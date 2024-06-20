@@ -195,8 +195,8 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
 
     auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
     views::View* focused_view = focus_manager->GetFocusedView();
-    DeskNameView* focused_name_view =
-        views::AsViewClass<DeskNameView>(focused_view);
+    const bool focused_name_view =
+        views::IsViewClass<DeskNameView>(focused_view);
 
     // TODO(b/290651821): Consolidates arrow key behaviors for the desk bar.
     switch (event->key_code()) {
@@ -224,6 +224,11 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
         break;
       case ui::VKEY_LEFT:
       case ui::VKEY_RIGHT:
+        // Let the textfield handle left/right to move the caret, unless using
+        // ChromeVox traversal.
+        if (!event->IsCommandDown() && focused_name_view) {
+          return;
+        }
         // Control + left/right falls through to be handed by the desk preview
         // to swap desks.
         if (is_control_down) {

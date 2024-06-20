@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/splitview/faster_split_view_old.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_state.h"
@@ -120,9 +121,19 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
   ASSERT_TRUE(overview_grid);
-  auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
-  ASSERT_TRUE(faster_split_view);
-  auto* settings_button = faster_split_view->settings_button();
+
+  views::Button* settings_button = nullptr;
+  if (ash::features::IsOverviewNewFocusEnabled()) {
+    auto* faster_split_view = overview_grid->GetFasterSplitView();
+    ASSERT_TRUE(faster_split_view);
+    settings_button = const_cast<views::Button*>(
+        views::AsViewClass<views::Button>(faster_split_view->GetViewByID(
+            ash::FasterSplitView::kSettingsButtonIDForTest)));
+  } else {
+    auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
+    ASSERT_TRUE(faster_split_view);
+    settings_button = faster_split_view->settings_button();
+  }
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.
@@ -183,10 +194,18 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithOldSettingsBrowserTest,
   auto* overview_grid =
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
-  ASSERT_TRUE(overview_grid);
-  auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
-  ASSERT_TRUE(faster_split_view);
-  auto* settings_button = faster_split_view->settings_button();
+  views::Button* settings_button = nullptr;
+  if (ash::features::IsOverviewNewFocusEnabled()) {
+    auto* faster_split_view = overview_grid->GetFasterSplitView();
+    ASSERT_TRUE(faster_split_view);
+    settings_button = const_cast<views::Button*>(
+        views::AsViewClass<views::Button>(faster_split_view->GetViewByID(
+            ash::FasterSplitView::kSettingsButtonIDForTest)));
+  } else {
+    auto* faster_split_view = overview_grid->GetFasterSplitViewOld();
+    ASSERT_TRUE(faster_split_view);
+    settings_button = faster_split_view->settings_button();
+  }
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.

@@ -6,12 +6,15 @@
 
 #include "ash/shell.h"
 #include "ash/style/rounded_label_widget.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -156,6 +159,24 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   const int next_index = AdvanceIndex(previous_index, size, reverse);
   ScopedActivatable scoped_activatable(widgets[next_index]);
   GetFirstOrLastFocusableView(widgets[next_index], reverse)->RequestFocus();
+}
+
+bool OverviewFocusCycler::AcceptSelection() {
+  views::View* focused_view = GetOverviewFocusedView();
+  if (!focused_view) {
+    return false;
+  }
+
+  if (auto* preview_view = views::AsViewClass<DeskPreviewView>(focused_view)) {
+    return preview_view->MaybeActivateFocusedViewOnOverviewExit(
+        overview_session_);
+  }
+
+  if (auto* item_view = views::AsViewClass<OverviewItemView>(focused_view)) {
+    return item_view->MaybeActivateFocusedViewOnOverviewExit(overview_session_);
+  }
+
+  return false;
 }
 
 views::View* OverviewFocusCycler::GetOverviewFocusedView() {

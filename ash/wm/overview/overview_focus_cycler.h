@@ -29,6 +29,8 @@ class ASH_EXPORT OverviewFocusCycler {
   // next traversable widget if necessary.
   void MoveFocus(bool reverse);
 
+  bool AcceptSelection();
+
   // Returns the current overview UI focused view if there is one.
   views::View* GetOverviewFocusedView();
 

@@ -2651,7 +2651,9 @@ TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
   ASSERT_EQ(name_view, GetFocusedView());
 
   // Rename template "a" to template "d".
-  PressAndReleaseKey(ui::VKEY_RETURN);
+  if (!features::IsOverviewNewFocusEnabled()) {
+    PressAndReleaseKey(ui::VKEY_RETURN);
+  }
   PressAndReleaseKey(ui::VKEY_D);
   PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();

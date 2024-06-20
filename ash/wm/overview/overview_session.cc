@@ -447,9 +447,10 @@ void OverviewSession::IncrementSelection(bool forward) {
 
 bool OverviewSession::AcceptSelection() {
   // Activate selected window or desk.
-  return focus_cycler_old_
-             ? focus_cycler_old_->MaybeActivateFocusedViewOnOverviewExit()
-             : false;
+  if (focus_cycler_old_) {
+    return focus_cycler_old_->MaybeActivateFocusedViewOnOverviewExit();
+  }
+  return focus_cycler_->AcceptSelection();
 }
 
 void OverviewSession::SelectWindow(OverviewItemBase* item) {
@@ -1020,9 +1021,28 @@ aura::Window* OverviewSession::GetOverviewFocusWindow() const {
 }
 
 aura::Window* OverviewSession::GetFocusedWindow() const {
-  OverviewItemBase* item =
-      focus_cycler_old_ ? focus_cycler_old_->GetFocusedItem() : nullptr;
-  return item ? item->GetWindow() : nullptr;
+  if (focus_cycler_old_) {
+    auto* item = focus_cycler_old_->GetFocusedItem();
+    return item ? item->GetWindow() : nullptr;
+  }
+
+  CHECK(focus_cycler_);
+  views::View* focused_view = focus_cycler_->GetOverviewFocusedView();
+  auto* item_view = views::AsViewClass<OverviewItemView>(focused_view);
+  if (!item_view) {
+    return nullptr;
+  }
+
+  const views::Widget* item_widget = item_view->GetWidget();
+  for (const std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
+    for (const auto& overview_item : overview_grid->window_list()) {
+      if (overview_item->item_widget() == item_widget) {
+        return overview_item->GetWindow();
+      }
+    }
+  }
+
+  return nullptr;
 }
 
 void OverviewSession::SuspendReposition() {
@@ -1518,6 +1538,14 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         // Control + left/right falls through to be handed by the desk preview
         // to swap desks.
         if (is_control_down) {
+          return;
+        }
+
+        // Let the textfield handle left/right to move the caret, unless using
+        // ChromeVox traversal.
+        views::View* focused_view = focus_cycler_->GetOverviewFocusedView();
+        if (!is_command_down && focused_view &&
+            views::IsViewClass<DeskTextfield>(focused_view)) {
           return;
         }
 

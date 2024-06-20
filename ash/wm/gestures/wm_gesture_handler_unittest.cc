@@ -22,6 +22,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -40,6 +41,7 @@
 #include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 
@@ -55,6 +57,21 @@ bool InOverviewSession() {
 }
 
 const aura::Window* GetFocusedWindow() {
+  if (features::IsOverviewNewFocusEnabled()) {
+    if (!InOverviewSession()) {
+      return nullptr;
+    }
+
+    views::View* focused_view = GetFocusedView();
+    if (!focused_view) {
+      return nullptr;
+    }
+
+    return views::IsViewClass<OverviewItemView>(focused_view)
+               ? focused_view->GetWidget()->GetNativeWindow()
+               : nullptr;
+  }
+
   return InOverviewSession() ? GetOverviewFocusedWindow() : nullptr;
 }
 
@@ -452,9 +469,13 @@ TEST_F(WmGestureHandlerTest, ActivateFocusedDeskWithVerticalScroll) {
           ->desks_bar_view()
           ->mini_views()[1];
 
-  overview_session->focus_cycler_old()->MoveFocusToView(
-      mini_view_1->desk_preview());
-  EXPECT_TRUE(mini_view_1->desk_preview()->is_focused());
+  if (features::IsOverviewNewFocusEnabled()) {
+    mini_view_1->desk_preview()->RequestFocus();
+  } else {
+    overview_session->focus_cycler_old()->MoveFocusToView(
+        mini_view_1->desk_preview());
+    ASSERT_TRUE(mini_view_1->desk_preview()->is_focused());
+  }
 
   // Exit overview with 3-fingers downward swipes.
   DeskSwitchAnimationWaiter waiter;
