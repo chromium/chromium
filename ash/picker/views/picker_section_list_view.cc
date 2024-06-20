@@ -13,7 +13,7 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -27,9 +27,9 @@ PickerSectionListView::PickerSectionListView(
     : section_width_(section_width),
       asset_fetcher_(asset_fetcher),
       submenu_controller_(submenu_controller) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  SetLayoutManager(
+      std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical))
+      ->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
 }
 
 PickerSectionListView::~PickerSectionListView() = default;
