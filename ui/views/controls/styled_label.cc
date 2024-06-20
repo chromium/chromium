@@ -293,10 +293,6 @@ void StyledLabel::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   need_recreate_child_ = true;
 }
 
-int StyledLabel::GetHeightForWidth(int w) const {
-  return GetLayoutSizeInfoForWidth(w).total_size.height();
-}
-
 void StyledLabel::Layout(PassKey) {
   if (!need_recreate_child_) {
     return;

@@ -53,7 +53,11 @@ class SecurityInformationView : public views::View {
       views::Button::PressedCallback password_reuse_callback);
 
  private:
-  // The icon that representes the security state for this site. Used for page
+  void AdjustContentWidth(int w);
+
+  int min_label_width_ = 0;
+
+  // The icon that represents the security state for this site. Used for page
   // info v2 only.
   raw_ptr<NonAccessibleImageView> icon_ = nullptr;
 

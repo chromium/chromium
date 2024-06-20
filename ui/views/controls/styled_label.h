@@ -186,7 +186,6 @@ class VIEWS_EXPORT StyledLabel : public View {
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  int GetHeightForWidth(int w) const override;
   void Layout(PassKey) override;
   void PreferredSizeChanged() override;
 
