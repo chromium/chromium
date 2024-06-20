@@ -120,9 +120,6 @@ declare_args() {
   # When true, seed corpora archives are built.
   archive_seed_corpus = true
 
-  # When true, sanitizer warnings will cause test case failures.
-  fail_on_san_warnings = false
-
   # When true, only builds fuzzer targets that require high end machines to run.
   # Otherwise, builds all the targets.
   # TODO(paulsemel): once we have everything implemented on the recipe side, we
@@ -141,6 +138,12 @@ declare_args() {
   # Compile for Undefined Behaviour Sanitizer's vptr checks.
   is_ubsan_vptr = is_ubsan_security
 }
+
+# Whether we are doing a fuzzer build. Normally this should be checked instead
+# of checking "use_libfuzzer || use_afl" because often developers forget to
+# check for "use_afl", and "use_centipede" is new.
+use_fuzzing_engine = use_libfuzzer || use_afl || use_centipede ||
+                     use_external_fuzzing_engine || use_fuzzilli
 
 declare_args() {
   # Builds fuzztest test executables such that they support the
@@ -173,6 +176,12 @@ declare_args() {
       use_centipede || use_external_fuzzing_engine
 }
 
+declare_args() {
+  use_sanitizer_coverage =
+      !use_clang_coverage && (use_fuzzing_engine || enable_fuzztest_fuzz ||
+                              sanitizer_coverage_flags != "")
+}
+
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
        "HWASan only supported on Android ARM64 builds.")
 
@@ -201,7 +210,6 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_ubsan_no_recover = false
   is_ubsan_security = false
   is_ubsan_vptr = false
-  fail_on_san_warnings = false
   msan_track_origins = 0
   sanitizer_coverage_flags = ""
   use_afl = false
@@ -216,17 +224,18 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_hwasan = false
 }
 
+# Whether we are linking against a sanitizer runtime library. Among other
+# things, this changes the default symbol level and other settings in order to
+# prepare to create stack traces "live" using the sanitizer runtime.
+using_sanitizer =
+    is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
+    is_ubsan_vptr || is_ubsan_security || use_sanitizer_coverage || use_cfi_diag
+
 # Use dynamic libraries instrumented by one of the sanitizers instead of the
 # standard system libraries. We have instrumented system libraries for msan,
 # which requires them to prevent false positives.
 # TODO(thakis): Maybe remove this variable.
 use_prebuilt_instrumented_libraries = is_msan
-
-# Whether we are doing a fuzzer build. Normally this should be checked instead
-# of checking "use_libfuzzer || use_afl" because often developers forget to
-# check for "use_afl", and "use_centipede" is new.
-use_fuzzing_engine = use_libfuzzer || use_afl || use_centipede ||
-                     use_external_fuzzing_engine || use_fuzzilli
 
 # Whether the current fuzzing engine supports libprotobuf_mutator.
 use_fuzzing_engine_with_lpm = use_libfuzzer || use_centipede
@@ -240,13 +249,12 @@ fuzzing_engine_supports_custom_main =
 # declare_args block. User overrides are only applied at the end of a
 # declare_args block.
 declare_args() {
+  # When true, sanitizer warnings will cause test case failures.
+  fail_on_san_warnings = using_sanitizer
+
   # Generates an owners file for each fuzzer test.
   # TODO(crbug.com/40175535): Remove this arg when finding OWNERS is faster.
   generate_fuzzer_owners = use_fuzzing_engine
-
-  use_sanitizer_coverage =
-      !use_clang_coverage && (use_fuzzing_engine || enable_fuzztest_fuzz ||
-                              sanitizer_coverage_flags != "")
 
   # https://crbug.com/1002058: Code coverage works inside the sandbox via the
   # help of several helper IPCs. Unfortunately, the sandbox-only path does not
@@ -280,13 +288,6 @@ if (sanitizer_coverage_flags == "") {
     sanitizer_coverage_flags = "trace-pc-guard,indirect-calls"
   }
 }
-
-# Whether we are linking against a sanitizer runtime library. Among other
-# things, this changes the default symbol level and other settings in order to
-# prepare to create stack traces "live" using the sanitizer runtime.
-using_sanitizer =
-    is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
-    is_ubsan_vptr || is_ubsan_security || use_sanitizer_coverage || use_cfi_diag
 
 assert(!using_sanitizer || is_clang,
        "Sanitizers (is_*san) require setting is_clang = true in 'gn args'")
