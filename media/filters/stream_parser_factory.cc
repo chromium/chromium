@@ -577,15 +577,15 @@ std::unique_ptr<StreamParser> StreamParserFactory::CreateRelaxedParser(
       // TODO(issue/40253609): Figure out how to determine SBR presence.
       return std::make_unique<mp2t::Mp2tStreamParser>(std::nullopt, false);
     }
+    case RelaxedParserSupportedType::kAAC: {
+      return std::make_unique<ADTSStreamParser>();
+    }
     case RelaxedParserSupportedType::kMP4: {
       // TODO(issue/40253609): Figure out how to determine presence of SBR,
       // FLAC, IAMF, DolbyVision.
       return enable_mp4 ? std::make_unique<mp4::MP4StreamParser>(
                               std::nullopt, false, true, false, false)
                         : nullptr;
-    }
-    case RelaxedParserSupportedType::kAAC: {
-      return enable_mp4 ? std::make_unique<ADTSStreamParser>() : nullptr;
     }
   }
 }
