@@ -433,7 +433,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return;
   }
 
-  if (!detachChange.group()) {
+  // When the deleted tab is showing as an item (i.e. when it's not
+  // grouped or shown as a search result), remove it from the grid.
+  if (!detachChange.group() || self.currentMode == TabGridModeSearch) {
     // Get the identifier to remove.
     web::WebState* detachedWebState = detachChange.detached_web_state();
     GridItemIdentifier* identifierToRemove =

@@ -248,6 +248,7 @@ class TabStripViewController: UIViewController,
     // To make the animation smoother, try to select the item if it's already
     // present in the collection view.
     selectItem(selectedItem)
+    reconfigureItems(itemIdentifiers)
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot,
       animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
