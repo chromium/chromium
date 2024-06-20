@@ -192,22 +192,8 @@ class PasswordsPrivateDelegateImpl
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
-  // Called after the lists are fetched. Once both lists have been set, the
-  // class is considered initialized and any queued functions (which could
-  // not be executed immediately due to uninitialized data) are invoked.
-  void InitializeIfNecessary();
-
-  // Executes a given callback by either invoking it immediately if the class
-  // has been initialized or by deferring it until initialization has completed.
-  void ExecuteFunction(base::OnceClosure callback);
-
   void SetCredentials(
       std::vector<password_manager::CredentialUIEntry> credentials);
-
-  void RemoveEntryInternal(
-      int id,
-      api::passwords_private::PasswordStoreSet from_stores);
-  void UndoRemoveSavedPasswordOrExceptionInternal();
 
   void MaybeShowPasswordShareButtonIPH(
       base::WeakPtr<content::WebContents> web_contents);
@@ -296,12 +282,9 @@ class PasswordsPrivateDelegateImpl
   // Whether SetCredentials has been called, and whether this class has been
   // initialized.
   bool current_entries_initialized_;
-  bool is_initialized_;
 
-  // Vector of callbacks which are queued up before the password store has been
-  // initialized. Once SetCredentials() has been called, this class is
-  // considered initialized and can these callbacks are invoked.
-  std::vector<base::OnceClosure> pre_initialization_callbacks_;
+  // Vectors of callbacks which are queued up before the password store has been
+  // initialized.
   std::vector<UiEntriesCallback> get_saved_passwords_list_callbacks_;
   std::vector<ExceptionEntriesCallback> get_password_exception_list_callbacks_;
 

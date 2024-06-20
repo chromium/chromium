@@ -343,8 +343,7 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
           &saved_passwords_presenter_,
           &credential_id_generator_,
           PasswordsPrivateEventRouterFactory::GetForProfile(profile_)),
-      current_entries_initialized_(false),
-      is_initialized_(false) {
+      current_entries_initialized_(false) {
   auth_timeout_handler_.Init(
       base::BindRepeating(&PasswordsPrivateDelegateImpl::OsReauthTimeoutCall,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -523,14 +522,6 @@ bool PasswordsPrivateDelegateImpl::ChangeCredential(
 void PasswordsPrivateDelegateImpl::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {
-  ExecuteFunction(
-      base::BindOnce(&PasswordsPrivateDelegateImpl::RemoveEntryInternal,
-                     base::Unretained(this), id, from_stores));
-}
-
-void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
-    int id,
-    api::passwords_private::PasswordStoreSet from_stores) {
   const CredentialUIEntry* entry = credential_id_generator_.TryGetKey(id);
   if (!entry) {
     return;
@@ -570,20 +561,11 @@ void PasswordsPrivateDelegateImpl::RemoveEntryInternal(
 }
 
 void PasswordsPrivateDelegateImpl::RemovePasswordException(int id) {
-  ExecuteFunction(base::BindOnce(
-      &PasswordsPrivateDelegateImpl::RemoveEntryInternal,
-      base::Unretained(this), id,
-      api::passwords_private::PasswordStoreSet::kDeviceAndAccount));
+  RemoveCredential(id,
+                   api::passwords_private::PasswordStoreSet::kDeviceAndAccount);
 }
 
 void PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrException() {
-  ExecuteFunction(base::BindOnce(
-      &PasswordsPrivateDelegateImpl::UndoRemoveSavedPasswordOrExceptionInternal,
-      base::Unretained(this)));
-}
-
-void PasswordsPrivateDelegateImpl::
-    UndoRemoveSavedPasswordOrExceptionInternal() {
   saved_passwords_presenter_.UndoLastRemoval();
 }
 
@@ -695,8 +677,8 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
   }
 
   if (current_entries_initialized_) {
-    DCHECK(get_saved_passwords_list_callbacks_.empty());
-    DCHECK(get_password_exception_list_callbacks_.empty());
+    CHECK(get_saved_passwords_list_callbacks_.empty());
+    CHECK(get_password_exception_list_callbacks_.empty());
   }
 
   PasswordsPrivateEventRouter* router =
@@ -707,7 +689,6 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
   }
 
   current_entries_initialized_ = true;
-  InitializeIfNecessary();
 
   for (auto& callback : get_saved_passwords_list_callbacks_) {
     std::move(callback).Run(current_entries_);
@@ -1201,15 +1182,6 @@ void PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
   auth_timeout_handler_.OnUserReauthenticationResult(authenticated);
 }
 
-void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
-  if (is_initialized_) {
-    std::move(callback).Run();
-    return;
-  }
-
-  pre_initialization_callbacks_.emplace_back(std::move(callback));
-}
-
 void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
   SetCredentials(saved_passwords_presenter_.GetSavedCredentials());
@@ -1233,19 +1205,6 @@ void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(
 
 void PasswordsPrivateDelegateImpl::OnWebAppInstallManagerDestroyed() {
   install_manager_observation_.Reset();
-}
-
-void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
-  if (is_initialized_ || !current_entries_initialized_) {
-    return;
-  }
-
-  is_initialized_ = true;
-
-  for (base::OnceClosure& callback : pre_initialization_callbacks_) {
-    std::move(callback).Run();
-  }
-  pre_initialization_callbacks_.clear();
 }
 
 void PasswordsPrivateDelegateImpl::EmitHistogramsForCredentialAccess(
