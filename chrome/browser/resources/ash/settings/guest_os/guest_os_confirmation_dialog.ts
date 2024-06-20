@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-crostini-confirmation-dialog' is a wrapper of
+ * @fileoverview 'settings-guest-os-confirmation-dialog' is a wrapper of
  * <cr-dialog> which
  *
  * - shows an accept button and a cancel button (you can customize the label via
@@ -20,17 +20,17 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './crostini_confirmation_dialog.html.js';
+import {getTemplate} from './guest_os_confirmation_dialog.html.js';
 
-export interface SettingsCrostiniConfirmationDialogElement {
+export interface SettingsGuestOsConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-export class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
+export class SettingsGuestOsConfirmationDialogElement extends PolymerElement {
   static get is() {
-    return 'settings-crostini-confirmation-dialog';
+    return 'settings-guest-os-confirmation-dialog';
   }
 
   static get template() {
@@ -79,11 +79,11 @@ export class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-crostini-confirmation-dialog':
-        SettingsCrostiniConfirmationDialogElement;
+    'settings-guest-os-confirmation-dialog':
+        SettingsGuestOsConfirmationDialogElement;
   }
 }
 
 customElements.define(
-    SettingsCrostiniConfirmationDialogElement.is,
-    SettingsCrostiniConfirmationDialogElement);
+    SettingsGuestOsConfirmationDialogElement.is,
+    SettingsGuestOsConfirmationDialogElement);

@@ -15,6 +15,7 @@ export interface SharedVmDevices {
 export class TestCrostiniBrowserProxy extends TestBrowserProxy implements
     CrostiniBrowserProxy {
   crostiniMicSharingEnabled: boolean;
+  bruschettaIsRunning: boolean;
   crostiniIsRunning: boolean;
   methodCalls: any;
   portOperationSuccess: boolean;
@@ -40,7 +41,9 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy implements
       'deactivateCrostiniPortForward',
       'getCrostiniActivePorts',
       'getCrostiniActiveNetworkInfo',
+      'checkBruschettaIsRunning',
       'checkCrostiniIsRunning',
+      'shutdownBruschetta',
       'shutdownCrostini',
       'setCrostiniMicSharingEnabled',
       'getCrostiniMicSharingEnabled',
@@ -64,6 +67,7 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy implements
       'checkCrostiniMicSharingStatus',
     ]);
     this.crostiniMicSharingEnabled = false;
+    this.bruschettaIsRunning = true;
     this.crostiniIsRunning = true;
     this.methodCalls = {};
     this.portOperationSuccess = true;
@@ -203,9 +207,19 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy implements
     return this.getNewPromiseFor('resizeCrostiniDisk');
   }
 
+  checkBruschettaIsRunning(): Promise<boolean> {
+    this.methodCalled('checkBruschettaIsRunning');
+    return Promise.resolve(this.bruschettaIsRunning);
+  }
+
   checkCrostiniIsRunning(): Promise<boolean> {
     this.methodCalled('checkCrostiniIsRunning');
     return Promise.resolve(this.crostiniIsRunning);
+  }
+
+  shutdownBruschetta(): void {
+    this.methodCalled('shutdownBruschetta');
+    this.bruschettaIsRunning = false;
   }
 
   shutdownCrostini(): void {

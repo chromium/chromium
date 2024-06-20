@@ -764,6 +764,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Guest OS
   (*s_allowlist)[bruschetta::prefs::kBruschettaInstalled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[bruschetta::prefs::kBruschettaMicAllowed] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[crostini::prefs::kCrostiniEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[crostini::prefs::kCrostiniMicAllowed] =

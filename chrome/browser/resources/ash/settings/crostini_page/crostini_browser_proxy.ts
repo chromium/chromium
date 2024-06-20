@@ -218,10 +218,17 @@ export interface CrostiniBrowserProxy {
 
   checkCrostiniIsRunning(): Promise<boolean>;
 
+  checkBruschettaIsRunning(): Promise<boolean>;
+
   /**
    * Shuts Crostini (Termina VM) down.
    */
   shutdownCrostini(): void;
+
+  /**
+   * Shuts Bruschetta (gLinux for ChromeOS) down.
+   */
+  shutdownBruschetta(): void;
 
   /**
    * @param enabled Set Crostini's access to the mic.
@@ -425,8 +432,16 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
     return sendWithPromise('checkCrostiniIsRunning');
   }
 
+  checkBruschettaIsRunning(): Promise<boolean> {
+    return sendWithPromise('checkBruschettaIsRunning');
+  }
+
   shutdownCrostini(): void {
     chrome.send('shutdownCrostini');
+  }
+
+  shutdownBruschetta(): void {
+    chrome.send('shutdownBruschetta');
   }
 
   setCrostiniMicSharingEnabled(enabled: boolean): void {

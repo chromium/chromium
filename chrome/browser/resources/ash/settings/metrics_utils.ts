@@ -31,6 +31,12 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  // Bruschetta settings
+  'bruschetta.mic_allowed': {
+    setting: Setting.kCrostiniMicAccess,
+    type: PrefType.BOOLEAN,
+  },
+
   // Date and time settings
   'settings.clock.use_24hour_clock': {
     setting: Setting.k24HourClock,

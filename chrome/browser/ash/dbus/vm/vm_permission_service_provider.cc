@@ -15,14 +15,17 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 #include "dbus/message.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -153,6 +156,9 @@ void VmPermissionServiceProvider::RegisterVm(
   } else if (request.type() ==
              vm_permission_service::RegisterVmRequest::BOREALIS) {
     vm_type = VmInfo::VmType::Borealis;
+  } else if (request.type() ==
+             vm_permission_service::RegisterVmRequest::BRUSCHETTA) {
+    vm_type = VmInfo::VmType::Bruschetta;
   } else {
     LOG(ERROR) << "Unsupported VM " << request.owner_id() << "/"
                << request.name() << " type: " << request.type();
@@ -341,6 +347,9 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
     case VmInfo::Borealis:
       UpdateBorealisPermissions(vm);
       break;
+    case VmInfo::Bruschetta:
+      UpdateBruschettaPermissions(vm);
+      break;
     case VmInfo::CrostiniVm:
       NOTREACHED_IN_MIGRATION();
   }
@@ -376,6 +385,23 @@ void VmPermissionServiceProvider::UpdateBorealisPermissions(VmInfo* vm) {
   if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
         prefs->GetBoolean(borealis::prefs::kBorealisMicAllowed);
+  }
+}
+
+void VmPermissionServiceProvider::UpdateBruschettaPermissions(VmInfo* vm) {
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser()));
+
+  if (!profile ||
+      ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {
+    return;
+  }
+
+  const PrefService* prefs = profile->GetPrefs();
+  if (prefs->GetBoolean(prefs::kAudioCaptureAllowed)) {
+    vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
+        prefs->GetBoolean(bruschetta::prefs::kBruschettaMicAllowed);
   }
 }
 

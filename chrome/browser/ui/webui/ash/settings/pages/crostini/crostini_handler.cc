@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -160,8 +161,16 @@ void CrostiniHandler::RegisterMessages() {
       base::BindRepeating(&CrostiniHandler::HandleCheckCrostiniIsRunning,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
+      "checkBruschettaIsRunning",
+      base::BindRepeating(&CrostiniHandler::HandleCheckBruschettaIsRunning,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
       "shutdownCrostini",
       base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "shutdownBruschetta",
+      base::BindRepeating(&CrostiniHandler::HandleShutdownBruschetta,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestContainerInfo",
@@ -709,6 +718,18 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
                             base::Value(crostini::IsCrostiniRunning(profile_)));
 }
 
+void CrostiniHandler::HandleCheckBruschettaIsRunning(
+    const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+
+  std::string callback_id = args[0].GetString();
+
+  ResolveJavascriptCallback(
+      base::Value(callback_id),
+      base::Value(bruschetta::IsBruschettaRunning(profile_)));
+}
+
 void CrostiniHandler::OnContainerStarted(
     const guest_os::GuestId& container_id) {
   if (container_id == crostini::DefaultContainerId()) {
@@ -738,6 +759,12 @@ void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
 
   crostini::CrostiniManager::GetForProfile(profile_)->StopRunningVms(
       base::DoNothing());
+}
+
+void CrostiniHandler::HandleShutdownBruschetta(const base::Value::List& args) {
+  CHECK_EQ(0U, args.size());
+
+  bruschetta::BruschettaService::GetForProfile(profile_)->StopRunningVms();
 }
 
 void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {

@@ -108,7 +108,7 @@ class VmPermissionServiceProvider
 
  private:
   struct VmInfo {
-    enum VmType { CrostiniVm = 0, PluginVm = 1, Borealis = 2 };
+    enum VmType { CrostiniVm = 0, PluginVm = 1, Borealis = 2, Bruschetta = 3 };
     enum PermissionType { PermissionCamera = 0, PermissionMicrophone = 1 };
 
     const std::string owner_id;
@@ -146,6 +146,7 @@ class VmPermissionServiceProvider
   void UpdateVmPermissions(VmInfo* vm);
   void UpdatePluginVmPermissions(VmInfo* vm);
   void UpdateBorealisPermissions(VmInfo* vm);
+  void UpdateBruschettaPermissions(VmInfo* vm);
 
   void SetCameraPermission(base::UnguessableToken token, bool enabled);
 

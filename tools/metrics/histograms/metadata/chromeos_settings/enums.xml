@@ -254,6 +254,7 @@ chromium-metrics-reviews@google.com.
   <int value="805" label="Crostini: Disk Resize"/>
   <int value="806" label="Crostini: Mic Access"/>
   <int value="807" label="Crostini: Container Upgrade"/>
+  <int value="808" label="Bruschetta: Mic Access"/>
   <int value="1000" label="24Hour Clock"/>
   <int value="1001" label="Change Time Zone"/>
   <int value="1101" label="Verified Access"/>

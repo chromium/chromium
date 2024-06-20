@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl, SettingsCrostiniConfirmationDialogElement, SettingsCrostiniPageElement} from 'chrome://os-settings/lazy_load.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl, SettingsCrostiniPageElement, SettingsGuestOsConfirmationDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -71,14 +71,14 @@ suite('<settings-crostini-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  suite('<settings-crostini-confirmation-dialog>', () => {
-    let dialog: SettingsCrostiniConfirmationDialogElement;
+  suite('<settings-guest-os-confirmation-dialog>', () => {
+    let dialog: SettingsGuestOsConfirmationDialogElement;
     let cancelOrCloseEvents: CustomEvent[];
     let closeEventPromise: Promise<Event>;
 
     setup(() => {
       cancelOrCloseEvents = [];
-      dialog = document.createElement('settings-crostini-confirmation-dialog');
+      dialog = document.createElement('settings-guest-os-confirmation-dialog');
 
       dialog.addEventListener('cancel', (e: Event) => {
         cancelOrCloseEvents.push(e as CustomEvent);

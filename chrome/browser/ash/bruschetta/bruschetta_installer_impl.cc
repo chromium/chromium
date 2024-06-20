@@ -113,6 +113,9 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
     LOG(ERROR) << "Installation prohibited by policy";
     return;
   }
+
+  // Reset mic permissions, as these should not persist across reinstall.
+  profile_->GetPrefs()->SetBoolean(prefs::kBruschettaMicAllowed, false);
 }
 
 void BruschettaInstallerImpl::InstallToolsDlc() {

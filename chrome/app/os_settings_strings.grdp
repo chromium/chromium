@@ -2866,6 +2866,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BRUSCHETTA_REMOVE_BUTTON" desc="Label for the button to open a dialog confirming removal of Bruschetta.">
     Remove
   </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_MIC_TITLE" desc="Title for sharing mic with Bruschetta.">
+    Allow <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> to access your microphone
+  </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_MIC_DIALOG_LABEL" desc="Dialog label for sharing mic with Bruschetta.">
+    The change in microphone setting requires <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> to shut down. Shut down <ph name="SPECIFIC_NAME">$1<ex>HappyVm</ex></ph> to proceed.
+  </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_MIC_DIALOG_SHUTDOWN_BUTTON" desc="Label for the shutdown button in the Bruschetta mic sharing dialog.">
+    Shut down
+  </message>
 
   <!-- Android apps page (OS settings) -->
   <message name="IDS_SETTINGS_ANDROID_APPS_LABEL" desc="The text associated with the primary section setting.">
