@@ -30,18 +30,6 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 
-// TODO(b/335543015): This part of code is just for to provide a temporary
-// solution to show digits on the icon button while to issue is fixed.
-#include "base/strings/string_number_conversions.h"
-#include "ui/base/models/image_model.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/font.h"
-#include "ui/gfx/font_list.h"
-#include "ui/gfx/image/canvas_image_source.h"
-#include "ui/gfx/image/image_skia.h"
-// Temporary includes end.
-
 namespace ash {
 
 namespace {
@@ -55,7 +43,7 @@ constexpr int kPinKeyboardWidthDp =
     3 * kButtonSize + 2 * kButtonsHorizontalPadding;
 
 constexpr ui::ColorId kButtonBackgroundColorId =
-    cros_tokens::kCrosSysSystemBaseElevated;
+    cros_tokens::kCrosSysBaseElevated;
 constexpr ui::ColorId kButtonContentColorId = cros_tokens::kCrosSysOnSurface;
 
 void StyleButton(IconButton* button_ptr) {
