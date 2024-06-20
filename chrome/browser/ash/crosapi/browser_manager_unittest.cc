@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/command_line.h"
@@ -18,9 +19,11 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
@@ -31,15 +34,18 @@
 #include "components/account_id/account_id.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_device_ownership_waiter.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
+#include "url/gurl.h"
 
 using ::component_updater::FakeComponentManagerAsh;
 using ::component_updater::MockComponentUpdateService;
@@ -495,7 +501,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 
   // Request a relaunch. Keep alive should not start Lacros in a windowless
-  // state but Lacros should instead start with the kRestoreLastSession action.
+  // state but Lacros should instead start with the kRestoreLastSession
+  // action.
   fake_browser_manager_->set_relaunch_requested_for_testing(true);
   fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 3);
@@ -580,6 +587,38 @@ TEST_F(BrowserManagerTest, VerifyProfileIdForNewTab) {
   EXPECT_CALL(mock_browser_service_, NewTab(testing::Eq(std::nullopt), _))
       .Times(1);
   fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
+}
+
+TEST_F(BrowserManagerTest, OnLacrosUserDataDirRemoved) {
+  AddUser(UserType::kRegularUser);
+  const User* user = fake_user_manager_->GetPrimaryUser();
+  content::BrowserContext* context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user);
+  ASSERT_TRUE(context);
+  PrefService* pref_service = user_prefs::UserPrefs::Get(context);
+  ASSERT_TRUE(pref_service);
+
+  pref_service->SetStandaloneBrowserPref(
+      ash::prefs::kAccessibilityHighContrastEnabled, base::Value(true));
+  EXPECT_TRUE(
+      pref_service->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
+
+  web_app::UserUninstalledPreinstalledWebAppPrefs
+      user_uninstalled_preinstalled_web_app_prefs(pref_service);
+  webapps::AppId app_id("kjbdgfilnfhdoflbpgamdcdgpehopbep");
+  GURL app_url(
+      "https://calendar.google.com/calendar/"
+      "installwebapp?usp=chrome_default");
+  user_uninstalled_preinstalled_web_app_prefs.Add(app_id, {app_url});
+  EXPECT_EQ(user_uninstalled_preinstalled_web_app_prefs.Size(), 1);
+
+  // Calling `OnLacrosUserDataDirRemoved()` with true should clear any
+  // standalone browser prefs and also clear all the preinstalled default web
+  // apps marked as user uninstalled.
+  fake_browser_manager_->OnLacrosUserDataDirRemoved(true);
+  EXPECT_EQ(user_uninstalled_preinstalled_web_app_prefs.Size(), 0);
+  EXPECT_FALSE(
+      pref_service->GetBoolean(ash::prefs::kAccessibilityHighContrastEnabled));
 }
 
 class BrowserManagerWithoutLacrosUserTest : public BrowserManagerTest {

@@ -80,6 +80,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -244,6 +245,13 @@ bool ShouldPrelaunchLacrosAtLoginScreen() {
   }
 
   return true;
+}
+
+bool RemoveLacrosUserDataDir() {
+  const base::FilePath lacros_data_dir = browser_util::GetUserDataDir();
+
+  return base::PathExists(lacros_data_dir) &&
+         base::DeletePathRecursively(lacros_data_dir);
 }
 
 // TODO(b/330659545): Investigate why we cannot run this inside
@@ -883,25 +891,29 @@ void BrowserManager::ClearLacrosData() {
     return;
   }
 
-  // TODO(hidehiko): This approach has timing issue. Specifically, if Chrome
-  // shuts down during the directory remove, some partially-removed directory
-  // may be kept, and if the user flips the flag in the next time, that
-  // partially-removed directory could be used. Fix this.
-  if (!ash::BrowserDataBackMigrator::IsBackMigrationEnabled(
+  if (ash::BrowserDataBackMigrator::IsBackMigrationEnabled(
           ash::standalone_browser::migrator_util::PolicyInitState::
               kAfterInit)) {
-    // If backward migration is enabled, don't remove the lacros directory as it
-    // will be used by the migration and will be removed after it completes.
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce([]() {
-          base::DeletePathRecursively(browser_util::GetUserDataDir());
-        }));
+    return;
   }
 
-  // Clear prefs set by Lacros and stored in
-  // 'standalone_browser_preferences.json' if Lacros is disabled.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(RemoveLacrosUserDataDir),
+      base::BindOnce(&BrowserManager::OnLacrosUserDataDirRemoved,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BrowserManager::OnLacrosUserDataDirRemoved(bool cleared) {
+  if (!cleared) {
+    // Do nothing if Lacros user data dir did not exist or could not be deleted.
+    return;
+  }
+
+  LOG(WARNING) << "Lacros user data directory was cleared. Now clearing lacros "
+                  "related prefs.";
+
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user) {
@@ -914,7 +926,20 @@ void BrowserManager::ClearLacrosData() {
     CHECK_IS_TEST();
     return;
   }
-  user_prefs::UserPrefs::Get(context)->RemoveAllStandaloneBrowserPrefs();
+  PrefService* pref_service = user_prefs::UserPrefs::Get(context);
+
+  // Clear prefs set by Lacros and stored in
+  // 'standalone_browser_preferences.json' if Lacros is disabled.
+  pref_service->RemoveAllStandaloneBrowserPrefs();
+
+  // Do a one time clearing of `kUserUninstalledPreinstalledWebAppPref`. This is
+  // because some users who had Lacros enabled before M114 had this pref set by
+  // accident for preinstalled web apps such as Calendar or Gmail. Without
+  // clearing this pref, if users disable Lacros, these apps will be considered
+  // uninstalled (and cannot easily be reinstalled). Note that this means that
+  // some users who intentionally uninstalled these apps on Lacros will find
+  // these apps reappear until they unistall them again.
+  web_app::UserUninstalledPreinstalledWebAppPrefs(pref_service).ClearAllApps();
 }
 
 void BrowserManager::OnBrowserServiceConnected(
