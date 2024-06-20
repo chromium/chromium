@@ -20,8 +20,8 @@ namespace data_controls {
 
 namespace {
 
-constexpr int kSpacingBetweenIconAndMessage = 16;
-constexpr int kBusinessIconSize = 24;
+constexpr int kSpacingBetweenIconAndMessage = 8;
+constexpr int kBusinessIconSize = 16;
 
 DataControlsDialog::TestObserver* observer_for_testing_ = nullptr;
 
@@ -129,7 +129,7 @@ views::View* DataControlsDialog::GetContentsView() {
     contents_view_->SetMainAxisAlignment(
         views::BoxLayout::MainAxisAlignment::kStart);
     contents_view_->SetCrossAxisAlignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
+        views::BoxLayout::CrossAxisAlignment::kCenter);
     contents_view_->SetBorder(views::CreateEmptyBorder(
         views::LayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
     contents_view_->SetBetweenChildSpacing(kSpacingBetweenIconAndMessage);
