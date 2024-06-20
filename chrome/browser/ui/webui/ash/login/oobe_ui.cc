@@ -362,6 +362,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isPersonalizedOnboarding",
                      features::IsOobePersonalizedOnboardingEnabled());
 
+  source->AddBoolean("isPerksDiscoveryEnabled",
+                     features::IsOobePerksDiscoveryEnabled());
+
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 

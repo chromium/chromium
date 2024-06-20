@@ -1921,6 +1921,8 @@ source_set("ash") {
     "login/screens/packaged_license_screen.h",
     "login/screens/parental_handoff_screen.cc",
     "login/screens/parental_handoff_screen.h",
+    "login/screens/perks_discovery_screen.cc",
+    "login/screens/perks_discovery_screen.h",
     "login/screens/personalized_recommend_apps_screen.cc",
     "login/screens/personalized_recommend_apps_screen.h",
     "login/screens/pin_setup_screen.cc",

@@ -3421,6 +3421,8 @@ static_library("ui") {
       "webui/ash/login/parental_handoff_screen_handler.h",
       "webui/ash/login/password_selection_screen_handler.cc",
       "webui/ash/login/password_selection_screen_handler.h",
+      "webui/ash/login/perks_discovery_screen_handler.cc",
+      "webui/ash/login/perks_discovery_screen_handler.h",
       "webui/ash/login/personalized_recommend_apps_screen_handler.cc",
       "webui/ash/login/personalized_recommend_apps_screen_handler.h",
       "webui/ash/login/pin_setup_screen_handler.cc",
