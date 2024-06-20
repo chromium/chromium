@@ -14,6 +14,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/robolectric_buildflags.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -50,9 +51,11 @@ jmethodID g_class_loader_load_class_method_id = nullptr;
 jclass GetClassFromSplit(JNIEnv* env,
                          const char* class_name,
                          const char* split_name) {
+  DCHECK(IsStringASCII(class_name));
+  ScopedJavaLocalRef<jstring> j_class_name(env, env->NewStringUTF(class_name));
   return static_cast<jclass>(env->CallObjectMethod(
       GetSplitClassLoader(env, split_name), g_class_loader_load_class_method_id,
-      ConvertUTF8ToJavaString(env, class_name).obj()));
+      j_class_name.obj()));
 }
 
 // Must be called before using GetClassFromSplit - we need to set the global,
