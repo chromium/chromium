@@ -2860,6 +2860,7 @@ std::string SerializeContentAnalysisRequest(
     request_data.Set("tab_url", request.request_data().tab_url());
     request_data.Set("source", request.request_data().source());
     request_data.Set("destination", request.request_data().destination());
+    request_data.Set("email", request.request_data().email());
 
     request_dict.Set("request_data", std::move(request_data));
   }
