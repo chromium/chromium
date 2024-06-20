@@ -87,6 +87,7 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/account_id/account_id.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
@@ -235,12 +236,18 @@ void MaybeShutdownLoginDisplayHostWebUI() {
 
 // ShowLoginWizard is split into two parts. This function is sometimes called
 // from TriggerShowLoginWizardFinish() directly, and sometimes from
-// OnLanguageSwitchedCallback()
-// (if locale was updated).
+// OnLanguageSwitchedCallback() (if locale was updated).
 void ShowLoginWizardFinish(
     OobeScreenId first_screen,
     const StartupCustomizationDocument* startup_manifest) {
   TRACE_EVENT0("chromeos", "ShowLoginWizard::ShowLoginWizardFinish");
+  // `ShowLoginWizardFinish` can be called as a result of
+  // `OnLanguageSwitchedCallback` and it can happen that the browser started to
+  // shut down. Return early if this is the case.
+  if (browser_shutdown::IsTryingToQuit() ||
+      KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    return;
+  }
 
   if (ShouldShowSigninScreen(first_screen)) {
     // Shutdown WebUI host to replace with the Mojo one.
