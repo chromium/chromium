@@ -423,7 +423,6 @@ const std::optional<float>& SimpleFontData::IdeographicAdvanceHeight() const {
     if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
       const HarfBuzzFace* hb_face = platform_data_->GetHarfBuzzFace();
       const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
-      has_vertical_metrics_ = vertical_data.HasVerticalMetrics();
       ideographic_advance_height_ =
           vertical_data.AdvanceHeight(cjk_water_glyph);
     }

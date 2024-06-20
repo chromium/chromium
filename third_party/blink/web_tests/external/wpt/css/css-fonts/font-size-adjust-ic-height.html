@@ -26,11 +26,11 @@ div {
      Therefore, an ic-height 2.0 means a 200% scaling up. */
   font-size-adjust: ic-height 2.0;
 }
-.notAdjusted {
+.fallback {
   font-family: Ahem;
-  /* The Ahem font lacks vertical metrics, so no adjustment is applied. */
+  /* The Ahem font lacks vertical metrics, so a fallback is applied. */
   font-size-adjust: ic-height 0.5;
 }
 </style>
 <div class="adjusted">水</div>
-<div class="notAdjusted">水</div>
+<div class="fallback">水</div>

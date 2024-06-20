@@ -114,8 +114,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const std::optional<float>& IdeographicAdvanceWidth() const;
   const std::optional<float>& IdeographicAdvanceHeight() const;
 
-  bool HasVerticalMetrics() const { return has_vertical_metrics_; }
-
   // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
   // This metrics can simulate ideographics em-box when the font doesn't have
   // better ways to compute it.
@@ -208,8 +206,6 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   mutable std::optional<float> ideographic_inline_size_;
   mutable std::optional<float> ideographic_advance_width_;
   mutable std::optional<float> ideographic_advance_height_;
-
-  mutable bool has_vertical_metrics_ = false;
 
   // Simple LRU cache for `HanKerning::FontData`. The cache has 2 entries
   // because one additional language or horizontal/vertical mixed document is
