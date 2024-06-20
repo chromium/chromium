@@ -191,7 +191,7 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
       LeaveStyleContainmentScope();
     }
     if (ElementGeneratesListItemCounter(element)) {
-      RemoveCounterIfAncestorExists(list_item_);
+      RemoveCounterIfAncestorExists(element, list_item_);
     }
     return;
   }
@@ -220,13 +220,13 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
     // self. This is done since we should always inherit from ancestor first,
     // and in the case described, all next elements would inherit ancestor
     // instead of self, so remove self.
-    RemoveCounterIfAncestorExists(identifier);
+    RemoveCounterIfAncestorExists(element, identifier);
   }
   // If there were no explicit counter related property set for `list-item`
   // counter, maybe we need to remove implicit one.
   if (ElementGeneratesListItemCounter(element) &&
       counter_directives->find(list_item_) == counter_directives->end()) {
-    RemoveCounterIfAncestorExists(list_item_);
+    RemoveCounterIfAncestorExists(element, list_item_);
   }
 }
 
@@ -354,6 +354,7 @@ void CountersAttachmentContext::RemoveStaleCounters(
 // so, if the previous counter is ancestor to the last one, the last one will
 // never be inherited, remove it.
 void CountersAttachmentContext::RemoveCounterIfAncestorExists(
+    const Element& owner,
     const AtomicString& identifier) {
   auto counter_stack_it = counter_inheritance_table_->find(identifier);
   if (counter_stack_it == counter_inheritance_table_->end()) {
@@ -361,8 +362,9 @@ void CountersAttachmentContext::RemoveCounterIfAncestorExists(
   }
   CounterStack& counter_stack = *counter_stack_it->value;
   // Don't remove the last on stack counter or style containment boundary.
+  // Also don't remove if the last counter's originating element is not `owner`.
   if (counter_stack.empty() || counter_stack.size() == 1 ||
-      counter_stack.back() == nullptr) {
+      counter_stack.back() == nullptr || counter_stack.back() != owner) {
     return;
   }
   const Element* element = counter_stack.back();

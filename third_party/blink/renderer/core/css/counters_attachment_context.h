@@ -52,7 +52,7 @@ class CORE_EXPORT CountersAttachmentContext {
  private:
   void CreateCounter(const AtomicString&, const Element&, int);
   void RemoveStaleCounters(const AtomicString&, const Element&);
-  void RemoveCounterIfAncestorExists(const AtomicString&);
+  void RemoveCounterIfAncestorExists(const Element&, const AtomicString&);
   void SetCounterValue(const AtomicString&, const Element&, int);
   int GetCounterValue(const AtomicString&, const Element&);
   void UpdateCounterValue(const AtomicString&, const Element&, unsigned, int);
