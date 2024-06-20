@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -46,6 +47,7 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -500,9 +502,12 @@ void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
 
   std::string data;
   ReadData(ClipboardFormatType::SvgType(), data_dst, &data);
-  result->assign(reinterpret_cast<const char16_t*>(data.data()),
-                 data.size() / sizeof(char16_t));
-
+  if (base::FeatureList::IsEnabled(features::kUseUtf8EncodingForSvgImage)) {
+    *result = base::UTF8ToUTF16(data);
+  } else {
+    result->assign(reinterpret_cast<const char16_t*>(data.data()),
+                   data.size() / sizeof(char16_t));
+  }
   TrimAfterNull(result);
 }
 
@@ -751,7 +756,12 @@ void ClipboardWin::WriteHTML(std::string_view markup,
 }
 
 void ClipboardWin::WriteSvg(std::string_view markup) {
-  HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(markup));
+  HGLOBAL glob;
+  if (base::FeatureList::IsEnabled(features::kUseUtf8EncodingForSvgImage)) {
+    glob = CreateGlobalData(std::string(markup));
+  } else {
+    glob = CreateGlobalData(base::UTF8ToUTF16(markup));
+  }
 
   WriteToClipboard(ClipboardFormatType::SvgType(), glob);
 }

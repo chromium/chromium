@@ -513,4 +513,7 @@ BASE_FEATURE(kEnableGestureBeginEndTypes,
              "EnableGestureBeginEndTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseUtf8EncodingForSvgImage,
+             "UseUtf8EncodingForSvgImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

@@ -241,6 +241,10 @@ BASE_DECLARE_FEATURE(kBubbleFrameViewTitleIsHeading);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kEnableGestureBeginEndTypes);
 
+// Use the UTF-8 encoding for SVG images instead of UTF-16.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kUseUtf8EncodingForSvgImage);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

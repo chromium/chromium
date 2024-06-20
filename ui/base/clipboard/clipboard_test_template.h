@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -52,6 +53,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
@@ -240,6 +242,18 @@ TYPED_TEST(ClipboardTest, SvgTest) {
                             /* data_dst = */ nullptr, &markup_result);
 
   EXPECT_EQ(markup, markup_result);
+  // On Windows, the SVG data is written as UTF-8.
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kUseUtf8EncodingForSvgImage)) {
+    std::string result;
+    this->clipboard().ReadData(ClipboardFormatType::SvgType(),
+                               /*data_dst=*/nullptr, &result);
+    // On Windows, after calling `GetClipboardData`, some extra null characters
+    // are added at the end. Use the C-string for comparison that ignores the
+    // null characters after the first one.
+    EXPECT_EQ(base::UTF16ToUTF8(markup), result.c_str());
+  }
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
