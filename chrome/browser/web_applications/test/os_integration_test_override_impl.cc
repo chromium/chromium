@@ -57,7 +57,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "net/base/filename_util.h"
 #import "skia/ext/skia_utils_mac.h"
 #endif

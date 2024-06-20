@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
 #include "base/files/file_path.h"
-#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
