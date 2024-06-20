@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

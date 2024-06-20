@@ -28,7 +28,7 @@
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/gfx/geometry/size.h"
 

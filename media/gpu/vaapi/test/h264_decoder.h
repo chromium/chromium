@@ -5,14 +5,14 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_H264_DECODER_H_
 #define MEDIA_GPU_VAAPI_TEST_H264_DECODER_H_
 
+#include <queue>
+
 #include "media/gpu/vaapi/test/h264_dpb.h"
 #include "media/gpu/vaapi/test/h264_vaapi_wrapper.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-#include <queue>
 
 namespace media {
 namespace vaapi_test {

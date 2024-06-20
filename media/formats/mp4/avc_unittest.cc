@@ -18,7 +18,7 @@
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/nalu_test_helper.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

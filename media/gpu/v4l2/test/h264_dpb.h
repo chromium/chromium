@@ -4,11 +4,11 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H264_DPB_H_
 #define MEDIA_GPU_V4L2_TEST_H264_DPB_H_
 
-#include "media/video/h264_parser.h"
-#include "ui/gfx/geometry/rect.h"
-
 #include <map>
 #include <set>
+
+#include "media/parsers/h264_parser.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace media {
 namespace v4l2_test {

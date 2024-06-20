@@ -22,7 +22,7 @@
 #include "media/base/test_helpers.h"
 #include "media/filters/ffmpeg_demuxer.h"
 #include "media/filters/file_data_source.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 
 namespace chromecast {
 namespace media {

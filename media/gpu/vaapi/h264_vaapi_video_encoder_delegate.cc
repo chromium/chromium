@@ -21,7 +21,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/video/h264_level_limits.h"
+#include "media/parsers/h264_level_limits.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {

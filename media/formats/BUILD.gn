@@ -85,6 +85,7 @@ source_set("formats") {
     "//build:chromecast_buildflags",
     "//media:media_buildflags",
     "//media/base",
+    "//media/parsers",
     "//third_party/libwebm",
   ]
 

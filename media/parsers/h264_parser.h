@@ -4,8 +4,8 @@
 //
 // This file contains an implementation of an H264 Annex-B video stream parser.
 
-#ifndef MEDIA_VIDEO_H264_PARSER_H_
-#define MEDIA_VIDEO_H264_PARSER_H_
+#ifndef MEDIA_PARSERS_H264_PARSER_H_
+#define MEDIA_PARSERS_H264_PARSER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -22,7 +22,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
-#include "media/video/h264_bit_reader.h"
+#include "media/parsers/h264_bit_reader.h"
 
 namespace gfx {
 class Rect;
@@ -607,4 +607,4 @@ class MEDIA_EXPORT H264Parser {
 
 }  // namespace media
 
-#endif  // MEDIA_VIDEO_H264_PARSER_H_
+#endif  // MEDIA_PARSERS_H264_PARSER_H_

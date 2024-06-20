@@ -44,8 +44,8 @@
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "media/video/h264_level_limits.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_level_limits.h"
+#include "media/parsers/h264_parser.h"
 
 namespace {
 const uint8_t kH264StartCode[] = {0, 0, 0, 1};

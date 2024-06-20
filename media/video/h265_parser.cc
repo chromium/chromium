@@ -16,7 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
-#include "media/video/bit_reader_macros.h"
+#include "media/parsers/bit_reader_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"

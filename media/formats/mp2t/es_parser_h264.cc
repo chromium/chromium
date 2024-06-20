@@ -18,7 +18,7 @@
 #include "media/base/video_frame.h"
 #include "media/formats/common/offset_byte_queue.h"
 #include "media/formats/mp2t/mp2t_common.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

@@ -15,8 +15,8 @@
 
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
-#include "media/video/h264_bit_reader.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_bit_reader.h"
+#include "media/parsers/h264_parser.h"
 
 namespace media {
 

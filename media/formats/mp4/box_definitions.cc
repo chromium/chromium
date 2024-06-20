@@ -29,7 +29,7 @@
 
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/dolby_vision.h"
-#include "media/video/h264_parser.h"  // nogncheck
+#include "media/parsers/h264_parser.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/formats/mp4/hevc.h"

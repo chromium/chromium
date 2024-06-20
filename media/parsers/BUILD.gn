@@ -6,6 +6,15 @@ import("//media/media_options.gni")
 
 source_set("parsers") {
   sources = [
+    "bit_reader_macros.h",
+    "h264_bit_reader.cc",
+    "h264_bit_reader.h",
+    "h264_level_limits.cc",
+    "h264_level_limits.h",
+    "h264_parser.cc",
+    "h264_parser.h",
+    "h264_poc.cc",
+    "h264_poc.h",
     "jpeg_parser.cc",
     "jpeg_parser.h",
     "vp8_bool_decoder.cc",
@@ -36,6 +45,9 @@ source_set("parsers") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "h264_bit_reader_unittest.cc",
+    "h264_parser_unittest.cc",
+    "h264_poc_unittest.cc",
     "jpeg_parser_unittest.cc",
     "vp8_bool_decoder_unittest.cc",
     "vp8_parser_unittest.cc",
@@ -48,6 +60,15 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//media:test_support",
     "//testing/gtest",
+  ]
+}
+
+fuzzer_test("media_h264_parser_fuzzer") {
+  sources = [ "h264_parser_fuzzertest.cc" ]
+  deps = [
+    "//base",
+    "//media",
+    "//ui/gfx/geometry",
   ]
 }
 

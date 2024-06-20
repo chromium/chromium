@@ -14,7 +14,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/video/h265_parser.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

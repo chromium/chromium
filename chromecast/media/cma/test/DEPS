@@ -1,5 +1,5 @@
 include_rules = [
   "+chromecast/common/mojom",
   "+media/filters",
-  "+media/video",
+  "+media/parsers",
 ]

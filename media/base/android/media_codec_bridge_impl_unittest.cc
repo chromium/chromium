@@ -21,7 +21,7 @@
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_frame.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 

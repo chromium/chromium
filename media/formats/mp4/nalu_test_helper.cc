@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #include "media/video/h265_nalu_parser.h"

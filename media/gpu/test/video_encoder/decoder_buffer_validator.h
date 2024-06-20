@@ -12,9 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/test/bitstream_helpers.h"
+#include "media/parsers/h264_parser.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/parsers/vp9_parser.h"
-#include "media/video/h264_parser.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "ui/gfx/geometry/rect.h"
 

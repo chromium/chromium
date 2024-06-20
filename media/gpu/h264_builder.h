@@ -6,7 +6,7 @@
 #define MEDIA_GPU_H264_BUILDER_H_
 
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 
 namespace media {
 

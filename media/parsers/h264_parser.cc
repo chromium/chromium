@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 
 #include <cstring>
 #include <limits>
@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "media/base/subsample_entry.h"
-#include "media/video/bit_reader_macros.h"
+#include "media/parsers/bit_reader_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"

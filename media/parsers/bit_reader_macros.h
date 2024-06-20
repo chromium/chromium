@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_VIDEO_BIT_READER_MACROS_H_
-#define MEDIA_VIDEO_BIT_READER_MACROS_H_
+#ifndef MEDIA_PARSERS_BIT_READER_MACROS_H_
+#define MEDIA_PARSERS_BIT_READER_MACROS_H_
 
 // Warning! Should only be included in .cc files.
 // Common bit reader macros shared by H.26x parsers.
@@ -185,4 +185,4 @@
     }                                               \
   } while (0)
 
-#endif  // MEDIA_VIDEO_BIT_READER_MACROS_H_
+#endif  // MEDIA_PARSERS_BIT_READER_MACROS_H_

@@ -18,8 +18,8 @@
 #include "media/base/ranges.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
-#include "media/video/h264_bit_reader.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_bit_reader.h"
+#include "media/parsers/h264_parser.h"
 #include "media/video/h265_nalu_parser.h"
 
 namespace gfx {

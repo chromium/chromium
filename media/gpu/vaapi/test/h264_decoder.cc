@@ -4,15 +4,15 @@
 
 #include "media/gpu/vaapi/test/h264_decoder.h"
 
+#include <va/va.h>
+
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/subsample_entry.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/h264_dpb.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
-#include "media/video/h264_parser.h"
-
-#include <va/va.h>
+#include "media/parsers/h264_parser.h"
 
 namespace media::vaapi_test {
 

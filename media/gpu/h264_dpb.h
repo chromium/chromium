@@ -15,7 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 

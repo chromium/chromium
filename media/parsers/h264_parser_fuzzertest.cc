@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "base/numerics/safe_conversions.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

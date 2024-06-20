@@ -18,19 +18,10 @@ source_set("video") {
   sources = [
     "alpha_video_encoder_wrapper.cc",
     "alpha_video_encoder_wrapper.h",
-    "bit_reader_macros.h",
     "gpu_memory_buffer_video_frame_pool.cc",
     "gpu_memory_buffer_video_frame_pool.h",
     "gpu_video_accelerator_factories.cc",
     "gpu_video_accelerator_factories.h",
-    "h264_bit_reader.cc",
-    "h264_bit_reader.h",
-    "h264_level_limits.cc",
-    "h264_level_limits.h",
-    "h264_parser.cc",
-    "h264_parser.h",
-    "h264_poc.cc",
-    "h264_poc.h",
     "offloading_video_encoder.cc",
     "offloading_video_encoder.h",
     "picture.cc",
@@ -85,6 +76,9 @@ source_set("video") {
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//media/base",
+
+    # TODO(b/347112896): Remove one H265 parse code is moved to //media/parsers.
+    "//media/parsers",
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gl",
@@ -158,9 +152,6 @@ source_set("unit_tests") {
   sources = [
     "alpha_video_encoder_wrapper_unittest.cc",
     "gpu_memory_buffer_video_frame_pool_unittest.cc",
-    "h264_bit_reader_unittest.cc",
-    "h264_parser_unittest.cc",
-    "h264_poc_unittest.cc",
     "offloading_video_encoder_unittest.cc",
     "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",
@@ -198,15 +189,6 @@ source_set("unit_tests") {
     "//third_party/libvpx:libvpx",
     "//third_party/libyuv:libyuv",
     "//ui/gfx",
-  ]
-}
-
-fuzzer_test("media_h264_parser_fuzzer") {
-  sources = [ "h264_parser_fuzzertest.cc" ]
-  deps = [
-    "//base",
-    "//media",
-    "//ui/gfx/geometry",
   ]
 }
 

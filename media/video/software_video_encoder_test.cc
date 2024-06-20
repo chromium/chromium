@@ -34,7 +34,7 @@
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/filters/h264_to_annex_b_bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #endif
 
 #if BUILDFLAG(ENABLE_OPENH264)

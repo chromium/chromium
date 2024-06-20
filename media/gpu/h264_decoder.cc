@@ -15,7 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "media/base/media_switches.h"
-#include "media/video/h264_level_limits.h"
+#include "media/parsers/h264_level_limits.h"
 
 namespace media {
 namespace {
