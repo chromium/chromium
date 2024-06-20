@@ -56,6 +56,14 @@ CONTENT_EXPORT bool HasValidRealTimePriorityWeight(
     const auction_worklet::mojom::RealTimeReportingContributionPtr&
         contribution);
 
+// Bit-pack a vector of 0 and 1s, i.e., use a bit to represent a 0/1, instead of
+// a byte. The first 8 elements of `data` packs to byte 0, the next 8 elements
+// packs to byte 1, until all elements are packed into the output. Within each
+// group of 8 elements, the first element packs to the most significant bit of
+// a byte. For example, the result of packing [0,0,0,0,0,0,0,1, 1]
+// is output[0]: 1, output[1]: 128.
+CONTENT_EXPORT std::vector<uint8_t> BitPacking(std::vector<uint8_t> data);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_REAL_TIME_REPORT_UTIL_H_
