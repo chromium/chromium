@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cassert>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/toast/system_nudge_view.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -26,6 +29,8 @@
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace {
 
@@ -79,6 +84,60 @@ constexpr char kCampaignsNudge[] = R"(
             "action": {},
             "shouldMarkDismissed": true
           }
+        }
+      }
+    }
+  ]
+}
+)";
+
+constexpr char kCampaignsNotification[] = R"(
+{
+  "3": [
+    {
+      "id": 101,
+      "targetings": [
+        {
+          "runtime": {
+            "triggerList": [
+              {
+                "triggerType": 1
+              }
+            ]
+          }
+        }
+      ],
+      "payload": {
+        "notification": {
+          "title": "Rebuy title",
+          "message": "Rebuy message",
+          "sourceIcon": {
+            "builtInVectorIcon": 0
+          },
+          "image": {
+            "builtInImage": 2
+          },
+          "shouldMarkDismissOnClose": true,
+          "buttons": [
+            {
+              "label": "Get Perk",
+              "shouldMarkDismissed": true,
+              "action": {
+                "type": 3,
+                "params": {
+                  "url": "https://www.google.com",
+                  "disposition": 0
+                }
+              }
+            },
+            {
+              "label": "Dismiss",
+              "shouldMarkDismissed": true,
+              "action": {
+                "type": 0
+              }
+            }
+          ]
         }
       }
     }
@@ -344,4 +403,97 @@ IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNudgeTest,
               "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 1),
           CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
                                1))));
+}
+
+// CampaignsManagerInteractiveUiNotificationTest
+// ----------------------------------
+
+class CampaignsManagerInteractiveUiNotificationTest
+    : public CampaignsManagerInteractiveUiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CampaignsManagerInteractiveUiNotificationTest() {
+    base::WriteFile(GetCampaignsFilePath(temp_dir_), kCampaignsNotification);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    InteractiveAshTest::SetupContextWidget();
+  }
+
+ protected:
+  message_center::Notification* GetNotification() {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        "growth_campaign_101");
+  }
+
+  // If a notification with `notification_id` is displayed, simulates clicking
+  // on that notification with `button_index` button.
+  auto Click(std::optional<int> button_index) {
+    return Do([=]() {
+      GetNotification()->delegate()->Click(button_index, std::nullopt);
+    });
+  }
+
+  bool ShouldUseTabletMode() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CampaignsManagerInteractiveUiNotificationTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
+                       ShowNotification) {
+  RunTestSequence(
+      InAnyContext(SetTabletMode(ShouldUseTabletMode())),
+      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting), FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 0),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101, 0),
+          ToggleTabletMode())));
+}
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
+                       ClickPrimaryButtonOnNotification) {
+  aura::Env* env = aura::Env::GetInstance();
+  ASSERT_TRUE(env);
+
+  RunTestSequence(
+      InAnyContext(SetTabletMode(ShouldUseTabletMode())),
+      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting), FlushEvents(),
+      InAnyContext(Click(/*button_index=*/0)),
+      WaitForHide(ash::AshNotificationView::kBubbleIdForTesting),
+      WaitForWindowWithTitle(env, u"www.google.com"), FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 0),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
+                               0))));
+}
+
+IN_PROC_BROWSER_TEST_P(CampaignsManagerInteractiveUiNotificationTest,
+                       ClickSecondaryButtonOnNotification) {
+  aura::Env* env = aura::Env::GetInstance();
+  ASSERT_TRUE(env);
+
+  RunTestSequence(
+      InAnyContext(SetTabletMode(ShouldUseTabletMode())),
+      WaitForShow(ash::AshNotificationView::kBubbleIdForTesting), FlushEvents(),
+      InAnyContext(Click(/*button_index=*/1)),
+      WaitForHide(ash::AshNotificationView::kBubbleIdForTesting), FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 101, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 101, 0),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 101, 1),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 101,
+                               0))));
 }

@@ -293,6 +293,8 @@ using Orientation = views::BoxLayout::Orientation;
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow)
 END_METADATA
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AshNotificationView, kBubbleIdForTesting);
+
 void AshNotificationView::AddedToWidget() {
   MessageView::AddedToWidget();
 
@@ -458,6 +460,8 @@ AshNotificationView::AshNotificationView(
     set_drag_controller(
         Shell::Get()->message_center_controller()->drag_controller());
   }
+
+  SetProperty(views::kElementIdentifierKey, kBubbleIdForTesting);
 
   message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug.com/40780100): fix views and layout to match spec.

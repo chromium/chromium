@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -48,6 +49,8 @@ class ASH_EXPORT AshNotificationView
   METADATA_HEADER(AshNotificationView, message_center::NotificationViewBase)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleIdForTesting);
+
   // TODO(crbug/1241983): Add metadata and builder support to this view.
   explicit AshNotificationView(const message_center::Notification& notification,
                                bool shown_in_popup);
