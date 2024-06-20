@@ -11,6 +11,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -30,6 +31,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -49,6 +51,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -68,6 +71,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -87,6 +91,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -106,6 +111,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: normal
 font-stretch: normal
 font-size: 12px
@@ -125,6 +131,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: bold
 font-stretch: normal
 font-size: 12px
@@ -144,6 +151,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: bold
 font-stretch: normal
 font-size: 14px
@@ -163,6 +171,7 @@ font-optical-sizing: auto
 font-feature-settings: normal
 font-variation-settings: normal
 font-variant-position: normal
+font-variant-emoji: normal
 font-weight: bold
 font-stretch: normal
 font-size: 14px
@@ -177,6 +186,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -196,6 +206,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -215,6 +226,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -234,6 +246,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -253,6 +266,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -272,6 +286,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -291,6 +306,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -310,6 +326,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 
@@ -329,6 +346,7 @@ font-variant-numeric:
 font-variant-east-asian: 
 font-variant-alternates: 
 font-variant-position: 
+font-variant-emoji: 
 font-weight: 
 font-stretch: 
 font-size: 

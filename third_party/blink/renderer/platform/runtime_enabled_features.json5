@@ -1921,6 +1921,7 @@
     },
     {
       name: "FontVariantEmoji",
+      status: "test",
     },
     {
       name: "FontVariationSequences",

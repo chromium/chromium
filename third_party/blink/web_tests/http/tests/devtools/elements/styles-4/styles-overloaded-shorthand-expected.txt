@@ -49,6 +49,7 @@ body { (<style>)
         font-feature-settings: normal;
         font-variation-settings: normal;
         font-variant-position: normal;
+        font-variant-emoji: normal;
     /-- overloaded --/     font-weight: normal;
     /-- overloaded --/     font-stretch: normal;
     /-- overloaded --/     font-size: 1.2em;
