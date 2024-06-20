@@ -41,6 +41,11 @@ class IpProtectionProxyConfigRetrieverTest : public testing::Test {
 };
 
 TEST_F(IpProtectionProxyConfigRetrieverTest, GetProxyConfigSuccess) {
+  std::map<std::string, std::string> parameters;
+  parameters["IpPrivacyDebugExperimentArm"] = "42";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
   ip_protection::GetProxyConfigResponse response_proto;
 
   ip_protection::GetProxyConfigResponse_ProxyChain* proxyChain =
@@ -57,6 +62,10 @@ TEST_F(IpProtectionProxyConfigRetrieverTest, GetProxyConfigSuccess) {
         EXPECT_FALSE(
             request.headers.HasHeader(net::HttpRequestHeaders::kAuthorization));
         EXPECT_TRUE(request.headers.HasHeader(kGoogApiKeyHeader));
+        std::string value;
+        EXPECT_TRUE(request.headers.GetHeader(
+            "Ip-Protection-Debug-Experiment-Arm", &value));
+        EXPECT_EQ(value, "42");
 
         auto head = network::mojom::URLResponseHead::New();
         test_url_loader_factory_.AddResponse(

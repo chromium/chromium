@@ -108,6 +108,11 @@ void IpProtectionProxyConfigRetriever::GetProxyConfig(
   } else {
     resource_request->headers.SetHeader(kGoogApiKeyHeader, api_key_);
   }
+  int experiment_arm = net::features::kIpPrivacyDebugExperimentArm.Get();
+  if (experiment_arm != 0) {
+    resource_request->headers.SetHeader("Ip-Protection-Debug-Experiment-Arm",
+                                        base::NumberToString(experiment_arm));
+  }
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),

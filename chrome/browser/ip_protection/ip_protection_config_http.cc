@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -106,6 +107,11 @@ void IpProtectionConfigHttp::DoRequest(
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       base::StrCat({"Bearer ", *authorization_header}));
+  int experiment_arm = net::features::kIpPrivacyDebugExperimentArm.Get();
+  if (experiment_arm != 0) {
+    resource_request->headers.SetHeader("Ip-Protection-Debug-Experiment-Arm",
+                                        base::NumberToString(experiment_arm));
+  }
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
 

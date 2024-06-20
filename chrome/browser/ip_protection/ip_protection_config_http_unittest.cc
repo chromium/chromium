@@ -84,6 +84,42 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
   EXPECT_EQ("Response body", result->body());
 }
 
+TEST_F(IpProtectionConfigHttpTest, DoRequestSendsHeaders) {
+  std::map<std::string, std::string> parameters;
+  parameters["IpPrivacyDebugExperimentArm"] = "42";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
+  std::string authorization_header = "token";
+  std::string body = "body";
+
+  // Queue up the request
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
+      result_future;
+  auto callback =
+      [&result_future](
+          absl::StatusOr<quiche::BlindSignMessageResponse> response) {
+        result_future.SetValue(std::move(response));
+      };
+  http_fetcher_->DoRequest(request_type, authorization_header, body,
+                           std::move(callback));
+
+  // Verify that the headers are present in the (stilll-pending) request.
+  network::TestURLLoaderFactory::PendingRequest* pending_req =
+      test_url_loader_factory_.GetPendingRequest(0);
+  CHECK(pending_req);
+
+  std::string value;
+  ASSERT_TRUE(pending_req->request.headers.GetHeader(
+      net::HttpRequestHeaders::kAuthorization, &value));
+  ASSERT_EQ(value, base::StrCat({"Bearer ", authorization_header}));
+  ASSERT_TRUE(pending_req->request.headers.GetHeader(
+      "Ip-Protection-Debug-Experiment-Arm", &value));
+  ASSERT_EQ(value, "42");
+}
+
 TEST_F(IpProtectionConfigHttpTest,
        DoRequestFailsToConnectReturnsFailureStatus) {
   auto request_type = quiche::BlindSignMessageRequestType::kAuthAndSign;
