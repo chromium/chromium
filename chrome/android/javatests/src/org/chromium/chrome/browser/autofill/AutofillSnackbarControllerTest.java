@@ -42,6 +42,7 @@ public class AutofillSnackbarControllerTest {
 
     private static final String SNACKBAR_MESSAGE_TEXT = "message_text";
     private static final String SNACKBAR_ACTION_TEXT = "action_text";
+    private static final int SNACKBAR_DURATION = 10000;
     private static final long NATIVE_AUTOFILL_SNACKBAR_VIEW = 100L;
 
     @Mock private AutofillSnackbarController.Natives mNativeMock;
@@ -69,6 +70,9 @@ public class AutofillSnackbarControllerTest {
                 "Incorrect snackbar message text", SNACKBAR_MESSAGE_TEXT, getSnackbarMessageText());
         Assert.assertEquals(
                 "Incorrect snackbar action text", SNACKBAR_ACTION_TEXT, getSnackbarActionText());
+        Assert.assertEquals(
+                "Incorrect snackbar duration", SNACKBAR_DURATION, currentSnackbar.getDuration());
+
         Assert.assertTrue(
                 "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof AutofillSnackbarController);
@@ -82,6 +86,7 @@ public class AutofillSnackbarControllerTest {
         dismissSnackbar();
 
         Assert.assertNull(getCurrentSnackbar());
+        verify(mNativeMock).onDismissed(NATIVE_AUTOFILL_SNACKBAR_VIEW);
     }
 
     @Test
@@ -109,7 +114,7 @@ public class AutofillSnackbarControllerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAutofillSnackbarController.show(
-                                SNACKBAR_MESSAGE_TEXT, SNACKBAR_ACTION_TEXT));
+                                SNACKBAR_MESSAGE_TEXT, SNACKBAR_ACTION_TEXT, SNACKBAR_DURATION));
     }
 
     private void dismissSnackbar() {

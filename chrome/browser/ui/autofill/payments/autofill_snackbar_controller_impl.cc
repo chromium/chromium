@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/ui/android/autofill/snackbar/autofill_snackbar_view_android.h"
+#include "chrome/browser/ui/autofill/payments/autofill_snackbar_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -29,13 +32,25 @@ AutofillSnackbarControllerImpl::~AutofillSnackbarControllerImpl() {
 
 void AutofillSnackbarControllerImpl::Show(
     AutofillSnackbarType autofill_snackbar_type) {
+  ShowWithDurationAndCallback(autofill_snackbar_type, kDefaultSnackbarDuration,
+                              std::nullopt);
+}
+
+void AutofillSnackbarControllerImpl::ShowWithDurationAndCallback(
+    AutofillSnackbarType autofill_snackbar_type,
+    base::TimeDelta snackbar_duration,
+    std::optional<base::OnceClosure> on_dismiss_callback) {
   CHECK_NE(autofill_snackbar_type, AutofillSnackbarType::kUnspecified);
   if (autofill_snackbar_view_) {
     // A snackbar is already showing. Ignore the new request.
     return;
   }
+
+  on_dismiss_callback_ = std::move(on_dismiss_callback);
+
   autofill_snackbar_type_ = autofill_snackbar_type;
   autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
+  autofill_snackbar_duration_ = snackbar_duration;
   autofill_snackbar_view_->Show();
   base::UmaHistogramBoolean(
       base::StrCat(
@@ -71,6 +86,12 @@ void AutofillSnackbarControllerImpl::OnActionClicked() {
 void AutofillSnackbarControllerImpl::OnDismissed() {
   autofill_snackbar_view_ = nullptr;
   autofill_snackbar_type_ = AutofillSnackbarType::kUnspecified;
+  autofill_snackbar_duration_ = kDefaultSnackbarDuration;
+
+  if (on_dismiss_callback_) {
+    std::move(*on_dismiss_callback_).Run();
+    on_dismiss_callback_.reset();
+  }
 }
 
 std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
@@ -107,6 +128,10 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED_NORETURN();
   }
+}
+
+base::TimeDelta AutofillSnackbarControllerImpl::GetDuration() const {
+  return autofill_snackbar_duration_;
 }
 
 content::WebContents* AutofillSnackbarControllerImpl::GetWebContents() const {

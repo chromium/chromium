@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
@@ -42,12 +44,28 @@ class AutofillSnackbarControllerImplTest
     return controller_;
   }
 
+  void ShowWithOnDismissCallback(AutofillSnackbarType autofill_snackbar_type) {
+    controller()->ShowWithDurationAndCallback(
+        autofill_snackbar_type,
+        AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+        base::BindOnce(&AutofillSnackbarControllerImplTest::OnDismissCallback,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+ protected:
+  int on_dismiss_callback_call_count_ = 0;
+
  private:
+  void OnDismissCallback() { ++on_dismiss_callback_call_count_; }
+
   raw_ptr<AutofillSnackbarControllerImpl> controller_ = nullptr;
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
+
+  base::WeakPtrFactory<AutofillSnackbarControllerImplTest> weak_ptr_factory_{
+      this};
 };
 
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCard) {
@@ -161,6 +179,37 @@ TEST_F(AutofillSnackbarControllerImplTest,
       controller()->GetActionButtonText(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
+}
+
+TEST_F(AutofillSnackbarControllerImplTest, OnShowDefaultDurationSet) {
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+  EXPECT_EQ(controller()->GetDuration(),
+            AutofillSnackbarControllerImpl::kDefaultSnackbarDuration);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       OnShowWithDurationCustomDurationSet) {
+  base::TimeDelta duration = base::Seconds(3);
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kSaveCardSuccess, duration, std::nullopt);
+  EXPECT_EQ(controller()->GetDuration(), duration);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest, OnDismissCallbackCalled) {
+  ShowWithOnDismissCallback(AutofillSnackbarType::kSaveCardSuccess);
+  EXPECT_EQ(on_dismiss_callback_call_count_, 0);
+
+  controller()->OnDismissed();
+  EXPECT_EQ(on_dismiss_callback_call_count_, 1);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest, OnDismissTwiceCallbackCalledOnce) {
+  ShowWithOnDismissCallback(AutofillSnackbarType::kSaveCardSuccess);
+  controller()->OnDismissed();
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+  controller()->OnDismissed();
+
+  EXPECT_EQ(on_dismiss_callback_call_count_, 1);
 }
 
 }  // namespace autofill

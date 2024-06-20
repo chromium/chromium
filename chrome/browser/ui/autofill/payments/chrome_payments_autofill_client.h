@@ -68,6 +68,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       delete;
   ~ChromePaymentsAutofillClient() override;
 
+  static constexpr base::TimeDelta kSaveCardConfirmationSnackbarDuration =
+      base::Seconds(3);
+
   // RiskDataLoader:
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override;

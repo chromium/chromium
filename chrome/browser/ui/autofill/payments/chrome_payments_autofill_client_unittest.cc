@@ -47,6 +47,12 @@ class MockAutofillSnackbarControllerImpl
       : AutofillSnackbarControllerImpl(web_contents) {}
 
   MOCK_METHOD(void, Show, (AutofillSnackbarType), (override));
+  MOCK_METHOD(void,
+              ShowWithDurationAndCallback,
+              (AutofillSnackbarType,
+               base::TimeDelta,
+               std::optional<base::OnceClosure>),
+              (override));
 };
 #else  //! BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
@@ -164,7 +170,28 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
 TEST_F(
     ChromePaymentsAutofillClientTest,
-    CreditCardUploadCompletedSuccessful_CallsSaveCardBottomSheetBridgeAndSnackbarController) {
+    CreditCardUploadCompletedSuccessful_CallsSaveCardBottomSheetBridgeAndSnackbarControllerWithDurationAndCallback) {
+  MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  EXPECT_CALL(*save_card_bridge, Hide);
+  EXPECT_CALL(
+      *snackbar_controller,
+      ShowWithDurationAndCallback(AutofillSnackbarType::kSaveCardSuccess,
+                                  payments::ChromePaymentsAutofillClient::
+                                      kSaveCardConfirmationSnackbarDuration,
+                                  testing::Ne(std::nullopt)));
+
+  std::optional<base::OnceClosure> callback = base::OnceClosure();
+  chrome_payments_client()->CreditCardUploadCompleted(true,
+                                                      std::move(callback));
+}
+
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    CreditCardUploadCompletedSuccessfulButNoCallback_CallsSaveCardBottomSheetBridgeAndSnackbarControllerWithoutDuration) {
   MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
       InjectMockAutofillSaveCardBottomSheetBridge();
   MockAutofillSnackbarControllerImpl* snackbar_controller =
@@ -186,6 +213,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   EXPECT_CALL(*save_card_bridge, Hide);
   EXPECT_CALL(*snackbar_controller, Show).Times(0);
+  EXPECT_CALL(*snackbar_controller, ShowWithDurationAndCallback).Times(0);
 
   chrome_payments_client()->CreditCardUploadCompleted(false, std::nullopt);
 }
