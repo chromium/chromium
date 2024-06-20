@@ -585,16 +585,26 @@ const FeatureEntry::FeatureVariation kCCTPageInsightsHubPeekVariations[] = {
     {"with both", kCCTPageInsightsHubBothParams,
      std::size(kCCTPageInsightsHubBothParams), nullptr}};
 
-const FeatureEntry::FeatureParam kCCTBottomBarButtonsEquallyDividedParam[] = {
-    {"google_bottom_bar_button_list", "0,3,1,2"}};
-const FeatureEntry::FeatureParam kCCTBottomBarPihInSpotlightParam[] = {
+const FeatureEntry::FeatureParam
+    kCCTBottomBarButtonBalancedWithPageInsightsParam[] = {
+        {"google_bottom_bar_button_list", "0,3,1,2"}};
+const FeatureEntry::FeatureParam kCCTBottomBarButtonsBalancedWithCustomParam[] =
+    {{"google_bottom_bar_button_list", "0,3,8,2"}};
+const FeatureEntry::FeatureParam kCCTBottomBarPageInsightsInSpotlightParam[] = {
     {"google_bottom_bar_button_list", "1,1,3,2"}};
+const FeatureEntry::FeatureParam kCCTBottomBarCustomInSpotlightParam[] = {
+    {"google_bottom_bar_button_list", "8,8,3,2"}};
 
 const FeatureEntry::FeatureVariation kCCTGoogleBottomBarVariations[] = {
-    {"Balanced bottom bar", kCCTBottomBarButtonsEquallyDividedParam,
-     std::size(kCCTBottomBarButtonsEquallyDividedParam), nullptr},
-    {"PIH basic in spotlight", kCCTBottomBarPihInSpotlightParam,
-     std::size(kCCTBottomBarPihInSpotlightParam), nullptr},
+    {"Balanced with Page Insights",
+     kCCTBottomBarButtonBalancedWithPageInsightsParam,
+     std::size(kCCTBottomBarButtonBalancedWithPageInsightsParam), nullptr},
+    {"Balanced with custom button", kCCTBottomBarButtonsBalancedWithCustomParam,
+     std::size(kCCTBottomBarButtonsBalancedWithCustomParam), nullptr},
+    {"Page Insights in spotlight", kCCTBottomBarPageInsightsInSpotlightParam,
+     std::size(kCCTBottomBarPageInsightsInSpotlightParam), nullptr},
+    {"custom button in spotlight", kCCTBottomBarCustomInSpotlightParam,
+     std::size(kCCTBottomBarCustomInSpotlightParam), nullptr},
 };
 
 const FeatureEntry::FeatureParam kCCTDoubleDeckerBottomBarParam[] = {
