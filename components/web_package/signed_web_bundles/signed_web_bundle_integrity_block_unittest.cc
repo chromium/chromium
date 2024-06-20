@@ -28,6 +28,10 @@ constexpr std::array<uint8_t, 32> kEd25519PublicKey2 = {
     0, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 8, 0, 8, 8,
     0, 8, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 0, 0, 0};
 
+// Corresponds to `kEd25519PublicKey1`.
+constexpr char kEd25519SignedWebBundleId1[] =
+    "aaeaqcaaaaaaaaaaaaaaqaaiaaaaaaaaaaaaacaibaaaaaaaaaaaaaic";
+
 constexpr std::array<uint8_t, 64> kEd25519Signature1 = {
     0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -121,6 +125,8 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
               ElementsAreArray(kCompleteEntryCbor1));
   EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
               ElementsAreArray(kAttributesCbor1));
+  EXPECT_EQ(integrity_block.web_bundle_id(),
+            SignedWebBundleId::Create(kEd25519SignedWebBundleId1));
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {

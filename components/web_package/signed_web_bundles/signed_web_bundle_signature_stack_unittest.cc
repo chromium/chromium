@@ -28,10 +28,6 @@ constexpr std::array<uint8_t, 32> kTestPublicKey2 = {
     222, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6,
     7,   8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2};
 
-// Corresponds to `kTestPublicKey1`.
-constexpr char kEd25519SignedWebBundleId1[] =
-    "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-
 constexpr std::array<uint8_t, 64> kTestSignature1 = {
     111, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2,
     3,   4, 5, 6, 7, 8, 9, 0, 1, 2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2,
@@ -70,8 +66,6 @@ TEST(SignedWebBundleSignatureStack,
                        SignedWebBundleSignatureStack::Create(entries));
   EXPECT_EQ(result.size(), 1u);
   EXPECT_EQ(result.entries()[0], entry);
-  EXPECT_EQ(result.derived_web_bundle_id(),
-            SignedWebBundleId::Create(kEd25519SignedWebBundleId1));
 }
 
 TEST(SignedWebBundleSignatureStack,

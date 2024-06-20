@@ -47,11 +47,10 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
     return;
   }
 
-  auto derived_web_bundle_id =
-      integrity_block.signature_stack().derived_web_bundle_id();
+  auto derived_web_bundle_id = integrity_block.web_bundle_id();
   if (derived_web_bundle_id != expected_web_bundle_id) {
     std::move(callback).Run(base::unexpected(base::StringPrintf(
-        "The Web Bundle ID (%s) derived from the public key does not "
+        "The Web Bundle ID (%s) derived from the integrity block does not "
         "match the expected Web Bundle ID (%s).",
         derived_web_bundle_id.id().c_str(),
         expected_web_bundle_id.id().c_str())));

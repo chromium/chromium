@@ -7,9 +7,13 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/overloaded.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 
@@ -55,6 +59,25 @@ bool SignedWebBundleIntegrityBlock::operator==(
 bool SignedWebBundleIntegrityBlock::operator!=(
     const SignedWebBundleIntegrityBlock& other) const {
   return !operator==(other);
+}
+
+SignedWebBundleId SignedWebBundleIntegrityBlock::web_bundle_id() const {
+  return absl::visit(
+      base::Overloaded{
+          [](const SignedWebBundleSignatureInfoEd25519& ed25519_signature_info)
+              -> SignedWebBundleId {
+            return SignedWebBundleId::CreateForEd25519PublicKey(
+                ed25519_signature_info.public_key());
+          },
+          [](const SignedWebBundleSignatureInfoEcdsaP256SHA256&
+                 ecdsa_p256_sha256_signature_info) {
+            return SignedWebBundleId::CreateForEcdsaP256PublicKey(
+                ecdsa_p256_sha256_signature_info.public_key());
+          },
+          [](const SignedWebBundleSignatureInfoUnknown&) -> SignedWebBundleId {
+            NOTREACHED_NORETURN();
+          }},
+      signature_stack_.entries()[0].signature_info());
 }
 
 }  // namespace web_package

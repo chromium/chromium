@@ -613,10 +613,7 @@ void UnsecureSignedWebBundleIdReader::OnIntegrityBlockParsed(
     return;
   }
 
-  web_package::SignedWebBundleId bundle_id =
-      integrity_block->signature_stack().derived_web_bundle_id();
-
-  std::move(web_bundle_id_callback_).Run(std::move(bundle_id));
+  std::move(web_bundle_id_callback_).Run(integrity_block->web_bundle_id());
 }
 
 void UnsecureSignedWebBundleIdReader::SetResultCallback(

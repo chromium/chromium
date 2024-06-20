@@ -11,6 +11,7 @@
 
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 namespace web_package {
@@ -50,6 +51,11 @@ class SignedWebBundleIntegrityBlock {
   const SignedWebBundleSignatureStack& signature_stack() const {
     return signature_stack_;
   }
+
+  // Returns the inferred id of the web bundle.
+  //   * For the v1 integrity block the id is derived from the lowermost
+  //   signature in the stack.
+  SignedWebBundleId web_bundle_id() const;
 
  private:
   explicit SignedWebBundleIntegrityBlock(
