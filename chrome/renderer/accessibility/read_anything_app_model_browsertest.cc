@@ -1435,8 +1435,9 @@ TEST_F(ReadAnythingAppModelTest,
 TEST_F(ReadAnythingAppModelTest,
        SupportedFonts_BeforeLanguageSet_ReturnsDefaultFonts) {
   std::vector<std::string> expectedFonts = {
-      "Poppins",     "Sans-serif",  "Serif",         "Comic Neue",
-      "Lexend Deca", "EB Garamond", "STIX Two Text", "Andika"};
+      "Poppins",       "Sans-serif",  "Serif",
+      "Comic Neue",    "Lexend Deca", "EB Garamond",
+      "STIX Two Text", "Andika",      "Atkinson Hyperlegible"};
   std::vector<std::string> fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());
@@ -1450,8 +1451,9 @@ TEST_F(ReadAnythingAppModelTest,
   // Spanish
   SetLanguageCode("es");
   std::vector<std::string> expectedFonts = {
-      "Poppins",     "Sans-serif",  "Serif",         "Comic Neue",
-      "Lexend Deca", "EB Garamond", "STIX Two Text", "Andika"};
+      "Poppins",       "Sans-serif",  "Serif",
+      "Comic Neue",    "Lexend Deca", "EB Garamond",
+      "STIX Two Text", "Andika",      "Atkinson Hyperlegible"};
   std::vector<std::string> fonts = GetSupportedFonts();
 
   EXPECT_EQ(fonts.size(), expectedFonts.size());

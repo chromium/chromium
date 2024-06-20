@@ -452,7 +452,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     link.as = 'style';
     link.href =
         'https://fonts.googleapis.com/css?family=Poppins|Comic+Neue|Lexend+Deca|' +
-        'EB+Garamond|STIX+Two+Text|Andika';
+        'EB+Garamond|STIX+Two+Text|Andika|Atkinson+Hyperlegible';
 
     link.addEventListener('load', () => {
       link.media = 'all';

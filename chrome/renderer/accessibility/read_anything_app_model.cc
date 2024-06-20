@@ -1045,6 +1045,10 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
   if (base::Contains(kLanguagesSupportedByAndika, base_language_code())) {
     font_choices_.push_back("Andika");
   }
+  if (base::Contains(kLanguagesSupportedByAtkinsonHyperlegible,
+                     base_language_code())) {
+    font_choices_.push_back("Atkinson Hyperlegible");
+  }
   return font_choices_;
 }
 

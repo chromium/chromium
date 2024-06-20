@@ -211,6 +211,8 @@ class ReadAnythingUntrustedPageHandler :
       {"Lexend Deca", ReadAnythingFont::kLexendDeca},
       {"EB Garamond", ReadAnythingFont::kEbGaramond},
       {"STIX Two Text", ReadAnythingFont::kStixTwoText},
+      {"Andika", ReadAnythingFont::kAndika},
+      {"Atkinson Hyperlegible", ReadAnythingFont::kAtkinsonHyperlegible},
   };
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;

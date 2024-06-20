@@ -26,6 +26,7 @@ const validFontNames: Array<{name: string, css: string}> = [
   {name: 'EB Garamond', css: '"EB Garamond"'},
   {name: 'STIX Two Text', css: '"STIX Two Text"'},
   {name: 'Andika', css: 'Andika'},
+  {name: 'Atkinson Hyperlegible', css: 'Atkinson Hyperlegible'},
 ];
 
 const ACTIVE_CSS_CLASS = 'active';

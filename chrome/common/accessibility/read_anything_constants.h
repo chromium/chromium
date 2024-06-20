@@ -89,6 +89,11 @@ const char* kLanguagesSupportedByAndika[] = {
     "hr", "hu", "id", "it", "kr", "lt", "lu", "lv", "ms", "nd", "nl",  "nr",
     "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk",  "vi"};
 
+const char* kLanguagesSupportedByAtkinsonHyperlegible[] = {
+    "af", "ca", "cs", "da", "de", "en", "es", "et", "eu", "fi", "fil", "fr",
+    "gl", "hr", "hu", "id", "is", "it", "kk", "lt", "ms", "nl", "no",  "pl",
+    "pt", "pt", "ro", "sl", "sq", "sr", "sr", "sv", "sw", "zu"};
+
 // Enum for logging when a text style setting is changed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -129,7 +134,9 @@ enum class ReadAnythingFont {
   kLexendDeca = 4,
   kEbGaramond = 5,
   kStixTwoText = 6,
-  kMaxValue = kStixTwoText,
+  kAndika = 7,
+  kAtkinsonHyperlegible = 8,
+  kMaxValue = kAtkinsonHyperlegible,
 };
 
 // Enum for logging how a scroll occurs.
