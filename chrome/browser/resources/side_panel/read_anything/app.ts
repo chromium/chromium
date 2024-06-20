@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
-import {ReadAnythingLogger} from './read_anything_logger.js';
+import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
@@ -290,9 +290,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   constructor() {
     super();
     this.constructorTime = Date.now();
-    chrome.readingMode?.logMetric(
-        (this.constructorTime - this.startTime),
-        'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
+    this.logger_.logTimeBetween(
+        TimeFrom.APP, TimeTo.CONSTRUCTOR, this.startTime, this.constructorTime);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     ColorChangeUpdater.forDocument().start();
@@ -306,13 +305,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();
       const connectedCallbackTime = Date.now();
-      chrome.readingMode.logMetric(
-          (connectedCallbackTime - this.startTime),
-          'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');
-      chrome.readingMode.logMetric(
-          (connectedCallbackTime - this.constructorTime),
-          'Accessibility.ReadAnything.' +
-              'TimeFromAppConstructorStartedToConnectedCallback');
+      this.logger_.logTimeBetween(
+          TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK, this.startTime,
+          connectedCallbackTime);
+      this.logger_.logTimeBetween(
+          TimeFrom.APP_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
+          this.constructorTime, connectedCallbackTime);
     }
 
     // Wait until the side panel is fully rendered before showing the side
@@ -1320,7 +1318,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.recordPlayClick();
       this.playSpeech();
     } else {
-      this.logSpeechPlaySession();
+      this.logSpeechPlaySession_();
       this.recordPauseClick();
       this.stopSpeech(PauseActionSource.BUTTON_CLICK);
     }
@@ -1366,18 +1364,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  // TODO(b/346868764): Longer term, this shouldn't be public just for tests.
-  logSpeechPlaySession() {
+  private logSpeechPlaySession_() {
     // Don't log a playback session just in case something has gotten out of
     // sync and we call stopSpeech before playSpeech.
     if (this.playSessionStartTime > 0) {
-      this.logger_.logLanguageUsedForReading(this.selectedVoice?.lang);
-      // <if expr="chromeos_ash">
-      this.logger_.logVoiceTypeUsedForReading(this.selectedVoice);
-      // </if>
-      chrome.readingMode.logLongMetric(
-          Date.now() - this.playSessionStartTime,
-          'Accessibility.ReadAnything.SpeechPlaybackSession');
+      this.logger_.logSpeechPlaySession(
+          this.playSessionStartTime, this.selectedVoice);
       this.playSessionStartTime = -1;
     }
   }
@@ -1730,7 +1722,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
       // Log a speech error. We aren't concerned with logging an interrupted
       // error, since that can be triggered from play / pause.
-      chrome.readingMode.logSpeechError(error.error);
+      this.logger_.logSpeechError(error.error);
 
       if (error.error === 'text-too-long') {
         // This is unlikely to happen, as the length limit on most voices
@@ -2044,7 +2036,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
     // Clear the formatting we added for highlighting.
     this.updateContent();
-    this.logSpeechPlaySession();
+    this.logSpeechPlaySession_();
   }
 
   private clearReadAloudState() {

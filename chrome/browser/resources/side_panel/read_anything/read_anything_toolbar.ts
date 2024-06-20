@@ -26,7 +26,7 @@ import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polym
 
 import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, validatedFontName} from './common.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
-import {ReadAnythingLogger} from './read_anything_logger.js';
+import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -376,9 +376,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   constructor() {
     super();
     this.constructorTime = Date.now();
-    chrome.readingMode?.logMetric(
-        (this.constructorTime - this.startTime),
-        'Accessibility.ReadAnything.TimeFromToolbarStartedToConstructor');
+    this.logger_.logTimeBetween(
+        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR, this.startTime,
+        this.constructorTime);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
     // Only add the button to the toolbar if the feature is enabled.
@@ -398,13 +398,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   override connectedCallback() {
     super.connectedCallback();
     const connectedCallbackTime = Date.now();
-    chrome.readingMode?.logMetric(
-        (connectedCallbackTime - this.startTime),
-        'Accessibility.ReadAnything.TimeFromToolbarStartedToConnectedCallback');
-    chrome.readingMode?.logMetric(
-        (connectedCallbackTime - this.constructorTime),
-        'Accessibility.ReadAnything.' +
-            'TimeFromToolbarConstructorStartedToConnectedCallback');
+    this.logger_.logTimeBetween(
+        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK, this.startTime,
+        connectedCallbackTime);
+    this.logger_.logTimeBetween(
+        TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
+        this.constructorTime, connectedCallbackTime);
     if (this.isReadAloudEnabled_) {
       this.textStyleOptions_.unshift(
           {

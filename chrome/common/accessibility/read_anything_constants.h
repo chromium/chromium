@@ -107,22 +107,6 @@ enum class ReadAnythingSettingsChange {
   kMaxValue = kLetterSpacingChange,
 };
 
-// Enum for logging when a speech error event occurs.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ReadAnythingSpeechError {
-  kTextTooLong = 0,
-  kLanguageUnavailable = 1,
-  kVoiceUnavailabe = 2,
-  kInvalidArgument = 3,
-  kSynthesisFailed = 4,
-  kSynthesisUnvailable = 5,
-  kAudioBusy = 6,
-  kAudioHardware = 7,
-  kNetwork = 8,
-  kMaxValue = kNetwork,
-};
-
 // Enum for logging the user-chosen font.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

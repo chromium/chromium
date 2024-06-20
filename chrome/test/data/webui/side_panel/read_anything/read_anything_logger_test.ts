@@ -4,17 +4,26 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, TimeFrom, TimeTo} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertGT, assertLE} from 'chrome-untrusted://webui-test/chai_assert.js';
 // <if expr="chromeos_ash">
 import {ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {createSpeechSynthesisVoice} from './common.js';
 // </if>
+import {createSpeechSynthesisVoice} from './common.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('Logger', () => {
+  const defaultSpeechStartTime = 0;
+
   let logger: ReadAnythingLogger;
   let metrics: TestMetricsBrowserProxy;
+
+  async function assertTimeMetricIsCalled(
+      from: TimeFrom, to: TimeTo, expectedMetric: string) {
+    metrics.reset();
+    logger.logTimeBetween(from, to, 100, 175);
+    assertEquals(expectedMetric, (await metrics.whenCalled('recordTime'))[0]);
+  }
 
   setup(() => {
     metrics = new TestMetricsBrowserProxy();
@@ -97,8 +106,9 @@ suite('Logger', () => {
   });
 
   // <if expr="chromeos_ash">
-  test('logVoiceTypeUsedForReading with natural voice', async () => {
-    logger.logVoiceTypeUsedForReading(
+  test('logSpeechPlaySession with natural voice', async () => {
+    logger.logSpeechPlaySession(
+        defaultSpeechStartTime,
         createSpeechSynthesisVoice({name: 'Grumpy (Natural)'}));
 
     assertEquals(
@@ -106,8 +116,9 @@ suite('Logger', () => {
         await metrics.whenCalled('recordVoiceType'));
   });
 
-  test('logVoiceTypeUsedForReading with espeak voice', async () => {
-    logger.logVoiceTypeUsedForReading(
+  test('logSpeechPlaySession with espeak voice', async () => {
+    logger.logSpeechPlaySession(
+        defaultSpeechStartTime,
         createSpeechSynthesisVoice({name: 'eSpeak Happy'}));
 
     assertEquals(
@@ -115,9 +126,9 @@ suite('Logger', () => {
         await metrics.whenCalled('recordVoiceType'));
   });
 
-  test('logVoiceTypeUsedForReading with other voice', async () => {
-    logger.logVoiceTypeUsedForReading(
-        createSpeechSynthesisVoice({name: 'Sleepy'}));
+  test('logSpeechPlaySession with other voice', async () => {
+    logger.logSpeechPlaySession(
+        defaultSpeechStartTime, createSpeechSynthesisVoice({name: 'Sleepy'}));
 
     assertEquals(
         ReadAnythingVoiceType.CHROMEOS,
@@ -125,31 +136,82 @@ suite('Logger', () => {
   });
   // </if>
 
-  test('logLanguageUsedForReading supported locale', async () => {
+  test('logSpeechPlaySession supported locale', async () => {
     const lang = 'pt-BR';
-    logger.logLanguageUsedForReading(lang);
+    logger.logSpeechPlaySession(
+        defaultSpeechStartTime, createSpeechSynthesisVoice({lang}));
     assertEquals(lang, await metrics.whenCalled('recordLanguage'));
   });
 
-  test('logLanguageUsedForReading supported lang', async () => {
+  test('logSpeechPlaySession supported lang', async () => {
     const lang = 'it';
-    logger.logLanguageUsedForReading(lang);
+    logger.logSpeechPlaySession(
+        defaultSpeechStartTime, createSpeechSynthesisVoice({lang}));
     assertEquals(lang, await metrics.whenCalled('recordLanguage'));
   });
 
   test(
-      'logLanguageUsedForReading unsupported locale with supported base lang',
+      'logSpeechPlaySession unsupported locale with supported base lang',
       async () => {
         const lang = 'id-id';
-        logger.logLanguageUsedForReading(lang);
+        logger.logSpeechPlaySession(
+            defaultSpeechStartTime, createSpeechSynthesisVoice({lang}));
         assertEquals('id', await metrics.whenCalled('recordLanguage'));
       });
 
   test(
-      'logLanguageUsedForReading supported locale with same base lang',
-      async () => {
+      'logSpeechPlaySession supported locale with same base lang', async () => {
         const lang = 'fr-fr';
-        logger.logLanguageUsedForReading(lang);
+        logger.logSpeechPlaySession(
+            defaultSpeechStartTime, createSpeechSynthesisVoice({lang}));
         assertEquals('fr', await metrics.whenCalled('recordLanguage'));
       });
+
+  test('logSpeechPlaySession records time since start', async () => {
+    const startTime = Date.now();
+    const expectedTime = 100;
+
+    await new Promise(resolve => setTimeout(resolve, expectedTime));
+    logger.logSpeechPlaySession(startTime, undefined);
+
+    // The playback length should be at least the amount of time we waited above
+    // and less than the starting time (i.e. we should be recording length of
+    // time, not timestamp).
+    const recordedTime = await metrics.whenCalled('recordSpeechPlaybackLength');
+    assertLE(expectedTime, recordedTime);
+    assertGT(startTime, recordedTime);
+  });
+
+  test('logTimeBetween uses correct uma name', async () => {
+    assertTimeMetricIsCalled(
+        TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK,
+        'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');
+    assertTimeMetricIsCalled(
+        TimeFrom.APP, TimeTo.CONSTRUCTOR,
+        'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
+    assertTimeMetricIsCalled(
+        TimeFrom.APP_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
+        'Accessibility.ReadAnything.' +
+            'TimeFromAppConstructorStartedToConnectedCallback');
+    assertTimeMetricIsCalled(
+        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK,
+        'Accessibility.ReadAnything.TimeFromToolbarStartedToConnectedCallback');
+    assertTimeMetricIsCalled(
+        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR,
+        'Accessibility.ReadAnything.TimeFromToolbarStartedToConstructor');
+    assertTimeMetricIsCalled(
+        TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
+        'Accessibility.ReadAnything.' +
+            'TimeFromToolbarConstructorStartedToConnectedCallback');
+  });
+
+  test('logTimeBetween logs time difference', async () => {
+    const startTime = 50;
+    const endTime = 125;
+    const expectedTime = endTime - startTime;
+
+    logger.logTimeBetween(TimeFrom.APP, TimeTo.CONSTRUCTOR, startTime, endTime);
+
+    assertEquals(expectedTime, (await metrics.whenCalled('recordTime'))[1]);
+  });
 });

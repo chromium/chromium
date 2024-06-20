@@ -82,9 +82,6 @@ suite('Speech', () => {
     // skip highlighting for these tests as we're just focused on what's spoken
     // and the fake speech synthesis causes problems here
     app.highlightNodes = () => {};
-    // No need to attempt to log a speech session while using the fake
-    // synthesis.
-    app.logSpeechPlaySession = () => {};
     chrome.readingMode.setContentForTesting(axTree, leafIds);
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;

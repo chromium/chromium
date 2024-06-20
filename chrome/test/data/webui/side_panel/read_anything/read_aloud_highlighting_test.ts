@@ -67,9 +67,6 @@ suite('ReadAloudHighlight', () => {
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     chrome.readingMode.setContentForTesting(axTree, leafIds);
-
-    // No need to attempt to log a speech session in tests.
-    app.logSpeechPlaySession = () => {};
   });
 
   suite('on speak first sentence', () => {

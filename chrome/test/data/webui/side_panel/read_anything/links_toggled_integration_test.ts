@@ -85,9 +85,6 @@ suite('LinksToggledIntegration', () => {
     app.selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     app.getSpeechSynthesisVoice();
-
-    // No need to attempt to log a speech session in tests.
-    app.logSpeechPlaySession = () => {};
   });
 
   suite('by default', () => {

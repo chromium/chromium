@@ -881,13 +881,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getImageDataUrl", &ReadAnythingAppController::GetImageDataUrl)
       .SetMethod("getDisplayNameForLocale",
                  &ReadAnythingAppController::GetDisplayNameForLocale)
-      .SetMethod("logMetric", &ReadAnythingAppController::LogUmaHistogramTimes)
-      .SetMethod("logLongMetric",
-                 &ReadAnythingAppController::LogUmaHistogramLongTimes)
       .SetMethod("incrementMetricCount",
                  &ReadAnythingAppController::IncrementMetricCount)
-      .SetMethod("logSpeechError",
-                 &ReadAnythingAppController::LogSpeechErrorEvent)
       .SetMethod("sendGetVoicePackInfoRequest",
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
@@ -1330,6 +1325,8 @@ const std::string& ReadAnythingAppController::GetDefaultLanguageCodeForSpeech()
 }
 
 void ReadAnythingAppController::OnConnected() {
+  // This needs to be logged here in the controller so we can base it off of the
+  // controller's constructor time.
   web_ui_connected_time_ms_ = base::TimeTicks::Now();
   base::UmaHistogramLongTimes(
       "Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected",
@@ -1641,6 +1638,8 @@ void ReadAnythingAppController::SetContentForTesting(
 }
 
 void ReadAnythingAppController::ShouldShowUI() {
+  // These need to be logged here in the controller so we can base them off of
+  // the controller's constructor time.
   base::UmaHistogramLongTimes(
       "Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded",
       base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
@@ -1699,18 +1698,6 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
   return model_.GetNextWordHighlightLength(index);
 }
 
-void ReadAnythingAppController::LogUmaHistogramTimes(
-    int64_t time,
-    const std::string& metric) {
-  base::UmaHistogramTimes(metric, base::Milliseconds(time));
-}
-
-void ReadAnythingAppController::LogUmaHistogramLongTimes(
-    int64_t time,
-    const std::string& metric) {
-  base::UmaHistogramLongTimes(metric, base::Milliseconds(time));
-}
-
 void ReadAnythingAppController::IncrementMetricCount(
     const std::string& metric) {
   model_.IncrementMetric(metric);
@@ -1718,35 +1705,4 @@ void ReadAnythingAppController::IncrementMetricCount(
 
 void ReadAnythingAppController::LogSpeechEventCounts() {
   model_.LogSpeechEventCounts();
-}
-
-void ReadAnythingAppController::LogSpeechErrorEvent(
-    const std::string& error_code) {
-  std::optional<ReadAnythingSpeechError> error;
-  if (error_code == "text-too-long") {
-    error = ReadAnythingSpeechError::kTextTooLong;
-  } else if (error_code == "voice-unavailable") {
-    error = ReadAnythingSpeechError::kVoiceUnavailabe;
-  } else if (error_code == "language-unavailable") {
-    error = ReadAnythingSpeechError::kLanguageUnavailable;
-  } else if (error_code == "invalid-argument") {
-    error = ReadAnythingSpeechError::kInvalidArgument;
-  } else if (error_code == "synthesis-failed") {
-    error = ReadAnythingSpeechError::kSynthesisFailed;
-  } else if (error_code == "synthesis-unavailable") {
-    error = ReadAnythingSpeechError::kSynthesisUnvailable;
-  } else if (error_code == "audio-busy") {
-    error = ReadAnythingSpeechError::kAudioBusy;
-  } else if (error_code == "audio-hardware") {
-    error = ReadAnythingSpeechError::kAudioHardware;
-  } else if (error_code == "network") {
-    error = ReadAnythingSpeechError::kNetwork;
-  }
-
-  // There are more error code possibilities, but right now, we only care
-  // about tracking the above error codes.
-  if (error.has_value()) {
-    base::UmaHistogramEnumeration(
-        string_constants::kReadAnythingSpeechErrorHistogramName, error.value());
-  }
 }

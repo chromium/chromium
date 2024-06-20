@@ -354,12 +354,6 @@ declare namespace chrome {
     // updateVoicePackStatusFromInstallResponse()
     function sendInstallVoicePackRequest(language: string): void;
 
-    // Log UmaHistogram
-    function logMetric(time: number, metricName: string): void;
-
-    // Log UmaHistogramLong
-    function logLongMetric(time: number, metricName: string): void;
-
     // Log UmaHistogramCount
     function incrementMetricCount(metricName: string): void;
 

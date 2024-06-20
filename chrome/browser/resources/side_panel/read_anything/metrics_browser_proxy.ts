@@ -11,6 +11,8 @@ enum UmaName {
   VOICE_SPEED_UMA = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed',
   SPEECH_SETTINGS_CHANGE_UMA =
       'Accessibility.ReadAnything.ReadAloud.SettingsChange',
+  SPEECH_PLAYBACK_UMA = 'Accessibility.ReadAnything.SpeechPlaybackSession',
+  SPEECH_ERROR_UMA = 'Accessibility.ReadAnything.SpeechError',
 }
 
 // Enum for logging when we play speech on a page.
@@ -75,20 +77,50 @@ export enum ReadAloudSettingsChange {
   COUNT = 3,
 }
 
+// Enum for logging when a speech error event occurs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+export enum ReadAnythingSpeechError {
+  TEXT_TOO_LONG = 0,
+  LANGUAGE_UNAVAILABLE = 1,
+  VOICE_UNAVAILABE = 2,
+  INVALID_ARGUMENT = 3,
+  SYNTHESIS_FAILED = 4,
+  SYNTHESIS_UNVAILABLE = 5,
+  AUDIO_BUSY = 6,
+  AUDIO_HARDWARE = 7,
+  NETWORK = 8,
+
+  // Must be last.
+  COUNT = 9,
+}
+
 // A proxy for forwarding logging calls to chrome.metricsPrivate.
 export interface MetricsBrowserProxy {
+  recordHighlightOff(): void;
+  recordHighlightOn(): void;
+  recordLanguage(lang: string): void;
   recordNewPage(): void;
   recordNewPageWithSpeech(): void;
-  recordHighlightOn(): void;
-  recordHighlightOff(): void;
-  recordVoiceType(voiceType: ReadAnythingVoiceType): void;
-  recordLanguage(lang: string): void;
-  recordTextSettingsChange(settingsChange: ReadAnythingSettingsChange): void;
+  recordSpeechError(error: ReadAnythingSpeechError): void;
+  recordSpeechPlaybackLength(time: number): void;
   recordSpeechSettingsChange(settingsChange: ReadAloudSettingsChange): void;
+  recordTextSettingsChange(settingsChange: ReadAnythingSettingsChange): void;
+  recordTime(umaName: string, time: number): void;
   recordVoiceSpeed(index: number): void;
+  recordVoiceType(voiceType: ReadAnythingVoiceType): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
+  recordSpeechError(error: ReadAnythingSpeechError) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        UmaName.SPEECH_ERROR_UMA, error, ReadAnythingSpeechError.COUNT);
+  }
+
+  recordTime(umaName: string, time: number) {
+    chrome.metricsPrivate.recordTime(umaName, time);
+  }
+
   recordNewPage() {
     chrome.metricsPrivate.recordEnumerationValue(
         UmaName.NEW_PAGE_UMA, ReadAnythingNewPage.NEW_PAGE,
@@ -137,6 +169,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordVoiceSpeed(index: number) {
     chrome.metricsPrivate.recordSmallCount(UmaName.VOICE_SPEED_UMA, index);
+  }
+
+  recordSpeechPlaybackLength(time: number) {
+    chrome.metricsPrivate.recordLongTime(UmaName.SPEECH_PLAYBACK_UMA, time);
   }
 
   static getInstance(): MetricsBrowserProxy {

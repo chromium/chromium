@@ -2,13 +2,73 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetricsBrowserProxyImpl, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
 import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {isEspeak, isNatural} from './voice_language_util.js';
+
+// TODO(crbug.com/40927698) - Investigate if both App and AppConstructor logs
+// are needed.
+export enum TimeFrom {
+  APP = 'App',
+  APP_CONSTRUCTOR = 'AppConstructor',
+  TOOLBAR = 'Toolbar',
+  TOOLBAR_CONSTRUCTOR = 'ToolbarConstructor',
+}
+
+export enum TimeTo {
+  CONNNECTED_CALLBACK = 'ConnectedCallback',
+  CONSTRUCTOR = 'Constructor',
+}
 
 // Handles the business logic for logging.
 export class ReadAnythingLogger {
   private metrics: MetricsBrowserProxy = MetricsBrowserProxyImpl.getInstance();
+
+  logSpeechError(errorCode: string) {
+    let error: ReadAnythingSpeechError;
+    switch (errorCode) {
+      case 'text-too-long':
+        error = ReadAnythingSpeechError.TEXT_TOO_LONG;
+        break;
+      case 'voice-unavailable':
+        error = ReadAnythingSpeechError.VOICE_UNAVAILABE;
+        break;
+      case 'language-unavailable':
+        error = ReadAnythingSpeechError.LANGUAGE_UNAVAILABLE;
+        break;
+      case 'invalid-argument':
+        error = ReadAnythingSpeechError.INVALID_ARGUMENT;
+        break;
+      case 'synthesis-failed':
+        error = ReadAnythingSpeechError.SYNTHESIS_FAILED;
+        break;
+      case 'synthesis-unavailable':
+        error = ReadAnythingSpeechError.SYNTHESIS_UNVAILABLE;
+        break;
+      case 'audio-busy':
+        error = ReadAnythingSpeechError.AUDIO_BUSY;
+        break;
+      case 'audio-hardware':
+        error = ReadAnythingSpeechError.AUDIO_HARDWARE;
+        break;
+      case 'network':
+        error = ReadAnythingSpeechError.NETWORK;
+        break;
+      default:
+        return;
+    }
+
+    // There are more error code possibilities, but right now, we only care
+    // about tracking the above error codes.
+    this.metrics.recordSpeechError(error);
+  }
+
+  logTimeBetween(
+      from: TimeFrom, to: TimeTo, startTime: number, endTime: number) {
+    const umaName = 'Accessibility.ReadAnything.' +
+        'TimeFrom' + from + 'StartedTo' + to;
+    this.metrics.recordTime(umaName, endTime - startTime);
+  }
 
   logNewPage(speechPlayed: boolean) {
     speechPlayed ? this.metrics.recordNewPageWithSpeech() :
@@ -21,7 +81,7 @@ export class ReadAnythingLogger {
   }
 
   // <if expr="chromeos_ash">
-  logVoiceTypeUsedForReading(voice: SpeechSynthesisVoice|undefined) {
+  private logVoiceTypeUsedForReading_(voice: SpeechSynthesisVoice|undefined) {
     if (!voice) {
       return;
     }
@@ -39,7 +99,7 @@ export class ReadAnythingLogger {
   }
   // </if>
 
-  logLanguageUsedForReading(lang: string|undefined) {
+  private logLanguageUsedForReading_(lang: string|undefined) {
     if (!lang) {
       return;
     }
@@ -66,6 +126,15 @@ export class ReadAnythingLogger {
 
   logVoiceSpeed(index: number) {
     this.metrics.recordVoiceSpeed(index);
+  }
+
+  logSpeechPlaySession(
+      startTime: number, voice: SpeechSynthesisVoice|undefined) {
+    // <if expr="chromeos_ash">
+    this.logVoiceTypeUsedForReading_(voice);
+    // </if>
+    this.logLanguageUsedForReading_(voice?.lang);
+    this.metrics.recordSpeechPlaybackLength(Date.now() - startTime);
   }
 
   static getInstance(): ReadAnythingLogger {

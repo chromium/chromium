@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange, ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 // Test version of the BrowserProxy used in connecting Reading Mode to the color
@@ -12,15 +12,18 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     MetricsBrowserProxy {
   constructor() {
     super([
+      'recordHighlightOff',
+      'recordHighlightOn',
+      'recordLanguage',
       'recordNewPage',
       'recordNewPageWithSpeech',
-      'recordHighlightOn',
-      'recordHighlightOff',
-      'recordVoiceType',
-      'recordLanguage',
-      'recordTextSettingsChange',
+      'recordSpeechError',
+      'recordSpeechPlaybackLength',
       'recordSpeechSettingsChange',
+      'recordTextSettingsChange',
+      'recordTime',
       'recordVoiceSpeed',
+      'recordVoiceType',
     ]);
   }
 
@@ -58,5 +61,17 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordVoiceSpeed(index: number) {
     this.methodCalled('recordVoiceSpeed', index);
+  }
+
+  recordSpeechError(error: ReadAnythingSpeechError) {
+    this.methodCalled('recordSpeechError', error);
+  }
+
+  recordTime(umaName: string, time: number) {
+    this.methodCalled('recordTime', umaName, time);
+  }
+
+  recordSpeechPlaybackLength(time: number) {
+    this.methodCalled('recordSpeechPlaybackLength', time);
   }
 }
