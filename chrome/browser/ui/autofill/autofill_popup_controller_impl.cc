@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -227,6 +228,11 @@ void AutofillPopupControllerImpl::Show(
       trigger_source_ ==
       AutofillSuggestionTriggerSource::kManualFallbackAddress;
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupMeasureTimeAfterPaint)) {
+    time_view_shown_.reset();
+  }
+
   if (view_) {
     OnSuggestionsChanged();
   } else {
@@ -260,8 +266,11 @@ void AutofillPopupControllerImpl::Show(
     FireControlsChangedEvent(true);
   }
 
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
-      kIgnoreEarlyClicksOnSuggestionsDuration);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillPopupMeasureTimeAfterPaint)) {
+    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+        kIgnoreEarlyClicksOnSuggestionsDuration);
+  }
 
   if (IsRootPopup()) {
     shown_time_ = base::TimeTicks::Now();
@@ -380,7 +389,8 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).
-  if (time_view_shown_.value().is_null() && !disable_threshold_for_testing_) {
+  if ((!time_view_shown_ || time_view_shown_->value().is_null()) &&
+      !disable_threshold_for_testing_) {
     return;
   }
 
@@ -821,6 +831,15 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
   }
 
   return view_ && view_->HandleKeyPressEvent(event);
+}
+
+void AutofillPopupControllerImpl::OnPopupPainted() {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kAutofillPopupMeasureTimeAfterPaint));
+  if (!time_view_shown_) {
+    time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicksWithDelay(
+        kIgnoreEarlyClicksOnSuggestionsDuration);
+  }
 }
 
 bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {

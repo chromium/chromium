@@ -204,6 +204,14 @@ void PopupViewViews::OnMouseExited(const ui::MouseEvent& event) {
   OnMouseExitedInChildren();
 }
 
+void PopupViewViews::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+  if (controller_ && base::FeatureList::IsEnabled(
+                         features::kAutofillPopupMeasureTimeAfterPaint)) {
+    controller_->OnPopupPainted();
+  }
+}
+
 bool PopupViewViews::Show(
     AutoselectFirstSuggestion autoselect_first_suggestion) {
   base::AutoReset show_in_progress_reset(&show_in_progress_, !!search_bar_);

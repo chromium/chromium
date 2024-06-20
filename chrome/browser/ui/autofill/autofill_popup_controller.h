@@ -93,6 +93,11 @@ class AutofillPopupController : public AutofillSuggestionController {
   virtual bool HandleKeyPressEvent(
       const input::NativeWebKeyboardEvent& event) = 0;
 
+  // Starts the time measurement that prevents accepting suggestions too early.
+  // If the time measurement is already ongoing or has been made, this method is
+  // a no-op.
+  virtual void OnPopupPainted() = 0;
+
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
 
   virtual void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) = 0;

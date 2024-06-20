@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/common/autofill_features.h"
 
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 
 namespace autofill::features {
@@ -548,6 +549,13 @@ BASE_FEATURE(kAutofillAlwaysParsePlaceholders,
 // are disabled.
 BASE_FEATURE(kAutofillPopupDisablePaintChecks,
              "AutofillPopupDisablePaintChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If the feature is enabled, the time measurement for when the popup was shown
+// is only made after the popup view has been painted once.
+// TODO: crbug.com/40279821 - Clean up when launched.
+BASE_FEATURE(kAutofillPopupMeasureTimeAfterPaint,
+             "AutofillPopupMeasureTimeAfterPaint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/334909042): Remove after cleanup.

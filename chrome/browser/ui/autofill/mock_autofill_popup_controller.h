@@ -112,6 +112,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               (override));
   MOCK_METHOD(void, PinView, (), (override));
   MOCK_METHOD(void, SetFilter, (std::optional<SuggestionFilter>), (override));
+  MOCK_METHOD(void, OnPopupPainted, (), (override));
   MOCK_METHOD(bool,
               HandleKeyPressEvent,
               (const input::NativeWebKeyboardEvent& event),

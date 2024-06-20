@@ -108,8 +108,9 @@ class AutofillPopupControllerImpl
   const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;
-  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   bool HasFilteredOutSuggestions() const override;
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
+  void OnPopupPainted() override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
   void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 
@@ -189,7 +190,7 @@ class AutofillPopupControllerImpl
   // The time the view was shown the last time. It is used to safeguard against
   // accepting suggestions too quickly after a the popup view was shown (see the
   // `show_threshold` parameter of `AcceptSuggestion`).
-  NextIdleTimeTicks time_view_shown_;
+  std::optional<NextIdleTimeTicks> time_view_shown_;
 
   // The time of the latest successful (the view is created and shown) `Show()`
   // call.
