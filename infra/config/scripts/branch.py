@@ -68,9 +68,6 @@ def parse_args(args=None, *, parser_type=None):
       help='A description of why the platform is enabled')
   enable_platform_parser.add_argument(
       '--gardener-rotation',
-      # TODO: crbug.com/343503161 - Update the branch_configuration/tester
-      # recipe to use --gardener-rotation flag, then remove this
-      '--sheriff-rotation',
       help=('A gardener rotation that builders'
             ' associated with the platform should be added to'))
 
