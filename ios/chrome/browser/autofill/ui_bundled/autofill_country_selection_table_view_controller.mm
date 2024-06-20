@@ -29,30 +29,27 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @interface AutofillCountrySelectionTableViewController () <
     UISearchControllerDelegate,
     UISearchResultsUpdating> {
+  // The delegate passed to this instance.
+  __weak id<AutofillCountrySelectionTableViewControllerDelegate> _delegate;
+
+  // This ViewController's search controller.
+  UISearchController* _searchController;
+
+  // Denotes the currently selected country.
+  NSString* _currentlySelectedCountry;
+
+  // The current search filter. May be nil.
+  NSPredicate* _searchPredicate;
+
+  // Scrim overlay covering the entire tableView when the search bar is focused.
+  UIControl* _scrimView;
+
+  // The fetched country list.
+  NSArray<CountryItem*>* _allCountries;
+
+  // If YES, denotes that the view is shown in the settings.
+  BOOL _settingsView;
 }
-
-// The delegate passed to this instance.
-@property(nonatomic, weak)
-    id<AutofillCountrySelectionTableViewControllerDelegate>
-        delegate;
-
-// This ViewController's search controller.
-@property(nonatomic, strong) UISearchController* searchController;
-
-// Denotes the currently selected country.
-@property(nonatomic, strong) NSString* currentlySelectedCountry;
-
-// The current search filter. May be nil.
-@property(nonatomic, strong) NSPredicate* searchPredicate;
-
-// Scrim overlay covering the entire tableView when the search bar is focused.
-@property(nonatomic, strong) UIControl* scrimView;
-
-// The fetched country list.
-@property(nonatomic, weak) NSArray<CountryItem*>* allCountries;
-
-// If YES, denotes that the view is shown in the settings.
-@property(nonatomic, assign) BOOL settingsView;
 
 @end
 
@@ -82,7 +79,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (!self.settingsView) {
+  if (!_settingsView) {
     self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SELECT_COUNTRY);
     self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.tableView.sectionHeaderHeight = 0;
@@ -90,15 +87,16 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   } else {
     self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS);
   }
+
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
   // Search controller.
-  self.searchController =
+  _searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
-  self.searchController.obscuresBackgroundDuringPresentation = NO;
-  self.searchController.searchResultsUpdater = self;
-  self.searchController.searchBar.accessibilityIdentifier =
+  _searchController.obscuresBackgroundDuringPresentation = NO;
+  _searchController.searchResultsUpdater = self;
+  _searchController.searchBar.accessibilityIdentifier =
       kAutofillCountrySelectionTableViewId;
   // Presentation of searchController will walk up the view controller hierarchy
   // until it finds the root view controller or one that defines a presentation
@@ -106,21 +104,20 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // searchController does not present on top of the navigation controller.
   self.definesPresentationContext = YES;
   // Place the search bar in the navigation bar.
-  self.navigationItem.searchController = self.searchController;
+  self.navigationItem.searchController = _searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeAutomatic;
 
   // Scrim.
-  self.scrimView = [[UIControl alloc] init];
-  self.scrimView.alpha = 0.0f;
-  self.scrimView.backgroundColor = UIColor.clearColor;
-  self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.scrimView.accessibilityIdentifier =
-      kAutofillCountrySelectionSearchScrimId;
-  [self.scrimView addTarget:self
-                     action:@selector(dismissSearchController:)
-           forControlEvents:UIControlEventTouchUpInside];
+  _scrimView = [[UIControl alloc] init];
+  _scrimView.alpha = 0.0f;
+  _scrimView.backgroundColor = UIColor.clearColor;
+  _scrimView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrimView.accessibilityIdentifier = kAutofillCountrySelectionSearchScrimId;
+  [_scrimView addTarget:self
+                 action:@selector(dismissSearchController:)
+       forControlEvents:UIControlEventTouchUpInside];
 
   [self loadModel];
 }
@@ -159,14 +156,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
-  [self.delegate didSelectCountry:item];
+  [_delegate didSelectCountry:item];
 }
 
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   CountryItem* item = base::apple::ObjCCastStrict<CountryItem>(
       [self.tableViewModel itemAtIndexPath:indexPath]);
-  [self.delegate didSelectCountry:item];
+  [_delegate didSelectCountry:item];
 }
 
 #pragma mark - UISearchResultsUpdating
@@ -179,14 +176,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // name of the language in the current locale and the language locale. The
   // search is case insensitive and diacritic insensitive. If the search text is
   // empty all languages will be displayed.
-  self.searchPredicate = [[NSPredicate
+  _searchPredicate = [[NSPredicate
       predicateWithFormat:@"$searchText.length == 0 OR text CONTAINS[cd] "
                           @"$searchText"]
       predicateWithSubstitutionVariables:@{@"searchText" : searchText}];
 
   // Show the scrim overlay only if the search text is empty and the search
   // controller is active (it is not being dismissed); Otherwise hide it.
-  if (searchText.length == 0 && self.searchController.active) {
+  if (searchText.length == 0 && _searchController.active) {
     [self showScrim];
   } else {
     [self hideScrim];
@@ -202,10 +199,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   TableViewModel* model = self.tableViewModel;
 
   // Filter the countries items based on the current search text, if applicable.
-  NSArray<CountryItem*>* filteredSupportedCountries = self.allCountries;
-  if (self.searchPredicate) {
+  NSArray<CountryItem*>* filteredSupportedCountries = _allCountries;
+  if (_searchPredicate) {
     filteredSupportedCountries = [filteredSupportedCountries
-        filteredArrayUsingPredicate:self.searchPredicate];
+        filteredArrayUsingPredicate:_searchPredicate];
   }
 
   for (CountryItem* item in filteredSupportedCountries) {
@@ -215,43 +212,47 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Shows scrim overlay and hide toolbar.
 - (void)showScrim {
-  if (self.scrimView.alpha < 1.0f) {
-    self.scrimView.alpha = 0.0f;
-    [self.tableView addSubview:self.scrimView];
+  if (_scrimView.alpha < 1.0f) {
+    _scrimView.alpha = 0.0f;
+    [self.tableView addSubview:_scrimView];
     // We attach our constraints to the superview because the tableView is
     // a scrollView and it seems that we get an empty frame when attaching to
     // it.
-    AddSameConstraints(self.scrimView, self.view.superview);
+    AddSameConstraints(_scrimView, self.view.superview);
     self.tableView.accessibilityElementsHidden = YES;
     self.tableView.scrollEnabled = NO;
     __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                      animations:^{
-                       weakSelf.scrimView.alpha = 1.0f;
-                       [weakSelf.view layoutIfNeeded];
+                       AutofillCountrySelectionTableViewController* strongSelf =
+                           weakSelf;
+                       strongSelf->_scrimView.alpha = 1.0f;
+                       [strongSelf.view layoutIfNeeded];
                      }];
   }
 }
 
 // Hides scrim and restore toolbar.
 - (void)hideScrim {
-  if (self.scrimView.alpha > 0.0f) {
+  if (_scrimView.alpha > 0.0f) {
     __weak __typeof(self) weakSelf = self;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
         animations:^{
-          weakSelf.scrimView.alpha = 0.0f;
+          AutofillCountrySelectionTableViewController* strongSelf = weakSelf;
+          strongSelf->_scrimView.alpha = 0.0f;
         }
         completion:^(BOOL finished) {
-          [weakSelf.scrimView removeFromSuperview];
-          weakSelf.tableView.accessibilityElementsHidden = NO;
-          weakSelf.tableView.scrollEnabled = YES;
+          AutofillCountrySelectionTableViewController* strongSelf = weakSelf;
+          [strongSelf->_scrimView removeFromSuperview];
+          strongSelf.tableView.accessibilityElementsHidden = NO;
+          strongSelf.tableView.scrollEnabled = YES;
         }];
   }
 }
 
 // Dismisses the search controller when the scrim overlay is tapped.
 - (void)dismissSearchController:(UIControl*)sender {
-  self.searchController.active = NO;
+  _searchController.active = NO;
 }
 
 // Reloads the countries items in thes ection.
