@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -28,10 +28,10 @@ class PickerKeyEventHandler;
 class PickerPerformanceMetrics;
 
 // View for the Picker search field.
-class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
+class ASH_EXPORT PickerSearchFieldView : public views::BoxLayoutView,
                                          public views::TextfieldController,
                                          public views::FocusChangeListener {
-  METADATA_HEADER(PickerSearchFieldView, views::FlexLayoutView)
+  METADATA_HEADER(PickerSearchFieldView, views::BoxLayoutView)
 
  public:
   using SearchCallback =
@@ -102,7 +102,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchFieldView, views::FlexLayoutView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchFieldView, views::BoxLayoutView)
 VIEW_BUILDER_PROPERTY(std::u16string, PlaceholderText)
 END_VIEW_BUILDER
 

@@ -20,8 +20,8 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -45,9 +45,9 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
                                views::BubbleBorder::RIGHT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW) {
   // Configuration for this view.
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  SetLayoutManager(
+      std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical))
+      ->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
   SetCanActivate(false);
 
   views::Builder<PickerPreviewBubbleView>(this)
@@ -65,7 +65,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetCrossAxisAlignment(
                   views::BoxLayout::CrossAxisAlignment::kStart)
-              .SetBorder(views::CreateEmptyBorder(kLabelPadding))
+              .SetInsideBorderInsets(kLabelPadding)
               .AddChildren(
                   views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
                       TypographyToken::kCrosAnnotation2, kLinkLabelText.data(),

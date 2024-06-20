@@ -25,8 +25,8 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
@@ -75,11 +75,8 @@ PickerSearchFieldView::PickerSearchFieldView(
               .SetBackgroundColor(SK_ColorTRANSPARENT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosBody2))
-              .SetProperty(views::kFlexBehaviorKey,
-                           views::FlexSpecification(
-                               views::LayoutOrientation::kHorizontal,
-                               views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded))
+              .SetProperty(views::kBoxLayoutFlexKey,
+                           views::BoxLayoutFlexSpecification().WithWeight(1))
               // TODO(b/309706053): Replace this once the strings are finalized.
               .SetAccessibleName(u"placeholder"))
       .AddChild(
