@@ -118,9 +118,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   CanvasResourceProvider* ResourceProvider() const;
   void ResetResourceProvider();
 
-  // Check if the Raster Mode is GPU and if the GPU context is not lost
-  bool ShouldAccelerate() const;
-
   CanvasHibernationHandler hibernation_handler_;
 
   std::unique_ptr<Logger> logger_;
