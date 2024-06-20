@@ -59,21 +59,28 @@ export interface ProductSpecificationsElement {
 }
 
 function getProductDetails(
-    product: ProductSpecificationsProduct,
+    product: ProductSpecificationsProduct|null,
     productSpecs: ProductSpecifications): ProductDetail[] {
   const productDetails: ProductDetail[] = [];
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
-    const value = product.productDimensionValues.get(key);
-    const description = (value?.specificationDescriptions || [])
-                            .flatMap(description => description.options)
-                            .flatMap(option => option.descriptions)
-                            .map(descText => descText.text)
-                            .join(', ') ||
-        '';
-    const summary =
-        (value?.summary || []).map(summary => summary?.text || '').join(' ') ||
-        '';
-    productDetails.push({title, description, summary});
+    if (!product) {
+      // Fill missing product details with strings to ensure uniform table row
+      // count.
+      productDetails.push({title, description: '', summary: ''});
+    } else {
+      const value = product.productDimensionValues.get(key);
+      const description = (value?.specificationDescriptions || [])
+                              .flatMap(description => description.options)
+                              .flatMap(option => option.descriptions)
+                              .map(descText => descText.text)
+                              .join(', ') ||
+          '';
+      const summary = (value?.summary || [])
+                          .map(summary => summary?.text || '')
+                          .join(' ') ||
+          '';
+      productDetails.push({title, description, summary});
+    }
   });
   return productDetails;
 }
@@ -199,7 +206,7 @@ export class ProductSpecificationsElement extends PolymerElement {
             imageUrl: info ? info.imageUrl.url : '',
           },
           productDetails: product ? getProductDetails(product, productSpecs) :
-                                    [],
+                                    getProductDetails(null, productSpecs),
         });
       });
     }

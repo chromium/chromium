@@ -326,8 +326,6 @@ suite('AppTest', () => {
               {title: detailTitle, description: 'bar, baz', summary: 'summary'},
             ],
           },
-          // Since this item's product dimension values has no ID,
-          // `productDetails` should be empty.
           {
             selectedItem: {
               // If the product spec doesn't have a title, the column should
@@ -336,7 +334,12 @@ suite('AppTest', () => {
               url: 'https://example2.com/',
               imageUrl: info2.imageUrl.url,
             },
-            productDetails: [],
+            // Since this item's product dimension values have no ID, its
+            // `productDetails` should have empty strings for `description` and
+            // summary`.
+            productDetails: [
+              {title: detailTitle, description: '', summary: ''},
+            ],
           },
         ],
         tableColumns);
