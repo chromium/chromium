@@ -36,7 +36,7 @@ class FacilitatedPaymentsController {
   // Called whenever the surface gets hidden (regardless of the cause).
   virtual void OnDismissed(JNIEnv* env);
 
-  void OnBankAccountSelected(JNIEnv* env, long instrument_id);
+  void OnBankAccountSelected(JNIEnv* env, jlong instrument_id);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
