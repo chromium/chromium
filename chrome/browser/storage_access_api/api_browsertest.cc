@@ -2078,6 +2078,29 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
       Gt(0));
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
+                       SameSite_NoRegression) {
+  // Note: kHostA and kHostB are considered same-party due to the use of
+  // `network::switches::kUseFirstPartySet`. But they should not be "same-site",
+  // so SameSite=Lax and SameSite=Strict should still block cookie access.
+  ASSERT_TRUE(
+      SetCookie(browser()->profile(), GetURL(kHostB),
+                "samesitelax=1; SameSite=Lax; Secure",
+                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+  ASSERT_TRUE(
+      SetCookie(browser()->profile(), GetURL(kHostB),
+                "samesitestrict=1; SameSite=Strict; Secure",
+                net::CookieOptions::SameSiteCookieContext::MakeInclusive()));
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostB), "cross-site=b.test");
+}
+
 class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
     : public StorageAccessAPIBaseBrowserTest {
  public:
