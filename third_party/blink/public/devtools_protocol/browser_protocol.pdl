@@ -892,7 +892,9 @@ experimental domain Audits
       ClientMetadataNoResponse
       ClientMetadataInvalidResponse
       ClientMetadataInvalidContentType
+      IdpNotPotentiallyTrustworthy
       DisabledInSettings
+      DisabledInFlags
       ErrorFetchingSignin
       InvalidSigninResponse
       AccountsHttpNotFound
@@ -915,6 +917,7 @@ experimental domain Audits
       NotSignedInWithIdp
       MissingTransientUserActivation
       ReplacedByButtonMode
+      InvalidFieldsSpecified
       RelyingPartyOriginIsOpaque
       TypeNotMatching
 

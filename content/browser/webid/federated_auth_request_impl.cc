@@ -198,50 +198,50 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kSuccess: {
       return RequestTokenStatus::kSuccess;
     }
-    case FederatedAuthRequestResult::kErrorTooManyRequests: {
+    case FederatedAuthRequestResult::kTooManyRequests: {
       return RequestTokenStatus::kErrorTooManyRequests;
     }
-    case FederatedAuthRequestResult::kErrorCanceled: {
+    case FederatedAuthRequestResult::kCanceled: {
       return RequestTokenStatus::kErrorCanceled;
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
-    case FederatedAuthRequestResult::kErrorDisabledInSettings:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown:
-    case FederatedAuthRequestResult::kErrorWellKnownTooBig:
-    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType:
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidResponse:
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidContentType:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse:
-    case FederatedAuthRequestResult::
-        kErrorFetchingIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType:
-    case FederatedAuthRequestResult::kErrorRpPageNotVisible:
-    case FederatedAuthRequestResult::kErrorSilentMediationFailure:
-    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
-    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp:
-    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
-    case FederatedAuthRequestResult::kErrorReplacedByButtonMode:
-    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque:
+    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
+    case FederatedAuthRequestResult::kDisabledInSettings:
+    case FederatedAuthRequestResult::kDisabledInFlags:
+    case FederatedAuthRequestResult::kWellKnownHttpNotFound:
+    case FederatedAuthRequestResult::kWellKnownNoResponse:
+    case FederatedAuthRequestResult::kWellKnownInvalidResponse:
+    case FederatedAuthRequestResult::kWellKnownListEmpty:
+    case FederatedAuthRequestResult::kWellKnownInvalidContentType:
+    case FederatedAuthRequestResult::kConfigNotInWellKnown:
+    case FederatedAuthRequestResult::kWellKnownTooBig:
+    case FederatedAuthRequestResult::kConfigHttpNotFound:
+    case FederatedAuthRequestResult::kConfigNoResponse:
+    case FederatedAuthRequestResult::kConfigInvalidResponse:
+    case FederatedAuthRequestResult::kConfigInvalidContentType:
+    case FederatedAuthRequestResult::kClientMetadataHttpNotFound:
+    case FederatedAuthRequestResult::kClientMetadataNoResponse:
+    case FederatedAuthRequestResult::kClientMetadataInvalidResponse:
+    case FederatedAuthRequestResult::kClientMetadataInvalidContentType:
+    case FederatedAuthRequestResult::kAccountsHttpNotFound:
+    case FederatedAuthRequestResult::kAccountsNoResponse:
+    case FederatedAuthRequestResult::kAccountsInvalidResponse:
+    case FederatedAuthRequestResult::kAccountsListEmpty:
+    case FederatedAuthRequestResult::kAccountsInvalidContentType:
+    case FederatedAuthRequestResult::kIdTokenHttpNotFound:
+    case FederatedAuthRequestResult::kIdTokenNoResponse:
+    case FederatedAuthRequestResult::kIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
+    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
+    case FederatedAuthRequestResult::kIdTokenInvalidContentType:
+    case FederatedAuthRequestResult::kRpPageNotVisible:
+    case FederatedAuthRequestResult::kSilentMediationFailure:
+    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
+    case FederatedAuthRequestResult::kNotSignedInWithIdp:
+    case FederatedAuthRequestResult::kMissingTransientUserActivation:
+    case FederatedAuthRequestResult::kReplacedByButtonMode:
+    case FederatedAuthRequestResult::kInvalidFieldsSpecified:
+    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
     case FederatedAuthRequestResult::kTypeNotMatching:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
@@ -256,65 +256,65 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kSuccess: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kNone;
     }
-    case FederatedAuthRequestResult::kErrorTooManyRequests:
-    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation:
-    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque:
-    case FederatedAuthRequestResult::kErrorCanceled: {
+    case FederatedAuthRequestResult::kTooManyRequests:
+    case FederatedAuthRequestResult::kMissingTransientUserActivation:
+    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque:
+    case FederatedAuthRequestResult::kInvalidFieldsSpecified:
+    case FederatedAuthRequestResult::kCanceled: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kRpFailure;
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType: {
+    case FederatedAuthRequestResult::kAccountsInvalidResponse:
+    case FederatedAuthRequestResult::kAccountsListEmpty:
+    case FederatedAuthRequestResult::kAccountsInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kAccountsEndpointInvalidResponse;
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse:
-    case FederatedAuthRequestResult::
-        kErrorFetchingIdTokenCrossSiteIdpErrorResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
+    case FederatedAuthRequestResult::kIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse:
+    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse:
+    case FederatedAuthRequestResult::kIdTokenInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kTokenEndpointInvalidResponse;
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
-    case FederatedAuthRequestResult::kErrorDisabledInSettings:
-    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked:
-    case FederatedAuthRequestResult::kErrorRpPageNotVisible:
-    case FederatedAuthRequestResult::kErrorReplacedByButtonMode:
-    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
+    case FederatedAuthRequestResult::kDisabledInFlags:
+    case FederatedAuthRequestResult::kDisabledInSettings:
+    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked:
+    case FederatedAuthRequestResult::kRpPageNotVisible:
+    case FederatedAuthRequestResult::kReplacedByButtonMode:
+    case FederatedAuthRequestResult::kNotSignedInWithIdp: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
     }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
+    case FederatedAuthRequestResult::kWellKnownHttpNotFound:
+    case FederatedAuthRequestResult::kWellKnownNoResponse:
+    case FederatedAuthRequestResult::kConfigHttpNotFound:
+    case FederatedAuthRequestResult::kConfigNoResponse:
+    case FederatedAuthRequestResult::kClientMetadataHttpNotFound:
+    case FederatedAuthRequestResult::kClientMetadataNoResponse:
+    case FederatedAuthRequestResult::kAccountsHttpNotFound:
+    case FederatedAuthRequestResult::kAccountsNoResponse:
+    case FederatedAuthRequestResult::kIdTokenHttpNotFound:
+    case FederatedAuthRequestResult::kIdTokenNoResponse: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kIdpServerUnavailable;
     }
-    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown:
-    case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
+    case FederatedAuthRequestResult::kConfigNotInWellKnown:
+    case FederatedAuthRequestResult::kWellKnownTooBig: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kManifestError;
     }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidContentType:
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType:
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidContentType: {
+    case FederatedAuthRequestResult::kWellKnownListEmpty:
+    case FederatedAuthRequestResult::kWellKnownInvalidResponse:
+    case FederatedAuthRequestResult::kConfigInvalidResponse:
+    case FederatedAuthRequestResult::kClientMetadataInvalidResponse:
+    case FederatedAuthRequestResult::kWellKnownInvalidContentType:
+    case FederatedAuthRequestResult::kConfigInvalidContentType:
+    case FederatedAuthRequestResult::kClientMetadataInvalidContentType: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kIdpServerInvalidResponse;
     }
+    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy:
     case FederatedAuthRequestResult::kError:
-    case FederatedAuthRequestResult::kErrorSilentMediationFailure:
+    case FederatedAuthRequestResult::kSilentMediationFailure:
     case FederatedAuthRequestResult::kTypeNotMatching: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
     }
@@ -806,9 +806,9 @@ void FederatedAuthRequestImpl::RequestToken(
               : RpMode::kWidget);
 
       AddDevToolsIssue(
-          blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+          blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
       AddConsoleErrorMessage(
-          blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+          blink::mojom::FederatedAuthRequestResult::kTooManyRequests);
 
       std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                               std::nullopt, "", /*error=*/nullptr,
@@ -827,7 +827,7 @@ void FederatedAuthRequestImpl::RequestToken(
     fedcm_metrics_->SetSessionID(old_session_id);
     idp_order_ = std::move(old_idp_order);
     pending_request->CompleteRequestWithError(
-        FederatedAuthRequestResult::kErrorReplacedByButtonMode,
+        FederatedAuthRequestResult::kReplacedByButtonMode,
         TokenStatus::kReplacedByButtonMode,
         /*token_error=*/std::nullopt,
         /*should_delay_callback=*/false);
@@ -863,7 +863,7 @@ void FederatedAuthRequestImpl::RequestToken(
     mediation_requirement_ = MediationRequirement::kRequired;
     if (!had_transient_user_activation_) {
       CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorMissingTransientUserActivation,
+          FederatedAuthRequestResult::kMissingTransientUserActivation,
           TokenStatus::kMissingTransientUserActivation,
           /*token_error=*/std::nullopt,
           /*should_delay_callback=*/false);
@@ -875,7 +875,7 @@ void FederatedAuthRequestImpl::RequestToken(
 
   if (origin().opaque()) {
     CompleteRequestWithError(
-        FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque,
+        FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque,
         TokenStatus::kRpOriginIsOpaque,
         /*token_error=*/std::nullopt,
         /*should_delay_callback=*/false);
@@ -891,14 +891,15 @@ void FederatedAuthRequestImpl::RequestToken(
   switch (permission_status) {
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
       error_token_status = TokenStatus::kDisabledInFlags;
+      request_result = FederatedAuthRequestResult::kDisabledInFlags;
       break;
     case FederatedApiPermissionStatus::BLOCKED_SETTINGS:
       error_token_status = TokenStatus::kDisabledInSettings;
-      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+      request_result = FederatedAuthRequestResult::kDisabledInSettings;
       break;
     case FederatedApiPermissionStatus::BLOCKED_EMBARGO:
       error_token_status = TokenStatus::kDisabledEmbargo;
-      request_result = FederatedAuthRequestResult::kErrorDisabledInSettings;
+      request_result = FederatedAuthRequestResult::kDisabledInSettings;
       break;
     case FederatedApiPermissionStatus::GRANTED:
       // Intentional fall-through.
@@ -933,10 +934,11 @@ void FederatedAuthRequestImpl::RequestToken(
 
       url::Origin idp_origin = url::Origin::Create(idp_ptr->config->config_url);
       if (!network::IsOriginPotentiallyTrustworthy(idp_origin)) {
-        CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                 TokenStatus::kIdpNotPotentiallyTrustworthy,
-                                 /*token_error=*/std::nullopt,
-                                 /*should_delay_callback=*/false);
+        CompleteRequestWithError(
+            FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy,
+            TokenStatus::kIdpNotPotentiallyTrustworthy,
+            /*token_error=*/std::nullopt,
+            /*should_delay_callback=*/false);
         return;
       }
     }
@@ -966,7 +968,7 @@ void FederatedAuthRequestImpl::RequestToken(
           // If the user is known to be signed-out and the RP is request
           // a widget, we fail the request early before fetching anything.
           CompleteRequestWithError(
-              FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
+              FederatedAuthRequestResult::kNotSignedInWithIdp,
               TokenStatus::kNotSignedInWithIdp,
               /*token_error=*/std::nullopt,
               /*should_delay_callback=*/true);
@@ -993,7 +995,7 @@ void FederatedAuthRequestImpl::RequestToken(
           continue;
         }
         CompleteRequestWithError(
-            FederatedAuthRequestResult::kErrorSilentMediationFailure,
+            FederatedAuthRequestResult::kSilentMediationFailure,
             TokenStatus::kSilentMediationFailure,
             /*token_error=*/std::nullopt,
             /*should_delay_callback=*/false);
@@ -1034,8 +1036,8 @@ void FederatedAuthRequestImpl::RequestToken(
     bool should_delay_callback =
         mediation_requirement_ == MediationRequirement::kSilent ? false : true;
     auto result = mediation_requirement_ == MediationRequirement::kSilent
-                      ? FederatedAuthRequestResult::kErrorSilentMediationFailure
-                      : FederatedAuthRequestResult::kErrorNotSignedInWithIdp;
+                      ? FederatedAuthRequestResult::kSilentMediationFailure
+                      : FederatedAuthRequestResult::kNotSignedInWithIdp;
     auto token_status = mediation_requirement_ == MediationRequirement::kSilent
                             ? TokenStatus::kSilentMediationFailure
                             : TokenStatus::kNotSignedInWithIdp;
@@ -1103,7 +1105,7 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
   // Dialog will be hidden by the destructor for request_dialog_controller_,
   // triggered by CompleteRequest.
 
-  CompleteRequestWithError(FederatedAuthRequestResult::kErrorCanceled,
+  CompleteRequestWithError(FederatedAuthRequestResult::kCanceled,
                            TokenStatus::kAborted,
                            /*token_error=*/std::nullopt,
                            /*should_delay_callback=*/false);
@@ -1324,13 +1326,11 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       bool contains_picture = base::Contains(*fields, kDefaultFieldPicture);
       if (contains_name || contains_email || contains_picture) {
         if (!(contains_name && contains_email && contains_picture)) {
-          render_frame_host().AddMessageToConsole(
-              blink::mojom::ConsoleMessageLevel::kError,
-              "Invalid fields specified");
-          CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                   TokenStatus::kRpPageNotVisible,
-                                   /*token_error=*/std::nullopt,
-                                   /*should_delay_callback=*/false);
+          CompleteRequestWithError(
+              FederatedAuthRequestResult::kInvalidFieldsSpecified,
+              TokenStatus::kInvalidFieldsSpecified,
+              /*token_error=*/std::nullopt,
+              /*should_delay_callback=*/false);
           return;
         }
       }
@@ -1368,11 +1368,10 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       // of which websites a user visits.
       idp_info->endpoints.metrics = GURL();
 
-      OnFetchDataForIdpFailed(
-          std::move(idp_info),
-          FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
-          TokenStatus::kNotSignedInWithIdp,
-          /*should_delay_callback=*/true);
+      OnFetchDataForIdpFailed(std::move(idp_info),
+                              FederatedAuthRequestResult::kNotSignedInWithIdp,
+                              TokenStatus::kNotSignedInWithIdp,
+                              /*should_delay_callback=*/true);
       continue;
     }
 
@@ -1551,11 +1550,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Note that for the button flow is not affected by the permission status.
   if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED &&
       rp_mode_ != RpMode::kButton) {
-    CompleteRequestWithError(
-        FederatedAuthRequestResult::kErrorDisabledInSettings,
-        TokenStatus::kDisabledInSettings,
-        /*token_error=*/std::nullopt,
-        /*should_delay_callback=*/true);
+    CompleteRequestWithError(FederatedAuthRequestResult::kDisabledInSettings,
+                             TokenStatus::kDisabledInSettings,
+                             /*token_error=*/std::nullopt,
+                             /*should_delay_callback=*/true);
     return;
   }
 
@@ -1676,7 +1674,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           "Silent mediation issue: the user has used FedCM with multiple "
           "accounts on this site.");
       CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorSilentMediationFailure,
+          FederatedAuthRequestResult::kSilentMediationFailure,
           TokenStatus::kSilentMediationFailure,
           /*token_error=*/std::nullopt,
           /*should_delay_callback=*/false);
@@ -1730,11 +1728,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
         IsFrameVisible(render_frame_host().GetMainFrame()), is_active);
 
     if (!is_active) {
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorRpPageNotVisible,
-          TokenStatus::kRpPageNotVisible,
-          /*token_error=*/std::nullopt,
-          /*should_delay_callback=*/true);
+      CompleteRequestWithError(FederatedAuthRequestResult::kRpPageNotVisible,
+                               TokenStatus::kRpPageNotVisible,
+                               /*token_error=*/std::nullopt,
+                               /*should_delay_callback=*/true);
       return;
     }
 
@@ -1846,7 +1843,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   }
 
   if (!IsFrameActive(render_frame_host().GetMainFrame())) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kErrorRpPageNotVisible,
+    CompleteRequestWithError(FederatedAuthRequestResult::kRpPageNotVisible,
                              TokenStatus::kRpPageNotVisible,
                              /*token_error=*/std::nullopt,
                              /*should_delay_callback=*/true);
@@ -1861,11 +1858,10 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     // 1. Reject the promise immediately without delay
     // 2. Not to show any UI to respect `mediation: silent`
     // TODO(crbug.com/40266561): validate the statement above with stakeholders
-    OnFetchDataForIdpFailed(
-        std::move(idp_info),
-        FederatedAuthRequestResult::kErrorSilentMediationFailure,
-        TokenStatus::kSilentMediationFailure,
-        /*should_delay_callback=*/false);
+    OnFetchDataForIdpFailed(std::move(idp_info),
+                            FederatedAuthRequestResult::kSilentMediationFailure,
+                            TokenStatus::kSilentMediationFailure,
+                            /*should_delay_callback=*/false);
     return;
   }
 
@@ -2003,7 +1999,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound,
+          FederatedAuthRequestResult::kAccountsHttpNotFound,
           TokenStatus::kAccountsHttpNotFound);
       return;
     }
@@ -2011,7 +2007,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+          FederatedAuthRequestResult::kAccountsNoResponse,
           TokenStatus::kAccountsNoResponse);
       return;
     }
@@ -2019,23 +2015,22 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+          FederatedAuthRequestResult::kAccountsInvalidResponse,
           TokenStatus::kAccountsInvalidResponse);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
-      HandleAccountsFetchFailure(
-          std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-          TokenStatus::kAccountsListEmpty);
+      HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
+                                 FederatedAuthRequestResult::kAccountsListEmpty,
+                                 TokenStatus::kAccountsListEmpty);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
       MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           std::move(idp_info), old_idp_signin_status,
-          FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType,
+          FederatedAuthRequestResult::kAccountsInvalidContentType,
           TokenStatus::kAccountsInvalidContentType);
       return;
     }
@@ -2053,7 +2048,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
           HandleAccountsFetchFailure(
               std::move(idp_info), old_idp_signin_status,
-              FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+              FederatedAuthRequestResult::kAccountsListEmpty,
               TokenStatus::kAccountsListEmpty);
           return;
         }
@@ -2068,7 +2063,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
         HandleAccountsFetchFailure(
             std::move(idp_info), old_idp_signin_status,
-            FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+            FederatedAuthRequestResult::kAccountsListEmpty,
             TokenStatus::kAccountsListEmpty);
         return;
       }
@@ -2082,7 +2077,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
         HandleAccountsFetchFailure(
             std::move(idp_info), old_idp_signin_status,
-            FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+            FederatedAuthRequestResult::kAccountsListEmpty,
             TokenStatus::kAccountsListEmpty);
         return;
       }
@@ -2255,11 +2250,10 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
   // Note that for the button flow is not affected by the permission status.
   if (GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED &&
       rp_mode_ != RpMode::kButton) {
-    CompleteRequestWithError(
-        FederatedAuthRequestResult::kErrorDisabledInSettings,
-        TokenStatus::kDisabledInSettings,
-        /*token_error=*/std::nullopt,
-        /*should_delay_callback=*/true);
+    CompleteRequestWithError(FederatedAuthRequestResult::kDisabledInSettings,
+                             TokenStatus::kDisabledInSettings,
+                             /*token_error=*/std::nullopt,
+                             /*should_delay_callback=*/true);
     return;
   }
 
@@ -2509,7 +2503,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
     }
 
     CompleteRequestWithError(
-        FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+        FederatedAuthRequestResult::kIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,
         /*token_error=*/std::nullopt,
         /*should_delay_callback=*/false);
@@ -2607,23 +2601,22 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
   switch (status.parse_status) {
     case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound,
-          TokenStatus::kIdTokenHttpNotFound, token_error,
-          should_delay_callback);
+      CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenHttpNotFound,
+                               TokenStatus::kIdTokenHttpNotFound, token_error,
+                               should_delay_callback);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
-          TokenStatus::kIdTokenNoResponse, token_error, should_delay_callback);
+      CompleteRequestWithError(FederatedAuthRequestResult::kIdTokenNoResponse,
+                               TokenStatus::kIdTokenNoResponse, token_error,
+                               should_delay_callback);
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+          FederatedAuthRequestResult::kIdTokenInvalidResponse,
           TokenStatus::kIdTokenInvalidResponse, token_error,
           should_delay_callback);
       return;
@@ -2631,7 +2624,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
       MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType,
+          FederatedAuthRequestResult::kIdTokenInvalidContentType,
           TokenStatus::kIdTokenInvalidContentType, token_error,
           should_delay_callback);
       return;
@@ -2646,14 +2639,13 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
         MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
         if (error_url_type_ && *error_url_type_ == ErrorUrlType::kCrossSite) {
           CompleteRequestWithError(
-              FederatedAuthRequestResult::
-                  kErrorFetchingIdTokenCrossSiteIdpErrorResponse,
+              FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse,
               TokenStatus::kIdTokenCrossSiteIdpErrorResponse, token_error,
               should_delay_callback);
           return;
         }
         CompleteRequestWithError(
-            FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+            FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
             TokenStatus::kIdTokenIdpErrorResponse, token_error,
             should_delay_callback);
         return;

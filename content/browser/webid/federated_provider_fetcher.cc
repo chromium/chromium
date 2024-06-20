@@ -106,37 +106,33 @@ void FederatedProviderFetcher::OnWellKnownFetched(
     switch (status.parse_status) {
       case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound,
+                FederatedAuthRequestResult::kWellKnownHttpNotFound,
                 TokenStatus::kWellKnownHttpNotFound,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
-        OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse,
+        OnError(fetch_result, FederatedAuthRequestResult::kWellKnownNoResponse,
                 TokenStatus::kWellKnownNoResponse,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
-        OnError(
-            fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse,
-            TokenStatus::kWellKnownInvalidResponse,
-            additional_console_error_message);
+        OnError(fetch_result,
+                FederatedAuthRequestResult::kWellKnownInvalidResponse,
+                TokenStatus::kWellKnownInvalidResponse,
+                additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
-        OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty,
+        OnError(fetch_result, FederatedAuthRequestResult::kWellKnownListEmpty,
                 TokenStatus::kWellKnownListEmpty,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
         OnError(fetch_result,
-                FederatedAuthRequestResult::
-                    kErrorFetchingWellKnownInvalidContentType,
+                FederatedAuthRequestResult::kWellKnownInvalidContentType,
                 TokenStatus::kWellKnownInvalidContentType,
                 additional_console_error_message);
         return;
@@ -168,32 +164,29 @@ void FederatedProviderFetcher::OnConfigFetched(
 
     switch (status.parse_status) {
       case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
-        OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound,
+        OnError(fetch_result, FederatedAuthRequestResult::kConfigHttpNotFound,
                 TokenStatus::kConfigHttpNotFound,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
-        OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingConfigNoResponse,
+        OnError(fetch_result, FederatedAuthRequestResult::kConfigNoResponse,
                 TokenStatus::kConfigNoResponse,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
         OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+                FederatedAuthRequestResult::kConfigInvalidResponse,
                 TokenStatus::kConfigInvalidResponse,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
-        OnError(
-            fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType,
-            TokenStatus::kConfigInvalidContentType,
-            additional_console_error_message);
+        OnError(fetch_result,
+                FederatedAuthRequestResult::kConfigInvalidContentType,
+                TokenStatus::kConfigInvalidContentType,
+                additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
@@ -270,8 +263,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       console_message += "\"login_url\"\n";
     }
 
-    SetError(result,
-             FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+    SetError(result, FederatedAuthRequestResult::kConfigInvalidResponse,
              TokenStatus::kConfigInvalidResponse, console_message);
     return;
   }
@@ -305,8 +297,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
     // configURL without checking for its presence in the provider_urls array.
     if (result.endpoints.accounts != result.wellknown.accounts ||
         result.metadata->idp_login_url != result.wellknown.login_url) {
-      SetError(result,
-               FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      SetError(result, FederatedAuthRequestResult::kConfigInvalidResponse,
                TokenStatus::kConfigInvalidResponse,
                "The well-known file contains an accounts endpoint or login_url "
                "that doesn't match the one in the configURL");
@@ -335,7 +326,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   // }
 
   if (result.wellknown.provider_urls.size() > kMaxProvidersInWellKnownFile) {
-    SetError(result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
+    SetError(result, FederatedAuthRequestResult::kWellKnownTooBig,
              TokenStatus::kWellKnownTooBig,
              /*additional_console_error_message=*/std::nullopt);
     return;
@@ -345,7 +336,7 @@ void FederatedProviderFetcher::ValidateAndMaybeSetError(FetchResult& result) {
                                     result.identity_provider_config_url) != 0);
 
   if (!provider_url_is_valid) {
-    SetError(result, FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+    SetError(result, FederatedAuthRequestResult::kConfigNotInWellKnown,
              TokenStatus::kConfigNotInWellKnown,
              /*additional_console_error_message=*/std::nullopt);
     return;

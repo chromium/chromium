@@ -486,6 +486,9 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
 
 // Verify an attempt to invoke FedCM with an insecure IDP path fails.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "The IdP is not potentially trustworthy \\(are you using HTTP\\?\\)");
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
   std::string script = R"(
@@ -507,6 +510,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
 
   std::string expected_error = "NetworkError: Error retrieving a token.";
   EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // Verify that an IdP can register itself.
@@ -730,9 +734,14 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeNoMatch) {
 
   std::string expected_error = "NetworkError: Error retrieving a token.";
 
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "The requested IdP type did not match the registered IdP.");
+
   // If the IdP does not have type set, it should not show up.
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
   EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), get_script)));
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // Verify that when the type of the registered IdP matches the requested one,
@@ -1424,6 +1433,42 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
     )";
 
   EXPECT_EQ(std::string("[request lgtm!]"), EvalJs(shell(), script));
+}
+
+// Verify that the Authz parameters are passed to the id assertion endpoint.
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_invalidFields) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Invalid 'fields' were specified in the FedCM call.");
+
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = R"(
+        (async () => {
+          var result = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+                fields: [
+                  'name'
+                ],
+              }]
+            }
+         });
+         return result.token;
+      }) ()
+    )";
+
+  std::string expected_error = "NetworkError: Error retrieving a token.";
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 // Verify that the id assertion endpoint can request a pop-up window.

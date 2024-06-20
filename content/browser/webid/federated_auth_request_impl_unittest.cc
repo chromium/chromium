@@ -1749,7 +1749,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownSuccess) {
 TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      FederatedAuthRequestResult::kConfigNotInWellKnown,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -1769,8 +1769,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
 // Test that the well-known file has too many provider urls.
 TEST_F(FederatedAuthRequestImplTest, WellKnownHasTooManyProviderUrls) {
   RequestExpectations expectation = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorWellKnownTooBig,
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kWellKnownTooBig,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -1805,7 +1804,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownHasNoFilename) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      FederatedAuthRequestResult::kConfigNotInWellKnown,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, config);
@@ -1819,7 +1818,7 @@ TEST_F(FederatedAuthRequestImplTest, MissingTokenEndpoint) {
   configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1842,7 +1841,7 @@ TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   configuration.idp_info[kProviderUrlFull].config.accounts_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1887,7 +1886,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
       kCrossOriginAccountsEndpoint;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1907,7 +1906,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginUrlDifferentOriginIdp) {
       "https://idp2.example/login_url";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1934,7 +1933,8 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
       /*rp_mode=*/blink::mojom::RpMode::kWidget};
   MockConfiguration configuration = kConfigurationValid;
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(request, expectations, configuration);
@@ -1950,7 +1950,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
       ParseStatus::kNoResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+      FederatedAuthRequestResult::kAccountsNoResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1965,7 +1965,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
       ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+      FederatedAuthRequestResult::kAccountsInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2045,7 +2045,7 @@ TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
   configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2124,7 +2124,7 @@ TEST_F(FederatedAuthRequestImplTest,
       ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kIdTokenInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2644,7 +2644,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      FederatedAuthRequestResult::kSilentMediationFailure,
       /*standalone_console_message=*/
       "Silent mediation issue: the user has not used FedCM on this "
       "site with this identity provider.",
@@ -2688,7 +2688,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      FederatedAuthRequestResult::kSilentMediationFailure,
       /*standalone_console_message=*/
       "Silent mediation issue: auto re-authn is in quiet period "
       "because "
@@ -2732,7 +2732,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      FederatedAuthRequestResult::kSilentMediationFailure,
       /*standalone_console_message=*/
       "Silent mediation issue: preventSilentAccess() has been invoked "
       "on the site.",
@@ -2775,7 +2775,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      FederatedAuthRequestResult::kSilentMediationFailure,
       /*standalone_console_message=*/
       "Silent mediation issue: the user has disabled auto re-authn.",
       /*selected_idp_config_url=*/std::nullopt};
@@ -2843,7 +2843,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      FederatedAuthRequestResult::kSilentMediationFailure,
       /*standalone_console_message=*/
       "Silent mediation issue: the user has used FedCM with multiple "
       "accounts on this site.",
@@ -3112,7 +3112,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
                      ApiPermissionStatus::BLOCKED_VARIATIONS);
 
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kDisabledInFlags,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
@@ -3314,7 +3314,7 @@ TEST_F(FederatedAuthRequestImplTest, ApiBlockedForOrigin) {
                      ApiPermissionStatus::BLOCKED_SETTINGS);
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorDisabledInSettings,
+      FederatedAuthRequestResult::kDisabledInSettings,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
@@ -3362,8 +3362,8 @@ TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
 
   WaitForCurrentAuthRequest();
   FederatedAuthRequestResult result =
-      fedcm_disabled ? FederatedAuthRequestResult::kError
-                     : FederatedAuthRequestResult::kErrorCanceled;
+      fedcm_disabled ? FederatedAuthRequestResult::kDisabledInFlags
+                     : FederatedAuthRequestResult::kCanceled;
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled, result,
                                    /*standalone_console_message=*/std::nullopt,
                                    /*selected_idp_config_url=*/std::nullopt};
@@ -3432,7 +3432,7 @@ TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorDisabledInSettings,
+      FederatedAuthRequestResult::kDisabledInSettings,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -3784,7 +3784,7 @@ TEST_F(FederatedAuthRequestImplTest,
       ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+      FederatedAuthRequestResult::kAccountsInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -3829,7 +3829,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
+      FederatedAuthRequestResult::kNotSignedInWithIdp,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
@@ -4157,7 +4157,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
   WaitForCurrentAuthRequest();
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   CheckAuthExpectations(kConfigurationValid, expectations);
@@ -4232,7 +4232,7 @@ TEST_F(FederatedAuthRequestImplTest,
       ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+      FederatedAuthRequestResult::kAccountsInvalidResponse,
       /*standalone_console_message=*/std::nullopt, std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
@@ -4362,7 +4362,7 @@ TEST_F(FederatedAuthRequestImplTest, FirstIdpWellKnownInvalid) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kSuccess,
-      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      FederatedAuthRequestResult::kConfigNotInWellKnown,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/kProviderTwoUrlFull};
 
@@ -4391,7 +4391,7 @@ TEST_F(FederatedAuthRequestImplTest, SecondIdpWellKnownInvalid) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kSuccess,
-      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      FederatedAuthRequestResult::kConfigNotInWellKnown,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/kProviderUrlFull};
 
@@ -4421,7 +4421,7 @@ TEST_F(FederatedAuthRequestImplTest, AllWellKnownsInvalid) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      FederatedAuthRequestResult::kConfigNotInWellKnown,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -4763,7 +4763,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorSilentMediationFailure,
+      FederatedAuthRequestResult::kSilentMediationFailure,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -4867,7 +4867,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpLoggedOut) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
+      FederatedAuthRequestResult::kNotSignedInWithIdp,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -4898,7 +4898,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithError) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kIdTokenInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -4941,7 +4941,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
   // been finalized.
   RequestExpectations expectations = {
       RequestTokenStatus::kErrorTooManyRequests,
-      FederatedAuthRequestResult::kErrorTooManyRequests,
+      FederatedAuthRequestResult::kTooManyRequests,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -4997,7 +4997,7 @@ TEST_F(FederatedAuthRequestImplTest,
   // another button flow.
   RequestExpectations expectations = {
       RequestTokenStatus::kErrorTooManyRequests,
-      FederatedAuthRequestResult::kErrorTooManyRequests,
+      FederatedAuthRequestResult::kTooManyRequests,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5054,7 +5054,7 @@ TEST_F(FederatedAuthRequestImplTest,
   // another button flow.
   RequestExpectations expectations = {
       RequestTokenStatus::kErrorTooManyRequests,
-      FederatedAuthRequestResult::kErrorTooManyRequests,
+      FederatedAuthRequestResult::kTooManyRequests,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5190,7 +5190,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kAccountLabelNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5268,7 +5268,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
   parameters.identity_providers[0].login_hint = "incorrect_login_hint";
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kLoginHintNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5326,7 +5326,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   parameters.identity_providers[0].login_hint = "incorrect_login_hint";
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kLoginHintNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5388,7 +5388,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
 
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5408,7 +5408,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
   parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5432,7 +5432,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
   parameters.identity_providers[0].domain_hint = kDomainHint;
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5511,7 +5511,7 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
   parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+      FederatedAuthRequestResult::kAccountsListEmpty,
       {kDomainHintNoMatchMessage},
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5592,7 +5592,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownInvalidContentType) {
       ParseStatus::kInvalidContentTypeError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidContentType,
+      FederatedAuthRequestResult::kWellKnownInvalidContentType,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5616,7 +5616,7 @@ TEST_F(FederatedAuthRequestImplTest, ConfigInvalidContentType) {
       ParseStatus::kInvalidContentTypeError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType,
+      FederatedAuthRequestResult::kConfigInvalidContentType,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5661,7 +5661,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountsInvalidContentType) {
       ParseStatus::kInvalidContentTypeError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType,
+      FederatedAuthRequestResult::kAccountsInvalidContentType,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5685,7 +5685,7 @@ TEST_F(FederatedAuthRequestImplTest, IdTokenInvalidContentType) {
       ParseStatus::kInvalidContentTypeError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType,
+      FederatedAuthRequestResult::kIdTokenInvalidContentType,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5875,7 +5875,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations error = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kIdTokenInvalidResponse,
       // TODO(crbug.com/40262526): introduce a more granular error.
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
@@ -5953,7 +5953,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
 
   RequestExpectations error = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorMissingTransientUserActivation,
+      FederatedAuthRequestResult::kMissingTransientUserActivation,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -5971,7 +5971,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWellKnownNotInList) {
 
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+      FederatedAuthRequestResult::kConfigNotInWellKnown,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
@@ -6347,7 +6347,7 @@ TEST_F(FederatedAuthRequestImplTest, AbortedAccountsDialogShownDurationMetric) {
 
   WaitForCurrentAuthRequest();
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
-                                   FederatedAuthRequestResult::kErrorCanceled,
+                                   FederatedAuthRequestResult::kCanceled,
                                    /*standalone_console_message=*/std::nullopt,
                                    /*selected_idp_config_url=*/std::nullopt};
   CheckAuthExpectations(configuration, expectations);
@@ -6394,7 +6394,7 @@ TEST_F(FederatedAuthRequestImplTest, AbortedMismatchDialogShownDurationMetric) {
   federated_auth_request_impl_->CancelTokenRequest();
 
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
-                                   FederatedAuthRequestResult::kErrorCanceled,
+                                   FederatedAuthRequestResult::kCanceled,
                                    /*standalone_console_message=*/std::nullopt,
                                    /*selected_idp_config_url=*/std::nullopt};
   WaitForCurrentAuthRequest();
@@ -6431,7 +6431,7 @@ TEST_F(FederatedAuthRequestImplTest, RecordNumRequestsPerDocumentMetric) {
 
   WaitForCurrentAuthRequest();
   RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
-                                   FederatedAuthRequestResult::kErrorCanceled,
+                                   FederatedAuthRequestResult::kCanceled,
                                    /*standalone_console_message=*/std::nullopt,
                                    /*selected_idp_config_url=*/std::nullopt};
   CheckAuthExpectations(configuration, expectations);
@@ -6477,7 +6477,7 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      FederatedAuthRequestResult::kIdTokenInvalidResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6513,7 +6513,7 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
+      FederatedAuthRequestResult::kIdTokenNoResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6552,7 +6552,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+      FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6760,7 +6760,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogTypeMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+      FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6786,7 +6786,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+      FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6815,7 +6815,7 @@ TEST_F(FederatedAuthRequestImplTest, TokenResponseTypeMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+      FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6842,7 +6842,7 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlTypeMetrics) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse,
+      FederatedAuthRequestResult::kIdTokenIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6870,8 +6870,7 @@ TEST_F(FederatedAuthRequestImplTest, CrossSiteErrorDialogDevtoolsIssue) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::
-          kErrorFetchingIdTokenCrossSiteIdpErrorResponse,
+      FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -6891,7 +6890,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorDisabledInSettings,
+      FederatedAuthRequestResult::kDisabledInSettings,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);

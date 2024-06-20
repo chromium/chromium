@@ -173,137 +173,142 @@ std::string GetConsoleErrorMessageFromResult(
       return "User declined or dismissed prompt. API exponential cool down "
              "triggered.";
     }
-    case FederatedAuthRequestResult::kErrorDisabledInSettings: {
-      return "Third-party sign in was disabled in browser Site Settings.";
+    case FederatedAuthRequestResult::kIdpNotPotentiallyTrustworthy: {
+      return "The IdP is not potentially trustworthy (are you using HTTP?)";
     }
-    case FederatedAuthRequestResult::kErrorTooManyRequests: {
+    case FederatedAuthRequestResult::kDisabledInSettings: {
+      return "FedCM was disabled in browser Site Settings.";
+    }
+    case FederatedAuthRequestResult::kDisabledInFlags: {
+      return "FedCM was disabled in flags.";
+    }
+    case FederatedAuthRequestResult::kTooManyRequests: {
       return "Only one navigator.credentials.get request may be outstanding at "
              "one time.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound: {
+    case FederatedAuthRequestResult::kWellKnownHttpNotFound: {
       return "The provider's FedCM well-known file cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse: {
+    case FederatedAuthRequestResult::kWellKnownNoResponse: {
       return "The provider's FedCM well-known file fetch resulted in an "
              "error response code.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse: {
+    case FederatedAuthRequestResult::kWellKnownInvalidResponse: {
       return "Provider's FedCM well-known file is invalid.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty: {
+    case FederatedAuthRequestResult::kWellKnownListEmpty: {
       return "Provider's FedCM well-known file has no config URLs.";
     }
-    case FederatedAuthRequestResult::
-        kErrorFetchingWellKnownInvalidContentType: {
+    case FederatedAuthRequestResult::kWellKnownInvalidContentType: {
       return "Provider's FedCM well-known content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
+    case FederatedAuthRequestResult::kConfigNotInWellKnown: {
       return "Provider's FedCM config file not listed in its well-known file.";
     }
-    case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
+    case FederatedAuthRequestResult::kWellKnownTooBig: {
       return "Provider's FedCM well-known file contains too many config URLs.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound: {
+    case FederatedAuthRequestResult::kConfigHttpNotFound: {
       return "The provider's FedCM config file cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse: {
+    case FederatedAuthRequestResult::kConfigNoResponse: {
       return "The provider's FedCM config file fetch resulted in an "
              "error response code.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
+    case FederatedAuthRequestResult::kConfigInvalidResponse: {
       return "Provider's FedCM config file is invalid.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType: {
+    case FederatedAuthRequestResult::kConfigInvalidContentType: {
       return "Provider's FedCM config file content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
+    case FederatedAuthRequestResult::kClientMetadataHttpNotFound: {
       return "The provider's client metadata endpoint cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse: {
+    case FederatedAuthRequestResult::kClientMetadataNoResponse: {
       return "The provider's client metadata fetch resulted in an error "
              "response code.";
     }
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidResponse: {
+    case FederatedAuthRequestResult::kClientMetadataInvalidResponse: {
       return "Provider's client metadata is invalid.";
     }
-    case FederatedAuthRequestResult::
-        kErrorFetchingClientMetadataInvalidContentType: {
+    case FederatedAuthRequestResult::kClientMetadataInvalidContentType: {
       return "Provider's client metadata content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
+    case FederatedAuthRequestResult::kAccountsHttpNotFound: {
       return "The provider's accounts list endpoint cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse: {
+    case FederatedAuthRequestResult::kAccountsNoResponse: {
       return "The provider's accounts list fetch resulted in an error response "
              "code.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
+    case FederatedAuthRequestResult::kAccountsInvalidResponse: {
       return "Provider's accounts list is invalid. Should have received an "
              "\"accounts\" list, where each account must have at least \"id\", "
              "\"name\", and \"email\".";
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty: {
+    case FederatedAuthRequestResult::kAccountsListEmpty: {
       return "Provider's accounts list is empty.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidContentType: {
+    case FederatedAuthRequestResult::kAccountsInvalidContentType: {
       return "Provider's accounts list endpoint content type must be a JSON "
              "content type.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
+    case FederatedAuthRequestResult::kIdTokenHttpNotFound: {
       return "The provider's id token endpoint cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
+    case FederatedAuthRequestResult::kIdTokenNoResponse: {
       return "The provider's token fetch resulted in an error response "
              "code.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
+    case FederatedAuthRequestResult::kIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse: {
+    case FederatedAuthRequestResult::kIdTokenIdpErrorResponse: {
       return "Provider is unable to issue a token, but provided details on the "
              "error that occurred.";
     }
-    case FederatedAuthRequestResult::
-        kErrorFetchingIdTokenCrossSiteIdpErrorResponse: {
+    case FederatedAuthRequestResult::kIdTokenCrossSiteIdpErrorResponse: {
       return "Provider is unable to issue a token, but provided details on the "
              "error that occurred. The error URL must be same-site with the "
              "config URL.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
+    case FederatedAuthRequestResult::kIdTokenInvalidContentType: {
       return "Provider's token endpoint content type must be a JSON content "
              "type.";
     }
-    case FederatedAuthRequestResult::kErrorCanceled: {
+    case FederatedAuthRequestResult::kCanceled: {
       return "The request has been aborted.";
     }
-    case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
+    case FederatedAuthRequestResult::kRpPageNotVisible: {
       return "RP page is not visible.";
     }
-    case FederatedAuthRequestResult::kErrorSilentMediationFailure: {
+    case FederatedAuthRequestResult::kSilentMediationFailure: {
       return "Silent mediation was requested, but the conditions to achieve it "
              "were not met.";
     }
-    case FederatedAuthRequestResult::kErrorThirdPartyCookiesBlocked: {
+    case FederatedAuthRequestResult::kThirdPartyCookiesBlocked: {
       return "Third party cookies are blocked. Right now the Chromium "
              "implementation of FedCM API requires third party cookies and "
              "this restriction will be removed soon. In the interim, to test "
              "FedCM without third-party cookies, enable the "
              "#fedcm-without-third-party-cookies flag.";
     }
-    case FederatedAuthRequestResult::kErrorMissingTransientUserActivation: {
+    case FederatedAuthRequestResult::kMissingTransientUserActivation: {
       return "FedCM button mode requires transient user activation.";
     }
-    case FederatedAuthRequestResult::kErrorReplacedByButtonMode: {
+    case FederatedAuthRequestResult::kReplacedByButtonMode: {
       return "The request is replaced by a new one with button mode.";
     }
-    case FederatedAuthRequestResult::kErrorNotSignedInWithIdp: {
+    case FederatedAuthRequestResult::kNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
     }
-    case FederatedAuthRequestResult::kErrorRelyingPartyOriginIsOpaque: {
+    case FederatedAuthRequestResult::kInvalidFieldsSpecified: {
+      return "Invalid 'fields' were specified in the FedCM call.";
+    }
+    case FederatedAuthRequestResult::kRelyingPartyOriginIsOpaque: {
       return "FedCM is not supported on an opaque origin.";
     }
     case FederatedAuthRequestResult::kTypeNotMatching: {
@@ -315,8 +320,7 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kSuccess: {
       // Should not be called with success, as we should not add a console
       // message for success.
-      DCHECK(false);
-      return "";
+      NOTREACHED_NORETURN();
     }
   }
 }

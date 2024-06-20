@@ -135,48 +135,47 @@ void FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched(
 
     FedCmDisconnectStatus status;
     switch (fetch_error.result) {
-      case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound: {
+      case FederatedAuthRequestResult::kWellKnownHttpNotFound: {
         status = FedCmDisconnectStatus::kWellKnownHttpNotFound;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse: {
+      case FederatedAuthRequestResult::kWellKnownNoResponse: {
         status = FedCmDisconnectStatus::kWellKnownNoResponse;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse: {
+      case FederatedAuthRequestResult::kWellKnownInvalidResponse: {
         status = FedCmDisconnectStatus::kWellKnownInvalidResponse;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingWellKnownListEmpty: {
+      case FederatedAuthRequestResult::kWellKnownListEmpty: {
         status = FedCmDisconnectStatus::kWellKnownListEmpty;
         break;
       }
-      case FederatedAuthRequestResult::
-          kErrorFetchingWellKnownInvalidContentType: {
+      case FederatedAuthRequestResult::kWellKnownInvalidContentType: {
         status = FedCmDisconnectStatus::kWellKnownInvalidContentType;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound: {
+      case FederatedAuthRequestResult::kConfigHttpNotFound: {
         status = FedCmDisconnectStatus::kConfigHttpNotFound;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse: {
+      case FederatedAuthRequestResult::kConfigNoResponse: {
         status = FedCmDisconnectStatus::kConfigNoResponse;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
+      case FederatedAuthRequestResult::kConfigInvalidResponse: {
         status = FedCmDisconnectStatus::kConfigInvalidResponse;
         break;
       }
-      case FederatedAuthRequestResult::kErrorFetchingConfigInvalidContentType: {
+      case FederatedAuthRequestResult::kConfigInvalidContentType: {
         status = FedCmDisconnectStatus::kConfigInvalidContentType;
         break;
       }
-      case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
+      case FederatedAuthRequestResult::kWellKnownTooBig: {
         status = FedCmDisconnectStatus::kWellKnownTooBig;
         break;
       }
-      case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
+      case FederatedAuthRequestResult::kConfigNotInWellKnown: {
         status = FedCmDisconnectStatus::kConfigNotInWellKnown;
         break;
       }
