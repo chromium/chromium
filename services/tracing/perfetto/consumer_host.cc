@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -105,16 +106,14 @@ class ConsumerHost::StreamWriter {
   void WriteToStream(std::unique_ptr<Slice> slice, bool has_more) {
     DCHECK(stream_.is_valid());
 
-    size_t write_position = 0;
-    while (write_position < slice->size()) {
-      size_t write_bytes = slice->size() - write_position;
-
-      MojoResult result =
-          stream_->WriteData(slice->data() + write_position, &write_bytes,
-                             MOJO_WRITE_DATA_FLAG_NONE);
+    base::span<const uint8_t> bytes = base::as_byte_span(*slice);
+    while (!bytes.empty()) {
+      size_t actually_written_bytes = 0;
+      MojoResult result = stream_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
+                                             actually_written_bytes);
 
       if (result == MOJO_RESULT_OK) {
-        write_position += write_bytes;
+        bytes = bytes.subspan(actually_written_bytes);
         continue;
       }
 
