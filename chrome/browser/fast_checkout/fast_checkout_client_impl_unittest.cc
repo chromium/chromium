@@ -253,10 +253,9 @@ class MockFastCheckoutAccessibilityService
   MOCK_METHOD(void, Announce, (const std::u16string&), (override));
 };
 
-class DISABLED_FastCheckoutClientImplTest
-    : public ChromeRenderViewHostTestHarness {
+class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
  public:
-  DISABLED_FastCheckoutClientImplTest()
+  FastCheckoutClientImplTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
@@ -497,8 +496,7 @@ MATCHER_P(FormFieldDataEqualTo,
   return FormFieldData::DeepEqual(arg, form_data);
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       Start_InvalidAutofillManager_NoRun) {
+TEST_F(FastCheckoutClientImplTest, Start_InvalidAutofillManager_NoRun) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
@@ -513,8 +511,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       Start_ShouldRunReturnsInvalidData_NoRun) {
+TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsInvalidData_NoRun) {
   ON_CALL(*validator(), ShouldRun)
       .WillByDefault(
           Return(FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile));
@@ -529,7 +526,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        Start_ShouldRunReturnsUnsupportedFile_NoRun) {
   ON_CALL(*validator(), ShouldRun)
       .WillByDefault(Return(FastCheckoutTriggerOutcome::kUnsupportedFieldType));
@@ -548,7 +545,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest, Start_ShouldRunReturnsSuccess_Run) {
+TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsSuccess_Run) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
@@ -575,7 +572,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest, Start_ShouldRunReturnsSuccess_Run) {
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnPersonalDataChanged_StopIfInvalidPersonalData) {
   ON_CALL(*validator(), HasValidPersonalData)
       .WillByDefault(
@@ -609,7 +606,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnPersonalDataChanged_UpdatesTheUIWithNewData) {
   ON_CALL(*validator(), HasValidPersonalData)
       .WillByDefault(Return(FastCheckoutTriggerOutcome::kSuccess));
@@ -648,7 +645,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
+TEST_F(FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   EXPECT_FALSE(fast_checkout_client()->IsShowing());
@@ -674,8 +671,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       OnDismiss_WhenIsRunning_CancelsTheRun) {
+TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
@@ -695,7 +691,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        DestroyingAutofillDriver_ResetsAutofillManagerPointer) {
   // Set up Autofill instances so that `FastCheckoutClient::Stop(..)` will be
   // called when `autofill_driver` is destroyed below. `Stop(..)` is supposed to
@@ -735,7 +731,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnOptionsSelected_ServerCard_SavesFormsAndAutofillDataSelections) {
   std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
   std::unique_ptr<autofill::FormStructure> credit_card_form =
@@ -758,7 +754,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnOptionsSelected_LocalCard_SavesFormsAndAutofillDataSelections) {
   autofill::FormStructure* credit_card_form =
       AddFormToAutofillManagerCache(SetUpCreditCardForm());
@@ -784,8 +780,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       OnAfterLoadedServerPredictions_FillsForms) {
+TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
   std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
   std::unique_ptr<autofill::FormStructure> credit_card_form =
       SetUpCreditCardForm();
@@ -834,8 +829,10 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops) {
+// TODO(crbug.com/345173143): Re-enable test.
+TEST_F(
+    FastCheckoutClientImplTest,
+    DISABLED_OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops) {
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
   autofill::FormStructure* credit_card_form =
@@ -915,7 +912,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
               Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 5))));
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnAutofillManagerReset_IsShowing_ResetsState) {
   OnBeforeAskForValuesToFill();
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
@@ -932,7 +929,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnAutofillManagerReset_IsNotShowing_ResetsState) {
   std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
 
@@ -945,8 +942,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       OnAutofillManagerDestroyed_ResetsState) {
+TEST_F(FastCheckoutClientImplTest, OnAutofillManagerDestroyed_ResetsState) {
   OnBeforeAskForValuesToFill();
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
@@ -960,8 +956,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
-       TimeoutTimer_ThirtyMinutesPassed_StopsRun) {
+TEST_F(FastCheckoutClientImplTest, TimeoutTimer_ThirtyMinutesPassed_StopsRun) {
   std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
   std::unique_ptr<autofill::FormStructure> credit_card_form =
       SetUpCreditCardForm();
@@ -977,7 +972,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest, OnNavigation_OtherUrl_StopsRun) {
+TEST_F(FastCheckoutClientImplTest, OnNavigation_OtherUrl_StopsRun) {
   OnBeforeAskForValuesToFill();
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
@@ -991,7 +986,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest, OnNavigation_OtherUrl_StopsRun) {
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnNavigation_SameUrlButNoCartOrCheckoutPage_StopsRun) {
   OnBeforeAskForValuesToFill();
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
@@ -1006,7 +1001,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnNavigation_SameUrlAndCartOrCheckoutPage_DoesNotStopRun) {
   OnBeforeAskForValuesToFill();
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
@@ -1020,7 +1015,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        OnFullCardRequestSucceeded_InvokesCreditCardFormFill) {
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
@@ -1054,7 +1049,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
+TEST_F(FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
   autofill::FormStructure* credit_card_form =
       AddFormToAutofillManagerCache(SetUpCreditCardForm());
   auto card_type = autofill::CreditCard::RecordType::kFullServerCard;
@@ -1070,7 +1065,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest, OnFullCardRequestFailed_StopsRun) {
 }
 
 TEST_F(
-    DISABLED_FastCheckoutClientImplTest,
+    FastCheckoutClientImplTest,
     OnAfterDidFillAutofillFormData_AddressForm_MakesAddressFormA11yAnnouncement) {
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
@@ -1085,7 +1080,7 @@ TEST_F(
 }
 
 TEST_F(
-    DISABLED_FastCheckoutClientImplTest,
+    FastCheckoutClientImplTest,
     OnAfterDidFillAutofillFormData_EmailForm_MakesEmailFormA11yAnnouncement) {
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
@@ -1101,7 +1096,7 @@ TEST_F(
 }
 
 TEST_F(
-    DISABLED_FastCheckoutClientImplTest,
+    FastCheckoutClientImplTest,
     OnAfterDidFillAutofillFormData_CreditCardForm_MakesCreditCardFormA11yAnnouncement) {
   autofill::FormStructure* credit_card_form =
       AddFormToAutofillManagerCache(SetUpCreditCardForm());
@@ -1122,7 +1117,7 @@ TEST_F(
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        GetSelectedAutofillProfile_ProfileDeletedSinceSelection_StopsRun) {
   std::unique_ptr<autofill::FormStructure> address_form = SetUpAddressForm();
 
@@ -1141,7 +1136,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        GetSelectedCreditCard_CardDeletedSinceSelection_StopsRun) {
   std::unique_ptr<autofill::FormStructure> credit_card_form =
       SetUpCreditCardForm();
@@ -1164,7 +1159,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_TRUE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(DISABLED_FastCheckoutClientImplTest,
+TEST_F(FastCheckoutClientImplTest,
        TryToFillForms_LocalCreditCard_ImmediatelyFillsCreditCardForm) {
   autofill::FormStructure* credit_card_form =
       AddFormToAutofillManagerCache(SetUpCreditCardForm());
