@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, I18nMixinLit) {
   RunTest("cr_elements/i18n_mixin_lit_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsTest, IconButton) {
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrIconButton) {
   RunTest("cr_elements/cr_icon_button_test.js", "mocha.run()");
 }
 

@@ -183,10 +183,8 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
       crIcon.icon = icon;
       this.$.icon.appendChild(crIcon);
       await crIcon.updateComplete;
-      if (crIcon.shadowRoot) {
-        crIcon.shadowRoot.querySelectorAll('svg, img')
-            .forEach(child => child.setAttribute('role', 'none'));
-      }
+      crIcon.shadowRoot!.querySelectorAll('svg, img')
+          .forEach(child => child.setAttribute('role', 'none'));
     });
   }
 
