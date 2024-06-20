@@ -17017,6 +17017,26 @@
             ]
         }
     ],
+    "PrivacySandboxAttestationsLoadPreInstalledComponent": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_PrivacySandboxAttestationsLoadPreInstalledComponent",
+                    "enable_features": [
+                        "PrivacySandboxAttestationsLoadPreInstalledComponent"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxHatsForDesktopM1": [
         {
             "platforms": [
