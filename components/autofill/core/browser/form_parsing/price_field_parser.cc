@@ -19,8 +19,7 @@ std::unique_ptr<FormFieldParser> PriceFieldParser::Parse(
   base::span<const MatchPatternRef> price_patterns =
       GetMatchPatterns("PRICE", context.page_language, context.pattern_source);
 
-  if (ParseFieldSpecifics(context, scanner, price_patterns, &field,
-                          "kPriceRe")) {
+  if (ParseField(context, scanner, price_patterns, &field, "kPriceRe")) {
     return std::make_unique<PriceFieldParser>(field);
   }
 

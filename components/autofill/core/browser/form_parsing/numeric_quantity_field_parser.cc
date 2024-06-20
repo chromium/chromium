@@ -19,8 +19,8 @@ std::unique_ptr<FormFieldParser> NumericQuantityFieldParser::Parse(
   base::span<const MatchPatternRef> quantity_patterns = GetMatchPatterns(
       "NUMERIC_QUANTITY", context.page_language, context.pattern_source);
 
-  if (ParseFieldSpecifics(context, scanner, quantity_patterns, &field,
-                          "kNumericQuantityRe")) {
+  if (ParseField(context, scanner, quantity_patterns, &field,
+                 "kNumericQuantityRe")) {
     return base::WrapUnique(new NumericQuantityFieldParser(field));
   }
 

@@ -230,18 +230,9 @@ class FormFieldParser {
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills `match` with a pointer to the field.
-  // TODO(crbug.com/40280853): This just forwards to `ParseFieldSpecifics()`.
-  // Remove.
-  static bool ParseField(ParsingContext& context,
-                         AutofillScanner* scanner,
-                         base::span<const MatchPatternRef> patterns,
-                         raw_ptr<AutofillField>* match,
-                         const char* regex_name = "");
-
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
-  // MatchParams after dereferencing the `MatchPatternRef`s. Note that this is
-  // only relevant with pattern provider.
-  static bool ParseFieldSpecifics(
+  // MatchParams after dereferencing the `MatchPatternRef`s.
+  static bool ParseField(
       ParsingContext& context,
       AutofillScanner* scanner,
       base::span<const MatchPatternRef> patterns,
@@ -308,27 +299,6 @@ class FormFieldParser {
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       FieldCandidatesMap& field_candidates,
       bool is_form_tag);
-
-  static bool ParseFieldSpecificsWithNewPatterns(
-      ParsingContext& context,
-      AutofillScanner* scanner,
-      base::span<const MatchPatternRef> patterns,
-      raw_ptr<AutofillField>* match,
-      const char* regex_name,
-      MatchParams (*projection)(const MatchParams&));
-
-  // Parses the stream of fields in |scanner| with regular expression |pattern|
-  // as specified in |match_type|. If |match| is non-NULL and the pattern
-  // matches, |match| will be set to the matched field, and the scanner would
-  // advance by one step. A |true| result is returned in the case of a
-  // successful match, false otherwise.
-  static bool ParseFieldSpecificsWithLegacyPattern(
-      ParsingContext& context,
-      AutofillScanner* scanner,
-      std::u16string_view pattern,
-      MatchParams match_type,
-      raw_ptr<AutofillField>* match,
-      const char* regex_name = "");
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.

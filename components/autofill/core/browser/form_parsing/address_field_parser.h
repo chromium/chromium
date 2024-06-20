@@ -82,10 +82,10 @@ class AddressFieldParser : public FormFieldParser {
   bool ParseFieldSpecificsForHouseNumberAndApt(ParsingContext& context,
                                                AutofillScanner* scanner);
 
-  // Like ParseFieldSpecifics(), but applies |pattern| against the name and
+  // Like ParseField(), but applies `pattern` against the name and
   // label of the current field separately. If the return value is
-  // RESULT_MATCH_NAME_LABEL, then |scanner| advances and |match| is filled if
-  // it is non-NULL. Otherwise |scanner| does not advance and |match| does not
+  // RESULT_MATCH_NAME_LABEL, then `scanner` advances and `match` is filled if
+  // it is non-NULL. Otherwise `scanner` does not advance and `match` does not
   // change.
   static ParseNameLabelResult ParseNameAndLabelSeparately(
       ParsingContext& context,

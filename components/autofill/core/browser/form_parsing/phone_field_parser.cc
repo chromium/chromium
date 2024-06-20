@@ -422,16 +422,16 @@ bool PhoneFieldParser::ParsePhoneField(ParsingContext& context,
   // However, for phone country code fields, <select> elements should also be
   // considered.
   if (is_country_code_field) {
-    return ParseFieldSpecifics(context, scanner, patterns, field, regex_name,
-                               [](const MatchParams& p) {
-                                 return MatchParams(p.attributes,
+    return ParseField(context, scanner, patterns, field, regex_name,
+                      [](const MatchParams& p) {
+                        return MatchParams(p.attributes,
                 kDefaultMatchParamsWith<
         FormControlType::kInputTelephone, FormControlType::kInputNumber,
         FormControlType::kSelectOne, FormControlType::kSelectList>.field_types);
-                               });
+                      });
   }
 
-  return ParseFieldSpecifics(context, scanner, patterns, field, regex_name);
+  return ParseField(context, scanner, patterns, field, regex_name);
 }
 
 }  // namespace autofill

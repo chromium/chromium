@@ -20,8 +20,8 @@ std::unique_ptr<FormFieldParser> MerchantPromoCodeFieldParser::Parse(
       GetMatchPatterns("MERCHANT_PROMO_CODE", context.page_language,
                        context.pattern_source);
 
-  if (ParseFieldSpecifics(context, scanner, merchant_promo_code_patterns,
-                          &field, "kMerchantPromoCodeRe")) {
+  if (ParseField(context, scanner, merchant_promo_code_patterns, &field,
+                 "kMerchantPromoCodeRe")) {
     return std::make_unique<MerchantPromoCodeFieldParser>(field);
   }
 

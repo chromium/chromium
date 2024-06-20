@@ -154,8 +154,8 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
   base::span<const MatchPatternRef> address_name_ignored_patterns =
       GetMatchPatterns("ADDRESS_NAME_IGNORED", context);
   bool should_ignore =
-      ParseFieldSpecifics(context, scanner, name_ignored_patterns, nullptr,
-                          "kNameIgnoredRe") ||
+      ParseField(context, scanner, name_ignored_patterns, nullptr,
+                 "kNameIgnoredRe") ||
       ParseField(context, scanner, address_name_ignored_patterns, nullptr,
                  "kAddressNameIgnoredRe");
   scanner->Rewind();
@@ -236,8 +236,8 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
     }
 
     // Skip over any unrelated fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(context, scanner, name_ignored_patterns, nullptr,
-                            "kNameIgnoredRe")) {
+    if (ParseField(context, scanner, name_ignored_patterns, nullptr,
+                   "kNameIgnoredRe")) {
       continue;
     }
 
@@ -313,8 +313,8 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
   scanner->SaveCursor();
 
   bool should_ignore =
-      ParseFieldSpecifics(context, scanner, name_ignored_patterns, nullptr,
-                          "kNameIgnoredRe") ||
+      ParseField(context, scanner, name_ignored_patterns, nullptr,
+                 "kNameIgnoredRe") ||
       ParseField(context, scanner, address_name_ignored_patterns, nullptr,
                  "kAddressNameIgnoredRe");
   scanner->Rewind();
@@ -423,8 +423,8 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
     }
 
     // Skip over any unrelated name fields, e.g. "username" or "nickname".
-    if (ParseFieldSpecifics(context, scanner, name_ignored_patterns, nullptr,
-                            "kNameIgnoredRe")) {
+    if (ParseField(context, scanner, name_ignored_patterns, nullptr,
+                   "kNameIgnoredRe")) {
       continue;
     }
 

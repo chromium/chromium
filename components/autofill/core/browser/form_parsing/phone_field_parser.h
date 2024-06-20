@@ -93,7 +93,7 @@ class PhoneFieldParser : public FormFieldParser {
   // |regex_id|.
   static std::string GetJSONFieldType(RegexType phonetype_id);
 
-  // Convenient wrapper for ParseFieldSpecifics().
+  // Convenient wrapper for ParseField().
   static bool ParsePhoneField(ParsingContext& context,
                               AutofillScanner* scanner,
                               raw_ptr<AutofillField>* field,

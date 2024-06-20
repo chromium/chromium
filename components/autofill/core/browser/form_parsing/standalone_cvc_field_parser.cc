@@ -33,8 +33,8 @@ std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
       GetMatchPatterns(CREDIT_CARD_VERIFICATION_CODE, context.page_language,
                        context.pattern_source);
 
-  if (ParseFieldSpecifics(context, scanner, cvc_patterns, &field,
-                          "kCardCvcRe(standalone)")) {
+  if (ParseField(context, scanner, cvc_patterns, &field,
+                 "kCardCvcRe(standalone)")) {
     return std::make_unique<StandaloneCvcFieldParser>(field);
   }
 
@@ -54,8 +54,8 @@ bool StandaloneCvcFieldParser::MatchGiftCard(ParsingContext& context,
       "GIFT_CARD", context.page_language, context.pattern_source);
 
   size_t saved_cursor = scanner->SaveCursor();
-  const bool gift_card_match = ParseFieldSpecifics(
-      context, scanner, gift_card_patterns, nullptr, "kGiftCardRe");
+  const bool gift_card_match =
+      ParseField(context, scanner, gift_card_patterns, nullptr, "kGiftCardRe");
   // MatchGiftCard only wants to test the presence of a gift card but not
   // consume the field.
   scanner->RewindTo(saved_cursor);
