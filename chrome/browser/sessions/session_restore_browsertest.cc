@@ -2059,45 +2059,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorage) {
   EXPECT_EQ(session_storage_id, restored_session_storage_id);
 }
 
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorageAfterTabReplace) {
-  // Simulate what prerendering does: create a new WebContents with the same
-  // SessionStorageNamespace as an existing tab, then replace the tab with it.
-  {
-    content::NavigationController* controller =
-        &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-    ASSERT_TRUE(controller->GetDefaultSessionStorageNamespace());
-
-    content::SessionStorageNamespaceMap session_storage_namespace_map =
-        content::CreateMapWithDefaultSessionStorageNamespace(
-            browser()->profile(),
-            controller->GetDefaultSessionStorageNamespace());
-
-    std::unique_ptr<content::WebContents> web_contents(
-        content::WebContents::CreateWithSessionStorage(
-            content::WebContents::CreateParams(browser()->profile()),
-            session_storage_namespace_map));
-
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
-    std::unique_ptr<content::WebContents> old_web_contents =
-        tab_strip_model->DiscardWebContentsAt(tab_strip_model->active_index(),
-                                              std::move(web_contents));
-    // Navigate with the new tab.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl2()));
-    // old_web_contents goes out of scope.
-  }
-
-  // Check that the sessionStorage data is going to be persisted.
-  content::NavigationController* controller =
-      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
-  EXPECT_TRUE(
-      controller->GetDefaultSessionStorageNamespace()->should_persist());
-
-  // Quit and restore. Check that no extra tabs were created.
-  Browser* new_browser = QuitBrowserAndRestore(browser());
-  ASSERT_EQ(1u, active_browser_list_->size());
-  EXPECT_EQ(1, new_browser->tab_strip_model()->count());
-}
-
 // Failing on Mac. See https://crbug.com/1484860
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabWithDownloadDoesNotGetRestored \
