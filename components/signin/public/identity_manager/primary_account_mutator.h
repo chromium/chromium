@@ -93,15 +93,8 @@ class PrimaryAccountMutator {
       base::OnceClosure prefs_committed_callback = base::NullCallback()) = 0;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Revokes sync consent from the primary account. We distinguish the following
-  // cases:
-  // a. If transitioning from ConsentLevel::kSync to ConsentLevel::kSignin
-  //    is supported (e.g. for DICE), then this method only revokes the sync
-  //    consent and the primary account is left at ConsentLevel::kSignin
-  //    level.
-  // b. Otherwise this method revokes the sync consent and it also  clears the
-  //    primary account and removes all other accounts via a call to
-  //    ClearPrimaryAccount().
+  // Revokes sync consent from the primary account: the primary account is left
+  // at ConsentLevel::kSignin.
   //
   // Note: This method expects that the user already consented for sync.
   virtual void RevokeSyncConsent(

@@ -1241,8 +1241,10 @@ void SyncServiceImpl::OnActionableProtocolError(
         // in and enables sync should clear the primary account here for
         // symmetry.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-        // On mobile, fully sign out the user.
-        account_mutator->ClearPrimaryAccount(
+        // On mobile, fully sign out the user (clear the primary account) but
+        // do not remove the list of known accounts, as the user may sign in
+        // again.
+        account_mutator->RemovePrimaryAccountButKeepTokens(
             signin_metrics::ProfileSignout::kServerForcedDisable);
 #else
         // Note: On some platforms, revoking the sync consent will also clear
