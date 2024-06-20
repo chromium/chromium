@@ -40,7 +40,7 @@ void ChromeProfileRequestGenerator::Generate(ReportCallback callback) {
 }
 
 void ChromeProfileRequestGenerator::ToggleExtensionReport(bool enabled) {
-  profile_report_generator_.set_policies_enabled(enabled);
+  profile_report_generator_.set_extensions_enabled(enabled);
 }
 
 void ChromeProfileRequestGenerator::OnBrowserReportReady(
