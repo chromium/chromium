@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/json/json_value_converter.h"
 #include "base/time/time.h"
-#include "device/fido/enclave/verify/hash.h"
 
 namespace device::enclave {
 
@@ -81,6 +80,22 @@ struct GenericSignature {
   std::string content;
   std::string format;
   PublicKey public_key;
+};
+
+enum HashType {
+  kSHA256,
+};
+
+struct COMPONENT_EXPORT(DEVICE_FIDO) Hash {
+  Hash(std::vector<uint8_t> bytes, HashType hash_type);
+  Hash();
+  ~Hash();
+  Hash(const Hash& hash);
+
+  static void RegisterJSONConverter(base::JSONValueConverter<Hash>* converter);
+
+  std::vector<uint8_t> bytes;
+  HashType hash_type = kSHA256;
 };
 
 // Struct representing the hashed data in the body of a Rekor LogEntry.

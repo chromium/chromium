@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
-#include "device/fido/enclave/verify/hash.h"
 #include "device/fido/enclave/verify/test_utils.h"
 #include "device/fido/enclave/verify/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

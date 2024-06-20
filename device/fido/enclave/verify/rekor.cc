@@ -51,6 +51,26 @@ bool IntToUint64t(const base::Value* s, uint64_t* result) {
   return true;
 }
 
+bool ConvertToBytes(const base::Value* s, std::vector<uint8_t>* result) {
+  if (!s->is_string()) {
+    return false;
+  }
+  std::vector<uint8_t> output(s->GetString().begin(), s->GetString().end());
+  *result = std::move(output);
+  return true;
+}
+
+bool CheckHashType(const base::Value* s, HashType* result) {
+  if (!s->is_string()) {
+    return false;
+  }
+  if (s->GetString() != "sha256") {
+    return false;
+  }
+  *result = kSHA256;
+  return true;
+}
+
 }  // namespace
 
 RekorSignatureBundle::RekorSignatureBundle(std::vector<uint8_t> canonicalized,
@@ -76,6 +96,18 @@ LogEntry::LogEntry() = default;
 LogEntry::~LogEntry() = default;
 LogEntry::LogEntry(const LogEntry& log_entry) = default;
 LogEntry::LogEntry(LogEntry&& log_entry) = default;
+
+Hash::Hash(std::vector<uint8_t> bytes, HashType hash_type)
+    : bytes(std::move(bytes)), hash_type(hash_type) {}
+Hash::Hash() = default;
+Hash::~Hash() = default;
+Hash::Hash(const Hash& hash) = default;
+
+void Hash::RegisterJSONConverter(base::JSONValueConverter<Hash>* converter) {
+  converter->RegisterCustomValueField("algorithm", &Hash::hash_type,
+                                      &CheckHashType);
+  converter->RegisterCustomValueField("value", &Hash::bytes, &ConvertToBytes);
+}
 
 void LogEntry::RegisterJSONConverter(
     base::JSONValueConverter<LogEntry>* converter) {

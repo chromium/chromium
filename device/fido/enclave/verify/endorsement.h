@@ -12,7 +12,6 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/claim.h"
-#include "device/fido/enclave/verify/hash.h"
 
 namespace device::enclave {
 
