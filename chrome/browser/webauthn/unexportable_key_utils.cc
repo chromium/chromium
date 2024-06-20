@@ -16,7 +16,24 @@
 
 std::unique_ptr<crypto::UnexportableKeyProvider>
 GetWebAuthnUnexportableKeyProvider() {
-  if (base::FeatureList::IsEnabled(
+  constexpr bool kIsLinux =
+#if BUILDFLAG(IS_LINUX)
+      true;
+#else
+      false;
+#endif
+
+  // On Linux, access to the TPM is complex compared to Windows and macOS.
+  // There are libraries that _should_ work with a TPM 2.0, but Linux often
+  // runs on non-PCs, where TPMs will probably never exist. Thus gating enclave
+  // features on the presence of a TPM isn't viable, and trying to use one
+  // where it is present seems complex and likely to cause lots of problems.
+  // Thus Linux saves identity keys on disk.
+  //
+  // If there is a scoped UnexportableKeyProvider configured, we always use
+  // that so that tests can still override the key provider.
+  if ((kIsLinux && !crypto::internal::HasScopedUnexportableKeyProvider()) ||
+      base::FeatureList::IsEnabled(
           device::kWebAuthnUseInsecureSoftwareUnexportableKeys)) {
     return crypto::GetSoftwareUnsecureUnexportableKeyProvider();
   }

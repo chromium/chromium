@@ -58,6 +58,10 @@ GetVirtualUnexportableKeyProvider_DO_NOT_USE_METRICS_ONLY() {
 
 namespace internal {
 
+bool HasScopedUnexportableKeyProvider() {
+  return g_mock_provider != nullptr;
+}
+
 void SetUnexportableKeyProviderForTesting(
     std::unique_ptr<UnexportableKeyProvider> (*func)()) {
   if (g_mock_provider) {

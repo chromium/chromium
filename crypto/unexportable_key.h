@@ -264,6 +264,8 @@ GetSoftwareUnsecureUnexportableKeyProvider();
 
 namespace internal {
 
+CRYPTO_EXPORT bool HasScopedUnexportableKeyProvider();
+
 CRYPTO_EXPORT void SetUnexportableKeyProviderForTesting(
     std::unique_ptr<UnexportableKeyProvider> (*func)());
 
