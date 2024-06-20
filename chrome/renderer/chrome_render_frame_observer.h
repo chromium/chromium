@@ -115,7 +115,6 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void GetMediaFeedURL(GetMediaFeedURLCallback callback) override;
   void LoadBlockedPlugins(const std::string& identifier) override;
   void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
-  void SetShouldDeferMediaLoad(bool should_defer) override;
 
   // Initialize a |phishing_classifier_delegate_|.
   void SetClientSidePhishingDetection();
