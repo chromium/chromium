@@ -60,7 +60,7 @@ public class ViewHighlighterTestUtils {
                     "Expected highlight to turn off!",
                     timeoutDuration,
                     CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        } catch (AssertionError e) {
+        } catch (CriteriaHelper.TimeoutException e) {
             e.printStackTrace();
             return false;
         }

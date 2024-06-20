@@ -226,7 +226,7 @@ public abstract class XrTestFramework {
                     "Polling timed out",
                     timeoutMs,
                     POLL_CHECK_INTERVAL_LONG_MS);
-        } catch (AssertionError e) {
+        } catch (CriteriaHelper.TimeoutException e) {
             Log.d(TAG, "pollJavaScriptBoolean() timed out: " + e.toString());
             return false;
         }
@@ -268,7 +268,7 @@ public abstract class XrTestFramework {
                     "Polling timed out",
                     timeoutMs,
                     POLL_CHECK_INTERVAL_LONG_MS);
-        } catch (AssertionError e) {
+        } catch (CriteriaHelper.TimeoutException e) {
             Log.d(TAG, "pollJavaScriptBooleanInFrame() timed out: " + e.toString());
             return false;
         }

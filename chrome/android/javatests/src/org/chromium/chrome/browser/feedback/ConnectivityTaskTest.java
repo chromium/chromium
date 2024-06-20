@@ -175,7 +175,6 @@ public class ConnectivityTaskTest {
     @Test
     @MediumTest
     @Feature({"Feedback"})
-    @SuppressWarnings("TryFailThrowable") // TODO(tedchoc): Remove after fixing timeout.
     public void testTwoTimeoutsShouldFillInTheRest() {
         final ConnectivityTask task =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -194,16 +193,13 @@ public class ConnectivityTaskTest {
                                         null);
                             }
                         });
-        thrown.expect(AssertionError.class);
+        thrown.expect(CriteriaHelper.TimeoutException.class);
         CriteriaHelper.pollUiThread(
                 () -> {
                     return task.isDone();
                 },
                 TIMEOUT_MS / 5,
                 RESULT_CHECK_INTERVAL_MS);
-        FeedbackData feedback = getResult(task);
-        verifyConnections(feedback, ConnectivityCheckResult.UNKNOWN);
-        Assert.assertEquals("The timeout value is wrong.", TIMEOUT_MS, feedback.getTimeoutMs());
     }
 
     @Test
