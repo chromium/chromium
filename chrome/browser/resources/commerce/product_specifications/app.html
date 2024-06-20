@@ -61,13 +61,10 @@
     margin-top: 32px;
   }
 
-  new-column-selector {
-    margin-top: 3px;
-  }
-
   #specs {
     display: flex;
     padding: 16px;
+    gap: 8px;
   }
 </style>
 <product-specifications-header id="header" subtitle="[[setName_]]"
@@ -93,13 +90,12 @@
       hidden$="[[!showTable_(showEmptyState_, loadingState_.loading)]]">
     <product-specifications-table
         id="summaryTable"
-        columns="[[specsTable_.columns]]"
-        rows="[[specsTable_.rows]]"
+        columns="[[tableColumns_]]"
         on-url-change="onUrlChange_"
         on-url-remove="onUrlRemove_">
     </product-specifications-table>
     <new-column-selector id="newColumnSelector"
-        excluded-urls="[[getTableUrls_(specsTable_.columns)]]"
+        excluded-urls="[[getTableUrls_(tableColumns_)]]"
         on-selected-url-change="onUrlAdd_">
     </new-column-selector>
   </div>

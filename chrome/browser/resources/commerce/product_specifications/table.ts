@@ -13,21 +13,15 @@ import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browse
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {TableColumn} from './app.js';
 import {getTemplate} from './table.html.js';
-import type {UrlListEntry} from './utils.js';
 
-/** Describes a row in a ProductSpecs table. */
-export interface TableRow {
-  title: string;
-  descriptions: string[];
-  summaries: string[];
-}
-/** Describes a column in a ProductSpecs table. */
-export interface TableColumn {
-  selectedItem: UrlListEntry;
+export interface TableElement {
+  $: {
+    table: HTMLElement,
+  };
 }
 
-/** Element for rendering a ProductSpecs table. */
 export class TableElement extends PolymerElement {
   static get is() {
     return 'product-specifications-table';
@@ -40,13 +34,11 @@ export class TableElement extends PolymerElement {
   static get properties() {
     return {
       columns: Array,
-      rows: Array,
       hoveredColumnIndex_: {type: Number, value: -1},
     };
   }
 
   columns: TableColumn[];
-  rows: TableRow[];
   private hoveredColumnIndex_: number;
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -59,54 +51,68 @@ export class TableElement extends PolymerElement {
     this.hoveredColumnIndex_ = -1;
   }
 
-  private onShowOpenTabButton_(e: DomRepeatEvent<TableColumn|TableRow>) {
-    this.hoveredColumnIndex_ = e.model.index;
+  private onShowOpenTabButton_(e: DomRepeatEvent<TableColumn>&
+                               {model: {columnIndex: number}}) {
+    this.hoveredColumnIndex_ = e.model.columnIndex;
   }
 
-  private shouldShowOpenTabButton_(columnIndex: number): boolean {
+  private showOpenTabButton_(columnIndex: number): boolean {
     return columnIndex === this.hoveredColumnIndex_;
   }
 
-  private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn, CustomEvent>) {
+  private onOpenTabButtonClick_(e: DomRepeatEvent<TableColumn>&
+                                {model: {columnIndex: number}}) {
     this.shoppingApi_.switchToOrOpenTab(
-        {url: this.columns[e.model.index].selectedItem.url});
+        {url: this.columns[e.model.columnIndex].selectedItem.url});
   }
 
   private onSelectedUrlChange_(
-      e: DomRepeatEvent<TableColumn, CustomEvent<{url: string}>>) {
+      e: DomRepeatEvent<TableColumn, CustomEvent<{url: string}>>&
+      {model: {columnIndex: number}}) {
     this.dispatchEvent(new CustomEvent('url-change', {
       bubbles: true,
       composed: true,
       detail: {
         url: e.detail.url,
-        index: e.model.index,
+        index: e.model.columnIndex,
       },
     }));
   }
 
-  private onUrlRemove_(e: DomRepeatEvent<TableColumn>) {
+  private onUrlRemove_(e: DomRepeatEvent<TableColumn>&
+                       {model: {columnIndex: number}}) {
     this.dispatchEvent(new CustomEvent('url-remove', {
       bubbles: true,
       composed: true,
       detail: {
-        index: e.model.index,
+        index: e.model.columnIndex,
       },
     }));
   }
 
-  private shouldShowRow_(row: TableRow): boolean {
-    return this.shouldShowDescriptionRow_(row) ||
-        this.shouldShowSummaryRow_(row);
+  private showRow_(title: string, rowIndex: number): boolean {
+    return this.showDescription_(title, rowIndex) ||
+        this.showSummary_(title, rowIndex);
   }
 
-  private shouldShowDescriptionRow_(row: TableRow): boolean {
-    return row.descriptions.some(
-        (description) => (description.length > 0 && description !== 'N/A'));
+  private showDescription_(title: string, rowIndex: number): boolean {
+    const rowDetails = this.columns.map(
+        column => column.productDetails && column.productDetails[rowIndex]);
+
+    return rowDetails.some(detail => {
+      return detail && detail.title === title && detail.description &&
+          detail.description.length > 0 && detail.description !== 'N/A';
+    });
   }
 
-  private shouldShowSummaryRow_(row: TableRow): boolean {
-    return row.summaries.some(
-        (summary) => (summary.length > 0 && summary !== 'N/A'));
+  private showSummary_(title: string, rowIndex: number): boolean {
+    const rowDetails = this.columns.map(
+        column => column.productDetails && column.productDetails[rowIndex]);
+
+    return rowDetails.some(detail => {
+      return detail && detail.title === title && detail.summary &&
+          detail.summary.length > 0 && detail.summary !== 'N/A';
+    });
   }
 }
 

@@ -257,7 +257,7 @@ suite('AppTest', () => {
   });
 
   test('populates specs table', async () => {
-    const rowTitle = 'foo';
+    const detailTitle = 'foo';
     const dimensionValues = {
       summary: [{text: 'summary', url: {url: ''}}],
       specificationDescriptions: [
@@ -302,7 +302,8 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/', 'https://example2.com/'],
       specs: createSpecs({
-        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        productDimensionMap:
+            new Map<bigint, string>([[BigInt(2), detailTitle]]),
         products: [specsProduct1],
       }),
       infos: [info1, info2, createInfo({clusterId: BigInt(0)})],
@@ -311,8 +312,8 @@ suite('AppTest', () => {
     appElement.resetMinLoadingAnimationMsForTesting();
     await flushTasks();
 
-    const columns = appElement.$.summaryTable.columns;
-    assertEquals(2, columns.length);
+    const tableColumns = appElement.$.summaryTable.columns;
+    assertEquals(2, tableColumns.length);
     assertArrayEquals(
         [
           {
@@ -321,7 +322,12 @@ suite('AppTest', () => {
               url: 'https://example.com/',
               imageUrl: info1.imageUrl.url,
             },
+            productDetails: [
+              {title: detailTitle, description: 'bar, baz', summary: 'summary'},
+            ],
           },
+          // Since this item's product dimension values has no ID,
+          // `productDetails` should be empty.
           {
             selectedItem: {
               // If the product spec doesn't have a title, the column should
@@ -330,24 +336,14 @@ suite('AppTest', () => {
               url: 'https://example2.com/',
               imageUrl: info2.imageUrl.url,
             },
+            productDetails: [],
           },
         ],
-        columns);
-    // Since only one of the two product dimension values has an ID, only
-    // one row should be created.
-    const rows = appElement.$.summaryTable.rows;
-    assertEquals(1, rows.length);
-    assertArrayEquals(
-        [{
-          title: rowTitle,
-          descriptions: ['bar, baz', ''],
-          summaries: ['summary', ''],
-        }],
-        rows);
+        tableColumns);
   });
 
   test('populates specs table, no summary', async () => {
-    const rowTitle = 'foo';
+    const detailTitle = 'foo';
     const dimensionValues = {
       summary: [],
       specificationDescriptions: [
@@ -384,7 +380,8 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/'],
       specs: createSpecs({
-        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        productDimensionMap:
+            new Map<bigint, string>([[BigInt(2), detailTitle]]),
         products: [specsProduct1],
       }),
       infos: [info1],
@@ -393,8 +390,8 @@ suite('AppTest', () => {
     appElement.resetMinLoadingAnimationMsForTesting();
     await flushTasks();
 
-    const columns = appElement.$.summaryTable.columns;
-    assertEquals(1, columns.length);
+    const tableColumns = appElement.$.summaryTable.columns;
+    assertEquals(1, tableColumns.length);
     assertArrayEquals(
         [
           {
@@ -403,18 +400,16 @@ suite('AppTest', () => {
               url: 'https://example.com/',
               imageUrl: info1.imageUrl.url,
             },
+            productDetails: [
+              {title: detailTitle, description: 'bar', summary: ''},
+            ],
           },
         ],
-        columns);
-
-    const rows = appElement.$.summaryTable.rows;
-    assertEquals(1, rows.length);
-    assertArrayEquals(
-        [{title: rowTitle, descriptions: ['bar'], summaries: ['']}], rows);
+        tableColumns);
   });
 
   test('populates specs table, correct column order', async () => {
-    const rowTitle = 'Section';
+    const detailTitle = 'Section';
 
     // Set up the first product with at least one unique description.
     const dimensionValues1 = {
@@ -490,7 +485,8 @@ suite('AppTest', () => {
     const promiseValues = createAppPromiseValues({
       urlsParam: ['https://example.com/1', 'https://example.com/2'],
       specs: createSpecs({
-        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        productDimensionMap:
+            new Map<bigint, string>([[BigInt(2), detailTitle]]),
         // These products are intentionally swapped to ensure they are shown
         // in the correct column, even if output order doesn't match input
         // order.
@@ -504,8 +500,8 @@ suite('AppTest', () => {
     await flushTasks();
 
     // Ensure the column header matches the content.
-    const columns = appElement.$.summaryTable.columns;
-    assertEquals(2, columns.length);
+    const tableColumns = appElement.$.summaryTable.columns;
+    assertEquals(2, tableColumns.length);
     assertArrayEquals(
         [
           {
@@ -514,6 +510,9 @@ suite('AppTest', () => {
               url: 'https://example.com/1',
               imageUrl: info1.imageUrl.url,
             },
+            productDetails: [
+              {title: detailTitle, description: 'desc 1', summary: ''},
+            ],
           },
           {
             selectedItem: {
@@ -521,19 +520,12 @@ suite('AppTest', () => {
               url: 'https://example.com/2',
               imageUrl: info2.imageUrl.url,
             },
+            productDetails: [
+              {title: detailTitle, description: 'desc 2', summary: ''},
+            ],
           },
         ],
-        columns);
-
-    const rows = appElement.$.summaryTable.rows;
-    assertEquals(1, rows.length);
-    assertArrayEquals(
-        [{
-          title: rowTitle,
-          descriptions: ['desc 1', 'desc 2'],
-          summaries: ['', ''],
-        }],
-        rows);
+        tableColumns);
   });
 
   test('add url for new set creates set', async () => {
@@ -562,8 +554,8 @@ suite('AppTest', () => {
     dropdownItem.click();
     await waitAfterNextRender(appElement);
 
-    // Since the UI wasn't showing an existing set, we should attempt to create
-    // one.
+    // Since the UI wasn't showing an existing set, we should attempt to
+    // create one.
     const args =
         await shoppingServiceApi.whenCalled('addProductSpecificationsSet');
     assertEquals(2, args.length);
@@ -727,7 +719,7 @@ suite('AppTest', () => {
       },
     }));
 
-    // Should not get called on an empty url list
+    // Should not get called on an empty url list.
     assertEquals(
         1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
     assertEquals(1, shoppingServiceApi.getCallCount('getProductInfoForUrl'));
@@ -804,8 +796,8 @@ suite('AppTest', () => {
       createAppElementWithPromiseValues(promiseValues);
       await flushTasks();
 
-      // TODO(b/338427523): Parameterize this test once there is UI for choosing
-      // the name.
+      // TODO(b/338427523): Parameterize this test once there is UI for
+      // choosing the name.
       assertEquals('Product specs', appElement.$.header.subtitle);
     });
 

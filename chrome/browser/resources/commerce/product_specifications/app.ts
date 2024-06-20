@@ -24,7 +24,8 @@ import type {NewColumnSelectorElement} from './new_column_selector.js';
 import type {ProductSelectorElement} from './product_selector.js';
 import {Router} from './router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct} from './shopping_service.mojom-webui.js';
-import type {TableColumn, TableElement, TableRow} from './table.js';
+import type {TableElement} from './table.js';
+import type {UrlListEntry} from './utils.js';
 
 interface AggregatedProductData {
   info: ProductInfo|null;
@@ -36,6 +37,17 @@ interface LoadingState {
   urlCount: number;
 }
 
+interface ProductDetail {
+  title: string;
+  description: string;
+  summary: string;
+}
+
+export interface TableColumn {
+  selectedItem: UrlListEntry;
+  productDetails: ProductDetail[];
+}
+
 export interface ProductSpecificationsElement {
   $: {
     header: HeaderElement,
@@ -44,6 +56,26 @@ export interface ProductSpecificationsElement {
     productSelector: ProductSelectorElement,
     summaryTable: TableElement,
   };
+}
+
+function getProductDetails(
+    product: ProductSpecificationsProduct,
+    productSpecs: ProductSpecifications): ProductDetail[] {
+  const productDetails: ProductDetail[] = [];
+  productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
+    const value = product.productDimensionValues.get(key);
+    const description = (value?.specificationDescriptions || [])
+                            .flatMap(description => description.options)
+                            .flatMap(option => option.descriptions)
+                            .map(descText => descText.text)
+                            .join(', ') ||
+        '';
+    const summary =
+        (value?.summary || []).map(summary => summary?.text || '').join(' ') ||
+        '';
+    productDetails.push({title, description, summary});
+  });
+  return productDetails;
 }
 
 function findProductInResults(clusterId: bigint, specs: ProductSpecifications):
@@ -74,33 +106,25 @@ export class ProductSpecificationsElement extends PolymerElement {
     return {
       loadingState_: Object,
       setName_: String,
-
       showEmptyState_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
-
-      specsTable_: {
-        type: Object,
-        value: {
-          columns: [],
-          rows: [],
-        },
-      },
+      tableColumns_: Object,
     };
   }
 
-  private minLoadingAnimationMs_: number = 500;
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string;
   private showEmptyState_: boolean;
-  private specsTable_: {columns: TableColumn[], rows: TableRow[]};
+  private tableColumns_: TableColumn[] = [];
 
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
   private callbackRouter_: PageCallbackRouter;
-  private listenerIds_: number[] = [];
   private id_: Uuid|null = null;
+  private listenerIds_: number[] = [];
+  private minLoadingAnimationMs_: number = 500;
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -156,8 +180,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.showEmptyState_ = false;
     this.loadingState_ = {loading: true, urlCount: urls.length};
 
-    const rows: TableRow[] = [];
-    const columns: TableColumn[] = [];
+    const tableColumns: TableColumn[] = [];
     if (urls.length) {
       const {productSpecs} =
           await this.shoppingApi_.getProductSpecificationsForUrls(
@@ -165,46 +188,18 @@ export class ProductSpecificationsElement extends PolymerElement {
       const aggregatedDataByUrl =
           await this.aggregateProductDataByUrl_(urls, productSpecs);
 
-      productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
-        const descriptions: string[] = [];
-        const summaries: string[] = [];
-
-        // In the order that the URLs were provided, add the data to the table.
-        urls.map((url: string) => {
-          const product = aggregatedDataByUrl.get(url)?.spec;
-          if (product) {
-            const value = product.productDimensionValues.get(key);
-            descriptions.push(
-                (value?.specificationDescriptions || [])
-                    .flatMap(description => description.options)
-                    .flatMap(option => option.descriptions)
-                    .map(descText => descText.text)
-                    .join(', ') ||
-                '');
-            summaries.push(
-                (value?.summary || [])
-                    .map(summary => summary?.text || '')
-                    ?.join(' ') ||
-                '');
-          } else {
-            descriptions.push('');
-            summaries.push('');
-          }
-        });
-
-        rows.push({title, descriptions, summaries});
-      });
-
       urls.map((url: string) => {
         const info = aggregatedDataByUrl.get(url)?.info;
         const product = aggregatedDataByUrl.get(url)?.spec;
 
-        columns.push({
+        tableColumns.push({
           selectedItem: {
             title: product?.title || info?.title || '',
             url: url,
             imageUrl: info ? info.imageUrl.url : '',
           },
+          productDetails: product ? getProductDetails(product, productSpecs) :
+                                    [],
         });
       });
     }
@@ -217,11 +212,8 @@ export class ProductSpecificationsElement extends PolymerElement {
           res => setTimeout(res, this.minLoadingAnimationMs_ - delta));
     }
 
-    this.specsTable_ = {
-      columns,
-      rows,
-    };
-    this.showEmptyState_ = this.specsTable_.columns.length === 0;
+    this.tableColumns_ = tableColumns;
+    this.showEmptyState_ = this.tableColumns_.length === 0;
     this.loadingState_ = {loading: false, urlCount: 0};
   }
 
@@ -333,7 +325,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private getTableUrls_(): string[] {
-    return this.specsTable_.columns.map(
+    return this.tableColumns_.map(
         (column: TableColumn) => column.selectedItem.url);
   }
 
