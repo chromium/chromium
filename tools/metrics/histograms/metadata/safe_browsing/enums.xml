@@ -128,6 +128,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown exception"/>
 </enum>
 
+<enum name="BooleanSameURL">
+  <int value="0" label="Different URL"/>
+  <int value="1" label="Same URL"/>
+</enum>
+
 <enum name="BooleanSentOrReceived">
   <int value="0" label="Sent"/>
   <int value="1" label="Received"/>

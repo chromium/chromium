@@ -1918,6 +1918,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.NavigationThrottle.IsSameURL"
+    enum="BooleanSameURL" expires_after="2024-12-18">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the URL being navigated to is the same as the URL flagged by
+    Safe Browsing. They can be different if a server redirect is encountered.
+    Logged each time a pre-commit Safe Browsing error page is about to show. If
+    the URL is not the same, the URL displayed in the URL bar will be incorrect.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.PageLoadToken.ClearReason"
     enum="SafeBrowsingPageLoadTokenClearReason" expires_after="2025-01-22">
   <owner>xinghuilu@chromium.org</owner>
