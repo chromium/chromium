@@ -39,6 +39,7 @@ class MEDIA_MOJO_EXPORT MojoMediaDrmStorage final : public MediaDrmStorage {
       LoadPersistentSessionCB load_persistent_session_cb) override;
   void RemovePersistentSession(const std::string& session_id,
                                ResultCB result_cb) override;
+  base::WeakPtr<MediaDrmStorage> AsWeakPtr() override;
 
  private:
   void OnPersistentSessionLoaded(
