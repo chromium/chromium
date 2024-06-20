@@ -1838,8 +1838,8 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData"
-    enum="LocaleCodeISO639" expires_after="2024-12-08">
+<histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData2"
+    enum="LocaleCodeISO639" expires_after="2025-06-30">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

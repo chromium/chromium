@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
@@ -49,6 +50,7 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/strings/string_util.h"
 #include "components/language/core/common/language_util.h"  // nogncheck
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -240,10 +242,22 @@ void RecordMostDetectedLanguageInOcrData(
 
   // Convert to a Chrome language code synonym. Then pass it to
   // `base::HashMetricName()` that maps this code to a `LocaleCodeISO639` enum
-  // value expected by this histogram.
-  language::ToChromeLanguageSynonym(&most_detected_language);
-  base::UmaHistogramSparse("Accessibility.PdfOcr.MostDetectedLanguageInOcrData",
-                           base::HashMetricName(most_detected_language));
+  // value expected by this histogram. See tools/metrics/histograms/enums.xml
+  // enum LocaleCodeISO639. The enum there doesn't always have locales where
+  // the base lang and the locale are the same (e.g. they don't have id-id, but
+  // do have id). So if the base lang and the locale are the same, just use the
+  // base lang.
+  std::string language_to_log = most_detected_language;
+  std::vector<std::string> lang_split =
+      base::SplitString(base::ToLowerASCII(language_to_log), "-",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (lang_split.size() == 2 && lang_split[0] == lang_split[1]) {
+    language_to_log = lang_split[0];
+  }
+  language::ToChromeLanguageSynonym(&language_to_log);
+  base::UmaHistogramSparse(
+      "Accessibility.PdfOcr.MostDetectedLanguageInOcrData2",
+      base::HashMetricName(language_to_log));
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

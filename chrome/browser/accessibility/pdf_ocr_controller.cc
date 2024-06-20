@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -114,11 +115,22 @@ void RecordAcceptLanguages(const std::string& accept_languages) {
        base::SplitString(accept_languages, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_NONEMPTY)) {
     // Convert to a Chrome language code synonym. This language synonym is then
-    // converted into a `LocaleCodeISO639` enum value for a UMA histogram.
-    language::ToChromeLanguageSynonym(&language);
+    // converted into a `LocaleCodeISO639` enum value for a UMA histogram. See
+    // tools/metrics/histograms/enums.xml enum LocaleCodeISO639. The enum there
+    // doesn't always have locales where the base lang and the locale are the
+    // same (e.g. they don't have id-id, but do have id). So if the base lang
+    // and the locale are the same, just use the base lang.
+    std::string language_to_log = language;
+    std::vector<std::string> lang_split =
+        base::SplitString(base::ToLowerASCII(language_to_log), "-",
+                          base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (lang_split.size() == 2 && lang_split[0] == lang_split[1]) {
+      language_to_log = lang_split[0];
+    }
+    language::ToChromeLanguageSynonym(&language_to_log);
     // TODO(crbug.com/40267312): Add a browser test to validate this UMA metric.
     base::UmaHistogramSparse("Accessibility.PdfOcr.UserAcceptLanguage",
-                             base::HashMetricName(language));
+                             base::HashMetricName(language_to_log));
   }
 }
 
