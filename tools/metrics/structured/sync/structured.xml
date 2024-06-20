@@ -1139,6 +1139,7 @@
     <variant value="13">DOCUMENT_CAPTURE_POST_PROCESSING</variant>
     <variant value="14">DOCUMENT_PDF_SAVING</variant>
     <variant value="15">OCR_SCANNING</variant>
+    <variant value="16">GIF_CAPTURE_SAVING</variant>
   </enum>
 
   <enum name="CameraAppOcrEventType">

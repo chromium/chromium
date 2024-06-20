@@ -361,6 +361,8 @@ export function convertPerfEventTypeToMojo(perfEventType: PerfEvent):
       return mojoType.PerfEventType.kDocumentPdfSaving;
     case PerfEvent.GIF_CAPTURE_POST_PROCESSING:
       return mojoType.PerfEventType.kGifCapturePostProcessing;
+    case PerfEvent.GIF_CAPTURE_SAVING:
+      return mojoType.PerfEventType.kGifCaptureSaving;
     case PerfEvent.LAUNCHING_FROM_LAUNCH_APP_COLD:
       return mojoType.PerfEventType.kLaunchingFromLaunchAppCold;
     case PerfEvent.LAUNCHING_FROM_LAUNCH_APP_WARM:

@@ -223,39 +223,44 @@ export type FpsRangeList = FpsRange[];
  */
 export enum PerfEvent {
   CAMERA_SWITCHING = 'camera-switching',
-  // In Doc Scan mode, the duration between the shutter sound plays and the
-  // image is being shown in the review.
+  // In Doc Scan mode, the duration between the shutter sound playing and the
+  // image appearing in the review page.
   DOCUMENT_CAPTURE_POST_PROCESSING = 'document-capture-post-processing',
-  // In Doc Scan mode, the duration between clicking "Save as PDF" and the
-  // review being closed.
+  // In Doc Scan mode, the duration between "Save as PDF" button being clicked
+  // and the review page closing.
   DOCUMENT_PDF_SAVING = 'document-pdf-saving',
+  // In GIF mode, the duration between GIF recording stopping and the temporal
+  // GIF appearing in the review page.
   GIF_CAPTURE_POST_PROCESSING = 'gif-capture-post-processing',
+  // In GIF mode, the duration between "Save" button being clicked and the
+  // result file saving finished.
+  GIF_CAPTURE_SAVING = 'gif-capture-saving',
   LAUNCHING_FROM_LAUNCH_APP_COLD = 'launching-from-launch-app-cold',
   LAUNCHING_FROM_LAUNCH_APP_WARM = 'launching-from-launch-app-warm',
   LAUNCHING_FROM_WINDOW_CREATION = 'launching-from-window-creation',
   MODE_SWITCHING = 'mode-switching',
   // In Photo mode, the duration between a snapshot of the preview being scanned
-  // by OCR(automatically, with 500ms intervals) and the scanned result being
-  // shown in the preview. The result might now be shown if it is empty or if
-  // other scanners have detected results.
+  // by OCR(automatically, with 500ms intervals) and the scanned result
+  // appearing in the preview. The result might not be shown if it is empty or
+  // if other scanners have detected results.
   OCR_SCANNING = 'ocr-scanning',
-  // In Photo mode, the duration between a shutter sound being played and the
-  // result file being saved.
+  // In Photo mode, the duration between a shutter sound playing and the
+  // result file saving finished.
   PHOTO_CAPTURE_POST_PROCESSING_SAVING = 'photo-capture-post-processing-saving',
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
-  // In Portrait mode, the duration between a shutter sound being played and the
-  // two result files being saved.
+  // In Portrait mode, the duration between a shutter sound playing and the
+  // two result files saving finished.
   PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING =
       'portrait-mode-capture-post-processing-saving',
-  // In Video mode, the duration between clicking the video snapshot button and
-  // the file is being saved.
+  // In Video mode, the duration between the video snapshot button being clicked
+  // and the result file saving finished.
   SNAPSHOT_TAKING = 'snapshot-taking',
-  // In Time lapse mode, the duration between a shutter sound being played and
-  // the result file being saved.
+  // In Time lapse mode, the duration between a shutter sound playing and
+  // the result file saving finished.
   TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING =
       'time-lapse-capture-post-processing-saving',
-  // In Video mode, the duration between clicking a shutter button to stop
-  // recording and the result file being saved.
+  // In Video mode, the duration between the shutter button being clicked to
+  // stop recording and the result file saving finished.
   VIDEO_CAPTURE_POST_PROCESSING_SAVING = 'video-capture-post-processing-saving',
 }
 

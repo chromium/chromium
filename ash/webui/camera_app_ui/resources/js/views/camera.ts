@@ -759,7 +759,9 @@ export class Camera extends View implements CameraViewUI {
     const perfLogger = PerfLogger.getInstance();
     perfLogger.start(PerfEvent.GIF_CAPTURE_POST_PROCESSING);
     const blob = await gifSaver.endWrite();
-    perfLogger.stop(PerfEvent.GIF_CAPTURE_POST_PROCESSING);
+    perfLogger.stop(
+        PerfEvent.GIF_CAPTURE_POST_PROCESSING,
+        {resolution, facing: this.getFacing()});
 
     const sendEvent = (gifResult: metrics.GifResultType) => {
       metrics.sendCaptureEvent({
@@ -803,7 +805,11 @@ export class Camera extends View implements CameraViewUI {
     });
     if (result) {
       sendEvent(metrics.GifResultType.SAVE);
+      const perfLogger = PerfLogger.getInstance();
+      perfLogger.start(PerfEvent.GIF_CAPTURE_SAVING);
       await this.resultSaver.saveGif(blob, name);
+      perfLogger.stop(
+          PerfEvent.GIF_CAPTURE_SAVING, {resolution, facing: this.getFacing()});
     } else {
       sendEvent(metrics.GifResultType.RETAKE);
     }
