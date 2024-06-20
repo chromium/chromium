@@ -5293,6 +5293,35 @@ No devices connected.
         Use Help me read to quickly summarize content or ask questions
       </message>
 
+      <!-- Magic boost -->
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_ACCEPT_BUTTON" desc="Text shown as the accept button in the Magic Boost disclaimer view.">
+        Got it
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_DECLINE_BUTTON" desc="Text shown as the decline button in the Magic Boost disclaimer view.">
+        No thanks
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_TITLE" desc="Text shown as the title of the Magic Boost disclaimer view.">
+        A few things to keep in mind
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAMIER_PARAGRAPH_ONE" desc="Text shown as the first paragraph of the Magic Boost disclamier view's body.">
+        You must be at least 18 years old to use Help me write and Help me read.
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_TWO" desc="Text shown as the second paragraph of the Magic Boost disclamier view's body.">
+        When you turn on Help me write and Help me read, the input text and document content is sent to Google AI servers to generate writing suggestions, generate summaries, answer questions, and improve the product, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service</ex></ph>. Don't include anything personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_THREE" desc="Text shown as the third paragraph of the Magic Boost disclamier view's body.">
+        Generative AI is experimental, in early development, and currently has limited availability.
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_PARAGRAPH_FOUR" desc="Text shown as the forth paragraph of the Magic Boost disclamier view's body.">
+        You can turn off Help me write and Help me read at any time in Settings. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_LEARN_MORE_LINK_TEXT" desc="The linked text Learn More text in the Magic Boost disclaimer view.">
+        Learn more
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_DISCLAIMER_TERMS_LINK_TEXT" desc="The linked Google terms of service text in the Magic Boost disclaimer view.">
+        Google's Terms of Service
+      </message>
+
       <!-- Multi-profiles intro dialog -->
       <message name="IDS_ASH_MULTIPROFILES_INTRO_HEADLINE" desc="Describes which feature multi-profiles intro dialog presents.">
         Multiple sign-in
