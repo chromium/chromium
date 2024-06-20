@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
+
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 namespace safe_browsing {
@@ -55,6 +58,29 @@ void SafeBrowsingLookupMechanism::CompleteCheck(
   std::move(complete_check_callback_).Run(std::move(result));
   // NOTE: Invoking the callback results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
+}
+
+void SafeBrowsingLookupMechanism::LogHashDatabaseFallbackResult(
+    const std::string& metric_variation,
+    HashDatabaseFallbackTrigger trigger,
+    SBThreatType threat_type) {
+  CHECK(metric_variation == "RT" || metric_variation == "HPRT");
+  std::string suffix;
+  switch (trigger) {
+    case HashDatabaseFallbackTrigger::kAllowlistMatch:
+      suffix = "AllowlistMatch";
+      break;
+    case HashDatabaseFallbackTrigger::kCacheMatch:
+      suffix = "CacheMatch";
+      break;
+    case HashDatabaseFallbackTrigger::kOriginalCheckFailed:
+      suffix = "OriginalCheckFailed";
+      break;
+  }
+  std::string histogram_name =
+      base::StrCat({"SafeBrowsing.", metric_variation,
+                    ".HashDatabaseFallbackThreatType.", suffix});
+  base::UmaHistogramEnumeration(histogram_name, threat_type);
 }
 
 }  // namespace safe_browsing

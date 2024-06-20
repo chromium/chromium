@@ -20,6 +20,16 @@ namespace safe_browsing {
 // the caller.
 class SafeBrowsingLookupMechanism {
  public:
+  // Represents what triggers a real-time mechanism falling back to the hash
+  // database mechanism. These values are persisted to logs. Entries should not
+  // be renumbered and numeric values should never be reused.
+  enum class HashDatabaseFallbackTrigger {
+    kAllowlistMatch = 0,
+    kCacheMatch = 1,
+    kOriginalCheckFailed = 2,
+    kMaxValue = kOriginalCheckFailed,
+  };
+
   struct StartCheckResult {
     explicit StartCheckResult(bool is_safe_synchronously,
                               std::optional<ThreatSource> threat_source);
@@ -74,6 +84,13 @@ class SafeBrowsingLookupMechanism {
   // synchronously). This should only be called once, since it calls std::move
   // on |complete_check_callback_|.
   void CompleteCheck(std::unique_ptr<CompleteCheckResult> result);
+
+  // Logs the |threat_type| triggered by falling back to
+  // hash database mechanism. |metric_variation| should be either "HPRT" or
+  // "RT".
+  void LogHashDatabaseFallbackResult(const std::string& metric_variation,
+                                     HashDatabaseFallbackTrigger trigger,
+                                     SBThreatType threat_type);
 
   // The URL to run the lookup for.
   GURL url_;

@@ -55,17 +55,20 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
                         std::optional<SBThreatType> threat_type);
 
   // Perform the hash-based database check for the url.
-  void PerformHashBasedCheck(const GURL& url);
+  void PerformHashBasedCheck(const GURL& url,
+                             HashDatabaseFallbackTrigger fallback_trigger);
 
   // The hash-prefix real-time check can sometimes default back to the
   // hash-based database check. In these cases, this function is called once the
   // check has completed, which reports back the final results to the caller.
   void OnHashDatabaseCompleteCheckResult(
+      HashDatabaseFallbackTrigger fallback_trigger,
       std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
   void OnHashDatabaseCompleteCheckResultInternal(
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      std::optional<ThreatSource> threat_source);
+      std::optional<ThreatSource> threat_source,
+      HashDatabaseFallbackTrigger fallback_trigger);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

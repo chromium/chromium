@@ -1522,6 +1522,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.HashDatabaseFallbackThreatType{TriggerType}"
+    enum="SBThreatType" expires_after="2024-12-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the threat type when the hash-prefix real-time lookup falls back to
+    hash-prefix local database lookup. This happens when {TriggerType}.
+  </summary>
+  <token key="TriggerType">
+    <variant name=".AllowlistMatch" summary="the URL matches the allowlist"/>
+    <variant name=".OriginalCheckFailed"
+        summary="the hash-prefix real-time lookup failed"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.HasOhttpKey" enum="BooleanHasKey"
     expires_after="2024-11-03">
   <owner>xinghuilu@chromium.org</owner>
@@ -2323,6 +2338,22 @@ chromium-metrics-reviews@google.com.
     actually obtained. Logged each time a user performs a real-time Safe
     Browsing URL check with token.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.HashDatabaseFallbackThreatType{TriggerType}"
+    enum="SBThreatType" expires_after="2024-12-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the threat type when the URL real-time lookup falls back to hash-prefix
+    local database lookup. This happens when {TriggerType}.
+  </summary>
+  <token key="TriggerType">
+    <variant name=".AllowlistMatch" summary="the URL matches the allowlist"/>
+    <variant name=".CacheMatch" summary="the URL matches the local cache"/>
+    <variant name=".OriginalCheckFailed"
+        summary="the URL real-time lookup failed"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.HasTokenFromFetcher" enum="BooleanHasToken"

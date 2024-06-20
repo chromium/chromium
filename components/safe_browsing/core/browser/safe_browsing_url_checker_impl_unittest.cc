@@ -650,6 +650,11 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledAllowlistMatch) {
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/1,
                                    /*expected_hpd_log_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.RT.HashDatabaseFallbackThreatType.AllowlistMatch",
+      /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_UrlRealTimeEnabledSafeUrl) {
@@ -779,6 +784,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/1,
                                    /*expected_hpd_log_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.RT.HashDatabaseFallbackThreatType.CacheMatch",
+      /*sample=*/SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -819,6 +829,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/0,
                                    /*expected_urt_log_count=*/1,
                                    /*expected_hpd_log_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.RT.HashDatabaseFallbackThreatType.CacheMatch",
+      /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1254,6 +1269,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.HPRT.HashDatabaseFallbackThreatType.AllowlistMatch",
+      /*sample=*/SB_THREAT_TYPE_SAFE,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -1288,6 +1308,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.HPRT.HashDatabaseFallbackThreatType.AllowlistMatch",
+      /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_SafeLookup) {
@@ -1430,6 +1455,11 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   ValidateCheckUrlTimeTakenMetrics(/*expected_hprt_log_count=*/1,
                                    /*expected_urt_log_count=*/0,
                                    /*expected_hpd_log_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/
+      "SafeBrowsing.HPRT.HashDatabaseFallbackThreatType.OriginalCheckFailed",
+      /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
