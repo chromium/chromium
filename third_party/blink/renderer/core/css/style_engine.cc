@@ -3442,7 +3442,6 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
     container.ComputedStyleRef().ClearCachedPseudoElementStyles();
   }
 
-  DecrementSkippedContainerRecalc();
   AllowMarkForReattachFromRebuildLayoutTreeScope allow_reattach(*this);
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
   RecalcStyleForContainer(container, change);
@@ -3520,9 +3519,6 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   NthIndexCache nth_index_cache(GetDocument());
 
-  if (cq_data->SkippedStyleRecalc()) {
-    DecrementSkippedContainerRecalc();
-  }
   UpdateViewportSize();
   RecalcStyleForContainer(container, change);
 

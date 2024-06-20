@@ -3691,26 +3691,28 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   child_recalc_context.try_set = nullptr;
   child_recalc_context.try_tactics_set = nullptr;
 
+  if (ContainerQueryData* cq_data = GetContainerQueryData()) {
+    // If we skipped the subtree during style recalc, retrieve the
+    // StyleRecalcChange which was the current change for the skipped subtree
+    // and combine it with the current child_change.
+    if (cq_data->SkippedStyleRecalc()) {
+      GetDocument().GetStyleEngine().DecrementSkippedContainerRecalc();
+      child_change = cq_data->ClearAndReturnRecalcChangeForChildren().Combine(
+          child_change);
+    }
+  }
+
   if (const ComputedStyle* style = GetComputedStyle()) {
     if (style->CanMatchSizeContainerQueries(*this)) {
-      if (change.IsSuppressed()) {
-        // IsSuppressed() means we are at the root of a container subtree
-        // called from UpdateStyleAndLayoutTreeForContainer(). If we skipped
-        // the subtree during style recalc, retrieve the StyleRecalcChange
-        // which was the current change for the skipped subtree and combine
-        // it with any current container flags.
-        ContainerQueryData* cq_data = GetContainerQueryData();
-        // Should be guaranteed to have ContainerQueryData here since we at
-        // least have a ContainerQueryEvaluator at this point.
-        CHECK(cq_data);
-        if (cq_data->SkippedStyleRecalc()) {
-          child_change =
-              cq_data->ClearAndReturnRecalcChangeForChildren().Combine(
-                  child_change);
+      // IsSuppressed() means we are at the root of a container subtree called
+      // from UpdateStyleAndLayoutTreeForContainer(). If so, we can not skip
+      // recalc again. Otherwise, we may skip recalc of the subtree if we can
+      // guarantee that we will be able to resume during layout later.
+      if (!change.IsSuppressed()) {
+        if (SkipStyleRecalcForContainer(*style, child_change,
+                                        style_recalc_context)) {
+          return;
         }
-      } else if (SkipStyleRecalcForContainer(*style, child_change,
-                                             style_recalc_context)) {
-        return;
       }
     }
     if (style->IsContainerForSizeContainerQueries()) {
