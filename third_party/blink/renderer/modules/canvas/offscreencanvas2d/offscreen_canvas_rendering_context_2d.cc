@@ -382,8 +382,8 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
   DCHECK(IsPaintable());
   FinalizeFrame(FlushReason::kWritePixels);
 
-  return offscreenCanvasForBinding()->ResourceProvider()->WritePixels(
-      orig_info, pixels, row_bytes, x, y);
+  return Host()->ResourceProvider()->WritePixels(orig_info, pixels, row_bytes,
+                                                 x, y);
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
