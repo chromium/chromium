@@ -492,17 +492,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
 - (void)openPageInfo {
   [self openToolsMenu];
-  id<GREYAction> searchAction =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? ScrollRight()
-          : grey_scrollInDirection(kGREYDirectionDown, 200);
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kToolsMenuSiteInformation),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:searchAction
-      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
-      performAction:grey_tap()];
+  [self tapToolsMenuButton:chrome_test_util::SiteInfoDestinationButton()];
 }
 
 - (BOOL)dismissContextMenuIfPresent {
