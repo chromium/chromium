@@ -117,6 +117,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="1513814250881909472">Sync to get your tabs from your other devices</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
+<translation id="1544084554881119930">Payment methods and addresses won't be encrypted. Browsing history from Chrome won't sync.
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your account<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
 <translation id="154513667535157406">Thumbs up submits feedback that you like this summary</translation>
 <translation id="1549000191223877751">Move to other window</translation>
@@ -458,6 +460,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3264259168916048410">Your computer wants to use this device to sign in to a site</translation>
 <translation id="3265093782546847662">All pages of <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Load image</translation>
+<translation id="327204079441056603">We changed how passwords on this device are saved</translation>
 <translation id="3280562213547448728">Voice search</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3290249595466894471">Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
@@ -1214,6 +1217,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6918398787259831832">If this issue keeps happening, <ph name="BEGIN_LINK" />get more information<ph name="END_LINK" /> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">All security codes saved on your device and in your Google Account will be deleted</translation>
 <translation id="6937524809504266803">Personalisation and linking</translation>
+<translation id="6937876069006524083">Nickname (optional)</translation>
 <translation id="6942665639005891494">Change the default download location at any time using the Settings menu option</translation>
 <translation id="694267552845942083">You are currently customising your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
 <translation id="6945221475159498467">Select</translation>
@@ -1277,6 +1281,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
 <translation id="7221869452894271364">Reload this page</translation>
+<translation id="7224097611345298931">All passwords saved only to this device for Chrome and <ph name="CHROME_CHANNEL" /> were merged. You can autofill all your saved passwords on both apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
 <translation id="72415438529550637">Password suggestion is closed.</translation>
 <translation id="7252076891734325316">Place your phone close to the computer</translation>

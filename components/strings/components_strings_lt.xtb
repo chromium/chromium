@@ -115,6 +115,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1209206284964581585">Slėpti dabar</translation>
 <translation id="121201262018556460">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė nesudėtingą raktą turintį sertifikatą. Užpuolikas galėjo nulaužti privatųjį raktą, o šis serveris gali būti ne tas, kurio tikėjotės (gali būti, kad bendraujate su užpuoliku).</translation>
 <translation id="1212527389003717329">Atsisiuntimas pradėtas. Jei norite jį peržiūrėti, paspauskite ir palaikykite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Kainų diapazonas</translation>
 <translation id="1219129156119358924">Sistemos sauga</translation>
 <translation id="1222060260947439312">Dešinysis dėklas</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1184,6 +1185,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Įveskite <ph name="NUMBER_OF_DIGITS" /> skaitm. patvirtinimo kodą</translation>
 <translation id="3272643614306383237">Mažiau nei 1 MB. Per kitą apsilankymą kai kurios svetainės gali būti įkeltos gerokai lėčiau.</translation>
+<translation id="327346289570683313">Kainų diapazonas</translation>
 <translation id="3273738040255912340">Administratorius gali nuotoliniu būdu atlikti profilio ir naršyklės pakeitimų, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šio failo naudojant <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Jūsų organizacija (<ph name="ENROLLMENT_DOMAIN" />) nusiuntė tam tikros informacijos, pvz., informacijos apie nustatymus ar politikos nuostatas, toliau nurodytoms svetainėms.</translation>

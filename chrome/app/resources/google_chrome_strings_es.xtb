@@ -30,7 +30,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1407223320754252908">Chrome tiene el Traductor de Google integrado para que puedas traducir cuando lo necesites</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas.}=1{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirá 1 ventana de Incógnito.}other{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirán # ventanas de Incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
-<translation id="1438479496118074429">La extensión \"<ph name="EXTENSION_NAME" />\" quiere que inicies sesión en Chrome</translation>
 <translation id="146866447420868597">¿Iniciar sesión en Chrome?</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
@@ -174,6 +173,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3261565993776444564">Prueba un nuevo color para personalizar tu navegador</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
+<translation id="3292333338048274092">Después, tendrás que reiniciar Chrome.</translation>
 <translation id="3360895254066713204">Ayudante de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se reiniciará ahora}=1{Chrome se reiniciará dentro de 1 segundo}other{Chrome se reiniciará dentro de # segundos}}</translation>
 <translation id="3396977131400919238">Se ha producido un error de sistema operativo durante el proceso de instalación. Vuelve a descargar Google Chrome.</translation>
@@ -218,6 +218,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4035053306113201399">ChromeOS se debe reiniciar para que se aplique la actualización.</translation>
 <translation id="4050175100176540509">En la última versión puedes encontrar mejoras de seguridad importantes y nuevas funciones.</translation>
 <translation id="4053720452172726777">Personaliza y controla Google Chrome</translation>
+<translation id="4084404300720192944">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Preferencias del sistema.</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
 <translation id="4110895483821904099">Configura tu nuevo perfil de Chrome</translation>
 <translation id="4111566860456076004">Chrome no puede verificar el origen de esta extensión y podría no ser segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
@@ -248,6 +249,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4384570495110188418">Chrome no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
 <translation id="4389991535395284064">Cuando navegues en modo Incógnito, Chrome te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y malware.</translation>
+<translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en curso en Google Chrome. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
@@ -358,6 +360,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> ‑ Google Chrome Beta</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
 <translation id="6200139057479872438">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">Para compartir tu pantalla, permite la grabación de pantalla de Chrome en Preferencias del sistema.</translation>
 <translation id="6235018212288296708">Regla entrante para que Google Chrome permita tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome se cerrará dentro de poco</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
@@ -473,7 +476,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7802622118583152311">Chrome te ofrece la tecnología más avanzada para que navegues mejor</translation>
 <translation id="7808348361785373670">Desinstalar de Chrome...</translation>
 <translation id="7825851276765848807">La instalación no se ha podido realizar a causa de un error no especificado. Vuelve a descargar Google Chrome.</translation>
-<translation id="7828063580843052643">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, inicia sesión en Chrome.\nTambién podrás usar y guardar tus contraseñas y más de tu cuenta de Google.</translation>
 <translation id="7836610565365456468">Transforma tu navegador con alegres temas inspirados en artistas, la naturaleza y más</translation>
 <translation id="7845233973568007926">Gracias por realizar la instalación. Debes reiniciar tu ordenador para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">La IA de Chrome ayuda a que la Web sea más rápida, segura y accesible</translation>

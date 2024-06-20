@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastelno žuta</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspjelo</translation>
+<translation id="1061864016440983342">Koristi bez lokacije</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> od <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Više postavki</translation>
 <translation id="2082932131694554252">Dodijeljena tipka tipkovnice</translation>
 <translation id="2085089206770112532">Smanjivanje svjetline zaslona</translation>
+<translation id="2086091080968010660">Promjene temeljene na vremenu možda nisu točne. Uključite pristup lokaciji sustava u postavkama.</translation>
 <translation id="2102231663024125441">Uređivanje teksta</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za videoigre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Vrati zadano</translation>
 <translation id="2286454467119466181">Jednostavno sučelje</translation>
 <translation id="2287186687001756809">Slika nije dostupna. Da biste dodali fotografije, posjetite <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Trenutačni raspored postavljen je na <ph name="SUNRISE" /> – <ph name="SUNSET" />. Da biste automatski ažurirali raspored zalaska i izlaska sunca, uključite pristup lokaciji sustava.</translation>
 <translation id="2305172810646967500">crna</translation>
 <translation id="2307344026739914387">Upotrijebi trenutačni par ključeva</translation>
 <translation id="2308243864813041101">Iskopčajte USB kabel uređaja <ph name="DEVICE_NAME" /> da biste nastavili s postupkom ažuriranja</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">svjetlina tipkovnice</translation>
 <translation id="6412715219990689313">Ugrađena tipkovnica</translation>
 <translation id="6417265370957905582">Google asistent</translation>
+<translation id="6419454453018688975">Uključite pristup lokaciji sustava</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Idi na postavke računa</translation>

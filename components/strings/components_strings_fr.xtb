@@ -3673,7 +3673,7 @@ Informations supplémentaires :
 <translation id="8037117624646282037">Utilisateurs récents de l'appareil</translation>
 <translation id="8037357227543935929">Demander (par défaut)</translation>
 <translation id="803771048473350947">Fichier</translation>
-<translation id="8041089156583427627">Envoyer</translation>
+<translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8041940743680923270">Utiliser le paramètre global par défaut ("Demander")</translation>
 <translation id="8043255123207491407">Voir les conditions d'utilisation du vendeur</translation>
 <translation id="8046360364391076336">Équipements et matériaux industriels</translation>
@@ -4275,6 +4275,7 @@ Informations supplémentaires :
 <translation id="920643408853370361">Assurance voyage</translation>
 <translation id="9207861905230894330">Échec de l'ajout de l'article.</translation>
 <translation id="9210825002219699214">Voyages aériens</translation>
+<translation id="9211461151375991073">Saisissez @ pour effectuer une recherche <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>
 <translation id="9215416866750762878">Une application empêche Chrome de se connecter à ce site de manière sécurisée</translation>
 <translation id="92178312226016010">Vous suivez ce produit.</translation>

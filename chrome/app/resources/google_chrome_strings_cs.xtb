@@ -30,7 +30,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1407223320754252908">V Chromu je integrován Překladač Google, takže si můžete cokoliv kdykoliv přeložit</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou.}=1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Anonymní okno se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymní okna se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymního okna se znovu neotevře.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymních oken se znovu neotevře.}}</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
-<translation id="1438479496118074429">Rozšíření <ph name="EXTENSION_NAME" /> chce, abyste se do Chromu přihlásili</translation>
 <translation id="146866447420868597">Přihlásit se do Chromu?</translation>
 <translation id="1492280395845991349">Aktualizaci Chromu dokončíte opětovným spuštěním</translation>
 <translation id="1497802159252041924">Chyba instalace: <ph name="INSTALL_ERROR" /></translation>
@@ -174,6 +173,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3261565993776444564">Přizpůsobte si prohlížeč – vyzkoušejte novou barvu</translation>
 <translation id="3282568296779691940">Přihlásit se do Chromu</translation>
 <translation id="3286538390144397061">Restartovat</translation>
+<translation id="3292333338048274092">Budete Chrome muset restartovat.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se nyní restartuje}=1{Chrome se za 1 sekundu restartuje}few{Chrome se za # sekundy restartuje}many{Chrome se za # sekundy restartuje}other{Chrome se za # sekund restartuje}}</translation>
 <translation id="3396977131400919238">Během instalace došlo k chybě operačního systému. Stáhněte prosím Google Chrome ještě jednou.</translation>
@@ -218,6 +218,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4035053306113201399">Aktualizace se použije po restartování systému ChromeOS.</translation>
 <translation id="4050175100176540509">V nejnovější verzi jsou k dispozici důležitá vylepšení zabezpečení a nové funkce.</translation>
 <translation id="4053720452172726777">Přizpůsobit a ovládat Google Chrome</translation>
+<translation id="4084404300720192944">Pokud chcete sdílet okno, v Předvolbách systému povolte pro Chrome nahrávání obrazovky.</translation>
 <translation id="4106587138345390261">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich dat a údajů</translation>
 <translation id="4110895483821904099">Nastavit nový profil prohlížeče Chrome</translation>
 <translation id="4111566860456076004">Toto rozšíření nemusí být bezpečné. Chrome nedokáže ověřit, odkud pochází. Odstraňte ho z prohlížeče Chrome, aby již nemohlo číst a měnit vaše data (včetně osobních údajů) na webech, které navštěvujete.</translation>
@@ -359,6 +360,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
 <translation id="6200139057479872438">V poslední době jste nenavštívili. Chrome odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Pokud chcete sdílet obrazovku, v Předvolbách systému povolte pro Chrome nahrávání obrazovky.</translation>
 <translation id="6235018212288296708">Pravidlo příchozího provozu pro aplikaci Google Chrome, které povolí provoz mDNS.</translation>
 <translation id="624230925347970731">Chrome se brzy zavře</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
@@ -474,7 +476,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7802622118583152311">Chrome vám přináší nejnovější technologii pro lepší prohlížení webů</translation>
 <translation id="7808348361785373670">Odstranit z Chromu...</translation>
 <translation id="7825851276765848807">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím aplikaci Google Chrome znovu.</translation>
-<translation id="7828063580843052643">Pokud toto rozšíření chcete používat jako <ph name="USER_EMAIL_ADDRESS" />, přihlaste se do Chromu.\nBudete také moci používat a ukládat svá hesla a další informace z účtu Google.</translation>
 <translation id="7836610565365456468">Proměňte svůj prohlížeč pomocí pestrých motivů inspirovaných umělci, přírodou a dalšími tématy</translation>
 <translation id="7845233973568007926">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat počítač.</translation>
 <translation id="7852254990718225089">S umělou inteligencí v Chromu je web rychlejší, bezpečnější a dostupnější</translation>

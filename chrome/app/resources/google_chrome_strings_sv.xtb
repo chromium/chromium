@@ -30,7 +30,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1407223320754252908">Google Översätt är inbyggt i Chrome så att du kan översätta när du behöver det</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen.}=1{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Inkognitofönstret öppnas inte igen.}other{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-appar</translation>
-<translation id="1438479496118074429">Tillägget <ph name="EXTENSION_NAME" /> vill att du ska logga in i Chrome</translation>
 <translation id="146866447420868597">Vill du logga in i Chrome?</translation>
 <translation id="1492280395845991349">Starta om för att slutföra uppdateringen av Chrome</translation>
 <translation id="1497802159252041924">Installationsfel: <ph name="INSTALL_ERROR" /></translation>
@@ -59,6 +58,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1734234790201236882">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="1786044937610313874">Genvägar öppnas i Chrome</translation>
+<translation id="178701303897325119">Detta tillägg stöds inte längre. Vi rekommenderar att du tar bort det i stället.</translation>
 <translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
 <translation id="1860536484129686729">Du behöver ge Chrome behörighet att använda kameran på webbplatsen</translation>
 <translation id="1873233029667955273">Google Chrome är inte din standardwebbläsare</translation>
@@ -251,6 +251,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4389991535395284064">När du surfar i inkognitoläge visas en varning i Chrome innan en webbplats läses in med en osäker anslutning</translation>
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Logga in på Chrome som <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annan process i Google Chrome pågår. Försök igen senare.</translation>
 <translation id="4459234553906210702">Genom annonsmätning kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
@@ -477,7 +478,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7802622118583152311">Med Chrome får du den senaste tekniken för bättre surfande</translation>
 <translation id="7808348361785373670">Ta bort från Chrome …</translation>
 <translation id="7825851276765848807">Installationen misslyckades på grund av ett okänt fel. Ladda ned Google Chrome igen.</translation>
-<translation id="7828063580843052643">Logga in i Chrome om du vill använda det här tillägget som <ph name="USER_EMAIL_ADDRESS" />.\nDu kan även använda och spara lösenord och annat från Google-kontot.</translation>
 <translation id="7836610565365456468">Förvandla webbläsaren med livfulla teman inspirerade av konstnärer, natur med mera</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI i Chrome gör webben snabbare, säkrare och mer tillgänglig</translation>

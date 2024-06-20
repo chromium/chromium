@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastellgul</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
+<translation id="1061864016440983342">Bruk uten posisjon</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
@@ -179,7 +180,7 @@
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1854156910036166007">dovendyr</translation>
 <translation id="1856388568474281774">Nedoverpil</translation>
-<translation id="1858620243986915808">Legg ved skjermdump</translation>
+<translation id="1858620243986915808">Legg ved skjermbilde</translation>
 <translation id="1871413952174074704">APN-et kan ikke ha mer enn <ph name="CHAR_LIMIT" /> tegn</translation>
 <translation id="1871569928317311284">Slå av mørkt tema</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Flere innstillinger</translation>
 <translation id="2082932131694554252">Tilordnet tastaturtast</translation>
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
+<translation id="2086091080968010660">Tidsbaserte endringer er kanskje ikke nøyaktige. Slå på posisjonstilgang for systemet i innstillingene.</translation>
 <translation id="2102231663024125441">Tekstbehandling</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" /></translation>
@@ -252,12 +254,13 @@
 <translation id="2240366984605217732">Oppsettsbytte</translation>
 <translation id="2244834438220057800">grønn</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
-<translation id="2267285889943769271">Legg til skjermdump</translation>
+<translation id="2267285889943769271">Legg til skjermbilde</translation>
 <translation id="2271469253353559191">Tidsplan for mørk modus</translation>
 <translation id="2276999893457278469">Populært hjelpeinnhold</translation>
 <translation id="2279051792571591988">Gjenopprett standardinnstillinger</translation>
 <translation id="2286454467119466181">Enkel</translation>
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Gjeldende tidsplan er satt til <ph name="SUNRISE" />–<ph name="SUNSET" />. For å oppdatere tidsplanen for solnedgang og soloppgang automatisk, slå på posisjonstilgang for systemet.</translation>
 <translation id="2305172810646967500">svart</translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
 <translation id="2308243864813041101">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
@@ -509,7 +512,7 @@
 <translation id="3889914174935857450">Tilbakestillingsdato</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="391412459402535266">Kan ikke teste enheten. Bytt til laptopmodus for å teste.</translation>
-<translation id="3916998944874125962">ta skjermdump</translation>
+<translation id="3916998944874125962">ta skjermbilde</translation>
 <translation id="3923184630988645767">Databruk</translation>
 <translation id="3932043219784172185">Ingen enheter er koblet til</translation>
 <translation id="3934185438132762746">Ikke-tilordnet <ph name="CONTROL_TYPE" /></translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">tastaturlysstyrke</translation>
 <translation id="6412715219990689313">Innebygd tastatur</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="6419454453018688975">Slå på posisjonstilgang for systemet</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoinnstillingene</translation>
@@ -1176,7 +1180,7 @@
 <translation id="7544126681856613971">tåkete skog</translation>
 <translation id="7550715992156305117">Diagnostikkrutiner</translation>
 <translation id="7551123448725492271">Enheten er en lydenhet.</translation>
-<translation id="7559239713112547082">Se forhåndsvisning av skjermdumpen</translation>
+<translation id="7559239713112547082">Se forhåndsvisning av skjermbildet</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-berøringsskjerm</translation>

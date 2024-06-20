@@ -903,6 +903,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4381031910344220229">Hierdoor wordt microfoontoegang toegestaan voor <ph name="APP_NAME" /> en alle apps en websites met microfoonrechten</translation>
 <translation id="4382340674111381977">Ga terug naar de vorige pagina</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
+<translation id="4394466652057229831">Klikken met de rechtermuisknop om samen te vatten</translation>
 <translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Kan screencast niet opslaan</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
@@ -1939,6 +1940,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8113423164597455979">Aan, alle apps</translation>
 <translation id="8113515504791187892">Knop Selecteer om voor te lezen</translation>
 <translation id="8120151603115102514">Je telefoon heeft geen vergrendelscherm. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
+<translation id="8120249852906205273">Opnieuw opstarten</translation>
 <translation id="8127095419621171197">De Rekenmachine-app openen</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Naar het begin van het document gaan</translation>
@@ -2033,6 +2035,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="85123341071060231">Bluetooth staat uit op je Chromebook. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>
 <translation id="851458219935658693">Vensters van het huidige bureau bekijken, keuzerondje geselecteerd</translation>
+<translation id="851660987304951246">Gebruik Help me met lezen om snel content samen te vatten of vragen te stellen</translation>
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Microfooninvoer beheerd door <ph name="APP_NAME" />}other{Microfooninvoer beheerd door # apps}}</translation>
 <translation id="8535393432370007982">Sorteren op kleur ongedaan maken</translation>

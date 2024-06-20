@@ -30,7 +30,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1407223320754252908">Chrome has Google Translate built in so that you can translate when you need it</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen.}=1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your incognito window won't reopen.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your # incognito windows won't reopen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
-<translation id="1438479496118074429">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="146866447420868597">Sign in to Chrome?</translation>
 <translation id="1492280395845991349">Relaunch to finish Chrome update</translation>
 <translation id="1497802159252041924">Install error: <ph name="INSTALL_ERROR" /></translation>
@@ -174,6 +173,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3261565993776444564">Try out a new colour to customise your browser</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
+<translation id="3292333338048274092">You'll then need to restart Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
@@ -218,6 +218,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
+<translation id="4084404300720192944">To share your window, allow screen recording for Chrome in System Preferences.</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="4110895483821904099">Set up your new Chrome profile</translation>
 <translation id="4111566860456076004">Chrome can't verify where this extension comes from, and it might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
@@ -360,6 +361,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
 <translation id="6200139057479872438">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">To share your screen, allow screen recording for Chrome in System Preferences.</translation>
 <translation id="6235018212288296708">Inbound rule for Google Chrome to allow mDNS traffic.</translation>
 <translation id="624230925347970731">Chrome will soon close</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -475,7 +477,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7802622118583152311">Chrome brings you the latest technology for better browsing</translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
 <translation id="7825851276765848807">Installation failed due to unspecified error. Please download Google Chrome again.</translation>
-<translation id="7828063580843052643">To use this extension as <ph name="USER_EMAIL_ADDRESS" />, sign in to Chrome.\nYou'll also be able to use and save your passwords and more from your Google Account.</translation>
 <translation id="7836610565365456468">Transform your browser with vibrant themes inspired by artists, nature and more</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI in Chrome helps make the web faster, safer and more accessible</translation>

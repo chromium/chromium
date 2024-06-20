@@ -14,6 +14,7 @@
 <translation id="1320619893013575407">Lülitasite Chrome'i sisselogimise välja.</translation>
 <translation id="1333745675627230582">Chrome'i dinosaurusemängu mängimine</translation>
 <translation id="1352919863522755794">Google'i paroolihalduril ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
+<translation id="139623527619433858">Kasutage iPadi puhul vaikimisi Chrome'i</translation>
 <translation id="1407843355326180937">Logige sisse sellele saidile ja Chrome’i, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="1436059927646026729">Ava Chrome'is minu viimane vaheleht</translation>
 <translation id="1449241544691504574">Järjehoidjate lisamine Chrome'i</translation>
@@ -134,6 +135,7 @@ Tasub teada
 <translation id="4903674399067644695">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chrome'i parimal moel kasutada.</translation>
 <translation id="4919069428879420545">Kustutage Chrome'is sirvimisandmed.</translation>
 <translation id="49200511069271369">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele sisse logite, ja Chrome'i kasutamist. Teie administraator saab teatud funktsioone seadistada või piirata.</translation>
+<translation id="4925322001044117929">Kasutage iPadis vaikimisi Chrome'i</translation>
 <translation id="498985224078955265">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chrome'i sisse.</translation>
 <translation id="5030102366287574140">Chrome aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest.</translation>
 <translation id="5108659628347594808">Chrome'i täiustamine</translation>
@@ -221,6 +223,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="7272930098487145294">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chrome'il fotode lisamine</translation>
 <translation id="7275945473750112644">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chrome'i andmed sellest seadmest</translation>
 <translation id="7284245284340063465">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
+<translation id="7299681342915173313">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke meilides, dokumentides ja muudes rakendustes.</translation>
 <translation id="7304491752269485262">Chrome'i automaattäite laiendatud vaade</translation>
 <translation id="7344094882820374540">Hankige Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="7349129508108954623">Lubage Chrome'il kasutada Google Mapsi teile tuvastatud aadresside kohta juhiste ja kohaliku teabe esitamiseks.</translation>

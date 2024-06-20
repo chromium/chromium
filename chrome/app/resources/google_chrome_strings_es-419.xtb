@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chrome tiene Google Traductor incorporado para que puedas traducir cuando lo necesites</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales.}=1{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverá a abrir la ventana de incógnito.}other{Chrome terminó de actualizarse. Puedes usar la versión más reciente cuando reinicies el dispositivo. Luego, se volverán a abrir las pestañas actuales. No se volverán a abrir # ventanas de incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
-<translation id="1438479496118074429">La extensión \“<ph name="EXTENSION_NAME" />\” quiere que accedas a Chrome</translation>
 <translation id="146866447420868597">¿Quieres acceder a Chrome?</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
@@ -55,6 +54,7 @@
 <translation id="1734234790201236882">Chrome guardará esta contraseña en tu cuenta de Google, por lo que no tendrás que recordarla.</translation>
 <translation id="1786003790898721085">Asegúrate de haber accedido a Chrome en tu <ph name="TARGET_DEVICE_NAME" /> y, luego, intenta enviarlo de nuevo.</translation>
 <translation id="1786044937610313874">Accesos directos abiertos en Chrome</translation>
+<translation id="178701303897325119">Esta extensión ya no es compatible. Chrome te recomienda quitarla.</translation>
 <translation id="1812689907177901597">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Chrome</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder a tu cámara para este sitio</translation>
 <translation id="1873233029667955273">Google Chrome no es tu navegador predeterminado</translation>
@@ -170,6 +170,7 @@
 <translation id="3261565993776444564">Prueba un color nuevo para personalizar tu navegador</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
+<translation id="3292333338048274092">Luego, deberás reiniciar Chrome.</translation>
 <translation id="3360895254066713204">Ayuda de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Se reiniciará Chrome ahora}=1{Se reiniciará Chrome en 1 segundo}other{Se reiniciará Chrome en # segundos}}</translation>
 <translation id="3396977131400919238">Se produjo un error del sistema operativo durante la instalación. Descargue Google Chrome nuevamente.</translation>
@@ -214,6 +215,7 @@
 <translation id="4035053306113201399">ChromeOS debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="4050175100176540509">La última versión proporciona importantes mejoras de seguridad y nuevas funciones.</translation>
 <translation id="4053720452172726777">Personalizar y controlar Google Chrome</translation>
+<translation id="4084404300720192944">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Preferencias del sistema.</translation>
 <translation id="4106587138345390261">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos información personal.</translation>
 <translation id="4110895483821904099">Configura tu nuevo perfil de Chrome</translation>
 <translation id="4111566860456076004">Chrome no puede verificar de dónde proviene esta extensión y es posible que no sea segura. Quítala de Chrome para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida la información personal.</translation>
@@ -245,6 +247,7 @@
 <translation id="4389991535395284064">Cuando navegues en el modo Incógnito, Chrome te advertirá antes de que cargues un sitio con una conexión no segura</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor los ataques de phishing y el software malicioso.</translation>
 <translation id="4434353761996769206">Error de instalador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Acceder a Chrome como <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome: Acceso a la red - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en Google Chrome en curso. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios les permite a los sitios que visitas solicitar información a Chrome a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.</translation>
@@ -351,6 +354,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Versión Beta de Google Chrome</translation>
 <translation id="6182736845697986886">No se pudo completar la instalación debido a un error interno del servidor de actualización.</translation>
 <translation id="6200139057479872438">No lo visitaste recientemente. Chrome quitó los permisos <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Para compartir tu pantalla, permite la grabación de pantalla de Chrome en Preferencias del sistema.</translation>
 <translation id="6235018212288296708">Regla de entrada para que Google Chrome permita el tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome se cerrará pronto</translation>
 <translation id="6247557882553405851">Administrador de contraseñas de Google</translation>
@@ -466,7 +470,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7802622118583152311">Chrome te ofrece la tecnología más reciente para una mejor navegación</translation>
 <translation id="7808348361785373670">Eliminar de Chrome…</translation>
 <translation id="7825851276765848807">La instalación falló debido a un error no especificado. Descarga Google Chrome otra vez.</translation>
-<translation id="7828063580843052643">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, accede a Chrome.\nTambién podrás usar y guardar tus contraseñas y mucho más de tu Cuenta de Google.</translation>
 <translation id="7836610565365456468">Transforma tu navegador con temas animados que se inspiran en artistas, la naturaleza y mucho más</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
 <translation id="7852254990718225089">La IA en Chrome ayuda a que la Web sea más rápida, segura y accesible</translation>

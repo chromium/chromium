@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">amarelo-pastel</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
+<translation id="1061864016440983342">Usar sem localização</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detectado</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2082932131694554252">Tecla do teclado atribuída</translation>
 <translation id="2085089206770112532">Diminuir o brilho da tela</translation>
+<translation id="2086091080968010660">As mudanças baseadas em tempo podem não ser precisas. Ative o acesso ao local nas configurações.</translation>
 <translation id="2102231663024125441">Edição de texto</translation>
 <translation id="2105810540595158374">Este dispositivo é um controle de jogo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Restaurar padrões</translation>
 <translation id="2286454467119466181">Simples</translation>
 <translation id="2287186687001756809">Nenhuma imagem disponível. Para adicionar fotos, acesse <ph name="LINK" /></translation>
+<translation id="2294577623958216786">A programação atual está definida de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Para atualizar automaticamente as programações de anoitecer e amanhecer, ative o acesso à localização do sistema.</translation>
 <translation id="2305172810646967500">preto</translation>
 <translation id="2307344026739914387">Usar par de chaves atual</translation>
 <translation id="2308243864813041101">Desconecte o cabo USB do <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">brilho do teclado</translation>
 <translation id="6412715219990689313">Teclado integrado</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
+<translation id="6419454453018688975">Ative o acesso à localização do sistema</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>

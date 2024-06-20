@@ -52,7 +52,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="185970820835152459">Du kan hantera dina inloggade Google-konton. Dina Google-konton används för webbläsaren Chromium, Play Butik, Gmail med mera. Om du vill lägga till ett konto åt någon annan, till exempel en familjemedlem, lägger du till en ny person på <ph name="DEVICE_TYPE" /> i stället. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Webbplatser kan lagra information om dina intressen med Chromium. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="1881322772814446296">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. Du kan skapa en ny profil om du vill hålla dina befintliga Chromium-uppgifter separata. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Logga in i Chromium om du vill använda det här tillägget som <ph name="USER_EMAIL_ADDRESS" />.\nDu kan även använda och spara lösenord och annat från Google-kontot.</translation>
 <translation id="1906696617298807388">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till Google Drive för att få förslag på objekt. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="1911763535808217981">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar inte. Vill du starta om?</translation>
@@ -145,7 +144,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3296368748942286671">Fortsätt köra bakgrundsappar när Chromium avslutas</translation>
 <translation id="3313189106987092621">Chromium varnar dig innan webbplatser med osäkra anslutningar läses in</translation>
 <translation id="3316771292331273802">Du loggas ut från de flesta webbplatser när du stänger alla fönster i Chromium, med undantag för Google-kontot om du är inloggad i Chromium. <ph name="SETTINGS_LINK" /> och gör så att webbplatser kommer ihåg dig.</translation>
-<translation id="333055255088403283">Tillägget <ph name="EXTENSION_NAME" /> vill att du ska logga in i Chromium</translation>
 <translation id="3350761136195634146">Det finns redan en Chromium-profil med detta konto</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vill du byta till befintlig Chromium-profil?</translation>
@@ -255,6 +253,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5277894862589591112">Ändringarna tillämpas när du startar om Chromium</translation>
 <translation id="5294316920224716406">När du surfar i inkognitoläge visas en varning i Chromium innan en webbplats läses in med en osäker anslutning</translation>
 <translation id="5296845517486664001">Om provfunktioner är aktiverade och du slumpmässigt har valts ut för en aktiv provfunktion påverkar webbhistoriken vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen från Chromium löpande varje månad.</translation>
+<translation id="5310474266708705970">Logga in på Chromium som <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Chromium har hittat säkerhetsrekommendationer som du bör granska</translation>
 <translation id="5352361688875342522">Andra Chromium-profiler</translation>
 <translation id="5358375970380395591">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. <ph name="LEARN_MORE" /></translation>
@@ -411,6 +410,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="734373864078049451">Här finns webben, bokmärken och allt annat du använder Chromium till.</translation>
 <translation id="7349591376906416160">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7355355292030546812">Den här nedladdningen blockerades av Chromium eftersom filen kan skada dina personliga konton och sociala nätverkskonton, bland annat <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Detta tillägg stöds inte längre. Vi rekommenderar att du tar bort det i stället.</translation>
 <translation id="7398989605938454041">Du kan hålla dina saker i Chromium åtskilda med hjälp av Chromium-profiler. Det gör det enklare att skilja på nytta och nöje.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Du behöver ge Chromium behörighet att använda kameran på webbplatsen</translation>

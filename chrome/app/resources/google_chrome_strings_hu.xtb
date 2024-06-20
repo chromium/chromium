@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">A Chrome beépített Google Fordítóval rendelkezik, így Ön akkor fordíthat, amikor szüksége van rá</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni.}=1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Az inkognitó ablak nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-alkalmazások</translation>
-<translation id="1438479496118074429">A(z) \„<ph name="EXTENSION_NAME" />\” bővítmény arra kéri, hogy jelentkezzen be a Chrome-ba</translation>
 <translation id="146866447420868597">Bejelentkezik a Chrome-ba?</translation>
 <translation id="1492280395845991349">Indítsa újra a Chrome frissítésének befejezéséhez</translation>
 <translation id="1497802159252041924">Telepítési hiba: <ph name="INSTALL_ERROR" /></translation>
@@ -55,6 +54,7 @@
 <translation id="1734234790201236882">A Chrome ezt a jelszót Google-fiókjába menti. Nem kell megjegyeznie.</translation>
 <translation id="1786003790898721085">Ellenőrizze, hogy bejelentkezett-e a Chrome-ba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
 <translation id="1786044937610313874">A parancsikonok a Chrome-ban nyílnak meg</translation>
+<translation id="178701303897325119">Ez a bővítmény már nem támogatott. A Chrome az eltávolítását javasolja.</translation>
 <translation id="1812689907177901597">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Chrome-ba is bejelentkezne</translation>
 <translation id="1860536484129686729">A Chrome-nak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához ennél a webhelynél</translation>
 <translation id="1873233029667955273">Nem a Google Chrome az alapértelmezett böngésző</translation>
@@ -246,6 +246,8 @@
 <translation id="4384570495110188418">A Chrome nem tudja ellenőrizni az Ön jelszavait, mert nincs bejelentkezve</translation>
 <translation id="4389991535395284064">Inkognitó módban való böngészéskor a Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
 <translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
+<translation id="4434353761996769206">Telepítőhiba: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Bejelentkezés a Chrome-ba mint <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Egy másik Google Chrome-művelet is folyamatban van. Próbálkozzon újra később.</translation>
 <translation id="4459234553906210702">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chrome-tól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
@@ -468,7 +470,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7802622118583152311">A Chrome a legújabb technológiát kínálja a jobb böngészés elősegítése érdekében</translation>
 <translation id="7808348361785373670">Eltávolítás a Chrome-ból…</translation>
 <translation id="7825851276765848807">A telepítés egy meg nem határozott hiba miatt nem sikerült. Kérjük, töltse le újra a Google Chrome-ot.</translation>
-<translation id="7828063580843052643">Ha ezt a bővítményt szeretné használni a(z) <ph name="USER_EMAIL_ADDRESS" /> fiókkal, jelentkezzen be a Chrome-ba.\nEzenkívül használhatja és mentheti a Google-fiókjában tárolt jelszavait és még sok mást is.</translation>
 <translation id="7836610565365456468">Alakítsa át böngészőjét a művészek, a természet és egyebek által inspirált élénk témákkal</translation>
 <translation id="7845233973568007926">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a számítógépet.</translation>
 <translation id="7852254990718225089">A Chrome-ba beépített AI segít az internet gyorsabbá, biztonságosabbá és hozzáférhetőbbé tételében</translation>

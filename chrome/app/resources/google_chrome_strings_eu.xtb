@@ -30,7 +30,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1407223320754252908">Chrome-k integratuta dauka Google Translate, behar duzunean testua itzultzeko</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira.}=1{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko leihoa ez da irekiko berriro.}other{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko # leihoak ez dira irekiko berriro.}}</translation>
 <translation id="1434626383986940139">Chrome Canary aplikazioak</translation>
-<translation id="1438479496118074429">\"<ph name="EXTENSION_NAME" />\" luzapenak Chrome-n saioa has dezazun behar du</translation>
 <translation id="146866447420868597">Chrome-n saioa hasi nahi duzu?</translation>
 <translation id="1492280395845991349">Chrome eguneratzen amaitzeko, exekuta ezazu berriro</translation>
 <translation id="1497802159252041924">Instalazio-errorea: <ph name="INSTALL_ERROR" /></translation>
@@ -173,6 +172,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3261565993776444564">Probatu beste kolore bat arakatzailea pertsonalizatzeko</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3286538390144397061">Berrabiarazi orain</translation>
+<translation id="3292333338048274092">Chrome berrabiarazi beharko duzu ondoren.</translation>
 <translation id="3360895254066713204">Chrome laguntzailea</translation>
 <translation id="3379938682270551431">{0,plural, =0{Orain exekutatuko da Chromium berriro}=1{1 segundo barru exekutatuko da Chromium berriro}other{# segundo barru exekutatuko da Chromium berriro}}</translation>
 <translation id="3396977131400919238">Sistema-eragilean errore bat gertatu da instalatu bitartean. Deskargatu Google Chrome berriro.</translation>
@@ -217,6 +217,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4035053306113201399">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chrome OS.</translation>
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
 <translation id="4053720452172726777">Pertsonalizatu eta kontrolatu Google Chrome</translation>
+<translation id="4084404300720192944">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren hobespenetan.</translation>
 <translation id="4106587138345390261">Chrome eginbide berriak probatzen ari da; haiei esker, informazio gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
 <translation id="4110895483821904099">Konfiguratu Chrome-ko profil berria</translation>
 <translation id="4111566860456076004">Chrome-k ezin du egiaztatu luzapena nondik datorren, eta baliteke segurua ez izatea. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
@@ -247,6 +248,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4384570495110188418">Chrome-k ezin ditu egiaztatu pasahitzak saioa hasi ez duzulako</translation>
 <translation id="4389991535395284064">Ezkutuko moduan arakatzen duzunean, Chrome-k abisatu egingo dizu webgune bat konexio ez-seguru batekin kargatu aurretik</translation>
 <translation id="4427306783828095590">Babes handiagoa eskaintzen du phishingaren eta malwarearen aurka</translation>
+<translation id="4434353761996769206">Instalatzailearen errorea: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Hasi saioa sarean - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Beste eragiketa bat ari da egiten Google Chrome. Saiatu berriro geroago.</translation>
 <translation id="4459234553906210702">Iragarkien neurketari esker, bisitatzen dituzun webguneek Chrome-ri informazioa eska diezaiokete. Informazio horren bidez, webguneek beren iragarkien errendimendua neur dezakete. Webguneen artean ahalik eta informazio gutxien transferituta mugatzen du iragarkien neurketak webgunearteko jarraipena.</translation>
@@ -357,6 +359,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalazioak huts egin du, eguneratze-zerbitzariak barneko errore bat izan duelako.</translation>
 <translation id="6200139057479872438">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimenak kendu dizkio.</translation>
+<translation id="621585339844629864">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren hobespenetan.</translation>
 <translation id="6235018212288296708">Google Chrome-k mDNS trafikoa baimentzeko sarrerako araua.</translation>
 <translation id="624230925347970731">Chrome itxi egingo da laster</translation>
 <translation id="6247557882553405851">Google-ren Pasahitz-kudeatzailea</translation>
@@ -472,7 +475,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7802622118583152311">Hobeki arakatzeko teknologiarik berriena eskaintzen dizu Chrome-k</translation>
 <translation id="7808348361785373670">Kendu Chrome-tik…</translation>
 <translation id="7825851276765848807">Instalazioak huts egin du zehaztu gabeko errore batengatik. Deskargatu Google Chrome berriro.</translation>
-<translation id="7828063580843052643">Luzapen hau <ph name="USER_EMAIL_ADDRESS" /> gisa erabiltzeko, hasi saioa Chrome-n.\nGainera, zure pasahitzak eta bestelako datuak Google-ko kontuan gorde eta erabili ahal izango dituzu.</translation>
 <translation id="7836610565365456468">Itxuraldatu arakatzailea artistetan, naturan eta bestelako elementuetan oinarritutako gai biziekin</translation>
 <translation id="7845233973568007926">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, ordenagailua berrabiarazi behar duzu.</translation>
 <translation id="7852254990718225089">Chrome-ko AAri esker, sarea bizkorragoa, seguruagoa eta erabilerrazagoa da</translation>

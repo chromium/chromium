@@ -119,6 +119,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1391102559483454063">Aan</translation>
 <translation id="1394698770495054737">Volle wasigheid</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 dag gelede}other{# dae gelede}}</translation>
 <translation id="1404963891829069586">Fokusklanke</translation>
 <translation id="1407069428457324124">Donkertema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gebruik pylsleutels om tussen datums te navigeer.</translation>
@@ -209,6 +210,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="174102739345480129">Merker is af.</translation>
 <translation id="1743570585616704562">Nie herken nie</translation>
 <translation id="1743927604032653654">Vou <ph name="NOTIFICATION_TITLE" />-kennisgewing in</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Binne 1 uur}=1{1 uur gelede}other{# uur gelede}}</translation>
 <translation id="1746730358044914197">Invoermetodes word deur jou administrateur opgestel.</translation>
 <translation id="1747336645387973286">sperdatum <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Opskerm-sleutelbord geaktiveer</translation>
@@ -346,6 +348,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2360398059912971776">battery</translation>
 <translation id="2361210043495191221">Wissel wi-fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Gestuur vanaf <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Kan nie by jou Chromebook aanmeld nie</translation>
 <translation id="2367972762794486313">Wys programme</translation>
 <translation id="2368828502825385061">Spoor op</translation>
@@ -506,6 +509,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Skakel mikrofoontoegang aan?</translation>
 <translation id="296762781903199866">Kon nie <ph name="LANGUAGE" />-spraaklêers aflaai nie</translation>
+<translation id="2968761508099987738">Jou huidige ligging word nie tans gesteun nie.</translation>
 <translation id="2970920913501714344">Installeer programme, uitbreidings en temas</translation>
 <translation id="2977598380246111477">Volgende syfer</translation>
 <translation id="2985148236010982088">Sien alle programme</translation>
@@ -980,6 +984,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="468293128311738995">Apps op jou foon</translation>
 <translation id="4690510401873698237">Rak aan onderkant</translation>
 <translation id="4696813013609194136">Ontsluit toestel met ouerkode</translation>
+<translation id="4697357603686181098">Kan nie hiermee help nie. Probeer ’n ander versoek.</translation>
 <translation id="4702647871202761252">Privaatheidskerm is af</translation>
 <translation id="4706121060329443414">Sal later probeer aflaai. Spraak sal vir eers na Google toe gestuur word vir verwerking.</translation>
 <translation id="470644585772471629">Kleuromkering</translation>
@@ -1902,6 +1907,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7982878511129296052">Skakel tans af …</translation>
 <translation id="7984197416080286869">Te veel vingerafdrukpogings</translation>
 <translation id="798779949890829624">Jou administrateur bestuur hierdie instelling</translation>
+<translation id="7989206653429884947">Gereeld oopgemaak</translation>
 <translation id="799296642788192631">Jy kan belangrike lêers vasspeld. Hou oor ’n item of maak Lêers oop en regsklik ’n item om dit vas te speld.</translation>
 <translation id="7994370417837006925">Veelvuldige aanmelding</translation>
 <translation id="7995804128062002838">Kon nie skermkiekie neem nie</translation>
@@ -2086,6 +2092,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tyd is op. Uitstekende werk! 🎉</translation>
+<translation id="8753368202781196133">Hierdie taal word nie tans gesteun nie.</translation>
 <translation id="8755498163081687682">Verifieer jou identiteit: <ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>
 <translation id="8756799553341497810">Jy kan begin om jou appuitleg te pasmaak sodra jy uit hierdie aansig gaan.</translation>

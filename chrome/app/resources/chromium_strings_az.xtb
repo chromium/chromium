@@ -52,7 +52,6 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="185970820835152459">Daxil olunmuş Google Hesablarını idarə edə bilərsiniz. Google Hesablarınız Chromium brauzeri, Play Market, Gmail və digər xidmətlər üçün istifadə olunur. Ailə üzvü kimi başqası üçün bir hesab əlavə etmək istəyirsinizsə, əvəzində <ph name="DEVICE_TYPE" /> cihazınıza yeni bir şəxs əlavə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Saytlar maraqlarınız haqqında Chromium ilə məlumat saxlaya bilər. Məsələn, marafona ayaqqabı almaq üçün sayta daxil olsanız, sayt marağınızı qaçış marafonu kimi müəyyən edə bilər. Sonra yarışa yazılmaq üçün başqa sayta daxil olsanız, həmin sayt maraqlarınız əsasında sizə qaçış ayaqqabısı reklamı göstərə bilər.</translation>
 <translation id="1881322772814446296">Nəzarət olunan hesabla daxil olursunuz və hesabın administratoruna Chromium profiliniz üzərində nəzarət etmək imkanı verirsiniz. Tətbiqləriniz, əlfəcinləriniz, tarixçəniz, parollarınız və digər ayarlarınız <ph name="USER_NAME" /> adına həmişəlik bağlı qalacaq. Bu datanı Google Hesab İdarə Paneli vasitəsilə silə biləcəksiniz, lakin bu datanı digər hesabla əlaqələndirə bilməyəcəksiniz. Mövcud Chromium datanızı ayrı saxlamaq üçün yeni profil yarada bilərsiniz. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795"><ph name="USER_EMAIL_ADDRESS" /> kimi bu artırmadan istifadə etmək üçün Chromium-a daxil olun.\nGoogle Hesabından əldə edilən parolları və s. məlumatları da istifadə edə və yadda saxlaya biləcəksiniz.</translation>
 <translation id="1906696617298807388">Ünvan panelinə, yaxud axtarış xanasına yazdıqda element təklifləri almaq üçün Chromium yazdıqlarınızı Google Diskə göndərir. Bu, Anonim rejimdə deaktivdir.</translation>
 <translation id="1911763535808217981">Bunu deaktiv etməklə Chromium'a giriş etmədən Gmail kimi Google saytlarına daxil ola bilərsiniz</translation>
 <translation id="1929939181775079593">Chromium cavab vermir. İndi yenidən başladılsın?</translation>
@@ -143,7 +142,6 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="3296368748942286671">Chromium bağlı olduqda arxa fon tətbiqləri işləsin?</translation>
 <translation id="3313189106987092621">Chromium təhlükəli bağlantı ilə sayt yükləməzdən əvvəl xəbərdarlıq edəcək</translation>
 <translation id="3316771292331273802">Chromium-a daxil olsanız, Google Hesabı istisna olmaqla bütün Chromium pəncərələrini bağladıqda əksər saytlardan çıxacaqsınız. Saytların sizi xatırlaması üçün <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">\"<ph name="EXTENSION_NAME" />\" artırması Chromium-a daxil olmağınızı istəyir</translation>
 <translation id="3350761136195634146">Bu hesab ilə Chromium profili artıq mövcuddur</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mövcud Chromium profilinə keçirilsin?</translation>
@@ -253,6 +251,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="5277894862589591112">Dəyişiklikləri tətbiq etmək üçün Chromium'u yenidən başladın</translation>
 <translation id="5294316920224716406">Anonim rejimdə nəzər saldıqda Chromium təhlükəli bağlantı ilə sayt yükləməzdən əvvəl xəbərdarlıq edəcək</translation>
 <translation id="5296845517486664001">Sınaqlar aktiv olduqda və Chromium təsadüfi olaraq sizi aktiv sınağa təyin edibsə, baxış tarixçəniz gördüyünüz reklamlara və aşağıda təxmin edilən maraqlara təsir edir. Məxfiliyinizi qorumaq üçün Chromium hər ay maraqlarınızı növbəlilik əsasında silir.</translation>
+<translation id="5310474266708705970">Chromium-a <ph name="USER_EMAIL" /> kimi daxil olun</translation>
 <translation id="5352264705793813212">Chromium nəzərdən keçirilməli güvənlik tövsiyələri tapdı</translation>
 <translation id="5352361688875342522">Digər Chromium profilləri</translation>
 <translation id="5358375970380395591">İdarə olunan hesabla daxil olursnuz və onun inzibati idarəetməsini Chromium profilinizə verirsiniz. Tətbiqləriniz, əlfəcinləriniz, tarixçəniz və digər ayarlarınız Chromimum datanızla birlikdə <ph name="USER_NAME" /> üzərinə həmişəlik bənd olacaq. Bu datanı Google Hesabları Paneli vasitəsilə silə bilərsiniz, lakin bu datanı digər hesabla əlaqəli edə bilməzsiniz. Mövcud Chrome datanızı ayrı saxlamaq üçün yeni profil yarada bilərsiniz. <ph name="LEARN_MORE" /></translation>
@@ -406,6 +405,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="734373864078049451">Veb, əlfəcinlər və Chromium'a aid hər şeyiniz buradadır.</translation>
 <translation id="7349591376906416160">Sistem administratorunun konfiqurasiyasına əsasən Chromium <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq üçün <ph name="ALTERNATIVE_BROWSER_NAME" /> tətbiqini aça bilər.</translation>
 <translation id="7355355292030546812">Chromium bu endirməni blokladı. Çünki fayl <ph name="USER_EMAIL" /> daxil olmaqla şəxsi və sosial şəbəkə hesablarını zədələyə bilər</translation>
+<translation id="7384121030444253939">Bu artırma artıq dəstəklənmir. Chromium onu silməyinizi tövsiyə edir.</translation>
 <translation id="7398989605938454041">Chromium profilləri ilə bütün Chromium elementlərinizi ayıra bilərsiniz. Bu, iş və əyləncə arasında ayırım etməyi asanlaşdırır.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium bu sayt üçün kameraya giriş tələb edir</translation>

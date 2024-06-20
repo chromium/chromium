@@ -119,6 +119,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1391102559483454063">An</translation>
 <translation id="1394698770495054737">Weichzeichnen (stark)</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Vor 1 Tag}other{Vor # Tagen}}</translation>
 <translation id="1404963891829069586">Sounds für mehr Konzentration</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> – Mit den Pfeiltasten kannst du zwischen den Datumsangaben wechseln.</translation>
@@ -209,6 +210,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="174102739345480129">Filzstift deaktiviert.</translation>
 <translation id="1743570585616704562">Nicht erkannt</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" />-Benachrichtigung minimieren</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Vor weniger als 1 Std.}=1{Vor 1 Std.}other{Vor # Std.}}</translation>
 <translation id="1746730358044914197">Die Eingabemethoden werden von deinem Administrator konfiguriert.</translation>
 <translation id="1747336645387973286">Abgabetermin: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Bildschirmtastatur aktiviert</translation>
@@ -346,6 +348,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2360398059912971776">Akku</translation>
 <translation id="2361210043495191221">WLAN aktivieren/deaktivieren. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Gesendet von <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Anmeldung auf dem Chromebook nicht möglich</translation>
 <translation id="2367972762794486313">Apps anzeigen</translation>
 <translation id="2368828502825385061">Suchen</translation>
@@ -506,6 +509,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2963773877003373896">Mod3</translation>
 <translation id="2965227184985674128">Mikrofonzugriff aktivieren?</translation>
 <translation id="296762781903199866">Sprachdateien auf <ph name="LANGUAGE" /> konnten nicht heruntergeladen werden</translation>
+<translation id="2968761508099987738">Dein aktueller Standort wird derzeit nicht unterstützt.</translation>
 <translation id="2970920913501714344">Apps, Erweiterungen und Designs installieren</translation>
 <translation id="2977598380246111477">Nächste Nummer</translation>
 <translation id="2985148236010982088">Alle Apps anzeigen</translation>
@@ -979,6 +983,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="468293128311738995">Apps von deinem Smartphone</translation>
 <translation id="4690510401873698237">Ablage unten</translation>
 <translation id="4696813013609194136">Gerät mit Elterncode entsperren</translation>
+<translation id="4697357603686181098">Dabei können wir dir nicht weiterhelfen. Versuche es mit einer anderen Anfrage.</translation>
 <translation id="4702647871202761252">Der Datenschutzbildschirm ist momentan deaktiviert</translation>
 <translation id="4706121060329443414">Der Download wird später versucht. Die Sprachdateien werden vorerst zur Verarbeitung an Google gesendet.</translation>
 <translation id="470644585772471629">Farbumkehr</translation>
@@ -1901,6 +1906,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7982878511129296052">Wird deaktiviert…</translation>
 <translation id="7984197416080286869">Zu viele Entsperrversuche mit Fingerabdruck</translation>
 <translation id="798779949890829624">Diese Einstellung wird von deinem Administrator verwaltet</translation>
+<translation id="7989206653429884947">Häufig geöffnet</translation>
 <translation id="799296642788192631">Du kannst wichtige Dateien anpinnen. Bewege dazu den Mauszeiger auf ein Element oder öffne die App „Dateien“ und klicke mit der rechten Maustaste auf ein Element.</translation>
 <translation id="7994370417837006925">Mehrfachanmeldung</translation>
 <translation id="7995804128062002838">Die Bildschirmaufnahme ist fehlgeschlagen</translation>
@@ -2085,6 +2091,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Die Zeit ist abgelaufen! Gut gemacht! 🎉</translation>
+<translation id="8753368202781196133">Diese Sprache wird derzeit nicht unterstützt.</translation>
 <translation id="8755498163081687682">Identität bestätigen: <ph name="ORIGIN_NAME" /> möchte sichergehen, dass du das bist</translation>
 <translation id="875593634123171288">VPN-Einstellungen anzeigen</translation>
 <translation id="8756799553341497810">Du kannst dein App-Layout anpassen, sobald du diese Ansicht geschlossen hast.</translation>

@@ -117,6 +117,8 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1513814250881909472">동기화하여 다른 기기에서 탭을 가져오세요.</translation>
 <translation id="1513858653616922153">비밀번호 삭제</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
+<translation id="1544084554881119930">결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
+암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="1544826120773021464">Google 계정을 관리하려면 '계정 관리' 버튼을 탭하세요.</translation>
 <translation id="154513667535157406">좋아요를 누르면 이 요약이 마음에 든다는 의견이 제출됩니다</translation>
 <translation id="1549000191223877751">다른 창으로 이동</translation>
@@ -458,6 +460,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3264259168916048410">컴퓨터가 사이트에 로그인하기 위해 기기를 사용하려고 합니다.</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />의 모든 페이지</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
+<translation id="327204079441056603">이 기기의 비밀번호 저장 방식이 변경됨</translation>
 <translation id="3280562213547448728">음성 검색</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
@@ -1214,6 +1217,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6918398787259831832">이 문제가 계속 발생하면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 <ph name="BEGIN_LINK" />자세히 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="6929224077895306814">기기 및 Google 계정에 저장된 모든 보안 코드가 삭제됩니다.</translation>
 <translation id="6937524809504266803">맞춤설정 및 연결</translation>
+<translation id="6937876069006524083">닉네임(선택사항)</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
@@ -1277,6 +1281,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7207760545532569765">탭 <ph name="TAB_COUNT" />개를 새 백그라운드 탭으로 복원합니다.</translation>
 <translation id="7217781228893594884">Chrome을 종료하면 시크릿 탭이 잠깁니다.</translation>
 <translation id="7221869452894271364">페이지 새로고침</translation>
+<translation id="7224097611345298931">이 기기에만 저장된 Chrome 및 <ph name="CHROME_CHANNEL" />의 모든 비밀번호가 병합되었습니다. 두 앱 모두에서 저장된 비밀번호를 자동 완성할 수 있습니다.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{다운로드 1개 대기 중}other{다운로드 #개 대기 중}}</translation>
 <translation id="72415438529550637">비밀번호 추천이 종료되었습니다.</translation>
 <translation id="7252076891734325316">휴대전화를 컴퓨터 가까이 두세요</translation>

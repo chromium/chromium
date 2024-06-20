@@ -15,6 +15,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1131805035311359397">Chcete-li zkontrolovat, zda jsou hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do prohlížeče Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klikněte na nabídku Chromium</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
+<translation id="1188705220418984327">Pokud chcete sdílet okno, v Předvolbách systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="1203500561924088507">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je potřeba restartovat prohlížeč.</translation>
 <translation id="1262876892872089030">Když tato karta nebyla aktivní, byla uvolněna paměť, aby byl prohlížeč Chromium rychlý. Můžete zvolit, že tento web nikdy nemá být považován za neaktivní.</translation>
 <translation id="1265577313130862557">Prohlížeč Chromium toto stahování zablokoval, protože soubor je nebezpečný</translation>
@@ -51,7 +52,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="185970820835152459">Můžete spravovat účty Google, ke kterým jste přihlášeni. Účty Google jsou používány v prohlížeči Chromium, Obchodu Play, Gmailu a dalších službách. Pokud chcete přidat účet někoho jiného, například člena rodiny, přidejte nového uživatele do zařízení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Weby mohou v prohlížeči Chromium ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
 <translation id="1881322772814446296">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem prohlížeče Chromium. Vaše údaje prohlížeče Chromium, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí stránky Dashboard služby Účty Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje prohlížeče Chromium odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Pokud toto rozšíření chcete používat jako <ph name="USER_EMAIL_ADDRESS" />, přihlaste se do prohlížeče Chromium.\nBudete také moci používat a ukládat svá hesla a další informace z účtu Google.</translation>
 <translation id="1906696617298807388">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chromium zadaný text na Disk Google, aby vám mohl nabízet návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="1911763535808217981">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do prohlížeče Chromium</translation>
 <translation id="1929939181775079593">Prohlížeč Chromium neodpovídá. Chcete jej znovu načíst?</translation>
@@ -144,7 +144,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="3296368748942286671">Po ukončení prohlížeče Chromium nechat aplikace na pozadí spuštěné</translation>
 <translation id="3313189106987092621">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chromium upozorní</translation>
 <translation id="3316771292331273802">Po zavření všech oken prohlížeče Chromium budete odhlášeni z většiny webů (s výjimkou účtu Google, pokud jste do prohlížeče Chromium přihlášeni). Pokud webům chcete umožnit pamatovat si vás, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">Rozšíření <ph name="EXTENSION_NAME" /> chce, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="3350761136195634146">Profil Chromium s tímto účtem už existuje</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Přepnout na stávající profil Chromium?</translation>
@@ -161,6 +160,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="364817392622123556">{COUNT,plural, =0{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování.}=1{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace prohlížeče Chromium, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3651803019964686660">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do prohlížeče Chromium.</translation>
 <translation id="3667616615096815454">Aplikaci nelze nainstalovat, protože ji server nezná.</translation>
+<translation id="3669334504579945026">Pokud chcete sdílet obrazovku, v Předvolbách systému povolte pro Chromium nahrávání obrazovky.</translation>
 <translation id="3685209450716071127">Chromium nemůže zkontrolovat hesla. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="3702352323269013324">Další informace o personalizaci reklam v prohlížeči Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>
@@ -463,6 +463,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8357820681460164151">Pokud ke svým údajům v prohlížeči Chromium chcete mít přístup na všech zařízeních, přihlaste se a poté zapněte synchronizaci</translation>
 <translation id="8360718212975266891">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
+<translation id="837460953767177950">Budete prohlížeč Chromium muset restartovat.</translation>
 <translation id="8401454788024434101">Toto rozšíření přestal vývojář publikovat a může být nebezpečné. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Do jednoho dne Chromium restartujte}few{Do # dní Chromium restartujte}many{Do # dne Chromium restartujte}other{Do # dní Chromium restartujte}}</translation>
 <translation id="8453117565092476964">Archiv instalačního programu je poškozený nebo neplatný. Stáhněte prosím Chromium znovu.</translation>

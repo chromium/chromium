@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}}</translation>
 <translation id="427987768447457592">新标签页分组</translation>
+<translation id="4338724047016295066">系统会自动关闭闲置标签页。您随时可以在“历史记录”中找到它们。</translation>
 <translation id="4371591986692297148">已停用</translation>
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="4648718555153979859">您的标签页会按组列在此处</translation>
 <translation id="4686942373615810936">创建时间：刚刚</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天后关闭}other{<ph name="DAY_COUNT_MANY" /> 天后关闭}}</translation>
 <translation id="4777866634702576038">要删除标签页分组吗？</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价）}other{（共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价）}}</translation>
 <translation id="4850886885716139402">查看</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">您的标签页分组会显示在此处</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页取消分组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页取消分组}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 天后}other{<ph name="DAY_COUNT_MANY" /> 天后}}</translation>
 <translation id="6549021453810473782">查看商店信息</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">左移标签页</translation>

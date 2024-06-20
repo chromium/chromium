@@ -2694,6 +2694,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="292371311537977079">Indstillinger for Chrome</translation>
 <translation id="2926085873880284723">Gendan standardgenveje</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> understøttes ikke.</translation>
+<translation id="2926708162326352948">Temaet er opdateret til et uploadet billede</translation>
 <translation id="2927017729816812676">Cachelagring</translation>
 <translation id="2928795416630981206">Har tilladelse til at spore din kameraposition</translation>
 <translation id="2931157624143513983">Tilpas til området, der kan udskrives</translation>
@@ -5937,6 +5938,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5372529912055771682">Den medfølgende tilstand for tilmelding understøttes ikke af denne version af operativsystemet. Sørg for, at du kører den nyeste version, og prøv igen.</translation>
 <translation id="5372579129492968947">Frigør udvidelse</translation>
 <translation id="5372632722660566343">Fortsæt uden en konto</translation>
+<translation id="5372990315769030589">Vil du beholde "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Hvis du vil bruge Deling tæt på med disse kontakter, skal du føje de mailadresser, der er tilknyttet deres Google-konti, til dine kontakter.</translation>
 <translation id="5375577102295339548">Websites kan hjælpe med at verificere, at du ikke er en bot</translation>
 <translation id="5376094717770783089">Anmoder om adgang</translation>
@@ -7413,6 +7415,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6494445798847293442">Ikke et nøglecenter</translation>
 <translation id="6494483173119160146">Der opstod en uoprettelig fejl på enheden. Nulstil din enhed (dette sletter alle brugerdata), og prøv igen.</translation>
 <translation id="6495266441917713704">Der kan ikke overføres via Wi-Fi</translation>
+<translation id="6495453178162183932">Temaet er opdateret til standardversionen af Chrome</translation>
 <translation id="6497784818439587832">Skift visningsstørrelse for at gøre elementer på skærmen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulning på mus</translation>
 <translation id="6498249116389603658">&amp;Alle dine sprog</translation>
@@ -9032,6 +9035,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7708143783728142771">Cookies giver dig mulighed for at få den samme grad af tilpasning af dine præferencer på nettet. Når du besøger et website, kan websitet gemme en cookie i din enheds browserlager for at huske dine præferencer for websitet, f.eks. det sprog, du taler, eller de varer, du vil gemme i en kurv. Hvis du senere besøger websitet igen med den samme browser, kan websitet læse den cookie, websitet har gemt, så du kan fortsætte, hvor du slap. Denne slags cookies kaldes ofte førstepartscookies, da de angives af det website, du besøger.</translation>
 <translation id="770831926727930011">Dine lokale data er beskyttet af din gamle adgangskode. Angiv din gamle adgangskode for at gendanne lokale data.</translation>
 <translation id="7709152031285164251">Mislykket - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Beskyt alle dine adgangsnøgler med en pinkode til gendannelse</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Forbind din telefon til computeren med et USB-kabel. Hvis din telefon allerede er tilsluttet, skal du tage stikket ud og sætte det i igen.</translation>
 <translation id="7711968363685835633">Deaktiver personligt tilpassede konverteringer og forslag samt brugerordbog</translation>
@@ -9762,6 +9766,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8233028084277069927">Åben nu</translation>
 <translation id="8234795456569844941">Hjælp vores softwareudviklere med at løse dette problem. Fortæl os, hvad der skete, lige før du fik fejlmeddelelsen for profilen:</translation>
 <translation id="8235418492073272647">Der blev delt en side fra <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Denne fane deler ressourcer med andre faner, hvilket kan forstyrre fejlretningen.</translation>
 <translation id="8236911020904880539">afslutte</translation>
 <translation id="8236917170563564587">Del denne fane i stedet</translation>
 <translation id="8237647586961940482">Mørk pink og rød</translation>
@@ -9966,6 +9971,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8376532149031784008">Genindlæser <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Udvidelser, der er installeret af din administrator, kan stadig læse og ændre dette website</translation>
 <translation id="8376752431516546391">Sidepanel i Google Søgning</translation>
+<translation id="8376812682111060348">Underretning om problem med ydeevne</translation>
 <translation id="8377625247046155446">Denne adgangsnøgle gemmes kun på denne enhed. Den forbliver på denne enhed, når du har lukket alle inkognitovinduer.</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8379988659465232385">Navnet skal udfyldes</translation>

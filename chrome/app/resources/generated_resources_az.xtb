@@ -5941,6 +5941,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5372529912055771682">Təchiz olunmuş qeydiyyat rejimi əməliyyat sisteminin bu versiyası tərəfindən dəstəklənmir. Lütfən, ən yeni versiyanı istifadə etdiyinizə əmin olun və yenidən cəhd edin.</translation>
 <translation id="5372579129492968947">Artırmanı tabdan çıxarın</translation>
 <translation id="5372632722660566343">Hesab olmadan davam edin</translation>
+<translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" saxlanılsın?</translation>
 <translation id="5375318608039113175">Bu kontaktlarla Yaxınlıqda Paylaşımı istifadə etmək üçün onların Google Hesabı ilə əlaqəli e-poçt ünvanını kontaktlarınıza əlavə edin.</translation>
 <translation id="5375577102295339548">Saytlar bot olmadığınızı təsdiqləməyə kömək edə bilər</translation>
 <translation id="5376094717770783089">Giriş istəyir</translation>
@@ -9036,6 +9037,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7708143783728142771">Kukilər vebdə eyni səviyyədə tərcih edilən bu fərdiləşdirməyə imkan verir. Sayta daxil olduqda danışdığınız dil və ya alış-veriş səbətində saxlamaq istədiyiniz məhsullar kimi sayt tərcihlərini yadda saxlamaq üçün sayt cihazın brauzer yaddaşında kuki saxlaya bilər. Daha sonra eyni brauzerdən istifadə edərək sayta yenidən daxil olsanız, həmin sayt ayarladığı kukini oxuya bilər və qaldığınız yerdən davam edə bilərsiniz. Bu cür kukilər daxil olduğunuz sayt tərəfindən ayarlandığı üçün, adətən, birinci tərəf kukiləri adlanır.</translation>
 <translation id="770831926727930011">Lokal data köhnə parol ilə qorunur. Lokal datanı bərpa etmək üçün köhnə parolu daxil edin.</translation>
 <translation id="7709152031285164251">Alınmadı - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Bütün giriş açarlarını bərpa PIN-i ilə qoruyun</translation>
 <translation id="7710568461918838723">&amp;Yayım...</translation>
 <translation id="7711900714716399411">Telefonunuzu kompüterinizə qoşmaq üçün USB kabelindən istifadə edin. Telefonunuz artıq qoşulubsa, elektrik mənbəyindən ayırıb yenidən taxın.</translation>
 <translation id="7711968363685835633">Fərdi çevirmələri və təklifləri, həmçinin istifadəçi lüğətini deaktiv edin</translation>
@@ -9767,6 +9769,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8233028084277069927">İndi açın</translation>
 <translation id="8234795456569844941">Bu problemin həll edilməsində mühəndislərimizə yardım edin. Profil xəta mesajını əldə etmədən öncə nə baş verdiyini bizə deyin:</translation>
 <translation id="8235418492073272647">Səhifə <ph name="DEVICE_NAME" /> cihazından paylaşılıb</translation>
+<translation id="8236802542508794819">Bu tab resursları sazlamaya mane ola biləcək digər tablarla paylaşır.</translation>
 <translation id="8236911020904880539">çıxış</translation>
 <translation id="8236917170563564587">Əvəzinə bu tabı paylaşın</translation>
 <translation id="8237647586961940482">Tünd-çəhrayı və qırmızı</translation>
@@ -9971,6 +9974,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> yenidən yüklənir...</translation>
 <translation id="8376610503048439696">Administratorun quraşdırdığı artırmalar yenə də bu saytı oxuya və dəyişə bilər</translation>
 <translation id="8376752431516546391">Google Axtarış yan paneli</translation>
+<translation id="8376812682111060348">Performans problemi xəbərdarlığı</translation>
 <translation id="8377625247046155446">Bu giriş açarı yalnız bu cihazda yadda saxlanılacaq. Bütün Anonim pəncərələri bağladıqdan sonra o, bu cihazda qalacaq.</translation>
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8379988659465232385">Ad boş ola bilməz</translation>

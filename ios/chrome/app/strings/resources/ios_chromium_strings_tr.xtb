@@ -264,6 +264,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="8386869251364507178">Chromium İşlemleri</translation>
 <translation id="8409374867500149834">Zararlı web sitelerine karşı Chromium'un en güçlü güvenlik avantajına sahipsiniz</translation>
 <translation id="8458950033462118672">Varsayılan tarayıcı uygulamanız yaparak bağlantıları Chromium'da otomatik bir şekilde açabilirsiniz.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Yalnızca oturumunuz açıkken bu cihaza kaydedilen veriler silinir. Geçmiş ve şifreler bu kapsamda yer alabilir.}other{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Yalnızca oturumunuz açıkken bu cihaza kaydedilen veriler silinir. Geçmiş ve şifreler bu kapsamda yer alabilir.}}</translation>
 <translation id="858114650497379505">Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="865600487977764604">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>

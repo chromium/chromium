@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Den här versionen av Chromium är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chromium.</translation>
 <translation id="1423007117030725713">Börja söka på en ny Chromium-flik.</translation>
 <translation id="1431818719585918472">Låt Chromium låsa inkognitoflikarna.</translation>
+<translation id="146407871188825689">Använd Chromium på iPad som standard</translation>
 <translation id="1472013873724362412">Kontot fungerar inte på Chromium. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="1503199973012840174">Chromium är inaktuellt. Se till att du är skyddad genom att uppdatera.</translation>
 <translation id="1507010443238049608">Bidra till att förbättra Chromiums funktioner och prestanda</translation>
@@ -122,6 +123,7 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Öppnar inställningssidan för betalningsmetoder i Chromium.</translation>
+<translation id="458786853569524949">Nu kan du använda Chromium varje gång du trycker på länkar i e-postmeddelanden, dokument och andra appar.</translation>
 <translation id="459080529287102949">Sök efter bilder i Chromium</translation>
 <translation id="4633738821577273991">Få Förbättrad säker webbsökning även för den här Chromium-profilen</translation>
 <translation id="4638625642619341392">Ladda ned Chromium här.</translation>
@@ -289,6 +291,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 Din data krypterades med lösenfrasen <ph name="TIME" />. Ange den om du vill använda och spara Chromium-data i ditt Google-konto.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
 <translation id="9050790730841755540">Använd Chromium varje gång du trycker på länkar i andra appar.</translation>
+<translation id="9057082013386654559">Använda Chromium för iPad som standard</translation>
 <translation id="9059693977935746710">Du behöver inte komma ihåg det här lösenordet. Det sparas med Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
 <translation id="9110075932708282655">Använd Chromium som standard</translation>

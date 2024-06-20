@@ -30,7 +30,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1407223320754252908">May built-in na Google Translate ang Chrome para puwede kang magsalin kung kailan mo ito kailangan</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab.}=1{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab. Hindi bubukas ulit ang iyong Incognito window.}one{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab. Hindi bubukas ulit ang iyong # Incognito window.}other{Tapos na ang pag-update sa Chrome. Puwede mo nang gamitin ang pinakabagong bersyon sa sandaling maglunsad ka ulit. Pagkatapos ay bubukas ulit ang iyong mga kasalukuyang tab. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
-<translation id="1438479496118074429">Gusto ng extension na \"<ph name="EXTENSION_NAME" />\" na mag-sign in ka sa Chrome</translation>
 <translation id="146866447420868597">Mag-sign in sa Chrome?</translation>
 <translation id="1492280395845991349">Ilunsad ulit para tapusin ang pag-update sa Chrome</translation>
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
@@ -477,7 +476,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7802622118583152311">Inihahatid sa iyo ng Chrome ang pinakabagong teknolohiya para sa mas mahusay na pag-browse</translation>
 <translation id="7808348361785373670">Alisin sa Chrome...</translation>
 <translation id="7825851276765848807">Nabigo ang pag-install dahil sa hindi natukoy na error. Paki-download muli ang Google Chrome.</translation>
-<translation id="7828063580843052643">Para magamit ang extension na ito bilang <ph name="USER_EMAIL_ADDRESS" />, mag-sign in sa Chrome.\nMagagamit at mase-save mo rin ang iyong mga password at higit pa mula sa Google Account mo.</translation>
 <translation id="7836610565365456468">Pagandahin ang iyong browser gamit ang mga matingkad na temang nakakuha ng inspirasyon sa mga artist, kalikasan, at higit pa</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">Nakakatulong ang AI sa Chrome na gawing mas mabilis, mas ligtas, at mas accessible ang web</translation>

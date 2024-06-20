@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="427987768447457592">קבוצת כרטיסיות חדשה</translation>
+<translation id="4338724047016295066">כרטיסיות לא פעילות ייסגרו אוטומטית. תמיד אפשר למצוא אותן בהיסטוריה.</translation>
 <translation id="4371591986692297148">לא פעיל</translation>
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
 <translation id="4648718555153979859">הכרטיסיות שלך מסודרות כאן בקבוצה</translation>
 <translation id="4686942373615810936">נוצרה עכשיו</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{ייסגרו אחרי יום אחד}one{ייסגרו אחרי <ph name="DAY_COUNT_MANY" /> ימים}two{ייסגרו אחרי <ph name="DAY_COUNT_MANY" /> ימים}other{ייסגרו אחרי <ph name="DAY_COUNT_MANY" /> ימים}}</translation>
 <translation id="4777866634702576038">למחוק את קבוצת הכרטיסיות?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(ביקורת אחת ‒ <ph name="REVIEWS_COUNT_ONE" />)}one{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}two{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}other{(<ph name="REVIEWS_COUNT_MANY" /> ביקורות)}}</translation>
 <translation id="4850886885716139402">הצגה</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">קבוצות הכרטיסיות יופיעו כאן</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ביטול הקיבוץ של הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{ביטול הקיבוץ של <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{אחרי יום אחד}one{אחרי <ph name="DAY_COUNT_MANY" /> ימים}two{אחרי <ph name="DAY_COUNT_MANY" /> ימים}other{אחרי <ph name="DAY_COUNT_MANY" /> ימים}}</translation>
 <translation id="6549021453810473782">הצגת פרטי החנות</translation>
 <translation id="6557858706263317126">‫+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>

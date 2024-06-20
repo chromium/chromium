@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chromessa on sisäänrakennettuna Google Kääntäjä, joten voit kääntää tekstiä aina tarvittaessa</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
-<translation id="1438479496118074429">Laajennus \"<ph name="EXTENSION_NAME" />\" haluaa, että kirjaudut Chromeen</translation>
 <translation id="146866447420868597">Haluatko kirjautua Chromeen?</translation>
 <translation id="1492280395845991349">Viimeistele Chrome-päivitys käynnistämällä se uudelleen</translation>
 <translation id="1497802159252041924">Asennusvirhe: <ph name="INSTALL_ERROR" /></translation>
@@ -469,7 +468,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7802622118583152311">Chrome tarjoaa uusimman teknologian ja helpottaa selaamista</translation>
 <translation id="7808348361785373670">Poista Chromesta…</translation>
 <translation id="7825851276765848807">Asennus epäonnistui tuntemattoman virheen vuoksi. Lataa Google Chrome uudelleen.</translation>
-<translation id="7828063580843052643">Jos haluat käyttää tätä laajennusta käyttäjänä <ph name="USER_EMAIL_ADDRESS" />, kirjaudu Chromeen.\nVoit myös käyttää ja tallentaa Google-tililtäsi esimerkiksi salasanoja.</translation>
 <translation id="7836610565365456468">Uudista selainta esim. taiteilijoiden ja luonnon inspiroimilla teemoilla</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="7852254990718225089">Chromen tekoäly tekee verkosta nopeamman, turvallisemman ja saavutettavamman</translation>

@@ -364,6 +364,7 @@
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6950072572526089586">Külastatav sait saab salvestada teavet teie tegevuste kohta, et sait toimiks ootuspäraselt – näiteks selleks, et hoida teid saidile sisselogituna või salvestada teie ostukorvis olevad üksused. Saidid salvestavad selle teabe teie seadmesse sageli ajutiselt.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980861169612950611">Kas kustutada saidi andmed? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="6992289844737586249">Küsi enne saitidele minu mikrofoni kasutamiseks juurdepääsu lubamist (soovitatav)</translation>
 <translation id="7000754031042624318">Androidi seadetes välja lülitatud</translation>
@@ -459,6 +460,7 @@
 <translation id="8441146129660941386">Keri tagasi</translation>
 <translation id="8444433999583714703">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie asukohale, lülitage funktsioon Asukoht sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Seadme loa tühistamine</translation>
+<translation id="8473055640493819707"><ph name="APP_NAME" /> on aegunud. Installige rakendus uuesti.</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
 <translation id="8499083585497694743">Tühista mikrofoni vaigistus</translation>

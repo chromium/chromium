@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK が正しくありません</translation>
 <translation id="4057991113334098539">有効にしています...</translation>
 <translation id="4092890906744441904">アイルランド語</translation>
+<translation id="4101601646343868113">モバイル ネットワークにログインしてモバイルデータ プランが有効になっていることを確認する</translation>
 <translation id="4124731372776320263">1 個のドライブ ファイルを同期しています</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
 <translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
 <translation id="5649768706273821470">聴く</translation>
+<translation id="5650895901941743674">APN 設定を確認してください</translation>
 <translation id="5669691691057771421">新しい PIN を入力</translation>
 <translation id="5678784840044122290">Linux アプリケーションはお使いのデバイスでご利用いただけるようになります。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />アーカイブまたは仮想ディスクから切断できません<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini イメージ ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
+<translation id="8630384863424041081">SIM カードの PIN または携帯通信会社から提供されたデフォルトの PIN を入力してください。サポートが必要な場合は、携帯通信会社にお問い合わせください。</translation>
 <translation id="863903787380594467">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>
 <translation id="8656407365183407932">オフライン ファイルを削除する必要があります</translation>

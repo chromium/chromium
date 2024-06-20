@@ -115,6 +115,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1209206284964581585">Fela í bili</translation>
 <translation id="121201262018556460">Þú reyndir að ná sambandi við <ph name="DOMAIN" /> en þjónninn framvísaði vottorði sem inniheldur ótraustan lykil. Tölvuþrjótur kann að hafa skemmt einkalykilinn og þjónninn er ef til vill ekki sá sem þú bjóst við (þú gætir verið í samskiptum við tölvuþrjót).</translation>
 <translation id="1212527389003717329">Niðurhal hafið. Ýttu á og haltu inni |<ph name="ACCELERATOR" />| til að sjá það.</translation>
+<translation id="1214970845432250240">Verðbil</translation>
 <translation id="1219129156119358924">Öryggisstilling kerfis</translation>
 <translation id="1222060260947439312">Bakk til hægri</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1183,6 +1184,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Sláðu inn <ph name="NUMBER_OF_DIGITS" /> tölustafa staðfestingarkóða</translation>
 <translation id="3272643614306383237">Minna en 1 MB. Sum vefsvæði kunna að hlaðast hægar í næstu heimsókn.</translation>
+<translation id="327346289570683313">Verðbil</translation>
 <translation id="3273738040255912340">Kerfisstjórinn þinn getur breytt prófíl- og vafrastillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. Einnig er hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Regla kerfisstjóra mælir ekki með að opna þessa skrá í <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að opna þessar skrár í <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að opna þessar skrár í <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Fyrirtækið þitt, <ph name="ENROLLMENT_DOMAIN" />, hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
@@ -4275,6 +4277,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="920643408853370361">Ferðatrygging</translation>
 <translation id="9207861905230894330">Ekki tókst að bæta greininni við.</translation>
 <translation id="9210825002219699214">Flugferðir</translation>
+<translation id="9211461151375991073">Sláðu inn @ til að leita í <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Sérsníða útlit</translation>
 <translation id="9215416866750762878">Forrit kemur í veg fyrir að Chrome geti tengst vefsvæðinu á öruggan máta</translation>
 <translation id="92178312226016010">Þú ert að fylgjast með þessari vöru.</translation>

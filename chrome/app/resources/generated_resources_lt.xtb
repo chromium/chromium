@@ -5940,6 +5940,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5372529912055771682">Ši operacinė sistema nepalaiko teikiamo registracijos režimo. Įsitikinkite, kad naudojate naujausią versiją ir bandykite dar kartą.</translation>
 <translation id="5372579129492968947">Atsegti plėtinį</translation>
 <translation id="5372632722660566343">Tęsti be paskyros</translation>
+<translation id="5372990315769030589">Palikti „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="5375318608039113175">Norėdami su šiais kontaktais naudoti Bendrinimo netoliese funkciją, prie savo kontaktų pridėkite el. pašto adresus, susietus su jų „Google“ paskyromis.</translation>
 <translation id="5375577102295339548">Svetainės gali padėti patvirtinti, kad nesate robotas</translation>
 <translation id="5376094717770783089">Pateikė prieigos užklausą</translation>
@@ -9041,6 +9042,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7708143783728142771">Slapukai leidžia nustatyti tą patį nuostatų tinkinimo lygį žiniatinklyje. Kai lankotės svetainėje, svetainė gali išsaugoti slapuką įrenginio naršyklės saugykloje, kad įsimintų svetainės nuostatas, pvz., kalbą, kuria kalbate, arba prekes, kurias norite išsaugoti pirkinių krepšelyje. Vėliau, jei dar kartą apsilankysite svetainėje naudodami tą pačią naršyklę, ta svetainė galės nuskaityti nustatytą slapuką ir galėsite pradėti nuo ten, kur baigėte. Šių tipų slapukai dažnai vadinami pirmosios šalies slapukais, nes juos nustato svetainė, kurioje lankotės.</translation>
 <translation id="770831926727930011">Vietiniai duomenys saugomi naudojant senąjį slaptažodį. Įveskite senąjį slaptažodį, kad atkurtumėte vietinius duomenis.</translation>
 <translation id="7709152031285164251">Įvyko klaida – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Apsaugokite visus prieigos raktus naudodami atkūrimo PIN kodą</translation>
 <translation id="7710568461918838723">&amp;Perduoti...</translation>
 <translation id="7711900714716399411">Naudodami USB laidą prijunkite telefoną prie kompiuterio. Jei telefonas jau prijungtas, atjunkite jį ir vėl prijunkite.</translation>
 <translation id="7711968363685835633">Išjungti suasmenintas konversijas, pasiūlymus ir naudotojo žodyną</translation>
@@ -9772,6 +9774,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8233028084277069927">Atidaryti dabar</translation>
 <translation id="8234795456569844941">Padėkite inžinieriams išspręsti šią problemą. Papasakokite, kas vyko prieš parodant profilio klaidos pranešimą:</translation>
 <translation id="8235418492073272647">Puslapis bendrinamas iš „<ph name="DEVICE_NAME" />“</translation>
+<translation id="8236802542508794819">Šiame skirtuke bendrinami ištekliai su kitais skirtukais, o tai gali trikdyti derinimą.</translation>
 <translation id="8236911020904880539">išeiti</translation>
 <translation id="8236917170563564587">Geriau bendrinti šį skirtuką</translation>
 <translation id="8237647586961940482">Tamsiai rožinė ir raudona</translation>
@@ -9976,6 +9979,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8376532149031784008"><ph name="DOMAIN" /> įkeliama iš naujo...</translation>
 <translation id="8376610503048439696">Administratoriaus įdiegti plėtiniai vis tiek galės skaityti ir keisti šią svetainę</translation>
 <translation id="8376752431516546391">„Google“ paieškos šoninis skydelis</translation>
+<translation id="8376812682111060348">Įspėjimas dėl našumo problemos</translation>
 <translation id="8377625247046155446">Šis „passkey“ bus išsaugotas tik šiame įrenginyje. Jis liks šiame įrenginyje, kai uždarysite visus inkognito langus.</translation>
 <translation id="8378714024927312812">Tvarko jūsų organizacija</translation>
 <translation id="8379988659465232385">Pavadinimo laukas negali būti tuščias</translation>

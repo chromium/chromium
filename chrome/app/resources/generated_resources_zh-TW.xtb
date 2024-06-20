@@ -5919,6 +5919,7 @@
 <translation id="5372529912055771682">這個版本的作業系統不支援提供註冊模式。請確認你使用的是最新版本，然後再試一次。</translation>
 <translation id="5372579129492968947">取消固定擴充功能</translation>
 <translation id="5372632722660566343">繼續進行設定但不選擇帳戶</translation>
+<translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用鄰近分享功能，請把對方用來連結 Google 帳戶的電子郵件地址，加到聯絡人清單。</translation>
 <translation id="5375577102295339548">網站可協助確認你不是機器人</translation>
 <translation id="5376094717770783089">要求存取權</translation>
@@ -9009,6 +9010,7 @@
 <translation id="7708143783728142771">系統可以運用 Cookie，根據使用者偏好在網路上提供量身訂作的同類服務。瀏覽網站時，網站可以在裝置的瀏覽器儲存空間中儲存 Cookie，藉此記住你的網站偏好設定，例如你使用的語言或你要儲存在購物車的商品。日後，如果你使用相同的瀏覽器再次造訪該網站，網站就能讀取先前設定的 Cookie，並接續你上次的進度。這類 Cookie 是由你造訪的網站所設定，因此通常稱為第一方 Cookie。</translation>
 <translation id="770831926727930011">本機資料受舊密碼保護。如要復原本機資料，請輸入舊密碼。</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">使用原 PIN 碼保護所有密碼金鑰</translation>
 <translation id="7710568461918838723">投放(&amp;C)...</translation>
 <translation id="7711900714716399411">使用 USB 傳輸線將手機連接電腦。如果手機已連接電腦，請拔掉傳輸線再重新連接。</translation>
 <translation id="7711968363685835633">停用個人化轉換、建議和使用者字典</translation>
@@ -9740,6 +9742,7 @@
 <translation id="8233028084277069927">立即開啟</translation>
 <translation id="8234795456569844941">請告訴我們在你收到設定檔錯誤訊息前執行的動作，以協助工程師修正此問題：</translation>
 <translation id="8235418492073272647">透過「<ph name="DEVICE_NAME" />」分享的網頁</translation>
+<translation id="8236802542508794819">這個分頁與其他分頁共用資源，可能會干擾偵錯作業。</translation>
 <translation id="8236911020904880539">離開</translation>
 <translation id="8236917170563564587">改為分享這個分頁</translation>
 <translation id="8237647586961940482">深粉紅色與紅色</translation>
@@ -9944,6 +9947,7 @@
 <translation id="8376532149031784008">正在重新載入 <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">系統管理員安裝的擴充功能仍可讀取及變更這個網站</translation>
 <translation id="8376752431516546391">Google 搜尋側邊面板</translation>
+<translation id="8376812682111060348">效能問題警示</translation>
 <translation id="8377625247046155446">這個密碼金鑰只會儲存在這部裝置中。關閉所有無痕視窗後，密碼金鑰會保存在這部裝置上。</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8379988659465232385">名稱不得留空</translation>

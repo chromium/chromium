@@ -134,6 +134,7 @@ Hafðu í huga:
 <translation id="4903674399067644695">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chrome til fulls.</translation>
 <translation id="4919069428879420545">Eyða vefskoðunargögnum í Chrome.</translation>
 <translation id="49200511069271369">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert að skrá þig inn á og því hvernig hægt er að nota Chrome. Stjórnandinn getur sett upp eða takmarkað tiltekna eiginleika.</translation>
+<translation id="4925322001044117929">Nota Chrome sjálfgefið í iPad</translation>
 <translation id="498985224078955265">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chrome í báðum tækjum.</translation>
 <translation id="5030102366287574140">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
 <translation id="5108659628347594808">Bættu Chrome</translation>
@@ -192,6 +193,7 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="6646696210740573446">Sendir ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir til Google, þar á meðal hluta af efni síðna.</translation>
 <translation id="6648150602980899529">Þú ert að skrá þig út af reikningi sem stýrt er af <ph name="DOMAIN" /> og veitir í leiðinni stjórnanda lénsins umsjón með Chrome gögnunum þínum. Gögnin þín verða tengd við þennan reikning til frambúðar. Ef þú skráir þig út af Chrome verður gögnunum þínum á þessu tæki eytt, en þau verða áfram geymd á Google reikningnum þínum.</translation>
 <translation id="6683891932310469419">Opnar Chrome-ferilssíðuna þína.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}one{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}other{Þetta gerist þegar Chrome er ekki í notkun í {THRESHOLD} mínútur. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}}</translation>
 <translation id="6709398533399187136">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Aðgangsorðastjórnun Google mælir með að þú breytir því núna.</translation>
 <translation id="6820553595690137150">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og vefföng.
 

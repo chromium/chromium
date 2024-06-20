@@ -2692,7 +2692,7 @@
 <translation id="292371311537977079">Chrome 設定</translation>
 <translation id="2926085873880284723">還原預設捷徑</translation>
 <translation id="2926620265753325858">不支援 <ph name="DEVICE_NAME" /></translation>
-<translation id="2926708162326352948">主題已更新為上傳的圖片</translation>
+<translation id="2926708162326352948">主題更新咗做上載咗嘅圖片</translation>
 <translation id="2927017729816812676">快取儲存空間</translation>
 <translation id="2928795416630981206">已允許追蹤攝錄機位置</translation>
 <translation id="2931157624143513983">依可列印範圍自動調整</translation>
@@ -5926,6 +5926,7 @@
 <translation id="5372529912055771682">這個版本的作業系統不支援提供註冊模式。請確保您使用的是最新版本，然後再試一次。</translation>
 <translation id="5372579129492968947">取消固定擴充程式</translation>
 <translation id="5372632722660566343">在不登入帳戶的情況下繼續</translation>
+<translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用「咫尺共享」，請將與他們 Google 帳戶連結的電郵地址加入您的通訊錄。</translation>
 <translation id="5375577102295339548">網站可協助驗證您不是機器人</translation>
 <translation id="5376094717770783089">要求存取權</translation>
@@ -7400,7 +7401,7 @@
 <translation id="6494445798847293442">不是憑證授權單位</translation>
 <translation id="6494483173119160146">裝置發生無法復原的錯誤。請重設裝置 (系統將清除所有使用者資料)，然後再試一次。</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi</translation>
-<translation id="6495453178162183932">主題已更新為預設的 Chrome 主題</translation>
+<translation id="6495453178162183932">主題更新咗做預設嘅 Chrome</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選的全部語言(&amp;A)</translation>
@@ -9017,6 +9018,7 @@
 <translation id="7708143783728142771">Cookie 有助網站自訂同等的偏好設定。瀏覽網站時，網站可在裝置的瀏覽器儲存空間儲存 Cookie，以記住你的網站偏好設定，例如你使用的語言或你儲存在購物車中的項目。如果你稍後使用同一瀏覽器再次瀏覽該網站，該網站便可讀取已設定的 Cookie，讓你從上次離開的地方繼續瀏覽。由於這種類型的 Cookie 是由你瀏覽的網站設定，因此通常稱為第一方 Cookie。</translation>
 <translation id="770831926727930011">本機資料受舊密碼保護。請輸入舊密碼以復原本機資料。</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">使用原 PIN 碼保護所有密碼金鑰</translation>
 <translation id="7710568461918838723">和 Cast…</translation>
 <translation id="7711900714716399411">使用 USB 連接線將手機連接電腦。如果手機已連接電腦，請拔除連接線再重新連接。</translation>
 <translation id="7711968363685835633">停用個人化轉換、建議和用戶字典</translation>
@@ -9748,6 +9750,7 @@
 <translation id="8233028084277069927">立即開啟</translation>
 <translation id="8234795456569844941">為協助我們的軟件工程師修正此問題，請說明您在收到設定檔錯誤訊息前發生的狀況：</translation>
 <translation id="8235418492073272647">透過「<ph name="DEVICE_NAME" />」分享的網頁</translation>
+<translation id="8236802542508794819">這個分頁與其他分頁共用資源，可能會干擾偵錯作業。</translation>
 <translation id="8236911020904880539">離開</translation>
 <translation id="8236917170563564587">改為分享此分頁</translation>
 <translation id="8237647586961940482">深粉紅色和紅色</translation>
@@ -9952,6 +9955,7 @@
 <translation id="8376532149031784008">正在重新載入 <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">管理員安裝的擴充程式仍可讀取及變更此網站</translation>
 <translation id="8376752431516546391">「Google 搜尋」側面板</translation>
+<translation id="8376812682111060348">效能問題警示</translation>
 <translation id="8377625247046155446">此密鑰只會儲存在此裝置中。關閉所有無痕式視窗後，密鑰會保存在此裝置上。</translation>
 <translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8379988659465232385">名稱不可留空</translation>

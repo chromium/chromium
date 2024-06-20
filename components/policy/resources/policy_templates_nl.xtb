@@ -279,6 +279,7 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
 <translation id="1212233008927724662">Lazy loading van WebUI voor inloggen uitzetten.</translation>
 <translation id="1214639335214075459">Videodecodering voor GPU-hardware aanzetten</translation>
+<translation id="1214942205301731697">Het gebruik van de ontwikkelaarsmodus op de pagina Extensies niet toestaan</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
 <translation id="1219027971768347970">De standaardconfiguratie gebruiken voor de audio-sandbox</translation>
 <translation id="1221359380862872747">Gespecificeerde URL's laden in demo-aanmeldvenster</translation>
@@ -1804,6 +1805,7 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior is een <ph name="PRODUCT_NAME" />-functie die zorgt dat <ph name="ABOUT_BLANK_PAGE" />- en <ph name="ABOUT_SRCDOC_PAGE" />-frames hun basis-URL-waarden consistent overnemen via momentopnamen van de basis-URL van hun initiator. Zie https://chromestatus.com/feature/5161101671530496 voor meer informatie.
 
 Als je het beleid niet toepast, kunnen gebruikers of <ph name="PRODUCT_NAME" />-varianten NewBaseUrlInheritanceBehavior niet aanzetten als er compatibiliteitsproblemen worden gevonden. Als je het beleid toepast of niet instelt, kan NewBaseUrlInheritanceBehavior worden aangezet.</translation>
+<translation id="2361182501645567439">De beschikbaarheid van de ontwikkelaarsmodus op de pagina Extensies bepalen</translation>
 <translation id="2362469626417133796">Tijdvenster voor herstarten</translation>
 <translation id="2362539163677485510">De inschrijvingstoken voor het cloudbeleid</translation>
 <translation id="2363928351203698966">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
@@ -3188,6 +3190,13 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
       De beschikbaarheid van deze functionaliteit is ook afhankelijk van het bijbehorende gebruikersbeleid.</translation>
 <translation id="3495602011142234826">Als je dit instelt op True, kan deze extensie alle sleutels voor zakelijk gebruik gebruiken om willekeurige gegevens te ondertekenen. Als je dit instelt op False, heeft de extensie geen toegang tot dergelijke sleutels en kan de gebruiker deze toegang ook niet geven. Als uitzondering kan een extensie precies 1 keer toegang krijgen tot een dergelijke sleutel als dezelfde extensie die sleutel heeft gegenereerd.</translation>
 <translation id="3496296378755072552">Wachtwoordmanager</translation>
+<translation id="3496519114741602716">Bepaal of gebruikers de ontwikkelaarsmodus kunnen aanzetten via chrome://extensions.
+
+Als je het beleid niet instelt, kunnen gebruikers de ontwikkelaarsmodus aanzetten via de pagina Extensies, tenzij het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> is ingesteld op <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2).
+Als het beleid is ingesteld op <ph name="ALLOW" /> (0), kunnen gebruikers de ontwikkelaarsmodus aanzetten via de pagina Extensies.
+Als je het beleid instelt op <ph name="DISALLOW" /> (1), kunnen gebruikers de ontwikkelaarsmodus niet aanzetten via de pagina Extensies.
+
+Als je dit beleid instelt, kan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> de ontwikkelaarsmodus niet meer beheren via de pagina Extensies.</translation>
 <translation id="3496761649331792755">Bookmarkbalk aanzetten</translation>
 <translation id="3498109920669229084">Als je het beleid instelt, geef je aan welke extensies niet onder de blokkeringslijst vallen.
 
@@ -5369,6 +5378,15 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="5307432759655324440">Beschikbaarheid van incognitomodus</translation>
 <translation id="5308551343115571396">Nadat <ph name="LACROS_NAME" /> is uitgezet, proberen we zo veel mogelijk gebruikersgegevens te behouden en alle browsergegevens te verwijderen.</translation>
 <translation id="530949964068726932">Toegankelijkheidsopties verbergen in het systeemvakmenu</translation>
+<translation id="5310544046492594469">Als je het beleid instelt op 0 (standaardinstelling), heb je toegang tot de tools voor ontwikkelaars en de JavaScript-console, maar niet in de context van extensies die via het organisatiebeleid zijn geïnstalleerd of, sinds versie 114 en als dit een beheerde gebruiker is, extensies die in de browser zijn ingebouwd. Als je het beleid instelt op 1, heb je toegang tot de tools voor ontwikkelaars en de JavaScript-console in alle contexten, waaronder die van extensies die via het organisatiebeleid zijn geïnstalleerd. Als je het beleid instelt op 2, heb je geen toegang tot de tools voor ontwikkelaars en kun je website-elementen niet inspecteren.
+
+      Met deze instelling worden ook sneltoetsen en menu- en contextmenu-opties uitgezet waarmee tools voor ontwikkelaars of de JavaScript-console kunnen worden geopend.
+
+      Vanaf <ph name="PRODUCT_NAME" /> versie 99 bepaalt deze instelling ook de startpunten voor de functie Paginabron bekijken. Als je dit beleid instelt op DeveloperToolsDisallowed (waarde 2), kunnen gebruikers de bron niet bekijken via een sneltoets of het contextmenu. Als je het bekijken van de bron helemaal wilt blokkeren, voeg je ook 'view-source:*' toe aan het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      Vanaf <ph name="PRODUCT_NAME" /> versie 119 bepaalt deze instelling ook of de ontwikkelaarsmodus voor geïsoleerde web-apps kan worden geactiveerd en gebruikt.
+
+      Vanaf <ph name="PRODUCT_NAME" /> versie 128 bepaalt deze instelling niet de ontwikkelaarsmodus op de pagina Extensies als het beleid <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> is ingesteld.</translation>
 <translation id="5311275381462687162">Instelling voor standaardgedrag voor verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="5312253627576569499">Het percentage waarmee de dimvertraging van het scherm wordt geschaald wanneer er gebruikersactiviteit wordt waargenomen terwijl het scherm is gedimd of kort nadat het scherm is uitgegaan</translation>
 <translation id="5316856058059940708">Grote cursor uitzetten</translation>
@@ -6109,6 +6127,15 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 
       Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> bepalen welke aanpak wordt gebruikt.</translation>
 <translation id="5888645257599699215">Audiostatus van apparaat rapporteren</translation>
+<translation id="5888861702011257917">Focusmodus is een functie die Niet storen regelt op basis van een timer en is bedoeld om afleidingen voor de gebruiker te verminderen. Met een functie van Focusmodus kunnen gebruikers naar een beperkte reeks muzieknummers luisteren zodat ze zich kunnen concentreren. Dit beleid bepaalt de toegang tot deze functie.
+
+Als je het beleid niet instelt, worden alle geluiden uitgezet voor beheerde gebruikers.
+
+Als je het beleid toepast, wordt toegang gegeven tot alle geluiden in Focusmodus.
+
+Als je het beleid instelt op EnabledFocusSoundsOnly, wordt de geluidsfunctie aangezet met alleen focusgeluiden.
+
+Als je het beleid niet toepast, worden geluiden in Focusmodus uitgezet.</translation>
 <translation id="5890063326284543943">Gebruik van de Serial API beheren</translation>
 <translation id="5893223274510346852">Zet de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> uit.</translation>
 <translation id="5893303508158298667">Als je <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> hebt toegepast en <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> toepast of niet instelt, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken als er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld vanwege firewallbeperkingen).
@@ -6577,6 +6604,17 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 
       Er was aangekondigd dat dit beleid zou worden verwijderd in <ph name="PRODUCT_NAME" /> versie 82, maar dat is versie 84 geworden.</translation>
 <translation id="6276087670023098167">Rapportage van informatie over machine-identificatie uitzetten</translation>
+<translation id="627645565733796818">X.509-certificaten kunnen beperkingen, zoals naambeperkingen, coderen in extensies in het certificaat. RFC 5280 bepaalt dat het afdwingen van dergelijke beperkingen voor vertrouwensankercertificaten optioneel is. Vanaf <ph name="PRODUCT_NAME" /> 112 worden dergelijke beperkingen afgedwongen in certificaten die worden geladen vanuit de certificaatopslag van het platform.
+
+Dit beleid bestaat als tijdelijke afmelding voor als een bedrijf problemen ondervindt met de beperkingen die in hun privéroots zijn gecodeerd. In dat geval kan dit beleid worden gebruikt om het afdwingen van de beperkingen tijdelijk uit te zetten en de certificaatproblemen te verhelpen.
+
+Als je dit beleid toepast of niet instelt, dwingt <ph name="PRODUCT_NAME" /> beperkingen af die zijn gecodeerd in vertrouwensankers die zijn geladen vanuit de vertrouwde truststore van het platform.
+
+Als je dit beleid niet toepast, dwingt <ph name="PRODUCT_NAME" /> geen beperkingen af die zijn gecodeerd in vertrouwensankers die zijn geladen vanuit de vertrouwde truststore van het platform.
+
+In <ph name="PRODUCT_NAME" /> 112 heeft dit beleid geen effect als het beleid <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> niet wordt toegepast.
+
+Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> versie 126. Vanaf deze versie worden beperkingen in vertrouwensankers altijd afgedwongen.</translation>
 <translation id="627672037430076089">Verbindingen voor externe support met deze machine voorkomen</translation>
 <translation id="6277314550042130537">KDC-beleidsgoedkeuring gebruiken tijdens HTTP-verificatie</translation>
 <translation id="6278428485366576908">Thema</translation>
@@ -6992,6 +7030,13 @@ Opmerking: Wachtwoorden kunnen ouder zijn dan de ingestelde periode als de clien
 <translation id="6554236101741861403">Snelheid waarmee telemetriegegevens van websites worden verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 5 minuten.
 
 Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
+<translation id="6555378905432946848">Als je het beleid instelt, wordt de handhaving van kennisgevingsvereisten via Certificaattransparantie uitgezet voor een lijst van verouderde certificeringsinstanties (CA's) voor certificaatketens met een gespecificeerde <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash. Enterprise-hosts kunnen certificaten blijven gebruiken die anders niet zouden worden vertrouwd (omdat deze niet op de juiste manier openbaar zijn gemaakt). Als je de handhaving wilt uitzetten, moet de <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash voorkomen in een CA-certificaat dat wordt herkend als verouderde CA. Een verouderde CA wordt openbaar vertrouwd door een of meer besturingssystemen die worden ondersteund door <ph name="PRODUCT_NAME" />, maar niet door het Android-opensourceproject of <ph name="PRODUCT_OS_NAME" />.
+
+      Verstrek een <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash door de naam van het hash-algoritme, een slash en de Base64-codering van het betreffende toegepaste hash-algoritme te koppelen aan de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> met DER-codering van het aangegeven certificaat. Een indeling met Base64-codering komt overeen met die van een SPKI-vingerafdruk. Het enige erkende hash-algoritme is sha256. Andere algoritmen worden genegeerd.
+
+      Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.
+
+      Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> versie 128.</translation>
 <translation id="6556586932263358975">Schermvergrendeling toestaan</translation>
 <translation id="6558013557780651644">Vertraging voordat acties bij inactiviteit worden uitgevoerd</translation>
 <translation id="6558812160831988140">Rapportage over app-gebruik</translation>
@@ -10365,6 +10410,7 @@ Als je dit beleid niet toepast, worden er geen enquêtes in het product aan gebr
 
 Dit beleid heeft geen effect als <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> uitstaat, waardoor enquêtes in het product ook worden uitgezet.</translation>
 <translation id="9173633148008709976">Grafische versnelling aanzetten</translation>
+<translation id="9177661626040846628">Het gebruik van de ontwikkelaarsmodus op de pagina Extensies toestaan</translation>
 <translation id="9180108183162961002">Toestaan dat gebruikers als gast inloggen bij de browser</translation>
 <translation id="9185963199234034321">Hoog contrast op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="9187743794267626640">Koppeling van externe opslag uitzetten</translation>

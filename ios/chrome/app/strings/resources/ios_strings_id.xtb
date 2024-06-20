@@ -532,6 +532,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="371398631992790800">Sembunyikan Bookmark</translation>
 <translation id="37207012422556617">Penelusuran Trending</translation>
 <translation id="3725081662140949903">Untuk mencegah orang lain menggunakan sandi Anda, buka aplikasi <ph name="APP" /> untuk mengubah sandi Anda</translation>
+<translation id="372676576864368480">Isi otomatis nomor kartu yang diakhiri dengan <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="374357899112510277">Sembunyikan Download</translation>
 <translation id="3745190878148784130">Sembunyikan Zoom Teks</translation>
@@ -1097,6 +1098,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="6476800141292307438">Menerjemahkan halaman ke dalam bahasa <ph name="LANGUAGE" />. Opsi tersedia di dekat bagian bawah layar.</translation>
 <translation id="648164694371393720">Error saat Autentikasi</translation>
 <translation id="6494931198667773526">Berakhir</translation>
+<translation id="6500795388871406244">Gunakan Sandi yang Disarankan:</translation>
 <translation id="650279896687777322">Pelajari Lebih Lanjut ...</translation>
 <translation id="6505334220040167806">Ciutkan grup tab.</translation>
 <translation id="6507973708545996744">Login untuk mendapatkan daftar bacaan di semua perangkat Anda.</translation>
@@ -1310,6 +1312,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Samaran.</translation>
 <translation id="7598439272585186139">Dapatkan peningkatan keamanan</translation>
 <translation id="7600965453749440009">Jangan pernah terjemahkan bahasa <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Isi otomatis pemegang kartu <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-up diblokir (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grup Tab</translation>
 <translation id="7607521702806708809">Hapus Sandi</translation>
@@ -1342,6 +1345,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7749790401023484470">Anda tidak memilih teks apa pun.</translation>
 <translation id="7752405526771734448">Penelusuran Visual Lens</translation>
 <translation id="7756478488453921771">Menu → Setelan → Metode Pembayaran</translation>
+<translation id="775755486779745798">Isi otomatis bulan habis masa berlaku <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Kunci Samaran</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
@@ -1518,6 +1522,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8556590991644167667">{count,plural, =1{Anda menolak {count} peringatan}other{Anda menolak {count} peringatan}}</translation>
 <translation id="8560253818350321773">Tampilkan item yang sering digunakan terlebih dahulu.</translation>
 <translation id="8569721750632860947">URL apa yang ingin Anda tambahkan ke daftar bacaan?</translation>
+<translation id="8577056989960190117">Isi otomatis tahun habis masa berlaku <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Nonaktif</translation>
 <translation id="8591976964826315682">Blokir Cookie Pihak Ketiga dalam Mode Samaran</translation>
 <translation id="8593565399399144771">Anda dapat membuka tab baru di sini.</translation>

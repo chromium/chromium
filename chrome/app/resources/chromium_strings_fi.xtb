@@ -50,7 +50,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="185970820835152459">Voit ylläpitää sisäänkirjautuneita Google-tilejäsi. Google-tilejäsi käytetään Chromium-selaimella, Play Kaupassa ja muualla. Jos haluat lisätä tilin jollekulle toiselle, esim. perheenjäsenelle, lisää tämän sijasta uusi henkilö laitteelle (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Sivustot voivat tallentaa Chromiumiin tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="1881322772814446296">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Chromium-profiiliasi. Chromium-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. Halutessasi voit luoda uuden profiilin, jolloin aiemmat Chromium-tietosi pysyvät erillään. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Jos haluat käyttää tätä laajennusta käyttäjänä <ph name="USER_EMAIL_ADDRESS" />, kirjaudu Chromiumiin.\nVoit myös käyttää ja tallentaa Google-tililtäsi esimerkiksi salasanoja.</translation>
 <translation id="1906696617298807388">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chromium lähettää kirjoittamasi tekstin Google Driveen, niin saat ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="1911763535808217981">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Chromiumiin.</translation>
 <translation id="1929939181775079593">Chromium ei vastaa. Käynnistetäänkö uudelleen?</translation>
@@ -143,7 +142,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3296368748942286671">Jätä taustasovellukset käyntiin, kun Chromium suljetaan</translation>
 <translation id="3313189106987092621">Chromium varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
 <translation id="3316771292331273802">Sinut kirjataan ulos useimmilta sivustoilta, kun suljet kaikki Chromium-ikkunat. Tämä ei kuitenkaan koske Google-tiliäsi, jos olet kirjautuneena Chromiumiin. <ph name="SETTINGS_LINK" />, jotta sivustot muistavat sinut.</translation>
-<translation id="333055255088403283">Laajennus \"<ph name="EXTENSION_NAME" />\" haluaa, että kirjaudut Chromiumiin</translation>
 <translation id="3350761136195634146">Tällä tilillä on jo Chromium-profiili</translation>
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3406848076815591792">Vaihdetaanko nykyiseen Chromium-profiiliin?</translation>

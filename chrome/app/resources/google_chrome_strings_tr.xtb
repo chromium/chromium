@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chrome, istediğinizde çeviri yapabilmeniz için yerleşik Google Çeviri hizmeti sunar.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır.}=1{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. Gizli pencereniz yeniden açılmayacak.}other{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. # gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Uygulamaları</translation>
-<translation id="1438479496118074429">\"<ph name="EXTENSION_NAME" />\" uzantısı, Chrome'da oturum açmanızı istiyor</translation>
 <translation id="146866447420868597">Chrome'da oturum açmak istiyor musunuz?</translation>
 <translation id="1492280395845991349">Chrome güncellemesini tamamlamak için yeniden başlatın</translation>
 <translation id="1497802159252041924">Yükleme hatası: <ph name="INSTALL_ERROR" /></translation>
@@ -169,6 +168,7 @@
 <translation id="3261565993776444564">Tarayıcınızı özelleştirmek için yeni bir renk deneyin.</translation>
 <translation id="3282568296779691940">Chrome'da oturum aç</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
+<translation id="3292333338048274092">Ardından Chrome'u yeniden başlatmanız gerekir.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome şimdi yeniden başlatılacak}=1{Chrome 1 saniye içinde yeniden başlatılacak}other{Chrome # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="3396977131400919238">Yükleme sırasında bir işletim sistemi hatası oluştu. Lütfen Google Chrome'u yeniden indirin.</translation>
@@ -213,6 +213,7 @@
 <translation id="4035053306113201399">Güncellemenin uygulanması için ChromeOS yeniden başlatılmalıdır.</translation>
 <translation id="4050175100176540509">Son sürümde güvenlikle ilgili önemli iyileştirmeler ve yeni özellikler mevcuttur.</translation>
 <translation id="4053720452172726777">Google Chrome'u özelleştirin ve kontrol edin</translation>
+<translation id="4084404300720192944">Pencerenizi paylaşmak için Sistem Tercihleri'nde Chrome'un ekranı kaydetmesine izin verin.</translation>
 <translation id="4106587138345390261">Chrome, sitelerin size ait daha az bilgiyi kullanarak aynı tarama deneyimini sunmasını sağlayan yeni özellikleri keşfediyor</translation>
 <translation id="4110895483821904099">Yeni Chrome profilinizi oluşturun</translation>
 <translation id="4111566860456076004">Chrome, bu uzantının kaynağını doğrulayamadığı için uzantı güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
@@ -243,6 +244,7 @@
 <translation id="4384570495110188418">Oturum açmadığınızdan Chrome, şifrelerinizi kontrol edemiyor</translation>
 <translation id="4389991535395284064">Chrome, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
+<translation id="4434353761996769206">Yükleyici hatası: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="4459234553906210702">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chrome'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
@@ -351,6 +353,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="6200139057479872438">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> iznini kaldırdı.</translation>
+<translation id="621585339844629864">Ekranınızı paylaşmak için Sistem Tercihleri'nde Chrome'un ekranı kaydetmesine izin verin.</translation>
 <translation id="6235018212288296708">Google Chrome'un mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="624230925347970731">Chrome yakında kapanacak</translation>
 <translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
@@ -466,7 +469,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7802622118583152311">Chrome, en son teknolojiyle daha iyi bir tarama deneyimi sunar.</translation>
 <translation id="7808348361785373670">Chrome'dan kaldır...</translation>
 <translation id="7825851276765848807">Yükleme belirtilmeyen bir hata nedeniyle başarısız oldu. Lütfen Google Chrome'u tekrar yükleyin.</translation>
-<translation id="7828063580843052643">Bu uzantıyı <ph name="USER_EMAIL_ADDRESS" /> olarak kullanmak için Chrome'da oturum açın.\nAyrıca, Google Hesabınızdaki şifrelerinizi ve diğer öğeleri de kullanıp kaydedebilirsiniz.</translation>
 <translation id="7836610565365456468">Sanatçılardan, doğadan ve diğer alanlardan ilham alan canlı temalarla tarayıcınıza yepyeni bir görünüm kazandırın.</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
 <translation id="7852254990718225089">Chrome'daki yapay zeka özellikleri; web'i daha hızlı, daha güvenli ve daha erişilebilir hale getirmeye yardımcı olur.</translation>

@@ -30,7 +30,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1407223320754252908">Google Translate er innbyggt í Chrome svo þú getir þýtt þegar þú þarft þess</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið.}=1{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. Huliðsglugginn opnast ekki aftur.}one{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggi opnast ekki aftur.}other{Chrome-uppfærslu er lokið. Þú getur notað nýju útgáfuna um leið og þú hefur endurræst. Núverandi flipar opnast aftur þegar endurræsingu er lokið. # huliðsgluggar opnast ekki aftur.}}</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
-<translation id="1438479496118074429">Viðbótin „<ph name="EXTENSION_NAME" />“ vill að þú skráir þig inn á Chrome</translation>
 <translation id="146866447420868597">Skrá þig inn á Chrome?</translation>
 <translation id="1492280395845991349">Endurræstu til að ljúka Chrome-uppfærslu</translation>
 <translation id="1497802159252041924">Uppsetningarvilla: <ph name="INSTALL_ERROR" /></translation>
@@ -58,6 +57,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1734234790201236882">Chrome mun vista þetta aðgangsorð á Google reikningnum þínum. Þú þarft ekki að muna það.</translation>
 <translation id="1786003790898721085">Vertu viss um að þú sért skráð(ur) inn á Chrome í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="1786044937610313874">Flýtilyklar opnir í Chrome</translation>
+<translation id="178701303897325119">Þessi viðbót er ekki lengur studd. Chrome mælir með að þú fjarlægir hana þess í stað.</translation>
 <translation id="1812689907177901597">Með því að slökkva á þessu geturðu skráð þig inn á Google vefsvæði eins og Gmail án þess að skrá þig inn í Chrome</translation>
 <translation id="1860536484129686729">Chrome þarf leyfi til að nota myndavélina á þessu vefsvæði</translation>
 <translation id="1873233029667955273">Google Chrome er ekki sjálfgefinn vafri</translation>
@@ -173,6 +173,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3261565993776444564">Prófaðu nýjan lit til að sérsníða vafrann þinn</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
+<translation id="3292333338048274092">Þú þarft að endurræsa Chrome í kjölfarið.</translation>
 <translation id="3360895254066713204">Chrome hjálpari</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
 <translation id="3396977131400919238">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Google Chrome aftur.</translation>
@@ -217,6 +218,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4035053306113201399">Endurræsa þarf ChromeOS til að nota uppfærsluna.</translation>
 <translation id="4050175100176540509">Mikilvægar öryggislagfæringar og nýir eiginleikar eru í boði í nýjustu útgáfunni.</translation>
 <translation id="4053720452172726777">Sérsníða og stjórna Google Chrome</translation>
+<translation id="4084404300720192944">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="4106587138345390261">Chrome er að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafn mikið af upplýsingum frá þér</translation>
 <translation id="4110895483821904099">Settu upp nýja Chrome prófílinn þinn</translation>
 <translation id="4111566860456076004">Chrome getur ekki staðfest hvaðan þessi viðbót kemur og hún gæti verið óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingum.</translation>
@@ -248,6 +250,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4389991535395284064">Þegar vafrað er í huliðsstillingu mun Chrome vara þig við áður en vefsvæði með ótrygga tengingu er hlaðið</translation>
 <translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4434353761996769206">Uppsetningarvilla: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Skrá inn í Chrome sem <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – innskráning á net – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Önnur aðgerð er í gangi í Google Chrome. Reyndu aftur síðar.</translation>
 <translation id="4459234553906210702">Auglýsingamælingar gera vefsvæðum sem þú opnar kleift að biðja Chrome um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
@@ -358,6 +361,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - tilraunaútgáfa Google Chrome</translation>
 <translation id="6182736845697986886">Uppsetning mistókst vegna innri villu uppfærsluþjóns.</translation>
 <translation id="6200139057479872438">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila skjánum þínum.</translation>
 <translation id="6235018212288296708">Regla á innleið til að láta Google Chrome leyfa mDNS-umferð.</translation>
 <translation id="624230925347970731">Chrome lokast bráðum</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
@@ -473,7 +477,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7802622118583152311">Chrome færir þér nýjustu tækni fyrir betri skoðun</translation>
 <translation id="7808348361785373670">Fjarlægja úr Chrome...</translation>
 <translation id="7825851276765848807">Uppsetning mistókst vegna ótilgreindrar villu. Sæktu Google Chrome aftur.</translation>
-<translation id="7828063580843052643">Skráðu þig inn á Chrome til að nota þessa viðbót sem <ph name="USER_EMAIL_ADDRESS" />.\nÞú getur líka notað og vistað aðgangsorðin þín og fleira af Google-reikningnum þínum.</translation>
 <translation id="7836610565365456468">Umbreyttu vafranum þínum með líflegum þemum sem eru innblásin af listafólki, náttúrunni og fleiru</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">Gervigreind í Chrome hjálpar til við að gera vefinn hraðari, öruggari og aðgengilegri</translation>

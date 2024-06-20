@@ -30,7 +30,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1407223320754252908">Chrome ka "Përkthe me Google" të integruar, kështu që mund të përkthesh kur të nevojitet</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri.}=1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
-<translation id="1438479496118074429">Shtesa \"<ph name="EXTENSION_NAME" />\" dëshiron që të identifikohesh në Chrome</translation>
 <translation id="146866447420868597">Do të identifikohesh në Chrome?</translation>
 <translation id="1492280395845991349">Rinise për të përfunduar përditësimin e Chrome</translation>
 <translation id="1497802159252041924">Gabim gjatë instalimit: <ph name="INSTALL_ERROR" /></translation>
@@ -249,6 +248,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4384570495110188418">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="4389991535395284064">Kur shfleton në "Modalitetin 'e fshehtë'", Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
+<translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="4459234553906210702">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
@@ -475,7 +475,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7802622118583152311">Chrome të sjell teknologjinë më të fundit për shfletim më të mirë</translation>
 <translation id="7808348361785373670">Hiqe nga Chrome...</translation>
 <translation id="7825851276765848807">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarkoje Google Chrome përsëri.</translation>
-<translation id="7828063580843052643">Për ta përdorur këtë shtesë si <ph name="USER_EMAIL_ADDRESS" />, identifikohu në Chrome.\nDo të jesh gjithashtu në gjendje që të përdorësh dhe të ruash fjalëkalimet e tua etj. nga "Llogaria jote e Google".</translation>
 <translation id="7836610565365456468">Transformo shfletuesin me tema të gjalla të frymëzuara nga artistë, natyra etj.</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">IA-ja në Chrome ndihmon për ta bërë uebin më të shpejtë, më të sigurt dhe më të qasshëm</translation>

@@ -119,6 +119,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1391102559483454063">Activé</translation>
 <translation id="1394698770495054737">Flou intégral</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{il y a 1 jour}one{il y a # jour}other{il y a # jours}}</translation>
 <translation id="1404963891829069586">Sons pour la concentration</translation>
 <translation id="1407069428457324124">Thème sombre</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilisez les touches fléchées pour naviguer entre les dates.</translation>
@@ -209,6 +210,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="174102739345480129">Le marqueur est désactivé.</translation>
 <translation id="1743570585616704562">Doigt non reconnu</translation>
 <translation id="1743927604032653654">Réduire la notification <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Dans 1 heure}=1{Il y a 1 heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="1746730358044914197">Les méthodes d'entrée sont configurées par votre administrateur.</translation>
 <translation id="1747336645387973286">date d'échéance : <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
@@ -346,6 +348,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360398059912971776">pile</translation>
 <translation id="2361210043495191221">Activer ou désactiver le Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Envoyé à partir de <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Impossible de se connecter à votre Chromebook</translation>
 <translation id="2367972762794486313">Afficher les applications</translation>
 <translation id="2368828502825385061">Localiser</translation>
@@ -506,6 +509,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Activer l'accès au microphone?</translation>
 <translation id="296762781903199866">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Votre pays n'est pas pris en charge pour le moment.</translation>
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Prochain numéro</translation>
 <translation id="2985148236010982088">Afficher toutes les applis</translation>
@@ -978,6 +982,7 @@ Un appareil connecté.</translation>
 <translation id="468293128311738995">Applications de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère dans le bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
+<translation id="4697357603686181098">Impossible de vous aider avec cette requête. Essayez-en une autre.</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
 <translation id="4706121060329443414">Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal sera maintenant envoyé à Google aux fin de traitement.</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
@@ -1900,6 +1905,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7982878511129296052">Désactivation en cours…</translation>
 <translation id="7984197416080286869">Trop de tentatives de déverrouillage avec empreinte digitale</translation>
 <translation id="798779949890829624">Ce paramètre est géré par votre administrateur</translation>
+<translation id="7989206653429884947">Fréquemment ouverts</translation>
 <translation id="799296642788192631">Vous pouvez épingler des fichiers importants. Pour épingler, pointez un élément ou ouvrez Fichiers et faites un clic droit sur un élément.</translation>
 <translation id="7994370417837006925">Connexion multicompte</translation>
 <translation id="7995804128062002838">Impossible d'effectuer une capture d'écran</translation>
@@ -2083,6 +2089,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" /> : Activation en cours…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Le temps est écoulé. Bon travail! 🎉</translation>
+<translation id="8753368202781196133">Cette langue n'est pas prise en charge pour le moment.</translation>
 <translation id="8755498163081687682">Vérifiez votre identité : <ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="875593634123171288">Afficher les paramètres RPV</translation>
 <translation id="8756799553341497810">Vous pouvez commencer à personnaliser la mise en page de votre application dès que vous quittez cet affichage.</translation>

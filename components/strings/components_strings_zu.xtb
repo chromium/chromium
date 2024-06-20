@@ -115,6 +115,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="1209206284964581585">Fihla okwamanje</translation>
 <translation id="121201262018556460">Uzame ukufinyelela ku-<ph name="DOMAIN" />, kodwa iseva iphrezente isitifiketi esiqukethe ukhiye obuthaka. Umhlaseli kungenzeka ukuthi uphule ukhiye wobumfihlo, futhi iseva kungenzeka kungabi yiseva obukade uyilindele (kungenzeka ukuthi ixhumana nomhlaseli).</translation>
 <translation id="1212527389003717329">Ukudawuniloda kuqalile. Ukuyibona, cindezela bese ubamba okuthi |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Ibanga lentengo</translation>
 <translation id="1219129156119358924">Ukuvikela kwesistimu</translation>
 <translation id="1222060260947439312">Ithileyi Lakwesokudla</translation>
 <translation id="1224330468394120478">I-A3x6</translation>
@@ -1181,6 +1182,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3272091146646336650">I-Super-B</translation>
 <translation id="3272112314896217187">Fake ikhodi yokuqinisekisa yamadijithi angu-<ph name="NUMBER_OF_DIGITS" /></translation>
 <translation id="3272643614306383237">Ngaphansi kunokungu-1 MB. Amanye amasayithi angalayisha kancane kakhulu ekuvakasheni kwakho okulandelayo.</translation>
+<translation id="327346289570683313">Ibanga Lentengo</translation>
 <translation id="3273738040255912340">Umlawuli wakho angenza izinguquko kuphrofayela yakho nebhrawuza ekude, ahlaziye ulwazi mayelana nebhrawuza ngokubika, futhi enze eminye imisebenzi edingekayo. Umsebenzi okule divayisi ungaphinda uphathwe ngaphandle kwe-Chromium. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Inqubomgomo yomlawuli ayincomi ukuvula leli fayela e-<ph name="DESTINATION_NAME" />}one{Inqubomgomo yomlawuli ayincomi ukuvula lamafayela ku-<ph name="DESTINATION_NAME" />}other{Inqubomgomo yomlawuli ayincomi ukuvula lamafayela ku-<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Inhlangano yakho, i-<ph name="ENROLLMENT_DOMAIN" />, ithumele ulwazi kumawebhusayithi alandelayo, njengamasethingi noma izinqumbomgomo.</translation>
@@ -4272,6 +4274,7 @@ Imininingwane engeziwe:
 <translation id="920643408853370361">Umshwalense Wokuhamba</translation>
 <translation id="9207861905230894330">Yehlulekile ukungeza i-athikili.</translation>
 <translation id="9210825002219699214">Ukundiza</translation>
+<translation id="9211461151375991073">Thayipha okuthi @ ukuze useshe i-<ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Yenza ngokwezifiso ukubukeka</translation>
 <translation id="9215416866750762878">Uhlelo lokusebenza lumisa i-Chrome ekuxhumeni ngokuphephile kuleli sayithi</translation>
 <translation id="92178312226016010">Ulandelela lo mkhiqizo.</translation>

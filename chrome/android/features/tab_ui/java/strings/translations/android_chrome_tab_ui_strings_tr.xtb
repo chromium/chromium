@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}}</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
+<translation id="4338724047016295066">Etkin olmayan sekmeler otomatik olarak kapatılır. Bu sekmeleri dilediğiniz zaman Geçmiş'te bulabilirsiniz.</translation>
 <translation id="4371591986692297148">Etkin değil</translation>
 <translation id="4460014764210899310">Grubu Çöz</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 gün sonra kapat}other{<ph name="DAY_COUNT_MANY" /> gün sonra kapat}}</translation>
 <translation id="4777866634702576038">Sekme grubu silinsin mi?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Sekme gruplarınız burada gösterilir</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekme grubunu iptal et}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekme grubunu iptal et}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 gün sonra}other{<ph name="DAY_COUNT_MANY" /> gün sonra}}</translation>
 <translation id="6549021453810473782">Mağaza bilgilerini görün</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Sekmeyi sola taşı</translation>

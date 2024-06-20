@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK nije točan</translation>
 <translation id="4057991113334098539">Aktivacija...</translation>
 <translation id="4092890906744441904">irski</translation>
+<translation id="4101601646343868113">Prijavite se na svoju mobilnu mrežu i potvrdite da je vaš paket mobilnih podataka aktivan</translation>
 <translation id="4124731372776320263">Sinkronizira se 1 datoteka Diska</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Nepotrebne stavke premjestite u otpad</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">tamilski s tipkovnicom Tamil99</translation>
 <translation id="5633226425545095130">Ako premjestite tu stavku, podijelit ćete je sa svima koji mogu vidjeti dijeljenu mapu <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
+<translation id="5650895901941743674">Provjerite konfiguraciju APN-a</translation>
 <translation id="5669691691057771421">Unesite novi PIN</translation>
 <translation id="5678784840044122290">Linux aplikacija bit će dostupna na vašem terminalu, a možda će se i u Pokretaču prikazati ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Prekid veze s arhivom ili virtualnim diskom nije moguć<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Popis datoteka promijenio se na prikaz minijatura.</translation>
 <translation id="8601932370724196034">Slikovna datoteka Crostinija</translation>
 <translation id="8609695766746872526">islandski</translation>
+<translation id="8630384863424041081">Unesite PIN svoje SIM kartice ili zadani PIN koji ste dobili od mobilnog operatera. Obratite se mobilnom operateru radi podrške.</translation>
 <translation id="863903787380594467">Netočan PIN. Preostao vam je sljedeći broj pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – priključak</translation>
 <translation id="8656407365183407932">Vaše offline datoteke trebale su se ukloniti</translation>

@@ -115,6 +115,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1209206284964581585">Ocultar por el momento</translation>
 <translation id="121201262018556460">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor  presentó un certificado que contiene una clave no segura. Es posible que un atacante haya descifrado la clave privada y que este no sea el servidor esperado (es posible que hayas establecido comunicación con un atacante).</translation>
 <translation id="1212527389003717329">Comenzó la descarga. Para verla, mantén presionado |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Intervalo de precios</translation>
 <translation id="1219129156119358924">Seguridad del sistema</translation>
 <translation id="1222060260947439312">Bandeja derecha</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1184,6 +1185,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3272091146646336650">B súper</translation>
 <translation id="3272112314896217187">Ingresa el código de verificación de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
+<translation id="327346289570683313">Intervalo de precios</translation>
 <translation id="3273738040255912340">El administrador puede realizar cambios en tu perfil y navegador de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias. Es posible que la actividad correspondiente a este dispositivo también se administre fuera de Chromium. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, envió parte de la información, como la configuración o las políticas, a los siguientes sitios web.</translation>
@@ -4277,6 +4279,7 @@ Detalles adicionales:
 <translation id="920643408853370361">Seguro de viaje</translation>
 <translation id="9207861905230894330">Error al agregar artículo</translation>
 <translation id="9210825002219699214">Vuelos</translation>
+<translation id="9211461151375991073">Escribe @ para buscar en <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personalizar el aspecto</translation>
 <translation id="9215416866750762878">Una aplicación impide que Chrome se conecte de forma segura a este sitio</translation>
 <translation id="92178312226016010">Estás realizando un seguimiento de este producto.</translation>

@@ -117,6 +117,8 @@ Confira mais configurações que usam dados para melhorar sua experiência do Ch
 <translation id="1513814250881909472">Sincronize para acessar suas guias de outros dispositivos</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
+<translation id="1544084554881119930">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
+Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para gerenciar sua Conta do Google, toque no botão "Gerenciar conta".</translation>
 <translation id="154513667535157406">O botão "Gostei" envia feedback informando que você gostou desse resumo</translation>
 <translation id="1549000191223877751">Mover para outra janela</translation>
@@ -458,6 +460,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3264259168916048410">O computador quer usar este dispositivo para fazer login em um site</translation>
 <translation id="3265093782546847662">Todas as páginas <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Carregar imagem</translation>
+<translation id="327204079441056603">Mudamos a forma como as senhas neste dispositivo são salvas</translation>
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
@@ -1215,6 +1218,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6918398787259831832">Se o problema persistir, <ph name="BEGIN_LINK" />confira mais informações<ph name="END_LINK" /> no <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Todos os códigos de segurança salvos no seu dispositivo e na sua Conta do Google serão excluídos</translation>
 <translation id="6937524809504266803">Personalização e vinculação</translation>
+<translation id="6937876069006524083">Apelido (opcional)</translation>
 <translation id="6942665639005891494">Altere o local padrão de download a qualquer momento usando a opção do menu "Configurações"</translation>
 <translation id="694267552845942083">No momento, você está personalizando suas configurações de sincronização. Para terminar de ativar a sincronização, toque no botão "Confirmar" na parte inferior da tela. Navegar para cima</translation>
 <translation id="6945221475159498467">Selecionar</translation>
@@ -1278,6 +1282,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> guias como novas guias em segundo plano.</translation>
 <translation id="7217781228893594884">As guias anônimas vão ser bloqueadas quando você sair do Chrome</translation>
 <translation id="7221869452894271364">Recarregar esta página</translation>
+<translation id="7224097611345298931">Todas as senhas salvas apenas neste dispositivo para o Chrome e o <ph name="CHROME_CHANNEL" /> foram fundidas. Você pode preencher automaticamente todas as senhas salvas nos dois apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pendente}one{# download pendente}other{# downloads pendentes}}</translation>
 <translation id="72415438529550637">A sugestão de senha está fechada.</translation>
 <translation id="7252076891734325316">Aproxime o smartphone do computador</translation>

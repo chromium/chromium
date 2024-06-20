@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">ପେଷ୍ଟେଲ ହଳଦିଆ</translation>
 <translation id="1056898198331236512">ଚେତାବନୀ</translation>
 <translation id="1059913517121127803">ସ୍କାନିଂ ଆରମ୍ଭ କରାଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="1061864016440983342">ଲୋକେସନ ବିନା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />ଟିରୁ <ph name="INDEX" />, <ph name="NAME" />।</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ଫାୟାରୱାଲ୍ ଥିବାର ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">ଅଧିକ ସେଟିଂ</translation>
 <translation id="2082932131694554252">ଆସାଇନ କରାଯାଇଥିବା କୀବୋର୍ଡ କୀ</translation>
 <translation id="2085089206770112532">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
+<translation id="2086091080968010660">ସମୟ ଆଧାରିତ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସଠିକ ହୋଇନପାରେ। ସେଟିଂସରେ ସିଷ୍ଟମ ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="2102231663024125441">ଟେକ୍ସଟ ଏଡିଟିଂ</translation>
 <translation id="2105810540595158374">ଡିଭାଇସଟି ଏକ ଗେମ କଣ୍ଟ୍ରୋଲର ଅଟେ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ଡିଫଲ୍ଟଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରନ୍ତୁ</translation>
 <translation id="2286454467119466181">ସରଳ</translation>
 <translation id="2287186687001756809">କୌଣସି ଇମେଜ ଉପଲବ୍ଧ ନାହିଁ। ଫଟୋଗୁଡ଼ିକୁ ଯୋଗ କରିବା ପାଇଁ <ph name="LINK" />କୁ ଯାଆନ୍ତୁ</translation>
+<translation id="2294577623958216786">ବର୍ତ୍ତମାନର ସିଡୁଲକୁ ଏଥିରେ ସେଟ କରାଯାଇଛି <ph name="SUNRISE" />-<ph name="SUNSET" />। ସୂର୍ଯ୍ୟାସ୍ତ ଏବଂ ସୂର୍ଯ୍ୟୋଦୟ ସିଡୁଲ ସ୍ୱତଃ ଅପଡେଟ ହେବା ପାଇଁ ସିଷ୍ଟମ ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="2305172810646967500">କଳା</translation>
 <translation id="2307344026739914387">ବର୍ତ୍ତମାନର କୀପେୟାର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2308243864813041101">ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବାକୁ <ph name="DEVICE_NAME" />ର USB କେବୁଲକୁ ଅନପ୍ଲଗ କରନ୍ତୁ</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">କୀବୋର୍ଡକୁ ଉଜ୍ଜ୍ଵଳ କରନ୍ତୁ</translation>
 <translation id="6412715219990689313">ବିଲ୍ଟ-ଇନ କୀବୋର୍ଡ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">ସିଷ୍ଟମର ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ଦୁର୍ବଳ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>

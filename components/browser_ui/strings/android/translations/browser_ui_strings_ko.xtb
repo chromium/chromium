@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3628308229821498208">추천 검색어</translation>
 <translation id="3697164069658504920">사용 설정하면 사이트에서 USB 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 USB 기기를 사용할 수 없습니다.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">방문하는 사이트에서 주로 내가 봇이 아님을 확인하기 위해 Chrome에 약간의 정보를 저장할 수 있습니다.</translation>
 <translation id="3721953990244350188">닫기 후 가능한 다음 작업 표시</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">기기에서 모든 권한을 취소합니다.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
 <translation id="4976702386844183910">최근 방문: <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
 <translation id="4994033804516042629">연락처 없음</translation>
 <translation id="4996978546172906250">공유 방법</translation>
@@ -457,6 +459,7 @@
 <translation id="8441146129660941386">뒤로 탐색</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />에서 위치 정보에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 위치를 사용 설정하세요.</translation>
 <translation id="8447861592752582886">기기 액세스 권한 취소</translation>
+<translation id="8473055640493819707">'<ph name="APP_NAME" />' 앱이 최신 버전이 아닙니다. 앱을 다시 설치하세요.</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="848952951823693243">항상 모바일 사이트 요청</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>

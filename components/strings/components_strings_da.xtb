@@ -115,6 +115,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1209206284964581585">Skjul indtil videre</translation>
 <translation id="121201262018556460">Du har forsøgt at få fat i <ph name="DOMAIN" />, men serveren har præsenteret et certifikat med en svag nøgle. En hacker kan have knækket den private nøgle, og serveren er muligvis ikke den forventede server (du kommunikerer muligvis med en hacker).</translation>
 <translation id="1212527389003717329">Downloaden er påbegyndt. Hold fingeren på |<ph name="ACCELERATOR" />| for at se den.</translation>
+<translation id="1214970845432250240">Prisinterval</translation>
 <translation id="1219129156119358924">Systemsikkerhed</translation>
 <translation id="1222060260947439312">Højre bakke</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1183,6 +1184,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede verificeringskode</translation>
 <translation id="3272643614306383237">Mindre end 1 MB. Nogle websites indlæses muligvis langsommere, næste gang du besøger dem.</translation>
+<translation id="327346289570683313">Prisinterval</translation>
 <translation id="3273738040255912340">Din administrator kan foretage ændringer i din profil og browser via fjernadgang, analysere oplysninger om browseren via rapportering og udføre andre nødvendige opgaver. Aktivitet på denne enhed administreres muligvis også uden for Chromium. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratorpolitikken fraråder at åbne denne fil på <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at åbne denne fil på <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at åbne disse filer på <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Din organisation <ph name="ENROLLMENT_DOMAIN" /> har sendt nogle oplysninger til følgende websites, f.eks. indstillinger eller politikker.</translation>

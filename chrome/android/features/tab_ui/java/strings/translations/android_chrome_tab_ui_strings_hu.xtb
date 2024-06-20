@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{A következő, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="427987768447457592">Új lapcsoport</translation>
+<translation id="4338724047016295066">Az inaktív lapokat automatikusan bezárja a rendszer. Az Előzményekben bármikor megtalálhatja őket.</translation>
 <translation id="4371591986692297148">Inaktív</translation>
 <translation id="4460014764210899310">Csoportosítás megszüntetése</translation>
 <translation id="4648718555153979859">A lapok itt vannak csoportosítva</translation>
 <translation id="4686942373615810936">Épp most létrehozva</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Bezárás 1 nap után}other{Bezárás <ph name="DAY_COUNT_MANY" /> nap után}}</translation>
 <translation id="4777866634702576038">Törli a lapcsoportot?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> vélemény)}other{(<ph name="REVIEWS_COUNT_MANY" /> vélemény)}}</translation>
 <translation id="4850886885716139402">Nézet</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Itt láthatja majd a lapcsoportjait</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap csoportosításának megszüntetése}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap csoportosításának megszüntetése}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 nap után}other{<ph name="DAY_COUNT_MANY" /> nap után}}</translation>
 <translation id="6549021453810473782">Üzletadatok megtekintése</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>

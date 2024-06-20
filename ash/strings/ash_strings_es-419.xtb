@@ -119,6 +119,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1391102559483454063">Sí</translation>
 <translation id="1394698770495054737">Desenfoque completo</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Hace 1 día}other{Hace # días}}</translation>
 <translation id="1404963891829069586">Sonidos del Modo sin distracciones</translation>
 <translation id="1407069428457324124">Tema oscuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utiliza las teclas de flecha para navegar por las fechas.</translation>
@@ -209,6 +210,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="174102739345480129">El marcador está desactivado.</translation>
 <translation id="1743570585616704562">No se reconoció</translation>
 <translation id="1743927604032653654">Contraer la notificación de <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{En la última hora}=1{Hace 1 h}other{Hace # h}}</translation>
 <translation id="1746730358044914197">Tu administrador configura los métodos de entrada.</translation>
 <translation id="1747336645387973286">fecha límite <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
@@ -346,6 +348,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">batería</translation>
 <translation id="2361210043495191221">Activa o desactiva la red Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Se envió desde <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">No se puede acceder a la Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicaciones</translation>
 <translation id="2368828502825385061">Ubicar</translation>
@@ -506,6 +509,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">¿Quieres activar el acceso al micrófono?</translation>
 <translation id="296762781903199866">No se pudieron descargar los archivos de voz en <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Tu ubicación actual no es compatible en este momento.</translation>
 <translation id="2970920913501714344">Instalar apps, extensiones y temas</translation>
 <translation id="2977598380246111477">Próximo número</translation>
 <translation id="2985148236010982088">Ver todas las apps</translation>
@@ -980,6 +984,7 @@ Se conectó un dispositivo.</translation>
 <translation id="468293128311738995">Apps de tu teléfono</translation>
 <translation id="4690510401873698237">Biblioteca en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
+<translation id="4697357603686181098">No podemos ayudarte con esto. Prueba con otra solicitud.</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
 <translation id="4706121060329443414">Se intentará completar la descarga más tarde. Por ahora, se enviará la voz a Google para su procesamiento.</translation>
 <translation id="470644585772471629">Inversión de colores</translation>
@@ -1902,6 +1907,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7982878511129296052">Apagando…</translation>
 <translation id="7984197416080286869">Demasiados intentos con la huella dactilar</translation>
 <translation id="798779949890829624">El administrador controla este parámetro de configuración.</translation>
+<translation id="7989206653429884947">Sitio abierto con frecuencia</translation>
 <translation id="799296642788192631">Puedes fijar archivos importantes. Para fijar un elemento, coloca el cursor sobre él o abre Archivos y haz clic con el botón derecho en él.</translation>
 <translation id="7994370417837006925">Acceso múltiple</translation>
 <translation id="7995804128062002838">No se pudo realizar una captura de pantalla.</translation>
@@ -2086,6 +2092,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Se acabó el tiempo. ¡Bien hecho! 🎉</translation>
+<translation id="8753368202781196133">Por el momento, no se admite este idioma.</translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Mostrar la configuración de la VPN</translation>
 <translation id="8756799553341497810">Podrás comenzar a personalizar el diseño de la app una vez que salgas de esta vista.</translation>

@@ -117,6 +117,8 @@ W <ph name="BEGIN_LINK2" />usługach Google<ph name="END_LINK2" /> znajdziesz w
 <translation id="1513814250881909472">Aby zobaczyć karty z innych urządzeń, włącz synchronizację</translation>
 <translation id="1513858653616922153">Usuń hasło</translation>
 <translation id="1521774566618522728">Aktywność: dzisiaj</translation>
+<translation id="1544084554881119930">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazowe. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli je zapomnisz lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Aby zarządzać kontem Google, kliknij przycisk „Zarządzaj kontem”</translation>
 <translation id="154513667535157406">Opcja Lubię powoduje przesłanie opinii pozytywnej</translation>
 <translation id="1549000191223877751">Przenieś do innego okna</translation>
@@ -458,6 +460,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3264259168916048410">Twój komputer chce użyć tego urządzenia, aby umożliwić Ci zalogowanie się na stronie</translation>
 <translation id="3265093782546847662">Wszystkie strony w domenie <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Wczytaj obraz</translation>
+<translation id="327204079441056603">Zmieniliśmy sposób zapisywania haseł na tym urządzeniu</translation>
 <translation id="3280562213547448728">Wyszukiwanie głosowe</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3290249595466894471">Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, żeby pomóc w wykrywaniu nowych zagrożeń.</translation>
@@ -1214,6 +1217,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6918398787259831832">Jeśli problem będzie się powtarzał, <ph name="BEGIN_LINK" />więcej informacji znajdziesz<ph name="END_LINK" /> w witrynie <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Wszystkie kody zabezpieczające zapisane na Twoim urządzeniu i na koncie Google zostaną usunięte</translation>
 <translation id="6937524809504266803">Personalizacja i łączenie usług</translation>
+<translation id="6937876069006524083">Pseudonim (opcjonalnie)</translation>
 <translation id="6942665639005891494">W dowolnej chwili w Ustawieniach możesz zmienić domyślną lokalizację pobierania</translation>
 <translation id="694267552845942083">W tej chwili dostosowujesz ustawienia synchronizacji. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
 <translation id="6945221475159498467">Wybierz</translation>
@@ -1277,6 +1281,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7207760545532569765">Przywróć karty (<ph name="TAB_COUNT" />) jako nowe karty w tle.</translation>
 <translation id="7217781228893594884">Gdy opuścisz Chrome, karty incognito zostaną zablokowane</translation>
 <translation id="7221869452894271364">Odśwież stronę</translation>
+<translation id="7224097611345298931">Chrome i <ph name="CHROME_CHANNEL" />: wszystkie hasła zapisane tylko na tym urządzeniu w tych przeglądarkach zostały scalone. Możesz korzystać z autouzupełniania wszystkich zapisanych haseł w obu aplikacjach.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 plik oczekuje na pobranie}few{# pliki oczekują na pobranie}many{# plików oczekuje na pobranie}other{# pliku oczekuje na pobranie}}</translation>
 <translation id="72415438529550637">Sugestia dotycząca hasła jest zamknięta.</translation>
 <translation id="7252076891734325316">Przybliż telefon do komputera</translation>

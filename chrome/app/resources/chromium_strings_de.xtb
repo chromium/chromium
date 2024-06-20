@@ -13,6 +13,7 @@
 <translation id="1131805035311359397">Wenn du prüfen möchtest, ob deine Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chromium an<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klicke auf das Chromium-Menü</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
+<translation id="1188705220418984327">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1262876892872089030">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chromium schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
 <translation id="1265577313130862557">Chromium hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
@@ -49,7 +50,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="185970820835152459">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chromium-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Websites können Daten zu deinen Interessen bei Chromium speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
 <translation id="1881322772814446296">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Chromium-Profil. Deine Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn du deine bestehenden Chromium-Daten getrennt verwenden möchtest, kannst du ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Damit du diese Erweiterung als <ph name="USER_EMAIL_ADDRESS" /> verwenden kannst, musst du dich in Chromium anmelden.\nDu kannst dann auch deine Passwörter und andere Daten aus deinem Google-Konto verwenden und speichern.</translation>
 <translation id="1906696617298807388">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chromium deine Eingabe an Google Drive, damit du Vorschläge für Elemente erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="1911763535808217981">Wenn du diese Einstellung deaktivierst, kannst du dich auf Websites von Google wie beispielsweise Gmail anmelden, ohne dich auch in Chromium anmelden zu müssen</translation>
 <translation id="1929939181775079593">Chromium reagiert nicht. Jetzt neu starten?</translation>
@@ -142,7 +142,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
 <translation id="3313189106987092621">Chromium warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="3316771292331273802">Wenn du alle Chromium-Fenster schließt, wirst du auf den meisten Websites abgemeldet – mit Ausnahme deines Google-Kontos, falls du in Chromium angemeldet bist. Wenn du möchtest, dass Websites dich wiedererkennen, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">Die Erweiterung „<ph name="EXTENSION_NAME" />“ fordert dich auf, dich in Chromium anzumelden</translation>
 <translation id="3350761136195634146">Ein Chromium-Profil mit diesem Konto ist bereits vorhanden</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Zu bestehendem Chromium-Profil wechseln?</translation>
@@ -159,6 +158,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="364817392622123556">{COUNT,plural, =0{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest.}=1{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3651803019964686660">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chromium anmelden.</translation>
 <translation id="3667616615096815454">Installation nicht möglich. Die App ist dem Server nicht bekannt.</translation>
+<translation id="3669334504579945026">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="3685209450716071127">Chromium kann deine Passwörter nicht prüfen. Überprüfe deine Internetverbindung.</translation>
 <translation id="3702352323269013324">Weitere Informationen zur Personalisierung von Werbung in Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen}=1{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator solltest du Chromium neu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
@@ -460,6 +460,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8357820681460164151">Wenn du auf allen deinen Geräten auf deine Chromium-Browserinhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung</translation>
 <translation id="8360718212975266891">Du benötigst Windows 10 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
+<translation id="837460953767177950">Du musst Chromium dann neu starten.</translation>
 <translation id="8401454788024434101">Diese Erweiterung ist möglicherweise nicht sicher – ihre Veröffentlichung wurde vom Entwickler aufgehoben. Entferne sie aus Chromium, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium innerhalb eines Tages neu starten}other{Chromium innerhalb von # Tagen neu starten}}</translation>
 <translation id="8453117565092476964">Das Installationsarchiv ist beschädigt oder ungültig. Bitte lade Chromium erneut herunter.</translation>

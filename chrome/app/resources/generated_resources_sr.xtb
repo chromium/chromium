@@ -2940,6 +2940,7 @@
 <translation id="3109724472072898302">Скупљено</translation>
 <translation id="3112292765614504292">Величина апликације: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Не дозвољавај сајтовима да мењају фајлове или фолдере на уређају</translation>
+<translation id="3113970906450647715">Дугме је откачено</translation>
 <translation id="3115147772012638511">Чека се кеш меморија...</translation>
 <translation id="3115580024857770654">Скупи све</translation>
 <translation id="3115728370128632723">Када кажемо да ћемо учинити да веб боље ради за вас, то значи:
@@ -5312,6 +5313,7 @@
 <translation id="4883436287898674711">Сви <ph name="WEBSITE_1" /> сајтови</translation>
 <translation id="48838266408104654">&amp;Менаџер задатака</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Увек приказуј пречицу за Google објектив</translation>
 <translation id="4885692421645694729">Овај додатак нема никакав додатан приступ сајту</translation>
 <translation id="4887424188275796356">Отвори помоћу системског приказивача</translation>
 <translation id="488785315393301722">Прикажи детаље</translation>
@@ -6119,6 +6121,7 @@
 <translation id="549602578321198708">Реч</translation>
 <translation id="5496587651328244253">Организовање</translation>
 <translation id="5496730470963166430">Није им дозвољено да шаљу искачуће прозоре или да користе преусмеравања</translation>
+<translation id="5497250476399536588">Можете да је пронађете у одељку Адресе и друго</translation>
 <translation id="5497251278400702716">Ова датотека</translation>
 <translation id="5497739595514726398">Chrome није успео да верификује овај пакет за инсталацију</translation>
 <translation id="5498967291577176373">Пишите брже помоћу предлога за име, адресу или број телефона у тексту</translation>
@@ -6890,6 +6893,7 @@
 <translation id="6082877069782862752">Мапирање кључа</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – део групе без назива</translation>
 <translation id="6086004606538989567">Налог који сте верификовали није овлашћен за приступ овом уређају.</translation>
+<translation id="6086418630711763366">Можете да се крећете страницама помоћу курсора за текст. Притисните Ctrl + <ph name="KEY" /> да бисте га искључили.</translation>
 <translation id="6086846494333236931">Инсталирао је администратор</translation>
 <translation id="6087746524533454243">Тражите страницу са основним подацима о прегледачу? Посетите</translation>
 <translation id="6087960857463881712">Задовољно лице</translation>
@@ -6954,6 +6958,7 @@
 <translation id="6130692320435119637">Додај WiFi</translation>
 <translation id="6130807998512240230">Phone Hub, Дељење у близини</translation>
 <translation id="6130887916931372608">Тастер тастатуре</translation>
+<translation id="6132251717264923430">Дугме је закачено</translation>
 <translation id="6132714462430777655">Желите да прескочите регистрацију за школу?</translation>
 <translation id="6134428719487602109">Уклоните све корисничке налоге и рестартујте Chromebook да би био као нов.</translation>
 <translation id="6135823405800500595">Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени</translation>
@@ -8090,6 +8095,7 @@
 <translation id="6988572888918530647">Управљајте Google налогом</translation>
 <translation id="6989274756151920076">Остани овде</translation>
 <translation id="6991665348624301627">Изаберите одредиште</translation>
+<translation id="6991926986715044139">Увек приказуј пречицу за Google објектив</translation>
 <translation id="6992554835374084304">Укључите побољшану проверу правописа</translation>
 <translation id="6993000214273684335">Картица је уклоњена из неименоване групе – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Прегледач Chrome се ажурира</translation>
@@ -8301,6 +8307,7 @@
 <translation id="7154020516215182599">Пошаљите повратне информације или опишите проблем. Ако је то могуће, уврстите кораке за изазивање истог проблема.</translation>
 <translation id="7154130902455071009">Промените почетну страницу у: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Пронађите видео садржај бољег квалитета и продужите трајање батерије. Видео ће се пуштати само на екрану који подржава Cast.</translation>
+<translation id="7159695867335480590">Пусти/паузирај</translation>
 <translation id="7159953856712257647">Подразумевано инсталирано</translation>
 <translation id="7160182524506337403">Сада можете да прегледате обавештења на телефону</translation>
 <translation id="7160911207516219534">Бочне табле</translation>
@@ -9807,6 +9814,7 @@
 <translation id="8252569384384439529">Отпрема се...</translation>
 <translation id="8253198102038551905">Кликните на „+“ да бисте видели својства мреже</translation>
 <translation id="8255212965098517578">Недавне слике, обавештења и апликације</translation>
+<translation id="8255927332875030912">Тастер за претрагу + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Искрица</translation>
 <translation id="8257950718085972371">Настави да блокираш приступ камери</translation>
 <translation id="8258027225380843424">Увоз је успео!</translation>

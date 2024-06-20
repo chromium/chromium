@@ -30,7 +30,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1407223320754252908">Mae Google Translate wedi'i gynnwys yn Chrome fel y gallwch gyfieithu pan fydd ei angen arnoch</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor.}=1{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich ffenestr Anhysbys yn ailagor.}two{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}few{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}many{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}other{Mae Chrome wedi gorffen diweddaru. Gallwch ddefnyddio'r fersiwn ddiweddaraf cyn gynted ag y byddwch yn ail-lansio. Ar ôl hynny, bydd eich tabiau presennol yn ailagor. Ni fydd eich # ffenestr Anhysbys yn ailagor.}}</translation>
 <translation id="1434626383986940139">Apiau Chrome Canary</translation>
-<translation id="1438479496118074429">Mae'r estyniad \"<ph name="EXTENSION_NAME" />\" eisiau i chi fewngofnodi i Chrome</translation>
 <translation id="146866447420868597">Mewngofnodi i Chrome?</translation>
 <translation id="1492280395845991349">Ail-lansiwch i orffen diweddariad Chrome</translation>
 <translation id="1497802159252041924">Gwall gosod: <ph name="INSTALL_ERROR" /></translation>
@@ -59,6 +58,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="1734234790201236882">Bydd Chrome yn cadw'r cyfrinair hwn yn eich Cyfrif Google. Ni fydd yn rhaid i chi ei gofio.</translation>
 <translation id="1786003790898721085">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chrome ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="1786044937610313874">Mae llwybrau byr yn agor yn Chrome</translation>
+<translation id="178701303897325119">Nid yw'r estyniad hwn yn cael ei gefnogi mwyach. Mae Chrome yn argymell eich bod yn ei dynnu yn lle hynny.</translation>
 <translation id="1812689907177901597">Drwy ddiffodd hyn, gallwch fewngofnodi i wefannau Google megis Gmail heb fewngofnodi i Chrome</translation>
 <translation id="1860536484129686729">Mae angen caniatâd ar Chrome i gael mynediad at eich camera ar gyfer y wefan hon</translation>
 <translation id="1873233029667955273">Nid Google Chrome yw eich porwr diofyn</translation>
@@ -251,6 +251,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4389991535395284064">Wrth bori yn y modd Anhysbys, bydd Chrome yn eich rhybuddio cyn llwytho gwefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="4427306783828095590">Mae gwell amddiffyniad yn gwneud rhagor i rwystro gwe-rwydo a drwgwedd</translation>
 <translation id="4434353761996769206">Gwall gosodwr: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Mewngofnodwch i Chrome fel <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Mewngofnodi Rhwydwaith - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Mae gweithred arall ar Google Chrome ar y gweill. Rhowch gynnig arall arni nes ymlaen.</translation>
 <translation id="4459234553906210702">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth gan Chrome sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
@@ -477,7 +478,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7802622118583152311">Mae Chrome yn dod â'r dechnoleg ddiweddaraf i chi ar gyfer pori gwell</translation>
 <translation id="7808348361785373670">Tynnu o Chrome...</translation>
 <translation id="7825851276765848807">Methwyd y gosodiad oherwydd gwall amhenodol. Lawrlwythwch Google Chrome eto.</translation>
-<translation id="7828063580843052643">I ddefnyddio'r estyniad hwn fel <ph name="USER_EMAIL_ADDRESS" />, mewngofnodwch i Chrome.\nByddwch hefyd yn gallu defnyddio a chadw'ch cyfrineiriau a rhagor o'ch Cyfrif Google.</translation>
 <translation id="7836610565365456468">Trawsnewidiwch eich porwr gyda themâu bywiog wedi'u hysbrydoli gan artistiaid, natur a rhagor</translation>
 <translation id="7845233973568007926">Diolch am osod. Rhaid i chi ailgychwyn eich cyfrifiadur cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">Mae AI yn Chrome yn helpu i wneud y we yn gyflymach, yn fwy diogel ac yn fwy hygyrch</translation>

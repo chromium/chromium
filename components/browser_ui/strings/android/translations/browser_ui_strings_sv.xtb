@@ -364,6 +364,7 @@
 <translation id="6945221475159498467">Välj</translation>
 <translation id="6950072572526089586">En webbplats som du besöker kan spara information om vad du gör så att den fungerar som förväntat. Det kan till exempel vara att hålla dig inloggad på en webbplats eller spara varor i kundvagnen. Webbplatser sparar ofta den här informationen tillfälligt på enheten.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980861169612950611">Vill du radera webbplatsdata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
 <translation id="6992289844737586249">Fråga innan webbplatser tillåts att använda mikrofonen (rekommenderas)</translation>
 <translation id="7000754031042624318">Inaktiverad i Android-inställningarna</translation>
@@ -459,6 +460,7 @@
 <translation id="8441146129660941386">Sök bakåt</translation>
 <translation id="8444433999583714703">Om du vill ge <ph name="APP_NAME" /> åtkomst till din plats måste du även aktivera plats i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Återkalla enhetsbehörighet</translation>
+<translation id="8473055640493819707"><ph name="APP_NAME" /> är inaktuell. Installera om appen.</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="848952951823693243">Begär alltid mobilversionen</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>

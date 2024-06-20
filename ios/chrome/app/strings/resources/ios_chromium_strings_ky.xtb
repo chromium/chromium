@@ -122,6 +122,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 
 Бул параметрди өзгөртүү үчүн <ph name="BEGIN_LINK" />аккаунтуңуздагы Chromium маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Төлөм ыкмаларынын параметрлерин Chromium'да ачат.</translation>
+<translation id="458786853569524949">Эми электрондук каттардагы шилтемелерди, документтерди жана башка колдонмолорду Chromium’да ача аласыз.</translation>
 <translation id="459080529287102949">Chromium'да визуалдык графикаларды издөө</translation>
 <translation id="4633738821577273991">Chromium профилиңизде Өркүндөтүлгөн коопсуз серептөөнү да иштетиңиз</translation>
 <translation id="4638625642619341392">Chromium'ду бул жерден жүктөп алыңыз.</translation>
@@ -289,6 +290,7 @@ Chromium'дун ишин жакшыртуу үчүн маалыматтарды 
 Маалыматыңыз сыр сүйлөм менен <ph name="TIME" /> күнү шифрленген. Chromium'дагы маалыматты колдонуу жана Google аккаунтуңузга сактоо үчүн сыр сүйлөмдү киргизиңиз.</translation>
 <translation id="9022552996538154597">Chromium'га кирүү</translation>
 <translation id="9050790730841755540">Эми башка колдонмолордогу шилтемелерди Chromium'да ача аласыз.</translation>
+<translation id="9057082013386654559">Демейки боюнча iPad түзмөгүндө Chromium'ду колдонуңуз</translation>
 <translation id="9059693977935746710">Бул сырсөздү эстеп калуунун кереги жок. Ал <ph name="EMAIL" /> аккаунту үчүн Google'дун Сырсөздөрдү башкаргычына сакталат</translation>
 <translation id="9089354809943900324">Chromium эскирип калган.</translation>
 <translation id="9110075932708282655">Chromium’ду демейки катары колдонуу</translation>

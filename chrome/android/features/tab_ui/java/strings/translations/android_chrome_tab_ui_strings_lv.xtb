@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Violets</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_ONE" /> cilne.}zero{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Izvērst ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="427987768447457592">Jauna ciļņu grupa</translation>
+<translation id="4338724047016295066">Neaktīvās cilnes tiks automātiski aizvērtas. Varat jebkurā laikā tās atrast vēsturē.</translation>
 <translation id="4371591986692297148">neaktīva</translation>
 <translation id="4460014764210899310">Atcelt grupēšanu</translation>
 <translation id="4648718555153979859">Jūsu cilnes šeit ir grupētas kopā</translation>
 <translation id="4686942373615810936">Izveidota tikko</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Aizvērt pēc 1 dienas}zero{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienām}one{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienas}other{Aizvērt pēc <ph name="DAY_COUNT_MANY" /> dienām}}</translation>
 <translation id="4777866634702576038">Vai dzēst ciļņu grupu?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsauksme)}zero{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmju)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsauksme)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmes)}}</translation>
 <translation id="4850886885716139402">Skatīt</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Šeit varēsiet skatīt savas ciļņu grupas</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Atcelt <ph name="TABS_COUNT_ONE" /> atlasītās cilnes grupēšanu}zero{Atcelt <ph name="TABS_COUNT_MANY" /> atlasīto ciļņu grupēšanu}one{Atcelt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes grupēšanu}other{Atcelt <ph name="TABS_COUNT_MANY" /> atlasīto ciļņu grupēšanu}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> ciļņu}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Pēc 1 dienas}zero{Pēc <ph name="DAY_COUNT_MANY" /> dienām}one{Pēc <ph name="DAY_COUNT_MANY" /> dienas}other{Pēc <ph name="DAY_COUNT_MANY" /> dienām}}</translation>
 <translation id="6549021453810473782">Skatīt veikala informāciju</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>

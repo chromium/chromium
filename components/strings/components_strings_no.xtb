@@ -47,7 +47,7 @@
 <translation id="1082026381988252344">Rull gjennom og zoom inn på innholdet på den delte fanen</translation>
 <translation id="1089439967362294234">Endre passord</translation>
 <translation id="1090629319939036170">VR-meny</translation>
-<translation id="1091779689406092804">skjermdumper</translation>
+<translation id="1091779689406092804">skjermbilder</translation>
 <translation id="1094777233105318927">Informasjon om nettleser, OS, enhet, installert programvare og filer.</translation>
 <translation id="1096545575934602868">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Oppføringer utover dette blir forkastet.</translation>
 <translation id="1097803577928227769">Regionale parker og hager</translation>
@@ -115,6 +115,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1209206284964581585">Skjul for øyeblikket</translation>
 <translation id="121201262018556460">Du forsøkte å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som inneholder en svak nøkkel. En angriper kan ha løst den private nøkkelen, og tjeneren er kanskje ikke den tjeneren du forventet (det kan hende at du kommuniserer med en angriper).</translation>
 <translation id="1212527389003717329">Nedlastingen er startet. For å se den, trykk på og hold inne |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Prisklasse</translation>
 <translation id="1219129156119358924">Systemsikkerhet</translation>
 <translation id="1222060260947439312">Høyre skuff</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -341,7 +342,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1611854593425834707">Lukk enhetslisten for casting</translation>
 <translation id="1612199629998703524">Administrer emner</translation>
 <translation id="1615178538289490617">Opphev tilgangen for <ph name="PORT_NAME" /></translation>
-<translation id="1615402009686901181">På grunn av en administratorregel er skjermdumper deaktivert når konfidensielt innhold er synlig</translation>
+<translation id="1615402009686901181">På grunn av en administratorregel er skjermbilder deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="1617276713587758852">Crossover-biler</translation>
 <translation id="1619007254056372606">Administrer nettstedsdata på enheten</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -1183,6 +1184,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Skriv inn den <ph name="NUMBER_OF_DIGITS" />-sifrede bekreftelseskoden</translation>
 <translation id="3272643614306383237">Mindre enn 1 MB. Det kan hende at enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
+<translation id="327346289570683313">Prisklasse</translation>
 <translation id="3273738040255912340">Administratoren din kan gjøre endringer i profilen og nettleseren eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver. Aktiviteten på denne enheten kan også administreres utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratorreglene anbefaler ikke at du åpner denne filen i <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du åpner disse filene i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasjonen din, <ph name="ENROLLMENT_DOMAIN" />, har sendt noe informasjon til de følgende nettstedene, for eksempel innstillinger eller retningslinjer.</translation>
@@ -2761,7 +2763,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6337133576188860026">Frigjør mindre enn <ph name="SIZE" />. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="6337534724793800597">Filtrér retningslinjer etter navn</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />-verdien er ugyldig og blir ikke brukt.</translation>
-<translation id="6340739886198108203">Administratorreglene anbefaler ikke at du tar skjermdumper eller gjør opptak når konfidensielt innhold er synlig:</translation>
+<translation id="6340739886198108203">Administratorreglene anbefaler ikke at du tar skjermbilder eller gjør opptak når konfidensielt innhold er synlig:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratorreglene anbefaler ikke at du laster opp denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du laster opp disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6344622098450209924">Sporingsbeskyttelse</translation>
 <translation id="634500758737709758">Veibeskrivelser</translation>
@@ -3168,7 +3170,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7119063404975271297">TV-dramaer</translation>
 <translation id="7119371694555167493">Kopieringen ble tidsavbrutt</translation>
 <translation id="7119414471315195487">Lukk andre faner eller programmer</translation>
-<translation id="7120588595737538743">nedlastinger og skjermdumper</translation>
+<translation id="7120588595737538743">nedlastinger og skjermbilder</translation>
 <translation id="7124354851782353862">Skriv inn verifiseringskoden</translation>
 <translation id="7129409597930077180">Kan ikke sende til denne adressen. Velg en annen adresse.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -4274,6 +4276,7 @@ Mer informasjon:
 <translation id="920643408853370361">Reiseforsikring</translation>
 <translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
 <translation id="9210825002219699214">Flyreiser</translation>
+<translation id="9211461151375991073">Skriv @ for å søke på <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Tilpass utseendet</translation>
 <translation id="9215416866750762878">Et program hindrer Chrome i å koble trygt til dette nettstedet.</translation>
 <translation id="92178312226016010">Du sporer dette produktet.</translation>

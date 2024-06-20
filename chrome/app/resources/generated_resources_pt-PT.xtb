@@ -412,6 +412,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1294807885394205587">Este processo poderá demorar alguns minutos. A iniciar o gestor de contentores…</translation>
 <translation id="12951065153783848">A sua organização gere a sua conta</translation>
+<translation id="1296410481664942178">Não mostrar o Calendário Google</translation>
 <translation id="1296911687402551044">Fixar o separador selecionado</translation>
 <translation id="1297175357211070620">Destino</translation>
 <translation id="129770436432446029">Enviar feedback sobre <ph name="EXPERIMENT_NAME" /></translation>
@@ -450,6 +451,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1327495825214193325">Para ativar a depuração do adb, tem de reiniciar este <ph name="DEVICE_TYPE" />. A desativação requer a reposição das definições de fábrica.</translation>
 <translation id="1327527584824210101">Use a sua chave de acesso</translation>
 <translation id="1327794256477341646">As funcionalidades que precisam da sua localização não funcionam</translation>
+<translation id="1328364753167940710">Dentro de <ph name="NUM_HR" /> h</translation>
 <translation id="1329466763986822896">Melhorar a privacidade desta zona Wi-Fi</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Algumas funcionalidades em <ph name="ORIGIN" /> poderão não funcionar até limpar os dados que outros sites armazenaram no seu dispositivo.</translation>
@@ -1000,6 +1002,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1709762881904163296">Definições de rede</translation>
 <translation id="1709916727352927457">Elimine o token de acesso</translation>
 <translation id="1709972045049031556">Não é possível partilhar</translation>
+<translation id="1712143791363119140">Em curso</translation>
 <translation id="1714644264617423774">Ativa as funcionalidades de acessibilidade para facilitar a utilização do dispositivo. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" /> e da respetiva app instalada?</translation>
 <translation id="171826447717908393">Apps Web isoladas (beta)</translation>
@@ -1405,6 +1408,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="200928901437634269">Use a Conta Google ou a conta escolar da criança. Também pode definir controlos parentais.</translation>
 <translation id="2009590708342941694">Ferramenta de emojis</translation>
 <translation id="2010501376126504057">Dispositivos compatíveis</translation>
+<translation id="2010636492623189611">Selecionado.</translation>
 <translation id="201217432804812273">Ative a opção "Guardar grupo"</translation>
 <translation id="2012935757369720523">Eliminar ficheiro</translation>
 <translation id="2013550551806600826">Experimente. Ative ou desative a definição e, de seguida, desloque o touchpad com dois dedos na área de teste. Também pode encontrá-la mais tarde em Definições &gt; Dispositivo &gt; Rato e touchpad.</translation>
@@ -1998,6 +2002,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2435248616906486374">Rede desligada</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2436385001956947090">Copiar &amp;link</translation>
+<translation id="2437561292559037753">Partilha de dados</translation>
 <translation id="2438853563451647815">Não tem ligação estabelecida à impressora</translation>
 <translation id="2439152382014731627">Repor palavra-passe do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">A carregar <ph name="WINDOW_TITLE" /></translation>
@@ -2576,6 +2581,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> libertados</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
 <translation id="2844809857160214557">Veja e faça a gestão de tarefas de impressão.</translation>
+<translation id="2845276301195220700">Mais ações para o Calendário Google</translation>
 <translation id="2845382757467349449">Mostrar Sempre a Barra de Marcadores</translation>
 <translation id="2845751331501453107">À medida que navega, a personalização de um anúncio que lhe é mostrado depende desta definição, dos <ph name="BEGIN_LINK1" />anúncios sugeridos pelos sites<ph name="LINK_END1" />, das <ph name="BEGIN_LINK2" />definições de cookies<ph name="LINK_END2" /> e de se o site que está a ver personaliza os anúncios</translation>
 <translation id="284581348330507117">Crie palavras-passe únicas</translation>
@@ -3693,6 +3699,7 @@ Quer pará-lo?</translation>
 <translation id="3694590407685276748">Realçar cursor de texto</translation>
 <translation id="369489984217678710">Palavras-passe e outros dados de início de sessão</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{As verificações de segurança estão concluídas. Os seus dados serão carregados.}=1{As verificações de segurança estão concluídas. O seu ficheiro será carregado.}other{As verificações de segurança estão concluídas. Os seus ficheiros serão carregados.}}</translation>
+<translation id="3695339288331169103">De <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">Launcher + seta para a esquerda</translation>
 <translation id="3697716475445175867">último acesso</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Pode impedir que este site envie notificações futuras.}other{Pode impedir que estes sites enviem notificações futuras.}}</translation>
@@ -4997,6 +5004,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4650591383426000695">Desligue o telemóvel do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Não foi possível carregar o componente online com os recursos do modo de demonstração.</translation>
 <translation id="4651921906638302153">Não é possível iniciar sessão com esta conta</translation>
+<translation id="4652921642122345344">Velocidade da voz <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">A alteração na definição da câmara requer que o Parallels Desktop seja reiniciado. Reinicie o Parallels Desktop para continuar.</translation>
 <translation id="4653116291358041820">Sombra pequena</translation>
 <translation id="4653405415038586100">Ocorreu um erro ao configurar o Linux.</translation>
@@ -5195,6 +5203,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4811212958317149293">Análise automática do teclado do acesso por comutador</translation>
 <translation id="4811503964269049987">Agrupar o separador selecionado</translation>
+<translation id="4812073856515324252">Escolha onde guardar a sua chave de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Erro de rede</translation>
 <translation id="4814114628197290459">Elimine o IBAN</translation>
 <translation id="4814327014588285482">Ignorar e lembrar-me mais tarde</translation>
@@ -5663,6 +5672,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Inicie sessão no <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
+<translation id="5161442190864186925">Participar na reunião</translation>
 <translation id="5161827038979306924">Qual é a diferença entre o histórico de navegação no Chrome e o histórico de pesquisas?</translation>
 <translation id="5162905305237671850">O <ph name="DEVICE_TYPE" /> foi bloqueado</translation>
 <translation id="5163910114647549394">Separador movido para o fim da faixa de separadores</translation>
@@ -7977,6 +7987,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6912007319859991306">PIN do SIM de rede móvel</translation>
 <translation id="6912380255120084882">Experimente um dispositivo diferente</translation>
 <translation id="691289340230098384">Preferências de legendas</translation>
+<translation id="6913051485529944333">Não vai voltar a ver o Calendário Google nesta página</translation>
 <translation id="6914812290245989348">Não ver avisos antes de aceder a sites inseguros</translation>
 <translation id="6916590542764765824">Gerir extensões</translation>
 <translation id="6918677045355889289">Atualização do ChromeOS necessária</translation>
@@ -9184,6 +9195,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7810202088502699111">Os pop-ups foram bloqueados nesta página.</translation>
 <translation id="7810367892333449285">A sua entrada deve ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />Endereço de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID correspondente opcional<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Tente novamente ou selecione um dos temas gerados anteriormente abaixo.</translation>
+<translation id="7812170317334653156">Calendário Google oculto</translation>
 <translation id="7814090115158024843">Nunca oferecer ajuda na escrita nestes sites</translation>
 <translation id="7814458197256864873">&amp;Copiar</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9242,6 +9254,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7853747251428735">Mais ferrament&amp;as</translation>
 <translation id="7853999103056713222">Use uma palavra-passe mais segura</translation>
 <translation id="7855678561139483478">Mover separador para nova janela</translation>
+<translation id="7856117067008941054">Ocultar Calendário Google</translation>
 <translation id="7857004848504343806">O seu computador contém um módulo seguro, que é usado para implementar várias funcionalidades de segurança essenciais no ChromeOS Flex. Visite o Centro de Ajuda do Chromebook em https://support.google.com/chromebook/?p=sm para saber mais</translation>
 <translation id="7857093393627376423">Sugestões de texto</translation>
 <translation id="7858120906780498731">Dispositivos de entrada ligados ao ChromeOS</translation>
@@ -9250,6 +9263,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="786073089922909430">Serviço: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Transferências</translation>
 <translation id="7861846108263890455">Idioma da Conta Google</translation>
+<translation id="7864114920800968141">Dentro de <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Desativar Bluetooth</translation>
 <translation id="7864825798076155402">Guardar na sua Conta Google?</translation>
 <translation id="7865127013871431856">Opções de tradução</translation>

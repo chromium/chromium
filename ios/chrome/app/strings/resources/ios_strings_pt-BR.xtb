@@ -532,6 +532,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="371398631992790800">Ocultar Favoritos</translation>
 <translation id="37207012422556617">Pesquisas em alta</translation>
 <translation id="3725081662140949903">Mude sua senha no app <ph name="APP" /> para impedir que ela seja usada por outras pessoas</translation>
+<translation id="372676576864368480">Preencher automaticamente o número do cartão que termina em <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Criação: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar Downloads</translation>
 <translation id="3745190878148784130">Ocultar "Aplicar zoom no texto"</translation>
@@ -1097,6 +1098,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 <translation id="6476800141292307438">Tradução da página para <ph name="LANGUAGE" />. Opções disponíveis na parte inferior da tela.</translation>
 <translation id="648164694371393720">Erro de autenticação</translation>
 <translation id="6494931198667773526">Fim</translation>
+<translation id="6500795388871406244">Usar senha sugerida:</translation>
 <translation id="650279896687777322">Saiba mais…</translation>
 <translation id="6505334220040167806">Fechar grupo de guias.</translation>
 <translation id="6507973708545996744">Faça login para ter sua Lista de leitura em todos os seus dispositivos.</translation>
@@ -1310,6 +1312,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7583004045319035904">Use o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear suas guias anônimas.</translation>
 <translation id="7598439272585186139">Aumente a segurança</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Preencher automaticamente o titular do cartão <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grupos de guias</translation>
 <translation id="7607521702806708809">Excluir senha</translation>
@@ -1342,6 +1345,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7749790401023484470">Você não selecionou nenhum texto.</translation>
 <translation id="7752405526771734448">Pesquisa visual com o Lens</translation>
 <translation id="7756478488453921771">Menu → Configurações → Formas de pagamento</translation>
+<translation id="775755486779745798">Preencher automaticamente o mês de vencimento <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Bloqueio anônimo</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar senha</translation>
@@ -1518,6 +1522,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8556590991644167667">{count,plural, =1{Você dispensou {count} aviso}one{Você dispensou {count} aviso}other{Você dispensou {count} avisos}}</translation>
 <translation id="8560253818350321773">Mostrar primeiro os itens usados com frequência.</translation>
 <translation id="8569721750632860947">Qual URL você quer adicionar à Lista de leitura?</translation>
+<translation id="8577056989960190117">Preencher automaticamente o ano de validade <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros na navegação anônima</translation>
 <translation id="8593565399399144771">Você pode abrir uma nova guia aqui.</translation>

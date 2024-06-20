@@ -532,6 +532,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="371398631992790800">Lesezeichen ausblenden</translation>
 <translation id="37207012422556617">Trends bei Suchanfragen</translation>
 <translation id="3725081662140949903">Wenn du verhindern möchtest, dass andere Personen dein Passwort verwenden, öffne die <ph name="APP" /> App und ändere es</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> als Endziffern der Kartennummer automatisch ausfüllen</translation>
 <translation id="3738428049780661523">Erstellt: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Downloads ausblenden</translation>
 <translation id="3745190878148784130">„Text zoomen“ ausblenden</translation>
@@ -1097,6 +1098,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="6476800141292307438">Die Seite wird in die Sprache <ph name="LANGUAGE" /> übersetzt. Optionen sind unten auf dem Bildschirm verfügbar.</translation>
 <translation id="648164694371393720">Authentifizierungsfehler</translation>
 <translation id="6494931198667773526">Ende</translation>
+<translation id="6500795388871406244">Vorgeschlagenes Passwort verwenden:</translation>
 <translation id="650279896687777322">Weitere Informationen</translation>
 <translation id="6505334220040167806">Tabgruppe minimieren.</translation>
 <translation id="6507973708545996744">Melde dich an, um deine Lesezeichen auf allen deinen Geräten abrufen zu können.</translation>
@@ -1310,6 +1312,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7583004045319035904">Nutze <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um deine Inkognitotabs zu entsperren.</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
+<translation id="7603308509262646847"><ph name="NAME" /> als Karteninhaber automatisch ausfüllen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Tabgruppen</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
@@ -1342,6 +1345,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7749790401023484470">Du hast keinen Text ausgewählt.</translation>
 <translation id="7752405526771734448">Visuelle Suche mit Google Lens</translation>
 <translation id="7756478488453921771">Menü → Einstellungen → Zahlungsmethoden</translation>
+<translation id="775755486779745798"><ph name="MONTH" /> als Ablaufmonat automatisch ausfüllen</translation>
 <translation id="7760127703945531263">Inkognitosperre</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
@@ -1518,6 +1522,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8556590991644167667">{count,plural, =1{Du hast {count} Warnung geschlossen}other{Du hast {count} Warnungen geschlossen}}</translation>
 <translation id="8560253818350321773">Häufig verwendete Elemente zuerst anzeigen</translation>
 <translation id="8569721750632860947">Welche URL möchtest du deiner Leseliste hinzufügen?</translation>
+<translation id="8577056989960190117"><ph name="YEAR" /> als Ablaufjahr automatisch ausfüllen</translation>
 <translation id="8588404856427128947">Aus</translation>
 <translation id="8591976964826315682">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="8593565399399144771">Hier kannst du einen neuen Tab öffnen.</translation>

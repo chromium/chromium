@@ -904,6 +904,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4381031910344220229">See lubab rakendusel <ph name="APP_NAME" /> ning kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel mikrofonile juurde pääseda</translation>
 <translation id="4382340674111381977">Tagasi eelmisele lehele</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
+<translation id="4394466652057229831">Paremklõpsake kokkuvõtte tegemiseks</translation>
 <translation id="439598569299422042">Pausil, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ei saa ekraaniülekannet salvestada</translation>
 <translation id="4405151984121254935">Ühendatud välisseadme tüüpi ei toetata</translation>
@@ -1940,6 +1941,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8113423164597455979">Sees, kõik rak.</translation>
 <translation id="8113515504791187892">Nupp Vali ja kuula</translation>
 <translation id="8120151603115102514">Teie telefonil pole lukustuskuva. Chromebooki avamiseks sisestage parool.</translation>
+<translation id="8120249852906205273">Taaskäivita</translation>
 <translation id="8127095419621171197">Ava rakendus Kalkulaator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Dokumendi algusesse liikumine</translation>
@@ -2034,6 +2036,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="85123341071060231">Teie Chromebooki Bluetooth on välja lülitatud. Chromebooki avamiseks sisestage parool.</translation>
 <translation id="8513108775083588393">Aut. pööramine</translation>
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>
+<translation id="851660987304951246">Sisust kiiresti kokkuvõtte tegemiseks või küsimuste esitamiseks kasutage funktsiooni Aita mul lugeda</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofonisisendit juhib <ph name="APP_NAME" />}other{Mikrofonisisendit juhib # rakendust}}</translation>
 <translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>

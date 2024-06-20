@@ -264,6 +264,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8386869251364507178">Chromium-en ekintzak</translation>
 <translation id="8409374867500149834">Chromium-en segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="8458950033462118672">Ezarri Chromium arakatzaile lehenetsi gisa eta ireki estekak bertan automatikoki.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}}</translation>
 <translation id="858114650497379505">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
 <translation id="865600487977764604">Babestuta mantentzen zaitu Chromium-en, eta segurtasuna areagotzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>

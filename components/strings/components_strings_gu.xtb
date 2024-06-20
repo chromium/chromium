@@ -507,6 +507,7 @@
 <translation id="192095259937375524">'આ ટૅબ શેર કરો' બટન, લિંક શેર કરીને, કોઈ QR કોડ બનાવીને, કાસ્ટ કરીને અને વધુ વિકલ્પો વડે આ ટૅબ શેર કરવા માટે સક્રિય કરો</translation>
 <translation id="1924727005275031552">નવું</translation>
 <translation id="1927439846988093361">વાળની સંભાળ</translation>
+<translation id="1935353813610900265">AI દ્વારા સંચાલિત, ઇતિહાસમાં શોધ સુવિધા માટે પ્રતિસાદ મોકલો</translation>
 <translation id="1935995810530254458">કોઈપણ રીતે કૉપિ કરો</translation>
 <translation id="1939059826036755332">ઑટોમૅટિક રીતે ચિત્ર-માં-ચિત્ર મોડ</translation>
 <translation id="1939175642807587452">નોટિફિકેશન મોકલવાનું પૂછી શકે છે</translation>
@@ -826,6 +827,7 @@
 <translation id="2526280916094749336">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામું તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">તમારો CVC તમારા કાર્ડની આગળના ભાગ પર હોય છે. તે તમારા કાર્ડ નંબરની ઉપર જમણી બાજુએ 4-અંકનો કોડ છે.</translation>
 <translation id="2529899080962247600">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની તમામ એન્ટ્રી અવગણવામાં આવશે.</translation>
+<translation id="2530042584066815841">માઉસ લૉક અને તેનો ઉપયોગ</translation>
 <translation id="2533649878691950253">આ સાઇટને તમારું ચોક્કસ સ્થાન જાણવાથી બ્લૉક કરવામાં આવી છે, કારણ કે તમે સામાન્ય રીતે આને મંજૂરી આપતા નથી</translation>
 <translation id="253493526287553278">પ્રોમો કોડની વિગતો જુઓ</translation>
 <translation id="2535585790302968248">ખાનગી રીતે બ્રાઉઝ કરવા માટે, નવી છૂપી ટૅબ ખોલો</translation>
@@ -851,6 +853,7 @@
 <translation id="255497580849974774">કૃપા કરીને અપડેટ દરમિયાન તમારા ડિવાઇસને ચાર્જર સાથે કનેક્ટેડ રાખો.</translation>
 <translation id="2556876185419854533">&amp;ફેરફાર કરવાનું રદ કરો</translation>
 <translation id="2559566667529177711">મલ્ટિ લેયર</translation>
+<translation id="2565789370591907825">કીબોર્ડ લૉક અને તેનો ઉપયોગ</translation>
 <translation id="2570734079541893434">સેટિંગને મેનેજ કરો</translation>
 <translation id="2573170131138724450">ટેલિવિઝન</translation>
 <translation id="257674075312929031">જૂથ</translation>
@@ -898,6 +901,7 @@
 <translation id="2687555958734450033">શ્રેષ્ઠ ફિટ</translation>
 <translation id="2688186765492306706">500 x 760 મિમી</translation>
 <translation id="2688969097326701645">હા, ચાલુ રાખો</translation>
+<translation id="2690699652723742414">છેલ્લા 30 દિવસ</translation>
 <translation id="2691924980723297736">સલામતીની ચેતવણી</translation>
 <translation id="2699273987028089219">સબમેનૂ ઉપલબ્ધ છે, વધારાનાં વિકલ્પો પર નૅવિગેટ કરવા માટે <ph name="SHORTCUT" />નો ઉપયોગ કરો.</translation>
 <translation id="2701514975700770343">નીચે તરફ</translation>
@@ -1027,6 +1031,7 @@
 <translation id="297173220375858963">ડેસ્કટૉપ પબ્લિશિંગ</translation>
 <translation id="2972581237482394796">&amp;ફરી કરો</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, વર્તમાનમાં પસંદ કરેલ. <ph name="ROW_CONTENT" /></translation>
+<translation id="2977847223286097084">તમારું કીબોર્ડ લૉક કરી તેનો ઉપયોગ કરવા</translation>
 <translation id="2978824962390592855">ઑપેરા</translation>
 <translation id="2979424420072875974">લેખકો સંબંધિત સંસાધનો</translation>
 <translation id="2980742331521553164">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે</translation>
@@ -1099,6 +1104,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />કનેક્ટિવિટી ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
 <translation id="3120807611504813890">એન્વલપ (વજનમાં હળવું)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> પર જાઓ</translation>
+<translation id="3122696783148405307">છેલ્લા 30 દિવસના પરિણામો બતાવો</translation>
 <translation id="3126023634486644099">લેબલ (કાયમી)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> હવે તમારું ડિફૉલ્ટ શોધ એન્જિન છે</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> શોધો</translation>
@@ -1467,6 +1473,7 @@
 <translation id="3781428340399460090">ચળકતો ગુલાબી</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">બ્લૂટૂથ ડિવાઇસ</translation>
+<translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" માટે શ્રેષ્ઠ મેળ ખાતા પરિણામો</translation>
 <translation id="3789155188480882154">કદ 16</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> ઇંચ)</translation>
@@ -1486,6 +1493,7 @@
 <translation id="3815434930383843058">8 x 12 ઇંચ</translation>
 <translation id="3816482573645936981">મૂલ્ય (જગ્યા અન્ય દ્વારા લેવામાં આવી છે)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" /> માટેનો CVC</translation>
+<translation id="3822492359574576064">માઉસ લૉક અને તેનો ઉપયોગ</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">તમારું બ્રાઉઝર <ph name="BROWSER_DOMAIN" /> દ્વારા અને પ્રોફાઇલ <ph name="PROFILE_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="382518646247711829">જો તમે કોઈ પ્રૉક્સી સર્વરનો ઉપયોગ કરો છો...</translation>
@@ -1810,6 +1818,7 @@
 <translation id="4438821706955556403">સામાન્ય કિંમત</translation>
 <translation id="4441832193888514600">અવગણવામાં આવ્યું કારણ કે પૉલિસી માત્ર ક્લાઉડ વપરાશકર્તાની પૉલિસી તરીકે જ સેટ કરવામાં આવી શકે છે.</translation>
 <translation id="4445133368066241428">લોકપ્રિય વિષયો</translation>
+<translation id="4445964943162061557">આ એક પ્રાયોગિક સુવિધા છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી.</translation>
 <translation id="4449116177348980384">'સાઇટ સેટિંગ મેનેજ કરો' બટન, Chrome સેટિંગમાં પરવાનગીઓ અને સમગ્ર સાઇટનો સ્ટોર કરેલો ડેટા મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="4451135742916150903">HID ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="4451684391620232683">વપરાશકર્તા સમક્ષ રજૂ કરેલી ટેક્સ્ટ:</translation>
@@ -1888,6 +1897,7 @@
 <translation id="4631881646528206880">વર્ચ્યુઅલ કાર્ડની નોંધણી</translation>
 <translation id="4635278307999235413">ઍડમિન કન્સોલ પર ડેટા મોકલી રહ્યાં છીએ</translation>
 <translation id="4636930964841734540">માહિતી</translation>
+<translation id="4640225694041297329">છેલ્લા 7 દિવસના પરિણામો બતાવો</translation>
 <translation id="464342062220857295">શોધ સુવિધાઓ</translation>
 <translation id="4644670975240021822">ઉલ્ટા ક્રમમાં નીચે તરફ</translation>
 <translation id="4646534391647090355">મને હવે ડાઉનલોડ હોમ પર લઈ જાઓ</translation>
@@ -1967,6 +1977,7 @@
 <translation id="4780366598804516005">મેઇલબૉક્સ 1</translation>
 <translation id="4785376858512657294">Google એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="4785689107224900852">આ ટૅબ પર સ્વિચ કરો</translation>
+<translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" શોધી રહ્યાં છીએ</translation>
 <translation id="4786804728079074733">વૉલીબૉલ</translation>
 <translation id="4787182171088676626">એન્વેલોપ (સરસ)</translation>
 <translation id="4789704664580239421">કિંમતમાં ઘટાડા વિશેના અલર્ટ તમારા ખુલ્લા ટૅબ પર બતાવવામાં આવશે</translation>
@@ -2004,6 +2015,7 @@
 <translation id="4864801646102013152">ઘરમાં સમારકામ</translation>
 <translation id="4866506163384898554">તમારું કર્સર બતાવવા |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| દબાવો</translation>
 <translation id="4873616204573862158">ચશ્માં</translation>
+<translation id="4873807733347502026">તમારું માઉસ લૉક કરી તેનો ઉપયોગ કરવા</translation>
 <translation id="4876188919622883022">સરળ દૃશ્ય</translation>
 <translation id="4876305945144899064">કોઈ વપરાશકર્તા નામ નથી</translation>
 <translation id="4876327226315760474">આનો અર્થ એ છે કે સાઇટની સુવિધાઓ અપેક્ષા મુજબ કાર્ય કરવી જોઈએ, પરંતુ તમારી પાસે બ્રાઉઝિંગ સંરક્ષણ ઓછું હોઈ શકે છે.</translation>
@@ -2091,6 +2103,7 @@
 <translation id="5018802455907704660">16 x 20 ઇંચ</translation>
 <translation id="5019198164206649151">બેકઅપ સ્ટોર કરવું ખરાબ સ્થિતિમાં છે</translation>
 <translation id="5019293549442035120">તમે Googleની સમગ્ર પ્રોડક્ટ પર સાચવેલા સરનામાનો ઉપયોગ કરી શકો છો. આ સરનામું તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> પૉલિસી સેટ કરેલી છે. એક્સ્ટેન્શન પેજ પર, ડેવલપર મોડની ઉપલબ્ધતાને <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> નિયંત્રિત કરશે નહીં.</translation>
 <translation id="5021557570875267742">Chrome વડે કિંમતો ટ્રૅક કરો</translation>
 <translation id="5023310440958281426">તમારા વ્યવસ્થાપકની પૉલિસીઓ તપાસો</translation>
 <translation id="5030338702439866405">આના દ્વારા રજૂ કરાયું</translation>
@@ -2428,6 +2441,7 @@
 <translation id="5667827081946850877">ઑડિયોબુક</translation>
 <translation id="5675650730144413517">આ પેજ કામ કરી રહ્યું નથી</translation>
 <translation id="5675809467256309336">ડાન્સ અને ઇલેક્ટ્રોનિક મ્યુઝિક</translation>
+<translation id="5675959228867414813">તારીખ અનુસાર બતાવો</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
 <translation id="5678007133659493065">ફૉઇલ</translation>
 <translation id="5680642791693447368">થ્રિલર, ક્રાઇમ અને મિસ્ટ્રી મૂવી</translation>
@@ -2645,6 +2659,7 @@
 <translation id="6108702513636120202">Chromiumમાં તમારું શોધ એન્જિન</translation>
 <translation id="6108849843016142864">સરિસૃપ અને ઉભયજીવી પ્રાણીઓ</translation>
 <translation id="610911394827799129">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે છે</translation>
+<translation id="611018310643025551">તમારી શોધો, શ્રેષ્ઠ મેળ ખાતા પરિણામો અને તેના પેજ કન્ટેન્ટ Googleને મોકલવામાં આવે છે તેમજ માનવ રિવ્યૂઅર દ્વારા જોવામાં આવે એમ બની શકે છે, જેથી આ સુવિધાને બહેતર બનાવી શકાય.</translation>
 <translation id="6116338172782435947">ક્લિપબોર્ડ પર કૉપિ કરેલી ટેક્સ્ટ અને છબીઓને જુઓ</translation>
 <translation id="6117833587752089929">ફોટો (સાટિન)</translation>
 <translation id="6118782133429281336">મૂળ સૂચિ ખાલી છે.</translation>
@@ -2901,6 +2916,7 @@
 <translation id="6587923378399804057">તમે કૉપિ કરેલી લિંક</translation>
 <translation id="6591833882275308647">તમારું <ph name="DEVICE_TYPE" /> મેનેજ કરવામાં આવતું નથી</translation>
 <translation id="6596325263575161958">એન્ક્રિપ્શન વિકલ્પો</translation>
+<translation id="6596573334527383067">ગઈકાલના ઇતિહાસમાંથી પરિણામો બતાવો</translation>
 <translation id="6597665340361269064">90 ડિગ્રી</translation>
 <translation id="6598976221101665070">ડ્રામા મૂવી</translation>
 <translation id="6599642189720630047">ટ્રૅક કરેલી પ્રોડક્ટ</translation>
@@ -3371,6 +3387,7 @@
 <translation id="7489392576326061356">શૅમ્પૂ અને કંડિશનર</translation>
 <translation id="7495528107193238112">આ કન્ટેન્ટ બ્લૉક કરવામાં આવ્યું છે. સમસ્યાનાં નિરાકરણ માટે, સાઇટના માલિકનો સંપર્ક કરો.</translation>
 <translation id="749865518782565832">પ્લમ્બિંગ</translation>
+<translation id="7500917112031739411">ગ્રૂપ અનુસાર બતાવો</translation>
 <translation id="7501663406926337752">આગળની સાઇટ તમારી સંસ્થા દ્વારા ચિહ્નિત કરવામાં આવી છે</translation>
 <translation id="7507075214339298899">એન્વલપ #9</translation>
 <translation id="7508255263130623398">પરત થયેલું પૉલિસી ડિવાઇસ id ખાલી છે અથવા વર્તમાન ટોકન સાથે મેળ ખાતું નથી</translation>
@@ -3571,6 +3588,7 @@
 <translation id="7825558994363763489">માઇક્રોવેવ</translation>
 <translation id="782886543891417279">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના લોગિન પેજ પર જવું પડી શકે.</translation>
 <translation id="7831993212387676366">શૉપિંગનું લિસ્ટ શું છે?</translation>
+<translation id="7832078172950550575">રોજિંદા વપરાશની ભાષાનો ઉપયોગ કરીને, તમે "મારી નજીકની પિઝા મળે તેવી જગ્યાઓ" કે "શહેરની વચ્ચે કુટુંબ માટે અનુકૂળ બગીચાઓ" જેવા વાકયાંશોનો ઉપયોગ કરીને તમારા બ્રાઉઝિંગ ઇતિહાસમાં શોધી શકો છો. તમારી શોધો, શ્રેષ્ઠ મેળ ખાતા પરિણામો અને તેના પેજ કન્ટેન્ટ Googleને મોકલવામાં આવે છે તેમજ માનવ રિવ્યૂઅર દ્વારા જોવામાં આવે એમ બની શકે છે, જેથી આ સુવિધાને બહેતર બનાવી શકાય. <ph name="BEGIN_LINK" />ઇતિહાસમાં શોધ સુવિધાના તમારા સેટિંગને મેનેજ કરો<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">સ્ક્રીન કૅપ્ચરની સુવિધા શરૂ કરી છે</translation>
 <translation id="784137052867620416">ખરીદીની જાણકારી</translation>
 <translation id="784404208867107517">ગ્રૂપ કરેલો ઇતિહાસ</translation>
@@ -3866,6 +3884,7 @@
 <translation id="8398335999901363925">ટચ કરીને ભરવાની ઉપલબ્ધ ચુકવણી પદ્ધતિઓની સૂચિ સંપૂર્ણ ઊંચાઈએ ખૂલી.</translation>
 <translation id="8398446215576328011">લાગુ પૉલિસીઓ પાછી ફેરવો</translation>
 <translation id="8398790343843005537">તમારો ફોન શોધો</translation>
+<translation id="8399276468426899527">કીબોર્ડ લૉક અને તેનો ઉપયોગ</translation>
 <translation id="8400929824946688748">નોકરીઓ અને શિક્ષણ</translation>
 <translation id="8403506619177967839">ચાહકો માટેની કાલ્પનિક વાર્તા</translation>
 <translation id="8405579342203358118">Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરો</translation>
@@ -4207,6 +4226,7 @@
 <translation id="9089260154716455634">બિન-કામકાજી સમય સંબંધી પૉલિસી:</translation>
 <translation id="9090218457905363312">રેગે અને કેરેબિયન મ્યુઝિક</translation>
 <translation id="9090243919347147717">જોડાણો</translation>
+<translation id="9090548458280093580">AI દ્વારા સંચાલિત, તમારા ઇતિહાસમાંથી શોધો સુવિધા</translation>
 <translation id="9090993752571911635">ઇન્ટરનેટ સેવા આપનાર કંપનીઓ (ISPs)</translation>
 <translation id="9093723786115107672">સૂતી વખતે પહેરવાના કપડા</translation>
 <translation id="9094544726794842788">થમ્બ્સ ડાઉન, આ પરિણામો તમને શા માટે નાપસંદ છે તેના વિશે વિગતવાર પ્રતિસાદ સબમિટ કરવા માટેનું ફોર્મ ખોલે છે</translation>
@@ -4275,6 +4295,7 @@
 <translation id="920643408853370361">મુસાફરી વીમો</translation>
 <translation id="9207861905230894330">લેખ ઉમેરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="9210825002219699214">હવાઈ મુસાફરી</translation>
+<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> શોધવા માટે @ ટાઈપ કરો</translation>
 <translation id="9213433120051936369">દેખાવને કસ્ટમાઇઝ કરો</translation>
 <translation id="9215416866750762878">કોઈ ઍપ્લિકેશન Chromeને આ સાઇટ સાથે સુરક્ષિત રીતે કનેક્ટ થવાથી અટકાવી રહી છે</translation>
 <translation id="92178312226016010">તમે આ પ્રોડક્ટને ટ્રૅક કરી રહ્યાં છો.</translation>

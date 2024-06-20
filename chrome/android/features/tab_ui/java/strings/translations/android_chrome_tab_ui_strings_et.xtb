@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
 <translation id="427987768447457592">Uus vahelehegrupp</translation>
+<translation id="4338724047016295066">Passiivsed vahelehed sulguvad automaatselt. Leiate need alati jaotisest Ajalugu.</translation>
 <translation id="4371591986692297148">Mitteaktiivne</translation>
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
 <translation id="4648718555153979859">Teie vahelehed on siin grupeeritud</translation>
 <translation id="4686942373615810936">Loodud just praegu</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Sule 1 päeva pärast}other{Sule <ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
 <translation id="4777866634702576038">Kas kustutada vahelehegrupp?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> arvustus)}other{(<ph name="REVIEWS_COUNT_MANY" /> arvustust)}}</translation>
 <translation id="4850886885716139402">Kuva</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Leiate oma vahelehegrupid siit</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tühista <ph name="TABS_COUNT_ONE" /> valitud vahelehe grupeerimine}other{Tühista <ph name="TABS_COUNT_MANY" /> valitud vahelehe grupeerimine}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 päeva pärast}other{<ph name="DAY_COUNT_MANY" /> päeva pärast}}</translation>
 <translation id="6549021453810473782">Kuva poe teave</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Teisalda vaheleht vasakule</translation>

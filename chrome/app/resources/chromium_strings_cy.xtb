@@ -52,7 +52,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="185970820835152459">Gallwch reoli'ch Cyfrifon Google sydd wedi'u mewngofnodi. Defnyddir eich Cyfrifon Google ar gyfer porwr Chromium, Play Store, Gmail, a rhagor. Os ydych am ychwanegu cyfrif ar gyfer rhywun arall, megis aelod o'r teulu, ychwanegwch berson newydd at eich <ph name="DEVICE_TYPE" /> yn lle. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chromium. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="1881322772814446296">Rydych yn mewngofnodi gyda chyfrif a reolir ac yn rhoi rheolaeth dros eich proffil Chromium i'w weinyddwr. Bydd eich data Chromium, megis eich apiau, eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill wedi'u cysylltu'n barhaol â <ph name="USER_NAME" />. Byddwch yn gallu dileu'r data hyn drwy'r Dangosfwrdd Cyfrifon Google, ond ni fyddwch yn gallu cysylltu'r data hyn â chyfrif arall. Gallwch ddewis creu proffil newydd i gadw'ch data Chromium presennol ar wahân. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">I ddefnyddio'r estyniad hwn fel <ph name="USER_EMAIL_ADDRESS" />, mewngofnodwch i Chromium.\nByddwch hefyd yn gallu defnyddio a chadw'ch cyfrineiriau a rhagor o'ch Cyfrif Google.</translation>
 <translation id="1906696617298807388">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chromium yn anfon yr hyn rydych yn ei deipio i Google Drive i gael awgrymiadau eitem. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="1911763535808217981">Drwy ddiffodd hyn, gallwch fewngofnodi i wefannau Google megis Gmail heb fewngofnodi i Chromium</translation>
 <translation id="1929939181775079593">Mae Chromium yn anymatebol. Ail-lansio nawr?</translation>
@@ -145,7 +144,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3296368748942286671">Parhau i redeg apiau cefndir pan fydd Chromium ar gau</translation>
 <translation id="3313189106987092621">Bydd Chromium yn eich rhybuddio cyn llwytho unrhyw wefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="3316771292331273802">Byddwch yn cael eich allgofnodi o'r rhan fwyaf o wefannau pan fyddwch yn cau holl ffenestri Chromium, ac eithrio eich Cyfrif Google os ydych wedi mewngofnodi i Chromium. I adael i wefannau eich cofio, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">Mae'r estyniad \"<ph name="EXTENSION_NAME" />\" eisiau i chi fewngofnodi i Chromium</translation>
 <translation id="3350761136195634146">Mae proffil Chromium â'r cyfrif hwn eisoes yn bodoli</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Newid i broffil Chromium presennol?</translation>
@@ -255,6 +253,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5277894862589591112">I gymhwyso'ch newidiadau, ail-lansiwch Chromium</translation>
 <translation id="5294316920224716406">Wrth bori yn y modd Anhysbys, bydd Chromium yn eich rhybuddio cyn llwytho gwefan gan ddefnyddio cysylltiad anniogel</translation>
 <translation id="5296845517486664001">Pan fydd treialon ymlaen ac os yw Chromium wedi'ch gosod ar hap mewn treial gweithredol, mae eich hanes pori yn effeithio ar yr hysbysebion a welwch a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chromium yn dileu eich diddordebau yn awtomatig bob mis.</translation>
+<translation id="5310474266708705970">Mewngofnodwch i Chromium fel <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Mae Chromium wedi dod o hyd i argymhellion diogelwch i chi eu hadolygu</translation>
 <translation id="5352361688875342522">Proffiliau Chromium Eraill</translation>
 <translation id="5358375970380395591">Rydych yn mewngofnodi gyda chyfrif a reolir ac yn rhoi rheolaeth dros eich proffil Chromium i'w weinyddwr. Bydd eich data Chromium, megis eich apiau, eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill wedi'u cysylltu'n barhaol â <ph name="USER_NAME" />. Byddwch yn gallu dileu'r data hyn drwy'r Dangosfwrdd Cyfrifon Google, ond ni fyddwch yn gallu cysylltu'r data hyn â chyfrif arall. <ph name="LEARN_MORE" /></translation>
@@ -411,6 +410,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="734373864078049451">Mae'ch gwe, nodau tudalen, a phethau Chromium eraill yn byw yma.</translation>
 <translation id="7349591376906416160">Mae gweinyddwr eich system wedi ffurfweddu Chromium i agor <ph name="ALTERNATIVE_BROWSER_NAME" /> i gael mynediad at <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd gall y ffeil niweidio'ch cyfrifon rhwydwaith personol a chymdeithasol, gan gynnwys <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Nid yw'r estyniad hwn yn cael ei gefnogi mwyach. Mae Chromium yn argymell eich bod yn ei dynnu yn lle hynny.</translation>
 <translation id="7398989605938454041">Gallwch wahanu eich holl bethau Chromium gyda phroffiliau Chromium. Mae hyn yn ei gwneud hi'n haws rhannu rhwng gwaith a hwyl.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Mae angen eich caniatâd ar Chromium i ddefnyddio eich camera ar gyfer y wefan hon</translation>

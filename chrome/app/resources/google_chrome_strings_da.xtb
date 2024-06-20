@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Google Oversæt er indbygget i Chrome, så du kan oversætte, når du har brug for det</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen.}=1{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dit inkognitovindue åbnes ikke igen.}one{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. # inkognitovindue åbnes ikke igen.}other{Chrome er blevet opdateret. Du kan bruge den nyeste version, så snart du har genstartet Chrome. Når du har gjort det, åbnes dine nuværende faner igen. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
-<translation id="1438479496118074429">Udvidelsen \"<ph name="EXTENSION_NAME" />\" vil have dig til at logge ind i Chrome</translation>
 <translation id="146866447420868597">Vil du logge ind i Chrome?</translation>
 <translation id="1492280395845991349">Genstart for at gennemføre Chrome-opdateringen</translation>
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
@@ -55,6 +54,7 @@
 <translation id="1734234790201236882">Chrome gemmer denne adgangskode på din Google-konto. Du behøver ikke at huske den.</translation>
 <translation id="1786003790898721085">Sørg for, at du er logget ind på Chrome på din <ph name="TARGET_DEVICE_NAME" />, og prøv derefter at sende igen.</translation>
 <translation id="1786044937610313874">Genveje åbnes i Chrome</translation>
+<translation id="178701303897325119">Denne udvidelse understøttes ikke længere. Chrome anbefaler, at du fjerner den.</translation>
 <translation id="1812689907177901597">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chrome</translation>
 <translation id="1860536484129686729">Chrome skal have tilladelse til at bruge dit kamera på dette website</translation>
 <translation id="1873233029667955273">Google Chrome er ikke din standardbrowser</translation>
@@ -246,6 +246,8 @@
 <translation id="4384570495110188418">Chrome kan ikke tjekke dine adgangskoder, da du ikke er logget ind</translation>
 <translation id="4389991535395284064">Når du browser i inkognitotilstand, advarer Chrome dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
+<translation id="4434353761996769206">Installationsfejl: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Log ind i Chrome som <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Login på netværk – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En anden handling i Google Chrome er i gang. Prøv igen senere.</translation>
 <translation id="4459234553906210702">Ad measurement giver websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.</translation>
@@ -468,7 +470,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7802622118583152311">Chrome giver dig den nyeste teknologi, så du får en optimal browseroplevelse</translation>
 <translation id="7808348361785373670">Fjern fra Chrome...</translation>
 <translation id="7825851276765848807">Installationen mislykkedes på grund af en uspecificeret fejl. Download Google Chrome igen.</translation>
-<translation id="7828063580843052643">Hvis du vil bruge denne udvidelse som <ph name="USER_EMAIL_ADDRESS" />, skal du logge ind i Chrome.\nDu kan også bruge og gemme dine adgangskoder m.m. fra din Google-konto.</translation>
 <translation id="7836610565365456468">Transformér din browser med flotte temaer, der er inspireret af kunstnere, naturen m.m.</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI i Chrome hjælper med at gøre nettet hurtigere og mere sikkert og brugervenligt</translation>

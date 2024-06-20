@@ -5923,6 +5923,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5372529912055771682">Modul de înscriere furnizat nu este acceptat de această versiune a sistemului de operare. Asigurați-vă că rulați cea mai recentă versiune și încercați din nou.</translation>
 <translation id="5372579129492968947">Anulează fixarea extensiei</translation>
 <translation id="5372632722660566343">Continuă fără cont</translation>
+<translation id="5372990315769030589">Păstrezi <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5375318608039113175">Pentru a folosi Trimiterea în apropiere cu aceste persoane de contact, adaugă în agendă adresele de e-mail asociate Conturilor Google respective.</translation>
 <translation id="5375577102295339548">Site-urile te pot ajuta să confirmi că nu ești o aplicație bot</translation>
 <translation id="5376094717770783089">Solicită acces</translation>
@@ -9019,6 +9020,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7708143783728142771">Cookie-urile permit același nivel de personalizare a preferințelor pe web. Când accesezi un site, acesta poate salva un cookie în spațiul de stocare al browserului de pe dispozitiv pentru a reține preferințele tale privind site-ul, cum ar fi limba pe care o vorbești sau articolele pe care vrei să le salvezi în coșul de cumpărături. Mai târziu, dacă accesezi din nou site-ul folosind același browser, acesta poate citi cookie-ul pe care l-a setat și poți relua de unde ai rămas. Aceste tipuri de cookie-uri sunt numite adesea cookie-uri primare, deoarece sunt setate de site-ul pe care îl accesezi.</translation>
 <translation id="770831926727930011">Datele locale sunt protejate de parola veche. Introdu vechea parolă pentru a recupera datele locale.</translation>
 <translation id="7709152031285164251">Nu a reușit – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Protejează-ți toate cheile de acces cu un PIN de recuperare</translation>
 <translation id="7710568461918838723">&amp;Proiectează…</translation>
 <translation id="7711900714716399411">Folosește un cablu USB pentru a conecta telefonul la computer. Dacă telefonul este deja conectat, deconectează-l și reconectează-l.</translation>
 <translation id="7711968363685835633">Dezactivează conversiile și sugestiile personalizate, precum și dicționarul utilizatorului</translation>
@@ -9750,6 +9752,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8233028084277069927">Deschide acum</translation>
 <translation id="8234795456569844941">Ajută-i pe inginerii noștri să remedieze această problemă. Spune-ne ce s-a întâmplat chiar înainte să primești mesajul de eroare privind profilul:</translation>
 <translation id="8235418492073272647">Pagină trimisă de pe <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Această filă folosește resurse în comun cu alte file, ceea ce ar putea interfera cu remedierea erorilor.</translation>
 <translation id="8236911020904880539">ieșire</translation>
 <translation id="8236917170563564587">Distribuie această filă</translation>
 <translation id="8237647586961940482">Roz închis și roșu</translation>
@@ -9954,6 +9957,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8376532149031784008">Se reîncarcă <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Extensiile instalate de administrator pot în continuare să citească și să modifice acest site</translation>
 <translation id="8376752431516546391">Panoul lateral Căutare Google</translation>
+<translation id="8376812682111060348">Alertă privind o problemă legată de performanță</translation>
 <translation id="8377625247046155446">Cheia de acces va fi salvată numai pe acest dispozitiv. Va rămâne pe acest dispozitiv după ce închizi toate ferestrele incognito.</translation>
 <translation id="8378714024927312812">Gestionat de organizația ta</translation>
 <translation id="8379988659465232385">Numele trebuie completat</translation>

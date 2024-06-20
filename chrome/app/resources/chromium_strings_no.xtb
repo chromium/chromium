@@ -13,6 +13,7 @@
 <translation id="1131805035311359397">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Klikk på Chromium-menyen</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
+<translation id="1188705220418984327">For å dele vinduet, tillat skjermopptak for Chromium i Systemvalg.</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chromium rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
 <translation id="1265577313130862557">Chromium har blokkert denne nedlastingen fordi filen er farlig</translation>
@@ -49,7 +50,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="185970820835152459">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chromium-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Nettsteder kan lagre informasjon om interessene dine i Chromium. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
 <translation id="1881322772814446296">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. Du kan velge om du vil opprette en ny profil for å holde de eksisterende Chromium-dataene atskilte. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">For å bruke denne utvidelsen som <ph name="USER_EMAIL_ADDRESS" />, logg på Chromium.\nDu kan også bruke og lagre passord med mer fra Google-kontoen din.</translation>
 <translation id="1906696617298807388">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til Google Disk for å få forslag til elementer. Dette er av i Inkognito.</translation>
 <translation id="1911763535808217981">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du starte den på nytt nå?</translation>
@@ -142,7 +142,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
 <translation id="3313189106987092621">Chromium advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
 <translation id="3316771292331273802">Du logges av de fleste nettsteder når du lukker alle Chromium-vinduer, men du blir ikke logget av Google-kontoen din hvis du er logget på Chromium. For å la nettsteder huske deg, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">Utvidelsen «<ph name="EXTENSION_NAME" />» vil at du skal logge på Chromium</translation>
 <translation id="3350761136195634146">Det finnes allerede en Chromium-profil med denne kontoen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
@@ -159,6 +158,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="364817392622123556">{COUNT,plural, =0{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt.}=1{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3651803019964686660">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chromium på begge enhetene.</translation>
 <translation id="3667616615096815454">Kan ikke installere programmet fordi det er ukjent for tjeneren.</translation>
+<translation id="3669334504579945026">For å dele skjermen din, tillat skjermopptak for Chromium i Systemvalg.</translation>
 <translation id="3685209450716071127">Chromium kan ikke sjekke passordene dine. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="3702352323269013324">Finn ut mer om personlig tilpasning av annonser i Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen}=1{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
@@ -209,6 +209,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4415566066719264597">La Chromium kjøre i bakgrunnen</translation>
 <translation id="4423735387467980091">Tilpass og kontroller Chromium</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
+<translation id="4434353761996769206">Installasjonsfeil: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Om Chrome for testing</translation>
 <translation id="4501471624619070934">Installasjonen mislyktes fordi tilgangen er begrenset i dette landet.</translation>
 <translation id="4510853178268397146">Denne utvidelsen har ikke publisert retningslinjer for personvern, for eksempel hvordan den samler inn og bruker data. Chromium anbefaler at du fjerner den.</translation>
@@ -250,6 +251,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
 <translation id="5294316920224716406">Når du surfer i inkognitomodus, advarer Chromium deg før nettsteder lastes inn via usikre tilkoblinger</translation>
 <translation id="5296845517486664001">Når prøveprosjekter er påslått, og hvis Chromium har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chromium interessene dine på rullerende basis hver måned.</translation>
+<translation id="5310474266708705970">Logg på Chromium som <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Chromium har noen sikkerhetsanbefalinger til deg</translation>
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
 <translation id="5358375970380395591">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
@@ -405,6 +407,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="734373864078049451">Her finner du nettinnholdet, bokmerkene og de andre Chromium-tingene dine.</translation>
 <translation id="7349591376906416160">Systemadministratoren din har konfigurert Chromium til å åpne <ph name="ALTERNATIVE_BROWSER_NAME" /> for å få tilgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium har blokkert denne nedlastingen fordi filen kan skade de personlige kontoene dine og kontoene dine på sosiale nettverk, inkludert <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den i stedet.</translation>
 <translation id="7398989605938454041">Med Chromium-profiler kan du holde alle Chromium-tingene dine atskilt. Dette gjør det lettere å skille mellom arbeid og fritid.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for utviklere</translation>
 <translation id="7451052299415159299">Chromium trenger tilgang til kameraet ditt for dette nettstedet</translation>
@@ -459,6 +462,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8357820681460164151">For å få tilgang til Chromium-nettlesertingene dine på alle enhetene dine, logg på og slå på synkronisering</translation>
 <translation id="8360718212975266891">For å få fremtidige Chromium-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
+<translation id="837460953767177950">Deretter må du starte Chromium på nytt.</translation>
 <translation id="8401454788024434101">Denne utvidelsen er avpublisert av utvikleren og kan være utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium på nytt innen én dag}other{Start Chromium på nytt innen # dager}}</translation>
 <translation id="8453117565092476964">Installasjonsarkivet er skadet eller ugyldig. Last ned Chromium på nytt.</translation>

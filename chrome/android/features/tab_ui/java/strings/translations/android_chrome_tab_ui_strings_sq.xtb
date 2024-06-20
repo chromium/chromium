@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Vjollcë</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="427987768447457592">Grupi i ri i skedave</translation>
+<translation id="4338724047016295066">Skedat joaktive do të mbyllen automatikisht. Mund t'i gjesh gjithmonë te "Historiku".</translation>
 <translation id="4371591986692297148">Joaktiv</translation>
 <translation id="4460014764210899310">Mos grupo</translation>
 <translation id="4648718555153979859">Skedat e tua grupohen së bashku këtu</translation>
 <translation id="4686942373615810936">Krijuar pikërisht tani</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Mbyll pas 1 dite}other{Mbyll pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>
 <translation id="4777866634702576038">Të fshihet grupi i skedave?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> koment)}other{(<ph name="REVIEWS_COUNT_MANY" /> komente)}}</translation>
 <translation id="4850886885716139402">Pamja</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Grupet e skedave do t'i gjesh këtu</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulo grupimin për <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Anulo grupimin për <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skedë}other{<ph name="TABS_COUNT_MANY" /> skeda}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Pas 1 dite}other{Pas <ph name="DAY_COUNT_MANY" /> ditësh}}</translation>
 <translation id="6549021453810473782">Shiko informacionet për dyqanin</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Lëviz skedën majtas</translation>

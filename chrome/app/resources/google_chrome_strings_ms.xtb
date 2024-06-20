@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chrome mengandungi Google Translate terbina dalam supaya anda boleh menterjemah apabila anda memerlukan fungsi ini</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome sudah selesai membuat pengemaskinian. Anda boleh menggunakan versi terkini setelah anda membuat pelancaran semula. Selepas itu, tab semasa anda akan dibuka semula.}=1{Chrome sudah selesai membuat pengemaskinian. Anda boleh menggunakan versi terkini setelah anda membuat pelancaran semula. Selepas itu, tab semasa anda akan dibuka semula. Tetingkap Inkognito anda tidak akan dibuka semula.}other{Chrome sudah selesai membuat pengemaskinian. Anda boleh menggunakan versi terkini setelah anda membuat pelancaran semula. Selepas itu, tab semasa anda akan dibuka semula. # tetingkap Inkognito anda tidak akan dibuka semula.}}</translation>
 <translation id="1434626383986940139">Apl Chrome Canary</translation>
-<translation id="1438479496118074429">Sambungan \"<ph name="EXTENSION_NAME" />\" mahu anda log masuk ke Chrome</translation>
 <translation id="146866447420868597">Log masuk ke Chrome?</translation>
 <translation id="1492280395845991349">Lancarkan semula untuk menyelesaikan pengemaskinian Chrome</translation>
 <translation id="1497802159252041924">Ralat pemasangan: <ph name="INSTALL_ERROR" /></translation>
@@ -471,7 +470,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7802622118583152311">Chrome memberi anda teknologi terbaharu untuk penyemakan imbas yang lebih baik</translation>
 <translation id="7808348361785373670">Alih keluar daripada Chrome...</translation>
 <translation id="7825851276765848807">Gagal pemasangan disebabkan ralat yang tidak dinyatakan. Sila muat turun semula Google Chrome.</translation>
-<translation id="7828063580843052643">Untuk menggunakan sambungan ini sebagai <ph name="USER_EMAIL_ADDRESS" />, log masuk ke Chrome.\nAnda juga akan dapat menggunakan dan menyimpan kata laluan dan pelbagai lagi daripada Google Account anda.</translation>
 <translation id="7836610565365456468">Ubah penyemak imbas anda dengan tema ceria yang diilhamkan oleh artis, alam semula jadi dan pelbagai lagi</translation>
 <translation id="7845233973568007926">Terima kasih kerana memasang. Anda perlu memulakan semula komputer anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI dalam Chrome menjadikan web lebih pantas, lebih selamat dan lebih mudah diakses</translation>

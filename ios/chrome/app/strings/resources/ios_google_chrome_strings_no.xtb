@@ -134,6 +134,7 @@ Du bør tenke på følgende:
 <translation id="4903674399067644695">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chrome.</translation>
 <translation id="4919069428879420545">Slett nettlesingsdata i Chrome.</translation>
 <translation id="49200511069271369">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>
+<translation id="4925322001044117929">Bruk Chrome på iPad som standard</translation>
 <translation id="498985224078955265">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene.</translation>
 <translation id="5030102366287574140">Chrome kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
 <translation id="5108659628347594808">Gjør Chrome bedre</translation>
@@ -192,6 +193,7 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="6646696210740573446">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Google.</translation>
 <translation id="6648150602980899529">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de lagres fortsatt i Google-kontoen din.</translation>
 <translation id="6683891932310469419">Åpner Chrome-loggsiden din.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutt. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}other{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutter. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}}</translation>
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="6820553595690137150">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
 

@@ -117,6 +117,8 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1513814250881909472">Synchronisieren, um deine Tabs von anderen Geräten abzurufen</translation>
 <translation id="1513858653616922153">Passwort löschen</translation>
 <translation id="1521774566618522728">Heute aktiv</translation>
+<translation id="1544084554881119930">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
+Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Wenn du dein Google-Konto verwalten möchtest, tippe auf die Schaltfläche "Konto verwalten"</translation>
 <translation id="154513667535157406">Mit „Mag ich“ gibst du an, dass dir diese Zusammenfassung gefällt</translation>
 <translation id="1549000191223877751">In anderes Fenster schieben</translation>
@@ -458,6 +460,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3264259168916048410">Dein Computer möchte dieses Gerät für die Anmeldung bei einer Website verwenden</translation>
 <translation id="3265093782546847662">Alle Seiten von <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Bild laden</translation>
+<translation id="327204079441056603">Die Passwortspeicherung auf diesem Gerät wurde geändert</translation>
 <translation id="3280562213547448728">Sprachsuche</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3290249595466894471">Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern</translation>
@@ -1214,6 +1217,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6918398787259831832">Wenn das Problem weiterhin auftritt, <ph name="BEGIN_LINK" />findest du hier weitere Informationen<ph name="END_LINK" /> von <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Alle auf deinem Gerät und in deinem Google-Konto gespeicherten Sicherheitscodes werden gelöscht</translation>
 <translation id="6937524809504266803">Personalisierung &amp; Verknüpfung</translation>
+<translation id="6937876069006524083">Alias (optional)</translation>
 <translation id="6942665639005891494">Du kannst den Standard-Downloadpfad jederzeit über die Option im Menü „Einstellungen“ ändern</translation>
 <translation id="694267552845942083">Du passt gerade die Synchronisierungseinstellungen an. Wenn du die Aktivierung der Synchronisierung abschließen möchtest, tippe unten auf dem Bildschirm auf „Bestätigen“. Nach oben</translation>
 <translation id="6945221475159498467">Auswählen</translation>
@@ -1277,6 +1281,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> Tabs als neue Tabs im Hintergrund wiederherstellen.</translation>
 <translation id="7217781228893594884">Inkognitotabs werden gesperrt, wenn du Chrome schließt</translation>
 <translation id="7221869452894271364">Diese Seite neu laden</translation>
+<translation id="7224097611345298931">Alle Passwörter, die für Chrome und <ph name="CHROME_CHANNEL" /> nur auf diesem Gerät gespeichert waren, wurden zusammengeführt. Du kannst alle deine gespeicherten Passwörter in beiden Apps automatisch ausfüllen lassen.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 Download ausstehend}other{# Downloads ausstehend}}</translation>
 <translation id="72415438529550637">Passwortvorschlag geschlossen.</translation>
 <translation id="7252076891734325316">Platziere dein Smartphone möglichst nah am Computer</translation>

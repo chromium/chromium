@@ -50,7 +50,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="185970820835152459">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chromium, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Site-urile pot stoca informații în Chromium despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="1881322772814446296">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. Aveți opțiunea de a crea un profil nou, pentru a păstra separat datele Chromium existente. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Pentru a folosi această extensie ca <ph name="USER_EMAIL_ADDRESS" />, conectează-te la Chromium.\nVei putea, în plus, să folosești și să salvezi parolele și altele din Contul Google.</translation>
 <translation id="1906696617298807388">Când introduci text în bara de adrese sau în caseta de căutare, Chromium trimite ceea ce introduci la Google Drive pentru a primi sugestii de elemente. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="1911763535808217981">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chromium</translation>
 <translation id="1929939181775079593">Chromium nu mai răspunde. Îl reporniți acum?</translation>
@@ -143,7 +142,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="3296368748942286671">Rulați în continuare aplicații de fundal când Chromium este închis</translation>
 <translation id="3313189106987092621">Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="3316771292331273802">Dacă te-ai conectat la Chromium, când închizi toate ferestrele Chromium fără să te deconectezi de la Contul Google, te vei deconecta de pe majoritatea site-urilor. Pentru ca site-urile să te rețină, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">Extensia <ph name="EXTENSION_NAME" /> solicită să te conectezi la Chromium</translation>
 <translation id="3350761136195634146">Există deja un profil Chromium asociat acestui cont</translation>
 <translation id="3387527074123400161">Sistemul de operare Chromium</translation>
 <translation id="3406848076815591792">Schimbi la profilul Chromium existent?</translation>
@@ -253,6 +251,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
 <translation id="5294316920224716406">Atunci când navighezi în modul incognito, Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="5296845517486664001">În versiunile de încercare și dacă Chromium te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chromium șterge categoriile de interese în permanență, în fiecare lună.</translation>
+<translation id="5310474266708705970">Conectează-te la Chromium ca <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Chromium a găsit câteva recomandări privind siguranța pe care să le examinezi</translation>
 <translation id="5352361688875342522">Alte profiluri Chromium</translation>
 <translation id="5358375970380395591">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. <ph name="LEARN_MORE" /></translation>
@@ -408,6 +407,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="734373864078049451">Experiența web personalizată, marcajele și celelalte date Chromium chiar aici.</translation>
 <translation id="7349591376906416160">Administratorul sistemului a configurat Chromium să deschidă <ph name="ALTERNATIVE_BROWSER_NAME" /> pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium a blocat descărcarea deoarece fișierul poate dăuna conturilor tale personale și din rețelele sociale, între care <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Extensia nu mai este acceptată. Chromium recomandă să o elimini.</translation>
 <translation id="7398989605938454041">Cu ajutorul profilurilor Chromium, poți păstra separat toate informațiile din Chromium. Astfel, poți face mai ușor diferența între muncă și timpul liber.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pentru dezvoltatori</translation>
 <translation id="7451052299415159299">Chromium are nevoie de permisiune ca să acceseze camera foto pentru acest site</translation>

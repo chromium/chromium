@@ -29,7 +29,6 @@
 <translation id="1407223320754252908">तुम्हाला आवश्यकता असेल, तेव्हा भाषांतर करण्यासाठी Chrome मध्ये Google Translate बिल्ट-इन आहे</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen.}=1{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{Chrome अपडेट केले आहे. तुम्ही पुन्हा लाँच केल्यावर नवीनतम आवृत्ती वापरू शकता. त्यानंतर, तुमचे सद्य टॅब पुन्हा उघडतील. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
-<translation id="1438479496118074429">\"<ph name="EXTENSION_NAME" />\" या एक्स्टेंशनसाठी तुम्हाला Chrome मध्ये साइन इन करावे लागेल</translation>
 <translation id="146866447420868597">Chrome मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="1492280395845991349">Chrome अपडेट पूर्ण करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="1497802159252041924">इंस्टॉलसंबंधित एरर: <ph name="INSTALL_ERROR" /></translation>
@@ -58,6 +57,7 @@
 <translation id="1734234790201236882">Chrome हा पासवर्ड तुमच्या Google खात्यामध्ये सेव्ह करेल. तुम्हाला लक्षात ठेवावा लागणार नाही.</translation>
 <translation id="1786003790898721085">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chrome मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पहा.</translation>
 <translation id="1786044937610313874">शॉर्टकट Chrome मध्ये उघडतात</translation>
+<translation id="178701303897325119">या एक्स्टेंशनला यापुढे सपोर्ट नाही. त्याऐवजी तुम्ही ते काढून टाकावे अशी Chrome शिफारस करते.</translation>
 <translation id="1812689907177901597">हे बंद करून, तुम्ही Chrome वर साइन इन न करता Gmail सारख्या Google साइटवर साइन इन करू शकता</translation>
 <translation id="1860536484129686729">या साइटसाठी Chrome ला तुमचा कॅमेरा ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="1873233029667955273">Google Chrome तुमचा डीफॉल्ट ब्राउझर नाही</translation>
@@ -250,6 +250,7 @@
 <translation id="4389991535395284064">गुप्त मोडमध्ये ब्राउझ करताना, असुरक्षित कनेक्शन वापरून साइट लोड करण्यापूर्वी Chrome तुम्हाला चेतावणी देईल</translation>
 <translation id="4427306783828095590">वर्धित सुरक्षितता फिशिंग आणि मालवेअर अधिक चांगल्यारितीने ब्लॉक करते</translation>
 <translation id="4434353761996769206">इंस्टॉलर एरर: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446"><ph name="USER_EMAIL" /> म्हणून Chrome मध्ये साइन इन करा</translation>
 <translation id="4450664632294415862">Chrome - नेटवर्क साइन इन - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome वर दुसरे ऑपरेशन प्रगतीपथावर आहे. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4459234553906210702">जाहिरात मापन हे तुम्ही भेट देत असलेल्या साइटना Chrome कडे माहितीची विनंती करण्यास अनुमती देते, जे साइटला तिच्या जाहिरातींचा परफॉर्मन्स मोजण्यात मदत करते. जाहिरात मापन हे साइटदरम्यान शक्य तितकी कमी माहिती ट्रान्सफर करून क्रॉस-साइट ट्रॅकिंग प्रतिबंधित करते.</translation>
@@ -475,7 +476,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7802622118583152311">आणखी चांगल्या प्रकारे ब्राउझ करता यावे यासाठी Chrome तुम्हाला नवीनतम तंत्रज्ञान देऊ करते</translation>
 <translation id="7808348361785373670">Chrome मधून काढून टाका...</translation>
 <translation id="7825851276765848807">नमूद न केलेल्या एररमुळे स्थापना अयशस्वी. कृपया Google Chrome पुन्हा डाउनलोड करा.</translation>
-<translation id="7828063580843052643"><ph name="USER_EMAIL_ADDRESS" /> म्हणून हे एक्स्टेंशन वापरण्यासाठी, Chrome मध्ये साइन इन करा.\nतसेच तुम्हाला तुमच्या Google खाते मधून तुमचे पासवर्ड आणि बरेच काही वापरता व सेव्ह करता येईल.</translation>
 <translation id="7836610565365456468">कलाकार, निसर्ग आणि बऱ्याच गोष्टींकडून प्रेरणा घेऊन आकर्षक थीम वापरून तुमच्या ब्राउझरचे रूपांतर करा</translation>
 <translation id="7845233973568007926">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा कॉंप्युटर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="7852254990718225089">Chrome मधील AI वेबला जलद, सुरक्षित आणि आणखी अ‍ॅक्सेस करण्यायोग्य करण्यात मदत करते</translation>

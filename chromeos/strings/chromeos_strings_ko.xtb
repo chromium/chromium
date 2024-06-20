@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">밝은 노란색</translation>
 <translation id="1056898198331236512">경고</translation>
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
+<translation id="1061864016440983342">위치 정보 없이 사용</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />개 중 <ph name="INDEX" />번째인 <ph name="NAME" />입니다.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2082932131694554252">할당된 키보드 키</translation>
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
+<translation id="2086091080968010660">시간 기반 변경사항은 정확하지 않을 수 있습니다. 설정에서 시스템 위치 액세스를 사용 설정하세요.</translation>
 <translation id="2102231663024125441">텍스트 수정</translation>
 <translation id="2105810540595158374">게임 컨트롤러 기기입니다.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, 버전 <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">기본값 복원</translation>
 <translation id="2286454467119466181">단순</translation>
 <translation id="2287186687001756809">사용할 수 있는 이미지가 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
+<translation id="2294577623958216786">현재 설정된 일정은 <ph name="SUNRISE" />~<ph name="SUNSET" />입니다. 일몰 및 일출 일정을 자동으로 업데이트하려면 시스템 위치 액세스를 사용 설정하세요.</translation>
 <translation id="2305172810646967500">블랙</translation>
 <translation id="2307344026739914387">현재 키 쌍 사용</translation>
 <translation id="2308243864813041101">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 USB 케이블을 분리하세요.</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">키보드 밝기</translation>
 <translation id="6412715219990689313">내장 키보드</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
+<translation id="6419454453018688975">시스템 위치 액세스 사용 설정</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">계정 설정으로 이동</translation>

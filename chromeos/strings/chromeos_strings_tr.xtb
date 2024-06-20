@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastel sarı</translation>
 <translation id="1056898198331236512">Uyarı</translation>
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
+<translation id="1061864016440983342">Konum olmadan kullan</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Güvenlik duvarı algılandı</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Daha fazla ayar</translation>
 <translation id="2082932131694554252">Atanan klavye tuşu</translation>
 <translation id="2085089206770112532">Ekran parlaklığını azalt</translation>
+<translation id="2086091080968010660">Zamana dayalı değişiklikler doğru olmayabilir. Ayarlar'dan konum erişimini etkinleştirin.</translation>
 <translation id="2102231663024125441">Metin düzenleme</translation>
 <translation id="2105810540595158374">Cihazın türü oyun kumandası.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Varsayılanları geri yükle</translation>
 <translation id="2286454467119466181">Basit</translation>
 <translation id="2287186687001756809">Resim yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>
+<translation id="2294577623958216786">Mevcut program <ph name="SUNRISE" />-<ph name="SUNSET" /> olarak ayarlandı. Gün batımı ve gün doğumu programını otomatik olarak güncellemek için sistem konum erişimini açın.</translation>
 <translation id="2305172810646967500">siyah</translation>
 <translation id="2307344026739914387">Mevcut anahtar çiftini kullanın</translation>
 <translation id="2308243864813041101">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> USB kablosunu çıkarın</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">klavye parlaklığı</translation>
 <translation id="6412715219990689313">Yerleşik klavye</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
+<translation id="6419454453018688975">Sistem konum erişimini açın</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zayıf (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hesap ayarlarına git</translation>

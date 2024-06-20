@@ -459,6 +459,7 @@
 <translation id="8441146129660941386">Spol tilbage</translation>
 <translation id="8444433999583714703">Aktivér også lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
+<translation id="8473055640493819707">"<ph name="APP_NAME" />" er forældet. Geninstaller appen.</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
 <translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
 <translation id="8499083585497694743">Slå mikrofon til</translation>

@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Google Oversetter er innebygd i Chrome, slik at du kan oversette når du trenger det</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt.}=1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Dine # inkognitovinduer åpnes ikke på nytt.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apper</translation>
-<translation id="1438479496118074429">Utvidelsen «<ph name="EXTENSION_NAME" />» vil at du skal logge på Chrome</translation>
 <translation id="146866447420868597">Vil du logge på Chrome?</translation>
 <translation id="1492280395845991349">Start på nytt for å fullføre Chrome-oppdateringen</translation>
 <translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
@@ -54,6 +53,7 @@
 <translation id="1734234790201236882">Chrome lagrer passordet i Google-kontoen din, så du trenger ikke å huske det.</translation>
 <translation id="1786003790898721085">Sørg for at du er logget på Chrome på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
 <translation id="1786044937610313874">Snarveier åpnes i Chrome</translation>
+<translation id="178701303897325119">Denne utvidelsen støttes ikke lenger. Chrome anbefaler at du fjerner den i stedet.</translation>
 <translation id="1812689907177901597">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chrome</translation>
 <translation id="1860536484129686729">Chrome trenger tilgang til kameraet ditt for dette nettstedet</translation>
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
@@ -169,6 +169,7 @@
 <translation id="3261565993776444564">Prøv en ny farge for å tilpasse nettleseren din</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
+<translation id="3292333338048274092">Deretter må du starte Chrome på nytt.</translation>
 <translation id="3360895254066713204">Chrome-hjelper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startes på nytt nå}=1{Chrome startes på nytt om 1 sekund}other{Chrome startes på nytt om # sekunder}}</translation>
 <translation id="3396977131400919238">Det oppstod en feil i operativsystemet under installeringen. Last ned Google Chrome på nytt.</translation>
@@ -213,6 +214,7 @@
 <translation id="4035053306113201399">ChromeOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4053720452172726777">Tilpass og kontroller Google Chrome</translation>
+<translation id="4084404300720192944">For å dele vinduet, tillat skjermopptak for Chrome i Systemvalg.</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="4110895483821904099">Konfigurer den nye Chrome-profilen din</translation>
 <translation id="4111566860456076004">Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra, og den kan være utrygg. Fjern den fra Chrome, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysninger.</translation>
@@ -243,6 +245,8 @@
 <translation id="4384570495110188418">Chrome kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
 <translation id="4389991535395284064">Når du surfer i inkognitomodus, advarer Chrome deg før nettsteder lastes inn via usikre tilkoblinger</translation>
 <translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
+<translation id="4434353761996769206">Installasjonsfeil: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Logg på Chrome som <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – nettverkspålogging – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">En annen handling er i gang på Google Chrome. Prøv på nytt senere.</translation>
 <translation id="4459234553906210702">Med annonsemålinger kan nettsteder du besøker, spørre Chrome om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
@@ -349,6 +353,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – betaversjon av Google Chrome</translation>
 <translation id="6182736845697986886">Installasjonen mislyktes på grunn av en intern feil i oppdateringstjeneren.</translation>
 <translation id="6200139057479872438">Du har ikke vært her i det siste. Chrome har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">For å dele skjermen din, tillat skjermopptak for Chrome i Systemvalg.</translation>
 <translation id="6235018212288296708">Regel om innkommende trafikk for Google Chrome for å tillate mDNS-trafikk.</translation>
 <translation id="624230925347970731">Chrome lukkes snart</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
@@ -464,7 +469,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7802622118583152311">Med Chrome får du den nyeste teknologien for bedre nettlesing</translation>
 <translation id="7808348361785373670">Fjern fra Chrome</translation>
 <translation id="7825851276765848807">Installeringen mislyktes på grunn av en uspesifisert feil. Last ned Google Chrome på nytt.</translation>
-<translation id="7828063580843052643">For å bruke denne utvidelsen som <ph name="USER_EMAIL_ADDRESS" />, logg på Chrome.\nDu kan også bruke og lagre passord med mer fra Google-kontoen din.</translation>
 <translation id="7836610565365456468">Forny nettleseren med spennende temaer inspirert av kunstnere, natur med mer</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">Med AI i Chrome blir nettet raskere, tryggere og mer tilgjengelig</translation>

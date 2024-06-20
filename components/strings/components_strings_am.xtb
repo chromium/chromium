@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">ለአሁን ደብቅ</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" />ን ለመድረስ ሞክረዋል፣ ግን አገልጋዩ ደካማ ቁልፍ የያዘ የእውቅና ማረጋገጫ ነው ያቀረበው። አንድ አጥቂ የግል ቁልፉን ሰብሮ ሊሆን ይችላል፣ እና አገልጋዩ የጠበቁት ላይሆን ይችላል (ከአጥቂ ጋር እየተገናኙ ሊሆኑ ይችላሉ)።</translation>
 <translation id="1212527389003717329">ማውረድ ተጀምሯል። ለማየት በ|<ph name="ACCELERATOR" />| ላይ ተጭነው ይያዙ።</translation>
+<translation id="1214970845432250240">የዋጋ ክልል</translation>
 <translation id="1219129156119358924">የስርዓት ደህንነት</translation>
 <translation id="1222060260947439312">የቀኝ መሳቢያ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1182,6 +1183,7 @@
 <translation id="3272091146646336650">ልዕለ B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-አሃዝ የማረጋገጫ ኮድ ያስገቡ</translation>
 <translation id="3272643614306383237">ከ1 ሜባ ያነሰ። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ ቀስ ብለው ሊጭኑ ይችላሉ።</translation>
+<translation id="327346289570683313">የዋጋ ክልል</translation>
 <translation id="3273738040255912340">አስተዳዳሪዎ በመገለጫዎ ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ እንዲሁም ከChromium ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል በ<ph name="DESTINATION_NAME" /> ውስጥ መክፈትን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል በ<ph name="DESTINATION_NAME" /> ውስጥ መክፈትን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች በ<ph name="DESTINATION_NAME" /> ውስጥ መክፈትን አይመክርም}}</translation>
 <translation id="3282085321714087552">ድርጅትዎ <ph name="ENROLLMENT_DOMAIN" /> እንደ ቅንብሮች ወይም መመሪያዎች ላሉት ለሚከተሉት ድር ጣቢያዎች የተወሰነ መረጃ ልኳል።</translation>

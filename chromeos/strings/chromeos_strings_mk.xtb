@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">пастелножолта</translation>
 <translation id="1056898198331236512">Предупредување</translation>
 <translation id="1059913517121127803">Не можеше да се започне со скенирање</translation>
+<translation id="1061864016440983342">Користи без локација</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> од <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откриен е заштитен ѕид</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2082932131694554252">Назначено е копче од тастатурата</translation>
 <translation id="2085089206770112532">Осветленоста на екранот се намали</translation>
+<translation id="2086091080968010660">Промените според време можеби не се прецизни. Вклучете пристап до локацијата за оперативниот систем во поставките.</translation>
 <translation id="2102231663024125441">Изменување текст</translation>
 <translation id="2105810540595158374">Уредот е контролер на игра.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Врати ги стандардните вредности</translation>
 <translation id="2286454467119466181">Едноставно</translation>
 <translation id="2287186687001756809">Нема достапна слика. За да додадете фотографии, одете на <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Тековниот распоред е поставен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. За автоматско ажурирање на распоредот на заоѓање и изгревање на сонцето, вклучете пристап до локацијата за оперативниот систем.</translation>
 <translation id="2305172810646967500">црна боја</translation>
 <translation id="2307344026739914387">Користи го тековниот пар клучеви</translation>
 <translation id="2308243864813041101">Исклучете го USB-кабелот на <ph name="DEVICE_NAME" /> повторно за да продолжите со процесот на ажурирање</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">осветленост на тастатурата</translation>
 <translation id="6412715219990689313">Вградена тастатура</translation>
 <translation id="6417265370957905582">Помошник на Google</translation>
+<translation id="6419454453018688975">Вклучи пристап до локацијата за оперативниот систем</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>

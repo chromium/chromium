@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Netačan PUK</translation>
 <translation id="4057991113334098539">Aktiviranje...</translation>
 <translation id="4092890906744441904">irski</translation>
+<translation id="4101601646343868113">Prijavite se na svoju mobilnu mrežu i potvrdite da je vaš tarifni paket aktivan</translation>
 <translation id="4124731372776320263">Sinhronizuje se 1 fajl sa Diska</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Premestite stavke koje vam ne trebaju u otpad</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">tamilski sa tastaturom Tamil99</translation>
 <translation id="5633226425545095130">Premeštanjem ove stavke delite je sa svima koji mogu da vide deljeni folder <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Slušaj</translation>
+<translation id="5650895901941743674">Proverite konfiguraciju APN-a</translation>
 <translation id="5669691691057771421">Unesite novi PIN</translation>
 <translation id="5678784840044122290">Linux aplikacija će biti dostupna na terminalu, a možda će prikazivati i ikonu u Pokretaču.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nije uspeo prekid veze sa arhivskim ili virtuelnim diskom<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Lista datoteka se promenila u prikaz sličica.</translation>
 <translation id="8601932370724196034">Crostini datoteka slike</translation>
 <translation id="8609695766746872526">islandski</translation>
+<translation id="8630384863424041081">Unesite PIN SIM kartice ili podrazumevani PIN koji vam je dao mobilni operater. Podršku potražite od mobilnog operatera.</translation>
 <translation id="863903787380594467">Netačan PIN. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Oflajn fajlovi su morali da se uklone</translation>

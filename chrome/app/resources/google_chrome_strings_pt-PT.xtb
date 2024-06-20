@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">O Chrome tem o Google Tradutor integrado para que possa traduzir quando precisar</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos.}=1{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir a janela de navegação anónima.}other{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir # janelas de navegação anónima.}}</translation>
 <translation id="1434626383986940139">Apps do Chrome para o Canary</translation>
-<translation id="1438479496118074429">A extensão \"<ph name="EXTENSION_NAME" />\" quer que inicie sessão no Chrome</translation>
 <translation id="146866447420868597">Iniciar sessão no Chrome?</translation>
 <translation id="1492280395845991349">Reinicie para concluir a atualização do Chrome</translation>
 <translation id="1497802159252041924">Erro ao instalar: <ph name="INSTALL_ERROR" /></translation>
@@ -171,6 +170,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3261565993776444564">Experimente uma nova cor para personalizar o seu navegador</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
+<translation id="3292333338048274092">Em seguida, tem de reiniciar o Chrome.</translation>
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}other{O Chrome será reiniciado dentro de # segundos}}</translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operativo durante a instalação. Descarregue de novo o Google Chrome.</translation>
@@ -215,6 +215,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="4035053306113201399">O ChromeOS tem de ser reiniciado para aplicar a atualização.</translation>
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
+<translation id="4084404300720192944">Para partilhar a sua janela, permita a gravação de ecrã para o Chrome nas Preferências do sistema.</translation>
 <translation id="4106587138345390261">O Chrome está a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização das suas informações</translation>
 <translation id="4110895483821904099">Configure o seu novo perfil do Chrome</translation>
 <translation id="4111566860456076004">O Chrome não consegue validar a origem desta extensão, e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo informações pessoais.</translation>
@@ -353,6 +354,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6200139057479872438">Não visitou o site recentemente. O Chrome removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Para partilhar o ecrã, permita a gravação de ecrã para o Chrome nas Preferências do sistema.</translation>
 <translation id="6235018212288296708">Regra de importação para o Google Chrome permitir o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome vai ser fechado em breve</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
@@ -468,7 +470,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7802622118583152311">O Chrome oferece-lhe a tecnologia mais recente para uma melhor navegação</translation>
 <translation id="7808348361785373670">Remover do Chrome...</translation>
 <translation id="7825851276765848807">Ocorreu uma falha na instalação devido a um erro não especificado. Descarregue novamente o Google Chrome.</translation>
-<translation id="7828063580843052643">Para usar esta extensão como <ph name="USER_EMAIL_ADDRESS" />, inicie sessão no Chrome.\nTambém vai poder usar e guardar as suas palavras-passe e muito mais a partir da Conta Google.</translation>
 <translation id="7836610565365456468">Transforme o navegador com temas vibrantes inspirados em artistas, na natureza e muito mais</translation>
 <translation id="7845233973568007926">Agradecemos a instalação. Tem de reiniciar o computador antes de usar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">A IA no Chrome ajuda a tornar a Web mais rápida, segura e acessível</translation>

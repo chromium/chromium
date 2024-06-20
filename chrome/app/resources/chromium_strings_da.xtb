@@ -50,7 +50,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="185970820835152459">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chromium-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Websites kan gemme oplysninger med Chromium om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="1881322772814446296">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine Chromium-data adskilt. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Hvis du vil bruge denne udvidelse som <ph name="USER_EMAIL_ADDRESS" />, skal du logge ind i Chromium.\nDu kan også bruge og gemme dine adgangskoder m.m. fra din Google-konto.</translation>
 <translation id="1906696617298807388">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til Google Drev for at få forslag til elementer. Dette er deaktiveret i inkognito.</translation>
 <translation id="1911763535808217981">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du genstarte nu?</translation>
@@ -143,7 +142,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3296368748942286671">Fortsæt med at køre baggrundsapps, når Chromium er lukket</translation>
 <translation id="3313189106987092621">Chromium advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="3316771292331273802">Du logges ud af de fleste websites, når du lukker alle Chromium-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chromium. <ph name="SETTINGS_LINK" /> for at give websites tilladelse til at huske dig.</translation>
-<translation id="333055255088403283">Udvidelsen \"<ph name="EXTENSION_NAME" />\" vil have dig til at logge ind i Chromium</translation>
 <translation id="3350761136195634146">Der findes allerede en Chromium-profil med denne konto</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Vil du skifte til den eksisterende Chromium-profil?</translation>
@@ -211,6 +209,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4415566066719264597">Lad Chromium køre i baggrunden</translation>
 <translation id="4423735387467980091">Tilpas og kontrollér Chromium</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
+<translation id="4434353761996769206">Installationsfejl: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4501471624619070934">Installationen mislykkedes, fordi der er begrænset adgang i dette land.</translation>
 <translation id="4510853178268397146">Denne udvidelse har ikke offentliggjort privatlivsprocedurer, f.eks. hvordan den indsamler og bruger data. Chromium anbefaler, at du fjerner den.</translation>
@@ -252,6 +251,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5277894862589591112">Åbn Chromium igen for at anvende ændringerne</translation>
 <translation id="5294316920224716406">Når du browser i inkognitotilstand, advarer Chromium dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="5296845517486664001">Når prøven er aktiveret, og hvis Chromium har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chromium dine interesser en gang om måneden.</translation>
+<translation id="5310474266708705970">Log ind i Chromium som <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Chromium har fundet nogle sikkerhedsanbefalinger, du kan gennemgå</translation>
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
 <translation id="5358375970380395591">Du er ved at logge ind med en managerstyret konto og giver dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
@@ -408,6 +408,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="734373864078049451">Dit webindhold, dine bogmærker og andre Chromium-ting kan findes her.</translation>
 <translation id="7349591376906416160">Din systemadministrator har konfigureret Chromium til at åbne <ph name="ALTERNATIVE_BROWSER_NAME" /> for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk, herunder <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Denne udvidelse understøttes ikke længere. Chromium anbefaler, at du fjerner den.</translation>
 <translation id="7398989605938454041">Du kan organisere alle dine ting i Chromium ved hjælp af Chromium-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for udviklere</translation>
 <translation id="7451052299415159299">Chromium skal have tilladelse til at bruge dit kamera på dette website</translation>

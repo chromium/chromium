@@ -52,7 +52,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="185970820835152459">Je kunt je ingelogde Google-accounts beheren. Je Google-accounts worden gebruikt voor onder andere de Chromium-browser, Play Store, en Gmail. Als je een account wilt toevoegen voor iemand anders, bijvoorbeeld een gezinslid, voeg je een nieuw persoon toe aan je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Sites kunnen informatie over je interesses in Chromium opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="1881322772814446296">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Chromium-profiel. Je Chromium-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account. Je kunt een nieuw profiel maken om je bestaande Chromium-gegevens apart te houden. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Als je deze extensie wilt gebruiken als <ph name="USER_EMAIL_ADDRESS" />, log je in bij Chromium.\nJe kunt dan ook onder andere je wachtwoorden uit je Google-account gebruiken en opslaan.</translation>
 <translation id="1906696617298807388">Als je in de adresbalk of het zoekvak typt, stuurt Chromium wat je typt naar Google Drive om itemsuggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="1911763535808217981">Als je dit uitzet, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chromium</translation>
 <translation id="1929939181775079593">Chromium reageert niet. Nu opnieuw starten?</translation>
@@ -145,7 +144,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="3296368748942286671">Achtergrondapps actief houden als Chromium is gesloten</translation>
 <translation id="3313189106987092621">Chromium waarschuwt je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="3316771292331273802">Je wordt uitgelogd van de meeste sites als je alle Chromium-vensters sluit, behalve van je Google-account als je bent ingelogd bij Chromium. Als je wilt dat sites je onthouden, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">De extensie <ph name="EXTENSION_NAME" /> wil dat je inlogt bij Chromium</translation>
 <translation id="3350761136195634146">Er bestaat al een Chromium-profiel voor dit account</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Overschakelen naar bestaand Chromium-profiel?</translation>

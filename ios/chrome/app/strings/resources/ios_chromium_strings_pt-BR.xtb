@@ -123,7 +123,7 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Abre a página de configurações de formas de pagamento do Chromium.</translation>
 <translation id="459080529287102949">Pesquisar recursos visuais no Chromium</translation>
-<translation id="4633738821577273991">Use também o recurso Navegação segura com maior proteção neste perfil do Chromium</translation>
+<translation id="4633738821577273991">Use também o recurso Navegação segura com proteção reforçada neste perfil do Chromium</translation>
 <translation id="4638625642619341392">Baixe o Chromium neste link.</translation>
 <translation id="4654936625574199632">Para ajudar a melhorar o app, o Chromium envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4675485352217495362">Excluir dados de navegação no Chromium</translation>
@@ -264,6 +264,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8386869251364507178">Ações do Chromium</translation>
 <translation id="8409374867500149834">Você tem a segurança reforçada do Chromium contra sites perigosos</translation>
 <translation id="8458950033462118672">Defina o Chromium como seu navegador padrão para abrir links nele automaticamente.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}}</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>

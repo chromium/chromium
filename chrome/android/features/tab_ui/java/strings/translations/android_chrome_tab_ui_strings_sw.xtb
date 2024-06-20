@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Zambarau</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha kichupo cha <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TABS_COUNT_ONE" />.}other{Panua kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="427987768447457592">Kikundi kipya cha vichupo</translation>
+<translation id="4338724047016295066">Vichupo visivyotumika vitajifunga kiotomatiki. Unaweza kuzipata wakati wowote kwenye Historia.</translation>
 <translation id="4371591986692297148">Haitumiki</translation>
 <translation id="4460014764210899310">Ondoa kwenye kundi</translation>
 <translation id="4648718555153979859">Vichupo vyako vimewekwa katika kikundi kimoja hapa</translation>
 <translation id="4686942373615810936">Kimeundwa sasa hivi</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Funga baada ya siku 1}other{Funga baada ya siku <ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="4777866634702576038">Ungependa kufuta kikundi cha vichupo?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Maoni <ph name="REVIEWS_COUNT_ONE" />)}other{(Maoni <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Utapata vikundi vya vichupo vyako hapa</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ondoa kwenye kikundi kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Ondoa kwenye kikundi vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Baada ya siku 1}other{Baada ya siku <ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Angalia maelezo ya duka</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Sogeza kichupo kushoto</translation>

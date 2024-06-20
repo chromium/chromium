@@ -903,6 +903,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4381031910344220229">Detta tillåter mikrofonåtkomst för <ph name="APP_NAME" /> och alla appar och webbplatser med mikrofonbehörighet</translation>
 <translation id="4382340674111381977">Återgå till föregående sida</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
+<translation id="4394466652057229831">Högerklicka för att sammanfatta</translation>
 <translation id="439598569299422042">Pausad, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Det gick inte att spara screencast</translation>
 <translation id="4405151984121254935">Typen av kringutrustning som är ansluten stöds inte</translation>
@@ -1939,6 +1940,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8113423164597455979">Alla appar på</translation>
 <translation id="8113515504791187892">Knappen Textuppläsning</translation>
 <translation id="8120151603115102514">Telefonen saknar låsskärm. Lås upp Chromebook med lösenordet.</translation>
+<translation id="8120249852906205273">Starta om</translation>
 <translation id="8127095419621171197">Öppna appen Kalkylator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Gå till början av dokumentet</translation>
@@ -2033,6 +2035,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="85123341071060231">Bluetooth har inaktiverats på Chromebook. Lås upp Chromebook med lösenordet.</translation>
 <translation id="8513108775083588393">Rotera automatiskt</translation>
 <translation id="851458219935658693">Visa fönster från det aktuella skrivbordet, alternativknapp har markerats</translation>
+<translation id="851660987304951246">Använd Help me read för att snabbt sammanfatta innehåll eller ställa frågor</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoningången styrs av <ph name="APP_NAME" />}other{Mikrofoningången styrs av # appar}}</translation>
 <translation id="8535393432370007982">Ångra sortering efter färg</translation>

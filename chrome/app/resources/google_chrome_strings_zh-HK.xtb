@@ -30,7 +30,6 @@
 <translation id="1407223320754252908">Chrome 內置「Google 翻譯」，可以即時為你提供翻譯</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁。}=1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁，但您的無痕式視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟您目前的分頁，但有 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
-<translation id="1438479496118074429">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="146866447420868597">要登入 Chrome 嗎？</translation>
 <translation id="1492280395845991349">重新啟動即可完成 Chrome 更新</translation>
 <translation id="1497802159252041924">安裝錯誤：<ph name="INSTALL_ERROR" /></translation>
@@ -58,6 +57,7 @@
 <translation id="1734234790201236882">Chrome 會將此密碼儲存在您的 Google 帳戶內，您無需記住。</translation>
 <translation id="1786003790898721085">請確保您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chrome，然後再傳送一次。</translation>
 <translation id="1786044937610313874">在 Chrome 中開啟捷徑</translation>
+<translation id="178701303897325119">Chrome 不再支援這項擴充功能，建議你移除。</translation>
 <translation id="1812689907177901597">關閉此功能後，您無需登入 Chrome，即可登入 Gmail 等 Google 網站</translation>
 <translation id="1860536484129686729">Chrome 需要取得權限，才能讓這個網站存取您的相機</translation>
 <translation id="1873233029667955273">Google Chrome 並非您的預設瀏覽器</translation>
@@ -250,6 +250,7 @@
 <translation id="4389991535395284064">使用無痕模式瀏覽時，Chrome 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">使用 <ph name="USER_EMAIL" /> 登入 Chrome</translation>
 <translation id="4450664632294415862">Chrome - 網絡登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4459234553906210702">「廣告評估」允許您瀏覽的網站向 Chrome 要求資料，以便評估廣告的效益。「廣告評估」會透過盡量減少在網站之間傳送的資料，從而限制跨網站追蹤功能。</translation>
@@ -476,7 +477,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7802622118583152311">Chrome 採用最新的技術，為你帶來更優質的瀏覽體驗</translation>
 <translation id="7808348361785373670">從 Chrome 中移除…</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
-<translation id="7828063580843052643">如要以 <ph name="USER_EMAIL_ADDRESS" /> 身分使用此擴充程式，請登入 Chrome。\n你還可以儲存並使用 Google 帳戶中的密碼和其他資料。</translation>
 <translation id="7836610565365456468">運用以藝術作品、大自然等內容為靈感的鮮明主題，讓瀏覽器煥然一新</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7852254990718225089">Chrome 中的 AI 技術有助提升網絡速度、安全和便利性</translation>

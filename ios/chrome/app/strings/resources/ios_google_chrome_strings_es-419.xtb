@@ -134,6 +134,7 @@ Aspectos que debes tener en cuenta:
 <translation id="4903674399067644695">En esta tarjeta, se muestran sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="4919069428879420545">Borra los datos de navegación en Chrome.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
+<translation id="4925322001044117929">Usa Chrome en iPad de forma predeterminada</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
 <translation id="5030102366287574140">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="5108659628347594808">Cómo mejorar Chrome</translation>
@@ -192,6 +193,7 @@ Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guard
 <translation id="6646696210740573446">Envía una parte ofuscada de la URL a Google con un servidor de privacidad que oculta la dirección IP. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, Chrome también puede enviar las URLs, con partes del contenido de la página, a Google.</translation>
 <translation id="6648150602980899529">Estás accediendo con una cuenta administrada por <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
 <translation id="6683891932310469419">Abre la página del historial de Chrome.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chrome durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chrome durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>
 <translation id="6709398533399187136">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiarla ahora.</translation>
 <translation id="6820553595690137150">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones.
 

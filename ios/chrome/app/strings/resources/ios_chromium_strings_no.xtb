@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chromium lenger.</translation>
 <translation id="1423007117030725713">Start et søk på en ny Chromium-fane.</translation>
 <translation id="1431818719585918472">La Chromium låse inkognitofanene dine.</translation>
+<translation id="146407871188825689">Bruk Chromium på iPad som standard</translation>
 <translation id="1472013873724362412">Kontoen din fungerer ikke i Chromium. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="1503199973012840174">Chromium er utdatert. Oppdater den for å holde deg trygg.</translation>
 <translation id="1507010443238049608">Bidra til å gjøre Chromium bedre og raskere</translation>
@@ -264,6 +265,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8386869251364507178">Chromium-handlinger</translation>
 <translation id="8409374867500149834">Du har den sterkeste sikkerheten i Chromium mot skadelige nettsteder</translation>
 <translation id="8458950033462118672">Du kan åpne linker i Chromium automatisk ved å angi Chromium som standard nettleserapp.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}}</translation>
 <translation id="858114650497379505">Du kan bruke passordene du har lagret i Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>

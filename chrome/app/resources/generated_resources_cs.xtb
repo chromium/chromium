@@ -410,6 +410,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1293556467332435079">Soubory</translation>
 <translation id="1294807885394205587">Tento proces může trvat několik minut. Spouštění správce kontejneru.</translation>
 <translation id="12951065153783848">Váš účet spravuje vaše organizace</translation>
+<translation id="1296410481664942178">Nezobrazovat Kalendář Google</translation>
 <translation id="1296911687402551044">Připnout vybranou kartu</translation>
 <translation id="1297175357211070620">Cíl</translation>
 <translation id="129770436432446029">Poslat zpětnou vazbu k funkci <ph name="EXPERIMENT_NAME" /></translation>
@@ -448,6 +449,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1327495825214193325">K aktivaci ladění ADB je toto zařízení <ph name="DEVICE_TYPE" /> potřeba restartovat. K vypnutí je potřeba resetovat tovární nastavení.</translation>
 <translation id="1327527584824210101">Použití přístupového klíče</translation>
 <translation id="1327794256477341646">Funkce vyžadující polohu nebudou k dispozici</translation>
+<translation id="1328364753167940710">Za <ph name="NUM_HR" /> h</translation>
 <translation id="1329466763986822896">Zlepšit u tohoto hotspotu ochranu soukromí</translation>
 <translation id="1331977651797684645">To jsem byl(a) já.</translation>
 <translation id="1333489022424033687">Některé funkce ze zdroje <ph name="ORIGIN" /> nemusí fungovat, dokud neuvolníte data uložená do zařízení z jiných webů</translation>
@@ -997,6 +999,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1709762881904163296">Nastavení sítě</translation>
 <translation id="1709916727352927457">Smazat přístupový klíč</translation>
 <translation id="1709972045049031556">Sdílení se nezdařilo</translation>
+<translation id="1712143791363119140">Probíhá</translation>
 <translation id="1714644264617423774">Aktivuje funkce usnadnění přístupu pro snazší používání zařízení. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Vymazat data a oprávnění webu <ph name="SITE_NAME" /> a jeho nainstalované aplikace?</translation>
 <translation id="171826447717908393">Izolované webové aplikace (beta)</translation>
@@ -1400,6 +1403,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="200928901437634269">Použít účet Google dítěte nebo školní účet. Můžete také nastavit rodičovskou kontrolu.</translation>
 <translation id="2009590708342941694">Nástroj Emodži</translation>
 <translation id="2010501376126504057">Kompatibilní zařízení</translation>
+<translation id="2010636492623189611">Vybráno.</translation>
 <translation id="201217432804812273">Zapněte možnost Uložit skupinu</translation>
 <translation id="2012935757369720523">Smazat soubor</translation>
 <translation id="2013550551806600826">Vyzkoušejte to. Zapněte nebo vypněte toto nastavení a poté v testovací oblasti posouvejte obsah přejížděním dvěma prsty po touchpadu. Tuto možnost najdete také později v sekci Nastavení &gt; Zařízení &gt; Myš a touchpad.</translation>
@@ -1992,6 +1996,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2435248616906486374">Síť odpojena</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="2436385001956947090">Kopírovat odkaz</translation>
+<translation id="2437561292559037753">Sdílení dat</translation>
 <translation id="2438853563451647815">Nejste připojeni k tiskárně</translation>
 <translation id="2439152382014731627">Obnovit heslo k zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Načítání služby <ph name="WINDOW_TITLE" /></translation>
@@ -2567,6 +2572,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2843698124892775282">Uvolněno: <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2844169650293029770">Zařízení USB Type-C (levý přední port)</translation>
 <translation id="2844809857160214557">Zobrazení a správa tiskových úloh</translation>
+<translation id="2845276301195220700">Další akce pro Kalendář Google</translation>
 <translation id="2845382757467349449">&amp;Vždy zobrazovat lištu záložek</translation>
 <translation id="2845751331501453107">Když procházíte internet, závisí personalizace reklam na tomto nastavení, <ph name="BEGIN_LINK1" />reklamách navrhovaných weby<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />nastavení souborů cookie<ph name="LINK_END2" /> a na tom, zda zobrazená stránka personalizuje reklamy</translation>
 <translation id="284581348330507117">Vytvářejte unikátní hesla</translation>
@@ -3679,6 +3685,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3694590407685276748">Zvýraznit textový kurzor</translation>
 <translation id="369489984217678710">Hesla a další přihlašovací údaje</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Bezpečnostní kontroly jsou dokončeny. Data se nahrají.}=1{Bezpečnostní kontroly jsou dokončeny. Soubor se nahraje.}few{Bezpečnostní kontroly jsou dokončeny. Soubory se nahrají.}many{Bezpečnostní kontroly jsou dokončeny. Soubory se nahrají.}other{Bezpečnostní kontroly jsou dokončeny. Soubory se nahrají.}}</translation>
+<translation id="3695339288331169103">Zdroj: <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">spouštěč + šipka vlevo</translation>
 <translation id="3697716475445175867">naposledy otevřeno</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Tomuto webu můžete zabránit v odesílání budoucích oznámení.}few{Těmto webům můžete zabránit v odesílání budoucích oznámení.}many{Těmto webům můžete zabránit v odesílání budoucích oznámení.}other{Těmto webům můžete zabránit v odesílání budoucích oznámení.}}</translation>
@@ -4978,6 +4985,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4650591383426000695">Odpojit telefon od zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Online komponentu se zdroji pro ukázkový režim se nepodařilo načíst.</translation>
 <translation id="4651921906638302153">Pomocí tohoto účtu se nelze přihlásit</translation>
+<translation id="4652921642122345344">Rychlost hlasu <ph name="RATE" />×</translation>
 <translation id="4652935475563630866">Změna nastavení kamery vyžaduje restart nástroje Parallels Desktop. Pokračujte restartováním nástroje Parallels Desktop.</translation>
 <translation id="4653116291358041820">Malý stín</translation>
 <translation id="4653405415038586100">Chyba konfigurace Linuxu</translation>
@@ -5176,6 +5184,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4809927044794281115">Světlý motiv</translation>
 <translation id="4811212958317149293">Automatické vyhledávání klávesnice pro přístup pomocí přepínačů</translation>
 <translation id="4811503964269049987">Přidat vybranou kartu do skupiny</translation>
+<translation id="4812073856515324252">Vyberte, kam se má uložit vaše heslo pro aplikaci <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Chyba sítě</translation>
 <translation id="4814114628197290459">Smazat IBAN</translation>
 <translation id="4814327014588285482">Přeskočit a připomenout později</translation>
@@ -5642,6 +5651,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5160634252433617617">Fyzická klávesnice</translation>
 <translation id="5160857336552977725">Přihlaste se do zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Zařízení USB od dodavatele <ph name="VENDOR_NAME" /></translation>
+<translation id="5161442190864186925">Připojit se ke schůzce</translation>
 <translation id="5161827038979306924">Jaký je rozdíl mezi historií prohlížení v Chromu a historií vyhledávání?</translation>
 <translation id="5162905305237671850">Zařízení <ph name="DEVICE_TYPE" /> bylo zablokováno</translation>
 <translation id="5163910114647549394">Karta byla přesunuta na konec lišty karet</translation>
@@ -7950,6 +7960,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6912007319859991306">PIN mobilní SIM karty</translation>
 <translation id="6912380255120084882">Vyzkoušejte jiné zařízení</translation>
 <translation id="691289340230098384">Předvolby titulků</translation>
+<translation id="6913051485529944333">Kalendář Google se vám už na této stránce nebude zobrazovat</translation>
 <translation id="6914812290245989348">Před přechodem na nezabezpečené weby nezobrazovat upozornění</translation>
 <translation id="6916590542764765824">Spravovat rozšíření</translation>
 <translation id="6918677045355889289">Je vyžadována aktualizace systému ChromeOS</translation>
@@ -9154,6 +9165,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7810202088502699111">Na této stránce byla zablokována vyskakovací okna.</translation>
 <translation id="7810367892333449285">Záznam by měl mít formát <ph name="LPA_0" />$<ph name="LPA_1" />adresa SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />volitelné odpovídající ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Zkuste to znovu nebo vyberte některý z dříve vygenerovaných motivů níže.</translation>
+<translation id="7812170317334653156">Kalendář Google je skryt</translation>
 <translation id="7814090115158024843">Na těchto webech pomoc s psaním nikdy nenabízet</translation>
 <translation id="7814458197256864873">&amp;Kopírovat</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9212,6 +9224,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7853747251428735">&amp;Další nástroje</translation>
 <translation id="7853999103056713222">Použijte bezpečnější heslo</translation>
 <translation id="7855678561139483478">Přesunout kartu do nového okna</translation>
+<translation id="7856117067008941054">Skrýt Kalendář Google</translation>
 <translation id="7857004848504343806">Ve vašem počítači je bezpečnostní modul, jehož pomocí je do systému ChromeOS Flex implementováno mnoho důležitých bezpečnostních prvků. Další informace najdete v centru nápovědy k Chromebookům: http://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textové návrhy</translation>
 <translation id="7858120906780498731">Připojená vstupní zařízení ChromeOS</translation>
@@ -9220,6 +9233,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="786073089922909430">Služba: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Stažené soubory</translation>
 <translation id="7861846108263890455">Jazyk účtu Google</translation>
+<translation id="7864114920800968141">Za <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Vypnout Bluetooth</translation>
 <translation id="7864825798076155402">Uložit do účtu Google?</translation>
 <translation id="7865127013871431856">Možnosti Překladače</translation>

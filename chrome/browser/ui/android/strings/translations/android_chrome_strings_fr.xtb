@@ -117,6 +117,8 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="1513814250881909472">Activez la synchronisation pour récupérer vos onglets depuis d'autres appareils</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
+<translation id="1544084554881119930">Les adresses et les modes de paiement ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
+Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Pour gérer votre compte Google, appuyez sur le bouton "Gérer le compte"</translation>
 <translation id="154513667535157406">"J'aime" indique que ce résumé vous convient</translation>
 <translation id="1549000191223877751">Déplacer vers autre fenêtre</translation>
@@ -458,6 +460,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3264259168916048410">L'ordinateur souhaite utiliser cet appareil pour se connecter à un site</translation>
 <translation id="3265093782546847662">Toutes les pages de <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Charger l'image</translation>
+<translation id="327204079441056603">Nous avons modifié la manière dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3290249595466894471">Un petit échantillon de pages, de téléchargements, d'informations système et d'activité des extensions est aussi envoyé afin d'identifier de nouvelles menaces</translation>
@@ -1214,6 +1217,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6918398787259831832">Si le problème persiste, <ph name="BEGIN_LINK" />renseignez-vous<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Tous les codes de sécurité enregistrés sur votre appareil et dans votre compte Google seront supprimés</translation>
 <translation id="6937524809504266803">Personnalisation et association</translation>
+<translation id="6937876069006524083">Pseudo (facultatif)</translation>
 <translation id="6942665639005891494">Modifier à tout moment l'emplacement de téléchargement par défaut à l'aide de l'option de menu "Paramètres"</translation>
 <translation id="694267552845942083">Vous personnalisez actuellement vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
@@ -1277,6 +1281,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7207760545532569765">Restaurer <ph name="TAB_COUNT" /> onglets en tant que nouveaux onglet en arrière-plan.</translation>
 <translation id="7217781228893594884">Les onglets de navigation privée seront verrouillés lorsque vous quitterez Chrome</translation>
 <translation id="7221869452894271364">Actualiser cette page</translation>
+<translation id="7224097611345298931">Tous les mots de passe enregistrés uniquement sur cet appareil pour Chrome et <ph name="CHROME_CHANNEL" /> ont été fusionnés. Vous pouvez saisir automatiquement tous vos mots de passe enregistrés dans les deux applis.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
 <translation id="7252076891734325316">Posez le téléphone près de l'ordinateur</translation>

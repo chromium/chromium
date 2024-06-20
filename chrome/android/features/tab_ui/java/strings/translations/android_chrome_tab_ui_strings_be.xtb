@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_ONE" /> укладка.}one{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладка.}few{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}many{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладак.}other{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="427987768447457592">Новая група ўкладак</translation>
+<translation id="4338724047016295066">Неактыўныя ўкладкі будуць аўтаматычна закрывацца. Іх можна заўсёды знайсці ў раздзеле гісторыі браўзера.</translation>
 <translation id="4371591986692297148">неактыўная</translation>
 <translation id="4460014764210899310">Разгрупаваць</translation>
 <translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
 <translation id="4686942373615810936">Створана толькі што</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Закрываць праз 1 дзень}one{Закрываць праз <ph name="DAY_COUNT_MANY" /> дзень}few{Закрываць праз <ph name="DAY_COUNT_MANY" /> дні}many{Закрываць праз <ph name="DAY_COUNT_MANY" /> дзён}other{Закрываць праз <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="4777866634702576038">Выдаліць групу ўкладак?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> водгук)}one{(<ph name="REVIEWS_COUNT_MANY" /> водгук)}few{(<ph name="REVIEWS_COUNT_MANY" /> водгукі)}many{(<ph name="REVIEWS_COUNT_MANY" /> водгукаў)}other{(<ph name="REVIEWS_COUNT_MANY" /> водгуку)}}</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Тут будуць знаходзіцца групы ўкладак</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Скасаваць групаванне для <ph name="TABS_COUNT_ONE" /> выбранай укладкі}one{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}few{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}many{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Праз 1 дзень}one{Праз <ph name="DAY_COUNT_MANY" /> дзень}few{Праз <ph name="DAY_COUNT_MANY" /> дні}many{Праз <ph name="DAY_COUNT_MANY" /> дзён}other{Праз <ph name="DAY_COUNT_MANY" /> дня}}</translation>
 <translation id="6549021453810473782">Паказаць звесткі пра краму</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Перамясціць укладку ўлева</translation>

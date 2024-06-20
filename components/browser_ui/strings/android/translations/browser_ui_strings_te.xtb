@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3628308229821498208">సెర్చ్ సూచనలు</translation>
 <translation id="3697164069658504920">ఆన్‌లో ఉన్నప్పుడు, సైట్‌లు USB పరికరాలను ఉపయోగించమని అడగవచ్చు. ఆఫ్‌లో ఉన్నప్పుడు, సైట్‌లు USB పరికరాలను ఉపయోగించడం సాధ్యం కాదు.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">మీరు సందర్శించే సైట్ Chromeతో కొద్దిపాటి సమాచారాన్ని సేవ్ చేయగలదు, ప్రధానంగా మీరు బాట్ కాదని ధృవీకరించడానికి ఇలా చేస్తుంది</translation>
 <translation id="3721953990244350188">తీసివేసి, తర్వాత అందుబాటులో ఉన్న చర్యను చూపండి</translation>
 <translation id="3744111561329211289">బ్యాక్‌గ్రౌండ్ సింక్</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">పరికరానికి అన్ని అనుమతులను ఉపసంహరించు</translation>
 <translation id="497421865427891073">ముందుకు వెళ్ళు</translation>
 <translation id="4976702386844183910"><ph name="DATE" />న చివరగా సందర్శించారు</translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">మీరు ఈ సైట్ కోసం థర్డ్-పార్టీ కుక్కీలను అనుమతించారు</translation>
 <translation id="4994033804516042629">కాంటాక్ట్‌లు కనుగొనబడలేదు</translation>
 <translation id="4996978546172906250">దీని ద్వారా భాగస్వామ్యం చే.</translation>
@@ -362,6 +364,7 @@
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6950072572526089586">మీరు ఏం చేస్తున్నారు అనే దానికి సంబంధించిన సమాచారాన్ని మీరు చూసిన సైట్ సేవ్ చేయగలదు, తద్వారా అది మీరు ఊహించిన విధంగా పని చేయగలదు — ఉదాహరణకు, సైట్‌లో మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడానికి లేదా మీ షాపింగ్ కార్ట్‌లో ఐటెమ్‌లను సేవ్ చేయడానికి. తరచుగా సైట్‌లు ఈ సమాచారాన్ని మీ పరికరంలో తాత్కాలికంగా సేవ్ చేస్తాయి.</translation>
 <translation id="6965382102122355670">సరే</translation>
+<translation id="6980861169612950611">సైట్ డేటాను తొలగించాలా? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
 <translation id="6992289844737586249">మీ మైక్రోఫోన్‌ను ఏవైనా సైట్‌లు ఉపయోగించగలిగేలా వాటిని అనుమతించే ముందు, మిమ్మల్ని అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="7000754031042624318">Android సెట్టింగ్‌లలో ఆఫ్ చేయబడింది</translation>
@@ -457,6 +460,7 @@
 <translation id="8441146129660941386">వెనుకకు జరుపు</translation>
 <translation id="8444433999583714703">మీ లొకేషన్‌ని యాక్సెస్ చేయడానికి <ph name="APP_NAME" />ని అనుమతించడానికి, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా లొకేషన్‌ని ఆన్ చేయండి.</translation>
 <translation id="8447861592752582886">పరికర అనుమతిని ఉపసంహరిస్తుంది</translation>
+<translation id="8473055640493819707">'<ph name="APP_NAME" />' గడువు తేదీ ముగిసింది. దయచేసి యాప్‌ను మళ్లీ ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="8487700953926739672">ఆఫ్‌లైన్‌లో అందుబాటు</translation>
 <translation id="848952951823693243">ఎల్లప్పుడూ మొబైల్ సైట్ కోసం రిక్వెస్ట్ చేయండి</translation>
 <translation id="8499083585497694743">మైక్రోఫోన్‌ను అన్‌మ్యూట్ చేయి</translation>

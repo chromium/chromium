@@ -784,6 +784,7 @@
 <translation id="4971735654804503942">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します。パスワードの侵害があった場合は警告します。Google に閲覧データを送信する必要があります。</translation>
 <translation id="4979397965658815378">Google アカウントでログインすると、どのデバイスからでも同じブックマーク、パスワード、履歴などの設定を利用できるようになります。</translation>
 <translation id="4989065233040279145"><ph name="FILENAME" /> の保存先を選択</translation>
+<translation id="4992255726304765516">タブグループの色 <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5016420433031926653">送信先: <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">後で通知する</translation>
@@ -813,6 +814,7 @@
 <translation id="5150492518600715772">お使いのデバイスに送信</translation>
 <translation id="5157638238828697074">エラーが発生しました。アプリケーションを開けませんでした。</translation>
 <translation id="5168414296986405587">iPadOS 向けの設計</translation>
+<translation id="5169725654005786900">操作を実行しています…</translation>
 <translation id="5173088371991956744">同期するには本人確認が必要です</translation>
 <translation id="5173493422621051500">キーボードを使用</translation>
 <translation id="5176312250994681348">最新のパスワードを保持する</translation>
@@ -847,6 +849,7 @@
 <translation id="5327753393331509826">コンテンツの通知を受け取る</translation>
 <translation id="5329451663851195956">下にスワイプして更新できます。</translation>
 <translation id="5333148247954006827">別のプロフィールに切り替え</translation>
+<translation id="5338512273860059533">ログインを処理しています。</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
 <translation id="5343472494710226394">興味や関心に基づくニュース、スポーツ、コンテンツ。</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{この荷物を追跡しますか？}other{{COUNT} 個の荷物を追跡しますか？}}</translation>

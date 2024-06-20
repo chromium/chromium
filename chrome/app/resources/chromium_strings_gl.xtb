@@ -51,7 +51,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="185970820835152459">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chromium, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Os sitios poden almacenar con Chromium información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
 <translation id="1881322772814446296">Estás iniciando sesión cunha conta xestionada e outorgando control ao seu administrador sobre o teu perfil de Chromium. Os teus datos de Chromium, como as túas aplicacións, marcadores, historial, contrasinais e outras configuracións ligaranse permanentemente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control das contas de Google, pero non poderás asociar estes datos a outra conta. Tamén podes crear un perfil novo para manter separados os teus datos de Chromium existentes. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, inicia sesión en Chromium.\nPoderás usar e gardar os contrasinais e outros datos da túa Conta de Google.</translation>
 <translation id="1906696617298807388">Cando escribes algo na barra de enderezos ou na caixa de busca, Chromium envíao a Google Drive para mostrarche suxestións de elementos. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="1911763535808217981">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chromium</translation>
 <translation id="1929939181775079593">Chromium non responde. Queres volver inicialo agora?</translation>
@@ -144,7 +143,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="3296368748942286671">Continuar executando aplicacións en segundo plano cando se peche Chromium</translation>
 <translation id="3313189106987092621">Chromium mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="3316771292331273802">Pecharase a túa sesión na maioría dos sitios cando peches todas as ventás de Chromium, excepto a túa Conta de Google se tes a sesión iniciada en Chromium. Permitir que os sitios te lembren, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">A extensión \"<ph name="EXTENSION_NAME" />\" quere que inicies sesión en Chromium</translation>
 <translation id="3350761136195634146">Xa existe un perfil de Chromium con esta conta</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Queres cambiar ao perfil existente de Chromium?</translation>
@@ -211,6 +209,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4415566066719264597">Deixar que Chromium se execute en segundo plano</translation>
 <translation id="4423735387467980091">Personaliza e controla Chromium</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
+<translation id="4434353761996769206">Produciuse un erro co instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Sobre Chrome for Testing</translation>
 <translation id="4501471624619070934">Produciuse un erro durante a instalación porque o acceso está restrinxido neste país.</translation>
 <translation id="4510853178268397146">Esta extensión non ten publicada ningunha práctica de privacidade (como, por exemplo, o modo en que recompila e usa os datos). Chromium recomenda que a quites.</translation>

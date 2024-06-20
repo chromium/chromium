@@ -30,7 +30,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1407223320754252908">Google Traduction est intégré à Chrome afin que vous puissiez traduire du contenu quand vous en avez besoin</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau.}=1{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Votre fenêtre de navigation privée ne s'ouvrira pas à nouveau.}one{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. # fenêtre de navigation privée ne sera pas rouverte.}other{Chrome a terminé la mise à jour. Vous pouvez utiliser la dernière version après avoir relancé le navigateur. Ensuite, vos onglets actuels s'ouvriront à nouveau. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="1434626383986940139">Applications Google Chrome Canary</translation>
-<translation id="1438479496118074429">L'extension « <ph name="EXTENSION_NAME" /> » souhaite que vous vous connectiez à Chrome</translation>
 <translation id="146866447420868597">Se connecter à Chrome?</translation>
 <translation id="1492280395845991349">Relancer pour terminer la mise à jour de Chrome</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
@@ -173,6 +172,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3261565993776444564">Essayez une nouvelle couleur pour personnaliser votre navigateur</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
+<translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va maintenant redémarrer}=1{Chrome redémarrera dans 1 seconde}one{Chrome redémarrera dans # seconde}other{Chrome redémarrera dans # secondes}}</translation>
 <translation id="3396977131400919238">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
@@ -217,6 +217,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4035053306113201399">Chrome OS doit être redémarré pour appliquer la mise à jour.</translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et gérer Google Chrome</translation>
+<translation id="4084404300720192944">Pour partager votre fenêtre, autorisez la fonctionnalité Enregistreur d'écran pour Chrome dans les préférences système.</translation>
 <translation id="4106587138345390261">Chrome explore de nouvelles fonctionnalités qui permettent aux sites d'offrir la même expérience de navigation tout en recourant dans une moindre mesure à vos renseignements personnels</translation>
 <translation id="4110895483821904099">Configurer votre nouveau profil Chrome</translation>
 <translation id="4111566860456076004">Chrome ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chrome afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
@@ -358,6 +359,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome bêta</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6200139057479872438">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Pour partager votre écran, autorisez la fonctionnalité Enregistreur d'écran pour Chrome dans les préférences système.</translation>
 <translation id="6235018212288296708">Règle de trafic entrant pour Google Chrome autorisant le trafic mDNS.</translation>
 <translation id="624230925347970731">Chrome se fermera bientôt</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -473,7 +475,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7802622118583152311">Chrome vous apporte les dernières technologies pour une meilleure navigation</translation>
 <translation id="7808348361785373670">Supprimer de Google Chrome...</translation>
 <translation id="7825851276765848807">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Google Chrome de nouveau.</translation>
-<translation id="7828063580843052643">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chrome.\nVous pourrez également utiliser et enregistrer vos mots de passe et plus encore à partir de votre compte Google.</translation>
 <translation id="7836610565365456468">Transformez votre navigateur avec des thèmes dynamiques inspirés par des artistes, par la nature et par bien plus encore</translation>
 <translation id="7845233973568007926">Merci pour l'installation. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">L'IA dans Chrome contribue à rendre le Web plus rapide, plus sûr et plus accessible</translation>

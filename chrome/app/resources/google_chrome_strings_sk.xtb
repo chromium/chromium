@@ -30,7 +30,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1407223320754252908">V Chrome je vstavaný Prekladač Google, aby ste mohli v prípade potreby prekladať</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria.}=1{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria. Vaše okno inkognito sa neotvorí.}few{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria. Vaše # okná inkognito sa neotvoria.}many{Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen. Your # Incognito windows won't reopen.}other{Aktualizácia Chromu bola dokončená. Najnovšiu verziu môžete používať ihneď po opätovnom spustení. Aktuálne karty sa znova otvoria. Vašich # okien inkognito sa neotvorí.}}</translation>
 <translation id="1434626383986940139">Aplikácie Chrome Canary</translation>
-<translation id="1438479496118074429">Rozšírenie <ph name="EXTENSION_NAME" /> vyžaduje, aby ste sa prihlásili do Chromu</translation>
 <translation id="146866447420868597">Chcete sa prihlásiť do Chromu?</translation>
 <translation id="1492280395845991349">Ak chcete dokončiť aktualizáciu Chromu, znova ho spustite</translation>
 <translation id="1497802159252041924">Chyba inštalácie: <ph name="INSTALL_ERROR" /></translation>
@@ -477,7 +476,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="7802622118583152311">Chrome vám prináša najnovšiu technológiu umožňujúcu lepšie prehliadanie</translation>
 <translation id="7808348361785373670">Odstrániť z prehliadača Chrome...</translation>
 <translation id="7825851276765848807">Inštalácia zlyhala kvôli neznámej chybe. Skúste aplikáciu Google Chrome stiahnuť znova.</translation>
-<translation id="7828063580843052643">Ak chcete používať toto rozšírenie ako <ph name="USER_EMAIL_ADDRESS" />, prihláste sa do Chromu.\nBudete môcť používať a ukladať svoje heslá a ďalší obsah zo svojho účtu Google.</translation>
 <translation id="7836610565365456468">Pretvorte svoj prehliadač živými motívmi inšpirovanými umelcami, prírodou či inak</translation>
 <translation id="7845233973568007926">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať počítač.</translation>
 <translation id="7852254990718225089">Umelá inteligencia v Chrome pomáha zvýšiť rýchlosť, bezpečnosť a dostupnosť internetu</translation>

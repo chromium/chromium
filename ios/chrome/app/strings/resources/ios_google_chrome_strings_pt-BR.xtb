@@ -92,7 +92,7 @@ Considerações:
 <translation id="3399930248910934354">Abrir configurações do Chrome</translation>
 <translation id="344736123700721678">Acesse o Chrome com mais rapidez no Dock da tela de início</translation>
 <translation id="3472587960215700950">O Chrome usa o Google Maps para fornecer rotas e informações locais sobre endereços detectados.</translation>
-<translation id="3503014945441706099">Use também o recurso Navegação segura com maior proteção neste perfil do Chrome</translation>
+<translation id="3503014945441706099">Use também o recurso Navegação segura com proteção reforçada neste perfil do Chrome</translation>
 <translation id="3522659714780527202">Para acessar suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
 <translation id="364480321352456989">O Chrome está desatualizado.</translation>
 <translation id="3646736009628185125">O membro da sua família não pode receber senhas no momento. Peça para essa pessoa atualizar o Chrome e sincronizar as senhas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -192,6 +192,7 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="6646696210740573446">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar o URL, incluindo partes do conteúdo da página, ao Google.</translation>
 <translation id="6648150602980899529">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="6683891932310469419">Abre a página de histórico do Chrome.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}one{Isso acontece quando o Chrome não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}other{Isso acontece quando o Chrome não é usado por {THRESHOLD} minutos. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}}</translation>
 <translation id="6709398533399187136">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas do Google recomenda que ela seja mudada agora mesmo.</translation>
 <translation id="6820553595690137150">A criptografia por senha longa não inclui formas de pagamento e endereços.
 

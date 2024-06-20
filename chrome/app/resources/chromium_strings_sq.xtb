@@ -52,7 +52,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="185970820835152459">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chromium, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Sajtet mund të ruajnë informacione rreth interesave të tua në Chromium. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="1881322772814446296">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontrollin mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, si aplikacionet, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera do të bëhen të lidhura përgjithmonë me <ph name="USER_NAME" />. Do të mund t'i fshish këto të dhëna nëpërmjet "Panelit të llogarive të Google", por nuk do të mund t'i lidhësh këto të dhëna me një llogari tjetër. Mund të krijosh si opsion një profil të ri për t'i mbajtur më vete të dhënat ekzistuese të Chromium. <ph name="LEARN_MORE" /></translation>
-<translation id="1903204122890929795">Për ta përdorur këtë shtesë si <ph name="USER_EMAIL_ADDRESS" />, identifikohu në Chromium.\nDo të jesh gjithashtu në gjendje që të përdorësh dhe të ruash fjalëkalimet e tua etj. nga "Llogaria jote e Google".</translation>
 <translation id="1906696617298807388">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chromium i dërgon ato që shkruan te "Disku i Google" për të marrë sugjerime për artikujt. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="1911763535808217981">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chromium</translation>
 <translation id="1929939181775079593">Chromium nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
@@ -145,7 +144,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3296368748942286671">Vazhdo funksionimin e aplikacioneve në sfond kur Chromium është i mbyllur</translation>
 <translation id="3313189106987092621">Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="3316771292331273802">Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chromium, përveçse nga "Llogaria jote e Google" nëse je identifikuar në Chromium. Për t'i lejuar sajtet që të të kujtojnë, <ph name="SETTINGS_LINK" />.</translation>
-<translation id="333055255088403283">Shtesa \"<ph name="EXTENSION_NAME" />\" dëshiron që të identifikohesh në Chromium</translation>
 <translation id="3350761136195634146">Ekziston tashmë një profil i Chromium me këtë llogari</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Të kalohet te profili ekzistues i Chromium?</translation>
@@ -213,6 +211,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4415566066719264597">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="4423735387467980091">Personalizo dhe kontrollo Chromium</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
+<translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Rreth Chrome for Testing</translation>
 <translation id="4501471624619070934">Instalimi nuk u krye sepse qasja është e kufizuar në këtë shtet.</translation>
 <translation id="4510853178268397146">Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat. Chromium rekomandon që ta heqësh atë.</translation>

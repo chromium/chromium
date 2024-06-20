@@ -30,7 +30,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1407223320754252908">In Chrome is Google Translate ingebouwd, zodat je iets kunt vertalen wanneer je dat nodig hebt</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is geüpdatet. Je kunt de nieuwste versie gebruiken nadat je de browser hebt herstart. Daarna worden je huidige tabbladen weer geopend.}=1{Chrome is geüpdatet. Je kunt de nieuwste versie gebruiken nadat je de browser hebt herstart. Daarna worden je huidige tabbladen weer geopend. Je incognitovenster kan niet opnieuw worden geopend.}other{Chrome is geüpdatet. Je kunt de nieuwste versie gebruiken nadat je de browser hebt herstart. Daarna worden je huidige tabbladen weer geopend. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
-<translation id="1438479496118074429">De extensie <ph name="EXTENSION_NAME" /> wil dat je inlogt bij Chrome</translation>
 <translation id="146866447420868597">Inloggen bij Chrome?</translation>
 <translation id="1492280395845991349">Herstarten om de Chrome-update af te ronden</translation>
 <translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
@@ -476,7 +475,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7802622118583152311">Chrome biedt je de nieuwste technologie voor beter browsen</translation>
 <translation id="7808348361785373670">Verwijderen uit Chrome…</translation>
 <translation id="7825851276765848807">De installatie is mislukt vanwege een onbekende fout. Download Google Chrome opnieuw.</translation>
-<translation id="7828063580843052643">Als je deze extensie wilt gebruiken als <ph name="USER_EMAIL_ADDRESS" />, log je in bij Chrome.\nJe kunt dan ook onder andere je wachtwoorden uit je Google-account gebruiken en opslaan.</translation>
 <translation id="7836610565365456468">Transformeer je browser met levendige thema's geïnspireerd door kunstenaars, de natuur en meer</translation>
 <translation id="7845233973568007926">Bedankt voor het installeren. Je moet de computer opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="7852254990718225089">AI in Chrome helpt het web sneller, beter beveiligd en toegankelijker te maken</translation>

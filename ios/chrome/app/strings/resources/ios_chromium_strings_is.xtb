@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chromium.</translation>
 <translation id="1423007117030725713">Hefja leit í nýjum flipa í Chromium.</translation>
 <translation id="1431818719585918472">Leyfa Chromium að læsa huliðsflipunum þínum.</translation>
+<translation id="146407871188825689">Nota Chromium sjálfgefið í iPad</translation>
 <translation id="1472013873724362412">Reikningurinn þinn virkar ekki í Chromium. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google-reikning til að skrá þig inn.</translation>
 <translation id="1503199973012840174">Chromium-útgáfan þín er úrelt. Uppfærðu hana til að gæta að öryggi þínu.</translation>
 <translation id="1507010443238049608">Hjálpa til við að bæta eiginleika og afköst Chromium</translation>
@@ -264,6 +265,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8386869251364507178">Chromium-aðgerðir</translation>
 <translation id="8409374867500149834">Þú ert með öflugustu öryggisráðstafanir Chromium gegn skaðlegum vefsvæðum</translation>
 <translation id="8458950033462118672">Þú getur opnað tengla sjálfkrafa í Chromium með því að stilla það sem sjálfgefið vafraforrit.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}one{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútu. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}other{Þetta gerist þegar Chromium er ekki í notkun í {THRESHOLD} mínútur. Gögnum sem voru eingöngu vistuð í þessu tæki á meðan þú varst skráð(ur) inn verður eytt. Það gæti m.a. átt við um feril og aðgangsorð.}}</translation>
 <translation id="858114650497379505">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun í öðrum forritum í iPhone.</translation>
 <translation id="8586442755830160949">Höfundarréttur <ph name="YEAR" /> höfundar Chromium. Allur réttur áskilinn.</translation>
 <translation id="865600487977764604">Gætir öryggis þíns í Chromium og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>

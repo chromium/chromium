@@ -117,6 +117,8 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1513814250881909472">Sincronize para obter os separadores dos seus outros dispositivos</translation>
 <translation id="1513858653616922153">Eliminar palavra-passe</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
+<translation id="1544084554881119930">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
+Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para gerir a sua Conta Google, toque no botão "Gerir conta".</translation>
 <translation id="154513667535157406">A opção Gosto envia feedback de que gosta deste resumo</translation>
 <translation id="1549000191223877751">Mover para outra janela</translation>
@@ -458,6 +460,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3264259168916048410">O seu computador quer utilizar este dispositivo para iniciar sessão num site</translation>
 <translation id="3265093782546847662">Todas as páginas de <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Carregar imagem</translation>
+<translation id="327204079441056603">Alterámos a forma como as palavras-passe neste dispositivo são guardadas</translation>
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3282568296779691940">Iniciar sessão no Chrome</translation>
 <translation id="3290249595466894471">Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças</translation>
@@ -1214,6 +1217,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6918398787259831832">Se este problema continuar a acontecer, <ph name="BEGIN_LINK" />receba mais informações<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Todos os códigos de segurança guardados no seu dispositivo e Conta Google são eliminados</translation>
 <translation id="6937524809504266803">Personalização e associação</translation>
+<translation id="6937876069006524083">Alcunha (opcional)</translation>
 <translation id="6942665639005891494">Altere a localização de transferência predefinida em qualquer altura ao utilizar a opção do menu Definições.</translation>
 <translation id="694267552845942083">Está atualmente a personalizar as suas definições de sincronização. Para concluir a ativação da sincronização, toque no botão Confirmar junto à parte inferior do ecrã. Navegar para cima</translation>
 <translation id="6945221475159498467">Selecionar</translation>
@@ -1277,6 +1281,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7207760545532569765">Restaure <ph name="TAB_COUNT" /> separadores como novos separadores em segundo plano.</translation>
 <translation id="7217781228893594884">Os separadores de navegação anónima serão bloqueados quando sair do Chrome</translation>
 <translation id="7221869452894271364">Recarregar esta página</translation>
+<translation id="7224097611345298931">Todas as palavras-passe guardadas apenas neste dispositivo para o Chrome e <ph name="CHROME_CHANNEL" /> foram unidas. Pode preencher automaticamente todas as palavras-passe guardadas em ambas as apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}other{# transferências pendentes}}</translation>
 <translation id="72415438529550637">A sugestão de palavra-passe está fechada.</translation>
 <translation id="7252076891734325316">Aproxime o telemóvel do computador</translation>

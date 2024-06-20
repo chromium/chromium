@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">O Chrome tem o Google Tradutor integrado para que você possa traduzir sempre que precisar</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas.}=1{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua janela anônima não será aberta novamente.}one{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Sua # janela anônima não será aberta novamente.}other{O Chrome foi atualizado. Reinicialize para usar a versão mais recente. Depois disso, as guias atuais serão reabertas. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1434626383986940139">Aplicativos Canary do Google Chrome</translation>
-<translation id="1438479496118074429">A extensão \"<ph name="EXTENSION_NAME" />\" quer que você faça login no Chrome</translation>
 <translation id="146866447420868597">Fazer login no Chrome?</translation>
 <translation id="1492280395845991349">Reinicialize para concluir a atualização do Chrome</translation>
 <translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
@@ -170,6 +169,7 @@
 <translation id="3261565993776444564">Personalize seu navegador com uma nova cor</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
+<translation id="3292333338048274092">Depois, é necessário reiniciar o Chrome.</translation>
 <translation id="3360895254066713204">Auxiliar do Google Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado em 1 segundo}one{O Chrome será reiniciado em # segundo}other{O Chrome será reiniciado em # segundos}}</translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operacional durante a instalação. Baixe o Google Chrome novamente.</translation>
@@ -214,6 +214,7 @@
 <translation id="4035053306113201399">É necessário reiniciar o ChromeOS para aplicar a atualização.</translation>
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
+<translation id="4084404300720192944">Para compartilhar a janela, permita a gravação de tela do Chrome nas "Preferências do sistema".</translation>
 <translation id="4106587138345390261">O Chrome está explorando novos recursos para permitir que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
 <translation id="4110895483821904099">Configure seu novo perfil do Chrome</translation>
 <translation id="4111566860456076004">O Chrome não pode conferir a origem dessa extensão, e talvez ela não seja segura. Remova do Chrome para que ela não apareça mais e mude seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
@@ -244,6 +245,7 @@
 <translation id="4384570495110188418">O Chrome não pode verificar suas senhas porque sua conta não está conectada</translation>
 <translation id="4389991535395284064">Quando você está no modo de navegação anônima, o Chrome avisa antes de carregar um site usando uma conexão sem segurança</translation>
 <translation id="4427306783828095590">A Proteção reforçada é mais eficiente no combate a golpes de phishing e malware</translation>
+<translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Login na rede - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Outra operação está em andamento no Google Chrome. Tente novamente mais tarde.</translation>
 <translation id="4459234553906210702">A medição de anúncios permite que os sites que você visita solicitem informações do Chrome, ajudando a medir o desempenho dos anúncios. Ela também restringe o rastreamento entre sites transferindo o mínimo de informações possível entre eles.</translation>
@@ -350,6 +352,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Google Chrome Beta</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
 <translation id="6200139057479872438">Você não visitou os sites recentemente. O Chrome removeu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Para compartilhar a tela, permita a gravação de tela do Chrome nas "Preferências do sistema".</translation>
 <translation id="6235018212288296708">Regra interna do Google Chrome que permite o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome será fechado em breve</translation>
 <translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
@@ -369,7 +372,7 @@
 <translation id="6473905796280459355">Acesse a página "Sobre o Chrome"</translation>
 <translation id="6479881432656947268">Acessar a Chrome Web Store</translation>
 <translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
-<translation id="648319183876919572">O recurso "Navegação segura com maior proteção" protege você ainda mais contra sites e downloads perigosos</translation>
+<translation id="648319183876919572">O recurso "Navegação segura com proteção reforçada" protege você ainda mais contra sites e downloads perigosos</translation>
 <translation id="6489302989675808168">Ativada: o Chrome não pode conferir a origem dessa extensão</translation>
 <translation id="6493527311031785448">O Google Chrome está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">O Chrome foi fechado automaticamente</translation>
@@ -427,7 +430,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7302361266603927550">Alguns dos seus dados do Chrome ainda não foram salvos na sua Conta do Google. Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="7308322188646931570">O Chrome precisa de acesso para fazer o download e armazenar arquivos</translation>
 <translation id="7339898014177206373">Nova janela</translation>
-<translation id="7352881504289275361">A "Navegação segura com maior proteção" oferece a melhor segurança on-line do Chrome para proteger você enquanto navega</translation>
+<translation id="7352881504289275361">A "Navegação segura com proteção reforçada" oferece a melhor segurança on-line do Chrome para proteger você enquanto navega</translation>
 <translation id="7394745511930161845">Crie seu próprio tema com IA para dar um visual único ao seu navegador</translation>
 <translation id="7398801000654795464">Você estava conectado ao Google Chrome como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7412494426921990001">Clique no menu do Google Chrome</translation>
@@ -465,7 +468,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7802622118583152311">O Chrome traz a tecnologia mais recente para aprimorar a navegação</translation>
 <translation id="7808348361785373670">Remover do Chrome</translation>
 <translation id="7825851276765848807">Houve uma falha na instalação devido a um erro não-especificado. Baixe o Chrome novamente.</translation>
-<translation id="7828063580843052643">Para usar essa extensão como <ph name="USER_EMAIL_ADDRESS" />, faça login no Chrome.\nVocê também poderá usar e salvar senhas e muito mais na sua Conta do Google.</translation>
 <translation id="7836610565365456468">Transforme seu navegador com temas vibrantes inspirados em artistas, na natureza e muito mais</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">A IA no Chrome ajuda a deixar a Web mais rápida, segura e acessível</translation>

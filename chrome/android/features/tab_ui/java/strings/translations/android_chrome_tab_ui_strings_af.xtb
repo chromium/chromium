@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Pers</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie uit.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies uit.}}</translation>
 <translation id="427987768447457592">Nuwe oortjiegroep</translation>
+<translation id="4338724047016295066">Onaktiewe oortjies sal outomaties toegemaak word. Jy kan hulle altyd in Geskiedenis kry.</translation>
 <translation id="4371591986692297148">Onaktief</translation>
 <translation id="4460014764210899310">Ongroepeer</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
 <translation id="4686942373615810936">Pas geskep</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Maak ná 1 dag toe}other{Maak ná <ph name="DAY_COUNT_MANY" /> dae toe}}</translation>
 <translation id="4777866634702576038">Vee oortjiegroep uit?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> resensie)}other{(<ph name="REVIEWS_COUNT_MANY" /> resensies)}}</translation>
 <translation id="4850886885716139402">Bekyk</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Jy sal jou oortjiegroepe hier kry</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Ná 1 dag}other{Ná <ph name="DAY_COUNT_MANY" /> dae}}</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Skuif oortjie na links</translation>

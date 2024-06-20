@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Morea</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Zabaldu fitxa <ph name="TABS_COUNT_ONE" /> duen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
 <translation id="427987768447457592">Fitxa talde berria</translation>
+<translation id="4338724047016295066">Fitxa inaktiboak automatikoki itxiko dira. Historian aurkituko dituzu.</translation>
 <translation id="4371591986692297148">Inaktibo</translation>
 <translation id="4460014764210899310">Desegin taldea</translation>
 <translation id="4648718555153979859">Fitxak taldekatuta daude hemen</translation>
 <translation id="4686942373615810936">Oraintxe bertan sortua</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Itxi egun bat igaro ondoren}other{Itxi <ph name="DAY_COUNT_MANY" /> egun igaro ondoren}}</translation>
 <translation id="4777866634702576038">Fitxa taldea ezabatu nahi duzu?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> iritzi)}other{(<ph name="REVIEWS_COUNT_MANY" /> iritzi)}}</translation>
 <translation id="4850886885716139402">Ikusi</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Hemen aurkituko dituzu fitxa taldeak</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desegin hautatutako <ph name="TABS_COUNT_ONE" /> fitxaren taldea}other{Desegin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen taldea}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Egun bat igaro ondoren}other{<ph name="DAY_COUNT_MANY" /> egun igaro ondoren}}</translation>
 <translation id="6549021453810473782">Ikusi dendari buruzko informazioa</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Eraman fitxa ezkerrera</translation>

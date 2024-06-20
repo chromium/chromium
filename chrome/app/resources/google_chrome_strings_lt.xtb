@@ -30,7 +30,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1407223320754252908">„Chrome“ įtaisytas „Google“ vertėjas, kad prireikus galėtumėte versti</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{„Chrome“ atnaujinta. Naujausią versiją galite naudoti iš karto, kai paleidžiama iš naujo. Dabartiniai skirtukai bus atidaryti iš naujo.}=1{„Chrome“ atnaujinta. Naujausią versiją galite naudoti iš karto, kai paleidžiama iš naujo. Dabartiniai skirtukai bus atidaryti iš naujo. Inkognito langas nebus atidarytas iš naujo.}one{„Chrome“ atnaujinta. Naujausią versiją galite naudoti iš karto, kai paleidžiama iš naujo. Dabartiniai skirtukai bus atidaryti iš naujo. # inkognito langas nebus atidarytas iš naujo.}few{„Chrome“ atnaujinta. Naujausią versiją galite naudoti iš karto, kai paleidžiama iš naujo. Dabartiniai skirtukai bus atidaryti iš naujo. # inkognito langai nebus atidaryti iš naujo.}many{„Chrome“ atnaujinta. Naujausią versiją galite naudoti iš karto, kai paleidžiama iš naujo. Dabartiniai skirtukai bus atidaryti iš naujo. # inkognito lango nebus atidaryta iš naujo.}other{„Chrome“ atnaujinta. Naujausią versiją galite naudoti iš karto, kai paleidžiama iš naujo. Dabartiniai skirtukai bus atidaryti iš naujo. # inkognito langų nebus atidaryta iš naujo.}}</translation>
 <translation id="1434626383986940139">„Chrome“ programos („Canary“)</translation>
-<translation id="1438479496118074429">Norint naudoti plėtinį \„<ph name="EXTENSION_NAME" />\“, reikia prisijungti prie „Chrome“</translation>
 <translation id="146866447420868597">Prisijungti prie „Chrome“?</translation>
 <translation id="1492280395845991349">Paleiskite iš naujo, kad užbaigtumėte „Chrome“ atnaujinimą</translation>
 <translation id="1497802159252041924">Diegimo klaida: <ph name="INSTALL_ERROR" /></translation>
@@ -59,6 +58,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1734234790201236882">„Chrome“ išsaugos šį slaptažodį „Google“ paskyroje. Jums nereikia jo prisiminti.</translation>
 <translation id="1786003790898721085">Įsitikinkite, kad esate prisijungę prie „Chrome“ naudodami „<ph name="TARGET_DEVICE_NAME" />“, ir bandykite siųsti iš naujo.</translation>
 <translation id="1786044937610313874">Spartieji klavišai atidaromi naršyklėje „Chrome“</translation>
+<translation id="178701303897325119">Šis plėtinys nebepalaikomas. „Chrome“ rekomenduoja jį pašalinti.</translation>
 <translation id="1812689907177901597">Jei išjungsite šį nustatymą, prie „Google“ svetainių galėsite prisijungti kaip prie „Gmail“ neprisijungę prie „Chrome“</translation>
 <translation id="1860536484129686729">„Chrome“ reikia leidimo, kad galėtų naudoti fotoaparatą šioje svetainėje</translation>
 <translation id="1873233029667955273">„Google Chrome“ nėra numatytoji naršyklė</translation>
@@ -251,6 +251,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4389991535395284064">Kai naršysite inkognito režimu, „Chrome“ perspės jus prieš įkeliant svetainę, kurioje naudojamas nesaugus ryšys</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
 <translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Prisijungti prie „Chrome“ kaip <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">„Chrome“ – prisijungimas prie tinklo – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="4458462641685292929">Vykdoma kita „Google Chrome“ operacija. Vėliau bandykite dar kartą.</translation>
 <translation id="4459234553906210702">Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chrome“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.</translation>
@@ -477,7 +478,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7802622118583152311">„Chrome“ teikiama naujausia technologija, kad būtų galima geriau naršyti</translation>
 <translation id="7808348361785373670">Pašalinti iš „Chrome“...</translation>
 <translation id="7825851276765848807">Nepavyko įdiegti dėl nenustatytos klaidos. Atsisiųskite „Google Chrome“ dar kartą.</translation>
-<translation id="7828063580843052643">Jei norite naudoti šį plėtinį kaip <ph name="USER_EMAIL_ADDRESS" />, prisijunkite prie „Chrome“.\nTaip pat galėsite naudoti ir išsaugoti slaptažodžius ir kt. iš „Google“ paskyros.</translation>
 <translation id="7836610565365456468">Transformuokite naršyklę naudodami ryškias temas, įkvėptas menininkų, gamtos ir kt.</translation>
 <translation id="7845233973568007926">Dėkojame už diegimą. Turite iš naujo paleisti kompiuterį, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="7852254990718225089">DI naršyklėje „Chrome“ padeda padaryti žiniatinklį spartesnį, saugesnį ir lengviau pasiekiamą</translation>

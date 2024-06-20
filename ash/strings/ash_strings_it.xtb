@@ -119,6 +119,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1394698770495054737">Sfocatura completa</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 giorno fa}other{# giorni fa}}</translation>
 <translation id="1404963891829069586">Suoni della modalità Senza distrazioni</translation>
 <translation id="1407069428457324124">Tema scuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Usa i tasti Freccia per spostarti tra le date.</translation>
@@ -209,6 +210,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="174102739345480129">Evidenziatore OFF.</translation>
 <translation id="1743570585616704562">Non riconosciuta</translation>
 <translation id="1743927604032653654">Comprimi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Entro 0 h}=1{1 h fa}other{# ore fa}}</translation>
 <translation id="1746730358044914197">I metodi di immissione vengono configurati dall'amministratore.</translation>
 <translation id="1747336645387973286">data di scadenza <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Tastiera sullo schermo attiva</translation>
@@ -346,6 +348,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360398059912971776">batteria</translation>
 <translation id="2361210043495191221">Attiva/disattiva il Wi-Fi <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Inviato da <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Impossibile accedere a Chromebook</translation>
 <translation id="2367972762794486313">Mostra app</translation>
 <translation id="2368828502825385061">Localizza</translation>
@@ -506,6 +509,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vuoi attivare l'accesso al microfono?</translation>
 <translation id="296762781903199866">Impossibile scaricare i file di contenuti vocali per la lingua: <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">La tua posizione attuale non è supportata al momento.</translation>
 <translation id="2970920913501714344">Installare app, estensioni e temi.</translation>
 <translation id="2977598380246111477">Numero successivo</translation>
 <translation id="2985148236010982088">Mostra tutte le app</translation>
@@ -976,6 +980,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="468293128311738995">App dal telefono</translation>
 <translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
+<translation id="4697357603686181098">Impossibile eseguire questa operazione. Prova con un'altra richiesta.</translation>
 <translation id="4702647871202761252">Schermata sulla privacy non attiva</translation>
 <translation id="4706121060329443414">Verrà effettuato un tentativo di download in un secondo tempo. Per ora ciò che dici viene inviato a Google per l'elaborazione.</translation>
 <translation id="470644585772471629">Inversione dei colori</translation>
@@ -1898,6 +1903,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7982878511129296052">Disattivazione in corso…</translation>
 <translation id="7984197416080286869">Troppi tentativi di Sblocco con l'Impronta</translation>
 <translation id="798779949890829624">Questa impostazione è gestita dall'amministratore</translation>
+<translation id="7989206653429884947">Aperto frequentemente</translation>
 <translation id="799296642788192631">Puoi bloccare i file importanti. Per bloccare l'elemento, passa il mouse sopra un elemento o apri File e fai clic con il tasto destro del mouse su un elemento.</translation>
 <translation id="7994370417837006925">Accesso simultaneo</translation>
 <translation id="7995804128062002838">Impossibile acquisire schermo</translation>
@@ -2081,6 +2087,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: attivazione in corso…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tempo scaduto. Ottimo lavoro! 🎉</translation>
+<translation id="8753368202781196133">Al momento questa lingua non è supportata.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
 <translation id="8756799553341497810">Puoi iniziare a personalizzare il layout delle app quando esci da questa visualizzazione.</translation>

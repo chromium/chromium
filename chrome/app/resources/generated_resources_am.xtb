@@ -2688,6 +2688,7 @@
 <translation id="292371311537977079">የChrome ቅንብሮች</translation>
 <translation id="2926085873880284723">ነባሪ አቋራጮችን ወደነበሩበት መልስ</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> አይደገፍም።</translation>
+<translation id="2926708162326352948">ገጽታ ወደ የተሰቀለው ምስል ተዘምኗል</translation>
 <translation id="2927017729816812676">የመሸጎጫ ማከማቻ</translation>
 <translation id="2928795416630981206">የካሜራዎን አቀማመጥ ለመከታተል ተፈቅዷል</translation>
 <translation id="2931157624143513983">ሊታተም ከሚችል አካባቢ ጋር አመጣጥን</translation>
@@ -5929,6 +5930,7 @@
 <translation id="5372529912055771682">የተሰጠው የምዝገባ ሁነታ በዚህ የስርዓተ ክወና ስሪት አይደገፍም። አዲሱን ስሪት እያሂዱ መሆንዎን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="5372579129492968947">ቅጥያን ንቀል</translation>
 <translation id="5372632722660566343">ያለመለያ ቀጥል</translation>
+<translation id="5372990315769030589">«<ph name="EXTENSION_NAME" />» ይቆይ?</translation>
 <translation id="5375318608039113175">የአቅራቢያ አጋራን ከእነዚህ እውቂያዎች ጋር ለመጠቀም፣ ከGoogle መለያቸው ጋር የተገናኘውን የኢሜይል አድራሻ ወደ የእርስዎ እውቂያዎች ያክሉ።</translation>
 <translation id="5375577102295339548">ጣቢያዎች ቦት አለመሆንዎን ለማረጋገጥ ያግዛሉ</translation>
 <translation id="5376094717770783089">መዳረሻ ይጠይቃል</translation>
@@ -7405,6 +7407,7 @@
 <translation id="6494445798847293442">የእውቅና ማረጋገጫ ባለሥልጣን አይደለም</translation>
 <translation id="6494483173119160146">መሣሪያው ሊመለስ የማይችል ስህተት አጋጥሞታል። እባክዎ መሣሪያዎን ዳግም ያስጀምሩት (ሁሉንም የተጠቃሚ ውሂብ ይሰርዛል) እና እንደገና ይሞክሩ።</translation>
 <translation id="6495266441917713704">Wi-Fiን ማስተላለፍ አልተቻለም</translation>
+<translation id="6495453178162183932">ገጽታ ወደ ነባሪው Chrome ተዘምኗል</translation>
 <translation id="6497784818439587832">በማያ ገጽዎ ላይ ያሉ ንጥሎችን ለማሳነስ ወይም ለማተለቅ የማሳያ መጠንን ይቀንሱ</translation>
 <translation id="6497789971060331894">የመዳፊት ኋሊዮሽ በሽብለላ ላይ</translation>
 <translation id="6498249116389603658">&amp;ሁሉም የእርስዎ ቋንቋዎች</translation>
@@ -9024,6 +9027,7 @@
 <translation id="7708143783728142771">ኩኪዎች በድር ላይ ተመሳሳይ ደረጃ ያለው ምርጫን እንዲያበጁ ያስችላቸዋል። አንድን ጣቢያ ሲጎበኙ፣ እንደ እርስዎ የሚናገሩት ቋንቋ ወይም በየሸመታ ተሳቢ ውስጥ እንዲቀመጡ የሚፈልጉትን ዕቃዎች የመሳሰሉ የጣቢያዎን ምርጫዎች ለማስታወስ፣ ጣቢያው የመሣሪያዎ አሳሽ ማከማቻ ውስጥ ኩኪ ማስቀመጥ ይችላል። በኋላ ላይ፣ ተመሳሳይ አሳሽ በመጠቀም ጣቢያውን በድጋሚ ከጎበኙ፣ ይህ ጣቢያ ያቀናበረውን ኩኪ ማንበብ ይችላል፣ እና እርስዎ ከቆሙበት ቦታ መጀመር ይችላሉ። እነዚህ የኩኪ ዓይነቶች ብዙውን ጊዜ የመጀመሪያ ወገን ኩኪዎች ተብለው ይጠራሉ፣ ምክንያቱም የሚቀመጡት በሚጎበኙት ጣቢያ ነው።</translation>
 <translation id="770831926727930011">አካባቢያዊ ውሂብ በእርስዎ የቀድሞ የይለፍ ቃል የተጠበቀ ነው። አካባቢያዊ ውሂብን መልሰው ለማግኘት የቀድሞ የይለፍ ቃልዎን ያስገቡ።</translation>
 <translation id="7709152031285164251">አልተሳካም - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">ሁሉንም የይለፍ ቁልፎችዎ በመልሶ ማግኛ ፒን ይጠብቁ</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">ስልክዎን ከኮምፒውተርዎ ጋር ለማገናኘት የዩኤስቢ ገመድ ይጠቀሙ። ስልክዎ ቀድሞ ከተገናኘ ነቅለው መልሰው ይሰኩት።</translation>
 <translation id="7711968363685835633">ግላዊነትን የተላበሱ ልወጣዎችን እና የአስተያየት ጥቆማዎችን እንዲሁም የተጠቃሚ መዝገበ ቃላትን አሰናክል</translation>
@@ -9760,6 +9764,7 @@ nil</translation>
 <translation id="8233028084277069927">አሁን ክፈት</translation>
 <translation id="8234795456569844941">እባክዎ መሐንዲሶቻችን ይህን ችግር እንዲፈቱት ያግዟቸው። ልክ የመገለጫ ስህተት መልዕክቱን ከማግኘትዎ በፊት ምን እንደተከሰተ ይንገሩን፦</translation>
 <translation id="8235418492073272647">ገፅ ከ<ph name="DEVICE_NAME" /> ተጋርቷል</translation>
+<translation id="8236802542508794819">ይህ ትር ንብረቶችን ከሌሎች ትሮች ጋር ይጋራል፣ ይህም ስህተትን በማረም ላይ ሊያስተጓጉል ይችላል።</translation>
 <translation id="8236911020904880539">ይውጡ</translation>
 <translation id="8236917170563564587">በምትኩ ይህን ትር አጋራ</translation>
 <translation id="8237647586961940482">ጠቆር ያለ ሮዝ እና ቀይ</translation>
@@ -9964,6 +9969,7 @@ nil</translation>
 <translation id="8376532149031784008"><ph name="DOMAIN" /> ዳግም በመጫን ላይ...</translation>
 <translation id="8376610503048439696">በአስተዳዳሪዎ የተጫኑ ቅጥያዎች አሁንም ይህንን ጣቢያ ማንበብ እና መለወጥ ይችላሉ።</translation>
 <translation id="8376752431516546391">የGoogle ፍለጋ የጎን ፓነል</translation>
+<translation id="8376812682111060348">የአፈጻጸም ችግር ማንቂያ</translation>
 <translation id="8377625247046155446">ይህ የይለፍ ቁልፍ እዚህ መሣሪያ ላይ ብቻ ይቀመጣል። እርስዎ ሁሉንም ማንነትዎን የማያሳውቁ መስኮቶችን ከዘጓቸው በኋላ እዚህ መሣሪያ ላይ እንዳለ ይቆያል።</translation>
 <translation id="8378714024927312812">በእርስዎ ድርጅት የሚተዳደር</translation>
 <translation id="8379988659465232385">ስም ባዶ መሆን አይችልም</translation>

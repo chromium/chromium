@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3628308229821498208">Suggested searches</translation>
 <translation id="3697164069658504920">When on, sites can ask to use USB devices. When off, sites can't use USB devices.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">A site that you visit can save a small amount of info with Chrome, mainly to validate that you're not a bot</translation>
 <translation id="3721953990244350188">Dismiss and show next available action</translation>
 <translation id="3744111561329211289">Background sync</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="497421865427891073">go forward</translation>
 <translation id="4976702386844183910">Last visited <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">You allowed third-party cookies for this site</translation>
 <translation id="4994033804516042629">No contacts found</translation>
 <translation id="4996978546172906250">Share via</translation>
@@ -362,6 +364,7 @@
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980861169612950611">Delete site data? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>

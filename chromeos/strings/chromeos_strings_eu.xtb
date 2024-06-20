@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">hori argi</translation>
 <translation id="1056898198331236512">Abisua</translation>
 <translation id="1059913517121127803">Ezin izan da hasi eskaneatzen</translation>
+<translation id="1061864016440983342">Erabili kokapenik gabe</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> elementutatik <ph name="INDEX" />garrena, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">suebakia hauteman da</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2082932131694554252">Esleitutako teklatuko tekla</translation>
 <translation id="2085089206770112532">Pantailaren distira jaisteko tekla</translation>
+<translation id="2086091080968010660">Baliteke orduaren araberako aldaketak zehatzak ez izatea. Eman sistemaren kokapena erabiltzeko baimena ezarpenetan.</translation>
 <translation id="2102231663024125441">Testua editatzea</translation>
 <translation id="2105810540595158374">Gailua bideo-jokoen kontrolagailu bat da.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> bertsioa</translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Leheneratu balio lehenetsiak</translation>
 <translation id="2286454467119466181">Arrunta</translation>
 <translation id="2287186687001756809">Ez dago irudirik. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>
+<translation id="2294577623958216786">Oraingo programa <ph name="SUNRISE" />-<ph name="SUNSET" /> tartean ezarrita dago. Egunsentia eta ilunabarra automatikoki eguneratzeko, eman sistemaren kokapena erabiltzeko baimena.</translation>
 <translation id="2305172810646967500">Beltz</translation>
 <translation id="2307344026739914387">Erabili une honetako gako parea</translation>
 <translation id="2308243864813041101">Eguneratzen jarraitzeko, deskonektatu <ph name="DEVICE_NAME" /> gailuaren USB kablea</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">teklatuaren distira</translation>
 <translation id="6412715219990689313">Teklatu integratua</translation>
 <translation id="6417265370957905582">Google-ren Laguntzailea</translation>
+<translation id="6419454453018688975">Aktibatu sistemaren kokapena erabiltzeko baimena</translation>
 <translation id="6423239382391657905">VPN irekia</translation>
 <translation id="6439505561246192797">Ahula (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Joan kontuaren ezarpenetara</translation>

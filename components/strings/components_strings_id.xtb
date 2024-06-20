@@ -115,6 +115,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1209206284964581585">Sembunyikan untuk saat ini</translation>
 <translation id="121201262018556460">Anda bermaksud membuka <ph name="DOMAIN" />, namun server menyajikan sertifikat yang berisi kunci yang lemah. Penyerang mungkin telah merusak kunci pribadi, dan server mungkin bukan yang diharapkan (Anda mungkin sedang berkomunikasi dengan penyerang).</translation>
 <translation id="1212527389003717329">Download dimulai. Untuk melihatnya, tekan dan tahan |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Rentang harga</translation>
 <translation id="1219129156119358924">Keamanan Sistem</translation>
 <translation id="1222060260947439312">Baki Kanan</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1184,6 +1185,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Masukkan kode verifikasi <ph name="NUMBER_OF_DIGITS" /> digit</translation>
 <translation id="3272643614306383237">Kurang dari 1 MB. Beberapa situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
+<translation id="327346289570683313">Rentang Harga</translation>
 <translation id="3273738040255912340">Administrator dapat melakukan perubahan pada profil dan browser Anda dari jarak jauh, menganalisis informasi tentang browser melalui pelaporan, dan melakukan tugas lain yang diperlukan. Aktivitas di perangkat ini mungkin juga dikelola di luar Chromium. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
@@ -4271,6 +4273,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="920643408853370361">Asuransi Perjalanan</translation>
 <translation id="9207861905230894330">Gagal menambahkan artikel.</translation>
 <translation id="9210825002219699214">Perjalanan Udara</translation>
+<translation id="9211461151375991073">Ketik @ untuk menelusuri <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Sesuaikan tampilan</translation>
 <translation id="9215416866750762878">Aplikasi membuat Chrome tidak terhubung dengan aman ke situs ini</translation>
 <translation id="92178312226016010">Anda memantau produk ini.</translation>

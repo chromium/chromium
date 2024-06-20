@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chrome dilengkapi Google Terjemahan sehingga Anda dapat menerjemahkan kapan saja</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali.}=1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1434626383986940139">Aplikasi Chrome Canary</translation>
-<translation id="1438479496118074429">Ekstensi \"<ph name="EXTENSION_NAME" />\" ingin Anda login ke Chrome</translation>
 <translation id="146866447420868597">Login ke Chrome?</translation>
 <translation id="1492280395845991349">Luncurkan kembali untuk menyelesaikan update Chrome</translation>
 <translation id="1497802159252041924">Error saat penginstalan: <ph name="INSTALL_ERROR" /></translation>
@@ -55,6 +54,7 @@
 <translation id="1734234790201236882">Chrome akan menyimpan sandi ini di Akun Google. Anda tidak perlu mengingatnya.</translation>
 <translation id="1786003790898721085">Pastikan Anda login ke Chrome di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="1786044937610313874">Pintasan terbuka di Chrome</translation>
+<translation id="178701303897325119">Ekstensi ini tidak lagi didukung. Chrome merekomendasikan agar Anda menghapusnya.</translation>
 <translation id="1812689907177901597">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chrome</translation>
 <translation id="1860536484129686729">Chrome memerlukan izin akses ke kamera untuk situs ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan browser default</translation>
@@ -170,6 +170,7 @@
 <translation id="3261565993776444564">Coba warna baru untuk menyesuaikan browser Anda</translation>
 <translation id="3282568296779691940">Login ke Chrome</translation>
 <translation id="3286538390144397061">Mulai Ulang Sekarang</translation>
+<translation id="3292333338048274092">Kemudian, Anda harus memulai ulang Chrome.</translation>
 <translation id="3360895254066713204">Pembantu Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan diluncurkan ulang sekarang}=1{Chrome akan diluncurkan ulang dalam 1 detik}other{Chrome akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="3396977131400919238">Terjadi error pada sistem operasi saat penginstalan berlangsung. Download kembali Google Chrome.</translation>
@@ -214,6 +215,7 @@
 <translation id="4035053306113201399">ChromeOS harus dimulai ulang untuk menerapkan update.</translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
 <translation id="4053720452172726777">Sesuaikan dan kontrol Google Chrome</translation>
+<translation id="4084404300720192944">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Preferensi Sistem.</translation>
 <translation id="4106587138345390261">Chrome sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
 <translation id="4110895483821904099">Siapkan profil Chrome baru Anda</translation>
 <translation id="4111566860456076004">Chrome tidak dapat memverifikasi asal ekstensi ini, dan mungkin ekstensi ini tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
@@ -245,6 +247,7 @@
 <translation id="4389991535395284064">Jika menjelajah dalam mode Samaran, Chrome akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Login ke Chrome sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4459234553906210702">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
@@ -351,6 +354,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6200139057479872438">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Untuk berbagi layar, izinkan perekaman layar untuk Chrome di Preferensi Sistem.</translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="624230925347970731">Chrome akan segera ditutup</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
@@ -466,7 +470,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7802622118583152311">Chrome menghadirkan teknologi terbaru untuk penjelajahan yang lebih baik</translation>
 <translation id="7808348361785373670">Hapus dari Chrome...</translation>
 <translation id="7825851276765848807">Pemasangan gagal karena kesalahan yang tidak ditentukan. Silakan download Google Chrome lagi.</translation>
-<translation id="7828063580843052643">Untuk menggunakan ekstensi ini sebagai <ph name="USER_EMAIL_ADDRESS" />, login ke Chrome.\nAnda juga dapat menggunakan serta menyimpan sandi dan lainnya dari Akun Google Anda.</translation>
 <translation id="7836610565365456468">Ubah browser Anda dengan tema semarak yang terinspirasi oleh seniman, alam, dan lainnya</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">AI di Chrome membantu membuat web lebih cepat, lebih aman, dan lebih mudah diakses</translation>

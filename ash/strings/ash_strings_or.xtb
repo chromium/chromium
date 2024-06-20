@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ଚାଲୁ</translation>
 <translation id="1394698770495054737">ସମ୍ପୂର୍ଣ୍ଣ ବ୍ଲର</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ଦିନ ପୂର୍ବେ}other{# ଦିନ ପୂର୍ବେ}}</translation>
 <translation id="1404963891829069586">ଫୋକସ ସାଉଣ୍ଡ</translation>
 <translation id="1407069428457324124">ଗାଢ଼ ଥିମ୍</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />। ତାରିଖଗୁଡ଼ିକ ମଧ୍ୟରେ ନାଭିଗେଟ କରିବାକୁ ତୀର କୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">ମାର୍କର ବନ୍ଦ ଅଛି।</translation>
 <translation id="1743570585616704562">ଚିହ୍ନଟ ହେଲାନାହିଁ</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> ବିଜ୍ଞପ୍ତିକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 ଘଣ୍ଟା ମଧ୍ୟରେ}=1{1 ଘଣ୍ଟା ପୂର୍ବେ}other{# ଘଣ୍ଟା ପୂର୍ବେ}}</translation>
 <translation id="1746730358044914197">ଇନ୍‍ପୁଟ୍ ପଦ୍ଧତିକୁ ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା କନ୍‌ଫିଗର୍‍ କରାଯାଇଛି।</translation>
 <translation id="1747336645387973286"><ph name="DUE_DATE" />ରେ ଧାର୍ଯ୍ୟ ତାରିଖ</translation>
 <translation id="1747827819627189109">ଅନ୍ ସ୍କ୍ରିନ୍ କୀ'ବୋର୍ଡକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2360398059912971776">ବେଟେରୀ</translation>
 <translation id="2361210043495191221">ୱାଇ-ଫାଇକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE" />।</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" />ରୁ ପଠାଯାଇଛି</translation>
 <translation id="2367186422933365202">ଆପଣଙ୍କ Chromebookରେ ସାଇନ୍ ଇନ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="2367972762794486313">ଆପ୍ସ ଦେଖାନ୍ତୁ</translation>
 <translation id="2368828502825385061">ଠାବ କରନ୍ତୁ</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">ମାଇକ୍ରୋଫୋନ ଆକ୍ସେସକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="2968761508099987738">ଏହି ସମୟରେ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଲୋକେସନ ସପୋର୍ଟ କରୁନାହିଁ।</translation>
 <translation id="2970920913501714344">ଆପ୍, ଏକ୍ସଟେନ୍‍ସନ୍ ଓ ଥିମ୍‍ଗୁଡ଼ିକ ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2977598380246111477">ପରବର୍ତ୍ତୀ ନମ୍ବର</translation>
 <translation id="2985148236010982088">ସମସ୍ତ ଆପ ଦେଖନ୍ତୁ</translation>
@@ -603,7 +607,7 @@
 <translation id="334927402682780278">କର୍ସରରୁ ଲାଇନର ଶେଷ ପର୍ଯ୍ୟନ୍ତ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3349345708646875009">ଟାସ୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
 <translation id="3364721542077212959">ଷ୍ଟାଇଲସ୍‌ ଟୁଲ୍ସ</translation>
-<translation id="3365281428003534650">ଏକ ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କର</translation>
+<translation id="3365281428003534650">ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କର</translation>
 <translation id="3365977133351922112">ଆପଣଙ୍କ ଫୋନଟି ବହୁତ ଦୂରରେ ଅଛି। ଆପଣଙ୍କ ଫୋନକୁ ପାଖକୁ ଆଣନ୍ତୁ।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369111525500416043">ଧାର୍ଯ୍ୟ ତାରିଖ ଶୀଘ୍ର ଆସୁଅଛି</translation>
@@ -979,6 +983,7 @@
 <translation id="468293128311738995">ଆପଣଙ୍କ ଫୋନରୁ ଆପ୍ସ</translation>
 <translation id="4690510401873698237">ତଳ ପଟକୁ ସେଲ୍ଫ</translation>
 <translation id="4696813013609194136">ମାତାପିତାଙ୍କ କୋଡ୍‌ରେ ଡିଭାଇସ୍ ଅନଲକ୍ କରନ୍ତୁ</translation>
+<translation id="4697357603686181098">ଏଥିପାଇଁ ସାହାଯ୍ୟ କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ଅନୁରୋଧ କରି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ ବନ୍ଦ ଅଛି</translation>
 <translation id="4706121060329443414">ପରେ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯିବ। ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେବା ପାଇଁ Googleକୁ ପଠାଯିବ।</translation>
 <translation id="470644585772471629">ରଙ୍ଗ ଇନଭର୍ସନ</translation>
@@ -1900,6 +1905,7 @@
 <translation id="7982878511129296052">ବନ୍ଦ କରାଯାଉଛି...</translation>
 <translation id="7984197416080286869">ଅନେକ ଟିପଚିହ୍ନ ପ୍ରଚେଷ୍ଟା</translation>
 <translation id="798779949890829624">ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
+<translation id="7989206653429884947">ବାରମ୍ବାର ଖୋଲାଯାଇଛି</translation>
 <translation id="799296642788192631">ଆପଣ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ପିନ କରିପାରିବେ। ପିନ କରିବା ପାଇଁ, ଏକ ଆଇଟମ ଉପରେ ହୋଭର କରନ୍ତୁ କିମ୍ବା ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲି ଏକ ଆଇଟମରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="7994370417837006925">ଏକାଧିକ ସାଇନ୍-ଇନ୍</translation>
 <translation id="7995804128062002838">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
@@ -2084,6 +2090,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">ସମୟ ଶେଷ ହୋଇଯାଇଛି। ବଢ଼ିଆ କାମ! 🎉</translation>
+<translation id="8753368202781196133">ବର୍ତ୍ତମାନ ଏହି ଭାଷାକୁ ସପୋର୍ଟ କରୁନାହିଁ।</translation>
 <translation id="8755498163081687682">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ: ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="875593634123171288">VPN ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>
 <translation id="8756799553341497810">ଆପଣ ଏହି ଭ୍ୟୁରୁ ବାହାରି ଯିବା ପରେ ଆପଣଙ୍କ ଆପ ଲେଆଉଟକୁ କଷ୍ଟମାଇଜ କରିବା ଆରମ୍ଭ କରିପାରିବେ।</translation>

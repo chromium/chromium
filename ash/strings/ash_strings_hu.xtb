@@ -904,6 +904,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4381031910344220229">Ezzel engedélyezi a mikrofonhoz való hozzáférést a(z) <ph name="APP_NAME" />, illetve a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="4382340674111381977">Vissza az előző oldalra</translation>
 <translation id="4389184120735010762">Lenyomta a dokkolt nagyító billentyűparancsát. Bekapcsolja a funkciót?</translation>
+<translation id="4394466652057229831">Kattintson a jobb gombbal az összefoglaláshoz</translation>
 <translation id="439598569299422042">Szünetel, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nem sikerült a képernyőfelvétel mentése</translation>
 <translation id="4405151984121254935">A csatlakoztatott perifériatípus nem támogatott</translation>
@@ -1940,6 +1941,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8113423164597455979">Be, összes app</translation>
 <translation id="8113515504791187892">Felolvasás gomb</translation>
 <translation id="8120151603115102514">Telefonján nincs beállítva lezárási képernyő. A Chromebook feloldásához írja be jelszavát.</translation>
+<translation id="8120249852906205273">Újraindítás</translation>
 <translation id="8127095419621171197">A Számológép alkalmazás megnyitása</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Ugrás a dokumentum elejére</translation>
@@ -2034,6 +2036,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="85123341071060231">A Chromebookon ki van kapcsolva a Bluetooth. A zárolás feloldásához írja be jelszavát.</translation>
 <translation id="8513108775083588393">Autom.forgatás</translation>
 <translation id="851458219935658693">A jelenlegi asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
+<translation id="851660987304951246">A Segítség az olvasáshoz funkció használatával gyorsan foglalhat össze tartalmakat és tehet fel kérdéseket</translation>
 <translation id="8517041960877371778">Előfordulhat, hogy a(z) <ph name="DEVICE_TYPE" /> nem töltődik, amíg be van kapcsolva.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{A mikrofonbemenetet a(z) <ph name="APP_NAME" /> alkalmazás vezérli}other{A mikrofonbemenetet # alkalmazás vezérli}}</translation>
 <translation id="8535393432370007982">Szín szerinti rendezés visszavonása</translation>

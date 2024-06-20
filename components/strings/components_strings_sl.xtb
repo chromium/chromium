@@ -115,6 +115,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1209206284964581585">Zaenkrat skrij</translation>
 <translation id="121201262018556460">Poskusili ste dostopati do domene <ph name="DOMAIN" />, vendar ima strežnik potrdilo s šibkim ključem. Napadalec je morda dešifriral zasebni ključ in strežnik morda ni tisti, ki ste ga pričakovali (morda komunicirate z napadalcem).</translation>
 <translation id="1212527389003717329">Prenos se je začel. Če si ga želite ogledati, pridržite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Cenovni okvir</translation>
 <translation id="1219129156119358924">Varnost sistema</translation>
 <translation id="1222060260947439312">Desni pladenj</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1183,6 +1184,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno kodo za preverjanje</translation>
 <translation id="3272643614306383237">Manj kot 1 MB. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
+<translation id="327346289570683313">Cenovni okvir</translation>
 <translation id="3273738040255912340">Skrbnik lahko na daljavo spreminja vaš profil in brskalnik, analizira podatke o brskalniku prek poročanja in izvaja druga potrebna opravila. Dejavnost v tej napravi morda tudi upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravilnik skrbnika ne priporoča odpiranja te datoteke tukaj: <ph name="DESTINATION_NAME" />.}one{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}two{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}few{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}other{Pravilnik skrbnika ne priporoča odpiranja teh datotek tukaj: <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, je poslala nekatere podatke, kot so nastavitve ali pravilniki, na ta spletna mesta.</translation>

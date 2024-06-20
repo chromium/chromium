@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1391102559483454063">ચાલુ</translation>
 <translation id="1394698770495054737">સંપૂર્ણ બ્લર કરો</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 દિવસ પહેલાં}one{# દિવસ પહેલાં}other{# દિવસ પહેલાં}}</translation>
 <translation id="1404963891829069586">ફોકસનાં સાઉન્ડ</translation>
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. તારીખો વચ્ચે નૅવિગેટ કરવા માટે, ઍરો કીનો ઉપયોગ કરો.</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">માર્કર બંધ છે.</translation>
 <translation id="1743570585616704562">ઓળખાયેલ નથી</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> નોટિફિકેશન નાનું કરો</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 કલાકની અંદર}=1{1 કલાક પહેલાં}one{# કલાક પહેલાં}other{# કલાક પહેલાં}}</translation>
 <translation id="1746730358044914197">ઇનપુટ પદ્ધતિઓને તમારા વ્યવસ્થાપક દ્વારા ગોઠવવામાં આવી છે.</translation>
 <translation id="1747336645387973286">નિયત તારીખ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2360398059912971776">બૅટરી</translation>
 <translation id="2361210043495191221">વાઇ-ફાઇ ટૉગલ કરો. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> એકાઉન્ટ પરથી મોકલવામાં આવ્યું</translation>
 <translation id="2367186422933365202">તમારી Chromebookમાં સાઇન ઇન કરી શકતા નથી</translation>
 <translation id="2367972762794486313">ઍપ્લિકેશનો બતાવો</translation>
 <translation id="2368828502825385061">શોધો</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">શું માઇક્રોફોનનો ઍક્સેસ ચાલુ કરીએ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> સ્પીચ ફાઇલો ડાઉનલોડ કરી શક્યા નથી</translation>
+<translation id="2968761508099987738">અત્યારે તમારા હાલના લોકેશનને સપોર્ટ આપવામાં આવતો નથી.</translation>
 <translation id="2970920913501714344">ઍપ, એક્સ્ટેન્શન અને થીમ ઇન્સ્ટૉલ કરો</translation>
 <translation id="2977598380246111477">આગલો નંબર</translation>
 <translation id="2985148236010982088">બધી ઍપ જુઓ</translation>
@@ -899,6 +903,7 @@
 <translation id="4381031910344220229">આ માઇક્રોફોનની પરવાનગી ધરાવતી <ph name="APP_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="4382340674111381977">પાછળનાં પેજ પર જાઓ</translation>
 <translation id="4389184120735010762">તમે ડૉક કરેલ મૅગ્નિફાયર માટે કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
+<translation id="4394466652057229831">સારાંશ આપવા માટે રાઇટ ક્લિક કરો</translation>
 <translation id="439598569299422042">ડાઉનલોડ થોભાવ્યું, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">સ્ક્રીનકાસ્ટ સાચવી શકાયું નથી</translation>
 <translation id="4405151984121254935">કનેક્ટ કરવામાં આવેલા પેરિફેરલ પ્રકારને સપોર્ટ આપવામાં આવતો નથી</translation>
@@ -979,6 +984,7 @@
 <translation id="468293128311738995">તમારા ફોન પરની ઍપ</translation>
 <translation id="4690510401873698237">શેલ્ફ સૌથી નીચે છે</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
+<translation id="4697357603686181098">આમાં કોઈ સહાય કરી શકાશે નહીં. કોઈ અન્ય વિનંતી અજમાવી જુઓ.</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
 <translation id="4706121060329443414">થોડા સમય પછી ડાઉનલોડ કરવાનો પ્રયાસ કરવામાં આવશે. હાલ પૂરતું સ્પીચ પ્રક્રિયા કરવા માટે Googleને મોકલવામાં આવશે.</translation>
 <translation id="470644585772471629">વિપરીત રંગમાં બદલવું</translation>
@@ -1901,6 +1907,7 @@
 <translation id="7982878511129296052">બંધ કરી રહ્યાં છીએ...</translation>
 <translation id="7984197416080286869">ફિંગરપ્રિન્ટ માટેના ઘણા બધા પ્રયત્નો</translation>
 <translation id="798779949890829624">આ સેટિંગને તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="7989206653429884947">વારંવાર ખોલવામાં આવી છે</translation>
 <translation id="799296642788192631">તમે મહત્ત્વની ફાઇલો પિન કરી શકો છો. પિન કરવા માટે, કોઈ આઇટમ પર કર્સર લઈ જાઓ અથવા Files ખોલો અને કોઈ આઇટમ પર રાઇટ ક્લિક કરો.</translation>
 <translation id="7994370417837006925">બહુવિધ સાઇન-ઇન</translation>
 <translation id="7995804128062002838">સ્ક્રીન કૅપ્ચર કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -1933,6 +1940,7 @@
 <translation id="8113423164597455979">ચાલુ, બધી ઍપ</translation>
 <translation id="8113515504791187892">સાંભળવા માટે પસંદ કરો બટન</translation>
 <translation id="8120151603115102514">તમારા ફોનમાં લૉક સ્ક્રીનની સુવિધા ચાલુ નથી. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>
+<translation id="8120249852906205273">ફરી શરૂ કરો</translation>
 <translation id="8127095419621171197">Calculator ઍપ ખોલો</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">દસ્તાવેજની શરૂઆત પર જાઓ</translation>
@@ -2027,6 +2035,7 @@
 <translation id="85123341071060231">તમારી Chromebookનું બ્લૂટૂથ બંધ છે. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
+<translation id="851660987304951246">કન્ટેન્ટનો ઝડપથી સારાંશ આપવા માટે કે પ્રશ્નો પૂછવા માટે, 'વાંચવામાં મારી સહાય કરો' સુવિધાનો ઉપયોગ કરો</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{માઇક ઇનપુટ <ph name="APP_NAME" />ના દ્વારા નિયંત્રિત કરવામાં આવે છે}one{માઇક ઇનપુટ # ઍપ દ્વારા નિયંત્રિત કરવામાં આવે છે}other{માઇક ઇનપુટ # ઍપ દ્વારા નિયંત્રિત કરવામાં આવે છે}}</translation>
 <translation id="8535393432370007982">રંગ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
@@ -2085,6 +2094,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">સમય સમાપ્ત. ખૂબ સરસ કામ! 🎉</translation>
+<translation id="8753368202781196133">અત્યારે આ ભાષાને સપોર્ટ કરવામાં આવતો નથી.</translation>
 <translation id="8755498163081687682">તમારી ઓળખની ચકાસણી કરો: આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="875593634123171288">VPN સેટિંગ બતાવો</translation>
 <translation id="8756799553341497810">એકવાર તમે આ વ્યૂમાંથી બહાર નીકળો, પછી તમે તમારી ઍપનો લેઆઉટ કસ્ટમાઇઝ કરવાની શરૂઆત કરી શકો છો.</translation>

@@ -66,7 +66,7 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
-<translation id="4338724047016295066">系統將自動關閉閒置分頁。你隨時可以前往歷史記錄中查看這些分頁。</translation>
+<translation id="4338724047016295066">閒置分頁會自動關閉，你可以隨時在「記錄」中查看。</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>

@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Abrir o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_ONE" /> guia.}one{Abrir o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_MANY" /> guia.}other{Abrir o grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
+<translation id="4338724047016295066">As guias inativas serão fechadas automaticamente. Elas podem ser encontradas no Histórico.</translation>
 <translation id="4371591986692297148">Inativos</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4648718555153979859">Suas guias são agrupadas aqui</translation>
 <translation id="4686942373615810936">Criado agora</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Fechar após 1 dia}one{Fechar após <ph name="DAY_COUNT_MANY" /> dia}other{Fechar após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="4777866634702576038">Excluir grupo de guias?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avaliação)}one{(<ph name="REVIEWS_COUNT_MANY" /> avaliação)}other{(<ph name="REVIEWS_COUNT_MANY" /> avaliações)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Seus grupos de guias vão aparecer aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Desagrupar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Após 1 dia}one{Após <ph name="DAY_COUNT_MANY" /> dia}other{Após <ph name="DAY_COUNT_MANY" /> dias}}</translation>
 <translation id="6549021453810473782">Ver informações da loja</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover guia para a esquerda</translation>

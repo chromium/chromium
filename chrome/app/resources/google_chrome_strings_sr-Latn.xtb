@@ -30,7 +30,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1407223320754252908">Google prevodilac je ugrađen u Chrome, pa možete da prevodite kada vam treba</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti.}=1{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary aplikacije</translation>
-<translation id="1438479496118074429">Dodatak „<ph name="EXTENSION_NAME" />“ želi da se prijavite u Chrome</translation>
 <translation id="146866447420868597">Želite li da se prijavite u Chrome?</translation>
 <translation id="1492280395845991349">Ponovo pokrenite da biste dovršili ažuriranje Chrome-a</translation>
 <translation id="1497802159252041924">Greška pri instalaciji: <ph name="INSTALL_ERROR" /></translation>
@@ -479,7 +478,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="7802622118583152311">Chrome vam donosi najnoviju tehnologiju za bolje pregledanje</translation>
 <translation id="7808348361785373670">Ukloni iz Chrome-a...</translation>
 <translation id="7825851276765848807">Instalacija nije uspela usled neutvrđene greške. Preuzmite Google Chrome ponovo.</translation>
-<translation id="7828063580843052643">Da biste koristili ovaj dodatak kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se u Chrome.\nMoći ćete i da koristite i čuvate lozinke i drugo na Google nalogu.</translation>
 <translation id="7836610565365456468">Transformišite pregledač živopisnim temama inspirisanim umetnicima, prirodom i drugim motivima</translation>
 <translation id="7845233973568007926">Hvala vam na instalaciji. Morate da restartujete računar pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7852254990718225089">Veštačka inteligencija u Chrome-u pomaže da veb bude brži, bezbedniji i pristupačniji</translation>

@@ -5921,6 +5921,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5372529912055771682">El mode d'inscripció proporcionat no és compatible amb aquesta versió del sistema operatiu. Assegureu-vos que estigueu executant la darrera versió i torneu-ho a provar.</translation>
 <translation id="5372579129492968947">Deixa de fixar l'extensió</translation>
 <translation id="5372632722660566343">Continua sense cap compte</translation>
+<translation id="5372990315769030589">Vols mantenir "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Per fer servir Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques enllaçades als seus Comptes de Google.</translation>
 <translation id="5375577102295339548">Els llocs web poden ajudar a verificar que no ets un bot</translation>
 <translation id="5376094717770783089">Sol·licita accés</translation>
@@ -9013,6 +9014,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7708143783728142771">Les galetes permeten aquest mateix nivell de personalització de les preferències al web. Quan visites un lloc web, aquest pot desar una galeta a l'emmagatzematge del navegador del dispositiu per recordar les teves preferències al lloc web, com ara l'idioma que parles o els articles que deses al carretó electrònic. Si més tard tornes a visitar el lloc web amb el mateix navegador, el lloc web en qüestió podrà llegir la galeta que ha definit i podràs continuar on ho havies deixat. Aquests tipus de galetes sovint es coneixen com a galetes pròpies, perquè les estableix el mateix lloc web que visites.</translation>
 <translation id="770831926727930011">Les dades locals estan protegides per la contrasenya antiga. Introdueix la contrasenya antiga per recuperar les dades locals.</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Protegeix totes les claus d'accés amb un PIN de recuperació</translation>
 <translation id="7710568461918838723">&amp;Emet…</translation>
 <translation id="7711900714716399411">Utilitza un cable USB per connectar el telèfon a l'ordinador. Si ja està connectat, desendolla'l i torna'l a endollar.</translation>
 <translation id="7711968363685835633">Desactiva les conversions i els suggeriments personalitzats, així com el diccionari de l'usuari</translation>
@@ -9744,6 +9746,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8233028084277069927">Obre ara</translation>
 <translation id="8234795456569844941">Ajuda els nostres enginyers a solucionar aquest problema. Explica'ns què ha passat just abans de rebre el missatge d'error del perfil:</translation>
 <translation id="8235418492073272647">Pàgina compartida des de <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Aquesta pestanya comparteix recursos amb altres pestanyes, cosa que podria interferir en la depuració.</translation>
 <translation id="8236911020904880539">sortir</translation>
 <translation id="8236917170563564587">Comparteix aquesta pestanya</translation>
 <translation id="8237647586961940482">Rosa fosc i vermell</translation>
@@ -9949,6 +9952,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8376532149031784008">S'està tornant a carregar <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Les extensions instal·lades per l'administrador poden continuar llegint i canviant aquest lloc web</translation>
 <translation id="8376752431516546391">Tauler lateral de la Cerca de Google</translation>
+<translation id="8376812682111060348">Alerta de problema de rendiment</translation>
 <translation id="8377625247046155446">Aquesta clau d'accés només es desarà en aquest dispositiu. S'hi conservarà després que tanquis totes les finestres d'incògnit.</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8379988659465232385">El nom no pot ser buit</translation>

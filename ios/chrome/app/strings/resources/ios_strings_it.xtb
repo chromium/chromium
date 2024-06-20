@@ -532,6 +532,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="371398631992790800">Nascondi preferiti</translation>
 <translation id="37207012422556617">Ricerche di tendenza</translation>
 <translation id="3725081662140949903">Per impedire ad altri di utilizzare la tua password, apri l'app <ph name="APP" /> per cambiare la password</translation>
+<translation id="372676576864368480">Compila automaticamente il numero della carta che termina con <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data creazione: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Nascondi download</translation>
 <translation id="3745190878148784130">Nascondi Zoom del testo</translation>
@@ -1097,6 +1098,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="648164694371393720">Errore di autenticazione</translation>
 <translation id="6494931198667773526">Fine</translation>
+<translation id="6500795388871406244">Utilizza la password suggerita:</translation>
 <translation id="650279896687777322">Scopri di più…</translation>
 <translation id="6505334220040167806">Comprimi il gruppo di schede.</translation>
 <translation id="6507973708545996744">Accedi per visualizzare il tuo elenco di lettura su tutti i tuoi dispositivi.</translation>
@@ -1310,6 +1312,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7598439272585186139">Ottieni maggiore sicurezza</translation>
 <translation id="7600965453749440009">Non tradurre mai <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Compila automaticamente il titolare della carta <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Gruppi di schede</translation>
 <translation id="7607521702806708809">Elimina password</translation>
@@ -1342,6 +1345,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7749790401023484470">Non hai selezionato alcun testo.</translation>
 <translation id="7752405526771734448">Ricerca visiva di Lens</translation>
 <translation id="7756478488453921771">Menu → Impostazioni → Metodi di pagamento</translation>
+<translation id="775755486779745798">Compila automaticamente il mese di scadenza <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Blocco delle schede di navigazione in incognito</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
@@ -1518,6 +1522,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8556590991644167667">{count,plural, =1{Hai ignorato {count} avviso}other{Hai ignorato {count} avvisi}}</translation>
 <translation id="8560253818350321773">Mostra prima le voci usate di frequente.</translation>
 <translation id="8569721750632860947">Quale URL vorresti aggiungere al tuo elenco di lettura?</translation>
+<translation id="8577056989960190117">Compila automaticamente l'anno di scadenza <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Non attiva</translation>
 <translation id="8591976964826315682">Blocca cookie di terze parti in modalità di navigazione in incognito</translation>
 <translation id="8593565399399144771">Puoi aprire una nuova scheda qui.</translation>

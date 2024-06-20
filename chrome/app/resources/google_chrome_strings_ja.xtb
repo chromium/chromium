@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chrome には Google 翻訳が組み込まれているため、必要なときにすぐ翻訳できます</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。}=1{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の更新が完了しました。再起動すると最新バージョンをすぐに使用できます。その後、現在のタブが再度開きます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1434626383986940139">Chrome Canary アプリ</translation>
-<translation id="1438479496118074429">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="146866447420868597">Chrome にログインしますか？</translation>
 <translation id="1492280395845991349">Chrome の更新を完了するには再起動してください</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
@@ -470,7 +469,6 @@
 <translation id="7802622118583152311">Chrome の最新テクノロジーでブラウジングがより快適になりました</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7825851276765848807">原因不明のエラーによりインストールに失敗しました。Google Chrome をもう一度ダウンロードしてください。</translation>
-<translation id="7828063580843052643">この拡張機能を <ph name="USER_EMAIL_ADDRESS" /> として使用するには、Chrome にログインしてください。\nログインすると、Google アカウントのパスワードやその他の設定も使用、保存できるようになります。</translation>
 <translation id="7836610565365456468">アーティスト、自然などから着想を得た鮮やかなテーマでブラウザを一新できます</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
 <translation id="7852254990718225089">Chrome の AI 機能がウェブをより高速、安全に使いやすくサポートします</translation>

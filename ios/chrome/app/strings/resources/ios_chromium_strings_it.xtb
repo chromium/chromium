@@ -265,6 +265,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8386869251364507178">Azioni di Chromium</translation>
 <translation id="8409374867500149834">Disponi della misura di sicurezza più efficace di Chromium contro siti web pericolosi</translation>
 <translation id="8458950033462118672">Puoi aprire automaticamente i link in Chromium impostandolo come app browser predefinita.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}}</translation>
 <translation id="858114650497379505">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="865600487977764604">Ti protegge su Chromium e potrebbe essere utilizzata per migliorare la tua sicurezza in altre app Google se hai eseguito l'accesso.</translation>

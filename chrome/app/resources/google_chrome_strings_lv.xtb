@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Pārlūkā Chrome ir iebūvēts Google tulkotājs, lai jūs varētu tulkot saturu, kad vien nepieciešams.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes.}=1{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Chrome atjaunināšana ir pabeigta. Varēsiet izmantot jaunāko versiju, tiklīdz atkārtoti palaidīsiet pārlūku. Pēc tam tiks atkārtoti atvērtas pašreizējās cilnes. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary lietotnes</translation>
-<translation id="1438479496118074429">Paplašinājums \“<ph name="EXTENSION_NAME" />\” pieprasa, lai jūs pierakstītos pārlūkā Chrome</translation>
 <translation id="146866447420868597">Vai pierakstīties pārlūkā Chrome?</translation>
 <translation id="1492280395845991349">Atkārtota palaišana, lai pabeigtu Chrome atjaunināšanu</translation>
 <translation id="1497802159252041924">Instalēšanas kļūda: <ph name="INSTALL_ERROR" /></translation>
@@ -247,6 +246,7 @@
 <translation id="4384570495110188418">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles, jo jūs neesat pierakstījies.</translation>
 <translation id="4389991535395284064">Ja veicat pārlūkošanu inkognito režīmā, pārlūkā Chrome tiks parādīts brīdinājums pirms vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
+<translation id="4434353761996769206">Instalēšanas kļūda: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome — pierakstīšanās vietnē — <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Tiek veikta cita darbība pārlūkā Google Chrome. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4459234553906210702">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
@@ -471,7 +471,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7802622118583152311">Chrome piedāvā jaunākās tehnoloģijas labākai pārlūkošanai.</translation>
 <translation id="7808348361785373670">Noņemšana no pārlūka Chrome...</translation>
 <translation id="7825851276765848807">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lūdzu, lejupielādējiet pārlūkprogrammu Google Chrome vēlreiz.</translation>
-<translation id="7828063580843052643">Lai izmantotu šo paplašinājumu kā <ph name="USER_EMAIL_ADDRESS" />, pierakstieties pārlūkā Chrome.\nVarēsiet arī izmantot un saglabāt paroles un citus datus no sava Google konta.</translation>
 <translation id="7836610565365456468">Pārveidojiet savu pārlūku, izmantojot košus motīvus, kuru pamatā ir mākslinieku darbi, dabas motīvus vai citus motīvus.</translation>
 <translation id="7845233973568007926">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē dators.</translation>
 <translation id="7852254990718225089">MI pārlūkā Chrome palīdz padarīt tīmekli ātrāku, drošāku un pieejamāku.</translation>

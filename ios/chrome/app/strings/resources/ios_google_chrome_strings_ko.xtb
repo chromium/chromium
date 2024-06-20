@@ -134,6 +134,7 @@
 <translation id="4903674399067644695">이 카드는 Chrome을 최대한 활용하는 방법에 관한 추천을 보여줍니다.</translation>
 <translation id="4919069428879420545">Chrome에서 인터넷 사용 기록을 삭제합니다.</translation>
 <translation id="49200511069271369">내가 로그인한 계정과 Chrome이 사용될 수 있는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
+<translation id="4925322001044117929">iPad에서 Chrome을 기본 브라우저로 사용</translation>
 <translation id="498985224078955265">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="5030102366287574140">Chrome에서는 정보 유출, 안전하지 않은 웹사이트 등으로부터 사용자를 보호합니다</translation>
 <translation id="5108659628347594808">Chrome 개선에 참여</translation>
@@ -192,6 +193,7 @@
 <translation id="6646696210740573446">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="6683891932310469419">Chrome 방문 기록 페이지를 엽니다.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{이 현상은 Chrome을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}other{이 현상은 Chrome을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}}</translation>
 <translation id="6709398533399187136">정보 유출로 인해 비밀번호가 노출되었습니다. Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="6820553595690137150">결제 수단 및 주소는 암호로 암호화되지 않습니다.
 

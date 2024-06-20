@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3628308229821498208">Utafutaji unaopendekezwa</translation>
 <translation id="3697164069658504920">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya USB. Kikizimwa, tovuti haziwezi kutumia vifaa vya USB.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Tovuti unayotembelea inaweza kuhifadhi kiasi kidogo cha maelezo kwenye Chrome, hasa ili kuthibitisha kuwa wewe si roboti</translation>
 <translation id="3721953990244350188">Ondoa na uonyeshe kitendo kinachofuata kinachopatikana</translation>
 <translation id="3744111561329211289">Usawazishaji wa chini chini</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">Batilisha ruhusa zote za kifaa</translation>
 <translation id="497421865427891073">Nenda mbele</translation>
 <translation id="4976702386844183910">Ilitembelewa mara ya mwisho <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Umeruhusu vidakuzi vya mshirika mwingine kwenye tovuti hii</translation>
 <translation id="4994033804516042629">Hakuna anwani zilizopatikana</translation>
 <translation id="4996978546172906250">Shiriki kupitia</translation>
@@ -457,6 +459,7 @@
 <translation id="8441146129660941386">Peleka nyuma</translation>
 <translation id="8444433999583714703">Ili uruhusu <ph name="APP_NAME" /> ifikie data ya mahali ulipo, washa pia huduma ya mahali katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Batilisha ruhusa ya kifaa</translation>
+<translation id="8473055640493819707">'<ph name="APP_NAME" />' imepitwa na wakati. Tafadhali weka upya programu hiyo kwenye kifaa.</translation>
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>
 <translation id="848952951823693243">Omba tovuti katika mwonekano wa kifaa cha mkononi kila wakati</translation>
 <translation id="8499083585497694743">Washa maikrofoni</translation>

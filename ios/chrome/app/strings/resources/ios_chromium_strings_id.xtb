@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Versi Chromium sudah usang. Jika tidak tersedia update di <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mungkin saja perangkat Anda tidak lagi mendukung versi baru Chromium.</translation>
 <translation id="1423007117030725713">Mulai penelusuran di tab Chromium baru.</translation>
 <translation id="1431818719585918472">Izinkan Chromium mengunci tab Samaran Anda.</translation>
+<translation id="146407871188825689">Gunakan Chromium di iPad secara Default</translation>
 <translation id="1472013873724362412">Akun Anda tidak berfungsi di Chromium. Harap hubungi administrator domain atau gunakan Akun Google biasa untuk masuk.</translation>
 <translation id="1503199973012840174">Chromium Anda belum diupdate. Update agar tetap aman.</translation>
 <translation id="1507010443238049608">Bantu Sempurnakan Fitur dan Performa Chromium</translation>
@@ -264,6 +265,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8386869251364507178">Tindakan Chromium</translation>
 <translation id="8409374867500149834">Anda memiliki keamanan terkuat Chromium terhadap situs berbahaya</translation>
 <translation id="8458950033462118672">Anda dapat membuka link di Chromium secara otomatis dengan menjadikan Chromium sebagai Aplikasi Browser Default Anda.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}}</translation>
 <translation id="858114650497379505">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi di aplikasi lain pada iPhone.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="865600487977764604">Memastikan Anda tetap aman di Chromium dan dapat digunakan untuk meningkatkan keamanan Anda di aplikasi Google lainnya saat login.</translation>

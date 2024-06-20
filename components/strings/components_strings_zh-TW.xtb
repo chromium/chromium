@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">暫時隱藏</translation>
 <translation id="121201262018556460">你嘗試前往 <ph name="DOMAIN" />，但伺服器所提供的憑證含有防護力薄弱的金鑰。攻擊者可能已破壞私密金鑰，而該伺服器可能並非你的目標伺服器 (你的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="1212527389003717329">開始下載。如要查看，請按住 |<ph name="ACCELERATOR" />|。</translation>
+<translation id="1214970845432250240">價格範圍</translation>
 <translation id="1219129156119358924">系統安全性</translation>
 <translation id="1222060260947439312">右匣</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -1181,6 +1182,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
 <translation id="3272643614306383237">低於 1 MB。下次造訪某些網站時，載入速度可能會變慢。</translation>
+<translation id="327346289570683313">價格範圍</translation>
 <translation id="3273738040255912340">系統管理員可以從遠端變更你的設定檔和瀏覽器、透過報表分析瀏覽器相關資訊，以及執行其他必要工作。這部裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{根據系統管理員政策，建議你不要在「<ph name="DESTINATION_NAME" />」中開啟這個檔案}other{根據系統管理員政策，建議你不要在「<ph name="DESTINATION_NAME" />」中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">貴機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到下列網站。</translation>

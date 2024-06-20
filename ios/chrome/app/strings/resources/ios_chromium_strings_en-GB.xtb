@@ -123,6 +123,7 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 
 To change this setting, <ph name="BEGIN_LINK" />delete the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Opens The Payment Methods Setting Page in Chromium.</translation>
+<translation id="458786853569524949">You can now use Chromium any time that you tap links in emails, documents and other apps.</translation>
 <translation id="459080529287102949">Search visuals in Chromium</translation>
 <translation id="4633738821577273991">Get Enhanced Safe Browsing for this Chromium profile, too</translation>
 <translation id="4638625642619341392">Download Chromium here.</translation>
@@ -265,6 +266,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8386869251364507178">Chromium actions</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
 <translation id="8458950033462118672">You can open links in Chromium automatically by making it your default browser app.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>
 <translation id="858114650497379505">You can use the passwords that you saved to Password Manager in other apps on your iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="865600487977764604">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.</translation>
@@ -289,6 +291,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to use and save Chromium data in your Google Account.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="9050790730841755540">Use Chrome anytime that you tap links in other apps.</translation>
+<translation id="9057082013386654559">Use Chromium for iPad by default</translation>
 <translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9110075932708282655">Use Chromium by default</translation>

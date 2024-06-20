@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Chrome ma wbudowanego Tłumacza Google, którego możesz używać w razie potrzeby</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty.}=1{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. Okno incognito nie otworzy się ponownie.}few{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. # okna incognito nie otworzą się ponownie.}many{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. # okien incognito nie otworzy się ponownie.}other{Przeglądarka Chrome została zaktualizowana. Uruchom ją ponownie, aby zacząć używać najnowszej wersji. Zostaną przywrócone Twoje bieżące karty. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="1434626383986940139">Aplikacje Chrome w wersji poglądowej</translation>
-<translation id="1438479496118074429">Rozszerzenie „<ph name="EXTENSION_NAME" />” chce, żebyś zalogował(a) się w Chrome</translation>
 <translation id="146866447420868597">Chcesz zalogować się w Chrome?</translation>
 <translation id="1492280395845991349">Uruchom ponownie, aby dokończyć aktualizację Chrome</translation>
 <translation id="1497802159252041924">Błąd instalacji: <ph name="INSTALL_ERROR" /></translation>
@@ -170,6 +169,7 @@
 <translation id="3261565993776444564">Wypróbuj nowy kolor, aby dostosować przeglądarkę</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
+<translation id="3292333338048274092">Następnie musisz ponownie uruchomić Chrome.</translation>
 <translation id="3360895254066713204">Pomoc Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome uruchomi się ponownie teraz}=1{Chrome uruchomi się ponownie za 1 sekundę}few{Chrome uruchomi się ponownie za # sekundy}many{Chrome uruchomi się ponownie za # sekund}other{Chrome uruchomi się ponownie za # sekundy}}</translation>
 <translation id="3396977131400919238">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Google Chrome ponownie.</translation>
@@ -214,6 +214,7 @@
 <translation id="4035053306113201399">Aby system operacyjny Chrome mógł zastosować aktualizacje, musisz go ponownie uruchomić.</translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
+<translation id="4084404300720192944">Aby udostępnić okno, pozwól Chrome na nagrywanie ekranu w Preferencjach systemowych.</translation>
 <translation id="4106587138345390261">Testujemy nowe funkcje Chrome, dzięki którym witryny będą mogły zapewniać użytkownikom taką samą wygodę przeglądania treści przy wykorzystaniu mniejszej ilości informacji</translation>
 <translation id="4110895483821904099">Skonfiguruj nowy profil w Chrome</translation>
 <translation id="4111566860456076004">Chrome nie może zweryfikować, skąd pochodzi to rozszerzenie, które może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to też danych osobowych.</translation>
@@ -352,6 +353,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6200139057479872438">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">Aby udostępnić ekran, pozwól Chrome na nagrywanie ekranu w Preferencjach systemowych.</translation>
 <translation id="6235018212288296708">Reguła dla ruchu przychodzącego w Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="624230925347970731">Przeglądarka Chrome zostanie wkrótce zamknięta</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
@@ -467,7 +469,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7802622118583152311">Aby zapewnić Ci lepsze wrażenia podczas przeglądania, Chrome korzysta z najnowszych technologii</translation>
 <translation id="7808348361785373670">Usuń z Chrome...</translation>
 <translation id="7825851276765848807">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Google Chrome ponownie.</translation>
-<translation id="7828063580843052643">Aby używać tego rozszerzenia jako <ph name="USER_EMAIL_ADDRESS" />, zaloguj się w Chrome.\nBędziesz też mieć możliwość używania haseł i innych danych z konta Google oraz ich zapisywania.</translation>
 <translation id="7836610565365456468">Przekształć swoją przeglądarkę za pomocą żywych motywów inspirowanych dziełami artystów, naturą i nie tylko</translation>
 <translation id="7845233973568007926">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić komputer.</translation>
 <translation id="7852254990718225089">AI w Chrome sprawia, że internet jest szybszy, bezpieczniejszy i bardziej dostępny</translation>

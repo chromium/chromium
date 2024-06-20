@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Нетачан PUK</translation>
 <translation id="4057991113334098539">Активирање...</translation>
 <translation id="4092890906744441904">ирски</translation>
+<translation id="4101601646343868113">Пријавите се на своју мобилну мрежу и потврдите да је ваш тарифни пакет активан</translation>
 <translation id="4124731372776320263">Синхронизује се 1 фајл са Диска</translation>
 <translation id="4124935795427217608">Једнорог</translation>
 <translation id="4131235941541910880">Преместите ставке које вам не требају у отпад</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">тамилски са тастатуром Tamil99</translation>
 <translation id="5633226425545095130">Премештањем ове ставке делите је са свима који могу да виде дељени фолдер <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Слушај</translation>
+<translation id="5650895901941743674">Проверите конфигурацију APN-a</translation>
 <translation id="5669691691057771421">Унесите нови PIN</translation>
 <translation id="5678784840044122290">Linux апликација ће бити доступна на терминалу, а можда ће приказивати и икону у Покретачу.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Није успео прекид везе са архивским или виртуелним диском<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Листа датотека се променила у приказ сличица.</translation>
 <translation id="8601932370724196034">Crostini датотека слике</translation>
 <translation id="8609695766746872526">исландски</translation>
+<translation id="8630384863424041081">Унесите PIN СИМ картице или подразумевани PIN који вам је дао мобилни оператер. Подршку потражите од мобилног оператера.</translation>
 <translation id="863903787380594467">Нетачан PIN. Преосталих покушаја: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Офлајн фајлови су морали да се уклоне</translation>

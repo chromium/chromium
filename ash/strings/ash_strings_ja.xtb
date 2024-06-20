@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">マイクへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、マイクへのアクセスを許可します</translation>
 <translation id="4382340674111381977">前のページに戻る</translation>
 <translation id="4389184120735010762">ドッキング拡大鏡のキーボード ショートカットを押しました。この機能をオンにしますか？</translation>
+<translation id="4394466652057229831">右クリックして要約</translation>
 <translation id="439598569299422042">一時停止中、<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">スクリーンキャストを保存できません</translation>
 <translation id="4405151984121254935">接続されている周辺機器のタイプはサポートされていません</translation>
@@ -1940,6 +1941,7 @@
 <translation id="8113423164597455979">オン: 全アプリ</translation>
 <translation id="8113515504791187892">選択して読み上げボタン</translation>
 <translation id="8120151603115102514">スマートフォンにロック画面が設定されていません。パスワードを入力してChromebookのロックを解除してください</translation>
+<translation id="8120249852906205273">再起動</translation>
 <translation id="8127095419621171197">電卓アプリを開きます</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
 <translation id="8130528849632411619">ドキュメントの先頭に移動する</translation>
@@ -2034,6 +2036,7 @@
 <translation id="85123341071060231">Chromebook の Bluetooth がオフになっています。ロックを解除するにはパスワードをご入力ください</translation>
 <translation id="8513108775083588393">自動回転</translation>
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
+<translation id="851660987304951246">読み取りサポート機能を使って、コンテンツをすばやく要約したり、質問したりできます</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{マイク入力は <ph name="APP_NAME" /> によって制御されています}other{マイク入力は # 個のアプリによって制御されています}}</translation>
 <translation id="8535393432370007982">色による並べ替えを元に戻す</translation>

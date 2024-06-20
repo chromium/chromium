@@ -532,6 +532,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="371398631992790800">Versteek boekmerke</translation>
 <translation id="37207012422556617">Soektogneigings</translation>
 <translation id="3725081662140949903">Maak die <ph name="APP" />-app oop om jou wagwoord te verander om ander te keer om jou wagwoord te gebruik</translation>
+<translation id="372676576864368480">Vul die kaartnommer wat op <ph name="LAST_DIGITS" /> eindig outomaties in</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> geskep</translation>
 <translation id="374357899112510277">Versteek aflaaie</translation>
 <translation id="3745190878148784130">Versteek zoomteks</translation>
@@ -1097,6 +1098,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="6476800141292307438">Vertaal tans die bladsy in <ph name="LANGUAGE" />. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="648164694371393720">Stawingfout</translation>
 <translation id="6494931198667773526">Eindig</translation>
+<translation id="6500795388871406244">Gebruik voorgestelde wagwoord:</translation>
 <translation id="650279896687777322">Kom meer te wete …</translation>
 <translation id="6505334220040167806">Vou oortjiegroep in.</translation>
 <translation id="6507973708545996744">Meld aan om jou leeslys op al jou toestelle te kry.</translation>
@@ -1310,6 +1312,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7583004045319035904">Gebruik <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> om jou Incognito-oortjies te ontsluit.</translation>
 <translation id="7598439272585186139">Kry meer sekuriteit</translation>
 <translation id="7600965453749440009">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
+<translation id="7603308509262646847">Vul die kaarthouer <ph name="NAME" /> outomaties in</translation>
 <translation id="7603852183842204213">Opspringers geblokkeer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Oortjiegroepe</translation>
 <translation id="7607521702806708809">Vee wagwoord uit</translation>
@@ -1342,6 +1345,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7749790401023484470">Jy het nie enige teks geselekteer nie.</translation>
 <translation id="7752405526771734448">Visuele soektog met Lens</translation>
 <translation id="7756478488453921771">Kieslys → Instellings → Betaalmetodes</translation>
+<translation id="775755486779745798">Vul die vervalmaand <ph name="MONTH" /> outomaties in</translation>
 <translation id="7760127703945531263">Incognito-slot</translation>
 <translation id="7765158879357617694">Skuif</translation>
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
@@ -1518,6 +1522,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8556590991644167667">{count,plural, =1{Jy het {count} waarskuwing toegemaak}other{Jy het {count} waarskuwings toegemaak}}</translation>
 <translation id="8560253818350321773">Wys gereeld gebruikte items eerste.</translation>
 <translation id="8569721750632860947">Watter URL wil jy by jou leeslys voeg?</translation>
+<translation id="8577056989960190117">Vul die vervaljaar <ph name="YEAR" /> outomaties in</translation>
 <translation id="8588404856427128947">Af</translation>
 <translation id="8591976964826315682">Blokkeer derdepartywebkoekies in incognito</translation>
 <translation id="8593565399399144771">Jy kan ’n nuwe oortjie hier oopmaak.</translation>

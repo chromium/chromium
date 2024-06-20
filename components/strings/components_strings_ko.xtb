@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">지금 숨기기</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" />에 접속하려 했으나 서버가 안전성이 낮은 키가 포함된 인증서를 전달했습니다. 공격자가 비공개 키를 손상시켰을 수 있으며 서버를 가장한 공격자와 통신 중일 수 있습니다.</translation>
 <translation id="1212527389003717329">다운로드가 시작되었습니다. 확인하려면 |<ph name="ACCELERATOR" />| 키를 길게 누르세요.</translation>
+<translation id="1214970845432250240">가격대</translation>
 <translation id="1219129156119358924">시스템 보안</translation>
 <translation id="1222060260947439312">오른쪽 트레이</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1183,6 +1184,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />자리 인증 코드 입력</translation>
 <translation id="3272643614306383237">1MB 미만입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
+<translation id="327346289570683313">가격대</translation>
 <translation id="3273738040255912340">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chromium 외부에서도 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}other{관리자 정책에 따라 이 파일을 <ph name="DESTINATION_NAME" />에서 열지 않는 것이 좋습니다.}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> 조직에서 다음 웹사이트로 설정 또는 정책과 같은 정보를 전송했습니다.</translation>
@@ -4273,6 +4275,7 @@
 <translation id="920643408853370361">여행자 보험</translation>
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
 <translation id="9210825002219699214">항공 여행</translation>
+<translation id="9211461151375991073">@을 입력하여 <ph name="FEATURED_SEARCH_LIST" /> 검색</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>
 <translation id="9215416866750762878">애플리케이션으로 인해 Chrome이 안전하게 이 사이트에 접속할 수 없음</translation>
 <translation id="92178312226016010">추적 중인 제품입니다.</translation>

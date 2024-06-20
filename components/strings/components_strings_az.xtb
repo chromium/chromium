@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">Hələlik gizlədin</translation>
 <translation id="121201262018556460">Siz <ph name="DOMAIN" /> üzərinə daxil olmağa çalışırsız, lakin server zəif açardan ibarət sertifikat təqdim edir.  Hücumçunun şəxsi açarı qırıq ola bilər və server gözlədiyiniz server olmaya bilər. (bir hücumçu ilə əlaqə yaratmış ola bilərsiniz)</translation>
 <translation id="1212527389003717329">Endirmə başladı. Ona baxmaq üçün basıb saxlayın |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Qiymət aralığı</translation>
 <translation id="1219129156119358924">Sistem Təhlükəsizliyi</translation>
 <translation id="1222060260947439312">Sağ Qab</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -1187,6 +1188,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> rəqəmli doğrulama kodunu daxil edin</translation>
 <translation id="3272643614306383237">1 MB-dən az. Növbəti dəfə daxil olarkən bəzi saytlar yavaş yüklənə bilər.</translation>
+<translation id="327346289570683313">Qiymət aralığı</translation>
 <translation id="3273738040255912340">Administrator profil və brauzerinizə uzaqdan dəyişikliklər edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. Bu cihazdakı fəaliyyət Chromium-dan kənarda da idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator siyasəti bu faylı burada açmağı tövsiyə etmir: <ph name="DESTINATION_NAME" />}other{Administrator siyasəti bu faylları burada açmağı tövsiyə etmir: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Təşkilatınız <ph name="ENROLLMENT_DOMAIN" /> aşağıdakı veb saytlara ayarlar və ya siyasətlər kimi bəzi məlumatlar göndərib.</translation>

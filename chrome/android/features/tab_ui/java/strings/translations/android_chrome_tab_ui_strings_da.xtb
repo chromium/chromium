@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
+<translation id="4338724047016295066">Inaktive faner lukkes automatisk. Du kan altid finde dem under Historik.</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Ophæv gruppering</translation>
 <translation id="4648718555153979859">Dine faner er grupperet sammen her</translation>
 <translation id="4686942373615810936">Oprettet lige nu</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Luk efter 1 dag}one{Luk efter <ph name="DAY_COUNT_MANY" /> dag}other{Luk efter <ph name="DAY_COUNT_MANY" /> dage}}</translation>
 <translation id="4777866634702576038">Vil du slette fanegruppen?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}one{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>
 <translation id="4850886885716139402">Vis</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Her kan du se dine fanegrupper</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ophæv grupperingen af <ph name="TABS_COUNT_ONE" /> valgt fane}one{Ophæv grupperingen af <ph name="TABS_COUNT_MANY" /> valgt fane}other{Ophæv grupperingen af <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Efter 1 dag}one{Efter <ph name="DAY_COUNT_MANY" /> dag}other{Efter <ph name="DAY_COUNT_MANY" /> dage}}</translation>
 <translation id="6549021453810473782">Se butiksinfo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Flyt fane til venstre</translation>

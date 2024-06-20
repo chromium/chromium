@@ -30,7 +30,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1407223320754252908">Google Vertaal is in Chrome ingebou sodat jy kan vertaal wanneer jy dit nodig het</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word.}=1{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou Incognito-venster sal nie weer oopgemaak word nie.}other{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou # Incognito-vensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
-<translation id="1438479496118074429">Die uitbreiding \"<ph name="EXTENSION_NAME" />\" wil hê dat jy by Chrome moet aanmeld</translation>
 <translation id="146866447420868597">Meld by Chrome aan?</translation>
 <translation id="1492280395845991349">Herbegin om Chrome-opdatering te voltooi</translation>
 <translation id="1497802159252041924">Installeerfout: <ph name="INSTALL_ERROR" /></translation>
@@ -174,6 +173,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3261565993776444564">Probeer ’n nuwe kleur om jou blaaier te pasmaak</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
+<translation id="3292333338048274092">Jy sal dan Chrome moet herbegin.</translation>
 <translation id="3360895254066713204">Chrome-helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sal nou herbegin}=1{Chrome sal oor 1 sekonde herbegin}other{Chrome sal oor # sekondes herbegin}}</translation>
 <translation id="3396977131400919238">'n Bedryfstelselfout het met installering voorgekom. Laai Google Chrome asseblief weer af.</translation>
@@ -218,6 +218,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4035053306113201399">Chrome-bedryfstelsel moet herbegin word om die opdatering toe te pas.</translation>
 <translation id="4050175100176540509">Belangrike sekuriteitverbeterings en nuwe kenmerke is in die jongste weergawe beskikbaar.</translation>
 <translation id="4053720452172726777">Pasmaak en beheer Google Chrome</translation>
+<translation id="4084404300720192944">Om jou venster te deel, moet jy skermopname vir Chrome in Stelselvoorkeure toelaat.</translation>
 <translation id="4106587138345390261">Chrome verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="4110895483821904099">Stel jou nuwe Chrome-profiel op</translation>
 <translation id="4111566860456076004">Chrome kan nie verifieer waar hierdie uitbreiding vandaan kom nie, en dit kan dalk onveilig wees. Verwyder dit uit Chrome sodat dit nie meer jou data, insluitend persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
@@ -248,6 +249,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4384570495110188418">Chrome kan nie jou wagwoorde nagaan nie, want jy is nie aangemeld nie</translation>
 <translation id="4389991535395284064">Chrome sal jou waarsku voordat ’n werf met ’n onveilige verbinding gelaai word wanneer jy in Incognitomodus blaai</translation>
 <translation id="4427306783828095590">Verbeterde beskerming doen meer om uitvissing en wanware te blokkeer</translation>
+<translation id="4434353761996769206">Installeerderfout: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – Netwerkaanmelding – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">'n Ander handeling in Google Chrome vind tans plaas. Probeer asseblief later weer.</translation>
 <translation id="4459234553906210702">Advertensiemeting stel werwe wat jy besoek in staat om inligting van Chrome af te versoek wat die werf help om die werkverrigting van hul advertensies te meet. Advertensiemeting beperk oorkruiswerfnasporing deur so min inligting moontlik tussen werwe oor te dra.</translation>
@@ -358,6 +360,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Installering het misluk as gevolg van ’n interne opdateringbedienerfout.</translation>
 <translation id="6200139057479872438">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> verwyder</translation>
+<translation id="621585339844629864">Om jou skerm te deel, moet jy skermopname vir Chrome in Stelselvoorkeure toelaat.</translation>
 <translation id="6235018212288296708">Inkomende reël vir Google Chrome om mDNS-verkeer toe te laat.</translation>
 <translation id="624230925347970731">Chrome gaan binnekort toemaak</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
@@ -473,7 +476,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7802622118583152311">Chrome bring vir jou die jongste tegnologie vir ’n beter blaai-ervaring</translation>
 <translation id="7808348361785373670">Verwyder uit Chrome …</translation>
 <translation id="7825851276765848807">Installering het weens 'n ongespesifiseerde fout misluk. Laai Google Chrome asseblief weer af.</translation>
-<translation id="7828063580843052643">Meld aan by Chrome om hierdie uitbreiding as <ph name="USER_EMAIL_ADDRESS" />te gebruik.\nJy sal ook jou wagwoorde en meer van jou Google-rekening kan gebruik en stoor.</translation>
 <translation id="7836610565365456468">Omskep jou blaaier met lewendige temas wat geïnspireer deur kunstenaars, die natuur en meer</translation>
 <translation id="7845233973568007926">Dankie dat jy geïnstalleer het. Jy moet jou rekenaar herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="7852254990718225089">AI in Chrome help om die web vinniger, veiliger en meer toeganklik te maak</translation>

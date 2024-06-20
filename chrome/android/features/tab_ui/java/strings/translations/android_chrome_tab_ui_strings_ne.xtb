@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
 <translation id="427987768447457592">नयाँ ट्याब समूह</translation>
+<translation id="4338724047016295066">निष्क्रिय ट्याबहरू स्वतः बन्द हुने छन्। तपाईं "हिस्ट्री" मा गई जुनसुकै बेला ती ट्याब भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="4371591986692297148">निष्क्रिय</translation>
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>
 <translation id="4648718555153979859">तपाईंका ट्याबहरू यहाँ एकै ठाउँमा समूहबद्ध गरिएको छन्</translation>
 <translation id="4686942373615810936">भर्खरै बनाइएको</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{१ दिनपछि बन्द गर्नुहोस्}other{<ph name="DAY_COUNT_MANY" /> दिनपछि बन्द गर्नुहोस्}}</translation>
 <translation id="4777866634702576038">ट्याब समूह मेटाउने हो?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा)}}</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">तपाईं आफ्ना ट्याब समूहहरू यहाँ भेट्टाउनु हुने छ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब समूहबाट हटाउनुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबाट हटाउनुहोस्}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> वटा ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{१ दिनपछि}other{<ph name="DAY_COUNT_MANY" /> दिनपछि}}</translation>
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ट्याब सारेर बायाँतिर लैजानुहोस्</translation>

@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium on aegunud. Kui <ph name="BEGIN_LINK" />App Store'is<ph name="END_LINK" /> pole värskendust saadaval, on võimalik, et teie seade ei toeta enam Chromiumi uuemaid versioone.</translation>
 <translation id="1423007117030725713">Alustage otsingut uuel Chromiumi vahelehel.</translation>
 <translation id="1431818719585918472">Laske Chromiumil oma inkognito vahelehed lukustada.</translation>
+<translation id="146407871188825689">Kasutage iPadis vaikimisi Chromiumi</translation>
 <translation id="1472013873724362412">Teie konto ei tööta Chromiumis. Võtke ühendust domeeni administraatoriga või kasutage sisselogimiseks tavalist Google'i kontot.</translation>
 <translation id="1503199973012840174">Teie Chromium on aegunud. Turvalisuse tagamiseks värskendage seda.</translation>
 <translation id="1507010443238049608">Aidake täiustada Chromiumi funktsioone ja toimivust</translation>
@@ -122,6 +123,7 @@ Teie andmed on krüpteeritud teie parooliga. Chromiumi andmete kasutamiseks ja s
 
 Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Avab Chromiumis makseviisi seadete lehe.</translation>
+<translation id="458786853569524949">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke meilides, dokumentides ja muudes rakendustes.</translation>
 <translation id="459080529287102949">Otsi Chromiumis visuaale</translation>
 <translation id="4633738821577273991">Hankige ka sellele Chromiumi profiilile täiustatud ohutu sirvimise funktsioon</translation>
 <translation id="4638625642619341392">Laadige Chromium alla siit.</translation>
@@ -289,6 +291,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
 <translation id="9022552996538154597">Logige Chromiumi sisse</translation>
 <translation id="9050790730841755540">Saate Chromiumi kasutada iga kord, kui puudutate linke muudes rakendustes.</translation>
+<translation id="9057082013386654559">Kasutage iPadi puhul vaikimisi Chromiumi</translation>
 <translation id="9059693977935746710">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="9110075932708282655">Kasutage Chromiumi vaikimisi</translation>

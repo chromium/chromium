@@ -30,7 +30,6 @@
 <translation id="1407223320754252908">ባስፈለገዎት ጊዜ መተርጎም እንዲችሉ Chrome አብሮገነብ Google ትርጉም አለው</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩ የቅርብ ጊዜውን ስሪት መጠቀም ይችላሉ። ከዚያም የአሁን ትሮችዎ ዳግም ይከፈታሉ።}=1{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩት የቅርብ ጊዜውን ስሪት መጠቀም ይችላሉ። ከዚያም የአሁን ትሮችዎ ዳግም ይከፈታሉ። የእርስዎ ማንነትን የማያሳውቅ መስኮት እንደገና አይከፈትም።}one{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩት የቅርብ ጊዜውን ስሪት መጠቀም ይችላሉ። ከዚያ የአሁን ትሮችዎ ዳግም ይከፈታሉ። የእርስዎ # ማንነትን የማያሳውቅ መስኮት እንደገና አይከፈትም።}other{Chrome ዝማኔን ጨርሷል። ልክ ዳግም እንዳስጀመሩት የቅርቡን ስሪት መጠቀም ይችላሉ። ከዚያ የአሁን ትሮችዎ ዳግም ይከፈታሉ። የእርስዎ # ማንነትን የማያሳውቁ መስኮቶች እንደገና አይከፈቱም።}}</translation>
 <translation id="1434626383986940139">የChrome Canary መተግበሪያዎች</translation>
-<translation id="1438479496118074429">ቅጥያው \«<ph name="EXTENSION_NAME" />\» ወደ Chrome እንዲገቡ ይፈልጋል</translation>
 <translation id="146866447420868597">ወደ CHROME ይግቡ?</translation>
 <translation id="1492280395845991349">የChrome ዝማኔን ለመጨረስ ዳግም ያስጀምሩ</translation>
 <translation id="1497802159252041924">የጭነት ስህተት፦ <ph name="INSTALL_ERROR" /></translation>
@@ -58,6 +57,7 @@
 <translation id="1734234790201236882">Chrome ይህን የይለፍ ቃል በእርስዎ የGoogle መለያ ውስጥ ያስቀምጠዋል። ማስታወስ አይኖርብዎትም።</translation>
 <translation id="1786003790898721085">በእርስዎ <ph name="TARGET_DEVICE_NAME" /> ላይ በመለያ ወደ Chrome መግባትዎን ያረጋግጡ እና እንደገና ለመላክ ይሞክሩ።</translation>
 <translation id="1786044937610313874">አቋራጮች በChrome ውስጥ ተከፍተዋል</translation>
+<translation id="178701303897325119">ይህ ቅጥያ ከአሁን በኋላ አይደገፍም። Chrome እንዲያስወግዱት ይመክራል።</translation>
 <translation id="1812689907177901597">ይህንን በማጥፋት፣ እንደ Gmail ወደ መሰሉ የGoogle ጣቢያዎች ወደ Chrome በመለያ ሳይገቡ መግባት ይችላሉ</translation>
 <translation id="1860536484129686729">Chrome ለዚህ ጣቢያ የእርስዎን ካሜራ ለመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="1873233029667955273">Google Chrome ነባሪ አሳሽዎ አይደለም</translation>
@@ -249,6 +249,8 @@
 <translation id="4384570495110188418">እርስዎ በመለያ ስላልገቡ ስለሆኑ Chrome የይለፍ ቃላትዎን መፈተሽ አይችልም</translation>
 <translation id="4389991535395284064">ማንነትን በማያሳውቅ ሁነታ ሲያስሱ፣ Chrome ደህንነቱ ያልተጠበቀ ግንኙነት በመጠቀም ጣቢያ ከመጫንዎ በፊት ያስጠነቅቀዎታል</translation>
 <translation id="4427306783828095590">የተሻሻለ ጥበቃ ማስገር እና ተንኮል-አዘል ዌር ለማገድ የበለጠ ይሠራል</translation>
+<translation id="4434353761996769206">የጫኚ ስህተት፦ <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">እንደ <ph name="USER_EMAIL" /> ወደ Chrome ግባ</translation>
 <translation id="4450664632294415862">Chrome - በአውታረ መረብ ወደ መለያ መግባት - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">በGoogle Chrome ላይ ሌላ ሥርዓተ ክወና በሂደት ላይ ነው። እባክዎ በኋላ ላይ እንደገና ይሞክሩ።</translation>
 <translation id="4459234553906210702">የማስታወቂያ ልኬት እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም የሚለካው ጣቢያ የሚያግዘውን መረጃ ከChrome እንዲጠይቁ ያስችላቸዋል። የማስታወቂያ ልኬት በተቻለ መጠን ትንሽ መረጃን በጣቢያዎች መካከል በማስተላለፍ የጣቢያ ተሻጋሪ ክትትልን ይገድባል።</translation>
@@ -475,7 +477,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7802622118583152311">Chrome ለተሻለ አሰሳ የቅርብ ጊዜውን ቴክኖሎጂ ያመጣልዎታል</translation>
 <translation id="7808348361785373670">ከChrome አስወግድ...</translation>
 <translation id="7825851276765848807">ተለይቶ ባልታወቀ ስህተት ምክንያት ጭነት ከሽፏል። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
-<translation id="7828063580843052643">ይህን ቅጥያ እንደ <ph name="USER_EMAIL_ADDRESS" /> ለመጠቀም ወደ Chrome ይግቡ።\nእንዲሁም የይለፍ ቃላትዎን እና ሌሎችንም ከGoogle መለያዎ መጠቀም እና ማስቀመጥ ይችላሉ።</translation>
 <translation id="7836610565365456468">በአርቲስቶች፣ በተፈጥሮ እና በሌሎችም በተነሳሱ ደማቅ ገጽታዎች አሳሽዎን ይቀይሩት</translation>
 <translation id="7845233973568007926">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ኮምፒውተርዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="7852254990718225089">በChrome ውስጥ ያለው AI ድሩን ፈጣን፣ ደህንነቱ የተጠበቀ እና የበለጠ ተደራሽ እንዲሆን ለማድረግ ይረዳል</translation>

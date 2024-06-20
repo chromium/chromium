@@ -117,6 +117,8 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="1513814250881909472">Activa la sincronización para recibir las pestañas de tus otros dispositivos</translation>
 <translation id="1513858653616922153">Eliminar contraseña</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
+<translation id="1544084554881119930">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
+Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Para gestionar tu cuenta de Google, toca el botón Gestionar cuenta</translation>
 <translation id="154513667535157406">Me gusta indica que este resumen te ha gustado</translation>
 <translation id="1549000191223877751">Mover a otra ventana</translation>
@@ -458,6 +460,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3264259168916048410">Tu ordenador quiere usar este dispositivo para iniciar sesión en un sitio.</translation>
 <translation id="3265093782546847662">Todas las páginas de <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Cargar imagen</translation>
+<translation id="327204079441056603">Hemos cambiado la forma de guardar contraseñas en este dispositivo</translation>
 <translation id="3280562213547448728">Búsqueda por voz</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, actividad de extensiones e información del sistema para ayudar a detectar nuevas amenazas.</translation>
@@ -1214,6 +1217,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6918398787259831832">Si el problema persiste, <ph name="BEGIN_LINK" />obtén más información<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Se eliminarán todos los códigos de seguridad guardados en tu dispositivo y en tu cuenta de Google</translation>
 <translation id="6937524809504266803">Personalización y vinculación</translation>
+<translation id="6937876069006524083">Nombre (opcional)</translation>
 <translation id="6942665639005891494">Cambia la ubicación predeterminada de las descargas en cualquier momento con la opción del menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando tus ajustes de sincronización. Para terminar de activar la sincronización, toca el botón Confirmar, que se encuentra casi al final de la pantalla. Desplazarse hacia arriba</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
@@ -1277,6 +1281,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> pestañas como nuevas pestañas en segundo plano.</translation>
 <translation id="7217781228893594884">Las pestañas de incógnito se bloquearán cuando salgas de Chrome</translation>
 <translation id="7221869452894271364">Cargar página de nuevo</translation>
+<translation id="7224097611345298931">Se han combinado todas las contraseñas guardadas solo en este dispositivo para Chrome y <ph name="CHROME_CHANNEL" />. Puedes autocompletar todas tus contraseñas guardadas en ambas aplicaciones.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
 <translation id="72415438529550637">La sugerencia de contraseña está cerrada.</translation>
 <translation id="7252076891734325316">Acerca tu teléfono al ordenador</translation>

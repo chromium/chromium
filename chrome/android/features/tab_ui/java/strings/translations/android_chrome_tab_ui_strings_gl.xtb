@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Despregar o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestana.}other{Despregar o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="427987768447457592">Novo grupo de pestanas</translation>
+<translation id="4338724047016295066">As pestanas inactivas pecharanse automaticamente. Sempre podes atopalas no historial.</translation>
 <translation id="4371591986692297148">Inactivo</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4648718555153979859">As túas pestanas agrúpanse aquí</translation>
 <translation id="4686942373615810936">Creouse agora mesmo</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Pechar despois de 1 día}other{Pechar despois de <ph name="DAY_COUNT_MANY" /> días}}</translation>
 <translation id="4777866634702576038">Queres eliminar o grupo de pestanas?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensión)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensións)}}</translation>
 <translation id="4850886885716139402">Vista</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Atoparás os teus grupos de pestanas aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Despois de 1 día}other{Despois de <ph name="DAY_COUNT_MANY" /> días}}</translation>
 <translation id="6549021453810473782">Ver información da tenda</translation>
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" /> máis</translation>
 <translation id="6562820390860419811">Mover pestana cara á esquerda</translation>

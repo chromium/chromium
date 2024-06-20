@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">U Chrome je ugrađen Google prevoditelj, stoga možete prevoditi kad trebate</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti.}=1{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Anonimni se prozor neće ponovno otvoriti.}one{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Chrome je ažuriran. Možete upotrijebiti najnoviju verziju čim ponovno pokrenete preglednik. Nakon toga vaše će se trenutačne kartice ponovno otvoriti. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1434626383986940139">Aplikacije kanala Chrome Canary</translation>
-<translation id="1438479496118074429">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite na Chrome</translation>
 <translation id="146866447420868597">Želite li se prijaviti u Chrome?</translation>
 <translation id="1492280395845991349">Ponovno pokrenite da biste dovršili ažuriranje Chromea</translation>
 <translation id="1497802159252041924">Instalacijska pogreška: <ph name="INSTALL_ERROR" /></translation>
@@ -171,6 +170,7 @@
 <translation id="3261565993776444564">Isprobajte novu boju da biste prilagodili preglednik</translation>
 <translation id="3282568296779691940">Prijavite se u Chrome</translation>
 <translation id="3286538390144397061">Ponovo pokreni sad</translation>
+<translation id="3292333338048274092">Tada ćete morati ponovo pokrenuti Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za jednu sekundu}one{Chrome će se ponovo pokrenuti za # s}few{Chrome će se ponovo pokrenuti za # s}other{Chrome će se ponovo pokrenuti za # s}}</translation>
 <translation id="3396977131400919238">Došlo je do pogreške operacijskog sustava tijekom instalacije. Ponovno preuzmite program Google Chrome.</translation>
@@ -215,6 +215,7 @@
 <translation id="4035053306113201399">Potrebno je ponovo pokrenuti Chrome OS kako bi se ažuriranje primijenilo.</translation>
 <translation id="4050175100176540509">Najnovija verzija sadrži važna sigurnosna poboljšanja i nove značajke.</translation>
 <translation id="4053720452172726777">Prilagodite Google Chrome i upravljajte njime</translation>
+<translation id="4084404300720192944">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
 <translation id="4106587138345390261">Chrome istražuje nove značajke koje web-lokacijama omogućuju pružanje istog doživljaja pregledavanja uz upotrebu manje količine vaših informacija</translation>
 <translation id="4110895483821904099">Postavite novi profil u Chromeu</translation>
 <translation id="4111566860456076004">Chrome ne može provjeriti odakle dolazi ovo proširenje, pa bi moglo biti nesigurno. Uklonite ga iz Chromea kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući osobne podatke.</translation>
@@ -353,6 +354,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Instalacija nije uspjela zbog interne pogreške poslužitelja ažuriranja.</translation>
 <translation id="6200139057479872438">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
 <translation id="6235018212288296708">Ulazno pravilo kako bi Google Chrome dopustio mDNS promet.</translation>
 <translation id="624230925347970731">Chrome će se uskoro zatvoriti</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
@@ -468,7 +470,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7802622118583152311">Chrome vam donosi najnoviju tehnologiju koja omogućuje bolje pregledavanje</translation>
 <translation id="7808348361785373670">Ukloni iz Chromea...</translation>
 <translation id="7825851276765848807">Instalacija nije uspjela zbog neodređene pogreške. Ponovo preuzmite Google Chrome.</translation>
-<translation id="7828063580843052643">Da biste koristili ovo proširenje kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se na Chrome.\nMoći ćete i koristiti te spremati svoje zaporke i druge podatke sa svojeg Google računa.</translation>
 <translation id="7836610565365456468">Preoblikujte svoj preglednik živopisnim temama nadahnutim umjetnicima, prirodom i drugim sadržajima</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
 <translation id="7852254990718225089">AI u Chromeu čini web bržim, sigurnijim i pristupačnijim</translation>

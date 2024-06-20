@@ -30,7 +30,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1407223320754252908">Chrome ima vgrajen Google Prevajalnik, tako da lahko prevajate, ko to potrebujete</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli.}=1{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. Anonimno okno se ne bo znova odprlo.}one{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimno okno se ne bo znova odprlo.}two{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimni okni se ne bosta znova odprli.}few{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimna okna se ne bodo znova odprla.}other{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1434626383986940139">Delovne različice aplikacij za Chrome</translation>
-<translation id="1438479496118074429">Razširitev »<ph name="EXTENSION_NAME" />« želi, da se prijavite v Chrome</translation>
 <translation id="146866447420868597">Se želite prijaviti v Chrome?</translation>
 <translation id="1492280395845991349">Znova zaženite, če želite dokončati posodobitev Chroma</translation>
 <translation id="1497802159252041924">Napaka pri namestitvi: <ph name="INSTALL_ERROR" /></translation>
@@ -59,6 +58,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1734234790201236882">Chrome bo shranil to geslo v Google Računu. Ni si vam ga treba zapomniti.</translation>
 <translation id="1786003790898721085">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chrome, nato poskusite znova poslati.</translation>
 <translation id="1786044937610313874">Bližnjice, odprte v Chromu</translation>
+<translation id="178701303897325119">Ta razširitev ni več podprta. Chrome priporoča, da jo odstranite.</translation>
 <translation id="1812689907177901597">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chrome</translation>
 <translation id="1860536484129686729">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
 <translation id="1873233029667955273">Google Chrome ni privzeti brskalnik</translation>
@@ -251,6 +251,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4389991535395284064">Pri brskanju v anonimnem načinu vas bo Chrome opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="4434353761996769206">Napaka namestitvenega programa: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Prijavite se v Chrome kot <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Poteka druga operacija v Google Chromu. Poskusite znova pozneje.</translation>
 <translation id="4459234553906210702">Merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>
@@ -477,7 +478,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7802622118583152311">Chrome ponuja najnovejšo tehnologijo za boljše brskanje</translation>
 <translation id="7808348361785373670">Odstranitev iz Chroma ...</translation>
 <translation id="7825851276765848807">Namestitev ni uspela zaradi nenavedene napake. Znova prenesite Google Chrome.</translation>
-<translation id="7828063580843052643">Če želite to razširitev uporabljati kot <ph name="USER_EMAIL_ADDRESS" />, se prijavite v Chrome.\nPrav tako boste lahko uporabljali in shranjevali gesla ter drugo v računu Google.</translation>
 <translation id="7836610565365456468">Preoblikujte brskalnik z živahnimi temami po navdihu umetnikov, narave in drugega</translation>
 <translation id="7845233973568007926">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati računalnik.</translation>
 <translation id="7852254990718225089">Umetna inteligenca v Chromu omogoča hitrejši, varnejši in dostopnejši splet</translation>

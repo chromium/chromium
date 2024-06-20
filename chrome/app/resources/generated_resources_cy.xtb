@@ -5939,6 +5939,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5372529912055771682">Nid yw'r dull cofrestru a ddarparir yn cael ei gefnogi gan y fersiwn hon o'r system weithredu.  Gwnewch yn siŵr eich bod yn rhedeg y fersiwn fwyaf newydd a rhowch gynnig arall arni.</translation>
 <translation id="5372579129492968947">Dadbinio'r estyniad</translation>
 <translation id="5372632722660566343">Parhau heb gyfrif</translation>
+<translation id="5372990315769030589">Cadw "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">I ddefnyddio Rhannu Gerllaw gyda'r cysylltiadau hyn, ychwanegwch y cyfeiriad e-bost sy'n gysylltiedig â'u Cyfrif Google at eich cysylltiadau.</translation>
 <translation id="5375577102295339548">Gall gwefannau helpu i gadarnhau nad bot ydych chi</translation>
 <translation id="5376094717770783089">Yn gwneud cais am fynediad</translation>
@@ -9040,6 +9041,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7708143783728142771">Mae cwcis yn caniatáu ar gyfer yr un lefel o addasu dewisiadau ar y we. Pan fyddwch yn ymweld â gwefan, gall y wefan gadw cwci yn storfa porwr eich dyfais i gofio'ch dewisiadau gwefan, fel yr iaith rydych yn ei siarad neu eitemau rydych am eu cadw mewn basged siopa. Yn ddiweddarach, os byddwch yn ymweld â'r wefan eto gan ddefnyddio'r un porwr, gall y wefan honno ddarllen y cwci a osododd a gallwch ddechrau lle gwnaethoch adael. Cyfeirir at y mathau hyn o gwcis yn aml fel cwcis parti cyntaf, oherwydd eu bod yn cael eu gosod gan y wefan rydych yn ymweld â hi.</translation>
 <translation id="770831926727930011">Mae eich data lleol yn cael eu gwarchod gan eich hen gyfrinair. Rhowch eich hen gyfrinair i adfer data lleol.</translation>
 <translation id="7709152031285164251">Wedi methu - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Amddiffynnwch eich holl godau pas gyda PIN adfer</translation>
 <translation id="7710568461918838723">&amp;Castio…</translation>
 <translation id="7711900714716399411">Defnyddiwch gebl USB i gysylltu eich ffôn â'ch cyfrifiadur. Os yw'ch ffôn eisoes wedi'i gysylltu, dadblygiwch y ffôn a phlygiwch ef yn ôl i mewn.</translation>
 <translation id="7711968363685835633">Analluogi trawsnewidiadau personol ac awgrymiadau yn ogystal â geiriadur defnyddiwr</translation>
@@ -9770,6 +9772,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8233028084277069927">Agor Nawr</translation>
 <translation id="8234795456569844941">Helpwch ein peirianwyr i ddatrys y broblem hon. Dywedwch wrthym beth ddigwyddodd yn syth cyn i chi gael y neges gwall proffil:</translation>
 <translation id="8235418492073272647">Tudalen wedi'i rhannu o <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Mae'r tab hwn yn rhannu adnoddau â thabiau eraill, a allai ymyrryd â dadfygio.</translation>
 <translation id="8236911020904880539">gadael</translation>
 <translation id="8236917170563564587">Rhannu'r tab hwn yn lle</translation>
 <translation id="8237647586961940482">Pinc tywyll a choch</translation>
@@ -9974,6 +9977,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8376532149031784008">Wrthi'n ail-lwytho <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Gall estyniadau a osodwyd gan eich gweinyddwr ddarllen a newid y wefan hon o hyd</translation>
 <translation id="8376752431516546391">Panel ochr Google Search</translation>
+<translation id="8376812682111060348">Rhybudd mater perfformiad</translation>
 <translation id="8377625247046155446">Bydd y cod pas hwn yn cael ei gadw ar y ddyfais hon yn unig. Bydd yn aros ar y ddyfais hon ar ôl i chi gau pob ffenestr Anhysbys.</translation>
 <translation id="8378714024927312812">Rheolir gan eich sefydliad</translation>
 <translation id="8379988659465232385">Ni all yr enw fod yn wag</translation>
@@ -10885,7 +10889,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9031811691986152304">rhowch gynnig arall arni</translation>
 <translation id="9032004780329249150">Defnyddiwch eich cyfrineiriau ar eich dyfeisiau iOS</translation>
 <translation id="9032097289595078011">Analluogi Paru Cyflym</translation>
-<translation id="9032513103438497286">Rhwystro apiau sydd wedi'u gosod ar yr <ph name="DEVICE_TYPE" /> yma. I gyfyngu ar lawrlwytho apiau neu gynnwys, ewch i'r Gosodiadau Google Play.</translation>
+<translation id="9032513103438497286">Rhwystro apiau sydd wedi'u gosod ar y <ph name="DEVICE_TYPE" /> yma. I gyfyngu ar lawrlwytho apiau neu gynnwys, ewch i'r Gosodiadau Google Play.</translation>
 <translation id="9033765790910064284">Parhau beth bynnag</translation>
 <translation id="9033857511263905942">&amp;Gludo</translation>
 <translation id="9034408118624208974">Newydd i Chromebook? Trowch cysoni ymlaen fel y bydd eich dewisiadau yn cael eu cadw wrth gefn.</translation>

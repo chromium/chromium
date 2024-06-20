@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastelowy żółty</translation>
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1059913517121127803">Nie udało się rozpocząć skanowania</translation>
+<translation id="1061864016440983342">Używaj bez lokalizacji</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2082932131694554252">Przypisany klawisz klawiatury</translation>
 <translation id="2085089206770112532">Zmniejsz jasność wyświetlacza</translation>
+<translation id="2086091080968010660">Zmiany oparte na czasie mogą być niedokładne. Włącz dostęp systemu do lokalizacji w ustawieniach.</translation>
 <translation id="2102231663024125441">Edytowanie tekstu</translation>
 <translation id="2105810540595158374">Urządzenie to kontroler do gier.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Przywróć domyślne</translation>
 <translation id="2286454467119466181">Prosty</translation>
 <translation id="2287186687001756809">Brak dostępnych obrazów. Aby dodać zdjęcia, wejdź na <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Bieżący harmonogram jest ustawiony na <ph name="SUNRISE" />–<ph name="SUNSET" />. Aby automatycznie aktualizować godziny zachodu i wschodu słońca, włącz w systemie dostęp do lokalizacji.</translation>
 <translation id="2305172810646967500">czarnym</translation>
 <translation id="2307344026739914387">Użyj bieżącej pary kluczy</translation>
 <translation id="2308243864813041101">Aby kontynuować proces aktualizacji, odłącz kabel USB urządzenia <ph name="DEVICE_NAME" /></translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">jasność klawiatury</translation>
 <translation id="6412715219990689313">Klawiatura wbudowana</translation>
 <translation id="6417265370957905582">Asystent Google</translation>
+<translation id="6419454453018688975">Włącz w systemie dostęp do lokalizacji</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Słaba (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otwórz ustawienia konta</translation>

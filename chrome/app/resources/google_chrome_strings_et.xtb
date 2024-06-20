@@ -28,7 +28,6 @@
 <translation id="1407223320754252908">Google'i tõlge on Chrome'i sisse ehitatud, et saaksite vajaduse korral tõlkida</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti.}=1{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti. Teie inkognito akent ei avata uuesti.}other{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary rakendused</translation>
-<translation id="1438479496118074429">Laiendus \„<ph name="EXTENSION_NAME" />\“ soovib, et logiksite Chrome'i sisse</translation>
 <translation id="146866447420868597">Kas logida Chrome'i sisse?</translation>
 <translation id="1492280395845991349">Chrome'i värskendamise lõpuleviimiseks käivitage uuesti</translation>
 <translation id="1497802159252041924">Installimisviga: <ph name="INSTALL_ERROR" /></translation>
@@ -56,6 +55,7 @@
 <translation id="1734234790201236882">Chrome salvestab selle parooli teie Google'i kontole. Te ei pea seda meeles pidama.</translation>
 <translation id="1786003790898721085">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chrome'i sisse logitud, ja proovige siis uuesti saata.</translation>
 <translation id="1786044937610313874">Otseteed avanevad Chrome'is</translation>
+<translation id="178701303897325119">Seda laiendust enam ei toetata. Chrome soovitab selle eemaldada.</translation>
 <translation id="1812689907177901597">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chrome'i sisse logimata</translation>
 <translation id="1860536484129686729">Chrome vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
 <translation id="1873233029667955273">Google Chrome ei ole vaikebrauser</translation>
@@ -247,6 +247,8 @@
 <translation id="4384570495110188418">Chrome ei saa teie paroole kontrollida, kuna te pole sisse logitud</translation>
 <translation id="4389991535395284064">Kui sirvite inkognito režiimis, hoiatab Chrome teid enne saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
+<translation id="4434353761996769206">Installiprogrammi viga: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Logige Chrome'i sisse kui <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – võrku sisselogimine – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Teine toiming on Google Chrome'is pooleli. Proovige hiljem uuesti.</translation>
 <translation id="4459234553906210702">Reklaamide mõõtmine võimaldab külastatavatel saitidel paluda Chrome'ilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
@@ -471,7 +473,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7802622118583152311">Chrome toob parema sirvimise jaoks teieni uusima tehnoloogia</translation>
 <translation id="7808348361785373670">Chrome'ist eemaldamine ...</translation>
 <translation id="7825851276765848807">Installimine nurjus määramata vea tõttu. Laadige Google Chrome uuesti alla.</translation>
-<translation id="7828063580843052643">Selle laienduse kasutamiseks kontoga <ph name="USER_EMAIL_ADDRESS" /> logige Chrome'i sisse.\nSamuti saate oma Google'i kontole salvestada paroole ja muud ning neid seal kasutada.</translation>
 <translation id="7836610565365456468">Muutke oma brauserit elavate teemadega, mis on inspireeritud kunstnikest, loodusest ja muust</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
 <translation id="7852254990718225089">AI aitab Chrome'is veebi kiiremaks, turvalisemaks ja juurdepääsetavamaks muuta</translation>

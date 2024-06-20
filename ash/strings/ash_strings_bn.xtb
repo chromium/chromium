@@ -899,6 +899,7 @@
 <translation id="4381031910344220229">এটি মাইক্রোফোন অনুমতি সহ <ph name="APP_NAME" /> এবং সমস্ত অ্যাপ এবং ওয়েবসাইটগুলির জন্য মাইক্রোফোন অ্যাক্সেসের অনুমতি দেয়</translation>
 <translation id="4382340674111381977">আগের পৃষ্ঠায় ফিরে যান</translation>
 <translation id="4389184120735010762">ডক করা ম্যাগনিফায়ারের জন্য আপনি কীবোর্ড শর্টকাট টিপেছেন। আপনি কি এটি চালু করতে চান?</translation>
+<translation id="4394466652057229831">সারাংশ তৈরি করতে ডানদিকের বোতামে ক্লিক করুন</translation>
 <translation id="439598569299422042">পজ করা হয়েছে, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">স্ক্রিনকাস্ট সেভ করা যাচ্ছে না</translation>
 <translation id="4405151984121254935">কানেক্ট করা পেরিফেরাল যে ধরনের, তাতে কাজ করে না</translation>
@@ -1934,6 +1935,7 @@
 <translation id="8113423164597455979">সমস্ত অ্যাপে</translation>
 <translation id="8113515504791187892">'বাছুন ও শুনুন' বোতাম</translation>
 <translation id="8120151603115102514">আপনার ফোনে লক স্ক্রিন নেই। Chromebook আনলক করতে, পাসওয়ার্ড লিখুন।</translation>
+<translation id="8120249852906205273">রিস্টার্ট করুন</translation>
 <translation id="8127095419621171197">Calculator অ্যাপ খুলুন</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° সেঃ</translation>
 <translation id="8130528849632411619">ডকুমেন্টের শুরুতে যান</translation>
@@ -2028,6 +2030,7 @@
 <translation id="85123341071060231">আপনার Chromebook-এর ব্লুটুথ বন্ধ আছে। Chromebook আনলক করতে, পাসওয়ার্ড লিখুন।</translation>
 <translation id="8513108775083588393">অটো রোটেট</translation>
 <translation id="851458219935658693">বর্তমান ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>
+<translation id="851660987304951246">দ্রুত কন্টেন্টের সারাংশ তৈরি করতে বা প্রশ্ন করতে 'আমাকে পড়তে সাহায্য করো' ফিচার ব্যবহার করুন</translation>
 <translation id="8517041960877371778">আপনার <ph name="DEVICE_TYPE" /> চালু থাকা অবস্থায় চার্জ নাও হতে পারে।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{MIC ইনপুট <ph name="APP_NAME" /> দ্বারা কন্ট্রোল করা হয়}one{MIC ইনপুট #টি অ্যাপ দ্বারা কন্ট্রোল করা হয়}other{MIC ইনপুট #টি অ্যাপ দ্বারা কন্ট্রোল করা হয়}}</translation>
 <translation id="8535393432370007982">রঙ অনুযায়ী বেছে নেওয়ার সেটিং থেকে বেরিয়ে আগের অবস্থায় ফেরানো হয়েছে</translation>

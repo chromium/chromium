@@ -5940,6 +5940,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5372529912055771682">Ta različica operacijskega sistema ne podpira navedenega načina včlanitve. Poskrbite, da imate nameščeno najnovejšo različico, in poskusite znova.</translation>
 <translation id="5372579129492968947">Odpenjanje razširitve</translation>
 <translation id="5372632722660566343">Nadaljuj brez računa</translation>
+<translation id="5372990315769030589">Želite obdržati razširitev »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="5375318608039113175">Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, vsakemu od njih dodajte e-poštni naslov, povezan z njegovim računom Google.</translation>
 <translation id="5375577102295339548">Spletna mesta vam lahko pomagajo potrditi, da niste bot</translation>
 <translation id="5376094717770783089">Zahteva dostop</translation>
@@ -9042,6 +9043,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7708143783728142771">Piškotki omogočajo enako raven prilagajanja nastavitev v spletu. Ko obiščete spletno mesto, lahko spletno mesto v shrambo brskalnika naprave shrani piškotek, da si zapomni nastavitve spletnega mesta, na primer jezik, ki ga govorite, ali izdelke, ki jih želite shraniti v nakupovalni voziček. Če pozneje spletno mesto znova obiščete v istem brskalniku, lahko to spletno mesto prebere nastavljeni piškotek in lahko nadaljujete, kjer ste končali. Te vrste piškotkov pogosto imenujemo lastni piškotki, ker jih nastavi spletno mesto, ki ga obiščete.</translation>
 <translation id="770831926727930011">Lokalni podatki so zaščiteni s starim geslom. Če želite obnoviti lokalne podatke, vnesite staro geslo.</translation>
 <translation id="7709152031285164251">Ni uspelo – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Vse ključe za dostop zaščitite z obnovitveno kodo PIN</translation>
 <translation id="7710568461918838723">&amp;Predvajanje ...</translation>
 <translation id="7711900714716399411">Uporabite kabel USB, če želite telefon povezati z računalnikom. Če je telefon že povezan, kabel odklopite in ga znova priklopite.</translation>
 <translation id="7711968363685835633">Onemogoči pretvorbe in predloge po meri ter uporabniški slovar</translation>
@@ -9773,6 +9775,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8233028084277069927">Odpri zdaj</translation>
 <translation id="8234795456569844941">Pomagajte našim tehnikom odpraviti to težavo. Opišite, kaj se je zgodilo, tik preden se je prikazalo sporočilo o napaki profila:</translation>
 <translation id="8235418492073272647">Stran, deljena iz naprave <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Ta zavihek si deli vire z drugimi zavihki, kar lahko moti odpravljanje napak.</translation>
 <translation id="8236911020904880539">zapreti</translation>
 <translation id="8236917170563564587">Deli ta zavihek</translation>
 <translation id="8237647586961940482">Temno rožnata in rdeča</translation>
@@ -9977,6 +9980,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8376532149031784008">Vnovično nalaganje domene <ph name="DOMAIN" /> …</translation>
 <translation id="8376610503048439696">Razširitve, ki jih namesti skrbnik, lahko še vedno berejo in spreminjajo to spletno mesto</translation>
 <translation id="8376752431516546391">Stransko podokno Iskanja Google</translation>
+<translation id="8376812682111060348">Opozorilo glede težave z delovanjem</translation>
 <translation id="8377625247046155446">Ta ključ za dostop bo shranjen samo v tej napravi. V tej napravi bo ostal, ko zaprete vsa anonimna okna.</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8379988659465232385">Polje z imenom ne sme biti prazno</translation>

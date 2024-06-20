@@ -532,6 +532,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="371398631992790800">Ocultar la opción Favoritos</translation>
 <translation id="37207012422556617">Tendencias de búsquedas</translation>
 <translation id="3725081662140949903">Si quieres evitar que otras personas usen tu contraseña, abre la app de <ph name="APP" /> para cambiarla</translation>
+<translation id="372676576864368480">Autocompletar el número de tarjeta que termina en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creación: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar la opción Descargas</translation>
 <translation id="3745190878148784130">Ocultar la opción Hacer zoom en el texto</translation>
@@ -1097,6 +1098,7 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="6476800141292307438">Se está traduciendo la página al <ph name="LANGUAGE" />. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error de autenticación</translation>
 <translation id="6494931198667773526">Finaliza</translation>
+<translation id="6500795388871406244">Usa la contraseña sugerida:</translation>
 <translation id="650279896687777322">Más información…</translation>
 <translation id="6505334220040167806">Contraer grupo de pestañas.</translation>
 <translation id="6507973708545996744">Accede para obtener tu lista de lectura en todos tus dispositivos.</translation>
@@ -1310,6 +1312,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7583004045319035904">Desbloquea tus pestañas de incógnito mediante <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Obtén más seguridad</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Autocompletar el titular de la tarjeta <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Vent.emerg.bloq. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grupos de pestañas</translation>
 <translation id="7607521702806708809">Borrar contraseña</translation>
@@ -1342,6 +1345,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7749790401023484470">No seleccionaste texto.</translation>
 <translation id="7752405526771734448">Búsqueda visual de Lens</translation>
 <translation id="7756478488453921771">Menú → Configuración → Formas de pago</translation>
+<translation id="775755486779745798">Autocompletar el mes de vencimiento <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Bloqueo de incógnito</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
@@ -1518,6 +1522,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8556590991644167667">{count,plural, =1{Descartaste {count} advertencia}other{Descartaste {count} advertencias}}</translation>
 <translation id="8560253818350321773">Muestra primero los elementos que se usan con frecuencia.</translation>
 <translation id="8569721750632860947">¿Qué URL te gustaría agregar a tu Lista de lectura?</translation>
+<translation id="8577056989960190117">Autocompletar el año de vencimiento <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Apagada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceros en modo Incógnito</translation>
 <translation id="8593565399399144771">Puedes abrir una pestaña nueva aquí.</translation>

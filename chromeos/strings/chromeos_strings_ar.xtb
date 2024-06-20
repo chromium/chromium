@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">أصفر باستيل</translation>
 <translation id="1056898198331236512">تحذير</translation>
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
+<translation id="1061864016440983342">الاستخدام بدون تفعيل الموقع الجغرافي</translation>
 <translation id="1062823486781306604">‫<ph name="INDEX" /> من أصل <ph name="COUNT" />، <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">تم العثور على جدار حماية.</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2082932131694554252">مفتاح لوحة المفاتيح المخصَّص</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
+<translation id="2086091080968010660">قد لا تكون التغييرات المستنِدة إلى الوقت دقيقة. فعِّل إذن الوصول إلى الموقع الجغرافي للنظام ضمن الإعدادات.</translation>
 <translation id="2102231663024125441">تعديل النص</translation>
 <translation id="2105810540595158374">الجهاز هو ذراع تحكّم في الألعاب.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، الإصدار <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">استعادة الإعدادات التلقائية</translation>
 <translation id="2286454467119466181">بسيطة</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
+<translation id="2294577623958216786">تم ضبط الجدول الزمني الحالي على <ph name="SUNRISE" /> إلى <ph name="SUNSET" />. لتعديل الجدول الزمني لغروب الشمس وشروقها تلقائيًا، يجب تفعيل إذن الوصول إلى الموقع الجغرافي للنظام.</translation>
 <translation id="2305172810646967500">أسود</translation>
 <translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
 <translation id="2308243864813041101">‏عليك فصل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة لمواصلة عملية التحديث</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">سطوع لوحة المفاتيح</translation>
 <translation id="6412715219990689313">لوحة مفاتيح مُدمَجة</translation>
 <translation id="6417265370957905582">‏مساعد Google</translation>
+<translation id="6419454453018688975">تفعيل إذن الوصول إلى الموقع الجغرافي للنظام</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">إشارة ضعيفة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">الانتقال إلى إعدادات الحساب</translation>

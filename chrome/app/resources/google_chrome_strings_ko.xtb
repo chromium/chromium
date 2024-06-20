@@ -30,7 +30,6 @@
 <translation id="1407223320754252908">Chrome에는 Google 번역이 내장되어 있어 필요할 때 번역할 수 있습니다.</translation>
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다.}=1{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창은 다시 열리지 않습니다.}other{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창 #개는 다시 열리지 않습니다.}}</translation>
 <translation id="1434626383986940139">Chrome Canary 앱</translation>
-<translation id="1438479496118074429">\"<ph name="EXTENSION_NAME" />\" 확장 프로그램에서 Chrome에 로그인하도록 요청합니다</translation>
 <translation id="146866447420868597">Chrome에 로그인하시겠습니까?</translation>
 <translation id="1492280395845991349">다시 실행하여 Chrome 업데이트 완료</translation>
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
@@ -59,6 +58,7 @@
 <translation id="1734234790201236882">Chrome에서 내 Google 계정에 이 비밀번호를 저장하므로 기억하지 않아도 됩니다.</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1786044937610313874">Chrome에서 바로가기 열기</translation>
+<translation id="178701303897325119">이 확장 프로그램은 더 이상 지원되지 않습니다. 대신 Chrome에서는 이 프로그램을 삭제할 것을 권장합니다.</translation>
 <translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1860536484129686729">이 사이트에서 카메라에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="1873233029667955273">Chrome이 기본 브라우저로 설정되어 있지 않습니다</translation>
@@ -174,6 +174,7 @@
 <translation id="3261565993776444564">새로운 색상으로 브라우저를 맞춤설정해 보세요.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
+<translation id="3292333338048274092">그런 다음 Chrome을 다시 시작해야 합니다.</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
@@ -218,6 +219,7 @@
 <translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>
+<translation id="4084404300720192944">창을 공유하려면 시스템 환경설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
 <translation id="4110895483821904099">새 Chrome 프로필 설정</translation>
 <translation id="4111566860456076004">Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다. 안전하지 않은 확장 프로그램일 수 있습니다. 더 이상 개인 정보를 비롯한 방문 사이트의 데이터를 확인하고 변경할 수 없도록 Chrome에서 이 확장 프로그램을 삭제하세요.</translation>
@@ -249,6 +251,7 @@
 <translation id="4389991535395284064">시크릿 모드로 탐색할 때 Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4434353761996769206">설치 프로그램 오류: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446"><ph name="USER_EMAIL" /> 계정으로 Chrome에 로그인</translation>
 <translation id="4450664632294415862">Chrome - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Chrome에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4459234553906210702">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
@@ -359,6 +362,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Chrome 베타</translation>
 <translation id="6182736845697986886">업데이트 서버 내부 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="6200139057479872438">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
+<translation id="621585339844629864">화면을 공유하려면 시스템 환경설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="6235018212288296708">Chrome이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="624230925347970731">Chrome이 곧 종료됩니다</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
@@ -474,7 +478,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7802622118583152311">Chrome은 더 나은 인터넷 탐색을 위한 최신 기술을 제공합니다.</translation>
 <translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7825851276765848807">알 수 없는 오류로 인해 설치에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
-<translation id="7828063580843052643">이 확장 프로그램을 <ph name="USER_EMAIL_ADDRESS" /> 주소로 사용하려면 Chrome에 로그인하세요.\nGoogle 계정에서 비밀번호 등을 사용하고 저장할 수도 있습니다.</translation>
 <translation id="7836610565365456468">아티스트, 자연 등에서 영감을 받은 생동감 있는 테마로 브라우저를 새롭게 꾸며 보세요.</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
 <translation id="7852254990718225089">Chrome의 AI는 웹을 더 빠르고 안전하게 만들고 접근성을 높여줍니다.</translation>
