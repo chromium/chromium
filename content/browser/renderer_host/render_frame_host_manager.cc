@@ -66,6 +66,7 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -506,7 +507,10 @@ bool CanIntentionallyDeferSpeculativeRFHForRequest(
          // to do an early RFH swap, which requires the speculative RFH to be
          // created before the network request is sent.
          frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
-         !frame_tree_node->current_frame_host()->must_be_replaced();
+         !frame_tree_node->current_frame_host()->must_be_replaced() &&
+         // TODO(crbug.com/348125591): Workaround for a mysterious race
+         // condition in V8 when navigating to a different site in devtools.
+         !DevToolsAgentHost::IsDebuggerAttached(request->GetWebContents());
 }
 
 }  // namespace
