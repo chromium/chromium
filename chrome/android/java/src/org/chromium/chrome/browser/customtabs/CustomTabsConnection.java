@@ -1987,7 +1987,7 @@ public class CustomTabsConnection {
     public static void createSpareWebContents(Profile profile) {
         if (sSkipTabPrewarmingForTesting) return;
         if (SysUtils.isLowEndDevice()) return;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
+        if (WarmupManager.getInstance().isCCTPrewarmTabFeatureEnabled(true)) {
             WarmupManager.getInstance().createRegularSpareTab(profile);
         } else {
             WarmupManager.getInstance().createSpareWebContents(profile);

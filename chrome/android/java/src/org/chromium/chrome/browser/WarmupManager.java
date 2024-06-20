@@ -154,6 +154,7 @@ public class WarmupManager {
     private ViewGroup mMainView;
     @VisibleForTesting WebContents mSpareWebContents;
     private RenderProcessGoneObserver mObserver;
+    private boolean mIsCCTPrewarmTabEnabled;
 
     // Stores a prebuilt tab. To load a URL, this can be used if available instead of creating one
     // from scratch.
@@ -697,6 +698,18 @@ public class WarmupManager {
         mSpareWebContents.destroy();
         mSpareWebContents = null;
         mObserver = null;
+    }
+
+    // We do some cleanup on Activity teardown, so to avoid activating the experiment for all users
+    // regardless of whether they actually interact with the feature, cache the flag here.
+    // This only works if no non-test code calls
+    // ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB) directly.
+    public boolean isCCTPrewarmTabFeatureEnabled(boolean activateExperiment) {
+        if (activateExperiment) {
+            mIsCCTPrewarmTabEnabled =
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB);
+        }
+        return mIsCCTPrewarmTabEnabled;
     }
 
     @NativeMethods

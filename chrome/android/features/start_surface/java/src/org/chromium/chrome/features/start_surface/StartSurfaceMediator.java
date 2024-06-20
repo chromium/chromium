@@ -862,9 +862,11 @@ class StartSurfaceMediator
             mIsHomepageShown = false;
         }
 
-        // Since the start surface is hidden, destroy any spare tabs created.
-        PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT, () -> WarmupManager.getInstance().destroySpareTab());
+        if (!WarmupManager.getInstance().isCCTPrewarmTabFeatureEnabled(false)) {
+            // Since the start surface is hidden, destroy any spare tabs created.
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT, () -> WarmupManager.getInstance().destroySpareTab());
+        }
 
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.startedHiding();
