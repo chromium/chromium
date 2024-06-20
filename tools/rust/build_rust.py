@@ -111,7 +111,7 @@ RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
 RUST_BUILD_DIR = os.path.join(RUST_SRC_DIR, 'build')
 RUST_BOOTSTRAP_DIST_RS = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
                                       'dist.rs')
-STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
+STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0')
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
 RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
@@ -211,7 +211,7 @@ def VerifyStage0JsonHash():
     if actual_hash == STAGE0_JSON_SHA256:
         return
 
-    print('src/stage0.json hash is different than expected!')
+    print('src/stage0 hash is different than expected!')
     print('Expected hash: ' + STAGE0_JSON_SHA256)
     print('Actual hash:   ' + actual_hash)
     sys.exit(1)
@@ -228,21 +228,23 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
     triple = triple if triple else RustTargetTriple()
     filename = f'{name}-beta-{triple}'
 
-    # Pull the stage0 JSON to find the package intended to be used to
-    # build this version of the Rust compiler.
+    # Pull the stage0 to find the package intended to be used to build this
+    # version of the Rust compiler.
     STAGE0_JSON_URL = (
         'https://chromium.googlesource.com/external/github.com/'
-        'rust-lang/rust/+/{GIT_HASH}/src/stage0.json?format=TEXT')
+        'rust-lang/rust/+/{GIT_HASH}/src/stage0?format=TEXT')
     base64_text = urllib.request.urlopen(
         STAGE0_JSON_URL.format(GIT_HASH=rust_git_hash)).read().decode("utf-8")
-    stage0 = json.loads(base64.b64decode(base64_text))
+    stage0 = base64.b64decode(base64_text).decode("utf-8")
+    lines = stage0.splitlines()
 
-    # The stage0 JSON contains the path to all tarballs it uses binaries from.
-    for k in stage0['checksums_sha256'].keys():
-        if k.endswith(filename + '.tar.gz'):
-            package_tgz = k
+    # The stage0 file contains the path to all tarballs it uses binaries from.
+    for l in lines:
+        if l.startswith('dist_server='):
+            server = l.split('=')[1]
+        if (filename + '.tar.gz') in l:
+            package_tgz = l.split('=')[0]
 
-    server = stage0['config']['dist_server']
     DownloadAndUnpack(f'{server}/{package_tgz}', LLVM_BUILD_TOOLS_DIR)
     return os.path.join(LLVM_BUILD_TOOLS_DIR, filename)
 
