@@ -449,6 +449,7 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #endif
 
@@ -803,6 +804,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   enterprise_commands::UserRemoteCommandsServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  enterprise_connectors::BrowserCrashEventRouterFactory::GetInstance();
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

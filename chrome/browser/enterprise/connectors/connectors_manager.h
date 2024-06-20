@@ -30,7 +30,6 @@ class FileSystemURL;
 }
 
 namespace enterprise_connectors {
-class BrowserCrashEventRouter;
 
 // Manages access to Connector policies for a given profile. This class is
 // responsible for caching the Connector policies, validate them against
@@ -50,7 +49,6 @@ class ConnectorsManager {
       std::map<ReportingConnector, std::vector<ReportingServiceSettings>>;
 
   ConnectorsManager(
-      std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
       std::unique_ptr<ExtensionTelemetryEventRouter>
           extension_telemetry_event_router,
       PrefService* pref_service,
@@ -188,9 +186,6 @@ class ConnectorsManager {
 
   // Used to report changes of reporting connector policy.
   base::RepeatingCallback<void(bool)> telemetry_observer_callback_;
-
-  // A router to report browser crash events via the reporting pipeline.
-  std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router_;
 
   // A router to report extension telemetry events via the reporting pipeline.
   std::unique_ptr<ExtensionTelemetryEventRouter>

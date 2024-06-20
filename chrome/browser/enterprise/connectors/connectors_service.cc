@@ -663,7 +663,6 @@ KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
 
   return new ConnectorsService(
       context, std::make_unique<ConnectorsManager>(
-                   std::make_unique<BrowserCrashEventRouter>(context),
                    std::make_unique<ExtensionTelemetryEventRouter>(context),
                    user_prefs::UserPrefs::Get(context),
                    GetServiceProviderConfig(), observe_prefs));

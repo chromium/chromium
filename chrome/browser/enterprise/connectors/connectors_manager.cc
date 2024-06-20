@@ -43,17 +43,14 @@ static constexpr enterprise_connectors::AnalysisConnector
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 ConnectorsManager::ConnectorsManager(
-    std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
     std::unique_ptr<ExtensionTelemetryEventRouter>
         extension_telemetry_event_router,
     PrefService* pref_service,
     const ServiceProviderConfig* config,
     bool observe_prefs)
     : service_provider_config_(config),
-      browser_crash_event_router_(std::move(browser_crash_event_router)),
       extension_telemetry_event_router_(
           std::move(extension_telemetry_event_router)) {
-  DCHECK(browser_crash_event_router_) << "Crash event router is null";
   DCHECK(extension_telemetry_event_router_)
       << "Extension telemetry event router is null";
 

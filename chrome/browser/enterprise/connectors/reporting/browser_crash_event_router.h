@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_BROWSER_CRASH_EVENT_ROUTER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_BROWSER_CRASH_EVENT_ROUTER_H_
 
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
+
+namespace base {
+template <typename T>
+struct DefaultSingletonTraits;
+}
 
 namespace enterprise_connectors {
 
-// An instance of class is owned by the ConnectorsManager, we use its lifetime
-// to manage which profiles are observed for the purposes of crash reporting.
-// Its constructor and destructor add and remove profiles to the
-// CrashReportingContext, respectively, if they are valid for crash reporting.
-class BrowserCrashEventRouter {
+// Keyed service that manages adding and removing profiles from
+// `CrashReportingContext`.
+class BrowserCrashEventRouter : public KeyedService {
  public:
   explicit BrowserCrashEventRouter(content::BrowserContext* context);
 
@@ -21,7 +26,27 @@ class BrowserCrashEventRouter {
   BrowserCrashEventRouter& operator=(const BrowserCrashEventRouter&) = delete;
   BrowserCrashEventRouter(BrowserCrashEventRouter&&) = delete;
   BrowserCrashEventRouter& operator=(BrowserCrashEventRouter&&) = delete;
-  ~BrowserCrashEventRouter();
+  ~BrowserCrashEventRouter() override;
+};
+
+class BrowserCrashEventRouterFactory : public ProfileKeyedServiceFactory {
+ public:
+  static BrowserCrashEventRouterFactory* GetInstance();
+  static BrowserCrashEventRouter* GetForBrowserContext(
+      content::BrowserContext* context);
+
+ protected:
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
+
+ private:
+  BrowserCrashEventRouterFactory();
+  ~BrowserCrashEventRouterFactory() override;
+  friend struct base::DefaultSingletonTraits<BrowserCrashEventRouterFactory>;
+
+  // BrowserContextKeyedServiceFactory:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
 };
 
 }  // namespace enterprise_connectors
