@@ -16399,15 +16399,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_SAVE_ANOTHER_WAY" desc="Text link that appears on a button to save the passkey another way. For example, in their iCloud Keychain account or by using Windows Hello.">
         Save another way
       </message>
-      <message name="IDS_WEBAUTHN_GPM_AVAILABLE_ACROSS_DEVICES" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are available on all of the user’s devices.">
-        Available across your devices
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_FASTER_SIGN_IN" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are a faster and encrypted way to sign in.">
-        Faster, encrypted sign-in
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_SAFER" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means passkeys are safer to use than a password.">
-        Safer than a password
-      </message>
       <message name="IDS_WEBAUTHN_GPM_TRUST_THIS_COMPUTER_CREATION_TITLE" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. It means that before the user can create the passkey, they need to verify their identity by, e.g., entering their Google Password Manager PIN or the lockscreen of a phone they own. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
         To create this passkey with Google Password Manager, verify it's you
       </message>
