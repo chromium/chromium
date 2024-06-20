@@ -2125,7 +2125,7 @@ bool AuthenticatorTrustThisComputerCreationSheetModel::IsAcceptButtonVisible()
 
 std::u16string
 AuthenticatorTrustThisComputerCreationSheetModel::GetAcceptButtonLabel() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_NEXT);
 }
 
 std::u16string
