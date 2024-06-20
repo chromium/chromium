@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -15,7 +16,7 @@ import {PersonalizationStore} from '../personalization_store.js';
 import {DisplayableImage} from './constants.js';
 import {isDefaultImage, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected, isWallpaperImage} from './utils.js';
 import * as action from './wallpaper_actions.js';
-import {DailyRefreshType, FullscreenPreviewState} from './wallpaper_state.js';
+import {DailyRefreshType} from './wallpaper_state.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through

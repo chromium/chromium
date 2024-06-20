@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {SeaPenImageId} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {setSelectedRecentSeaPenImageAction} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 import {isSeaPenImageId} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
@@ -12,7 +13,6 @@ import {PersonalizationStore} from '../personalization_store.js';
 import {setAttributionAction, setFullscreenStateAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshState} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-import {FullscreenPreviewState} from './wallpaper_state.js';
 
 function parseSeaPenImageIdOrNull(str: string): SeaPenImageId|null {
   // Use `parseFloat` even though `str` is expected to be an integer because

@@ -11,6 +11,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.html.js';
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
@@ -23,7 +24,6 @@ import {setFullscreenStateAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_fullscreen_element.html.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-import {FullscreenPreviewState} from './wallpaper_state.js';
 
 const fullscreenClass = 'fullscreen-preview';
 const fullscreenTransitionClass = 'fullscreen-preview-transition';

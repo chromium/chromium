@@ -117,6 +117,7 @@ export {GooglePhotosSharedAlbumDialogElement, AcceptEvent} from './wallpaper/goo
 export {GooglePhotosZeroStateElement} from './wallpaper/google_photos_zero_state_element.js';
 export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
+export {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 export * from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 export {getRecentSeaPenImageIds, selectRecentSeaPenImage, getSeaPenThumbnails, selectSeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
 export {SeaPenErrorElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_error_element.js';
@@ -147,7 +148,7 @@ export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreviewElement} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.js';
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
-export {DailyRefreshType, FullscreenPreviewState} from './wallpaper/wallpaper_state.js';
+export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 export {setTransitionsEnabled, maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
 

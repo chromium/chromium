@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {SeaPenActionName, SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 import {seaPenReducer} from 'chrome://resources/ash/common/sea_pen/sea_pen_reducer.js';
 import {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
@@ -17,7 +18,7 @@ import {PersonalizationState} from '../personalization_state.js';
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
 import {findAlbumById, isDefaultImage, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
-import {DailyRefreshType, FullscreenPreviewState, WallpaperState} from './wallpaper_state.js';
+import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
 
 function backdropReducer(
     state: WallpaperState['backdrop'], action: Actions,

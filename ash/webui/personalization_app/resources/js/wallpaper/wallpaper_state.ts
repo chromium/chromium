@@ -1,6 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {emptyState as emptySeaPenState, SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -109,12 +111,6 @@ export enum DailyRefreshType {
 export interface DailyRefreshState {
   id: string;
   type: DailyRefreshType;
-}
-
-export enum FullscreenPreviewState {
-  OFF = 'fullscreen_preview_off',
-  LOADING = 'fullscreen_preview_loading',
-  VISIBLE = 'fullscreen_preview_visible',
 }
 
 export interface WallpaperState {

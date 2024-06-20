@@ -13,6 +13,8 @@ build_webui("build_ts") {
 
   web_component_files = [ "wallpaper_grid_item_element.ts" ]
 
+  non_web_component_files = [ "wallpaper_state.ts" ]
+
   icons_html_files = [ "personalization_shared_icons.html" ]
 
   css_files = [
