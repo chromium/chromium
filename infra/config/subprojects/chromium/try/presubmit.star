@@ -153,6 +153,7 @@ presubmit_builder(
     executable = "recipe:chromium/gn_args_verifier",
     contact_team_email = "chrome-browser-infra-team@google.com",
     properties = {
+        "gclient_config": "chromium",
         "builder_config_directory": "infra/config/generated/builders",
         "mb_config_paths": ["src/tools/mb/mb_config.pyl"],
     },
