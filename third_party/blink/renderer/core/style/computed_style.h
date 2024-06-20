@@ -304,9 +304,6 @@ class ComputedStyle final : public ComputedStyleBase {
   Vector<AtomicString>* GetVariableNamesCache() const;
   Vector<AtomicString>& EnsureVariableNamesCache() const;
 
-  PositionFallbackStyleCache& EnsurePositionFallbackStyleCache(
-      unsigned ensure_size) const;
-
   CORE_EXPORT base::RefCountedData<Vector<AppliedTextDecoration, 1>>*
   EnsureAppliedTextDecorationsCache() const;
 
@@ -430,10 +427,6 @@ class ComputedStyle final : public ComputedStyleBase {
       PseudoId pseudo_id,
       const AtomicString& pseudo_argument) const;
   void ClearCachedPseudoElementStyles() const;
-
-  const ComputedStyle* GetCachedPositionFallbackStyle(unsigned index) const;
-  const ComputedStyle* AddCachedPositionFallbackStyle(const ComputedStyle*,
-                                                      unsigned index) const;
 
   // If this ComputedStyle is affected by animation/transitions, then the
   // unanimated "base" style can be retrieved with this function.

@@ -219,34 +219,6 @@ Vector<AtomicString>& ComputedStyle::EnsureVariableNamesCache() const {
   return *cached_data_->variable_names_;
 }
 
-const ComputedStyle* ComputedStyle::AddCachedPositionFallbackStyle(
-    const ComputedStyle* style,
-    unsigned index) const {
-  EnsurePositionFallbackStyleCache(index + 1)[index] = style;
-  return (*cached_data_->position_fallback_styles_)[index].Get();
-}
-
-const ComputedStyle* ComputedStyle::GetCachedPositionFallbackStyle(
-    unsigned index) const {
-  if (!cached_data_ || !cached_data_->position_fallback_styles_ ||
-      index >= cached_data_->position_fallback_styles_->size()) {
-    return nullptr;
-  }
-  return (*cached_data_->position_fallback_styles_)[index].Get();
-}
-
-PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
-    unsigned ensure_size) const {
-  if (!cached_data_ || !cached_data_->position_fallback_styles_) {
-    EnsureCachedData().position_fallback_styles_ =
-        MakeGarbageCollected<PositionFallbackStyleCache>();
-  }
-  if (cached_data_->position_fallback_styles_->size() < ensure_size) {
-    cached_data_->position_fallback_styles_->resize(ensure_size);
-  }
-  return *cached_data_->position_fallback_styles_;
-}
-
 ALWAYS_INLINE ComputedStyle::ComputedStyle() = default;
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& initial_style)
