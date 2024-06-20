@@ -37,8 +37,7 @@ constexpr int kPasswordGlyphSpacing = 6;
 constexpr int kIconSizeDp = 20;
 
 // The max width of the AuthTextfield.
-constexpr int kAuthTextfieldMaxWidthDp = 293;
-
+constexpr int kAuthTextfieldMaxWidthDp = 216;
 }
 
 AuthTextfield::AuthTextfield(AuthType auth_type)
@@ -74,10 +73,14 @@ AuthTextfield::AuthTextfield(AuthType auth_type)
   if (auth_type_ == AuthType::kPassword) {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_AUTH_TEXTFIELD_PASSWORD_ACCESSIBLE_NAME));
+    SetPlaceholderText(l10n_util::GetStringUTF16(
+        IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
   } else {
     CHECK_EQ(auth_type_, AuthType::kPin);
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ASH_AUTH_TEXTFIELD_PIN_ACCESSIBLE_NAME));
+    SetPlaceholderText(
+        l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_PLACEHOLDER));
   }
 }
 
