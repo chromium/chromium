@@ -193,7 +193,7 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
   DCHECK(pb_local_group_data);
   pb_local_group_data->set_created_before_syncing_tab_groups(true);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::string serialized_local_id = base::Token::CreateRandom().ToString();
   pb_local_group_data->set_local_group_id(serialized_local_id);
 #endif

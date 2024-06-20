@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "build/build_config.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/proto/saved_tab_group_data.pb.h"

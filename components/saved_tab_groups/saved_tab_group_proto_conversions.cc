@@ -15,12 +15,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "build/build_config.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 
@@ -158,12 +158,10 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   std::optional<LocalTabGroupID> local_group_id;
   if (data.has_local_tab_group_data() &&
       data.local_tab_group_data().has_local_group_id()) {
-#if BUILDFLAG(IS_ANDROID)
-    local_group_id =
-        base::Token::FromString(data.local_tab_group_data().local_group_id());
-#else
-    CHECK(false) << "Local ID should not have been serialized on this platform";
-#endif
+    if (AreLocalIdsPersisted()) {
+      local_group_id = LocalTabGroupIDFromString(
+          data.local_tab_group_data().local_group_id());
+    }
   }
 
   std::optional<std::string> creator_cache_guid =
@@ -224,13 +222,13 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
     }
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  const auto& local_group_id = group.local_group_id();
-  if (local_group_id.has_value()) {
-    pb_data.mutable_local_tab_group_data()->set_local_group_id(
-        local_group_id.value().ToString());
+  if (AreLocalIdsPersisted()) {
+    const auto& local_group_id = group.local_group_id();
+    if (local_group_id.has_value()) {
+      pb_data.mutable_local_tab_group_data()->set_local_group_id(
+          LocalTabGroupIDToString(local_group_id.value()));
+    }
   }
-#endif
 
   pb_data.mutable_local_tab_group_data()->set_created_before_syncing_tab_groups(
       group.created_before_syncing_tab_groups());
