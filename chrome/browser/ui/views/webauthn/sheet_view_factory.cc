@@ -419,6 +419,10 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
           std::make_unique<PlaceholderSheetModel>(dialog_model));
 #endif
       break;
+    case Step::kGPMLockedPin:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorGPMLockedPinSheetModel>(dialog_model));
+      break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:
     case Step::kClosed:

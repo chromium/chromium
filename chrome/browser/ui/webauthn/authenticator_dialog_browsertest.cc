@@ -773,6 +773,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "gpm_confirm_incognito_create") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
+    } else if (name == "gpm_locked_pin") {
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMLockedPin);
     } else {
       NOTREACHED_IN_MIGRATION();
     }
@@ -897,6 +900,11 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_confirm_incognito_create) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_locked_pin) {
   ShowAndVerifyUi();
 }
 

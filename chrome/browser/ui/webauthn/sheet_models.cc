@@ -1743,7 +1743,7 @@ std::u16string AuthenticatorGPMPinSheetModel::GetStepDescription() const {
 std::u16string AuthenticatorGPMPinSheetModel::GetError() const {
   std::optional<int> remaining_attempts =
       dialog_model()->gpm_pin_remaining_attempts_;
-  return remaining_attempts
+  return remaining_attempts && mode_ == Mode::kPinEntry
              ? l10n_util::GetPluralStringFUTF16(
                    IDS_WEBAUTHN_GPM_WRONG_PIN_ERROR, *remaining_attempts)
              : std::u16string();
@@ -1846,7 +1846,7 @@ std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepDescription()
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetError() const {
   std::optional<int> remaining_attempts =
       dialog_model()->gpm_pin_remaining_attempts_;
-  return remaining_attempts
+  return remaining_attempts && mode_ == Mode::kPinEntry
              ? l10n_util::GetPluralStringFUTF16(
                    IDS_WEBAUTHN_GPM_WRONG_PIN_ERROR, *remaining_attempts)
              : std::u16string();
@@ -2136,4 +2136,43 @@ AuthenticatorTrustThisComputerCreationSheetModel::GetOtherMechanismButtonLabel()
 
 void AuthenticatorTrustThisComputerCreationSheetModel::OnAccept() {
   dialog_model()->OnTrustThisComputer();
+}
+
+// AuthenticatorGPMLockedPinSheetModel ----------------------------------
+
+AuthenticatorGPMLockedPinSheetModel::AuthenticatorGPMLockedPinSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  // TODO(enclave): Add correct illustrations.
+  lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
+                                IDR_WEBAUTHN_PASSKEY_DARK);
+}
+
+AuthenticatorGPMLockedPinSheetModel::~AuthenticatorGPMLockedPinSheetModel() =
+    default;
+
+std::u16string AuthenticatorGPMLockedPinSheetModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CHANGE_PIN_TITLE);
+}
+
+std::u16string AuthenticatorGPMLockedPinSheetModel::GetStepDescription() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_CREATE_PIN_DESC);
+}
+
+bool AuthenticatorGPMLockedPinSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorGPMLockedPinSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorGPMLockedPinSheetModel::GetAcceptButtonLabel()
+    const {
+  return u"Change PIN (UT)";
+}
+
+void AuthenticatorGPMLockedPinSheetModel::OnAccept() {
+  dialog_model()->OnForgotGPMPinPressed();
 }

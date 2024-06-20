@@ -321,7 +321,8 @@ class AuthenticatorRequestDialogController;
   F(kTrustThisComputerCreation)                                                \
                                                                                \
   /* Changing GPM PIN. */                                                      \
-  F(kGPMReauthForPinReset)
+  F(kGPMReauthForPinReset)                                                     \
+  F(kGPMLockedPin)
 
 struct AuthenticatorRequestDialogModel {
   enum class Step {

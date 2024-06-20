@@ -917,10 +917,12 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 }
 
 void GPMEnclaveController::PromptForPin() {
-  // TODO(enclave): Check for failed PIN attempts having been exhausted, and
-  // trigger a PIN reset flow in that case.
-  model_->SetStep(pin_is_arbitrary_ ? Step::kGPMEnterArbitraryPin
-                                    : Step::kGPMEnterPin);
+  if (GetFailedPINAttemptCount() >= device::enclave::kMaxFailedPINAttempts) {
+    model_->SetStep(Step::kGPMLockedPin);
+  } else {
+    model_->SetStep(pin_is_arbitrary_ ? Step::kGPMEnterArbitraryPin
+                                      : Step::kGPMEnterPin);
+  }
 }
 
 void GPMEnclaveController::OnGpmPinChanged(bool success) {
@@ -933,6 +935,7 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
   }
 
   SetFailedPINAttemptCount(0);
+  model_->gpm_pin_remaining_attempts_ = std::nullopt;
   // Changing GPM Pin required reauth, hence we can just proceed with the
   // get/create passkey transaction.
   StartTransaction();
@@ -1273,7 +1276,7 @@ void GPMEnclaveController::HandlePINValidationResult(
       SetFailedPINAttemptCount(++count);
 
       if (count >= device::enclave::kMaxFailedPINAttempts) {
-        // TODO(enclave): If the new count is 5, go to the locked PIN UI.
+        model_->SetStep(Step::kGPMLockedPin);
       } else {
         model_->gpm_pin_remaining_attempts_ =
             device::enclave::kMaxFailedPINAttempts - count;
@@ -1282,7 +1285,7 @@ void GPMEnclaveController::HandlePINValidationResult(
       break;
     }
     case device::enclave::PINValidationResult::kLocked:
-      // TODO(enclave): Handle locked PIN.
+      model_->SetStep(Step::kGPMLockedPin);
       break;
   }
 }

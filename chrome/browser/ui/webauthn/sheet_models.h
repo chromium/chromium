@@ -895,4 +895,23 @@ class AuthenticatorTrustThisComputerCreationSheetModel
   void OnAccept() override;
 };
 
+// The sheet shown when the maximum amount of GPM pin entry attempts has been
+// reached informing that the PIN needs to be reset.
+class AuthenticatorGPMLockedPinSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorGPMLockedPinSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+
+  ~AuthenticatorGPMLockedPinSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+  bool IsAcceptButtonEnabled() const override;
+  bool IsAcceptButtonVisible() const override;
+  std::u16string GetAcceptButtonLabel() const override;
+  void OnAccept() override;
+};
+
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
