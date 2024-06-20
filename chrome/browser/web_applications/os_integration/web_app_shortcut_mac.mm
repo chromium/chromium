@@ -54,7 +54,7 @@
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
-#include "chrome/browser/web_applications/os_integration/icns_encoder.h"
+#include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

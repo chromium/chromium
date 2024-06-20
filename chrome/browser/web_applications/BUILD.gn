@@ -388,10 +388,10 @@ source_set("web_applications") {
 
   if (is_mac) {
     sources += [
-      "os_integration/icns_encoder.cc",
-      "os_integration/icns_encoder.h",
       "os_integration/mac/app_shim_registry.cc",
       "os_integration/mac/app_shim_registry.h",
+      "os_integration/mac/icns_encoder.cc",
+      "os_integration/mac/icns_encoder.h",
       "os_integration/web_app_file_handler_registration_mac.cc",
       "os_integration/web_app_protocol_handler_registration_mac.cc",
       "os_integration/web_app_run_on_os_login_mac.mm",
@@ -874,8 +874,8 @@ source_set("web_applications_unit_tests") {
 
   if (is_mac) {
     sources += [
-      "os_integration/icns_encoder_unittest.cc",
       "os_integration/mac/app_shim_registry_unittest.cc",
+      "os_integration/mac/icns_encoder_unittest.cc",
       "os_integration/shortcuts_versioning_mac_unittest.cc",
       "os_integration/web_app_run_on_os_login_mac_unittest.mm",
       "os_integration/web_app_shortcut_mac_unittest.mm",
