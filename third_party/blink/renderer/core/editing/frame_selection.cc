@@ -364,7 +364,7 @@ void FrameSelection::DidSetSelectionDeprecated(
   if (RuntimeEnabledFeatures::DispatchSelectionchangeEventPerElementEnabled()) {
     TextControlElement* text_control =
         EnclosingTextControl(GetSelectionInDOMTree().Anchor());
-    if (text_control) {
+    if (text_control && !text_control->IsInShadowTree()) {
       text_control->EnqueueEvent(
           *Event::CreateBubble(event_type_names::kSelectionchange),
           TaskType::kMiscPlatformAPI);
