@@ -18,19 +18,19 @@ found in the LICENSE file.
         android:title="@string/safety_hub_safety_modules_section_header"/>
 
     <!-- Account-level passwords -->
-    <Preference
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="passwords_account"
         android:title="@string/safety_check_passwords_safe" />
     <!-- Update check -->
-    <Preference
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="update_check"
         android:title="@string/safety_check_updates_title" />
     <!-- Unused permissions -->
-    <Preference
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="permissions"
         android:title="@string/safety_hub_permissions_ok_title" />
     <!-- Notification review -->
-    <Preference
+    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="notifications_review"
         android:title="@string/safety_hub_notifications_review_ok_title" />
 

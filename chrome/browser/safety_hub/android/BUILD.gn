@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubBaseFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubExpandablePreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubExpandablePreferenceCategory.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchService.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceFactory.java",
@@ -187,6 +188,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/safety_hub_bottom_elements.xml",
     "java/res/layout/safety_hub_button_widget.xml",
+    "java/res/layout/safety_hub_expandable_preference.xml",
     "java/res/layout/safety_hub_list_menu_widget.xml",
     "java/res/xml/safety_hub_preferences.xml",
     "java/res/xml/safety_hub_subpage_preferences.xml",
