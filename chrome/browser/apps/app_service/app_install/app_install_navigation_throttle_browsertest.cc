@@ -125,8 +125,6 @@ class AppInstallNavigationThrottleBrowserTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList feature_list_;
   std::map<std::string, std::string> app_install_map_;
-  base::AutoReset<bool> feature_scope_ =
-      chromeos::features::SetAppInstallServiceUriEnabledForTesting();
 
   struct SetupIds {
     webapps::AppId app_id;
@@ -337,12 +335,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
 }
 #endif
 
-class AppInstallNavigationThrottleUserGestureBrowserTest
-    : public InProcessBrowserTest {
- public:
-  base::AutoReset<bool> feature_scope_ =
-      chromeos::features::SetAppInstallServiceUriEnabledForTesting();
-};
+using AppInstallNavigationThrottleUserGestureBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleUserGestureBrowserTest,
                        IgnoresNonUserGesture) {

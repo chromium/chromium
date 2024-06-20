@@ -143,8 +143,8 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
     // Only use the action URL if the install URI is enabled.
-    source->AddBoolean("UseActionUrl",
-                       chromeos::features::IsAppInstallServiceUriEnabled());
+    // TODO(b/346687914): Clean up flag in Showoff code.
+    source->AddBoolean("UseActionUrl", true);
   }
 
   PrefService* pref_service = profile->GetPrefs();

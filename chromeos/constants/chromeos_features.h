@@ -119,8 +119,6 @@ BASE_DECLARE_FEATURE(kFileSystemProviderContentCache);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsApnPoliciesEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsAppInstallServiceUriEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsCaptivePortalPopupWindowEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistoryRefreshEnabled();
@@ -176,9 +174,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsUploadOfficeToCloudForEnterpriseEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled();
-
-[[nodiscard]] COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-    base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting();
 
 }  // namespace features
 }  // namespace chromeos

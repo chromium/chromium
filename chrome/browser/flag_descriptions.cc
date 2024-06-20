@@ -5774,10 +5774,6 @@ const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "
     "system UI and related infrastructure.";
 
-const char kAppInstallServiceUriName[] = "Enable app install service URI";
-const char kAppInstallServiceUriDescription[] =
-    "Allows app installs to be invoked from a specific URI.";
-
 const char kAppInstallServiceUriBorealisName[] =
     "Enable app install service URI for Borealis";
 const char kAppInstallServiceUriBorealisDescription[] =

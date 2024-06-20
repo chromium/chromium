@@ -13,19 +13,6 @@
 
 namespace chromeos::features {
 
-namespace {
-
-bool g_app_install_service_uri_enabled_for_testing = false;
-
-}  // namespace
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables triggering app installs from a specific URI.
-BASE_FEATURE(kAppInstallServiceUri,
-             "AppInstallServiceUri",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Adds Managed APN Policies support.
 BASE_FEATURE(kApnPolicies, "ApnPolicies", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -302,17 +289,6 @@ bool IsApnPoliciesEnabled() {
   return base::FeatureList::IsEnabled(kApnPolicies);
 }
 
-bool IsAppInstallServiceUriEnabled() {
-  if (g_app_install_service_uri_enabled_for_testing) {
-    return true;
-  }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsAppInstallServiceUriEnabled();
-#else
-  return base::FeatureList::IsEnabled(kAppInstallServiceUri);
-#endif
-}
-
 bool IsCaptivePortalPopupWindowEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()
@@ -578,10 +554,6 @@ int RoundedWindowsRadius() {
 
   return base::GetFieldTrialParamByFeatureAsInt(
       kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/12);
-}
-
-base::AutoReset<bool> SetAppInstallServiceUriEnabledForTesting() {
-  return {&g_app_install_service_uri_enabled_for_testing, true};
 }
 
 }  // namespace chromeos::features

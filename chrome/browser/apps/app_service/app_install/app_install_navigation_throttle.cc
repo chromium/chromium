@@ -143,8 +143,7 @@ AppInstallNavigationThrottle::MaybeCreateCallbackForTesting() {
 std::unique_ptr<content::NavigationThrottle>
 AppInstallNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   std::unique_ptr<content::NavigationThrottle> throttle;
-  if (chromeos::features::IsAppInstallServiceUriEnabled() &&
-      IsNavigationUserInitiated(handle)) {
+  if (IsNavigationUserInitiated(handle)) {
     throttle = std::make_unique<apps::AppInstallNavigationThrottle>(handle);
   }
 
@@ -209,9 +208,7 @@ AppInstallNavigationThrottle::ExtractQueryParams(std::string_view query) {
 
 AppInstallNavigationThrottle::AppInstallNavigationThrottle(
     content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {
-  CHECK(chromeos::features::IsAppInstallServiceUriEnabled());
-}
+    : content::NavigationThrottle(navigation_handle) {}
 
 AppInstallNavigationThrottle::~AppInstallNavigationThrottle() = default;
 
