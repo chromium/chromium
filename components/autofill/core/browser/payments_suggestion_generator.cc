@@ -880,8 +880,9 @@ void PaymentsSuggestionGenerator::SetSuggestionLabelsForCard(
       // of users with benefit-eligible cards and assess how actually
       // displaying the benefit in the experiment influences the users autofill
       // interactions.
-      metadata_logging_context.instrument_ids_with_benefits_available.insert(
-          credit_card.instrument_id());
+      metadata_logging_context
+          .instrument_ids_to_issuer_ids_with_benefits_available.insert(
+              {credit_card.instrument_id(), credit_card.issuer_id()});
       if (payments_data().IsCardEligibleForBenefits(credit_card)) {
         labels.push_back({*benefit_label});
       }

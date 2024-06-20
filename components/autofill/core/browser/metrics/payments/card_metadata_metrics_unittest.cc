@@ -592,6 +592,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
 // benefit is only suppoerted on desktop.
 // TODO(crbug.com/332559112): Remove the platform check after Android and iOS
 // are supported.
+// TODO(crbug.com/346399130): Reduce the amount of '_ONCE' metric tests.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Params:
 // 1. Whether card benefit feature flag is enabled.
@@ -602,8 +603,6 @@ class CardBenefitFormEventMetricsTest
  public:
   CardBenefitFormEventMetricsTest() = default;
   ~CardBenefitFormEventMetricsTest() override = default;
-
-  int64_t GetCardInstrumentId() const { return card_.instrument_id(); }
 
   // Adding a benefit for the card on client.
   void AddBenefitToCard() {
@@ -622,17 +621,32 @@ class CardBenefitFormEventMetricsTest
     personal_data().payments_data_manager().AddCreditCard(local_card);
   }
 
-  // Simulating selecting and filling the given `card`.
-  void SelectAndFillCard(const CreditCard* card) {
+  // Simulate showing card suggestinos.
+  void ShowCardSuggestions() {
     autofill_manager().OnAskForValuesToFillTest(
         form(), form().fields[credit_card_number_field_index()].global_id());
     DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
                                SuggestionType::kCreditCardEntry);
+  }
+
+  // Simulate selecting a card.
+  void SelectCard(const CreditCard* card) {
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form(), form().fields[credit_card_number_field_index()], *card,
         {.trigger_source = AutofillTriggerSource::kPopup});
+  }
+
+  // Simulating selecting and filling the given `card`.
+  void SelectAndFillCard(const CreditCard* card) {
+    ShowCardSuggestions();
+    SelectCard(card);
     test_api(autofill_manager())
         .OnCreditCardFetched(/*result=*/CreditCardFetchResult::kSuccess, card);
+  }
+
+  const CreditCard* GetCreditCard() {
+    return personal_data().payments_data_manager().GetCreditCardByInstrumentId(
+        card_.instrument_id());
   }
 
   void SetUp() override {
@@ -677,6 +691,12 @@ class CardBenefitFormEventMetricsTest
     return credit_card_number_field_index_;
   }
 
+  // Returns the histogram name for issuer-specific benefits form events.
+  const std::string GetIssuerFormEventHistogram() const {
+    return base::StrCat({"Autofill.FormEvents.CreditCard.WithBenefits.",
+                         GetCardIssuerIdOrNetworkSuffix(card().issuer_id())});
+  }
+
  private:
   int credit_card_number_field_index_;
   CreditCard card_;
@@ -707,11 +727,7 @@ TEST_P(CardBenefitFormEventMetricsTest, LogShownMetrics_SuggestionHasBenefits) {
   AddBenefitToCard();
 
   // Simulate activating the autofill popup for the credit card field.
-  autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()].global_id());
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
-
+  ShowCardSuggestions();
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1)));
   EXPECT_THAT(
@@ -729,8 +745,7 @@ TEST_P(CardBenefitFormEventMetricsTest, LogShownMetrics_SuggestionHasBenefits) {
               0)));
 
   // Show the popup again.
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
+  ShowCardSuggestions();
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2)));
@@ -744,6 +759,34 @@ TEST_P(CardBenefitFormEventMetricsTest, LogShownMetrics_SuggestionHasBenefits) {
               1)));
 }
 
+// Tests that when we have multiple cards with benefits that share the same
+// issuer id, we only log
+// FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE once for all
+// cards in that issuer id's benefits histogram.
+TEST_P(
+    CardBenefitFormEventMetricsTest,
+    LogShownMetrics_IssuerHistogram_MultipleSuggestionsWithSameIssuerHaveBenefits) {
+  base::HistogramTester histogram_tester;
+  AddBenefitToCard();
+
+  CreditCard second_card = test::GetMaskedServerCard2();
+  second_card.set_issuer_id(card().issuer_id());
+  CreditCardBenefit benefit = test::GetActiveCreditCardFlatRateBenefit();
+  test_api(benefit).SetLinkedCardInstrumentId(
+      CreditCardBenefitBase::LinkedCardInstrumentId(
+          second_card.instrument_id()));
+  personal_data().payments_data_manager().AddCreditCardBenefitForTest(benefit);
+  personal_data().test_payments_data_manager().AddServerCreditCard(second_card);
+
+  // Simulate activating the autofill popup for the credit card field.
+  ShowCardSuggestions();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      BucketsAre(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
+          1)));
+}
+
 // Tests that when the card suggestion shown did not have any benefit available,
 // `FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN` is logged
 // as many times as the suggestions are shown, and
@@ -754,10 +797,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate activating the autofill popup for the credit card field.
-  autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()].global_id());
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
+  ShowCardSuggestions();
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1)));
@@ -776,9 +816,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
               1)));
 
   // Show the popup again.
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
-
+  ShowCardSuggestions();
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2)));
   EXPECT_THAT(
@@ -805,15 +843,8 @@ TEST_P(CardBenefitFormEventMetricsTest,
   AddBenefitToCard();
 
   // Simulate selecting the card.
-  autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()].global_id());
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields[credit_card_number_field_index()],
-      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  ShowCardSuggestions();
+  SelectCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(
@@ -838,11 +869,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
               1)));
 
   // Select the suggestion again.
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields[credit_card_number_field_index()],
-      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  SelectCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(
@@ -861,6 +888,35 @@ TEST_P(CardBenefitFormEventMetricsTest,
               1)));
 }
 
+// Tests that when a masked server card with a benefit is selected after card
+// suggestions containing a benefit were shown,
+// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE`
+// is logged once in the issuer specific histogram for card benefits.
+TEST_P(CardBenefitFormEventMetricsTest,
+       LogSelectedMetrics_IssuerHistogram_SuggestionHasBenefits) {
+  base::HistogramTester histogram_tester;
+  AddBenefitToCard();
+
+  // Simulate selecting the card.
+  ShowCardSuggestions();
+  SelectCard(GetCreditCard());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
+          1)));
+
+  // Select the suggestion again.
+  SelectCard(GetCreditCard());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE,
+          1)));
+}
+
 // Tests that when the shown masked server card suggestions do not have any
 // entries with benefits, that when a suggestion is selected,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED`
@@ -872,15 +928,8 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate selecting the card.
-  autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()].global_id());
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields[credit_card_number_field_index()],
-      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  ShowCardSuggestions();
+  SelectCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(
@@ -905,11 +954,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
               0)));
 
   // Select the suggestion again.
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields[credit_card_number_field_index()],
-      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  SelectCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(
@@ -941,15 +986,8 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate selecting the card with no benefit.
-  autofill_manager().OnAskForValuesToFillTest(
-      form(), form().fields[credit_card_number_field_index()].global_id());
-  DidShowAutofillSuggestions(form(), credit_card_number_field_index(),
-                             SuggestionType::kCreditCardEntry);
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields[credit_card_number_field_index()],
-      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          card2.instrument_id()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  ShowCardSuggestions();
+  SelectCard(&card2);
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(
@@ -961,11 +999,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
           1)));
 
   // Select the card again.
-  autofill_manager().AuthenticateThenFillCreditCardForm(
-      form(), form().fields[credit_card_number_field_index()],
-      *personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          card2.instrument_id()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  SelectCard(&card2);
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(Bucket(
@@ -991,9 +1025,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   AddBenefitToCard();
 
   // Simulate filling the card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -1018,9 +1050,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
               1)));
 
   // Fill the card suggestion again.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -1039,6 +1069,32 @@ TEST_P(CardBenefitFormEventMetricsTest,
               1)));
 }
 
+// Tests that when a masked server card with a benefit is filled after card
+// suggestions containing a benefit were shown,
+// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE`
+// is logged once in the card's issuer histogram.
+TEST_P(CardBenefitFormEventMetricsTest,
+       LogFilledMetrics_IssuerHistogram_SuggestionHasBenefits) {
+  base::HistogramTester histogram_tester;
+  AddBenefitToCard();
+
+  // Simulate filling the card.
+  SelectAndFillCard(GetCreditCard());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
+          1)));
+
+  // Fill the card suggestion again.
+  SelectAndFillCard(GetCreditCard());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE,
+          1)));
+}
+
 // Tests that when the shown masked server card suggestions do not have any
 // entries with benefits when a suggestion is filled,
 // `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED` is
@@ -1050,9 +1106,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate filling the card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -1077,9 +1131,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
               0)));
 
   // Fill the card suggestion again.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
               BucketsInclude(
@@ -1149,9 +1201,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate filling with a masked server card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
 
   ASSERT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1199,9 +1249,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   AddBenefitToCard();
 
   // Simulate submitting the card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
   SubmitForm(form());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1221,6 +1269,26 @@ TEST_P(CardBenefitFormEventMetricsTest,
               1)));
 }
 
+// Tests that when a form is submitted after a masked server card with a
+// benefit is filled from a list of suggestions containing a masked server
+// card with a benefit,
+// `FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE`
+// is logged in the card's issuer histogram.
+TEST_P(CardBenefitFormEventMetricsTest,
+       LogSubmittedMetrics_IssuerHistogram_SuggestionHasBenefits) {
+  base::HistogramTester histogram_tester;
+  AddBenefitToCard();
+
+  // Simulate submitting the card.
+  SelectAndFillCard(GetCreditCard());
+  SubmitForm(form());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(GetIssuerFormEventHistogram()),
+      BucketsInclude(Bucket(
+          FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE,
+          1)));
+}
+
 // Tests that when the shown masked server card suggestions do not have any
 // entries with benefits, when the form is submitted after a masked server
 // card is filled,
@@ -1231,9 +1299,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate submitting the card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
   SubmitForm(form());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1269,9 +1335,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Simulate submitting the card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          card2.instrument_id()));
+  SelectAndFillCard(&card2);
   SubmitForm(form());
 
   ASSERT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1294,9 +1358,7 @@ TEST_P(CardBenefitFormEventMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Filling with a masked server card.
-  SelectAndFillCard(
-      personal_data().payments_data_manager().GetCreditCardByInstrumentId(
-          GetCardInstrumentId()));
+  SelectAndFillCard(GetCreditCard());
 
   // Filling with a local card.
   SelectAndFillCard(personal_data().payments_data_manager().GetCreditCardByGUID(

@@ -359,8 +359,13 @@ class AutofillCreditCardBenefitsLabelTest
             card(), CREDIT_CARD_NUMBER,
             /*virtual_card_option=*/false,
             /*card_linked_offer_available=*/false, metadata_logging_context);
-    EXPECT_THAT(metadata_logging_context.instrument_ids_with_benefits_available,
-                testing::ElementsAre(card().instrument_id()));
+
+    base::flat_map<int64_t, std::string>
+        expected_instrument_ids_to_issuer_ids_with_benefits_available = {
+            {card().instrument_id(), card().issuer_id()}};
+    EXPECT_EQ(metadata_logging_context
+                  .instrument_ids_to_issuer_ids_with_benefits_available,
+              expected_instrument_ids_to_issuer_ids_with_benefits_available);
   }
 
  private:
