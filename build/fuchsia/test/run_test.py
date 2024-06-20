@@ -13,6 +13,8 @@ import tempfile
 from contextlib import ExitStack
 from typing import List
 
+import monitors
+
 from common import register_common_args, register_device_args, \
                    register_log_args, resolve_packages
 from compatible_utils import running_unattended
@@ -97,6 +99,11 @@ def main():
         # This may belong to IsolateDaemon, but let's keep it here to test its
         # functionality and reliability.
         stack.enter_context(ModificationWaiter(runner_args.out_dir))
+        # TODO(crbug.com/343242386): Find a way to upload metric output when
+        # logs_dir is not defined.
+        if runner_args.logs_dir:
+            stack.push(lambda *_: monitors.dump(
+                os.path.join(runner_args.logs_dir, 'invocations')))
         log_manager = LogManager(runner_args.logs_dir)
         if running_unattended():
             if runner_args.extra_path:

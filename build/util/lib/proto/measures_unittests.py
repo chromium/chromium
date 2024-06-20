@@ -6,7 +6,6 @@
 """File for testing measures.py."""
 
 import os
-import sys
 import tempfile
 import unittest
 

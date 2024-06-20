@@ -10,6 +10,8 @@ import random
 
 from contextlib import AbstractContextManager
 
+import monitors
+
 from common import run_ffx_command, IMAGES_ROOT, INTERNAL_IMAGES_ROOT, \
                    DIR_SRC_ROOT
 from compatible_utils import get_host_arch
@@ -89,7 +91,8 @@ class FfxEmulator(AbstractContextManager):
         if self._product.endswith('arm64'):
             emu_command.extend(['--engine', 'qemu'])
 
-        run_ffx_command(cmd=emu_command, timeout=310, configs=configs)
+        with monitors.time_consumption('emulator', 'startup_time'):
+            run_ffx_command(cmd=emu_command, timeout=310, configs=configs)
 
         return self._node_name
 
