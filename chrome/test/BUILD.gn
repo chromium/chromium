@@ -12284,6 +12284,8 @@ if (!is_android) {
       "//components/password_manager/core/browser/sharing",
       "//components/plus_addresses",
       "//components/plus_addresses:test_support",
+      "//components/plus_addresses/settings",
+      "//components/plus_addresses/settings:test_support",
       "//components/plus_addresses/webdata",
       "//components/power_bookmarks/common:test_support",
       "//components/power_bookmarks/core",
