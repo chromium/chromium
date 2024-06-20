@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/controls/rich_hover_button.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/views/layout/fill_layout.h"
 
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
@@ -19,9 +24,27 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
+  set_title_margins(
+      ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
+  SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // TODO(b/345242100): Add passkey label row.
-  // TODO(b/345242100): Add manage passkeys and passwords button.
+  // TODO(b/345242100): Pass the username.
+  AddChildView(CreatePasskeyIconWithLabelRow(vector_icons::kPasskeyIcon, u""));
+
+  SetFootnoteView(std::make_unique<RichHoverButton>(
+      // TODO(b/345242100): Add handling clicks once it's decided whether they
+      // should open password manager main page or passkey details page.
+      base::RepeatingClosure(),
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
+                                     ui::kColorIcon),
+      // TODO(b/345242100): Add button label string once it's finalised.
+      u"Manage passkeys (UT)",
+      /*secondary_text=*/std::u16string(), u"Manage passkeys (UT)",
+      /*subtitle_text=*/std::u16string(),
+      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
+                                     ui::kColorIconSecondary),
+      /*state_icon=*/std::nullopt));
+  set_footnote_margins(gfx::Insets());
 }
 
 PasskeySavedConfirmationView::~PasskeySavedConfirmationView() = default;

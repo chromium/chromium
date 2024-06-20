@@ -16485,6 +16485,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Wrong PIN. 1 attempt remaining.}
           other {Wrong PIN. # attempts remaining.}}
       </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was created and saved in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Passkey saved
+      </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">

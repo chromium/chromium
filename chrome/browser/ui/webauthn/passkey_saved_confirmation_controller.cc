@@ -20,8 +20,8 @@ PasskeySavedConfirmationController::~PasskeySavedConfirmationController() {
 }
 
 std::u16string PasskeySavedConfirmationController::GetTitle() const {
-  // TODO(b/345242100): Add correct string.
-  return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE);
+  // TODO(b/345242100): Add string version with pin created.
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE);
 }
 
 void PasskeySavedConfirmationController::ReportInteractions() {

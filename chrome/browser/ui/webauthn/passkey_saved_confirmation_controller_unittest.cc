@@ -1,4 +1,3 @@
-
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -66,7 +65,6 @@ TEST_F(PasskeySavedConfirmationControllerTest, DestroyImplicictly) {
 
 TEST_F(PasskeySavedConfirmationControllerTest, Content) {
   CreateController();
-  EXPECT_EQ(
-      controller()->GetTitle(),
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE));
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE));
 }
