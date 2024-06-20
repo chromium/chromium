@@ -383,9 +383,6 @@ void PasskeySyncBridge::DeleteAllPasskeys() {
       store_->CreateWriteBatch();
   std::vector<PasskeyModelChange> changes;
   for (const auto& [sync_id, passkey] : data_) {
-    //    std::string sync_id(data_map_entry.first);
-    //    auto passkey = data_map_entry.second;
-
     changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,
                          std::move(passkey));
     change_processor()->Delete(sync_id,
