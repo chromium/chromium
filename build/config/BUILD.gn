@@ -255,12 +255,7 @@ group("common_deps") {
     public_deps += [ "//third_party/afl" ]
   }
 
-  # This dep should only be added for the default_toolchain as we only need to
-  # instrument on-device code, not any host-only code. See:
-  # https://crbug.com/347976629
-  if (is_android && use_order_profiling &&
-      current_toolchain != host_system_allocator_toolchain &&
-      current_toolchain != default_system_allocator_toolchain) {
+  if (is_android && use_order_profiling) {
     public_deps += [ "//base/android/orderfile:orderfile_instrumentation" ]
   }
 
