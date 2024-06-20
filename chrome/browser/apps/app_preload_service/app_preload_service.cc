@@ -207,14 +207,11 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
       }
     }
     // Sort shelf pin ordering.
-    for (auto const& [key, val] : shelf_pin_ordering) {
-      pin_order_.push_back(key);
-    }
-    std::sort(pin_order_.begin(), pin_order_.end(),
-              [&shelf_pin_ordering](apps::PackageId const& lhs,
-                                    apps::PackageId const& rhs) {
-                return shelf_pin_ordering[lhs] < shelf_pin_ordering[rhs];
-              });
+    std::vector<std::pair<apps::PackageId, uint32_t>> pins(
+        shelf_pin_ordering.begin(), shelf_pin_ordering.end());
+    base::ranges::sort(pins, {}, &std::pair<apps::PackageId, uint32_t>::second);
+    base::ranges::transform(pins, std::back_inserter(pin_order_),
+                            &std::pair<apps::PackageId, uint32_t>::first);
   }
   for (auto& callback : get_pin_apps_callbacks_) {
     std::move(callback).Run(pin_apps_, pin_order_);
