@@ -362,6 +362,24 @@ class PersonalizationAppVersionedWallpaperInfoBrowserTest
         features::kVersionedWallpaperInfo);
   }
 
+ protected:
+  void TestMigratingLocalWallpaperInfo(const WallpaperInfo& unmigrated_info) {
+    const AccountId account_id = GetAccountId(browser()->profile());
+    PutWallpaperInfoInPrefs(account_id, unmigrated_info,
+                            g_browser_process->local_state(),
+                            prefs::kUserWallpaperInfo);
+    // Migration is triggered by `OnActiveUserPrefServiceChanged`.
+    wallpaper_controller()->OnActiveUserPrefServiceChanged(
+        browser()->profile()->GetPrefs());
+    base::RunLoop().RunUntilIdle();
+
+    WallpaperInfo new_info =
+        *wallpaper_controller()->GetActiveUserWallpaperInfo();
+
+    EXPECT_TRUE(new_info.version.IsValid());
+    EXPECT_EQ(new_info.version, GetSupportedVersion(new_info.type));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -423,6 +441,82 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
   EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
   EXPECT_TRUE(new_info.version.IsValid());
   EXPECT_EQ(new_info.version, GetSupportedVersion(new_info.type));
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       LocalPrefIsMigratedSuccessfullyForDailyWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.collection_id = kDummyCollectionId;
+  unmigrated_info.location = kDummyUrl;
+  unmigrated_info.type = WallpaperType::kDaily;
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
+
+  WallpaperInfo new_info =
+      *wallpaper_controller()->GetActiveUserWallpaperInfo();
+
+  // Expects asset_id to be empty.
+  EXPECT_FALSE(new_info.asset_id.has_value());
+  // Expects unit_id, and variants to be set.
+  EXPECT_TRUE(new_info.unit_id.has_value());
+  EXPECT_EQ(new_info.variants.size(), 1u);
+  EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       LocalPrefIsMigratedSuccessfullyForCustomWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.type = WallpaperType::kCustomized;
+  unmigrated_info.user_file_path = "_some_user_file_path";
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       LocalPrefIsMigratedSuccessfullyForDefaultWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.type = WallpaperType::kDefault;
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       LocalPrefIsMigratedSuccessfullyForPolicyWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.type = WallpaperType::kPolicy;
+  unmigrated_info.location =
+      "547ff840b5bc4aa50d7b57823c47d06cb79c7666/policy-controlled.jpeg";
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PersonalizationAppVersionedWallpaperInfoBrowserTest,
+    LocalPrefIsMigratedSuccessfullyForDailyGooglePhotosWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.type = WallpaperType::kDailyGooglePhotos;
+  unmigrated_info.collection_id = "_some_google_photos_collection_id";
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PersonalizationAppVersionedWallpaperInfoBrowserTest,
+    LocalPrefIsMigratedSuccessfullyForOnceGooglePhotosWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.type = WallpaperType::kOnceGooglePhotos;
+  unmigrated_info.location = "_some_google_photos_id";
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizationAppVersionedWallpaperInfoBrowserTest,
+                       LocalPrefIsMigratedSuccessfullyForSeaPenWallpaper) {
+  WallpaperInfo unmigrated_info;
+  unmigrated_info.type = WallpaperType::kSeaPen;
+  unmigrated_info.location = "1864724739";
+  unmigrated_info.version = base::Version();
+  TestMigratingLocalWallpaperInfo(unmigrated_info);
 }
 
 }  // namespace
