@@ -219,7 +219,7 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 };
 
 // static
-std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
+std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferStubCB get_stub_cb) {
   DCHECK(gpu_task_runner);
@@ -237,8 +237,9 @@ std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
   auto gpu_delegate = std::make_unique<GpuDelegateImpl>(
       gpu_task_runner, std::move(get_gpu_channel_cb));
 
-  return base::WrapUnique(new MailboxVideoFrameConverter(
-      std::move(gpu_task_runner), std::move(gpu_delegate)));
+  return base::WrapUnique<FrameResourceConverter>(
+      new MailboxVideoFrameConverter(std::move(gpu_task_runner),
+                                     std::move(gpu_delegate)));
 }
 
 MailboxVideoFrameConverter::MailboxVideoFrameConverter(

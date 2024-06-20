@@ -115,7 +115,7 @@ class MailboxVideoFrameConverterTest : public ::testing::Test {
   std::vector<std::unique_ptr<StrictMock<base::MockOnceCallback<void()>>>>
       mock_frame_destruction_cbs_;
 
-  std::unique_ptr<MailboxVideoFrameConverter> converter_;
+  std::unique_ptr<FrameResourceConverter> converter_;
 };
 
 class MailboxVideoFrameConverterWithUnwrappedFramesTest
@@ -125,9 +125,11 @@ class MailboxVideoFrameConverterWithUnwrappedFramesTest
   MailboxVideoFrameConverterWithUnwrappedFramesTest() {
     auto mock_gpu_delegate = std::make_unique<StrictMock<MockGpuDelegate>>();
     mock_gpu_delegate_ = mock_gpu_delegate.get();
-    converter_ = base::WrapUnique(new MailboxVideoFrameConverter(
-        /*gpu_task_runner=*/base::ThreadPool::CreateSingleThreadTaskRunner({}),
-        std::move(mock_gpu_delegate)));
+    converter_ =
+        base::WrapUnique<FrameResourceConverter>(new MailboxVideoFrameConverter(
+            /*gpu_task_runner=*/base::ThreadPool::CreateSingleThreadTaskRunner(
+                {}),
+            std::move(mock_gpu_delegate)));
     converter_->Initialize(
         /*parent_task_runner=*/base::SingleThreadTaskRunner::
             GetCurrentDefault(),

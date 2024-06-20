@@ -24,8 +24,8 @@
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/frame_resource.h"
+#include "media/gpu/chromeos/frame_resource_converter.h"
 #include "media/gpu/chromeos/image_processor_with_pool.h"
-#include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -194,7 +194,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
-      std::unique_ptr<MailboxVideoFrameConverter> frame_converter,
+      std::unique_ptr<FrameResourceConverter> frame_converter,
       std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
@@ -281,7 +281,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
-      std::unique_ptr<MailboxVideoFrameConverter> frame_converter,
+      std::unique_ptr<FrameResourceConverter> frame_converter,
       std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
       CreateDecoderFunctionCB create_decoder_function_cb,
@@ -381,7 +381,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // The frame converter passed from the client, otherwise used and destroyed on
   // |decoder_task_runner_|.
-  std::unique_ptr<MailboxVideoFrameConverter> frame_converter_
+  std::unique_ptr<FrameResourceConverter> frame_converter_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   // The set of output formats allowed to be used in order of preference.

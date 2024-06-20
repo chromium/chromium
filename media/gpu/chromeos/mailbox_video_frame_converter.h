@@ -74,7 +74,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   // Creates a MailboxVideoFrameConverter instance. |gpu_task_runner| is the
   // task runner of the GPU main thread. Returns nullptr if the
   // MailboxVideoFrameConverter can't be created.
-  static std::unique_ptr<MailboxVideoFrameConverter> Create(
+  static std::unique_ptr<FrameResourceConverter> Create(
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferStubCB get_stub_cb);
 
@@ -196,13 +196,5 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
 };
 
 }  // namespace media
-
-namespace std {
-
-template <>
-struct MEDIA_GPU_EXPORT default_delete<media::MailboxVideoFrameConverter>
-    : public default_delete<media::FrameResourceConverter> {};
-
-}  // namespace std
 
 #endif  // MEDIA_GPU_CHROMEOS_MAILBOX_VIDEO_FRAME_CONVERTER_H_
