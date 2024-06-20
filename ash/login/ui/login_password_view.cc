@@ -35,12 +35,14 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -639,6 +641,10 @@ void LoginPasswordView::SubmitPassword() {
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
+  const gfx::VectorIcon& capslock_icon =
+      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
+          ? kModifierSplitLockScreenCapsLockIcon
+          : kLockScreenCapsLockIcon;
   const bool is_jelly = chromeos::features::IsJellyrollEnabled();
   const ui::ColorId enabled_icon_color_id =
       is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
@@ -647,7 +653,7 @@ void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
       is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
                : kColorAshIconPrimaryDisabledColor;
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kLockScreenCapsLockIcon,
+      capslock_icon,
       highlight ? enabled_icon_color_id : disabled_icon_color_id));
 }
 

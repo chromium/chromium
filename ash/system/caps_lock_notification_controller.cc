@@ -19,6 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/message_center/message_center.h"
@@ -40,6 +41,10 @@ std::unique_ptr<Notification> CreateNotification() {
       CapsLockNotificationController::IsSearchKeyMappedToCapsLock()
           ? IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_SEARCH
           : IDS_ASH_STATUS_TRAY_CAPS_LOCK_CANCEL_BY_ALT_SEARCH;
+  const gfx::VectorIcon& capslock_icon =
+      !Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
+          ? kModifierSplitNotificationCapslockIcon
+          : kNotificationCapslockIcon;
   std::unique_ptr<Notification> notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kCapsLockNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPS_LOCK_ENABLED),
@@ -48,8 +53,7 @@ std::unique_ptr<Notification> CreateNotification() {
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierCapsLock,
                                  NotificationCatalogName::kCapsLock),
-      message_center::RichNotificationData(), nullptr,
-      kNotificationCapslockIcon,
+      message_center::RichNotificationData(), nullptr, capslock_icon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   notification->set_pinned(true);
 

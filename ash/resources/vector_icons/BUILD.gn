@@ -250,6 +250,8 @@ aggregate_vector_icons("ash_vector_icons") {
     "marker.icon",
     "medium_or_large_close_button.icon",
     "mic.icon",
+    "modifier_split_lock_screen_caps_lock.icon",
+    "modifier_split_notification_capslock.icon",
     "more_than_nine_files.icon",
     "music_note.icon",
     "muted_microphone.icon",
