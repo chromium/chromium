@@ -19,28 +19,20 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
 
   std::optional<LayoutUnit> baseline;
   switch (style.BaselineSource()) {
-    case EBaselineSource::kAuto:
+    case EBaselineSource::kAuto: {
       baseline = fragment.UseLastBaselineForInlineBaseline() ? LastBaseline()
                                                              : FirstBaseline();
 
-      if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-        // Some blocks force baseline synthesis.
-        bool force_baseline_synthesis =
-            fragment.UseLastBaselineForInlineBaseline() &&
-            (fragment.IsScrollContainer() &&
-             !style.ShouldIgnoreOverflowPropertyForInlineBlockBaseline());
-        if (force_baseline_synthesis) {
-          baseline = std::nullopt;
-        }
-      } else {
-        // Some blocks force the baseline to be the block-end margin edge.
-        if (fragment.UseBlockEndMarginEdgeForInlineBaseline()) {
-          baseline = BlockSize() + (writing_direction_.IsFlippedLines()
-                                        ? margins.line_over
-                                        : margins.line_under);
-        }
+      // Some scroll containers force baseline synthesis.
+      bool force_baseline_synthesis =
+          fragment.UseLastBaselineForInlineBaseline() &&
+          (fragment.IsScrollContainer() &&
+           !style.ShouldIgnoreOverflowPropertyForInlineBlockBaseline());
+      if (force_baseline_synthesis) {
+        baseline = std::nullopt;
       }
       break;
+    }
     case EBaselineSource::kFirst:
       baseline = FirstBaseline();
       break;
@@ -70,55 +62,31 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
   };
 
   // The baseline was not found, synthesize it off the appropriate edge.
-  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-    switch (style.InlineBlockBaselineEdge()) {
-      case EInlineBlockBaselineEdge::kMarginBox: {
-        const LayoutUnit margin_size = BlockSize() + margins.BlockSum();
-        return SynthesizeMetrics(margin_size);
-      }
-      case EInlineBlockBaselineEdge::kBorderBox: {
-        FontHeight metrics = SynthesizeMetrics(BlockSize());
-        metrics.ascent += margins.line_over;
-        metrics.descent += margins.line_under;
-        return metrics;
-      }
-      case EInlineBlockBaselineEdge::kContentBox: {
-        const LineBoxStrut border_scrollbar_padding(
-            Borders() + Scrollbar() + Padding(),
-            writing_direction_.IsFlippedLines());
-        const LayoutUnit content_size =
-            (BlockSize() - border_scrollbar_padding.BlockSum())
-                .ClampNegativeToZero();
-        FontHeight metrics = SynthesizeMetrics(content_size);
-        metrics.ascent +=
-            margins.line_over + border_scrollbar_padding.line_over;
-        metrics.descent +=
-            margins.line_under + border_scrollbar_padding.line_under;
-        return metrics;
-      }
+  switch (style.InlineBlockBaselineEdge()) {
+    case EInlineBlockBaselineEdge::kMarginBox: {
+      const LayoutUnit margin_size = BlockSize() + margins.BlockSum();
+      return SynthesizeMetrics(margin_size);
     }
-    NOTREACHED_IN_MIGRATION();
-  }
-
-  // For checkbox and radio controls, we always use the border edge instead of
-  // the margin edge.
-  if (style.IsCheckboxOrRadioPart()) {
-    if (baseline_type == kAlphabeticBaseline) {
-      return FontHeight(margins.line_over + BlockSize(), margins.line_under);
+    case EInlineBlockBaselineEdge::kBorderBox: {
+      FontHeight metrics = SynthesizeMetrics(BlockSize());
+      metrics.ascent += margins.line_over;
+      metrics.descent += margins.line_under;
+      return metrics;
     }
-    // For a central baseline, center within the checkbox/radio part.
-    return FontHeight(margins.line_over + BlockSize() / 2,
-                      BlockSize() - BlockSize() / 2 + margins.line_under);
+    case EInlineBlockBaselineEdge::kContentBox: {
+      const LineBoxStrut border_scrollbar_padding(
+          Borders() + Scrollbar() + Padding(),
+          writing_direction_.IsFlippedLines());
+      const LayoutUnit content_size =
+          (BlockSize() - border_scrollbar_padding.BlockSum())
+              .ClampNegativeToZero();
+      FontHeight metrics = SynthesizeMetrics(content_size);
+      metrics.ascent += margins.line_over + border_scrollbar_padding.line_over;
+      metrics.descent +=
+          margins.line_under + border_scrollbar_padding.line_under;
+      return metrics;
+    }
   }
-
-  // The baseline type was not found. This is either this box should synthesize
-  // box-baseline without propagating from children, or caller forgot to add
-  // baseline requests to constraint space when it called Layout().
-  LayoutUnit block_size = BlockSize() + margins.BlockSum();
-
-  if (baseline_type == kAlphabeticBaseline)
-    return FontHeight(block_size, LayoutUnit());
-  return FontHeight(block_size - block_size / 2, block_size / 2);
 }
 
 LayoutUnit LogicalBoxFragment::BlockEndScrollableOverflow() const {

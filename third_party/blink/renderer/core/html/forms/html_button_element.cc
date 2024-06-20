@@ -71,10 +71,8 @@ LayoutObject* HTMLButtonElement::CreateLayoutObject(
 }
 
 void HTMLButtonElement::AdjustStyle(ComputedStyleBuilder& builder) {
-  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
-    builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
-  }
+  builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
   HTMLFormControlElement::AdjustStyle(builder);
 }
 

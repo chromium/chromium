@@ -49,10 +49,8 @@ bool ButtonInputType::IsTextButton() const {
 }
 
 void ButtonInputType::AdjustStyle(ComputedStyleBuilder& builder) {
-  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
-    builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
-  }
+  builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
   BaseButtonInputType::AdjustStyle(builder);
 }
 

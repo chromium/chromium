@@ -2225,11 +2225,6 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HasEffectiveAppearance() const {
     return HasEffectiveAppearance(EffectiveAppearance());
   }
-  bool IsCheckboxOrRadioPart() const {
-    return HasEffectiveAppearance() &&
-           (EffectiveAppearance() == kCheckboxPart ||
-            EffectiveAppearance() == kRadioPart);
-  }
 
   // Other utility functions.
   bool RequireTransformOrigin(ApplyTransformOrigin apply_origin,

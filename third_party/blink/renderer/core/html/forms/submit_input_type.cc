@@ -89,10 +89,8 @@ void SubmitInputType::ValueAttributeChanged() {
 }
 
 void SubmitInputType::AdjustStyle(ComputedStyleBuilder& builder) {
-  if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
-    builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
-  }
+  builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
+  builder.SetInlineBlockBaselineEdge(EInlineBlockBaselineEdge::kContentBox);
   BaseButtonInputType::AdjustStyle(builder);
 }
 

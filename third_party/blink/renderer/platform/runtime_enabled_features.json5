@@ -2320,12 +2320,7 @@
       status: "stable",
     },
     {
-      name: "LayoutBaselineFix",
-      status: "stable",
-    },
-    {
       name: "LayoutBlockButton",
-      depends_on: ["LayoutBaselineFix"],
       status: "stable",
     },
     {

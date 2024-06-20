@@ -1523,12 +1523,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     AdjustButtonBaseline(final_content_cross_size);
   } else if (Node().IsSlider()) {
     DCHECK(!InvolvedInBlockFragmentation(container_builder_));
-    if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-      container_builder_.ClearBaselines();
-    } else {
-      container_builder_.SetBaselines(BorderScrollbarPadding().BlockSum() +
-                                      final_content_cross_size);
-    }
+    container_builder_.ClearBaselines();
   }
 
   // Signal if we need to relayout with new child scrollbar information.
@@ -2080,14 +2075,6 @@ void FlexLayoutAlgorithm::AdjustButtonBaseline(
   // See LayoutButton::BaselinePosition()
   if (!Node().HasLineIfEmpty() && !Node().ShouldApplyLayoutContainment() &&
       !container_builder_.FirstBaseline()) {
-    if (RuntimeEnabledFeatures::LayoutBaselineFixEnabled()) {
-      return;
-    }
-    // To ensure that we have a consistent baseline when we have no children,
-    // even when we have the anonymous LayoutBlock child, we calculate the
-    // baseline for the empty case manually here.
-    container_builder_.SetBaselines(BorderScrollbarPadding().block_start +
-                                    final_content_cross_size);
     return;
   }
 
