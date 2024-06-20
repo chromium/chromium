@@ -402,8 +402,17 @@ chromium-metrics-reviews@google.com.
   <int value="132" label="SIGILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
+  <int value="133" label="SIGTRAP">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTRAP (5) from libminijail
+  </int>
   <int value="134" label="SIGABRT">
     MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
+  </int>
+  <int value="135" label="SIGBUS">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGBUS (7) from libminijail
+  </int>
+  <int value="136" label="SIGFPE">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGFPE (8) from libminijail
   </int>
   <int value="137" label="SIGKILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGKILL (9) from libminijail
