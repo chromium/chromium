@@ -235,8 +235,13 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_WithResults) {
 #endif
 
   auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
-  unsigned expected_lines_count =
-      (expected_call_success && IsOcrAvailable()) ? 6 : 0;
+  unsigned expected_lines_count = 0;
+  if (expected_call_success && IsOcrAvailable()) {
+    // Expected lines count is 6, but current library splits one of the lines
+    // into two.
+    // TODO(crbug.com/347622611): Update when post-processing is added.
+    expected_lines_count = 7;
+  }
   ASSERT_EQ(expected_lines_count, results->lines.size());
   if (results->lines.size()) {
     ASSERT_EQ(results->lines[0]->text_line,
