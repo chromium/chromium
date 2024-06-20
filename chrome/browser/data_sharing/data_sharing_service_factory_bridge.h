@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/profiles/profile.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -17,7 +18,7 @@ class DataSharingServiceFactoryBridge {
   DataSharingServiceFactoryBridge();
   ~DataSharingServiceFactoryBridge();
 
-  static ScopedJavaLocalRef<jobject> CreateJavaSDKDelegate();
+  static ScopedJavaLocalRef<jobject> CreateJavaSDKDelegate(Profile* profile);
 };
 
 }  // namespace data_sharing

@@ -65,7 +65,7 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_ANDROID)
   ui_delegate = std::make_unique<DataSharingUIDelegateAndroid>(profile);
   sdk_delegate = DataSharingSDKDelegate::CreateDelegate(
-      DataSharingServiceFactoryBridge::CreateJavaSDKDelegate());
+      DataSharingServiceFactoryBridge::CreateJavaSDKDelegate(profile));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return new DataSharingServiceImpl(

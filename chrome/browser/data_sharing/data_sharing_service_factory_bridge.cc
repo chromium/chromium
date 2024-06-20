@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/data_sharing/jni_headers/DataSharingServiceFactoryBridge_jni.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace data_sharing {
 
@@ -14,9 +15,11 @@ DataSharingServiceFactoryBridge::~DataSharingServiceFactoryBridge() = default;
 
 // static
 ScopedJavaLocalRef<jobject>
-DataSharingServiceFactoryBridge::CreateJavaSDKDelegate() {
+DataSharingServiceFactoryBridge::CreateJavaSDKDelegate(Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_DataSharingServiceFactoryBridge_createJavaSDKDelegate(env);
+  auto j_profile = profile->GetJavaObject();
+  return Java_DataSharingServiceFactoryBridge_createJavaSDKDelegate(env,
+                                                                    j_profile);
 }
 
 }  // namespace data_sharing
