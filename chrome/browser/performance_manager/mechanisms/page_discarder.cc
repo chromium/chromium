@@ -8,28 +8,23 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
+#include "base/functional/callback.h"
 #include "base/task/task_traits.h"
-#include "build/build_config.h"
+#include "base/time/time.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
-namespace performance_manager {
-namespace mechanism {
+namespace performance_manager::mechanism {
+
 namespace {
 
 bool disabled_for_testing = false;
-
-using WebContentsAndPmf =
-    std::pair<base::WeakPtr<content::WebContents>, uint64_t>;
 
 // Discards pages on the UI thread. Returns true if at least 1 page is
 // discarded.
@@ -37,7 +32,7 @@ using WebContentsAndPmf =
 // UrgentlyDiscardMultiplePages can keep reclaiming until the reclaim target is
 // met or there is no discardable page.
 std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
-    const std::vector<WebContentsAndPmf>& web_contents_and_pmf,
+    const std::vector<user_tuning::PageContextAndPmf>& page_contexts_and_pmf,
     resource_coordinator::LifecycleUnitDiscardReason discard_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -46,13 +41,14 @@ std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
   if (disabled_for_testing)
     return discard_events;
 
-  for (const auto& [contents, memory_footprint_estimate] :
-       web_contents_and_pmf) {
+  for (const auto& [page_context, memory_footprint_estimate] :
+       page_contexts_and_pmf) {
+    content::WebContents* contents = page_context.GetWebContents();
     if (!contents)
       continue;
 
     auto* lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
-        GetTabLifecycleUnitExternal(contents.get());
+        GetTabLifecycleUnitExternal(contents);
     if (!lifecycle_unit)
       continue;
 
@@ -62,6 +58,18 @@ std::vector<PageDiscarder::DiscardEvent> DiscardPagesOnUIThread(
     }
   }
   return discard_events;
+}
+
+void DiscardPagesWithReason(
+    resource_coordinator::LifecycleUnitDiscardReason discard_reason,
+    base::OnceCallback<void(const std::vector<PageDiscarder::DiscardEvent>&)>
+        post_discard_cb,
+    std::vector<user_tuning::PageContextAndPmf> page_contexts_and_pmf) {
+  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DiscardPagesOnUIThread, std::move(page_contexts_and_pmf),
+                     discard_reason),
+      std::move(post_discard_cb));
 }
 
 }  // namespace
@@ -77,19 +85,14 @@ void PageDiscarder::DiscardPageNodes(
     resource_coordinator::LifecycleUnitDiscardReason discard_reason,
     base::OnceCallback<void(const std::vector<DiscardEvent>&)>
         post_discard_cb) {
-  std::vector<WebContentsAndPmf> web_contents_and_pmf;
-  web_contents_and_pmf.reserve(page_nodes.size());
+  std::vector<resource_attribution::PageContext> page_contexts;
+  page_contexts.reserve(page_nodes.size());
   for (const auto* page_node : page_nodes) {
-    web_contents_and_pmf.emplace_back(
-        page_node->GetWebContents(),
-        user_tuning::GetDiscardedMemoryEstimateForPage(page_node));
+    page_contexts.push_back(page_node->GetResourceContext());
   }
-  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DiscardPagesOnUIThread, std::move(web_contents_and_pmf),
-                     discard_reason),
-      std::move(post_discard_cb));
+  user_tuning::GetDiscardedMemoryEstimateForPageContexts(
+      page_contexts, base::BindOnce(&DiscardPagesWithReason, discard_reason,
+                                    std::move(post_discard_cb)));
 }
 
-}  // namespace mechanism
-}  // namespace performance_manager
+}  // namespace performance_manager::mechanism

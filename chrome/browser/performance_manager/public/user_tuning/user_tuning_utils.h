@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_TUNING_UTILS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_TUNING_UTILS_H_
 
-#include "components/performance_manager/public/graph/page_node.h"
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback_forward.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 
 namespace performance_manager::user_tuning {
 
@@ -17,16 +21,19 @@ bool IsRefreshRateThrottled();
 // Returns whether battery saver mode should be managed by the OS
 bool IsBatterySaverModeManagedByOS();
 
-// Helper for logic to get the memory footprint estimate for a discarded page.
-// This must be called from the |PerformanceManager| sequence.
-uint64_t GetDiscardedMemoryEstimateForPage(
-    const performance_manager::PageNode* node);
+// Gets the discarded memory estimate and then calls the |result_callback| with
+// the memory estimate.
+void GetDiscardedMemoryEstimateForPageContext(
+    resource_attribution::PageContext page_context,
+    base::OnceCallback<void(uint64_t)> result_callback);
 
 // Gets the discarded memory estimate and then calls the |result_callback| with
-// the memory estimate. This must be called on the UI Thread.
-void GetDiscardedMemoryEstimateForWebContents(
-    content::WebContents* web_contents,
-    base::OnceCallback<void(uint64_t)> result_callback);
+// the memory estimate.
+using PageContextAndPmf =
+    std::pair<resource_attribution::PageContext, uint64_t>;
+void GetDiscardedMemoryEstimateForPageContexts(
+    const std::vector<resource_attribution::PageContext>& page_contexts,
+    base::OnceCallback<void(std::vector<PageContextAndPmf>)> result_callback);
 
 }  // namespace performance_manager::user_tuning
 
