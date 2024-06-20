@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/command_buffer/tests/webgpu_test.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -835,6 +836,11 @@ TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
 // the client doesn't pass a usage supporting lazy clearing.
 TEST_P(WebGPUMailboxTest,
        PassDiscardWhenAssociatingMailboxWithoutUsageSupportingClearing) {
+  // The relevant check in WebGPUDecoderImpl is only performed if the below
+  // feature is enabled.
+  SKIP_TEST_IF(!base::FeatureList::IsEnabled(
+      features::kDawnSIRepsUseClientProvidedInternalUsages));
+
   // Create the shared image.
   SharedImageInterface* sii = GetSharedImageInterface();
   scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
