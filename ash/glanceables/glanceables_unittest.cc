@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
+#include "ash/glanceables/common/glanceables_contents_scroll_view.h"
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -429,7 +430,7 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
-       MouseWheelScrollingDownFromTheBottomOfTasksDoesNotExpandsClassroom) {
+       MouseWheelScrollingDownFromTheBottomOfTasksExpandsClassroom) {
   // Increase the number of tasks to ensure the scroll contents overflow.
   PopulateTasks(10);
 
@@ -451,19 +452,31 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
                                  tasks_scroll_bar->GetMinPosition() + 10;
 
-  // Using mouse wheel doesn't change expand state in either direction.
+  // Scrolling upward at the top of the scroll view doesn't change expand state.
   GetEventGenerator()->MoveMouseTo(tasks_scroll_view_center);
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
+  // Scrolling downward when there is scrollable content doesn't change expand
+  // state.
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
+  // Right after hitting the bottom of the scroll view, scrolling downward at
+  // the bottom of the scroll view doesn't change expand state.
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
+
+  // After the mouse wheel is fired, scrolling downward at the bottom of the
+  // scroll view changes expand state.
+  views::AsViewClass<GlanceablesContentsScrollView>(GetTasksScrollView())
+      ->FireMouseWheelTimerForTest();
+  GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -559,7 +572,7 @@ TEST_F(GlanceablesTasksAndClassroomTest,
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
-       MouseWheelScrollingUpFromTheTopOfClassroomDoesNotExpandsTasks) {
+       MouseWheelScrollingUpFromTheTopOfClassroomExpandsTasks) {
   // Expand classroom first to make the scroll view visible.
   auto const* classroom_expand_button = GetClassroomExpandButtonView();
   ASSERT_TRUE(classroom_expand_button);
@@ -583,19 +596,32 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   const int distance_to_scroll = classroom_scroll_bar->GetMaxPosition() -
                                  classroom_scroll_bar->GetMinPosition() + 10;
 
-  // Using mouse wheel doesn't change expand state in either direction.
+  // Scrolling downward to the bottom of the scroll view doesn't change expand
+  // state.
   GetEventGenerator()->MoveMouseTo(classroom_scroll_view_center);
   GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 
+  // Scrolling upward when there is scrollable content doesn't change expand
+  // state.
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
 
+  // Right after hitting the top of the scroll view, scrolling upward at the top
+  // of the scroll view doesn't change expand state.
   GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
+
+  // After the mouse wheel timer is fired, scrolling upward at the top of the
+  // scroll view changes expand state.
+  views::AsViewClass<GlanceablesContentsScrollView>(GetClassroomScrollView())
+      ->FireMouseWheelTimerForTest();
+  GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,
@@ -650,6 +676,20 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   // Tasks.
   GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/true,
                               distance_to_scroll);
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  // Scrolling downward when tasks scroll view is not scrollable expands
+  // Classroom.
+  GetEventGenerator()->MoveMouseTo(tasks_scroll_view_center);
+  GetEventGenerator()->MoveMouseWheel(0, -distance_to_scroll);
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  // Scrolling upward when classroom scroll view is not scrollable expands
+  // Tasks.
+  GetEventGenerator()->MoveMouseTo(classroom_scroll_view_center);
+  GetEventGenerator()->MoveMouseWheel(0, distance_to_scroll);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 }

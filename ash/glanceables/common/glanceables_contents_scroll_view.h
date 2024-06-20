@@ -5,12 +5,13 @@
 #ifndef ASH_GLANCEABLES_COMMON_GLANCEABLES_CONTENTS_SCROLL_VIEW_H_
 #define ASH_GLANCEABLES_COMMON_GLANCEABLES_CONTENTS_SCROLL_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 
-class GlanceablesContentsScrollView : public views::ScrollView {
+class ASH_EXPORT GlanceablesContentsScrollView : public views::ScrollView {
   METADATA_HEADER(GlanceablesContentsScrollView, views::ScrollView)
  public:
   using TimeManagementContext = GlanceablesTimeManagementBubbleView::Context;
@@ -23,7 +24,13 @@ class GlanceablesContentsScrollView : public views::ScrollView {
 
   void SetOnOverscrollCallback(const base::RepeatingClosure& callback);
 
+  // Fire the timer for mouse wheel overscroll so that next mouse wheel event
+  // will expand the other glanceables. This is only used in tests.
+  void FireMouseWheelTimerForTest();
+
   // views::ScrollView:
+  void OnScrollEvent(ui::ScrollEvent* event) override;
+  bool OnMouseWheel(const ui::MouseWheelEvent& e) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void ChildPreferredSizeChanged(views::View* view) override;
 
