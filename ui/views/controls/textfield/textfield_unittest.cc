@@ -53,7 +53,9 @@
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
+#include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -4134,6 +4136,48 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   // typically not an appropriate value.
   EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(TextfieldTest, AccessibilityAttributes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  InitTextfield();
+
+  ViewAXPlatformNodeDelegate* delegate =
+      static_cast<ViewAXPlatformNodeDelegate*>(
+          &textfield_->GetViewAccessibility());
+
+  textfield_->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
+  textfield_->SetText(u"this is the textfield");
+  textfield_->SetBounds(1, 2, 3, 4);
+
+  ui::AXNodeData actual =
+      delegate->GetAtomicViewAXTreeManagerForTesting()->GetRoot()->data();
+
+  EXPECT_EQ(ax::mojom::Role::kTextField, actual.role);
+  EXPECT_TRUE(actual.HasState(ax::mojom::State::kEditable) &&
+              actual.HasState(ax::mojom::State::kFocusable));
+  EXPECT_EQ(textfield_->GetAccessibleName(),
+            actual.GetString16Attribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(textfield_->GetText(),
+            actual.GetString16Attribute(ax::mojom::StringAttribute::kValue));
+  EXPECT_EQ(
+      textfield_->GetPlaceholderText(),
+      actual.GetString16Attribute(ax::mojom::StringAttribute::kPlaceholder));
+
+  EXPECT_EQ(static_cast<const int>(textfield_->GetSelectedRange().start()),
+            actual.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart));
+  EXPECT_EQ(static_cast<const int>(textfield_->GetSelectedRange().end()),
+            actual.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd));
+
+  EXPECT_EQ(gfx::Rect(1, 2, 3, 4),
+            gfx::ToEnclosingRect(actual.relative_bounds.bounds));
+
+  EXPECT_EQ(textfield_->GetBoundsInScreen(),
+            delegate->GetBoundsRect(ui::AXCoordinateSystem::kScreenDIPs,
+                                    ui::AXClippingBehavior::kUnclipped, nullptr));
+}
+#endif
 
 TEST_F(TextfieldTest, AccessibleNameFromLabel) {
   InitTextfield();
