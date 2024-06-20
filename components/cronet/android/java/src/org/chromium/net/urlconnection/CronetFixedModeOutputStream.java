@@ -150,8 +150,8 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
     // Below are CronetOutputStream implementations:
 
     @Override
-    void setConnected() throws IOException {
-        // Do nothing.
+    boolean connectRequested() throws IOException {
+        return true;
     }
 
     @Override

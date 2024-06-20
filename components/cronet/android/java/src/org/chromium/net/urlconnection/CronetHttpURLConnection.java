@@ -68,9 +68,13 @@ public class CronetHttpURLConnection extends HttpURLConnection {
     }
 
     /**
-     * Opens a connection to the resource. If the connect method is called when
-     * the connection has already been opened (indicated by the connected field
-     * having the value {@code true}), the call is ignored.
+     * Opens a connection to the resource. If the connect method is called when the connection has
+     * already been opened (indicated by the connected field having the value {@code true}), the
+     * call is ignored.
+     *
+     * <p>Note that if there is an unclosed output stream on this connection, and neither {@link
+     * #setFixedLengthStreamingMode} nor {@link #setChunkedStreamingMode} have been called, this
+     * call is a no-op and the connection will only be established once the output stream is closed.
      */
     @Override
     public void connect() throws IOException {
@@ -250,6 +254,10 @@ public class CronetHttpURLConnection extends HttpURLConnection {
         if (connected) {
             return;
         }
+        if (mOutputStream != null && !mOutputStream.connectRequested()) {
+            // Output stream is not ready to start the request. It will call us back when it is.
+            return;
+        }
         final ExperimentalUrlRequest.Builder requestBuilder =
                 (ExperimentalUrlRequest.Builder)
                         mCronetEngine.newUrlRequestBuilder(
@@ -266,9 +274,6 @@ public class CronetHttpURLConnection extends HttpURLConnection {
                             CONTENT_LENGTH,
                             Long.toString(mOutputStream.getUploadDataProvider().getLength()));
                 }
-                // Tells mOutputStream that startRequest() has been called, so
-                // the underlying implementation can prepare for reading if needed.
-                mOutputStream.setConnected();
             } else {
                 if (getRequestProperty(CONTENT_LENGTH) == null) {
                     addRequestProperty(CONTENT_LENGTH, "0");
@@ -596,13 +601,13 @@ public class CronetHttpURLConnection extends HttpURLConnection {
 
     /** Blocks until the response headers are received. */
     private void getResponse() throws IOException {
-        // Check to see if enough data has been received.
         if (mOutputStream != null) {
             mOutputStream.checkReceivedEnoughContent();
-            if (isChunkedUpload()) {
-                // Write last chunk.
-                mOutputStream.close();
-            }
+            // Ideally the user should have closed the output stream by this point, but if they
+            // didn't, we implicitly do it for them, as it's not possible to write after the full
+            // request body has been sent anyway. This is consistent with what the default Android
+            // implementation does.
+            mOutputStream.close();
         }
         if (!mHasResponseHeadersOrCompleted) {
             startRequest();
