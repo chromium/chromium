@@ -363,6 +363,7 @@ defaults = args.defaults(
     siso_enable_cloud_trace = True,
     siso_experiments = [],
     siso_remote_jobs = None,
+    siso_fail_if_reapi_used = None,
     health_spec = None,
     builder_config_settings = None,
 
@@ -441,6 +442,7 @@ def builder(
         siso_enable_cloud_trace = args.DEFAULT,
         siso_experiments = args.DEFAULT,
         siso_remote_jobs = args.DEFAULT,
+        siso_fail_if_reapi_used = None,
         skip_profile_upload = args.DEFAULT,
         health_spec = args.DEFAULT,
         shadow_builderless = args.DEFAULT,
@@ -646,6 +648,8 @@ def builder(
         siso_experiments: a list of experiment flags for siso.
         siso_remote_jobs: an integer indicating the number of concurrent remote jobs
             to run when building with Siso.
+        siso_fail_if_reapi_used: If True, check siso_metrics.json to see if the build
+            used remote execution and fail the build if any step used it.
         health_spec: a health spec instance describing the threshold for when
             the builder should be considered unhealthy.
         shadow_builderless: If set to True, then led builds created for this
@@ -862,6 +866,8 @@ def builder(
         remote_jobs = defaults.get_value("siso_remote_jobs", siso_remote_jobs)
         if remote_jobs:
             siso["remote_jobs"] = remote_jobs
+        if siso_fail_if_reapi_used:
+            siso["fail_if_reapi_used"] = siso_fail_if_reapi_used
         properties["$build/siso"] = siso
         if shadow_rbe_project:
             shadow_siso = dict(siso)
