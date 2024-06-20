@@ -36,7 +36,8 @@ class EnterpriseCompanionStatus {
       policy::DeviceManagementStatus status) {
     return status == policy::DM_STATUS_SUCCESS ? Success() : From<1>(status);
   }
-  bool EqualsDeviceManagementStatus(policy::DeviceManagementStatus other) {
+  bool EqualsDeviceManagementStatus(
+      policy::DeviceManagementStatus other) const {
     return operator==(From<1>(other));
   }
 
@@ -48,7 +49,7 @@ class EnterpriseCompanionStatus {
                : From<2>(status);
   }
   bool EqualsCloudPolicyValidationResult(
-      policy::CloudPolicyValidatorBase::Status other) {
+      policy::CloudPolicyValidatorBase::Status other) const {
     return operator==(From<2>(other));
   }
 

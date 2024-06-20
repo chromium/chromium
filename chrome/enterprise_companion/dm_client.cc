@@ -101,7 +101,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
 
   // Overrides for DMClient.
   void RegisterBrowser(
-      base::OnceCallback<void(EnterpriseCompanionStatus)> callback) override {
+      base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback)
+      override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!pending_callback_);
 
@@ -157,7 +158,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
   scoped_refptr<device_management_storage::DMStorage> dm_storage_;
   ClientDataDelegate client_data_delegate_;
-  base::OnceCallback<void(EnterpriseCompanionStatus)> pending_callback_;
+  base::OnceCallback<void(const EnterpriseCompanionStatus&)> pending_callback_;
 
   bool ShouldSkipRegistration() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

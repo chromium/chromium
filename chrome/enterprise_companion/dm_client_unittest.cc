@@ -128,7 +128,7 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](EnterpriseCompanionStatus status) {
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
@@ -147,7 +147,7 @@ TEST_F(DMClientTest, RegisterDeviceFailure) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](EnterpriseCompanionStatus status) {
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER));
       }).Then(run_loop.QuitClosure()));
@@ -182,7 +182,7 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
   // Register the device. All policies should be removed as a side effect.
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](EnterpriseCompanionStatus status) {
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
@@ -198,7 +198,7 @@ TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](EnterpriseCompanionStatus status) {
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
@@ -213,7 +213,7 @@ TEST_F(DMClientTest, RegistrationSkippedAlreadyManaged) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](EnterpriseCompanionStatus status) {
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
@@ -241,7 +241,7 @@ TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   // Registration should be skipped as DM token is still present.
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](EnterpriseCompanionStatus status) {
+      base::BindOnce([](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();

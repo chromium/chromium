@@ -34,7 +34,7 @@ class DMClient {
   // Register the browser with the enrollment token from storage. Posts
   // `callback` to the current sequence with the result of the operation.
   virtual void RegisterBrowser(
-      base::OnceCallback<void(EnterpriseCompanionStatus)> callback) = 0;
+      base::OnceCallback<void(const EnterpriseCompanionStatus&)> callback) = 0;
 };
 
 CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(
