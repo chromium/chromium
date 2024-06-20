@@ -840,7 +840,7 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   auto mojo_provider = IdentityProviderConfig::New();
 
   mojo_provider->config_url = blink::KURL(provider.configURL());
-  mojo_provider->client_id = provider.clientId();
+  mojo_provider->client_id = provider.getClientIdOr("");
   return mojo_provider;
 }
 
@@ -862,7 +862,7 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   } else {
     mojo_options->config->config_url = blink::KURL(options.configURL());
   }
-  mojo_options->config->client_id = options.clientId();
+  mojo_options->config->client_id = options.getClientIdOr("");
 
   mojo_options->nonce = options.getNonceOr("");
   mojo_options->login_hint = options.getLoginHintOr("");
