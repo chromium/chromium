@@ -232,6 +232,13 @@ export class RecordPage extends ReactiveLitElement {
     #delete-dialog {
       width: 368px;
     }
+
+    #exit-dialog div[slot="actions"] cra-button:first-child {
+      align-self: flex-start;
+
+      /* There's a 8px gap. */
+      margin-right: 72px;
+    }
   `;
 
   static override properties: PropertyDeclarations = {
@@ -285,9 +292,14 @@ export class RecordPage extends ReactiveLitElement {
     this.recordingSession.value = null;
   }
 
-  private async stopRecording() {
+  /**
+   * Stops and saves the recording.
+   *
+   * @return The id of the saved recording.
+   */
+  private async stopRecording(): Promise<string|null> {
     if (this.recordingSession.value === null) {
-      return;
+      return null;
     }
     const session = this.recordingSession.value;
     const audioData = await session.finish();
@@ -303,14 +315,16 @@ export class RecordPage extends ReactiveLitElement {
         audioData,
     );
 
-    navigateTo(`/playback?id=${id}`);
-
     this.recordingSession.value = null;
+    return id;
   }
 
   private async onStopRecording() {
     // TODO(pihsun): Make this function sync since it's called as event handler.
-    await this.stopRecording();
+    const id = await this.stopRecording();
+    if (id !== null) {
+      navigateTo(`/playback?id=${id}`);
+    }
   }
 
   override async connectedCallback(): Promise<void> {
@@ -334,6 +348,14 @@ export class RecordPage extends ReactiveLitElement {
 
   private get deleteDialog(): CraDialog|null {
     const el = this.shadowRoot?.querySelector('#delete-dialog') ?? null;
+    if (el === null) {
+      return null;
+    }
+    return assertInstanceof(el, CraDialog);
+  }
+
+  private get exitDialog(): CraDialog|null {
+    const el = this.shadowRoot?.querySelector('#exit-dialog') ?? null;
     if (el === null) {
       return null;
     }
@@ -404,6 +426,46 @@ export class RecordPage extends ReactiveLitElement {
     </cra-button>`;
   }
 
+  private async saveAndExitRecording() {
+    await this.stopRecording();
+    navigateTo('/');
+  }
+
+  private onBackClick() {
+    // TODO: b/336963138 - This should directly save and exit when the
+    // recording is paused.
+    this.exitDialog?.show();
+  }
+
+  private closeExitDialog() {
+    this.exitDialog?.close();
+  }
+
+  private renderExitRecordingDialog() {
+    return html`<cra-dialog id="exit-dialog">
+      <div slot="headline">${i18n('Exit recording')}</div>
+      <div slot="content">
+        ${i18n('Leaving this page will end your current recording.')}
+      </div>
+      <div slot="actions">
+        <cra-button
+          .label=${i18n('Delete')}
+          button-style="secondary"
+          @click=${this.deleteRecording}
+        ></cra-button>
+        <cra-button
+          .label=${i18n('Cancel')}
+          button-style="secondary"
+          @click=${this.closeExitDialog}
+        ></cra-button>
+        <cra-button
+          .label=${i18n('Save and exit')}
+          @click=${this.saveAndExitRecording}
+        ></cra-button>
+      </div>
+    </cra-dialog>`;
+  }
+
   private closeDeleteDialog() {
     this.deleteDialog?.close();
   }
@@ -433,8 +495,7 @@ export class RecordPage extends ReactiveLitElement {
     return html`
       <div id="main-area">
         <div id="header" class="sheet">
-          <cra-icon-button buttonstyle="floating">
-            <!-- TODO: b/336963138 - Implements back button -->
+          <cra-icon-button buttonstyle="floating" @click=${this.onBackClick}>
             <cra-icon slot="icon" name="arrow_back"></cra-icon>
           </cra-icon-button>
           <span id="title">${this.recordingTitle}</span>
@@ -472,7 +533,7 @@ export class RecordPage extends ReactiveLitElement {
           </secondary-button>
         </div>
       </div>
-      ${this.renderDeleteRecordingDialog()}
+      ${this.renderDeleteRecordingDialog()} ${this.renderExitRecordingDialog()}
     `;
   }
 }
