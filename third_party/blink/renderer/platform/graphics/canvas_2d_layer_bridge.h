@@ -44,7 +44,6 @@ struct SkImageInfo;
 
 namespace blink {
 
-class Canvas2DLayerBridgeTest;
 class StaticBitmapImage;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge {
@@ -107,10 +106,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   }
 
  private:
-  friend class Canvas2DLayerBridgeTest;
-  friend class CanvasRenderingContext2DTest;
-  friend class HTMLCanvasPainterTestForCAP;
-
   static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
                                     base::TimeTicks /*idleDeadline*/);
   void Hibernate();
