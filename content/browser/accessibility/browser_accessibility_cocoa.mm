@@ -1153,42 +1153,60 @@ bool content::IsNSRange(id value) {
 }
 
 - (NSArray*)rowHeaders {
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return nil;
+  }
 
-  bool is_cell_or_table_header = ui::IsCellOrTableHeader(_owner->GetRole());
-  bool is_table_like = ui::IsTableLike(_owner->GetRole());
-  if (!is_table_like && !is_cell_or_table_header)
+  bool isCellOrTableHeader = ui::IsCellOrTableHeader(_owner->GetRole());
+  bool isTableLike = ui::IsTableLike(_owner->GetRole());
+  if (!isTableLike && !isCellOrTableHeader) {
     return nil;
+  }
+
   BrowserAccessibility* table = [self containingTable];
-  if (!table)
+  if (!table) {
     return nil;
+  }
 
-  NSMutableArray* ret = [[NSMutableArray alloc] init];
+  // A table with no row headers.
+  if (isTableLike && !table->GetTableRowCount().has_value()) {
+    return nil;
+  }
 
-  if (is_table_like) {
-    // If this is a table, return all row headers.
+  NSMutableArray* rowHeaders = [[NSMutableArray alloc] init];
+
+  if (isTableLike) {
+    // Return the table's row headers.
     std::set<int32_t> headerIds;
-    for (int i = 0; i < *table->GetTableRowCount(); i++) {
+
+    int numberOfRows = table->GetTableRowCount().value();
+
+    // Rows can have more than one row header cell. Also, we apparently need
+    // to guard against duplicate row header ids. Storing in a set dedups.
+    for (int i = 0; i < numberOfRows; i++) {
       std::vector<int32_t> rowHeaderIds = table->GetRowHeaderNodeIds(i);
-      for (int32_t id : rowHeaderIds)
-        headerIds.insert(id);
+      for (int32_t rowHeaderId : rowHeaderIds) {
+        headerIds.insert(rowHeaderId);
+      }
     }
-    for (int32_t id : headerIds) {
-      BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
-      if (cell)
-        [ret addObject:cell->GetNativeViewAccessible()];
+
+    for (int32_t headerId : headerIds) {
+      BrowserAccessibility* cell = _owner->manager()->GetFromID(headerId);
+      if (cell) {
+        [rowHeaders addObject:cell->GetNativeViewAccessible()];
+      }
     }
   } else {
     // Otherwise this is a cell, return the row headers for this cell.
-    for (int32_t id : _owner->node()->GetTableCellRowHeaderNodeIds()) {
-      BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
-      if (cell)
-        [ret addObject:cell->GetNativeViewAccessible()];
+    for (int32_t nodeId : _owner->node()->GetTableCellRowHeaderNodeIds()) {
+      BrowserAccessibility* cell = _owner->manager()->GetFromID(nodeId);
+      if (cell) {
+        [rowHeaders addObject:cell->GetNativeViewAccessible()];
+      }
     }
   }
 
-  return [ret count] ? ret : nil;
+  return [rowHeaders count] ? rowHeaders : nil;
 }
 
 - (NSValue*)rowIndexRange {

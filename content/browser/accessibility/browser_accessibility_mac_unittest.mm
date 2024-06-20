@@ -26,7 +26,12 @@ namespace content {
 
 namespace {
 
-enum class TableHeaderOption { NoHeaders, RowHeaders, ColumnHeaders };
+enum class TableHeaderOption {
+  NoHeaders,
+  RowHeaders,
+  TwoRowHeaders,
+  ColumnHeaders
+};
 
 void MakeRow(ui::AXNodeData* row, int row_id) {
   row->id = row_id;
@@ -99,6 +104,9 @@ void MakeTable(ui::AXTreeUpdate* initial_state,
     for (int column = 0; column < column_count; column++) {
       ui::AXNodeData* cell_node = &initial_state->nodes[next_node_index++];
       if (header_option == TableHeaderOption::RowHeaders && column == 0) {
+        MakeRowHeader(cell_node, next_id++, row, column);
+      } else if (header_option == TableHeaderOption::TwoRowHeaders &&
+                 column < 2) {
         MakeRowHeader(cell_node, next_id++, row, column);
       } else if (header_option == TableHeaderOption::ColumnHeaders &&
                  row == 0) {
@@ -367,7 +375,6 @@ TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
 
   id first_row = ax_table_children[0];
   EXPECT_NSEQ(@"AXRow", [first_row role]);
-  EXPECT_EQ(2U, [first_row children].count);
   id first_row_children = [first_row children];
   EXPECT_EQ(2U, [first_row_children count]);
   EXPECT_NSEQ(@"AXCell", [first_row_children[0] role]);
@@ -375,7 +382,6 @@ TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
 
   id second_row = ax_table_children[1];
   EXPECT_NSEQ(@"AXRow", [second_row role]);
-  EXPECT_EQ(2U, [second_row children].count);
   id second_row_children = [second_row children];
   EXPECT_EQ(2U, [second_row_children count]);
   EXPECT_NSEQ(@"AXCell", [second_row_children[0] role]);
@@ -424,6 +430,92 @@ TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
   row_headers = [last_cell_second_row rowHeaders];
   EXPECT_EQ(1U, [row_headers count]);
   EXPECT_NSEQ(second_row_header_cell, row_headers[0]);
+}
+
+// Test table with more than one row header.
+TEST_F(BrowserAccessibilityMacTest, TableWithTwoRowHeaders) {
+  // Create a table with two row headers per row.
+  const int kNumberOfRows = 2;
+  const int kNumberOfColumns = 3;
+  ui::AXTreeUpdate table_state;
+  MakeTable(&table_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::TwoRowHeaders);
+  manager_ =
+      std::make_unique<BrowserAccessibilityManagerMac>(table_state, nullptr);
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+
+  // Confirm the AX structure is as expected.
+  NSArray* ax_table_children = ax_table.children;
+  EXPECT_EQ(6U, ax_table_children.count);
+
+  id first_row = ax_table_children[0];
+  EXPECT_NSEQ(@"AXRow", [first_row role]);
+  id first_row_children = [first_row children];
+  EXPECT_EQ(3U, [first_row_children count]);
+  EXPECT_NSEQ(@"AXCell", [first_row_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [first_row_children[1] role]);
+  EXPECT_NSEQ(@"AXCell", [first_row_children[2] role]);
+
+  id second_row = ax_table_children[1];
+  EXPECT_NSEQ(@"AXRow", [second_row role]);
+  id second_row_children = [second_row children];
+  EXPECT_EQ(3U, [second_row_children count]);
+  EXPECT_NSEQ(@"AXCell", [second_row_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [second_row_children[1] role]);
+  EXPECT_NSEQ(@"AXCell", [second_row_children[2] role]);
+
+  id first_column = ax_table_children[2];
+  EXPECT_NSEQ(@"AXColumn", [first_column role]);
+  id first_column_children = [first_column children];
+  EXPECT_EQ(2U, [first_column_children count]);
+  EXPECT_NSEQ(@"AXCell", [first_column_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [first_column_children[1] role]);
+
+  id second_column = ax_table_children[3];
+  EXPECT_NSEQ(@"AXColumn", [second_column role]);
+  id second_column_children = [second_column children];
+  EXPECT_EQ(2U, [second_column_children count]);
+  EXPECT_NSEQ(@"AXCell", [second_column_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [second_column_children[1] role]);
+
+  id third_column = ax_table_children[4];
+  EXPECT_NSEQ(@"AXColumn", [third_column role]);
+  id third_column_children = [third_column children];
+  EXPECT_EQ(2U, [third_column_children count]);
+  EXPECT_NSEQ(@"AXCell", [third_column_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [third_column_children[1] role]);
+
+  EXPECT_EQ(first_row_children[0], first_column_children[0]);
+  EXPECT_EQ(first_row_children[1], second_column_children[0]);
+  EXPECT_EQ(first_row_children[2], third_column_children[0]);
+  EXPECT_EQ(second_row_children[0], first_column_children[1]);
+  EXPECT_EQ(second_row_children[1], second_column_children[1]);
+  EXPECT_EQ(second_row_children[2], third_column_children[1]);
+
+  id table_group = ax_table_children[5];
+  EXPECT_NSEQ(@"AXGroup", [table_group role]);
+  EXPECT_EQ(0U, [table_group children].count);
+
+  // Confirm the table has two row headers per row, and that they match
+  // the expected cells in the table.
+  NSArray* row_headers = [ax_table rowHeaders];
+  EXPECT_EQ(4U, [row_headers count]);
+  id first_row_header_cell = row_headers[0];
+  EXPECT_EQ(first_row_header_cell, first_row_children[0]);
+  id second_row_header_cell = row_headers[1];
+  EXPECT_EQ(second_row_header_cell, first_row_children[1]);
+  id third_row_header_cell = row_headers[2];
+  EXPECT_EQ(third_row_header_cell, second_row_children[0]);
+  id fourth_row_header_cell = row_headers[3];
+  EXPECT_EQ(fourth_row_header_cell, second_row_children[1]);
+
+  // A non-row-header cell should return the headers for its row.
+  id last_cell_second_row = second_row_children[2];
+  row_headers = [last_cell_second_row rowHeaders];
+  EXPECT_EQ(2U, [row_headers count]);
+  EXPECT_NSEQ(third_row_header_cell, row_headers[0]);
+  EXPECT_NSEQ(fourth_row_header_cell, row_headers[1]);
 }
 
 // Test Mac indirect columns and descendants.
