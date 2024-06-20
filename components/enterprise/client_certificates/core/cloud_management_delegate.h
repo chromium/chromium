@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+
 namespace client_certificates {
 
 // Delegate abstracting cloud management dependencies for the current context
@@ -20,9 +22,12 @@ class CloudManagementDelegate {
   // there is none.
   virtual std::optional<std::string> GetDMToken() const = 0;
 
-  // Returns the DM server URL configured for the UploadBrowserPublicKey action,
-  // or std::nullopt if its retrieval failed.
-  virtual std::optional<std::string> GetUploadBrowserPublicKeyUrl() const = 0;
+  // Uploads browser public key (from upload_request) to the DM server and calls
+  // the callback when done. DM server retries uploading the key in case of net
+  // error.
+  virtual void UploadBrowserPublicKey(
+      const enterprise_management::DeviceManagementRequest& upload_request,
+      policy::DMServerJobConfiguration::Callback callback) = 0;
 };
 
 }  // namespace client_certificates

@@ -42,6 +42,9 @@ struct DMServerJobResult {
   DeviceManagementStatus dm_status =
       DeviceManagementStatus::DM_STATUS_REQUEST_INVALID;
 
+  // HTTP response codes of the DMServer.
+  int response_code = 0;
+
   // The parsed response proto received from DMServer. This could be empty
   // in case of errors.
   enterprise_management::DeviceManagementResponse response;

@@ -342,8 +342,8 @@ void DMServerJobConfiguration::OnURLLoadComplete(
   }
 
   if (callback_) {
-    std::move(callback_).Run(
-        DMServerJobResult{job, net_error, code, std::move(response)});
+    std::move(callback_).Run(DMServerJobResult{
+        job, net_error, code, response_code, std::move(response)});
   }
 }
 

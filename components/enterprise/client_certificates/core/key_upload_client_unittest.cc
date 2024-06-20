@@ -19,7 +19,6 @@
 #include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/dm_server_client.h"
 #include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
-#include "components/enterprise/client_certificates/core/mock_dm_server_client.h"
 #include "components/enterprise/client_certificates/core/mock_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
@@ -41,10 +40,10 @@ using testing::StrictMock;
 namespace {
 
 constexpr int kSuccessCode = 200;
+constexpr int kDeviceIdConflictCode = 409;
 constexpr std::string_view kFakeSignature = "signature";
 constexpr std::string_view kFakeSpki = "spki";
-constexpr std::string_view kFakeDMToken = "dm_token";
-constexpr std::string_view kFakeUploadURL = "https://example.com/upload";
+constexpr std::string kFakeDMToken = "dm_token";
 
 std::vector<uint8_t> ToBytes(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
@@ -74,21 +73,6 @@ enterprise_management::DeviceManagementRequest CreateExpectedRequest(
   return request;
 }
 
-enterprise_management::DeviceManagementResponse CreateResponse(
-    scoped_refptr<net::X509Certificate> certificate) {
-  enterprise_management::DeviceManagementResponse response;
-
-  std::vector<std::string> pem_chain;
-  if (certificate && certificate->GetPEMEncodedChain(&pem_chain) &&
-      !pem_chain.empty()) {
-    auto* upload_response =
-        response.mutable_browser_public_key_upload_response();
-    upload_response->set_pem_encoded_certificate(pem_chain[0]);
-  }
-
-  return response;
-}
-
 scoped_refptr<net::X509Certificate> LoadTestCert() {
   static constexpr char kTestCertFileName[] = "client_1.pem";
   return net::ImportCertFromFile(net::GetTestCertsDirectory(),
@@ -103,35 +87,12 @@ MATCHER_P(EqualsProto, expected, "") {
 
 class KeyUploadClientTest : public testing::Test {
  protected:
-  void CreateUploadClient(
-      std::unique_ptr<MockCloudManagementDelegate> mock_management_delegate,
-      std::unique_ptr<MockDMServerClient> mock_dm_server_client) {
-    upload_client_ = KeyUploadClient::Create(
-        std::move(mock_management_delegate), std::move(mock_dm_server_client));
+  void CreateUploadClient() {
+    upload_client_ =
+        KeyUploadClient::Create(std::move(mock_management_delegate_));
   }
 
-  scoped_refptr<PrivateKey> SetUpSuccessPath(
-      scoped_refptr<net::X509Certificate> fake_cert) {
-    auto mock_management_delegate =
-        std::make_unique<StrictMock<MockCloudManagementDelegate>>();
-    EXPECT_CALL(*mock_management_delegate, GetDMToken())
-        .WillOnce(Return(std::string(kFakeDMToken)));
-    EXPECT_CALL(*mock_management_delegate, GetUploadBrowserPublicKeyUrl())
-        .WillOnce(Return(std::string(kFakeUploadURL)));
-
-    auto mock_dm_server_client =
-        std::make_unique<StrictMock<MockDMServerClient>>();
-
-    EXPECT_CALL(*mock_dm_server_client,
-                SendRequest(GURL(kFakeUploadURL), kFakeDMToken,
-                            EqualsProto(CreateExpectedRequest(
-                                /*provision_certificate=*/!!fake_cert)),
-                            _))
-        .WillOnce(RunOnceCallback<3>(kSuccessCode, CreateResponse(fake_cert)));
-
-    CreateUploadClient(std::move(mock_management_delegate),
-                       std::move(mock_dm_server_client));
-
+  scoped_refptr<PrivateKey> SetUpPrivateKey() {
     auto private_key = CreateMockedKey();
     EXPECT_CALL(*private_key, SignSlowly(_));
     EXPECT_CALL(*private_key, GetSubjectPublicKeyInfo());
@@ -139,14 +100,55 @@ class KeyUploadClientTest : public testing::Test {
     return private_key;
   }
 
+  void SetUpDMToken(std::optional<std::string> dm_token = kFakeDMToken) {
+    EXPECT_CALL(*mock_management_delegate_, GetDMToken())
+        .WillOnce(Return(dm_token));
+  }
+
+  void SetUpUploadPublicKey(
+      policy::DMServerJobResult result,
+      scoped_refptr<net::X509Certificate> fake_cert = nullptr) {
+    EXPECT_CALL(
+        *mock_management_delegate_,
+        UploadBrowserPublicKey(EqualsProto(CreateExpectedRequest(
+                                   /*provision_certificate=*/!!fake_cert)),
+                               _))
+        .WillOnce(RunOnceCallback<1>(result));
+  }
+
+  policy::DMServerJobResult CreateResult(
+      scoped_refptr<net::X509Certificate> certificate = nullptr) {
+    policy::DMServerJobResult result;
+    result.net_error = net::OK;
+    result.dm_status = policy::DM_STATUS_SUCCESS;
+    result.response_code = kSuccessCode;
+    std::vector<std::string> pem_chain;
+    if (certificate && certificate->GetPEMEncodedChain(&pem_chain) &&
+        !pem_chain.empty()) {
+      result.response.mutable_browser_public_key_upload_response()
+          ->set_pem_encoded_certificate(pem_chain[0]);
+    }
+
+    return result;
+  }
+
+  scoped_refptr<PrivateKey> SetUpSuccessPath(
+      scoped_refptr<net::X509Certificate> fake_cert = nullptr) {
+    SetUpDMToken();
+    SetUpUploadPublicKey(CreateResult(fake_cert), fake_cert);
+    CreateUploadClient();
+    return SetUpPrivateKey();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<KeyUploadClient> upload_client_;
+  std::unique_ptr<MockCloudManagementDelegate> mock_management_delegate_ =
+      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
 };
 
 TEST_F(KeyUploadClientTest, CreateCertificate_Success) {
   auto test_cert = LoadTestCert();
   ASSERT_TRUE(test_cert);
-
   auto private_key = SetUpSuccessPath(test_cert);
 
   base::test::TestFuture<HttpCodeOrClientError,
@@ -162,15 +164,8 @@ TEST_F(KeyUploadClientTest, CreateCertificate_Success) {
 }
 
 TEST_F(KeyUploadClientTest, CreateCertificate_NoDMToken_Fail) {
-  auto mock_management_delegate =
-      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
-  EXPECT_CALL(*mock_management_delegate, GetDMToken())
-      .WillOnce(Return(std::nullopt));
-
-  auto mock_dm_server_client =
-      std::make_unique<StrictMock<MockDMServerClient>>();
-  CreateUploadClient(std::move(mock_management_delegate),
-                     std::move(mock_dm_server_client));
+  SetUpDMToken(std::nullopt);
+  CreateUploadClient();
 
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
@@ -184,68 +179,9 @@ TEST_F(KeyUploadClientTest, CreateCertificate_NoDMToken_Fail) {
             base::unexpected(UploadClientError::kMissingDMToken));
 }
 
-TEST_F(KeyUploadClientTest, CreateCertificate_NoUploadURL_Fail) {
-  auto mock_management_delegate =
-      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
-  EXPECT_CALL(*mock_management_delegate, GetDMToken())
-      .WillOnce(Return(std::string(kFakeDMToken)));
-  EXPECT_CALL(*mock_management_delegate, GetUploadBrowserPublicKeyUrl())
-      .WillOnce(Return(std::nullopt));
-
-  auto mock_dm_server_client =
-      std::make_unique<StrictMock<MockDMServerClient>>();
-  CreateUploadClient(std::move(mock_management_delegate),
-                     std::move(mock_dm_server_client));
-
-  base::test::TestFuture<HttpCodeOrClientError,
-                         scoped_refptr<net::X509Certificate>>
-      test_future;
-  upload_client_->CreateCertificate(nullptr, test_future.GetCallback());
-
-  auto [response_code, certificate] = test_future.Take();
-
-  EXPECT_FALSE(certificate);
-  EXPECT_EQ(response_code,
-            base::unexpected(UploadClientError::kMissingUploadURL));
-}
-
-TEST_F(KeyUploadClientTest, CreateCertificate_InvalidURL_Fail) {
-  auto mock_management_delegate =
-      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
-  EXPECT_CALL(*mock_management_delegate, GetDMToken())
-      .WillOnce(Return(std::string(kFakeDMToken)));
-  EXPECT_CALL(*mock_management_delegate, GetUploadBrowserPublicKeyUrl())
-      .WillOnce(Return("h/t/t/p/s"));
-
-  auto mock_dm_server_client =
-      std::make_unique<StrictMock<MockDMServerClient>>();
-  CreateUploadClient(std::move(mock_management_delegate),
-                     std::move(mock_dm_server_client));
-
-  base::test::TestFuture<HttpCodeOrClientError,
-                         scoped_refptr<net::X509Certificate>>
-      test_future;
-  upload_client_->CreateCertificate(nullptr, test_future.GetCallback());
-
-  auto [response_code, certificate] = test_future.Take();
-
-  EXPECT_FALSE(certificate);
-  EXPECT_EQ(response_code,
-            base::unexpected(UploadClientError::kInvalidUploadURL));
-}
-
 TEST_F(KeyUploadClientTest, CreateCertificate_NullKey_Fail) {
-  auto mock_management_delegate =
-      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
-  EXPECT_CALL(*mock_management_delegate, GetDMToken())
-      .WillOnce(Return(std::string(kFakeDMToken)));
-  EXPECT_CALL(*mock_management_delegate, GetUploadBrowserPublicKeyUrl())
-      .WillOnce(Return(std::string(kFakeUploadURL)));
-
-  auto mock_dm_server_client =
-      std::make_unique<StrictMock<MockDMServerClient>>();
-  CreateUploadClient(std::move(mock_management_delegate),
-                     std::move(mock_dm_server_client));
+  SetUpDMToken();
+  CreateUploadClient();
 
   base::test::TestFuture<HttpCodeOrClientError,
                          scoped_refptr<net::X509Certificate>>
@@ -259,8 +195,87 @@ TEST_F(KeyUploadClientTest, CreateCertificate_NullKey_Fail) {
             base::unexpected(UploadClientError::kInvalidKeyParameter));
 }
 
+TEST_F(KeyUploadClientTest, CreateCertificate_DMServerFailed) {
+  auto test_cert = LoadTestCert();
+  ASSERT_TRUE(test_cert);
+
+  SetUpDMToken();
+  SetUpUploadPublicKey(
+      policy::DMServerJobResult{
+          nullptr, net::OK, policy::DM_STATUS_SERVICE_DEVICE_ID_CONFLICT,
+          kDeviceIdConflictCode,
+          enterprise_management::DeviceManagementResponse()},
+      test_cert);
+
+  CreateUploadClient();
+
+  auto private_key = SetUpPrivateKey();
+
+  base::test::TestFuture<HttpCodeOrClientError,
+                         scoped_refptr<net::X509Certificate>>
+      test_future;
+  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+
+  auto [response_code, certificate] = test_future.Take();
+
+  EXPECT_FALSE(certificate);  // Certificate will be empty.
+  EXPECT_EQ(response_code, kDeviceIdConflictCode);
+}
+
+TEST_F(KeyUploadClientTest, CreateCertificate_NetFailed) {
+  auto test_cert = LoadTestCert();
+  ASSERT_TRUE(test_cert);
+
+  SetUpDMToken();
+  SetUpUploadPublicKey(
+      policy::DMServerJobResult{
+          nullptr, net::ERR_FAILED, policy::DM_STATUS_REQUEST_FAILED, 0,
+          enterprise_management::DeviceManagementResponse()},
+      test_cert);
+
+  CreateUploadClient();
+
+  auto private_key = SetUpPrivateKey();
+
+  base::test::TestFuture<HttpCodeOrClientError,
+                         scoped_refptr<net::X509Certificate>>
+      test_future;
+  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+
+  auto [response_code, certificate] = test_future.Take();
+
+  EXPECT_FALSE(certificate);  // Certificate will be empty.
+  EXPECT_EQ(response_code, 0);
+}
+
+TEST_F(KeyUploadClientTest, CreateCertificate_MalformedResponse) {
+  auto test_cert = LoadTestCert();
+  ASSERT_TRUE(test_cert);
+
+  SetUpDMToken();
+  SetUpUploadPublicKey(
+      policy::DMServerJobResult{
+          nullptr, net::OK, policy::DM_STATUS_SUCCESS, kSuccessCode,
+          enterprise_management::DeviceManagementResponse()},
+      test_cert);
+
+  CreateUploadClient();
+
+  auto private_key = SetUpPrivateKey();
+
+  base::test::TestFuture<HttpCodeOrClientError,
+                         scoped_refptr<net::X509Certificate>>
+      test_future;
+  upload_client_->CreateCertificate(private_key, test_future.GetCallback());
+
+  auto [response_code, certificate] = test_future.Take();
+
+  EXPECT_FALSE(certificate);  // Certificate will be empty.
+  EXPECT_EQ(response_code, kSuccessCode);
+}
+
 TEST_F(KeyUploadClientTest, KeySync_Success) {
-  auto private_key = SetUpSuccessPath(nullptr);
+  auto private_key = SetUpSuccessPath();
 
   base::test::TestFuture<HttpCodeOrClientError> test_future;
   upload_client_->SyncKey(private_key, test_future.GetCallback());
@@ -270,19 +285,22 @@ TEST_F(KeyUploadClientTest, KeySync_Success) {
   EXPECT_EQ(response_code, kSuccessCode);
 }
 
+TEST_F(KeyUploadClientTest, KeySync_NoDMToken) {
+  SetUpDMToken(std::nullopt);
+  CreateUploadClient();
+
+  base::test::TestFuture<HttpCodeOrClientError> test_future;
+  upload_client_->SyncKey(nullptr, test_future.GetCallback());
+
+  auto response_code = test_future.Take();
+
+  EXPECT_EQ(response_code,
+            base::unexpected(UploadClientError::kMissingDMToken));
+}
+
 TEST_F(KeyUploadClientTest, KeySync_FailSignature_Fail) {
-  auto mock_management_delegate =
-      std::make_unique<StrictMock<MockCloudManagementDelegate>>();
-  EXPECT_CALL(*mock_management_delegate, GetDMToken())
-      .WillOnce(Return(std::string(kFakeDMToken)));
-  EXPECT_CALL(*mock_management_delegate, GetUploadBrowserPublicKeyUrl())
-      .WillOnce(Return(std::string(kFakeUploadURL)));
-
-  auto mock_dm_server_client =
-      std::make_unique<StrictMock<MockDMServerClient>>();
-
-  CreateUploadClient(std::move(mock_management_delegate),
-                     std::move(mock_dm_server_client));
+  SetUpDMToken();
+  CreateUploadClient();
 
   auto private_key = CreateMockedKey();
   EXPECT_CALL(*private_key, SignSlowly(_)).WillOnce(Return(std::nullopt));
@@ -295,6 +313,24 @@ TEST_F(KeyUploadClientTest, KeySync_FailSignature_Fail) {
 
   EXPECT_EQ(response_code,
             base::unexpected(UploadClientError::kSignatureCreationFailed));
+}
+
+TEST_F(KeyUploadClientTest, KeySync_DMServerFailed) {
+  SetUpDMToken();
+  auto private_key = SetUpPrivateKey();
+  SetUpUploadPublicKey(policy::DMServerJobResult{
+      nullptr, net::OK,
+      policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_ID_CONFLICT,
+      kDeviceIdConflictCode,
+      enterprise_management::DeviceManagementResponse()});
+
+  CreateUploadClient();
+
+  base::test::TestFuture<HttpCodeOrClientError> test_future;
+  upload_client_->SyncKey(private_key, test_future.GetCallback());
+  auto response_code = test_future.Take();
+
+  EXPECT_EQ(response_code, 409);
 }
 
 }  // namespace client_certificates

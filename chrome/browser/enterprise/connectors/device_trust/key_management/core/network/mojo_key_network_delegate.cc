@@ -116,27 +116,6 @@ void MojoKeyNetworkDelegate::SendPublicKeyToDmServer(
                      std::move(upload_key_completed_callback)));
 }
 
-void MojoKeyNetworkDelegate::SendRequest(
-    const GURL& url,
-    std::string_view dm_token,
-    const enterprise_management::DeviceManagementRequest& request_body,
-    SendRequestCallback callback) {
-  std::string body;
-  if (!request_body.SerializeToString(&body)) {
-    std::move(callback).Run(0, std::nullopt);
-    return;
-  }
-
-  auto url_loader = CreateURLLoader(url, std::string(dm_token), body);
-  auto* url_loader_ptr = url_loader.get();
-  url_loader_ptr->DownloadToString(
-      shared_url_loader_factory_.get(),
-      base::BindOnce(&MojoKeyNetworkDelegate::OnDownloadStringComplete,
-                     weak_factory_.GetWeakPtr(), std::move(url_loader),
-                     std::move(callback)),
-      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
-}
-
 void MojoKeyNetworkDelegate::OnURLLoaderComplete(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     UploadKeyCompletedCallback upload_key_completed_callback,
@@ -148,30 +127,6 @@ void MojoKeyNetworkDelegate::OnURLLoaderComplete(
   }
 
   std::move(upload_key_completed_callback).Run(response_code);
-}
-
-void MojoKeyNetworkDelegate::OnDownloadStringComplete(
-    std::unique_ptr<network::SimpleURLLoader> url_loader,
-    SendRequestCallback callback,
-    std::optional<std::string> response_body) {
-  HttpResponseCode response_code = 0;
-  if (url_loader && url_loader->ResponseInfo() &&
-      url_loader->ResponseInfo()->headers) {
-    response_code = url_loader->ResponseInfo()->headers->response_code();
-  }
-
-  if (response_code == 0 && url_loader) {
-    LogNetError(url_loader->NetError());
-  }
-
-  enterprise_management::DeviceManagementResponse response;
-  if (response_body.has_value() &&
-      response.ParseFromString(response_body.value())) {
-    std::move(callback).Run(response_code, std::move(response));
-    return;
-  }
-
-  std::move(callback).Run(response_code, std::nullopt);
 }
 
 }  // namespace enterprise_connectors

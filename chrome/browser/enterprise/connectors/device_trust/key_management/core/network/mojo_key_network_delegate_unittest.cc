@@ -8,13 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -36,12 +32,6 @@ constexpr char kFakeDMServerUrl[] =
 constexpr char kFakeDMToken[] = "fake-browser-dm-token";
 constexpr HttpResponseCode kSuccessCode = 200;
 constexpr HttpResponseCode kHardFailureCode = 404;
-
-bool CompareResponseProtos(
-    const enterprise_management::DeviceManagementResponse& response1,
-    const enterprise_management::DeviceManagementResponse& response2) {
-  return response1.SerializeAsString() == response2.SerializeAsString();
-}
 
 }  // namespace
 
@@ -123,64 +113,6 @@ TEST_F(MojoKeyNetworkDelegateTest, UploadRequest_EmptyHeader) {
       network::URLLoaderCompletionStatus(net::OK),
       network::TestURLLoaderFactory::Redirects());
   EXPECT_EQ(0, SendRequest());
-}
-
-TEST_F(MojoKeyNetworkDelegateTest, SendRequest_Success) {
-  enterprise_management::DeviceManagementRequest request_body;
-  request_body.mutable_browser_public_key_upload_request()
-      ->set_provision_certificate(true);
-  const auto& request_body_string = request_body.SerializeAsString();
-
-  enterprise_management::DeviceManagementResponse response_body;
-  response_body.mutable_browser_public_key_upload_response()
-      ->set_pem_encoded_certificate("1234");
-  const auto& response_body_string = response_body.SerializeAsString();
-
-  base::test::TestFuture<
-      int, std::optional<enterprise_management::DeviceManagementResponse>>
-      test_future;
-  network_delegate_->SendRequest(GURL(kFakeDMServerUrl), kFakeDMToken,
-                                 request_body, test_future.GetCallback());
-
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0U);
-  ASSERT_TRUE(pending_request);
-
-  // Verify the request properties.
-  const auto& resource_request = pending_request->request;
-  EXPECT_EQ(network::GetUploadData(resource_request), request_body_string);
-  EXPECT_EQ(resource_request.method, "POST");
-  EXPECT_EQ(resource_request.url, GURL(kFakeDMServerUrl));
-
-  // Send the response.
-  test_url_loader_factory_.SimulateResponseWithoutRemovingFromPendingList(
-      pending_request, network::CreateURLResponseHead(net::HTTP_OK),
-      response_body_string, network::URLLoaderCompletionStatus(net::OK));
-
-  auto [response_code, response] = test_future.Take();
-
-  EXPECT_EQ(response_code, kSuccessCode);
-  ASSERT_TRUE(response.has_value());
-  EXPECT_TRUE(CompareResponseProtos(response.value(), response_body));
-}
-
-TEST_F(MojoKeyNetworkDelegateTest, SendRequest_Fail) {
-  enterprise_management::DeviceManagementRequest request_body;
-  request_body.mutable_browser_public_key_upload_request()
-      ->set_provision_certificate(true);
-
-  AddResponse(net::HTTP_NOT_FOUND);
-
-  base::test::TestFuture<
-      int, std::optional<enterprise_management::DeviceManagementResponse>>
-      test_future;
-  network_delegate_->SendRequest(GURL(kFakeDMServerUrl), kFakeDMToken,
-                                 request_body, test_future.GetCallback());
-
-  auto [response_code, response] = test_future.Take();
-
-  EXPECT_EQ(response_code, kHardFailureCode);
-  EXPECT_FALSE(response.has_value());
 }
 
 }  // namespace enterprise_connectors

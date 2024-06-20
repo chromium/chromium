@@ -9,12 +9,20 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace enterprise_management {
 class DeviceManagementRequest;
-class DeviceManagementResponse;
 }  // namespace enterprise_management
+
+namespace policy {
+class DeviceManagementService;
+}  // namespace policy
 
 namespace client_certificates {
 
@@ -22,20 +30,24 @@ namespace client_certificates {
 // abstracting away the networking implementation details.
 class DMServerClient {
  public:
+  // Visible for testing.
+  static constexpr char kNetErrorHistogram[] =
+      "Enterprise.DeviceTrust.PublicKeyUpload.URLLoaderNetError";
+
+  static std::unique_ptr<DMServerClient> Create(
+      raw_ptr<policy::DeviceManagementService> device_management_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  // Uploads browser public key to DM server. DM server retries in case of net
+  // error.
+  virtual void UploadBrowserPublicKey(
+      const std::string& client_id,
+      const std::string& dm_token,
+      const std::optional<std::string>& profile_id,
+      const enterprise_management::DeviceManagementRequest& upload_request,
+      policy::DMServerJobConfiguration::Callback callback) = 0;
+
   virtual ~DMServerClient() = default;
-
-  using SendRequestCallback = base::OnceCallback<void(
-      int,
-      std::optional<enterprise_management::DeviceManagementResponse>)>;
-
-  // Sends `request_body` to the DM server at `url` using `dm_token` as auth
-  // token. Invokes `callback` upon receiving the response with the HTTP status
-  // code and body.
-  virtual void SendRequest(
-      const GURL& url,
-      std::string_view dm_token,
-      const enterprise_management::DeviceManagementRequest& request_body,
-      SendRequestCallback callback) = 0;
 };
 
 }  // namespace client_certificates

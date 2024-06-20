@@ -19,13 +19,12 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
-#include "components/enterprise/client_certificates/core/dm_server_client.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/x509_certificate.h"
-#include "url/gurl.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
@@ -54,24 +53,8 @@ BPKUR::KeyType AlgorithmToType(
   }
 }
 
-struct RequestParameters {
-  RequestParameters(const GURL& url,
-                    std::string_view dm_token,
-                    enterprise_management::DeviceManagementRequest request)
-      : url(url), dm_token(dm_token), request(std::move(request)) {}
-
-  ~RequestParameters() = default;
-
-  GURL url;
-  std::string dm_token;
-  enterprise_management::DeviceManagementRequest request;
-};
-
-UploadClientErrorOr<RequestParameters> CreateRequest(
-    GURL dm_server_url,
-    std::string_view dm_token,
-    scoped_refptr<PrivateKey> private_key,
-    bool create_certificate) {
+UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
+CreateRequest(scoped_refptr<PrivateKey> private_key, bool create_certificate) {
   if (!private_key) {
     return base::unexpected(UploadClientError::kInvalidKeyParameter);
   }
@@ -95,16 +78,15 @@ UploadClientErrorOr<RequestParameters> CreateRequest(
       AlgorithmToType(private_key->GetAlgorithm()));
   mutable_upload_request->set_provision_certificate(create_certificate);
 
-  return RequestParameters(dm_server_url, dm_token, std::move(overall_request));
+  return overall_request;
 }
 
 }  // namespace
 
 class KeyUploadClientImpl : public KeyUploadClient {
  public:
-  KeyUploadClientImpl(
-      std::unique_ptr<CloudManagementDelegate> management_delegate,
-      std::unique_ptr<DMServerClient> dm_server_client);
+  explicit KeyUploadClientImpl(
+      std::unique_ptr<CloudManagementDelegate> management_delegate);
   ~KeyUploadClientImpl() override;
 
   // KeyUploadClient:
@@ -114,61 +96,46 @@ class KeyUploadClientImpl : public KeyUploadClient {
                SyncKeyCallback callback) override;
 
  private:
-  // Asynchronously generates the request parameters for the upload request,
-  // involving the creation of a proof-of-poseesion of `private_key`.
-  void GetRequestParameters(
+  // Asynchronously generates the upload request, involving the creation of a
+  // proof-of-poseesion of `private_key`.
+  void GetRequest(
       scoped_refptr<PrivateKey> private_key,
       bool create_certificate,
-      base::OnceCallback<void(UploadClientErrorOr<RequestParameters>)>
-          callback);
-
-  void SendRequest(
-      const RequestParameters& parameters,
-      base::OnceCallback<
-          void(int,
-               std::optional<enterprise_management::DeviceManagementResponse>)>
+      base::OnceCallback<void(
+          UploadClientErrorOr<enterprise_management::DeviceManagementRequest>)>
           callback);
 
   void OnCertificateRequestCreated(
       CreateCertificateCallback callback,
-      UploadClientErrorOr<RequestParameters> parameters);
+      UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
+          request);
 
-  void OnCertificateResponseReceived(
-      CreateCertificateCallback callback,
-      int response_code,
-      std::optional<enterprise_management::DeviceManagementResponse>
-          response_body);
+  void OnCertificateResponseReceived(CreateCertificateCallback callback,
+                                     policy::DMServerJobResult result);
 
-  void OnSyncRequestCreated(SyncKeyCallback callback,
-                            UploadClientErrorOr<RequestParameters> parameters);
-
-  void OnSyncResponseReceived(
+  void OnSyncRequestCreated(
       SyncKeyCallback callback,
-      int response_code,
-      std::optional<enterprise_management::DeviceManagementResponse>
-          response_body);
+      UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
+          request);
+
+  void OnSyncResponseReceived(SyncKeyCallback callback,
+                              policy::DMServerJobResult result);
 
   std::unique_ptr<CloudManagementDelegate> management_delegate_;
-  std::unique_ptr<DMServerClient> dm_server_client_;
 
   base::WeakPtrFactory<KeyUploadClientImpl> weak_factory_{this};
 };
 
 // static
 std::unique_ptr<KeyUploadClient> KeyUploadClient::Create(
-    std::unique_ptr<CloudManagementDelegate> management_delegate,
-    std::unique_ptr<DMServerClient> dm_server_client) {
-  return std::make_unique<KeyUploadClientImpl>(std::move(management_delegate),
-                                               std::move(dm_server_client));
+    std::unique_ptr<CloudManagementDelegate> management_delegate) {
+  return std::make_unique<KeyUploadClientImpl>(std::move(management_delegate));
 }
 
 KeyUploadClientImpl::KeyUploadClientImpl(
-    std::unique_ptr<CloudManagementDelegate> management_delegate,
-    std::unique_ptr<DMServerClient> dm_server_client)
-    : management_delegate_(std::move(management_delegate)),
-      dm_server_client_(std::move(dm_server_client)) {
+    std::unique_ptr<CloudManagementDelegate> management_delegate)
+    : management_delegate_(std::move(management_delegate)) {
   CHECK(management_delegate_);
-  CHECK(dm_server_client_);
 }
 
 KeyUploadClientImpl::~KeyUploadClientImpl() = default;
@@ -176,88 +143,62 @@ KeyUploadClientImpl::~KeyUploadClientImpl() = default;
 void KeyUploadClientImpl::CreateCertificate(
     scoped_refptr<PrivateKey> private_key,
     CreateCertificateCallback callback) {
-  GetRequestParameters(
-      private_key, /*create_certificate=*/true,
-      base::BindOnce(&KeyUploadClientImpl::OnCertificateRequestCreated,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  GetRequest(private_key, /*create_certificate=*/true,
+             base::BindOnce(&KeyUploadClientImpl::OnCertificateRequestCreated,
+                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void KeyUploadClientImpl::SyncKey(scoped_refptr<PrivateKey> private_key,
                                   SyncKeyCallback callback) {
-  GetRequestParameters(
-      private_key, /*create_certificate=*/false,
-      base::BindOnce(&KeyUploadClientImpl::OnSyncRequestCreated,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  GetRequest(private_key, /*create_certificate=*/false,
+             base::BindOnce(&KeyUploadClientImpl::OnSyncRequestCreated,
+                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
-void KeyUploadClientImpl::GetRequestParameters(
+
+void KeyUploadClientImpl::GetRequest(
     scoped_refptr<PrivateKey> private_key,
     bool create_certificate,
-    base::OnceCallback<void(UploadClientErrorOr<RequestParameters>)> callback) {
-  auto dm_token = management_delegate_->GetDMToken();
-  if (!dm_token.has_value()) {
+    base::OnceCallback<void(
+        UploadClientErrorOr<enterprise_management::DeviceManagementRequest>)>
+        callback) {
+  if (!management_delegate_->GetDMToken().has_value()) {
     std::move(callback).Run(
         base::unexpected(UploadClientError::kMissingDMToken));
     return;
   }
 
-  auto upload_url_string = management_delegate_->GetUploadBrowserPublicKeyUrl();
-  if (!upload_url_string.has_value()) {
-    std::move(callback).Run(
-        base::unexpected(UploadClientError::kMissingUploadURL));
-    return;
-  }
-
-  GURL dm_server_url(upload_url_string.value());
-  if (!dm_server_url.is_valid()) {
-    std::move(callback).Run(
-        base::unexpected(UploadClientError::kInvalidUploadURL));
-    return;
-  }
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(CreateRequest, dm_server_url, dm_token.value(),
-                     std::move(private_key), create_certificate),
+      base::BindOnce(CreateRequest, std::move(private_key), create_certificate),
       std::move(callback));
-}
-
-void KeyUploadClientImpl::SendRequest(
-    const RequestParameters& parameters,
-    base::OnceCallback<
-        void(int,
-             std::optional<enterprise_management::DeviceManagementResponse>)>
-        callback) {
-  dm_server_client_->SendRequest(parameters.url, parameters.dm_token,
-                                 parameters.request, std::move(callback));
 }
 
 void KeyUploadClientImpl::OnCertificateRequestCreated(
     CreateCertificateCallback callback,
-    UploadClientErrorOr<RequestParameters> parameters) {
-  if (!parameters.has_value()) {
-    std::move(callback).Run(base::unexpected(parameters.error()), nullptr);
+    UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
+        request) {
+  if (!request.has_value()) {
+    std::move(callback).Run(base::unexpected(request.error()), nullptr);
     return;
   }
 
-  SendRequest(
-      parameters.value(),
+  management_delegate_->UploadBrowserPublicKey(
+      std::move(request.value()),
       base::BindOnce(&KeyUploadClientImpl::OnCertificateResponseReceived,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void KeyUploadClientImpl::OnCertificateResponseReceived(
     CreateCertificateCallback callback,
-    int response_code,
-    std::optional<enterprise_management::DeviceManagementResponse>
-        response_body) {
+    policy::DMServerJobResult result) {
   scoped_refptr<net::X509Certificate> certificate = nullptr;
-  if (response_body.has_value() &&
-      response_body->has_browser_public_key_upload_response() &&
-      response_body->browser_public_key_upload_response()
+  if (result.dm_status == policy::DM_STATUS_SUCCESS &&
+      result.response.has_browser_public_key_upload_response() &&
+      result.response.browser_public_key_upload_response()
           .has_pem_encoded_certificate()) {
     // Try to parse the client certificate.
     std::string_view pem_encoded_certificate =
-        response_body->browser_public_key_upload_response()
+        result.response.browser_public_key_upload_response()
             .pem_encoded_certificate();
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
@@ -267,29 +208,32 @@ void KeyUploadClientImpl::OnCertificateResponseReceived(
       certificate = certs[0];
     }
   }
-
-  std::move(callback).Run(response_code, std::move(certificate));
+  // TODO(b/347949238): return a new UploadClientError::kNetworkError when there
+  // is a net error.
+  std::move(callback).Run(result.response_code, std::move(certificate));
 }
 
 void KeyUploadClientImpl::OnSyncRequestCreated(
     SyncKeyCallback callback,
-    UploadClientErrorOr<RequestParameters> parameters) {
-  if (!parameters.has_value()) {
-    std::move(callback).Run(base::unexpected(parameters.error()));
+    UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
+        request) {
+  if (!request.has_value()) {
+    std::move(callback).Run(base::unexpected(request.error()));
     return;
   }
 
-  SendRequest(parameters.value(),
-              base::BindOnce(&KeyUploadClientImpl::OnSyncResponseReceived,
-                             weak_factory_.GetWeakPtr(), std::move(callback)));
+  management_delegate_->UploadBrowserPublicKey(
+      std::move(request.value()),
+      base::BindOnce(&KeyUploadClientImpl::OnSyncResponseReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void KeyUploadClientImpl::OnSyncResponseReceived(
     SyncKeyCallback callback,
-    int response_code,
-    std::optional<enterprise_management::DeviceManagementResponse>
-        response_body) {
-  std::move(callback).Run(response_code);
+    policy::DMServerJobResult result) {
+  // TODO(b/347949238): return a new UploadClientError::kNetworkError when there
+  // is a net error.
+  std::move(callback).Run(result.response_code);
 }
 
 }  // namespace client_certificates

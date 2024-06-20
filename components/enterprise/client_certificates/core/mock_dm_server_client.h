@@ -18,11 +18,12 @@ class MockDMServerClient : public DMServerClient {
   ~MockDMServerClient() override;
 
   MOCK_METHOD(void,
-              SendRequest,
-              (const GURL&,
-               std::string_view,
+              UploadBrowserPublicKey,
+              (const std::string&,
+               const std::string&,
+               const std::optional<std::string>&,
                const enterprise_management::DeviceManagementRequest&,
-               SendRequestCallback),
+               policy::DMServerJobConfiguration::Callback),
               (override));
 };
 

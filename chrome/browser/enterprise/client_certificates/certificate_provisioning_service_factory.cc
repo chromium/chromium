@@ -13,7 +13,6 @@
 #include "chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 #include "chrome/browser/enterprise/client_certificates/profile_cloud_management_delegate.h"
 #include "chrome/browser/enterprise/client_certificates/profile_context_delegate.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -108,11 +107,10 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
   return CertificateProvisioningService::Create(
       profile->GetPrefs(), certificate_store,
       std::make_unique<ProfileContextDelegate>(profile_network_context_service),
-      KeyUploadClient::Create(
-          std::make_unique<ProfileCloudManagementDelegate>(
-              profile, device_management_service, profile_id_service),
-          std::make_unique<enterprise_connectors::MojoKeyNetworkDelegate>(
-              std::move(url_loader_factory))));
+      KeyUploadClient::Create(std::make_unique<ProfileCloudManagementDelegate>(
+          profile, profile_id_service,
+          DMServerClient::Create(device_management_service,
+                                 std::move(url_loader_factory)))));
 }
 
 }  // namespace client_certificates

@@ -544,7 +544,8 @@ void CloudPolicyClient::OnRegisterWithCertificateRequestSigned(
   if (!success) {
     const em::DeviceManagementResponse response;
     OnRegisterCompleted(
-        DMServerJobResult{nullptr, 0, DM_STATUS_CANNOT_SIGN_REQUEST, response});
+        DMServerJobResult{/* job */ nullptr, 0, DM_STATUS_CANNOT_SIGN_REQUEST,
+                          /* http response code */ 0, response});
     return;
   }
 

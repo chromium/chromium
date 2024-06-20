@@ -4,5 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/leveldb_proto",
   "+net",
+  "+services/network/public",
+  "+services/network/test",
   "+third_party/boringssl/src/include",
 ]

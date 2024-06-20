@@ -16,10 +16,11 @@ class MockCloudManagementDelegate : public CloudManagementDelegate {
   ~MockCloudManagementDelegate() override;
 
   MOCK_METHOD(std::optional<std::string>, GetDMToken, (), (const, override));
-  MOCK_METHOD(std::optional<std::string>,
-              GetUploadBrowserPublicKeyUrl,
-              (),
-              (const, override));
+  MOCK_METHOD(void,
+              UploadBrowserPublicKey,
+              (const enterprise_management::DeviceManagementRequest&,
+               policy::DMServerJobConfiguration::Callback callback),
+              (override));
 };
 
 }  // namespace client_certificates
