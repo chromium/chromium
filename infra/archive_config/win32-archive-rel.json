@@ -24,6 +24,8 @@
                 "MEIPreload\\preloaded_data.pb",
                 "mojo_core.dll",
                 "notification_helper.exe",
+                "PrivacySandboxAttestationsPreloaded\\manifest.json",
+                "PrivacySandboxAttestationsPreloaded\\privacy-sandbox-attestations.dat",
                 "resources.pak",
                 "v8_context_snapshot.bin",
                 "vk_swiftshader.dll",

@@ -14,6 +14,10 @@
         {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe":
         {"exists": true},
+    "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$MINI_INSTALLER_FILE_VERSION\\PrivacySandboxAttestationsPreloaded\\manifest.json":
+        {"exists": true},
+    "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$MINI_INSTALLER_FILE_VERSION\\PrivacySandboxAttestationsPreloaded\\privacy-sandbox-attestations.dat":
+        {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$MINI_INSTALLER_FILE_VERSION\\$MINI_INSTALLER_FILE_VERSION.manifest":
         {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$MINI_INSTALLER_FILE_VERSION\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION":

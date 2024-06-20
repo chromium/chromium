@@ -9,6 +9,8 @@
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\chrome.7z": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe": {"exists": true},
+    "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\PrivacySandboxAttestationsPreloaded\\manifest.json": {"exists": true},
+    "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\PrivacySandboxAttestationsPreloaded\\privacy-sandbox-attestations.dat": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION.manifest": {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_SXS\\Application\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION\\$PREVIOUS_VERSION_MINI_INSTALLER_FILE_VERSION": {"exists": false}
   },
