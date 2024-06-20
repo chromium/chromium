@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         implements NotificationPermissionReviewBridge.Observer,
                 SafetyHubNotificationsPreference.MenuClickListener {
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
+    private LargeIconBridge mLargeIconBridge;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -96,13 +98,17 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
 
     @Override
     protected void updatePreferenceList() {
+        if (mLargeIconBridge == null) {
+            mLargeIconBridge = new LargeIconBridge(getProfile());
+        }
         mPreferenceList.removeAll();
 
         List<NotificationPermissions> notificationPermissionsList =
                 mNotificationPermissionReviewBridge.getNotificationPermissions();
         for (NotificationPermissions notificationPermissions : notificationPermissionsList) {
             SafetyHubNotificationsPreference preference =
-                    new SafetyHubNotificationsPreference(getContext(), notificationPermissions);
+                    new SafetyHubNotificationsPreference(
+                            getContext(), notificationPermissions, mLargeIconBridge);
             preference.setMenuClickListener(this);
             mPreferenceList.addPreference(preference);
         }

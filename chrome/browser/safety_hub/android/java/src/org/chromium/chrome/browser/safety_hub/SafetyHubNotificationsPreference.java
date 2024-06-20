@@ -7,16 +7,23 @@ package org.chromium.chrome.browser.safety_hub;
 import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 public class SafetyHubNotificationsPreference extends ChromeBasePreference
         implements ListMenu.Delegate {
@@ -33,13 +40,18 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
     private static final int MENU_ASK_NOTIFICATIONS_ITEM_ID = 2;
 
     private final NotificationPermissions mNotificationPermissions;
+    private final LargeIconBridge mLargeIconBridge;
     private MenuClickListener mMenuClickListener;
+    private boolean mFaviconFetched;
 
     SafetyHubNotificationsPreference(
-            Context context, NotificationPermissions notificationPermissions) {
+            Context context,
+            @NonNull NotificationPermissions notificationPermissions,
+            @NonNull LargeIconBridge largeIconBridge) {
         super(context);
 
         mNotificationPermissions = notificationPermissions;
+        mLargeIconBridge = largeIconBridge;
 
         setTitle(mNotificationPermissions.getPrimaryPattern());
         int notificationCount = mNotificationPermissions.getNotificationCount();
@@ -62,6 +74,18 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
 
         ListMenuButton listMenu = (ListMenuButton) holder.findViewById(R.id.button);
         listMenu.setDelegate(() -> getListMenu());
+
+        ImageView icon = (ImageView) holder.findViewById(android.R.id.icon);
+        FaviconViewUtils.formatIconForFavicon(getContext().getResources(), icon);
+
+        if (!mFaviconFetched) {
+            FaviconLoader.loadFavicon(
+                    getContext(),
+                    mLargeIconBridge,
+                    new GURL(mNotificationPermissions.getPrimaryPattern()),
+                    this::onFaviconAvailable);
+            mFaviconFetched = true;
+        }
     }
 
     @Override
@@ -113,5 +137,11 @@ public class SafetyHubNotificationsPreference extends ChromeBasePreference
                         MENU_ASK_NOTIFICATIONS_ITEM_ID,
                         0));
         return BrowserUiListMenuUtils.getBasicListMenu(getContext(), listItems, this);
+    }
+
+    private void onFaviconAvailable(Drawable drawable) {
+        if (drawable != null) {
+            setIcon(drawable);
+        }
     }
 }
