@@ -271,7 +271,7 @@
    */
   function addHeaders(url, headers) {
     function escape(s) {
-      return s.replace('(', '\\(').replace(')', '\\)');
+      return s.replace('(', '\\(').replace(')', '\\)').replace(',', '\\,');
     }
     const formattedHeaders = headers.map((header) => {
       return `header(${escape(header[0])}, ${escape(header[1])})`;
