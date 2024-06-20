@@ -3284,16 +3284,18 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
   if ((retry_size == kIndefiniteSize &&
        ruby_size <= available + overhang.start) ||
       is_monolithic) {
-    // Recreate lines because lines created with LineBreakerMode::kMaxContent
-    // are not usable in InlineLayoutAlgorithm.
-    base_line_info =
-        CreateSubLineInfo(base_start, base_end_index, LineBreakerMode::kContent,
-                          kIndefiniteSize, trailing_whitespace_);
-    for (wtf_size_t i = 0; i < annotation_data.size(); ++i) {
-      annotation_line_list[i] = CreateSubLineInfo(
-          annotation_data[i].start, annotation_data[i].end_item_index,
-          LineBreakerMode::kContent, kIndefiniteSize,
-          WhitespaceState::kLeading);
+    if (mode_ == LineBreakerMode::kContent) {
+      // Recreate lines because lines created with LineBreakerMode::kMaxContent
+      // are not usable in InlineLayoutAlgorithm.
+      base_line_info = CreateSubLineInfo(base_start, base_end_index,
+                                         LineBreakerMode::kContent,
+                                         kIndefiniteSize, trailing_whitespace_);
+      for (wtf_size_t i = 0; i < annotation_data.size(); ++i) {
+        annotation_line_list[i] = CreateSubLineInfo(
+            annotation_data[i].start, annotation_data[i].end_item_index,
+            LineBreakerMode::kContent, kIndefiniteSize,
+            WhitespaceState::kLeading);
+      }
     }
 
     InlineItemResult* result =
@@ -3313,9 +3315,8 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
   LayoutUnit base_target = retry_size == kIndefiniteSize
                                ? (available * base_intrinsic_size / ruby_size)
                                : retry_size - 1;
-  base_line_info =
-      CreateSubLineInfo(base_start, base_end_index, LineBreakerMode::kContent,
-                        base_target, trailing_whitespace_);
+  base_line_info = CreateSubLineInfo(base_start, base_end_index, mode_,
+                                     base_target, trailing_whitespace_);
 
   bool annotation_is_broken = false;
   for (wtf_size_t i = 0; i < number_of_annotations; ++i) {
@@ -3332,9 +3333,9 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
         limit = available * line.Width() / ruby_size;
       }
     }
-    line = CreateSubLineInfo(
-        annotation_data[i].start, annotation_data[i].end_item_index,
-        LineBreakerMode::kContent, limit, WhitespaceState::kLeading);
+    line = CreateSubLineInfo(annotation_data[i].start,
+                             annotation_data[i].end_item_index, mode_, limit,
+                             WhitespaceState::kLeading);
     annotation_is_broken = annotation_is_broken || line.GetBreakToken();
   }
 
