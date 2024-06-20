@@ -45,7 +45,10 @@ std::vector<mojom::StandardAcceleratorPropertiesPtr> GetAcceleratorsForActionId(
 }  // namespace
 
 AcceleratorFetcher::AcceleratorFetcher() {
-  CHECK(::features::IsShortcutCustomizationEnabled());
+  if (!::features::IsShortcutCustomizationEnabled()) {
+    return;
+  }
+
   if (Shell::HasInstance()) {
     Shell::Get()
         ->accelerator_controller()
@@ -58,6 +61,10 @@ AcceleratorFetcher::AcceleratorFetcher() {
 }
 
 AcceleratorFetcher::~AcceleratorFetcher() {
+  if (!::features::IsShortcutCustomizationEnabled()) {
+    return;
+  }
+
   if (Shell::HasInstance()) {
     Shell::Get()
         ->accelerator_controller()
