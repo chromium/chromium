@@ -75,6 +75,15 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
   private onAccept_() {
     this.diceWebSigninInterceptBrowserProxy_.accept();
   }
+
+  private getAcceptButtonAriaLabel_() {
+    if (!this.interceptionParameters_) {
+      return null;
+    }
+    const nameAndEmail = this.interceptionParameters_.givenName + ' ' +
+        this.interceptionParameters_.email;
+    return this.i18n('chromeSigninAcceptText', nameAndEmail);
+  }
 }
 
 declare global {
