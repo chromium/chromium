@@ -120,8 +120,9 @@ class LensOverlayController : public LensSearchboxClient,
     lens::LensOverlaySelectionType multimodal_selection_type_;
   };
 
-  // Returns whether the lens overlay feature is enabled.
-  static bool IsEnabled(Profile* profile);
+  // Returns whether the Lens Overlay feature is enabled for this user profile
+  // and browser window.
+  static bool IsEnabled(Browser* browser);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
