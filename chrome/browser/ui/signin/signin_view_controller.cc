@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +41,7 @@
 #include "google_apis/gaia/core_account_id.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -52,20 +56,59 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "url/url_constants.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class NewTabWebContentsObserver : public content::WebContentsObserver {
+ public:
+  explicit NewTabWebContentsObserver(
+      content::WebContents* web_contents,
+      base::OnceCallback<void(content::WebContents*)> callback)
+      : callback_(std::move(callback)) {
+    this->Observe(web_contents);
+  }
+
+  ~NewTabWebContentsObserver() override { Notify(nullptr); }
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!callback_) {
+      return;
+    }
+    if (SigninViewController::IsNTPTab(navigation_handle->GetWebContents())) {
+      Notify(navigation_handle->GetWebContents());
+    }
+  }
+
+  void WebContentsDestroyed() override { Notify(nullptr); }
+
+ private:
+  void Notify(content::WebContents* web_contents) {
+    if (callback_) {
+      std::move(callback_).Run(web_contents);
+      // `this` might be destroyed.
+    }
+  }
+  base::OnceCallback<void(content::WebContents*)> callback_;
+};
 
 // Opens a new tab on |url| or reuses the current tab if it is the NTP.
 void ShowTabOverwritingNTP(Browser* browser, const GURL& url) {
@@ -230,6 +273,16 @@ SigninViewController::~SigninViewController() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// static
+bool SigninViewController::IsNTPTab(content::WebContents* contents) {
+  if (!contents) {
+    return false;
+  }
+  const GURL& contents_url = contents->GetVisibleURL();
+  return contents_url == chrome::kChromeUINewTabURL ||
+         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL;
+}
+
 void SigninViewController::ShowSignin(signin_metrics::AccessPoint access_point,
                                       const GURL& redirect_url) {
   Profile* profile = browser_->profile();
@@ -278,6 +331,72 @@ void SigninViewController::SignoutOrReauthWithPrompt(
   }
   // Dice users don't see the prompt, pass empty datatypes.
   std::move(signout_prompt_with_datatypes).Run(syncer::ModelTypeSet());
+}
+
+void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
+    std::string_view extension_name,
+    base::OnceClosure on_complete) {
+  // TODO(b/321900930): Consider using `CHECK()` instead on `DVLOG()`.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    DVLOG(1) << "Chrome is already signed in.";
+    std::move(on_complete).Run();
+    return;
+  }
+
+  AccountInfo account_info_for_promos =
+      signin_ui_util::GetSingleAccountForPromos(
+          IdentityManagerFactory::GetForProfile(browser_->profile()));
+  if (account_info_for_promos.IsEmpty()) {
+    DVLOG(1) << "The user is not signed in on the web.";
+    std::move(on_complete).Run();
+    return;
+  }
+
+  // Check if there is already a new_tab_page open.
+  TabStripModel* tab_strip = browser_->tab_strip_model();
+  int ntp_tab_index = TabStripModel::kNoTab;
+  int active_tab_index = tab_strip->active_index();
+  int tab_count = tab_strip->count();
+  for (int tab_index = 0; tab_index < tab_count; ++tab_index) {
+    content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);
+    if (web_contents && SigninViewController::IsNTPTab(web_contents)) {
+      ntp_tab_index = tab_index;
+      if (ntp_tab_index == active_tab_index) {
+        break;
+      }
+    }
+  }
+
+  if (ntp_tab_index != TabStripModel::kNoTab) {
+    tab_strip->ActivateTabAt(
+        ntp_tab_index, TabStripUserGestureDetails(
+                           TabStripUserGestureDetails::GestureType::kOther));
+    ShowChromeSigninDialogForExtensions(
+        extension_name, std::move(on_complete), account_info_for_promos,
+        tab_strip->GetWebContentsAt(ntp_tab_index));
+    return;
+  }
+
+  // Create a new tab page and wait for the navigation to complete.
+  NavigateParams params(browser_, GURL(chrome::kChromeUINewTabURL),
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.user_gesture = false;
+  params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
+
+  content::WebContents* web_contents = Navigate(&params)->GetWebContents();
+  // `base::Unretained(this)` is safe as `this` owns
+  // `new_tab_web_contents_observer_`.
+  base::OnceCallback<void(content::WebContents*)> callback =
+      base::BindOnce(&SigninViewController::ShowChromeSigninDialogForExtensions,
+                     base::Unretained(this), std::string(extension_name),
+                     std::move(on_complete), account_info_for_promos);
+
+  new_tab_web_contents_observer_ = std::make_unique<NewTabWebContentsObserver>(
+      web_contents, std::move(callback));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -619,6 +738,68 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     // Sign out immediately
     std::move(callback).Run(ChromeSignoutConfirmationChoice::kSignout);
   }
+}
+
+void SigninViewController::ShowChromeSigninDialogForExtensions(
+    std::string_view extension_name,
+    base::OnceClosure on_complete,
+    const AccountInfo& account_info_for_promos,
+    content::WebContents* contents) {
+  new_tab_web_contents_observer_.reset();
+  if (!contents) {
+    std::move(on_complete).Run();
+    return;
+  }
+
+  // `ok_callback` sets the primary account.
+  base::OnceClosure ok_callback = base::BindOnce(
+      [](base::WeakPtr<Profile> profile, const CoreAccountId& account_id) {
+        if (!profile) {
+          return;
+        }
+        signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile.get());
+        if (identity_manager) {
+          identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+              account_id, signin::ConsentLevel::kSignin);
+        }
+      },
+      browser_->profile()->GetWeakPtr(), account_info_for_promos.account_id);
+
+  std::u16string title =
+      extension_name.empty()
+          ? l10n_util::GetStringUTF16(
+                IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE_FALLBACK)
+          : l10n_util::GetStringFUTF16(
+                IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE,
+                base::UTF8ToUTF16(extension_name));
+  // TODO(msalama): Remove in next milestone.
+  base::RemoveChars(title, u"\\", &title);
+
+  std::u16string continue_as_text =
+      base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
+                            ? account_info_for_promos.given_name
+                            : account_info_for_promos.email);
+  std::u16string body = l10n_util::GetStringFUTF16(
+      IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY,
+      base::UTF8ToUTF16(account_info_for_promos.email));
+  // TODO(msalama): Remove in next milestone.
+  base::ReplaceSubstringsAfterOffset(&body, 0, u"\\n", u"\n");
+
+  ui::DialogModel::Builder dialog_builder;
+  dialog_builder.SetInternalName("ChromeSigninChoiceForExtensionsPrompt")
+      .SetTitle(title)
+      .AddParagraph((ui::DialogModelLabel(body)))
+      .AddOkButton(
+          base::BindOnce(std::move(ok_callback)),
+          ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringFUTF16(
+              IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON, continue_as_text)))
+      .AddCancelButton(base::DoNothing(),
+                       ui::DialogModel::Button::Params().SetLabel(
+                           l10n_util::GetStringUTF16(IDS_CANCEL)))
+      .SetDialogDestroyingCallback(std::move(on_complete));
+
+  constrained_window::ShowWebModal(dialog_builder.Build(), contents);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

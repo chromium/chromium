@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 
+#include <string_view>
+
+#include "base/functional/callback_forward.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
@@ -14,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome_signout_confirmation_prompt.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -24,6 +29,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -44,6 +50,7 @@ constexpr char kConfirmationUnsyncedHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.Unsynced";
 constexpr char kConfirmationUnsyncedReauthHistogramName[] =
     "Signin.ChromeSignoutConfirmationPrompt.UnsyncedReauth";
+constexpr std::string_view kTestExtensionName = "Test extension";
 
 std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
   return std::make_unique<syncer::TestSyncService>();
@@ -174,6 +181,22 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserImplicitSigninTest,
 
 class SigninViewControllerBrowserTest
     : public SigninViewControllerBrowserTestBase {
+ public:
+  views::DialogDelegate* TriggerChromeSigninDialogForExtensionsPrompt(
+      base::OnceClosure on_complete) {
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{},
+        "ChromeSigninChoiceForExtensionsPrompt");
+    browser()
+        ->signin_view_controller()
+        ->MaybeShowChromeSigninDialogForExtensions(kTestExtensionName,
+                                                   std::move(on_complete));
+
+    // Confirmation prompt is shown.
+    views::Widget* confirmation_prompt = widget_waiter.WaitIfNeededAndGet();
+    return confirmation_prompt->widget_delegate()->AsDialogDelegate();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       switches::kExplicitBrowserSigninUIOnDesktop};
@@ -279,6 +302,146 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(tab);
   EXPECT_TRUE(IsSignoutTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninDialogForExtensionsPromptReuseOpenTab) {
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  ASSERT_TRUE(SigninViewController::IsNTPTab(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+
+  identity_test_env()->MakeAccountAvailable(kTestEmail, {.set_cookie = true});
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  base::test::TestFuture<void> future;
+  views::DialogDelegate* dialog_delegate =
+      TriggerChromeSigninDialogForExtensionsPrompt(future.GetCallback());
+  ASSERT_TRUE(dialog_delegate);
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(SigninViewController::IsNTPTab(tab));
+
+  ASSERT_FALSE(future.IsReady());
+  dialog_delegate->AcceptDialog();
+
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    ShowChromeSigninDialogForExtensionsPromptReuseInactiveOpenTab) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.google.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  ASSERT_FALSE(SigninViewController::IsNTPTab(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+
+  identity_test_env()->MakeAccountAvailable(kTestEmail, {.set_cookie = true});
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  base::test::TestFuture<void> future;
+  views::DialogDelegate* dialog_delegate =
+      TriggerChromeSigninDialogForExtensionsPrompt(future.GetCallback());
+  ASSERT_TRUE(dialog_delegate);
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(SigninViewController::IsNTPTab(tab));
+
+  ASSERT_FALSE(future.IsReady());
+  dialog_delegate->AcceptDialog();
+
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninDialogForExtensionsPromptInNewTab) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  ASSERT_FALSE(SigninViewController::IsNTPTab(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+
+  identity_test_env()->MakeAccountAvailable(kTestEmail, {.set_cookie = true});
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  base::test::TestFuture<void> future;
+  views::DialogDelegate* dialog_delegate =
+      TriggerChromeSigninDialogForExtensionsPrompt(future.GetCallback());
+  ASSERT_TRUE(dialog_delegate);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(SigninViewController::IsNTPTab(tab));
+
+  ASSERT_FALSE(future.IsReady());
+  dialog_delegate->AcceptDialog();
+
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowChromeSigninDialogForExtensionsPromptCancel) {
+  identity_test_env()->MakeAccountAvailable(kTestEmail, {.set_cookie = true});
+  ASSERT_FALSE(identity_manager()->GetAccountsWithRefreshTokens().empty());
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  base::test::TestFuture<void> future;
+  views::DialogDelegate* dialog_delegate =
+      TriggerChromeSigninDialogForExtensionsPrompt(future.GetCallback());
+  ASSERT_TRUE(dialog_delegate);
+
+  ASSERT_FALSE(future.IsReady());
+  dialog_delegate->CancelDialog();
+
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    ShowChromeSigninDialogForExtensionsPromptNotShownPrimaryAccountSet) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  base::test::TestFuture<void> future;
+  browser()->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
+      kTestExtensionName, future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SigninViewControllerBrowserTest,
+    ShowChromeSigninDialogForExtensionsPromptNotShownNoAccounts) {
+  base::test::TestFuture<void> future;
+  browser()->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
+      kTestExtensionName, future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
 }
 
 class SigninViewControllerBrowserCookieParamTest
