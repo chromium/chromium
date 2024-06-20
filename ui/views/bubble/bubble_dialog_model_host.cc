@@ -1066,7 +1066,15 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
   LayoutProvider* const layout_provider = LayoutProvider::Get();
   gfx::Insets dialog_side_insets =
       layout_provider->GetInsetsMetric(InsetsMetric::INSETS_DIALOG);
-  dialog_side_insets.set_top(0);
+  if (GetWindowTitle().empty()) {
+    // If there is no title, increase the margin at the top to match the title
+    // margin, so that the text is not too close to the top edge.
+    dialog_side_insets.set_top(
+        layout_provider->GetInsetsMetric(InsetsMetric::INSETS_DIALOG_TITLE)
+            .top());
+  } else {
+    dialog_side_insets.set_top(0);
+  }
   dialog_side_insets.set_bottom(0);
 
   ui::DialogModelField* first_field = nullptr;
