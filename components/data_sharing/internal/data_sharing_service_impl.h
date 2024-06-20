@@ -131,6 +131,8 @@ class DataSharingServiceImpl : public DataSharingService,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
       const absl::Status& result);
 
+  // It must be destroyed after the `sdk_delegate_` member because
+  // `sdk_delegate` needs the `data_sharing_network_loader_`.
   std::unique_ptr<DataSharingNetworkLoader> data_sharing_network_loader_;
   std::unique_ptr<CollaborationGroupSyncBridge>
       collaboration_group_sync_bridge_;

@@ -47,6 +47,11 @@ public class DataSharingSDKDelegateBridge {
     }
 
     @CalledByNative
+    public void initialize(DataSharingNetworkLoader networkLoader) {
+        mSDKDelegateImpl.initialize(networkLoader);
+    }
+
+    @CalledByNative
     public void createGroup(String protoParams, long nativeCallbackPtr) {
         CreateGroupParams params;
         try {

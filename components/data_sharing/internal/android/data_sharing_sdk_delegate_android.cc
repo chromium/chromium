@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "components/data_sharing/internal/android/data_sharing_network_loader_android.h"
 #include "components/data_sharing/internal/jni_headers/DataSharingSDKDelegateBridge_jni.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/android/gurl_android.h"
@@ -47,6 +48,14 @@ ScopedJavaLocalRef<jobject> DataSharingSDKDelegateAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_obj_);
 }
 
+void DataSharingSDKDelegateAndroid::Initialize(
+    DataSharingNetworkLoader* data_sharing_network_loader) {
+  JNIEnv* env = AttachCurrentThread();
+  network_loader_ = std::make_unique<DataSharingNetworkLoaderAndroid>(
+      data_sharing_network_loader);
+  Java_DataSharingSDKDelegateBridge_initialize(
+      env, java_obj_, network_loader_->GetJavaObject());
+}
 void DataSharingSDKDelegateAndroid::CreateGroup(
     const data_sharing_pb::CreateGroupParams& params,
     CreateGroupCallback callback) {

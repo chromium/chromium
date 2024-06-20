@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_DATA_SHARING_INTERNAL_ANDROID_DATA_SHARING_SDK_DELEGATE_ANDROID_H_
 #define COMPONENTS_DATA_SHARING_INTERNAL_ANDROID_DATA_SHARING_SDK_DELEGATE_ANDROID_H_
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +19,7 @@ using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace data_sharing {
+class DataSharingNetworkLoaderAndroid;
 
 // Helper class responsible for bridging the DataSharingSDKDelegate between
 // C++ and Java.
@@ -50,6 +53,8 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
   ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // DataSharingSDKDelegate implementation.
+  void Initialize(
+      DataSharingNetworkLoader* data_sharing_network_loader) override;
   void CreateGroup(const data_sharing_pb::CreateGroupParams& params,
                    CreateGroupCallback callback) override;
   void ReadGroups(const data_sharing_pb::ReadGroupsParams& params,
@@ -65,6 +70,8 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
       LookupGaiaIdByEmailCallback callback) override;
 
  private:
+  std::unique_ptr<DataSharingNetworkLoaderAndroid> network_loader_;
+
   // A reference to the Java counterpart of this class.  See
   // DataSharingSDKDelegateAndroid.java.
   ScopedJavaGlobalRef<jobject> java_obj_;

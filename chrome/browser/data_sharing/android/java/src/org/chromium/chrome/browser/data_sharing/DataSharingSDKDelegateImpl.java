@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.data_sharing.DataSharingNetworkLoader;
 import org.chromium.components.data_sharing.DataSharingSDKDelegate;
 import org.chromium.components.data_sharing.DataSharingSDKDelegateProtoResponseCallback;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
@@ -22,6 +24,19 @@ import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
  * same stack frame) and is therefore re-entrant.
  */
 public class DataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
+
+    private final Profile mProfile;
+
+    DataSharingSDKDelegateImpl() {
+        mProfile = null;
+    }
+
+    DataSharingSDKDelegateImpl(Profile profile) {
+        mProfile = profile;
+    }
+
+    @Override
+    public void initialize(DataSharingNetworkLoader networkLoader) {}
 
     @Override
     public void createGroup(

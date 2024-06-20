@@ -17,6 +17,7 @@ using base::android::ScopedJavaLocalRef;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace data_sharing {
+class DataSharingNetworkLoader;
 
 // Used by DataSharingService to provide access to SDK.
 class DataSharingSDKDelegate {
@@ -34,6 +35,9 @@ class DataSharingSDKDelegate {
   static std::unique_ptr<DataSharingSDKDelegate> CreateDelegate(
       ScopedJavaLocalRef<jobject> sdk_delegate);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  virtual void Initialize(
+      DataSharingNetworkLoader* data_sharing_network_loader) = 0;
 
   virtual void CreateGroup(
       const data_sharing_pb::CreateGroupParams& params,

@@ -20,6 +20,9 @@ import org.chromium.components.sync.protocol.GroupData;
 public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
 
     @Override
+    public void initialize(DataSharingNetworkLoader networkLoader) {}
+
+    @Override
     public void createGroup(
             CreateGroupParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
         GroupData.Builder groupData =

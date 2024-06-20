@@ -16,6 +16,9 @@ import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
  * Copy of C++ DataSharingSDKDelegate in Java. Used by DataSharingService to provide access to SDK.
  */
 public interface DataSharingSDKDelegate {
+
+    void initialize(DataSharingNetworkLoader networkLoader);
+
     void createGroup(
             CreateGroupParams params, DataSharingSDKDelegateProtoResponseCallback callback);
 

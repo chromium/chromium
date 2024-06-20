@@ -96,6 +96,9 @@ DataSharingServiceImpl::DataSharingServiceImpl(
       std::make_unique<CollaborationGroupSyncBridge>(
           std::move(change_processor), std::move(model_type_store_factory));
   collaboration_group_sync_bridge_->AddObserver(this);
+  if (sdk_delegate_) {
+    sdk_delegate_->Initialize(data_sharing_network_loader_.get());
+  }
 }
 
 DataSharingServiceImpl::~DataSharingServiceImpl() {

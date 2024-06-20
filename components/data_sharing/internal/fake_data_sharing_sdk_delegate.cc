@@ -60,6 +60,9 @@ void FakeDataSharingSDKDelegate::AddAccount(const std::string& email,
   email_to_gaia_id_[email] = gaia_id;
 }
 
+void FakeDataSharingSDKDelegate::Initialize(
+    DataSharingNetworkLoader* data_sharing_network_loader) {}
+
 void FakeDataSharingSDKDelegate::CreateGroup(
     const data_sharing_pb::CreateGroupParams& params,
     base::OnceCallback<
