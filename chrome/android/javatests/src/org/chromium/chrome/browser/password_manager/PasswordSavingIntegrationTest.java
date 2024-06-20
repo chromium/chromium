@@ -68,6 +68,7 @@ public class PasswordSavingIntegrationTest {
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String OLD_PASSWORD_NODE_ID = "chg_password_field";
     private static final String NEW_PASSWORD_NODE_ID = "chg_new_password_1";
+    private static final String NEW_PASSWORD_REPEAT_NODE_ID = "chg_new_password_2";
     private static final String USERNAME_TEXT = "username";
     private static final String PASSWORD_TEXT = "password";
     private static final String NEW_PASSWORD_TEXT = "new password";
@@ -186,8 +187,29 @@ public class PasswordSavingIntegrationTest {
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
 
         // Enter the new password.
+        DOMUtils.clickNode(
+                mWebContents,
+                NEW_PASSWORD_NODE_ID,
+                /* goThroughRootAndroidView= */ true,
+                /* shouldScrollIntoView= */ false);
         enterInputIntoTextField(
-                mWebContents, mInputMethodManagerWrapper, NEW_PASSWORD_NODE_ID, NEW_PASSWORD_TEXT);
+                mWebContents,
+                mInputMethodManagerWrapper,
+                NEW_PASSWORD_NODE_ID,
+                NEW_PASSWORD_TEXT,
+                /* shouldFocusNode= */ false);
+        // Repeat the new password.
+        DOMUtils.clickNode(
+                mWebContents,
+                NEW_PASSWORD_REPEAT_NODE_ID,
+                /* goThroughRootAndroidView= */ true,
+                /* shouldScrollIntoView= */ false);
+        enterInputIntoTextField(
+                mWebContents,
+                mInputMethodManagerWrapper,
+                NEW_PASSWORD_REPEAT_NODE_ID,
+                NEW_PASSWORD_TEXT,
+                /* shouldFocusNode= */ false);
 
         // Submit the form and wait for the success page to load.
         DOMUtils.clickNodeWithJavaScript(mWebContents, CHANGE_PASSWORD_BUTTON_ID);

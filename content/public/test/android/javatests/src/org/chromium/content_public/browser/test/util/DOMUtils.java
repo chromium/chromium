@@ -726,7 +726,7 @@ public class DOMUtils {
      *
      * @param webContents The WebContents in which the node lives.
      * @param inputMethodManagerWrapper The test input method manager wrapper, that will be used for
-     *         inputting.
+     *     inputting.
      * @param nodeId The id of the text input node.
      * @param input The text to be entered into the text field.
      */
@@ -736,19 +736,47 @@ public class DOMUtils {
             String nodeId,
             String input)
             throws TimeoutException {
+        enterInputIntoTextField(
+                webContents, inputMethodManagerWrapper, nodeId, input, /* shouldFocusNode= */ true);
+    }
+
+    /**
+     * Prints the text into the text field node simulating the keyboard input. The node needs to be
+     * focused at first to bring up the keyboard.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param inputMethodManagerWrapper The test input method manager wrapper, that will be used for
+     *     inputting.
+     * @param nodeId The id of the text input node.
+     * @param input The text to be entered into the text field.
+     * @param shouldFocusNode specifies whether the input field should be focused before entering
+     *     input.
+     */
+    public static void enterInputIntoTextField(
+            WebContents webContents,
+            TestInputMethodManagerWrapper inputMethodManagerWrapper,
+            String nodeId,
+            String input,
+            boolean shouldFocusNode)
+            throws TimeoutException {
         Assert.assertTrue(
                 "Input should be a non-empty string", input != null && input.length() > 0);
         // Click the text field node, so that it would get focus.
-        DOMUtils.clickNode(webContents, nodeId);
+        if (shouldFocusNode) {
+            DOMUtils.clickNode(webContents, nodeId);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        try {
+                            Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
+                        } catch (TimeoutException e) {
+                            throw new CriteriaNotSatisfiedException(e);
+                        }
+                    });
+        }
 
         // Wait for the text field to get focused and the virtual keyboard to be activated.
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    try {
-                        Criteria.checkThat(DOMUtils.getFocusedNode(webContents), is(nodeId));
-                    } catch (TimeoutException e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
                     Criteria.checkThat(
                             inputMethodManagerWrapper.isActive(
                                     DOMUtils.getContainerView(webContents)),
