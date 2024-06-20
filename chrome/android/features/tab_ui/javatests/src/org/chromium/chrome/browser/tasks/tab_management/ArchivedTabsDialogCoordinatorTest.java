@@ -59,7 +59,6 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     private final TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
-    private ArchivedTabsDialogCoordinator mCoordinator;
     private Profile mProfile;
     private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private TabModel mArchivedTabModel;
@@ -172,6 +171,32 @@ public class ArchivedTabsDialogCoordinatorTest {
         onView(withText("Close all inactive tabs")).perform(click());
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectTabs() {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+
+        mRobot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Select tabs");
+
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(2)
+                .verifyItemNotSelectedAtAdapterPosition(0)
+                .verifyItemNotSelectedAtAdapterPosition(1)
+                .verifyToolbarSelectionText("2 inactive tabs");
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.actionRobot.clickItemAtAdapterPosition(1);
+        mRobot.resultRobot.verifyToolbarSelectionText("2 tabs");
+
+        mRobot.actionRobot.clickToolbarNavigationButton();
+        mRobot.resultRobot
+                .verifyTabListEditorIsVisible()
+                .verifyAdapterHasItemCount(2)
+                .verifyToolbarSelectionText("2 inactive tabs");
     }
 
     private void showDialog(int numTabs) {

@@ -65,7 +65,7 @@ public class ArchivedTabsDialogCoordinator {
 
                 @Override
                 public void startTabSelection() {
-                    // TODO(crbug.com/345011130): Implement this.
+                    moveToState(TabActionState.SELECTABLE);
                 }
             };
 
@@ -76,8 +76,7 @@ public class ArchivedTabsDialogCoordinator {
                     if (mTabActionState == TabActionState.CLOSABLE) {
                         hide();
                     } else {
-                        // TODO(crbug.com/342255180): Enable this when TabListEditor supports
-                        // setting action state.
+                        moveToState(TabActionState.CLOSABLE);
                     }
                 }
             };
@@ -181,6 +180,14 @@ public class ArchivedTabsDialogCoordinator {
         mTabListEditorCoordinator.getController().hide();
         mRootView.removeView(mView);
         mArchivedTabModel.removeObserver(mTabModelObserver);
+    }
+
+    void moveToState(@TabActionState int tabActionState) {
+        mTabActionState = tabActionState;
+        mTabListEditorCoordinator.getController().setTabActionState(mTabActionState);
+        if (mTabActionState == TabActionState.CLOSABLE) {
+            updateTitle();
+        }
     }
 
     @VisibleForTesting
