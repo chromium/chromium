@@ -2804,6 +2804,14 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   if (!image_data)
     return nullptr;
 
+  gfx::Rect snapshot_rect{snapshot->Size()};
+  if (!snapshot_rect.Intersects(image_data_rect)) {
+    // If the readback area is completely out of bounds just return a zero
+    // initialized buffer. No point in trying to perform out of bounds read.
+    CHECK(validate_and_create_params.zero_initialize);
+    return image_data;
+  }
+
   // Read pixels into |image_data|.
   if (snapshot) {
     SkPixmap image_data_pixmap = image_data->GetSkPixmap();
