@@ -40,9 +40,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -52,18 +51,21 @@ namespace {
 
 constexpr int kPickerEmojiBarHeight = 48;
 
+// Padding around the emoji bar content.
+constexpr auto kEmojiBarMargins = gfx::Insets::TLBR(8, 16, 8, 12);
+
+// Gap between the item row (containing emojis) and the gif button.
+constexpr int kItemRowAndGifsSpacing = 12;
+
+// Gap between the gif button and the more emojis button.
+constexpr int kGifsAndMoreEmojisSpacing = 12;
+
 constexpr gfx::Size kEmojiBarItemPreferredSize(32, 32);
 
 constexpr auto kGifsButtonCornerRadius = 12;
 
-// Padding around the more emojis icon button.
-constexpr auto kMoreEmojisIconButtonPadding = gfx::Insets::TLBR(0, 8, 0, 12);
-
-// Padding around the item row.
-constexpr auto kItemRowMargins = gfx::Insets::TLBR(8, 16, 8, 12);
-
 // Horizontal padding between items in the item row.
-constexpr auto kItemMargins = gfx::Insets::VH(0, 12);
+constexpr int kItemGap = 12;
 
 // Creates an item view for a search result. Only supports results that can be
 // added to the emoji bar, i.e. emojis, symbols and emoticons.
@@ -100,15 +102,11 @@ std::unique_ptr<PickerItemView> CreateItemView(
 }
 
 std::unique_ptr<views::View> CreateItemRow() {
-  auto row = views::Builder<views::FlexLayoutView>()
-                 .SetOrientation(views::LayoutOrientation::kHorizontal)
-                 .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-                 .SetCollapseMargins(true)
-                 .SetIgnoreDefaultMainAxisMargins(true)
-                 .SetInteriorMargin(kItemRowMargins)
-                 .Build();
-  row->SetDefault(views::kMarginsKey, kItemMargins);
-  return row;
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+      .SetBetweenChildSpacing(kItemGap)
+      .Build();
 }
 
 class GifsButton : public views::LabelButton {
@@ -148,9 +146,11 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
     : delegate_(delegate), picker_view_width_(picker_view_width) {
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+                       views::LayoutOrientation::kHorizontal,
+                       /*inside_border_insets=*/kEmojiBarMargins,
+                       /*between_child_spacing=*/kGifsAndMoreEmojisSpacing))
+      ->set_cross_axis_alignment(views::LayoutAlignment::kCenter);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
@@ -161,19 +161,21 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
       this, kPickerContainerShadowType);
   shadow_->SetRoundedCornerRadius(kPickerContainerBorderRadius);
 
-  item_row_ = AddChildView(CreateItemRow());
+  auto* container = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetBetweenChildSpacing(kItemRowAndGifsSpacing)
+          .SetProperty(views::kBoxLayoutFlexKey,
+                       views::BoxLayoutFlexSpecification().WithWeight(1))
+          .Build());
+  item_row_ = container->AddChildView(CreateItemRow());
 
   // base::Unretained is safe here because this class owns `gifs_button_`.
-  gifs_button_ = AddChildView(std::make_unique<GifsButton>(base::BindRepeating(
-      &PickerEmojiBarView::OpenGifs, base::Unretained(this))));
-
-  // Spacer.
-  AddChildView(views::Builder<views::View>()
-                   .SetProperty(views::kFlexBehaviorKey,
-                                views::FlexSpecification(
-                                    views::MinimumFlexSizeRule::kScaleToMinimum,
-                                    views::MaximumFlexSizeRule::kUnbounded))
-                   .Build());
+  gifs_button_ =
+      container->AddChildView(std::make_unique<GifsButton>(base::BindRepeating(
+          &PickerEmojiBarView::OpenGifs, base::Unretained(this))));
 
   // base::Unretained is safe here because this class owns
   // `more_emojis_button_`.
@@ -182,8 +184,6 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                           base::Unretained(this)),
       IconButton::Type::kSmallFloating, &kPickerMoreEmojisIcon,
       IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
-  more_emojis_button_->SetProperty(views::kMarginsKey,
-                                   kMoreEmojisIconButtonPadding);
 }
 
 PickerEmojiBarView::~PickerEmojiBarView() = default;
@@ -245,7 +245,7 @@ void PickerEmojiBarView::SetSearchResults(
         result, base::BindRepeating(&PickerEmojiBarView::SelectSearchResult,
                                     base::Unretained(this), result));
     // Add the item if there is enough space in the row.
-    if (item_row_->GetPreferredSize().width() + kItemMargins.left() +
+    if (item_row_->GetPreferredSize().width() + kItemGap +
             item_view->GetPreferredSize().width() <=
         CalculateAvailableWidthForItemRow()) {
       item_row_->AddChildView(std::move(item_view));
@@ -266,9 +266,10 @@ void PickerEmojiBarView::OpenGifs() {
 }
 
 int PickerEmojiBarView::CalculateAvailableWidthForItemRow() {
-  return picker_view_width_ - gifs_button_->GetPreferredSize().width() -
-         more_emojis_button_->GetPreferredSize().width() -
-         kMoreEmojisIconButtonPadding.width();
+  return picker_view_width_ - kEmojiBarMargins.width() -
+         kItemRowAndGifsSpacing - gifs_button_->GetPreferredSize().width() -
+         kGifsAndMoreEmojisSpacing -
+         more_emojis_button_->GetPreferredSize().width();
 }
 
 views::View* PickerEmojiBarView::GetLeftmostItem() {
