@@ -257,38 +257,24 @@ void ReportPartitionAllocThreadCacheStats(
   dump->AddScalar("metadata_overhead", MemoryAllocatorDump::kUnitsBytes,
                   stats.metadata_overhead);
 
-  if (stats.alloc_count) {
-    int hit_rate_percent =
-        static_cast<int>((100 * stats.alloc_hits) / stats.alloc_count);
-    base::UmaHistogramPercentage(
-        "Memory.PartitionAlloc.ThreadCache.HitRate" + metrics_suffix,
-        hit_rate_percent);
-    int batch_fill_rate_percent =
-        static_cast<int>((100 * stats.batch_fill_count) / stats.alloc_count);
-    base::UmaHistogramPercentage(
-        "Memory.PartitionAlloc.ThreadCache.BatchFillRate" + metrics_suffix,
-        batch_fill_rate_percent);
-
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-    if (detailed) {
-      partition_alloc::internal::BucketIndexLookup lookup{};
-      std::string name = dump->absolute_name();
-      for (size_t i = 0; i < partition_alloc::kNumBuckets; i++) {
-        size_t bucket_size = lookup.bucket_sizes()[i];
-        if (bucket_size == partition_alloc::kInvalidBucketSize)
-          continue;
-        // Covers all normal buckets, that is up to ~1MiB, so 7 digits.
-        std::string dump_name =
-            base::StringPrintf("%s/buckets_alloc/%07d", name.c_str(),
-                               static_cast<int>(bucket_size));
-        auto* buckets_alloc_dump = pmd->CreateAllocatorDump(dump_name);
-        buckets_alloc_dump->AddScalar("count",
-                                      MemoryAllocatorDump::kUnitsObjects,
-                                      stats.allocs_per_bucket_[i]);
+  if (stats.alloc_count && detailed) {
+    partition_alloc::internal::BucketIndexLookup lookup{};
+    std::string name = dump->absolute_name();
+    for (size_t i = 0; i < partition_alloc::kNumBuckets; i++) {
+      size_t bucket_size = lookup.bucket_sizes()[i];
+      if (bucket_size == partition_alloc::kInvalidBucketSize) {
+        continue;
       }
+      // Covers all normal buckets, that is up to ~1MiB, so 7 digits.
+      std::string dump_name = base::StringPrintf(
+          "%s/buckets_alloc/%07d", name.c_str(), static_cast<int>(bucket_size));
+      auto* buckets_alloc_dump = pmd->CreateAllocatorDump(dump_name);
+      buckets_alloc_dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects,
+                                    stats.allocs_per_bucket_[i]);
     }
-#endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   }
+#endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
 }
 
 void ReportPartitionAllocLightweightQuarantineStats(

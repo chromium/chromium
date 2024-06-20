@@ -1665,37 +1665,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.PartitionAlloc.ThreadCache.BatchFillRate{ThreadType}"
-    units="%" expires_after="M102">
-  <owner>lizeb@chromium.org</owner>
-  <owner>bartekn@chromium.org</owner>
-  <summary>
-    Fraction of PartitionAlloc's thread cache allocations requests that required
-    a batch fill, that is cache hits touching the central allocator. Recorded
-    during memory dumps, at the same time as the Memory.*.PartitionAlloc.*
-    histograms. Data is collected for {ThreadType}.
-  </summary>
-  <token key="ThreadType">
-    <variant name="" summary="all threads"/>
-    <variant name=".MainThread" summary="the main thread only"/>
-  </token>
-</histogram>
-
-<histogram name="Memory.PartitionAlloc.ThreadCache.HitRate{ThreadType}"
-    units="%" expires_after="M102">
-  <owner>lizeb@chromium.org</owner>
-  <owner>bartekn@chromium.org</owner>
-  <summary>
-    Hit rate for PartitionAlloc's thread cache. Recorded during memory dumps, at
-    the same time as the Memory.*.PartitionAlloc.* histograms. Data is collected
-    for {ThreadType}.
-  </summary>
-  <token key="ThreadType">
-    <variant name="" summary="all threads"/>
-    <variant name=".MainThread" summary="the main thread only"/>
-  </token>
-</histogram>
-
 <histogram name="Memory.PreFreeze2.Gpu.PrivateMemoryFootprint.{Timing}"
     units="MiB" expires_after="2025-02-01">
   <owner>thiabaud@google.com</owner>
