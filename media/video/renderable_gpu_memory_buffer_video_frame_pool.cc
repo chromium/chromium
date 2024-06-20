@@ -35,8 +35,8 @@ namespace {
 class InternalRefCountedPool;
 
 // The VideoFrame-backing resources that are reused by the pool, namely, a
-// GpuMemoryBuffer and a per-plane SharedImage. This retains a reference to
-// the InternalRefCountedPool that created it. Not safe for concurrent use.
+// GpuMemoryBuffer and a SharedImage. This retains a reference to the
+// InternalRefCountedPool that created it. Not safe for concurrent use.
 class FrameResources {
  public:
   FrameResources(scoped_refptr<InternalRefCountedPool> pool,
@@ -60,8 +60,8 @@ class FrameResources {
   // the GpuMemoryBuffer to the VideoFrame.
   scoped_refptr<VideoFrame> CreateVideoFrameAndTakeGpuMemoryBuffer();
 
-  // Return ownership of the GpuMemory to `this`, and update the sync tokens
-  // of the MailboxHolders to `sync_token`.
+  // Return ownership of the GpuMemory to `this` and updates `sync_token_` to
+  // `sync_token`.
   void ReturnGpuMemoryBufferFromFrame(
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       const gpu::SyncToken& sync_token);
@@ -69,7 +69,7 @@ class FrameResources {
  private:
   // This reference ensures that the creating InternalRefCountedPool (and,
   // critically, its interface through which `this` can destroy its
-  // SharedImages) will not be destroyed until after `this` is destroyed.
+  // SharedImage) will not be destroyed until after `this` is destroyed.
   const scoped_refptr<InternalRefCountedPool> pool_;
 
   const VideoPixelFormat format_;
