@@ -43,6 +43,15 @@ export class TableElement extends PolymerElement {
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  //   Determines the number of rows needed in the grid layout.
+  //   This is the sum of:
+  //   - 1 row for the product selector.
+  //   - 1 row for the image container.
+  //   - Number of product details.
+  private getRowCount_(numProductDetails: number): number {
+    return 2 + numProductDetails;
+  }
+
   private getUrls_() {
     return this.columns.map(column => column.selectedItem.url);
   }

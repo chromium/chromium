@@ -393,4 +393,31 @@ suite('ProductSpecificationsTableTest', () => {
     assertStyle(details[0]!, 'display', 'none');
     assertStyle(details[1]!, 'display', 'none');
   });
+
+  test('`grid-row` populates correctly ', async () => {
+    // Arrange
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: 'https://example.com',
+          imageUrl: 'https://example.com/image',
+        },
+        productDetails: [{title: 'foo', description: 'foo1', summary: ''}],
+      },
+      {
+        selectedItem: {
+          title: 'title2',
+          url: 'https://example.com/2',
+          imageUrl: 'https://example.com/2/image',
+        },
+        productDetails: [{title: 'foo', description: 'foo2', summary: ''}],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+    const columns = tableElement.shadowRoot!.querySelectorAll('.col');
+    assertEquals(2, columns.length);
+    assertStyle(columns[0]!, 'grid-row', 'span 3');
+    assertStyle(columns[1]!, 'grid-row', 'span 3');
+  });
 });

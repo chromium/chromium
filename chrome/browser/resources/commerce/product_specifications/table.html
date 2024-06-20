@@ -1,31 +1,44 @@
 <style include="cr-icons cr-hidden-style">
   :host {
     --column-width: 220px;
+    --table-gap: 8px;
   }
 
   #table {
+    display: grid;
     font-size: 12px;
+    gap: var(--table-gap);
+    grid-auto-flow: column;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
     line-height: 16px;
+    width: fit-content;
   }
 
   .col {
+    display: grid;
+    grid-template-rows: subgrid;
     width: var(--column-width);
   }
 
-  img {
-    height: inherit;
-    object-fit: contain;
-    width: var(--column-width);
+  .col:last-of-type {
+    overflow: hidden;
   }
 
   .img-container {
+    position: relative;
+  }
+
+  img {
     border: 1px solid var(--color-sys-base-container);
     border-radius: 8px;
-    height: 105px;
+    box-sizing: border-box;
+    height: 123px;
     margin-bottom: 16px;
     margin-top: 6px;
     padding: 8px 0;
-    position: relative;
+    object-fit: contain;
+    width: var(--column-width);
   }
 
   .open-tab-button {
@@ -39,6 +52,9 @@
   }
 
   .detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--table-gap);
     margin-bottom: 24px;
   }
 
@@ -58,7 +74,9 @@
 <div id="table" on-pointerleave="onHideOpenTabButton_">
   <template is="dom-repeat" items="[[columns]]" as="column"
       index-as="columnIndex">
-    <div class="col" on-pointerenter="onShowOpenTabButton_">
+    <div class="col"
+        style$="grid-row: span [[getRowCount_(column.productDetails.length)]]"
+        on-pointerenter="onShowOpenTabButton_">
       <product-selector
           selected-item="[[column.selectedItem]]"
           excluded-urls="[[getUrls_(columns)]]"
