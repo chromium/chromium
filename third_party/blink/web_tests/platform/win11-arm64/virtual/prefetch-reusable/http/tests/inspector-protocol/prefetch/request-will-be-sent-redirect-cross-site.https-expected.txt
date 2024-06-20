@@ -98,7 +98,7 @@ Network.responseReceivedExtraInfo{
     cookiePartitionKey : {
         hasCrossSiteAncestor : false
         topLevelSite : https://127.0.0.1
-    }    
+    }
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]

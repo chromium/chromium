@@ -2621,6 +2621,7 @@ crbug.com/347055177 external/wpt/geolocation/non-fully-active.https.html [ Timeo
 [ Linux ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Win ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Win11 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure Timeout ]
+[ Win11-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Win10.20h2 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Mac14-arm64 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
