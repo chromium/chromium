@@ -107,7 +107,6 @@
 
     [self configureToolbarsButtons];
   }
-  // TODO(crbug.com/40273478): Implement.
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
