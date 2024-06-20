@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,12 +19,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 
 /** Conditionally displays empty state for the tab group pane. */
 public class TabGroupListView extends FrameLayout {
     private RecyclerView mRecyclerView;
     private View mEmptyStateContainer;
     private TextView mEmptyStateSubheading;
+    private UiConfig mUiConfig;
 
     /** Constructor for inflation. */
     public TabGroupListView(Context context, @Nullable AttributeSet attrs) {
@@ -49,6 +53,9 @@ public class TabGroupListView extends FrameLayout {
         TextView emptyStateHeading = findViewById(R.id.empty_state_text_title);
         emptyStateHeading.setText(R.string.tab_groups_empty_header);
         mEmptyStateSubheading = findViewById(R.id.empty_state_text_description);
+
+        mUiConfig = new UiConfig(this);
+        mUiConfig.addObserver(this::onDisplayStyleChanged);
     }
 
     void setRecyclerViewAdapter(RecyclerView.Adapter adapter) {
@@ -65,5 +72,17 @@ public class TabGroupListView extends FrameLayout {
                 enabled
                         ? R.string.tab_groups_empty_state_description
                         : R.string.tab_groups_empty_state_description_no_sync);
+    }
+
+    private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
+        int padding =
+                SelectableListLayout.getPaddingForDisplayStyle(newDisplayStyle, getResources());
+        mRecyclerView.setPaddingRelative(
+                padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        if (mUiConfig != null) mUiConfig.updateDisplayStyle();
     }
 }
