@@ -325,14 +325,10 @@ class ParseContext {
   // The given set and aliases must be disjoint from everything previously added
   // to the context.
   void AddSet(const SetsAndAliases& set_and_aliases) {
-    for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-             site_and_entry : set_and_aliases.first) {
-      const net::SchemefulSite& site = site_and_entry.first;
+    for (const auto& [site, unused_entry] : set_and_aliases.first) {
       CHECK(elements_.insert(site).second);
     }
-    for (const std::pair<net::SchemefulSite, net::SchemefulSite>&
-             alias_and_canonical : set_and_aliases.second) {
-      const net::SchemefulSite& alias = alias_and_canonical.first;
+    for (const auto& [alias, unused_canonical] : set_and_aliases.second) {
       CHECK(elements_.insert(alias).second);
     }
   }
@@ -369,10 +365,7 @@ class ParseContext {
 
     // Since we just removed some keys, we have to double-check that there are
     // no singleton sets.
-    for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>& pair :
-         sets) {
-      const net::SchemefulSite& site = pair.first;
-      const net::FirstPartySetEntry& entry = pair.second;
+    for (const auto& [site, entry] : sets) {
       if (site == entry.primary()) {
         // Skip primaries, they don't count as their own members.
         continue;
@@ -382,9 +375,8 @@ class ParseContext {
       possible_singletons.erase(entry.primary());
     }
     // Any canonical site that has at least one alias is not a singleton.
-    for (const std::pair<net::SchemefulSite, net::SchemefulSite>& pair :
-         aliases) {
-      possible_singletons.erase(pair.second);
+    for (const auto& [unused_alias, canonical] : aliases) {
+      possible_singletons.erase(canonical);
     }
 
     if (possible_singletons.empty()) {
