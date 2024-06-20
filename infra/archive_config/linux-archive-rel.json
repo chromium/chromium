@@ -15,6 +15,8 @@
                 "libvulkan.so.1",
                 "MEIPreload/manifest.json",
                 "MEIPreload/preloaded_data.pb",
+                "PrivacySandboxAttestationsPreloaded/manifest.json",
+                "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
                 "product_logo_48.png",
                 "resources.pak",
                 "v8_context_snapshot.bin",

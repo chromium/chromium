@@ -18,6 +18,8 @@
                 "nacl_helper",
                 "nacl_helper_bootstrap",
                 "nacl_irt_x86_64.nexe",
+                "PrivacySandboxAttestationsPreloaded/manifest.json",
+                "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
                 "product_logo_48.png",
                 "resources.pak",
                 "snapshot_blob.bin",

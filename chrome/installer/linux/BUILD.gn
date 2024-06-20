@@ -70,6 +70,8 @@ packaging_files = packaging_files_binaries + [
                     "$root_out_dir/locales/en-US.pak",
                     "$root_out_dir/MEIPreload/manifest.json",
                     "$root_out_dir/MEIPreload/preloaded_data.pb",
+                    "$root_out_dir/PrivacySandboxAttestationsPreloaded/manifest.json",
+                    "$root_out_dir/PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
                   ]
 if (enable_swiftshader) {
   packaging_files += [ "$root_out_dir/vk_swiftshader_icd.json" ]
@@ -374,6 +376,7 @@ group("installer_deps") {
     "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
     "//chrome/browser/resources/media/mei_preload:component",
     "//components/crash/core/app:chrome_crashpad_handler",
+    "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
     "//sandbox/linux:chrome_sandbox",
     "//third_party/angle:libEGL",
     "//third_party/angle:libGLESv2",
