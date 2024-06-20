@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mediator.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_consumer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -30,12 +30,12 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-// Unittests for the Browsing Data Mediator, namely for testing the construction
+// Unittests for the Quick Delete Mediator, namely for testing the construction
 // of the summaries that rely on counters for the several browsing data types
 // that could be deleted in Quick Delete.
-class BrowsingDataMediatorTest : public PlatformTest {
+class QuickDeleteMediatorTest : public PlatformTest {
  public:
-  BrowsingDataMediatorTest() {
+  QuickDeleteMediatorTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
@@ -51,7 +51,7 @@ class BrowsingDataMediatorTest : public PlatformTest {
     // every time.
     resetQuickDeletePrefs();
 
-    consumer_ = OCMStrictProtocolMock(@protocol(BrowsingDataConsumer));
+    consumer_ = OCMStrictProtocolMock(@protocol(QuickDeleteConsumer));
     OCMStub([consumer_ setTimeRange:browsing_data::TimePeriod::LAST_HOUR])
         .andDo(nil);
     OCMStub(
@@ -64,13 +64,13 @@ class BrowsingDataMediatorTest : public PlatformTest {
         [[FakeBrowsingDataCounterWrapperProducer alloc]
             initWithBrowserState:browser_state_.get()];
 
-    mediator_ = [[BrowsingDataMediator alloc]
+    mediator_ = [[QuickDeleteMediator alloc]
                              initWithPrefs:browser_state_.get()->GetPrefs()
         browsingDataCounterWrapperProducer:
             fake_browsing_data_counter_wrapper_producer_];
   }
 
-  ~BrowsingDataMediatorTest() override {
+  ~QuickDeleteMediatorTest() override {
     resetQuickDeletePrefs();
 
     mediator_.consumer = nil;
@@ -148,7 +148,7 @@ class BrowsingDataMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  BrowsingDataMediator* mediator_;
+  QuickDeleteMediator* mediator_;
   id consumer_;
   history::HistoryService* history_service_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_;
@@ -157,7 +157,7 @@ class BrowsingDataMediatorTest : public PlatformTest {
 };
 
 // Tests the construction of the browsing history summary with different inputs.
-TEST_F(BrowsingDataMediatorTest, TestBrowsingHistorySummary) {
+TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
   // Select browsing history for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
 
@@ -211,7 +211,7 @@ TEST_F(BrowsingDataMediatorTest, TestBrowsingHistorySummary) {
 }
 
 // Tests the construction of the passwords summary with different inputs.
-TEST_F(BrowsingDataMediatorTest, TestPasswordsSummary) {
+TEST_F(QuickDeleteMediatorTest, TestPasswordsSummary) {
   // Select passwords for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);
 
@@ -266,7 +266,7 @@ TEST_F(BrowsingDataMediatorTest, TestPasswordsSummary) {
 }
 
 // Tests the construction of the addresses summary with different inputs.
-TEST_F(BrowsingDataMediatorTest, TestAddressesSummary) {
+TEST_F(QuickDeleteMediatorTest, TestAddressesSummary) {
   // Select autofill for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, true);
 
@@ -312,7 +312,7 @@ TEST_F(BrowsingDataMediatorTest, TestAddressesSummary) {
 }
 
 // Tests the construction of the cards summary with different inputs.
-TEST_F(BrowsingDataMediatorTest, TestCardsSummary) {
+TEST_F(QuickDeleteMediatorTest, TestCardsSummary) {
   // Select autofill for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, true);
 
@@ -359,7 +359,7 @@ TEST_F(BrowsingDataMediatorTest, TestCardsSummary) {
 }
 
 // Tests the construction of the suggestions summary with different inputs.
-TEST_F(BrowsingDataMediatorTest, TestSuggestionsSummary) {
+TEST_F(QuickDeleteMediatorTest, TestSuggestionsSummary) {
   // Select autofill for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteFormData, true);
 
@@ -406,7 +406,7 @@ TEST_F(BrowsingDataMediatorTest, TestSuggestionsSummary) {
   }
 }
 
-TEST_F(BrowsingDataMediatorTest,
+TEST_F(QuickDeleteMediatorTest,
        TestBrowsingHistorySummaryWithPasswordsUnselected) {
   // Select browsing history for deletion, but not passwords.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
@@ -433,7 +433,7 @@ TEST_F(BrowsingDataMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
-TEST_F(BrowsingDataMediatorTest, TestSummaryWithSeveralTypes) {
+TEST_F(QuickDeleteMediatorTest, TestSummaryWithSeveralTypes) {
   // Select both browsing history and passowrds for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
   prefs()->SetBoolean(browsing_data::prefs::kDeletePasswords, true);

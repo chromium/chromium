@@ -4,12 +4,8 @@
 
 source_set("clear_browsing_data") {
   sources = [
-    "browsing_data_consumer.h",
     "browsing_data_counter_wrapper_producer.h",
     "browsing_data_counter_wrapper_producer.mm",
-    "browsing_data_mediator.h",
-    "browsing_data_mediator.mm",
-    "browsing_data_mutator.h",
     "clear_browsing_data_consumer.h",
     "clear_browsing_data_coordinator.h",
     "clear_browsing_data_coordinator.mm",
@@ -20,8 +16,12 @@ source_set("clear_browsing_data") {
     "clear_browsing_data_ui_delegate.h",
     "pop_up_menu_control.h",
     "pop_up_menu_control.mm",
+    "quick_delete_consumer.h",
     "quick_delete_coordinator.h",
     "quick_delete_coordinator.mm",
+    "quick_delete_mediator.h",
+    "quick_delete_mediator.mm",
+    "quick_delete_mutator.h",
     "quick_delete_presentation_commands.h",
     "quick_delete_view_controller.h",
     "quick_delete_view_controller.mm",
@@ -97,8 +97,8 @@ source_set("clear_browsing_data_ui_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "browsing_data_mediator_unittest.mm",
     "clear_browsing_data_manager_unittest.mm",
+    "quick_delete_mediator_unittest.mm",
     "time_range_selector_table_view_controller_unittest.mm",
   ]
   deps = [

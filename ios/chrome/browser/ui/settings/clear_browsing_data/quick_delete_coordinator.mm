@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mediator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_view_controller.h"
 
@@ -24,7 +24,7 @@
 
 @implementation QuickDeleteCoordinator {
   QuickDeleteViewController* _viewController;
-  BrowsingDataMediator* _mediator;
+  QuickDeleteMediator* _mediator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -32,10 +32,10 @@
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
   _mediator =
-      [[BrowsingDataMediator alloc] initWithPrefs:browserState->GetPrefs()
-               browsingDataCounterWrapperProducer:
-                   [[BrowsingDataCounterWrapperProducer alloc]
-                       initWithBrowserState:browserState]];
+      [[QuickDeleteMediator alloc] initWithPrefs:browserState->GetPrefs()
+              browsingDataCounterWrapperProducer:
+                  [[BrowsingDataCounterWrapperProducer alloc]
+                      initWithBrowserState:browserState]];
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _mediator.consumer = _viewController;

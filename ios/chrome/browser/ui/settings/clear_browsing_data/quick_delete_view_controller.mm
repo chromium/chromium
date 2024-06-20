@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mutator.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/table_view_pop_up_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -220,7 +220,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self.presentationHandler openMyActivityURL:url.gurl];
 }
 
-#pragma mark - BrowsingDataConsumer
+#pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
   _timeRange = timeRange;

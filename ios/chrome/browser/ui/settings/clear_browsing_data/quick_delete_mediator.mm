@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_mediator.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/counters/autofill_counter.h"
@@ -11,12 +11,12 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_consumer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@implementation BrowsingDataMediator {
+@implementation QuickDeleteMediator {
   PrefService* _prefs;
   BrowsingDataCounterWrapperProducer* _counterWrapperProducer;
 
@@ -48,7 +48,7 @@
   return self;
 }
 
-- (void)setConsumer:(id<BrowsingDataConsumer>)consumer {
+- (void)setConsumer:(id<QuickDeleteConsumer>)consumer {
   if (_consumer == consumer) {
     return;
   }
@@ -67,7 +67,7 @@
   _prefs = nil;
 }
 
-#pragma mark - BrowsingDataMutator
+#pragma mark - QuickDeleteMutator
 
 - (void)timeRangeSelected:(browsing_data::TimePeriod)timeRange {
   _prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
@@ -89,7 +89,7 @@
 
 // Creates a counter for the browsing data type defined by the `prefName`.
 - (void)createCounter:(std::string)prefName {
-  __weak BrowsingDataMediator* weakSelf = self;
+  __weak QuickDeleteMediator* weakSelf = self;
   std::unique_ptr<BrowsingDataCounterWrapper> counter = [_counterWrapperProducer
       createCounterWrapperWithPrefName:prefName
                       updateUiCallback:
