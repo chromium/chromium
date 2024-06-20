@@ -5,21 +5,31 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
-#include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -37,15 +47,14 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -56,51 +65,61 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
-#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_client.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
+#include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "google_apis/gaia/gaia_constants.h"
+#include "extensions/common/url_pattern.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "services/device/public/mojom/usb_manager.mojom.h"
 #include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/views/widget/widget.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/base64.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/credential_metadata.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -576,13 +595,8 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce([]() -> bool {
-        crypto::UnexportableKeyProvider::Config config;
-#if BUILDFLAG(IS_MAC)
-        config.keychain_access_group =
-            EnclaveManager::kEnclaveKeysKeychainAccessGroup;
-#endif  // BUILDFLAG(IS_MAC)
         std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-            crypto::GetUnexportableKeyProvider(std::move(config));
+            GetWebAuthnUnexportableKeyProvider();
         if (!provider) {
           FIDO_LOG(EVENT)
               << "Enclave authenticator disabled because no key provider";

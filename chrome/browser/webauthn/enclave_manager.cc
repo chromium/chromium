@@ -4,38 +4,64 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include <array>
 #include <cstdint>
+#include <deque>
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <tuple>
 #include <utility>
-#include <variant>
+#include <vector>
 
-#include "base/base64.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
-#include "base/memory/ref_counted.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
+#include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "components/cbor/diagnostic_writer.h"
-#include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/os_crypt/sync/os_crypt.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
@@ -54,21 +80,22 @@
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/constants.h"
-#include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/features.h"
 #include "device/fido/network_context_factory.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/features.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -850,19 +877,6 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
   return new_secrets;
 }
 
-std::unique_ptr<crypto::UnexportableKeyProvider> GetUnexportableKeyProvider() {
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnUseInsecureSoftwareUnexportableKeys)) {
-    return crypto::GetSoftwareUnsecureUnexportableKeyProvider();
-  }
-  crypto::UnexportableKeyProvider::Config config;
-#if BUILDFLAG(IS_MAC)
-  config.keychain_access_group =
-      EnclaveManager::kEnclaveKeysKeychainAccessGroup;
-#endif  // BUILDFLAG(IS_MAC)
-  return crypto::GetUnexportableKeyProvider(std::move(config));
-}
-
 crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
   crypto::UserVerifyingKeyProvider::Config config;
@@ -1544,7 +1558,7 @@ class EnclaveManager::StateMachine {
             [](std::optional<std::vector<uint8_t>> key_id,
                MaybeUVKey uv_key) -> Event {
               std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-                  GetUnexportableKeyProvider();
+                  GetWebAuthnUnexportableKeyProvider();
               if (!provider) {
                 return Failure();
               }
@@ -2730,7 +2744,7 @@ void EnclaveManager::GetHardwareKeyForSignature(
           [](std::string wrapped_hardware_private_key)
               -> std::unique_ptr<crypto::UnexportableSigningKey> {
             std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-                GetUnexportableKeyProvider();
+                GetWebAuthnUnexportableKeyProvider();
             if (!provider) {
               return nullptr;
             }
@@ -3524,7 +3538,7 @@ void EnclaveManager::ClearRegistration() {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
           [](std::vector<uint8_t> wrapped_hardware_private_key) {
-            if (auto provider = GetUnexportableKeyProvider()) {
+            if (auto provider = GetWebAuthnUnexportableKeyProvider()) {
               provider->DeleteSigningKeySlowly(wrapped_hardware_private_key);
             }
           },

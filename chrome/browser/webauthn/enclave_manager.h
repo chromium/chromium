@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
-#include "chrome/common/chrome_version.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "device/fido/enclave/types.h"
@@ -27,6 +26,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_version.h"
 #include "crypto/scoped_lacontext.h"
 #endif  // BUILDFLAG(IS_MAC)
 

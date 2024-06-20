@@ -139,11 +139,7 @@ BASE_FEATURE(kWebAuthnEnableAndroidCableAuthenticator,
 // kWebAuthnEnclaveAuthenticator is enabled.
 BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,
              "WebAuthenticationUseInsecureSoftwareUnexportableKeys",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
              base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // Default enabled in M126. Remove in or after M129.
 BASE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround,

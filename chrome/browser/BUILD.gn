@@ -4610,6 +4610,8 @@ static_library("browser") {
       "webauthn/observable_authenticator_list.h",
       "webauthn/passkey_model_factory.cc",
       "webauthn/passkey_model_factory.h",
+      "webauthn/unexportable_key_utils.cc",
+      "webauthn/unexportable_key_utils.h",
       "webauthn/webauthn_switches.cc",
       "webauthn/webauthn_switches.h",
     ]
