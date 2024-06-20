@@ -531,6 +531,7 @@
 <translation id="371398631992790800">Скриј „Обележувачи“</translation>
 <translation id="37207012422556617">Пребарувања во тренд</translation>
 <translation id="3725081662140949903">За да сопрете други да ја користат вашата лозинка, отворете ја апликацијата <ph name="APP" /> за да ја промените лозинката</translation>
+<translation id="372676576864368480">Пополни го автоматски бројот на картичката што завршува со <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Создадено: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Скриј „Преземања“</translation>
 <translation id="3745190878148784130">Скриј „Зумирај текст“</translation>
@@ -1096,6 +1097,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6476800141292307438">Страницата се преведува на <ph name="LANGUAGE" />. Достапни се опции на дното на екранот.</translation>
 <translation id="648164694371393720">Грешка при проверката</translation>
 <translation id="6494931198667773526">Завршува</translation>
+<translation id="6500795388871406244">Користете ја предложената лозинка:</translation>
 <translation id="650279896687777322">Дознајте повеќе…</translation>
 <translation id="6507973708545996744">Најавете се за да ја добиете „Список за читање“ на сите ваши уреди.</translation>
 <translation id="6510072653668207258">Потсети ме подоцна</translation>
@@ -1308,6 +1310,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7583004045319035904">Користете <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за да ги отклучите картичките „Инкогнито“.</translation>
 <translation id="7598439272585186139">Заштитете се дополнително</translation>
 <translation id="7600965453749440009">Никогаш не преведувај <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Пополни го автоматски сопственикот на картичката <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Појавните прозорци се блокирани (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Групи картички</translation>
 <translation id="7607521702806708809">Избриши ја лозинката</translation>
@@ -1340,6 +1343,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7749790401023484470">Не избравте текст.</translation>
 <translation id="7752405526771734448">Визуелно пребарување на Lens</translation>
 <translation id="7756478488453921771">Мени → Поставки → Начини на плаќање</translation>
+<translation id="775755486779745798">Пополни го автоматски месецот на истекување <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Заклучување картички „Инкогнито“</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
@@ -1516,6 +1520,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8556590991644167667">{count,plural, =1{Отфрливте {count} предупредување}one{Отфрливте {count} предупредување}other{Отфрливте {count} предупредувања}}</translation>
 <translation id="8560253818350321773">Прво прикажувај ги често користените ставки.</translation>
 <translation id="8569721750632860947">Која URL-адреса би сакале да ја додадете во вашиот „Список за читање“?</translation>
+<translation id="8577056989960190117">Пополни ја автоматски годината на истекување <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Исклучена</translation>
 <translation id="8591976964826315682">Блокирајте колачиња од трети страни во „Инкогнито“</translation>
 <translation id="8593565399399144771">Нова картичка може да отворите тука.</translation>

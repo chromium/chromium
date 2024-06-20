@@ -531,6 +531,7 @@
 <translation id="371398631992790800">બુકમાર્ક છુપાવો</translation>
 <translation id="37207012422556617">વલણમાં છે એવી શોધો</translation>
 <translation id="3725081662140949903">અન્ય લોકોને તમારા પાસવર્ડનો ઉપયોગ કરતા રોકવા માટે, તમારો પાસવર્ડ બદલવા માટે <ph name="APP" /> ઍપ ખોલો</translation>
+<translation id="372676576864368480">અંતમાં <ph name="LAST_DIGITS" /> ધરાવતો કાર્ડ નંબર ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="3738428049780661523"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="374357899112510277">ડાઉનલોડ છુપાવો</translation>
 <translation id="3745190878148784130">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6476800141292307438">પેજનો અનુવાદ <ph name="LANGUAGE" />માં કરી રહ્યા છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
 <translation id="648164694371393720">પ્રમાણીકરણ ભૂલ</translation>
 <translation id="6494931198667773526">સમાપ્તિ તારીખ</translation>
+<translation id="6500795388871406244">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો:</translation>
 <translation id="650279896687777322">વધુ જાણો...</translation>
 <translation id="6507973708545996744">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે સાઇન ઇન કરો.</translation>
 <translation id="6510072653668207258">મને પછીથી યાદ કરાવો</translation>
@@ -1308,6 +1310,7 @@
 <translation id="7583004045319035904">તમારી છૂપી ટૅબને અનલૉક કરવા માટે <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />નો ઉપયોગ કરો.</translation>
 <translation id="7598439272585186139">વધુ સુરક્ષા મેળવો</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="7603308509262646847">કાર્ડધારક <ph name="NAME" /> ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) અવરોધિત પૉપ-અપ્સ</translation>
 <translation id="7606639338662398635">ટૅબના ગ્રૂપ</translation>
 <translation id="7607521702806708809">પાસવર્ડ ડિલીટ કરો</translation>
@@ -1340,6 +1343,7 @@
 <translation id="7749790401023484470">તમે કોઈ ટેક્સ્ટ પસંદ કરેલી નથી.</translation>
 <translation id="7752405526771734448">Lens દ્વારા વિઝ્યુઅલ શોધ</translation>
 <translation id="7756478488453921771">મેનૂ → સેટિંગ → ચુકવણી પદ્ધતિઓ</translation>
+<translation id="775755486779745798">સમયસમાપ્તિનો મહિનો <ph name="MONTH" /> ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="7760127703945531263">છૂપા મોડનું લૉક</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
@@ -1516,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{તમે {count} ચેતવણી છોડી દીધી}one{તમે {count} ચેતવણી છોડી દીધી}other{તમે {count} ચેતવણી છોડી દીધી}}</translation>
 <translation id="8560253818350321773">પહેલા વારંવાર ઉપયોગમાં લેવામાં આવતી આઇટમ બતાવો.</translation>
 <translation id="8569721750632860947">તમે તમારા વાંચન સૂચિમાં કયું URL ઉમેરવા માગો છો?</translation>
+<translation id="8577056989960190117">સમયસમાપ્તિનું વર્ષ <ph name="YEAR" /> ઑટોમૅટિક રીતે ભરાય</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="8593565399399144771">તમે અહીં એક નવું ટૅબ ખોલી શકો છો.</translation>

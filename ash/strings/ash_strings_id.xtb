@@ -121,6 +121,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1391102559483454063">Aktif</translation>
 <translation id="1394698770495054737">Buram Penuh</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 hari lalu}other{# hari lalu}}</translation>
 <translation id="1404963891829069586">Suara fokus</translation>
 <translation id="1407069428457324124">Tema gelap</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gunakan tombol panah untuk berpindah-pindah antar-tanggal.</translation>
@@ -211,6 +212,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="174102739345480129">Penanda nonaktif.</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
 <translation id="1743927604032653654">Ciutkan notifikasi <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Dalam 1 jam}=1{1 jam lalu}other{# jam lalu}}</translation>
 <translation id="1746730358044914197">Metode masukan dikonfigurasi oleh administrator.</translation>
 <translation id="1747336645387973286">batas waktu <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Keyboard di layar diaktifkan</translation>
@@ -348,6 +350,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2360398059912971776">baterai</translation>
 <translation id="2361210043495191221">Aktifkan/nonaktifkan Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Dikirim dari <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Tidak dapat login ke Chromebook</translation>
 <translation id="2367972762794486313">Tampilkan aplikasi</translation>
 <translation id="2368828502825385061">Temukan</translation>
@@ -510,6 +513,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Aktifkan akses mikrofon?</translation>
 <translation id="296762781903199866">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Lokasi Anda saat ini tidak didukung untuk saat ini.</translation>
 <translation id="2970920913501714344">Instal aplikasi, ekstensi, dan tema</translation>
 <translation id="2977598380246111477">Nomor berikutnya</translation>
 <translation id="2985148236010982088">Lihat semua aplikasi</translation>
@@ -986,6 +990,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="468293128311738995">Aplikasi dari ponsel Anda</translation>
 <translation id="4690510401873698237">Rak di bagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
+<translation id="4697357603686181098">Kami tidak dapat membantu menyelesaikan permintaan ini. Coba permintaan lain.</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
 <translation id="4706121060329443414">Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="470644585772471629">Inversi warna</translation>
@@ -1902,6 +1907,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7982878511129296052">Menonaktifkan...</translation>
 <translation id="7984197416080286869">Terlalu banyak percobaan sidik jari</translation>
 <translation id="798779949890829624">Setelan ini dikelola oleh administrator Anda</translation>
+<translation id="7989206653429884947">Sering dibuka</translation>
 <translation id="799296642788192631">Anda dapat menyematkan file penting. Untuk menyematkan, arahkan kursor ke item atau buka File lalu klik kanan item.</translation>
 <translation id="7994370417837006925">Fitur masuk banyak akun</translation>
 <translation id="7995804128062002838">Gagal mengambil screenshot</translation>
@@ -2088,6 +2094,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Waktu habis. Bagus. 🎉</translation>
+<translation id="8753368202781196133">Bahasa ini tidak didukung untuk saat ini.</translation>
 <translation id="8755498163081687682">Verifikasi identitas Anda: <ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>
 <translation id="8756799553341497810">Anda dapat mulai menyesuaikan tata letak aplikasi setelah keluar dari tampilan ini.</translation>

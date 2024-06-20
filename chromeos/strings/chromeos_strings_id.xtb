@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">kuning pastel</translation>
 <translation id="1056898198331236512">Peringatan</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
+<translation id="1061864016440983342">Gunakan tanpa lokasi</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> dari <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2082932131694554252">Tombol keyboard yang ditetapkan</translation>
 <translation id="2085089206770112532">Kurangi kecerahan layar</translation>
+<translation id="2086091080968010660">Perubahan berbasis waktu mungkin tidak akurat. Aktifkan akses lokasi sistem di setelan.</translation>
 <translation id="2102231663024125441">Pengeditan teks</translation>
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Pulihkan default</translation>
 <translation id="2286454467119466181">Sederhana</translation>
 <translation id="2287186687001756809">Foto tidak tersedia. Untuk menambahkan foto, buka <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Jadwal saat ini disetel ke <ph name="SUNRISE" />-<ph name="SUNSET" />. Untuk memperbarui jadwal matahari terbenam dan matahari terbit secara otomatis, aktifkan akses lokasi sistem.</translation>
 <translation id="2305172810646967500">hitam</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci saat ini</translation>
 <translation id="2308243864813041101">Cabut kabel USB <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">kecerahan keyboard</translation>
 <translation id="6412715219990689313">Keyboard bawaan</translation>
 <translation id="6417265370957905582">Asisten Google</translation>
+<translation id="6419454453018688975">Aktifkan akses lokasi sistem</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>

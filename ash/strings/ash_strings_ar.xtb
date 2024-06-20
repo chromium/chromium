@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1391102559483454063">مُفعَّلة</translation>
 <translation id="1394698770495054737">تمويه كامل</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{قبل يوم واحد}zero{قبل # يوم}two{قبل يومين}few{قبل # أيام}many{قبل # يومًا}other{قبل # يوم}}</translation>
 <translation id="1404963891829069586">مقاطع موسيقية تساعد على التركيز</translation>
 <translation id="1407069428457324124">المظهر الداكن</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. يمكنك الانتقال بين التواريخ باستخدام مفاتيح الأسهم.</translation>
@@ -212,6 +213,7 @@
 <translation id="174102739345480129">أداة التحديد غير مفعَّلة.</translation>
 <translation id="1743570585616704562">لم يتم التعرف عليها</translation>
 <translation id="1743927604032653654">تصغير محتوى إشعار <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{خلال ساعة واحدة}=1{قبل ساعة واحدة}two{قبل ساعتَين}few{قبل # ساعات}many{قبل # ساعة}other{قبل # ساعة}}</translation>
 <translation id="1746730358044914197">يتم إعداد طرق الإدخال بواسطة المشرف.</translation>
 <translation id="1747336645387973286">‏تاريخ إنجاز المهمة ‎<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
@@ -349,6 +351,7 @@
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2360398059912971776">بطارية</translation>
 <translation id="2361210043495191221">‏إيقاف/تفعيل شبكة Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">تم الإرسال من <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">‏يتعذّر تسجيل الدخول إلى جهاز Chromebook.</translation>
 <translation id="2367972762794486313">إظهار التطبيقات</translation>
 <translation id="2368828502825385061">البحث عن الهاتف</translation>
@@ -511,6 +514,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">هل تريد السماح بالوصول إلى الميكروفون؟</translation>
 <translation id="296762781903199866">يتعذّر تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
+<translation id="2968761508099987738">الميزة غير متاحة حاليًا في موقعك الجغرافي الحالي.</translation>
 <translation id="2970920913501714344">تثبيت التطبيقات والإضافات والتصاميم</translation>
 <translation id="2977598380246111477">الرقم التالي</translation>
 <translation id="2985148236010982088">عرض كل التطبيقات</translation>
@@ -988,6 +992,7 @@
 <translation id="468293128311738995">تطبيقات من هاتفك</translation>
 <translation id="4690510401873698237">الرف في الجزء السفلي</translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
+<translation id="4697357603686181098">لا يمكنني مساعدتك في هذا الطلب. جرِّب طلبًا آخر.</translation>
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
 <translation id="4706121060329443414">‏ستتم إعادة محاولة التنزيل لاحقًا. سيتم إرسال ملفات الكلام إلى Google لمعالجتها الآن.</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
@@ -1905,6 +1910,7 @@
 <translation id="7982878511129296052">جارٍ الإيقاف...</translation>
 <translation id="7984197416080286869">أُجريت محاولات كثيرة جدًا لاستخدام بصمة الإصبع</translation>
 <translation id="798779949890829624">يتولّى المشرف إدارة هذا الإعداد</translation>
+<translation id="7989206653429884947">يتم فتحه بشكل متكرّر</translation>
 <translation id="799296642788192631">يمكنك تثبيت الملفات المهمة. للتثبيت، مرِّر مؤشر الماوس فوق أحد الملفات أو افتح تطبيق "الملفات" وانقر بزر الماوس الأيمن على أحد الملفات.</translation>
 <translation id="7994370417837006925">الدخول المتعدد</translation>
 <translation id="7995804128062002838">تعذّر التقاط الشاشة.</translation>
@@ -2091,6 +2097,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">انتهى الوقت. أحسنت صنعًا. 🎉</translation>
+<translation id="8753368202781196133">هذه اللغة غير متاحة في الوقت الحالي.</translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات الشبكة الظاهرية الخاصة (VPN)</translation>
 <translation id="8756799553341497810">يمكنك بدء تخصيص تنسيق التطبيق بعد الخروج من هذا العرض.</translation>

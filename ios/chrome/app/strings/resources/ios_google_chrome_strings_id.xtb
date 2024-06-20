@@ -191,6 +191,7 @@ Data Anda dienkripsi dengan frasa sandi. Masukkan frasa sandi untuk menggunakan 
 <translation id="6646696210740573446">Mengirim bagian URL yang di-obfuscate ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Google.</translation>
 <translation id="6648150602980899529">Anda login dengan akun terkelola oleh <ph name="DOMAIN" /> dan memberikan kontrol kepada administratornya atas data Chrome Anda. Data Anda akan terikat dengan akun ini secara permanen. Dengan logout dari Chrome, Anda akan menghapus data dari perangkat ini, tetapi data akan tetap tersimpan di Akun Google.</translation>
 <translation id="6683891932310469419">Membuka Halaman Histori Chrome Anda.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}other{Hal ini terjadi jika Chrome tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}}</translation>
 <translation id="6709398533399187136">Sandi Anda terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubahnya sekarang.</translation>
 <translation id="6820553595690137150">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran.
 

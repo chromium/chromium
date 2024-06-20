@@ -531,6 +531,7 @@
 <translation id="371398631992790800">Хавчуургыг нуух</translation>
 <translation id="37207012422556617">Тренд болж буй хайлт</translation>
 <translation id="3725081662140949903">Бусад хүнийг таны нууц үгийг ашиглахыг зогсоохын тулд <ph name="APP" /> аппыг нээгээд нууц үгээ өөрчилнө үү</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" />-р төгссөн картын дугаарыг автоматаар бөглөх</translation>
 <translation id="3738428049780661523"><ph name="DATE" />-д үүсгэсэн</translation>
 <translation id="374357899112510277">Татаж авсан файлыг нуух</translation>
 <translation id="3745190878148784130">Текстийг томруулахыг нуух</translation>
@@ -1096,6 +1097,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6476800141292307438">Хуудсыг <ph name="LANGUAGE" /> руу орчуулж байна. Дэлгэцийн доод хэсгийн ойролцоо сонголт хийх боломжтой.</translation>
 <translation id="648164694371393720">Нотолгооны алдаа</translation>
 <translation id="6494931198667773526">Дуусна</translation>
+<translation id="6500795388871406244">Санал болгосон нууц үгийг ашиглах:</translation>
 <translation id="650279896687777322">Нэмэлт мэдээлэл авах...</translation>
 <translation id="6507973708545996744">Бүх төхөөрөмждөө унших жагсаалтаа авахын тулд нэвтэрнэ үү.</translation>
 <translation id="6510072653668207258">Надад дараа сануулна уу</translation>
@@ -1308,6 +1310,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7583004045319035904">Нууцлалтай табуудынхаа түгжээг тайлахын тулд <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-г ашиглана уу.</translation>
 <translation id="7598439272585186139">Аюулгүй байдлаа сайжруулаарай</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />-ийг хэзээ ч бүү хөрвүүл</translation>
+<translation id="7603308509262646847">Карт эзэмшигч буюу <ph name="NAME" />-г автоматаар бөглөх</translation>
 <translation id="7603852183842204213">Мэдээллийн цонхнуудыг хориглосон байна (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Табын бүлгүүд</translation>
 <translation id="7607521702806708809">Нууц үг устгах</translation>
@@ -1340,6 +1343,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7749790401023484470">Та ямар ч текст сонгоогүй.</translation>
 <translation id="7752405526771734448">Lens-н визуал хайлт</translation>
 <translation id="7756478488453921771">Цэс → Тохиргоо → Төлбөрийн хэрэгсэл</translation>
+<translation id="775755486779745798">Дуусах сарыг буюу <ph name="MONTH" />-г автоматаар бөглөх</translation>
 <translation id="7760127703945531263">Нууцлалтай табыг түгжих</translation>
 <translation id="7765158879357617694">Зөөх</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
@@ -1516,6 +1520,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8556590991644167667">{count,plural, =1{Та {count} сануулгыг үл хэрэгссэн}other{Та {count} сануулгыг үл хэрэгссэн}}</translation>
 <translation id="8560253818350321773">Байнга ашигладаг зүйлсийг эхэнд харуулна.</translation>
 <translation id="8569721750632860947">Та унших жагсаалтдаа ямар URL нэмэх хүсэлтэй байна вэ?</translation>
+<translation id="8577056989960190117">Дуусах жилийг буюу <ph name="YEAR" />-г автоматаар бөглөх</translation>
 <translation id="8588404856427128947">Унтраах</translation>
 <translation id="8591976964826315682">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="8593565399399144771">Та энд шинэ таб нээх боломжтой.</translation>

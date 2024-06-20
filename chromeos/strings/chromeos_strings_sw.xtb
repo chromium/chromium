@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">rangi ya krayoni ya manjano</translation>
 <translation id="1056898198331236512">Ilani</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
+<translation id="1061864016440983342">Tumia bila data ya mahali</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> kati ya <ph name="COUNT" />, <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Kinga mtandao imetambuliwa</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2082932131694554252">Ufunguo uliokabidhiwa wa kibodi</translation>
 <translation id="2085089206770112532">Punguza mwangaza wa skrini</translation>
+<translation id="2086091080968010660">Mabadiliko kulingana na wakati huenda yasiwe sahihi. Washa ufikiaji wa data ya mahali kwenye kifaa katika mipangilio.</translation>
 <translation id="2102231663024125441">Kuhariri maandishi</translation>
 <translation id="2105810540595158374">Kifaa hiki ni kidhibiti cha mchezo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Rejesha viwe chaguo msingi</translation>
 <translation id="2286454467119466181">Rahisi</translation>
 <translation id="2287186687001756809">Hakuna picha inayopatikana. Ili uweke picha, nenda kwenye <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Ratiba ya sasa imewekwa kuwa <ph name="SUNRISE" /> hadi <ph name="SUNSET" />. Ili usasishe kiotomatiki ratiba ya machweo na macheo, washa ufikiaji wa data ya mahali kwenye kifaa.</translation>
 <translation id="2305172810646967500">nyeusi</translation>
 <translation id="2307344026739914387">Tumia jozi ya funguo ya sasa</translation>
 <translation id="2308243864813041101">Chomoa kebo ya USB ya <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">ung'avu wa kibodi</translation>
 <translation id="6412715219990689313">Kibodi iliyojumuishwa ndani ya kifaa</translation>
 <translation id="6417265370957905582">Mratibu wa Google</translation>
+<translation id="6419454453018688975">Washa ufikiaji wa data ya mahali kwenye kifaa</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Dhaifu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Nenda kwenye mipangilio ya akaunti</translation>

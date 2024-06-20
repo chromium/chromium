@@ -121,6 +121,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1394698770495054737">Potpuno zamućenje</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Prije 1 dan}one{Prije # dan}few{Prije # dana}other{Prije # dana}}</translation>
 <translation id="1404963891829069586">Zvukovi fokusiranja</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Pomoću tipki sa strelicama navigirajte datumima.</translation>
@@ -211,6 +212,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="174102739345480129">Označivač je isključen.</translation>
 <translation id="1743570585616704562">Nije prepoznato</translation>
 <translation id="1743927604032653654">Suzite obavještenje <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Unutar 1 h}=1{Prije 1 h}one{Prije # h}few{Prije # h}other{Prije # h}}</translation>
 <translation id="1746730358044914197">Načine unosa konfigurira vaš administrator.</translation>
 <translation id="1747336645387973286">rok <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
@@ -348,6 +350,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2360398059912971776">baterija</translation>
 <translation id="2361210043495191221">Uključite/isključite WiFi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Poslano s uređaja <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nije se moguće prijaviti na Chromebook</translation>
 <translation id="2367972762794486313">Prikaži aplikacije</translation>
 <translation id="2368828502825385061">Pronađi</translation>
@@ -510,6 +513,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Uključiti pristup mikrofonu?</translation>
 <translation id="296762781903199866">Preuzimanje fajlova govora na jeziku <ph name="LANGUAGE" /> nije uspjelo</translation>
+<translation id="2968761508099987738">Vaša aktuelna lokacija trenutno nije podržana.</translation>
 <translation id="2970920913501714344">Instalirati aplikacije, ekstenzije i teme</translation>
 <translation id="2977598380246111477">Sljedeći broj</translation>
 <translation id="2985148236010982088">Pogledajte sve aplikacije</translation>
@@ -986,6 +990,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="468293128311738995">Aplikacije s vašeg telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Otključajte uređaj pomoću koda roditelja</translation>
+<translation id="4697357603686181098">S ovim vam ne možemo pomoći. Pokušajte s drugim zahtjevom.</translation>
 <translation id="4702647871202761252">Ekran za privatnost je isključen</translation>
 <translation id="4706121060329443414">Pokušaj preuzimanja će se izvršiti kasnije. Govor će se odmah poslati Googleu na obradu.</translation>
 <translation id="470644585772471629">Inverzija boja</translation>
@@ -1902,6 +1907,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7982878511129296052">Isključivanje…</translation>
 <translation id="7984197416080286869">Previše pokušaja otključavanja otiskom prsta</translation>
 <translation id="798779949890829624">Ovom postavkom upravlja vaš administrator</translation>
+<translation id="7989206653429884947">Često otvarano</translation>
 <translation id="799296642788192631">Možete zakačiti važne fajlove. Da zakačite, postaviti pokazivač miša iznad stavke ili otvorite Fajlove i desnim klikom odaberite stavku.</translation>
 <translation id="7994370417837006925">Višestruka prijava</translation>
 <translation id="7995804128062002838">Snimanje ekrana nije uspjelo</translation>
@@ -2088,6 +2094,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Vrijeme je isteklo. Odlično! 🎉</translation>
+<translation id="8753368202781196133">Ovaj jezik trenutno nije podržan.</translation>
 <translation id="8755498163081687682">Potvrdite identitet: <ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="875593634123171288">Prikaži postavke VPN mreže</translation>
 <translation id="8756799553341497810">Možete započeti prilagođavati izgled svoje aplikacije kada izađete iz ovog prikaza.</translation>

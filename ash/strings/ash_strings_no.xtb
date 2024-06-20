@@ -121,6 +121,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1394698770495054737">Fullstendig uskarphet</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{For 1 dag siden}other{For # dager siden}}</translation>
 <translation id="1404963891829069586">Fokuslyder</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Bruk piltastene for å navigere mellom datoer.</translation>
@@ -211,6 +212,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="174102739345480129">Markøren er av.</translation>
 <translation id="1743570585616704562">Ikke gjenkjent</translation>
 <translation id="1743927604032653654">Skjul varselet <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Innen 1 t}=1{For 1 t siden}other{For # t siden}}</translation>
 <translation id="1746730358044914197">Inndatametoder konfigureres av administratoren din.</translation>
 <translation id="1747336645387973286">frist <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
@@ -333,12 +335,12 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2302092602801625023">Denne kontoen er administrert av Family Link</translation>
 <translation id="2303600792989757991">Vis eller skjul vindusoversikten</translation>
 <translation id="2305738328104302723">Liste fra Google Huskeliste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
-<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nylige skjermdumper, nedlastinger og festede filer</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nylige skjermbilder, nedlastinger og festede filer</translation>
 <translation id="2318576281648121272">I dag, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> – kategori for søkeresultat</translation>
 <translation id="2322173485024759474">Én bokstav tilbake</translation>
 <translation id="2335091074961603075">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Bruk den interne mikrofonen for å få bedre lydkvalitet.</translation>
-<translation id="2339073806695260576">Trykk på pekepennknappen på hyllen for å ta et notat, ta en skjermdump, bruke laserpekeren eller bruke forstørrelsesglasset.</translation>
+<translation id="2339073806695260576">Trykk på pekepennknappen på hyllen for å ta et notat, ta et skjermbilde, bruke laserpekeren eller bruke forstørrelsesglasset.</translation>
 <translation id="2341729377289034582">Låst til vertikal</translation>
 <translation id="2345226652884463045">Trykk på Enter eller Søk + mellomrom for å markere teksten som skal redigeres.</translation>
 <translation id="2349785431103945039">Vis detaljer for wifi-sonen. Koble til mobilnettet for å bruke wifi-sone.</translation>
@@ -348,6 +350,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360398059912971776">batteri</translation>
 <translation id="2361210043495191221">Slå av/på wifi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Sendt fra <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Kan ikke logge på Chromebooken</translation>
 <translation id="2367972762794486313">Vis apper</translation>
 <translation id="2368828502825385061">Finn</translation>
@@ -414,7 +417,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2582112259361606227">Start på nytt for å oppdatere</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
-<translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
+<translation id="2596078834055697711">Ta et skjermbilde av vinduet</translation>
 <translation id="2598725286293895280">Skrivebordet inneholder apper som ikke støttes</translation>
 <translation id="2607678425161541573">Nettbasert pålogging kreves</translation>
 <translation id="2612072250312279703">aktivitetsmåler</translation>
@@ -481,7 +484,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2844169650293029770">USB-C-enhet (porten foran på venstre side)</translation>
 <translation id="2844350028562914727">detaljer</translation>
 <translation id="2847759467426165163">Cast til</translation>
-<translation id="2848120746144143659">Trykk på Enter for å ta en skjermdump av hele skjermen</translation>
+<translation id="2848120746144143659">Trykk på Enter for å ta et skjermbilde av hele skjermen</translation>
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="2860184359326882502">Beste treff</translation>
 <translation id="2865888419503095837">Nettverksinformasjon</translation>
@@ -510,6 +513,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vil du slå på mikrofontilgang?</translation>
 <translation id="296762781903199866">Kunne ikke laste ned talefiler for <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Den nåværende posisjonen din støttes ikke for øyeblikket.</translation>
 <translation id="2970920913501714344">installere apper, utvidelser og temaer</translation>
 <translation id="2977598380246111477">Neste nummer</translation>
 <translation id="2985148236010982088">Se alle appene</translation>
@@ -544,7 +548,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3095995014811312755">versjon</translation>
 <translation id="309749186376891736">Flytt markøren</translation>
 <translation id="3100274880412651815">Lukk opptaksmodus</translation>
-<translation id="3105917916468784889">Ta skjermdump</translation>
+<translation id="3105917916468784889">Ta skjermbilde</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3107155169630537783">Velkomstvarselet er <ph name="STATE" /></translation>
 <translation id="3113492864356515707">Fremhev det forrige elementet på hyllen</translation>
@@ -600,10 +604,10 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332827762492701193">Varsler er skjult</translation>
 <translation id="3333674550998107387">Vis varselet <ph name="NOTIFICATION_TITLE" /></translation>
-<translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermdumper og skjermopptak</translation>
+<translation id="3339826665088060472">Skjermdump, verktøy for å ta skjermbilder og skjermopptak</translation>
 <translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341303451326249809">Skjermdumpen er lagret</translation>
-<translation id="334252345105450327">Ta en skjermdump</translation>
+<translation id="334252345105450327">Ta et skjermbilde</translation>
 <translation id="3346728094401457853">Skriv inn enhetspassordet for <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Merk tekst fra markøren til slutten av linjen</translation>
 <translation id="3349345708646875009">Åpne oppgavebehandling.</translation>
@@ -614,7 +618,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3369111525500416043">Fristen forfaller snart</translation>
 <translation id="3371140690572404006">USB-C-enhet (porten foran på høyre side)</translation>
 <translation id="3375634426936648815">Tilkoblet</translation>
-<translation id="3378438761594387761">Her finner du nylige nedlastinger og skjermdumper</translation>
+<translation id="3378438761594387761">Her finner du nylige nedlastinger og skjermbilder</translation>
 <translation id="3386978599540877378">fullskjermlupen</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Vil du slå på diktering?</translation>
@@ -719,7 +723,7 @@ Koble enheten til strøm.</translation>
 <translation id="36813544980941320">Wifi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, deretter <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">Nettsteder</translation>
-<translation id="3697991387880191195">Trykk på snarveien for skjermdumper</translation>
+<translation id="3697991387880191195">Trykk på snarveien for skjermbilder</translation>
 <translation id="3702809606464356667">Viser vinduer fra det nåværende skrivebordet. Trykk på oppoverpiltasten for å vise vinduer fra alle skrivebord</translation>
 <translation id="3702846122927433391">Antall innbyggere i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -793,7 +797,7 @@ Koble enheten til strøm.</translation>
 <translation id="3982013579989864579">Vil du bytte utenhet for lyd?</translation>
 <translation id="3984536049089846927">Neste side</translation>
 <translation id="3986082989454912832">Svar</translation>
-<translation id="3990002060657467458">Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermdumper.</translation>
+<translation id="3990002060657467458">Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermbilder.</translation>
 <translation id="3991203706072366707">Av for <ph name="GAME_APP_NAME" /></translation>
 <translation id="3995138139523574647">USB-C-enhet (porten bak på høyre side)</translation>
 <translation id="4002066346123236978">Tittel</translation>
@@ -808,7 +812,7 @@ Koble enheten til strøm.</translation>
 <translation id="4028481283645788203">Passord kreves for mer sikkerhet</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + venstrepil</translation>
-<translation id="4039699481424758547">Trykk på Enter for å ta en skjermdump av vinduet <ph name="WINDOW_TITLE" /></translation>
+<translation id="4039699481424758547">Trykk på Enter for å ta et skjermbilde av vinduet <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">Du deler skjermen din</translation>
 <translation id="404437169852192935">Enheten får ikke oppdateringer lenger</translation>
 <translation id="4049230407053723315">Hurtiginnstillinger</translation>
@@ -943,7 +947,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4527045527269911712">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til.</translation>
 <translation id="4533343294786968049">Batterilevetiden forlenges. Batteriet kommer til å være helt oppladet innen <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> til batteriet er fulladet</translation>
-<translation id="4538824937723742295">Ta skjermdump i fullskjerm</translation>
+<translation id="4538824937723742295">Ta skjermbilde i fullskjerm</translation>
 <translation id="4539127209940689201">Skriv ut gjeldende side</translation>
 <translation id="4541706525461326392">Fjerner profilen. Dette kan ta noen minutter.</translation>
 <translation id="4544483149666270818">Velg vinduet du vil ta opp</translation>
@@ -970,7 +974,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernevurdering <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Trykk på Ctrl + W for å slette</translation>
 <translation id="4635501805800894201">{0,plural, =0{Oppdater enheten til en tidligere versjon nå}=1{Oppdater enheten til en tidligere versjon innen 1 sekund}other{Oppdater enheten til en tidligere versjon innen # sekunder}}</translation>
-<translation id="4642092649622328492">Ta en delvis skjermdump</translation>
+<translation id="4642092649622328492">Ta en delvis skjermbilde</translation>
 <translation id="4644727592819780893">Regionen er for liten – det er ikke plass til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" /> – appanbefaling</translation>
 <translation id="4649019912155580914">Du redigerte</translation>
@@ -986,6 +990,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="468293128311738995">Apper fra telefonen din</translation>
 <translation id="4690510401873698237">Hyllen er nederst</translation>
 <translation id="4696813013609194136">Lås opp enheten med foreldrekode</translation>
+<translation id="4697357603686181098">Du kan ikke få hjelp med dette. Prøv noe annet.</translation>
 <translation id="4702647871202761252">Personvernskjermen er av</translation>
 <translation id="4706121060329443414">Vi forsøker å laste ned filene senere. Inntil videre blir tale sendt til Google for behandling.</translation>
 <translation id="470644585772471629">Fargeinvertering</translation>
@@ -1070,7 +1075,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4964188651935955085">Når du slår av Bluetooth, blir denne eksterne enheten koblet fra <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Skru opp volumet</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> t <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
-<translation id="496999337731226334">Innføringstrinn <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermdumper. Trykk på Alt + Shift + S for å åpne hurtiginnstillingene.</translation>
+<translation id="496999337731226334">Innføringstrinn <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermbilder. Trykk på Alt + Shift + S for å åpne hurtiginnstillingene.</translation>
 <translation id="4975771730019223894">Appmerking</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1424,7 +1429,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6199775032047436064">Laster inn gjeldende side på nytt</translation>
 <translation id="6200515304866777730">Støttes ikke av appen</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
-<translation id="6213808132343683860">Ta delvis skjermdump eller skjermopptak</translation>
+<translation id="6213808132343683860">Ta delvis skjermbilde eller skjermopptak</translation>
 <translation id="621606890568890214">Vis Google Classroom</translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
@@ -1590,7 +1595,7 @@ Nylig installert</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
 <translation id="6827049576281411231">Lukk hendelsespanelet</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
-<translation id="6837621009301897464">For å ta en skjermdump, trykk på</translation>
+<translation id="6837621009301897464">For å ta et skjermbilde, trykk på</translation>
 <translation id="6852052252232534364">Klikk for å aktivere</translation>
 <translation id="6852628153543175788">Legg til 10 minutter</translation>
 <translation id="6855029042976311970">Redigert nå nettopp</translation>
@@ -1663,7 +1668,7 @@ Nylig installert</translation>
 <translation id="7100906357717321275">Vis skjulte filer i Filer-appen</translation>
 <translation id="7108254681523785542">Velg et element for å lime det inn. Du kan se utklippstavlen ved å trykke på <ph name="SHORTCUT_KEY_NAME" /> + V.</translation>
 <translation id="7116969082764510092">Skrivebord 11</translation>
-<translation id="7118268675952955085">skjermdump</translation>
+<translation id="7118268675952955085">skjermbilde</translation>
 <translation id="7119327711295338600">Velg neste ord eller bokstav</translation>
 <translation id="7126996685418858413">Åpnet den siste uken</translation>
 <translation id="7130207228079676353">MEST SANNSYNLIG</translation>
@@ -1692,7 +1697,7 @@ Nylig installert</translation>
 <translation id="7262906531272962081">Opprett en påminnelse</translation>
 <translation id="7264788308526527464">Reduser med <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + tilbaketast</translation>
-<translation id="7285232777292757180">Bruk skjermdumpverktøyet i hurtiginnstillingene for å ta skjermdumper</translation>
+<translation id="7285232777292757180">Bruk skjermdumpverktøyet i hurtiginnstillingene for å ta skjermbilder</translation>
 <translation id="7301826272005790482">Lukk vindusforslag</translation>
 <translation id="7302889331339392448">Direkteteksting er av.</translation>
 <translation id="7303365578352795231">Svarer på en annen enhet</translation>
@@ -1722,7 +1727,7 @@ Nylig installert</translation>
 <translation id="7384028040782072252">Høyreklikk hvor som helst for å endre rekkefølge på appene</translation>
 <translation id="7386767620098596324">Slå av eller på nettverkstilkobling. <ph name="STATE_TEXT" />.</translation>
 <translation id="7392563512730092880">Du kan alltid konfigurere dette senere i Innstillinger.</translation>
-<translation id="7401222354741467707">Ta fullstendig skjermdump eller skjermopptak</translation>
+<translation id="7401222354741467707">Ta fullstendig skjermbilde eller skjermopptak</translation>
 <translation id="7401788553834047908">Ikke forstyrr mens fokus er påslått</translation>
 <translation id="7405710164030118432">For å låse opp enheten, skriv inn koden din for foreldretilgang til Family Link</translation>
 <translation id="7406608787870898861">Fullfør konfigureringen av mobilnettverket</translation>
@@ -1786,7 +1791,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="761736749114493194">Slå av/på kamerainnramming. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kameraet er festet til nedre høyre hjørne</translation>
-<translation id="7638572816805275740">Ta en skjermdump eller et skjermopptak av vinduet</translation>
+<translation id="7638572816805275740">Ta et skjermbilde eller et skjermopptak av vinduet</translation>
 <translation id="7642106959537987271">modus for fargeinvertering</translation>
 <translation id="7642647758716480637">Åpne innstillinger for <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />)</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eier)</translation>
@@ -1902,6 +1907,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7982878511129296052">Slår av …</translation>
 <translation id="7984197416080286869">For mange forsøk med fingeravtrykk</translation>
 <translation id="798779949890829624">Denne innstillingen administreres av administratoren din</translation>
+<translation id="7989206653429884947">Åpnes ofte</translation>
 <translation id="799296642788192631">Du kan feste viktige filer. For å feste et element, hold markøren over det eller åpne Filer og høyreklikk på det.</translation>
 <translation id="7994370417837006925">Multipålogging</translation>
 <translation id="7995804128062002838">Kunne ikke ta opp skjermen</translation>
@@ -2066,7 +2072,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8653151467777939995">Vis innstillinger for varsler. Varsler er på</translation>
 <translation id="8660331759611631213">Kvadratroten av 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="8664282223139913403">Trykk på Enter for å ta en delvis skjermdump</translation>
+<translation id="8664282223139913403">Trykk på Enter for å ta et delvis skjermbilde</translation>
 <translation id="8676770494376880701">Laveffektslader er tilkoblet</translation>
 <translation id="8679158879996532670">Vis innstillinger for fokus. Fokus er på. <ph name="REMAINING_TIME" /> gjenstår.</translation>
 <translation id="8683506306463609433">Ytelsessporing er aktiv</translation>
@@ -2088,6 +2094,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tiden er ute. Bra jobbet! 🎉</translation>
+<translation id="8753368202781196133">Vi støtter foreløpig ikke dette språket.</translation>
 <translation id="8755498163081687682">Verifiser identiteten din: <ph name="ORIGIN_NAME" /> vil bekrefte at det er deg</translation>
 <translation id="875593634123171288">Vis innstillinger for VPN</translation>
 <translation id="8756799553341497810">Du kan begynne å tilpasse appoppsettet når du går ut av denne visningen.</translation>
@@ -2103,7 +2110,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">«Hjelp»</translation>
 <translation id="8814190375133053267">Wifi</translation>
-<translation id="8815390544836110344">Trykk på snarveien for skjermdump, Ctrl + Shift + Oversiktsmodus-tasten</translation>
+<translation id="8815390544836110344">Trykk på snarveien for skjermbilde, Ctrl + Shift + Oversiktsmodus-tasten</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
 <translation id="8819728065740986820">Tilpasset lading er på</translation>
 <translation id="8822104519413696986">Dette er et berøringsspill</translation>

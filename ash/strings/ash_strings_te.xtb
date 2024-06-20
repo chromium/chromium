@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="1391102559483454063">ఆన్</translation>
 <translation id="1394698770495054737">పూర్తిగా బ్లర్</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 రోజు క్రితం}other{# రోజుల క్రితం}}</translation>
 <translation id="1404963891829069586">ఫోకస్ చేసినప్పుడు వచ్చే సౌండ్‌లు</translation>
 <translation id="1407069428457324124">ముదురు రూపం</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. తేదీల మధ్య నావిగేట్ చేయడానికి బాణం కీలను ఉపయోగించండి.</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">మార్కర్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="1743570585616704562">గుర్తించలేదు</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> నోటిఫికేషన్‌ను కుదించండి</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 గంట లోపు}=1{1 గంట క్రితం}other{# గం. క్రితం}}</translation>
 <translation id="1746730358044914197">ఇన్‌పుట్ పద్ధతులు మీ నిర్వాహకుల ద్వారా కాన్ఫిగర్ చేయబడ్డాయి.</translation>
 <translation id="1747336645387973286">గడువు తేదీ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">స్క్రీన్‌పై కనిపించే కీబోర్డ్ ప్రారంభించబడింది</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2360398059912971776">బ్యాటరీ</translation>
 <translation id="2361210043495191221">Wi-Fiని టోగుల్ చేయండి. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> నుండి పంపబడింది</translation>
 <translation id="2367186422933365202">మీ Chromebookకు సైన్ ఇన్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="2367972762794486313">యాప్‌లను చూపు</translation>
 <translation id="2368828502825385061">గుర్తించండి</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">మైక్రోఫోన్ యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
+<translation id="2968761508099987738">ఈ సమయంలో మీ ప్రస్తుత లొకేషన్‌కు సపోర్ట్ లేదు.</translation>
 <translation id="2970920913501714344">యాప్‌లు, ఎక్స్‌టెన్షన్‌లు, థీమ్‌లను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2977598380246111477">తర్వాతి నంబర్</translation>
 <translation id="2985148236010982088">అన్ని యాప్‌లను చూడండి</translation>
@@ -987,6 +991,7 @@
 <translation id="468293128311738995">మీ ఫోన్‌లోని యాప్‌లు</translation>
 <translation id="4690510401873698237">అర కింది భాగంలో ఉంది</translation>
 <translation id="4696813013609194136">తల్లి/తండ్రి కోడ్‌తో పరికరాన్ని అన్‌లాక్ చేయండి</translation>
+<translation id="4697357603686181098">దీని విషయంలో సహాయం చేయలేము. మరొక రిక్వెస్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="4702647871202761252">గోప్యతా స్క్రీన్ ఆఫ్‌లో ఉంది</translation>
 <translation id="4706121060329443414">మీ డౌన్‌లోడ్ తర్వాత మళ్లీ ప్రారంభమవుతుంది. ప్రస్తుతానికి, ప్రాసెసింగ్ కోసం స్పీచ్ Googleకు పంపబడుతుంది.</translation>
 <translation id="470644585772471629">కలర్ మార్పిడి</translation>
@@ -1903,6 +1908,7 @@
 <translation id="7982878511129296052">ఆఫ్ అవుతోంది...</translation>
 <translation id="7984197416080286869">చాలా ఎక్కువ వేలిముద్ర ప్రయత్నాలు చేశారు</translation>
 <translation id="798779949890829624">ఈ సెట్టింగ్‌ను మీ అడ్మినిస్ట్రేటర్ మేనేజ్ చేస్తారు</translation>
+<translation id="7989206653429884947">తరచుగా తెరుస్తున్నారు</translation>
 <translation id="799296642788192631">మీరు ముఖ్యమైన ఫైల్స్‌ను పిన్ చేయవచ్చు. ఏదైనా ఐటెమ్‌ను పిన్ చేయడానికి, దానిపై మౌస్ కర్సర్ ఉంచండి లేదా Filesను తెరిచి, ఐటెమ్‌పై కుడి క్లిక్ చేయండి.</translation>
 <translation id="7994370417837006925">బహుళ సైన్-ఇన్</translation>
 <translation id="7995804128062002838">స్క్రీన్‌ను క్యాప్చర్ చేయడం విఫలమైంది</translation>
@@ -2089,6 +2095,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">సమయం ముగిసింది. బాగా చేశారు! 🎉</translation>
+<translation id="8753368202781196133">ప్రస్తుతం ఈ భాషకు సపోర్ట్ లేదు.</translation>
 <translation id="8755498163081687682">మీ గుర్తింపును వెరిఫై చేయండి: <ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="8756799553341497810">మీరు ఈ వీక్షణ నుండి ఎగ్జిట్ అయిన తర్వాత మీ యాప్ లేఅవుట్‌ను అనుకూలీకరించడం ప్రారంభించవచ్చు.</translation>

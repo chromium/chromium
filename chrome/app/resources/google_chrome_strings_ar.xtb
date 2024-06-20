@@ -171,6 +171,7 @@
 <translation id="3261565993776444564">جرِّب لونًا جديدًا لتخصيص المتصفّح</translation>
 <translation id="3282568296779691940">‏تسجيل الدخول إلى Chrome</translation>
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>
+<translation id="3292333338048274092">‏بعد ذلك، عليك إعادة تشغيل Chrome.</translation>
 <translation id="3360895254066713204">‏مساعد Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏ستتم إعادة تشغيل Chrome الآن}=1{‏ستتم إعادة تشغيل Chrome في غضون ثانية واحدة}two{‏ستتم إعادة تشغيل Chrome في غضون ثانيتين}few{‏ستتم إعادة تشغيل Chrome في غضون # ثوان}many{‏ستتم إعادة تشغيل Chrome في غضون # ثانيةً}other{‏ستتم إعادة تشغيل Chrome في غضون # ثانية}}</translation>
 <translation id="3396977131400919238">‏حدث خطأ في نظام التشغيل أثناء عملية التثبيت. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
@@ -215,6 +216,7 @@
 <translation id="4035053306113201399">‏يجب إعادة تشغيل نظام التشغيل Chrome لتثبيت التحديث.</translation>
 <translation id="4050175100176540509">تحسينات الأمان المهمة والميزات الجديدة متاحة في أحدث إصدار.</translation>
 <translation id="4053720452172726777">‏تخصيص Google Chrome والتحكم فيه</translation>
+<translation id="4084404300720192944">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chrome ضمن "إعدادات النظام المفضّلة".</translation>
 <translation id="4106587138345390261">‏يعمل Chrome على استكشاف ميزات جديدة تتيح للمواقع الإلكترونية توفير تجربة التصفّح ذاتها باستخدام قدر أقل من المعلومات.</translation>
 <translation id="4110895483821904099">‏إعداد ملفك الشخصي الجديد على متصفِّح Chrome</translation>
 <translation id="4111566860456076004">‏لا يمكن لمتصفّح Chrome معرفة مصدر هذه الإضافة، وقد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chrome كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
@@ -351,6 +353,7 @@
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Google Chrome</translation>
 <translation id="6182736845697986886">تعذَّر تثبيت التطبيق بسبب حدوث خطأ داخلي في خادم التحديث.</translation>
 <translation id="6200139057479872438">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">‏لمشاركة شاشتك، يجب السماح بتسجيل الشاشة في Chrome ضمن "إعدادات النظام المفضّلة".</translation>
 <translation id="6235018212288296708">‏قاعدة الوارد إلى Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="624230925347970731">‏سيتم إغلاق متصفِّح Chrome قريبًا</translation>
 <translation id="6247557882553405851">‏مدير كلمات المرور في Google</translation>

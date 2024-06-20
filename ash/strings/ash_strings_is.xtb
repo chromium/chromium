@@ -121,6 +121,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1391102559483454063">Kveikt</translation>
 <translation id="1394698770495054737">Algjör óskýrleiki</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Fyrir einum degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
 <translation id="1404963891829069586">Einbeitingarhljóð</translation>
 <translation id="1407069428457324124">Dökkt þema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Notaðu örvalyklana til að fletta á milli daga.</translation>
@@ -211,6 +212,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="174102739345480129">Slökkt er á merkipennanum.</translation>
 <translation id="1743570585616704562">Þekktist ekki</translation>
 <translation id="1743927604032653654">Minnka tilkynninguna „<ph name="NOTIFICATION_TITLE" />“</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Fyrir innan við klukkustund}=1{Fyrir klukkustund}one{Fyrir # klukkustund}other{Fyrir # klukkustundum}}</translation>
 <translation id="1746730358044914197">Kerfisstjóri stillti innfærsluaðferðir.</translation>
 <translation id="1747336645387973286">skiladagur <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Skjályklaborð virkt</translation>
@@ -348,6 +350,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2360398059912971776">rafhlaða</translation>
 <translation id="2361210043495191221">Kveikja/slökkva á Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Sent úr <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Ekki tókst að skrá þig inn á Chromebook</translation>
 <translation id="2367972762794486313">Sýna forrit</translation>
 <translation id="2368828502825385061">Staðsetja</translation>
@@ -510,6 +513,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Kveikja á hljóðnemaaðgangi?</translation>
 <translation id="296762781903199866">Ekki tókst að sækja <ph name="LANGUAGE" /> talskrár</translation>
+<translation id="2968761508099987738">Núverandi staðsetning er ekki studd eins og er.</translation>
 <translation id="2970920913501714344">Sett upp forrit, viðbætur og þemu</translation>
 <translation id="2977598380246111477">Næsta tala</translation>
 <translation id="2985148236010982088">Sjá öll forrit</translation>
@@ -986,6 +990,7 @@ Eitt tæki er tengt.</translation>
 <translation id="468293128311738995">Forrit úr símanum</translation>
 <translation id="4690510401873698237">Hilla neðst</translation>
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
+<translation id="4697357603686181098">Get ekki aðstoðað með þetta. Prófaðu aðra beiðni.</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
 <translation id="4706121060329443414">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu í millitíðinni.</translation>
 <translation id="470644585772471629">Umsnúningur lita</translation>
@@ -1902,6 +1907,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7982878511129296052">Slekkur á sér…</translation>
 <translation id="7984197416080286869">Of margar tilraunir til að nota fingrafar</translation>
 <translation id="798779949890829624">Kerfisstjórinn þinn stjórnar þessari stillingu</translation>
+<translation id="7989206653429884947">Oft opnað</translation>
 <translation id="799296642788192631">Þú getur fest mikilvægar skrár. Til að festa skaltu halda bendlinum yfir atriði eða opna Files og hægrismella á atriði.</translation>
 <translation id="7994370417837006925">Innskráning á marga reikninga</translation>
 <translation id="7995804128062002838">Ekki tókst að taka skjámynd</translation>
@@ -2088,6 +2094,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tíminn er liðinn. Vel gert! 🎉</translation>
+<translation id="8753368202781196133">Þetta tungumál er ekki stutt eins og er.</translation>
 <translation id="8755498163081687682">Staðfestu hver þú ert: <ph name="ORIGIN_NAME" /> vill staðfesta að þetta sért þú</translation>
 <translation id="875593634123171288">Sýna VPN-stillingar</translation>
 <translation id="8756799553341497810">Þú getur byrjað að sérsníða útlit forritsins þegar þú ferð úr þessu yfirliti.</translation>

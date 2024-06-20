@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastelově žlutá</translation>
 <translation id="1056898198331236512">Upozornění</translation>
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
+<translation id="1061864016440983342">Používat bez polohy</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> z <ph name="COUNT" />, <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Byl zjištěn Firewall</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2082932131694554252">Přiřazená klávesa</translation>
 <translation id="2085089206770112532">Snížit jas displeje</translation>
+<translation id="2086091080968010660">Změny závislé na čase nemusí být přesné. V Nastavení zapněte přístup k poloze.</translation>
 <translation id="2102231663024125441">Úprava textu</translation>
 <translation id="2105810540595158374">Zařízení je herní ovladač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Obnovit výchozí nastavení</translation>
 <translation id="2286454467119466181">Jednoduché</translation>
 <translation id="2287186687001756809">Žádné snímky. Fotky můžete přidat na adrese <ph name="LINK" />.</translation>
+<translation id="2294577623958216786">Aktuální plán je nastaven na <ph name="SUNRISE" />–<ph name="SUNSET" />. Pokud chcete plán západu a východu slunce automaticky aktualizovat, zapněte systémový přístup k poloze.</translation>
 <translation id="2305172810646967500">černá</translation>
 <translation id="2307344026739914387">Použít aktuální dvojici klíčů</translation>
 <translation id="2308243864813041101">Pokud chcete v procesu aktualizace pokračovat, odpojte od zařízení <ph name="DEVICE_NAME" /> kabel USB</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">jas klávesnice</translation>
 <translation id="6412715219990689313">Vestavěná klávesnice</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
+<translation id="6419454453018688975">Zapnout systémový přístup k poloze</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabý (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Přejít na nastavení účtu</translation>

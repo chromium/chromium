@@ -121,6 +121,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1391102559483454063">Ativada</translation>
 <translation id="1394698770495054737">Efeito totalmente esbatido</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Há 1 dia}other{Há # dias}}</translation>
 <translation id="1404963891829069586">Focar nos sons</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilize as teclas de seta para navegar entre datas.</translation>
@@ -211,6 +212,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="174102739345480129">O marcador está desativado.</translation>
 <translation id="1743570585616704562">Não reconhecida</translation>
 <translation id="1743927604032653654">Fechar notificação de <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Dentro de 1 h}=1{Há 1 h}other{Há # horas}}</translation>
 <translation id="1746730358044914197">Os métodos de introdução são configurados pelo gestor.</translation>
 <translation id="1747336645387973286">data de conclusão: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Teclado no ecrã ativado</translation>
@@ -348,6 +350,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Ative/desative o Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Enviado de <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Não é possível iniciar sessão no Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicações</translation>
 <translation id="2368828502825385061">Localizar</translation>
@@ -510,6 +513,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Ativar acesso ao microfone?</translation>
 <translation id="296762781903199866">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">De momento, a sua localização atual não é suportada.</translation>
 <translation id="2970920913501714344">Instalar aplicações, extensões e temas</translation>
 <translation id="2977598380246111477">Número seguinte</translation>
 <translation id="2985148236010982088">Ver todas as apps</translation>
@@ -986,6 +990,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="468293128311738995">Apps do telemóvel</translation>
 <translation id="4690510401873698237">Prateleira na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
+<translation id="4697357603686181098">Não podemos ajudar com isto. Experimente outro pedido.</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
 <translation id="4706121060329443414">Tentar-se-á a transferência mais tarde. Por enquanto, a voz será enviada para a Google para processamento.</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
@@ -1902,6 +1907,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7982878511129296052">A desativar…</translation>
 <translation id="7984197416080286869">Demasiadas tentativas de introdução da impressão digital</translation>
 <translation id="798779949890829624">Esta definição é gerida pelo seu administrador</translation>
+<translation id="7989206653429884947">Aberto frequentemente</translation>
 <translation id="799296642788192631">Pode afixar ficheiros importantes. Para afixar, passe o cursor do rato sobre um item ou abra o Files e clique com o botão direito do rato num item.</translation>
 <translation id="7994370417837006925">Início de sessão integrado</translation>
 <translation id="7995804128062002838">Falha ao capturar o ecrã.</translation>
@@ -2088,6 +2094,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Terminou o tempo. Muito bem! 🎉</translation>
+<translation id="8753368202781196133">De momento, este idioma não é suportado.</translation>
 <translation id="8755498163081687682">Valide a sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar a sua identidade.</translation>
 <translation id="875593634123171288">Mostrar definições da VPN</translation>
 <translation id="8756799553341497810">Pode começar a personalizar o esquema da app após sair desta vista.</translation>

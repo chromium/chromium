@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">пастел шар</translation>
 <translation id="1056898198331236512">Анхааруулга</translation>
 <translation id="1059913517121127803">Скан хийхийг эхлүүлж чадсангүй</translation>
+<translation id="1061864016440983342">Байршилгүйгээр ашиглах</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />-с <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2082932131694554252">Оноосон гарын товч</translation>
 <translation id="2085089206770112532">Дэлгэцийн гэрэлтүүлгийг багасгах</translation>
+<translation id="2086091080968010660">Цагт тулгуурласан өөрчлөлтүүд оновчгүй байж магадгүй. Системийн байршлын хандалтыг тохиргоонд асаана уу.</translation>
 <translation id="2102231663024125441">Текст засах</translation>
 <translation id="2105810540595158374">Төхөөрөмж нь тоглоомын гар байна.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Өгөгдмөлийг сэргээх</translation>
 <translation id="2286454467119466181">Энгийн</translation>
 <translation id="2287186687001756809">Боломжтой зураг байхгүй. Зураг нэмэхийн тулд <ph name="LINK" /> руу очно уу</translation>
+<translation id="2294577623958216786">Одоогийн хуваарийг <ph name="SUNRISE" />-<ph name="SUNSET" /> болгож тохируулсан. Нар жаргах, нар мандах хуваарийг автоматаар шинэчлэхийн тулд системийн байршлын хандалтыг асаана уу.</translation>
 <translation id="2305172810646967500">хар</translation>
 <translation id="2307344026739914387">Одоогийн хос түлхүүрийг ашиглах</translation>
 <translation id="2308243864813041101">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н USB кабелийг салгана уу</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">гарын гэрэлтүүлэг</translation>
 <translation id="6412715219990689313">Суурилуулсан гар</translation>
 <translation id="6417265370957905582">Google туслах</translation>
+<translation id="6419454453018688975">Системийн байршлын хандалтыг асаах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6439505561246192797">Сул (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Бүртгэлийн тохиргоо хэсэгт очих</translation>

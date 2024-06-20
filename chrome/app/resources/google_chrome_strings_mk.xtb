@@ -173,6 +173,7 @@
 <translation id="3261565993776444564">Испробајте нова боја за да го приспособите прелистувачот</translation>
 <translation id="3282568296779691940">Најави се на Chrome</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
+<translation id="3292333338048274092">Потоа ќе треба да го рестартирате Chrome.</translation>
 <translation id="3360895254066713204">Помошник на Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ќе се рестартира сега}=1{Chrome ќе се рестартира по 1 секунда}one{Chrome ќе се рестартира по # секунда}other{Chrome ќе се рестартира по # секунди}}</translation>
 <translation id="3396977131400919238">Се појави грешка во оперативниот систем додека се инсталираше. Преземете го Google Chrome повторно.</translation>
@@ -217,6 +218,7 @@
 <translation id="4035053306113201399">Chrome OS треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="4050175100176540509">Во најновата верзија се достапни значајни безбедносни подобрувања и нови карактеристики.</translation>
 <translation id="4053720452172726777">Приспособи го и контролирај го Google Chrome</translation>
+<translation id="4084404300720192944">За да го споделите прозорецот, дозволете снимање на екранот за Chrome во System Preferences.</translation>
 <translation id="4106587138345390261">Chrome истражува нови функции што им овозможуваат на сајтовите да го испорачуваат истото доживување при прелистувањето со користење помалку ваши податоци</translation>
 <translation id="4110895483821904099">Поставете нов профил на Chrome</translation>
 <translation id="4111566860456076004">Chrome не може да потврди од каде е екстензијава, па може да биде небезбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и личните податоци.</translation>
@@ -355,6 +357,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
 <translation id="6200139057479872438">Не сте отвориле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">За да го споделите екранот, дозволете снимање на екранот за Chrome во System Preferences.</translation>
 <translation id="6235018212288296708">Дојдовно правило за Google Chrome за да овозможи сообраќај mDNS.</translation>
 <translation id="624230925347970731">Chrome ќе се затвори наскоро</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

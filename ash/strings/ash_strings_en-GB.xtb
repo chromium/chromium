@@ -121,6 +121,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1394698770495054737">Full blur</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 day ago}other{# days ago}}</translation>
 <translation id="1404963891829069586">Focus sounds</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
@@ -211,6 +212,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="174102739345480129">Marker is off.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
 <translation id="1743927604032653654">Collapse <ph name="NOTIFICATION_TITLE" /> notification</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Within 1 hr}=1{1 hr ago}other{# hrs ago}}</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
 <translation id="1747336645387973286">due date <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
@@ -348,6 +350,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360398059912971776">battery</translation>
 <translation id="2361210043495191221">Toggle Wi-Fi <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Sent from <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2367972762794486313">Show apps</translation>
 <translation id="2368828502825385061">Locate</translation>
@@ -510,6 +513,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Turn on microphone access?</translation>
 <translation id="296762781903199866">Couldn't download <ph name="LANGUAGE" /> speech files</translation>
+<translation id="2968761508099987738">Your current location isn't supported at this time.</translation>
 <translation id="2970920913501714344">Install apps, extensions and themes</translation>
 <translation id="2977598380246111477">Next number</translation>
 <translation id="2985148236010982088">See all apps</translation>
@@ -986,6 +990,7 @@ One device connected.</translation>
 <translation id="468293128311738995">Apps from your phone</translation>
 <translation id="4690510401873698237">Shelf on bottom</translation>
 <translation id="4696813013609194136">Unlock device with parent code</translation>
+<translation id="4697357603686181098">Can't help with this. Try another request.</translation>
 <translation id="4702647871202761252">Privacy screen is off</translation>
 <translation id="4706121060329443414">Download will be attempted later. Speech will be sent to Google for processing for now.</translation>
 <translation id="470644585772471629">Colour inversion</translation>
@@ -1902,6 +1907,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7982878511129296052">Turning off…</translation>
 <translation id="7984197416080286869">Too many fingerprint attempts</translation>
 <translation id="798779949890829624">This setting is managed by your administrator</translation>
+<translation id="7989206653429884947">Frequently opened</translation>
 <translation id="799296642788192631">You can pin important files. To pin, hover over an item or open Files and right-click an item.</translation>
 <translation id="7994370417837006925">Multiple sign-in</translation>
 <translation id="7995804128062002838">Failed to capture screen</translation>
@@ -2088,6 +2094,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Time's up. Great work! 🎉</translation>
+<translation id="8753368202781196133">This language isn't supported at this time.</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
 <translation id="8756799553341497810">You can start customising your app layout once you exit this view.</translation>

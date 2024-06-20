@@ -533,6 +533,7 @@
 <translation id="371398631992790800">إخفاء الإشارات المرجعية</translation>
 <translation id="37207012422556617">طلبات البحث الرائجة</translation>
 <translation id="3725081662140949903">لمنع الآخرين من استخدام كلمة مرورك، يجب فتح "<ph name="APP" />" لتغييرها.</translation>
+<translation id="372676576864368480">الملء التلقائي لرقم البطاقة التي تنتهي بالأرقام <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">‏تاريخ الإنشاء: ‎<ph name="DATE" /></translation>
 <translation id="374357899112510277">إخفاء المحتوى الذي تم تنزيله</translation>
 <translation id="3745190878148784130">إحفاء ميزة "تصغير/تكبير النص"</translation>
@@ -1098,6 +1099,7 @@
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
 <translation id="648164694371393720">خطأ في المصادقة</translation>
 <translation id="6494931198667773526">الانتهاء</translation>
+<translation id="6500795388871406244">استخدِم كلمة المرور المقترَحة:</translation>
 <translation id="650279896687777322">مزيد من المعلومات...</translation>
 <translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
 <translation id="6510072653668207258">تذكيري لاحقًا</translation>
@@ -1310,6 +1312,7 @@
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7598439272585186139">تعزيز مستوى الأمان</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">الملء التلقائي لاسم حامل البطاقة "<ph name="NAME" />"</translation>
 <translation id="7603852183842204213">تم حظر النوافذ المنبثقة (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">مجموعات علامات التبويب</translation>
 <translation id="7607521702806708809">حذف كلمة المرور</translation>
@@ -1342,6 +1345,7 @@
 <translation id="7749790401023484470">لم يتم تحديد أي نص.</translation>
 <translation id="7752405526771734448">‏البحث المرئي عبر "عدسة Google"</translation>
 <translation id="7756478488453921771">القائمة ← الإعدادات ← طُرق الدفع</translation>
+<translation id="775755486779745798">الملء التلقائي لشهر انتهاء الصلاحية <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">قفل علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
@@ -1518,6 +1522,7 @@
 <translation id="8556590991644167667">{count,plural, =1{أغلقت تحذيرًا واحدًا ({count}).}zero{أغلقت {count} تحذير.}two{أغلقت تحذيرَين ({count}).}few{أغلقت {count} تحذيرات.}many{أغلقت {count} تحذيرًا.}other{أغلقت {count} تحذير.}}</translation>
 <translation id="8560253818350321773">عرض العناصر الأكثر استخدامًا أولاً</translation>
 <translation id="8569721750632860947">‏ما هو عنوان URL الذي تريد إضافته إلى "قائمة القراءة"؟</translation>
+<translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="8593565399399144771">يمكنك فتح علامة تبويب جديدة هنا.</translation>

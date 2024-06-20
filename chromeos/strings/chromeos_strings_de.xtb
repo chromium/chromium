@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastellgelb</translation>
 <translation id="1056898198331236512">Warnung</translation>
 <translation id="1059913517121127803">Scan konnte nicht gestartet werden</translation>
+<translation id="1061864016440983342">Ohne Standortzugriff verwenden</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> von <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Weitere Einstellungen</translation>
 <translation id="2082932131694554252">Zugewiesene Taste</translation>
 <translation id="2085089206770112532">Displayhelligkeit verringern</translation>
+<translation id="2086091080968010660">Zeitbasierte Änderungen können ungenau sein. Aktiviere den Standortzugriff für Systemdienste in den Einstellungen.</translation>
 <translation id="2102231663024125441">Textbearbeitung</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Standardeinstellungen wiederherstellen</translation>
 <translation id="2286454467119466181">Einfach</translation>
 <translation id="2287186687001756809">Kein Bild verfügbar. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>
+<translation id="2294577623958216786">Aktueller Zeitplan: <ph name="SUNRISE" />–<ph name="SUNSET" />. Wenn der Zeitplan für Sonnenuntergang und Sonnenaufgang automatisch aktualisiert werden soll, aktiviere den Standortzugriff für Systemdienste.</translation>
 <translation id="2305172810646967500">Schwarz</translation>
 <translation id="2307344026739914387">Aktuelles Schlüsselpaar verwenden</translation>
 <translation id="2308243864813041101">Ziehe zum Fortsetzen des Updates das USB-Kabel des Geräts „<ph name="DEVICE_NAME" />“ ab</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">Tastaturhelligkeit</translation>
 <translation id="6412715219990689313">Eingebaute Tastatur</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">Standortzugriff für Systemdienste aktivieren</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>

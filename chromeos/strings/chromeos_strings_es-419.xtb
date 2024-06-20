@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">amarillo pastel</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
+<translation id="1061864016440983342">Usar sin ubicación</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2082932131694554252">Tecla del teclado asignada</translation>
 <translation id="2085089206770112532">Disminuir el brillo de la pantalla</translation>
+<translation id="2086091080968010660">Es posible que los cambios basados en la hora no sean precisos. Activa el acceso a la ubicación en la configuración.</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
 <translation id="2105810540595158374">El dispositivo es un control de juegos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Restaurar la configuración predeterminada</translation>
 <translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">No hay imágenes disponibles. Para agregar fotos, ve a <ph name="LINK" />.</translation>
+<translation id="2294577623958216786">El horario actual está establecido de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Para actualizar automáticamente el horario del amanecer y del atardecer, activa el acceso a la ubicación del sistema.</translation>
 <translation id="2305172810646967500">negro</translation>
 <translation id="2307344026739914387">Usar el par de claves actual</translation>
 <translation id="2308243864813041101">Desenchufa el cable USB del dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">brillo del teclado</translation>
 <translation id="6412715219990689313">Teclado integrado</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
+<translation id="6419454453018688975">Activar el acceso a la ubicación del sistema</translation>
 <translation id="6423239382391657905">VPN abierto</translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>

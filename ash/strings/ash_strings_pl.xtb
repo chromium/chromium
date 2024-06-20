@@ -121,6 +121,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1391102559483454063">Włączono</translation>
 <translation id="1394698770495054737">Pełne rozmycie</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 dzień temu}few{# dni temu}many{# dni temu}other{# dnia temu}}</translation>
 <translation id="1404963891829069586">Dźwięki w trybie skupienia</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Aby przechodzić między datami, użyj klawiszy strzałek.</translation>
@@ -211,6 +212,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="174102739345480129">Pisak jest wyłączony.</translation>
 <translation id="1743570585616704562">Nie rozpoznano</translation>
 <translation id="1743927604032653654">Zwiń powiadomienie <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{W ciągu 1 godz.}=1{1 godz. temu}few{# godz. temu}many{# godz. temu}other{# godz. temu}}</translation>
 <translation id="1746730358044914197">Metody wprowadzania zostały skonfigurowane przez administratora.</translation>
 <translation id="1747336645387973286">termin <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
@@ -348,6 +350,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Przełącz Wi-Fi. <ph name="STATE" /></translation>
+<translation id="236574664504281623">Wysłane z: <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nie mogę zalogować się na Chromebooku</translation>
 <translation id="2367972762794486313">Pokaż aplikacje</translation>
 <translation id="2368828502825385061">Zlokalizuj</translation>
@@ -510,6 +513,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Włączyć dostęp do mikrofonu?</translation>
 <translation id="296762781903199866">Nie udało się pobrać plików z mową w języku: <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Twoja obecna lokalizacja nie jest teraz obsługiwana.</translation>
 <translation id="2970920913501714344">instalować aplikacje, rozszerzenia i motywy;</translation>
 <translation id="2977598380246111477">Następny numer</translation>
 <translation id="2985148236010982088">Zobacz wszystkie aplikacje</translation>
@@ -986,6 +990,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="468293128311738995">Aplikacje z telefonu</translation>
 <translation id="4690510401873698237">Półka na dole</translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
+<translation id="4697357603686181098">Tej prośby nie można spełnić. Poproś o coś innego.</translation>
 <translation id="4702647871202761252">Ekran chroniący prywatność jest wyłączony</translation>
 <translation id="4706121060329443414">Spróbuję je pobrać później. Na razie mowa będzie wysyłana do Google i tam będzie przetwarzana.</translation>
 <translation id="470644585772471629">Odwrócenie kolorów</translation>
@@ -1901,6 +1906,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7982878511129296052">Wyłączam…</translation>
 <translation id="7984197416080286869">Zbyt wiele prób odblokowania odciskiem palca</translation>
 <translation id="798779949890829624">Tym ustawieniem zarządza Twój administrator</translation>
+<translation id="7989206653429884947">Często otwierane</translation>
 <translation id="799296642788192631">Możesz przypiąć ważne pliki. Aby przypiąć element, najedź na niego kursorem lub otwórz Pliki i kliknij go prawym przyciskiem myszy.</translation>
 <translation id="7994370417837006925">Wielokrotne logowanie</translation>
 <translation id="7995804128062002838">Nie udało się zrobić zrzutu ekranu</translation>
@@ -2087,6 +2093,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Czas minął. Brawo! 🎉</translation>
+<translation id="8753368202781196133">Ten język nie jest obecnie obsługiwany.</translation>
 <translation id="8755498163081687682">Weryfikacja tożsamości: strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
 <translation id="8756799553341497810">Po zamknięciu tego widoku możesz zacząć dostosowywać układ aplikacji.</translation>

@@ -410,6 +410,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1293556467332435079">File</translation>
 <translation id="1294807885394205587">Questa procedura potrebbe richiedere alcuni minuti. Avvio del gestore di container.</translation>
 <translation id="12951065153783848">Il tuo account è gestito dalla tua organizzazione</translation>
+<translation id="1296410481664942178">Non mostrare Google Calendar</translation>
 <translation id="1296911687402551044">Blocca scheda selezionata</translation>
 <translation id="1297175357211070620">Destinazione</translation>
 <translation id="129770436432446029">Invia feedback su <ph name="EXPERIMENT_NAME" /></translation>
@@ -448,6 +449,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1327495825214193325">Per attivare il debug ADB è necessario riavviare questo <ph name="DEVICE_TYPE" />. Per disattivarlo è necessario ripristinare le impostazioni di fabbrica.</translation>
 <translation id="1327527584824210101">Utilizza la tua passkey</translation>
 <translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
+<translation id="1328364753167940710">Tra <ph name="NUM_HR" /> h</translation>
 <translation id="1329466763986822896">Migliora la privacy di questo hotspot</translation>
 <translation id="1331977651797684645">Ero io.</translation>
 <translation id="1333489022424033687">Alcune funzionalità sul sito <ph name="ORIGIN" /> potrebbero non funzionare se non cancelli i dati memorizzati da altri siti sul dispositivo</translation>
@@ -997,6 +999,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1709762881904163296">Impostazioni di rete</translation>
 <translation id="1709916727352927457">Elimina passkey</translation>
 <translation id="1709972045049031556">Impossibile condividere</translation>
+<translation id="1712143791363119140">In corso</translation>
 <translation id="1714644264617423774">Attiva funzioni di accessibilità per facilitare l'utilizzo del dispositivo. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Vuoi eliminare le autorizzazioni e i dati del sito <ph name="SITE_NAME" /> e della relativa app installata?</translation>
 <translation id="171826447717908393">App web isolate (beta)</translation>
@@ -1400,6 +1403,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="200928901437634269">Utilizza l'Account Google di tuo figlio o un account della scuola. Puoi anche configurare il Controllo genitori.</translation>
 <translation id="2009590708342941694">Strumento Emoji</translation>
 <translation id="2010501376126504057">Dispositivi compatibili</translation>
+<translation id="2010636492623189611">Selezionato.</translation>
 <translation id="201217432804812273">Attiva "Salva gruppo"</translation>
 <translation id="2012935757369720523">Elimina file</translation>
 <translation id="2013467735169740431">I siti possono chiedere di bloccare la tastiera</translation>
@@ -1992,6 +1996,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2436385001956947090">Copia &amp;link</translation>
+<translation id="2437561292559037753">Condivisione dei dati</translation>
 <translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
 <translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
@@ -2569,6 +2574,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> di spazio liberato</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
 <translation id="2844809857160214557">Visualizza e gestisci i processi di stampa</translation>
+<translation id="2845276301195220700">Altre azioni per Google Calendar</translation>
 <translation id="2845382757467349449">Mostra sempre barra dei preferiti</translation>
 <translation id="2845751331501453107">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK1" />annunci suggeriti dai siti<ph name="LINK_END1" />, dalle <ph name="BEGIN_LINK2" />impostazioni dei cookie<ph name="LINK_END2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="284581348330507117">Crea password univoche</translation>
@@ -3683,6 +3689,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3694590407685276748">Evidenzia il cursore di testo</translation>
 <translation id="369489984217678710">Password e altri dati di accesso</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Controlli di sicurezza effettuati. I tuoi dati verranno caricati.}=1{Controlli di sicurezza effettuati. Il tuo file verrà caricato.}other{Controlli di sicurezza effettuati. I tuoi file verranno caricati.}}</translation>
+<translation id="3695339288331169103">Da <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">Avvio app + Freccia sinistra</translation>
 <translation id="3697716475445175867">ultimi aperti</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Puoi impedire a questo sito di inviare notifiche future.}other{Puoi impedire a questi siti di inviare notifiche future.}}</translation>
@@ -4982,6 +4989,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4650591383426000695">Disconnetti il telefono da <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Impossibile caricare il componente online con le risorse della modalità demo.</translation>
 <translation id="4651921906638302153">Impossibile accedere con questo account</translation>
+<translation id="4652921642122345344">Velocità voce <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">La modifica dell'impostazione della videocamera richiede il riavvio di Parallels Desktop. Riavvia Parallels Desktop per continuare.</translation>
 <translation id="4653116291358041820">Ombra piccola</translation>
 <translation id="4653405415038586100">Errore durante la configurazione di Linux</translation>
@@ -5180,6 +5188,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4809927044794281115">Tema chiaro</translation>
 <translation id="4811212958317149293">Scansione automatica tastiera Switch Access</translation>
 <translation id="4811503964269049987">Aggiungi scheda selezionata a nuovo gruppo</translation>
+<translation id="4812073856515324252">Scegli dove salvare la passkey per <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Errore di rete</translation>
 <translation id="4814114628197290459">Elimina IBAN</translation>
 <translation id="4814327014588285482">Salta e ricordamelo in un secondo momento</translation>
@@ -5646,6 +5655,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5160634252433617617">Tastiera fisica</translation>
 <translation id="5160857336552977725">Accedi al tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Dispositivi USB di <ph name="VENDOR_NAME" /></translation>
+<translation id="5161442190864186925">Partecipa alla riunione</translation>
 <translation id="5161827038979306924">Qual è la differenza tra la cronologia di navigazione di Chrome e la cronologia delle ricerche?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> è stato bloccato</translation>
 <translation id="5163910114647549394">Scheda spostata alla fine della tabstrip</translation>
@@ -7950,6 +7960,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6912007319859991306">PIN SIM rete mobile</translation>
 <translation id="6912380255120084882">Prova con un altro dispositivo</translation>
 <translation id="691289340230098384">Preferenze sottotitoli</translation>
+<translation id="6913051485529944333">Non rivedrai più Google Calendar in questa pagina</translation>
 <translation id="6914812290245989348">Non visualizzare avvisi prima di visitare i siti non sicuri</translation>
 <translation id="6916590542764765824">Gestisci estensioni</translation>
 <translation id="6918677045355889289">Aggiornamento di ChromeOS richiesto</translation>
@@ -9154,6 +9165,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7810202088502699111">I popup sono stati bloccati in questa pagina.</translation>
 <translation id="7810367892333449285">Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Riprova o seleziona uno dei temi generati in precedenza riportati di seguito.</translation>
+<translation id="7812170317334653156">Google Calendar nascosto</translation>
 <translation id="7814090115158024843">Non offrire mai assistenza per la scrittura su questi siti</translation>
 <translation id="7814458197256864873">&amp;Copia</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9212,6 +9224,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7853747251428735">Altri strume&amp;nti</translation>
 <translation id="7853999103056713222">Usa una password più sicura</translation>
 <translation id="7855678561139483478">Sposta scheda in una nuova finestra</translation>
+<translation id="7856117067008941054">Nascondi Google Calendar</translation>
 <translation id="7857004848504343806">Il computer contiene un modulo di sicurezza che viene utilizzato per implementare in ChromeOS Flex molte funzionalità di sicurezza fondamentali. Per saperne di più, visita il Centro assistenza Chromebook all'indirizzo: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Suggerimenti testuali</translation>
 <translation id="7858120906780498731">Dispositivi di input collegati a ChromeOS</translation>
@@ -9220,6 +9233,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="786073089922909430">Servizio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Download</translation>
 <translation id="7861846108263890455">Lingua dell'Account Google</translation>
+<translation id="7864114920800968141">Tra <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Disattiva Bluetooth</translation>
 <translation id="7864825798076155402">Salvare nel tuo Account Google?</translation>
 <translation id="7865127013871431856">Opzioni di Traduttore</translation>

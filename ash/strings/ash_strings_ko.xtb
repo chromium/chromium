@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">검색</translation>
 <translation id="1391102559483454063">사용</translation>
 <translation id="1394698770495054737">강한 블러</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1일 전}other{#일 전}}</translation>
 <translation id="1404963891829069586">집중 모드 사운드</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. 화살표 키를 사용하여 날짜 간에 이동합니다.</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">마커가 꺼졌습니다.</translation>
 <translation id="1743570585616704562">인식할 수 없음</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> 알림 접기</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1시간 이내}=1{1시간 전}other{#시간 전}}</translation>
 <translation id="1746730358044914197">입력 방법은 관리자가 설정합니다.</translation>
 <translation id="1747336645387973286">마감일: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2360398059912971776">배터리</translation>
 <translation id="2361210043495191221">Wi-Fi를 전환합니다. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" />에서 전송</translation>
 <translation id="2367186422933365202">Chromebook에 로그인할 수 없음</translation>
 <translation id="2367972762794486313">앱 표시</translation>
 <translation id="2368828502825385061">위치 확인</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">마이크 액세스를 사용 설정하시겠습니까?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> 음성 파일을 다운로드할 수 없음</translation>
+<translation id="2968761508099987738">현재 위치는 지원되지 않습니다.</translation>
 <translation id="2970920913501714344">앱, 확장 프로그램 및 테마 설치</translation>
 <translation id="2977598380246111477">다음 번호</translation>
 <translation id="2985148236010982088">앱 모두 보기</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">휴대전화 앱</translation>
 <translation id="4690510401873698237">앱 표시줄 하단에 표시</translation>
 <translation id="4696813013609194136">부모 코드로 기기 잠금 해제</translation>
+<translation id="4697357603686181098">이 요청에 대해 도움을 드릴 수 없습니다. 다른 요청을 시도해 보세요.</translation>
 <translation id="4702647871202761252">개인 정보 보호 화면이 꺼져 있습니다</translation>
 <translation id="4706121060329443414">다운로드가 나중에 시도됩니다. 일단 처리를 위해 음성 파일이 Google로 전송됩니다.</translation>
 <translation id="470644585772471629">색상 반전</translation>
@@ -1902,6 +1907,7 @@
 <translation id="7982878511129296052">끄는 중…</translation>
 <translation id="7984197416080286869">지문 인식을 너무 많이 시도함</translation>
 <translation id="798779949890829624">관리자가 관리하는 설정입니다</translation>
+<translation id="7989206653429884947">자주 열어 봄</translation>
 <translation id="799296642788192631">중요한 파일을 고정할 수 있습니다. 항목을 고정하려면 항목 위로 마우스를 가져가거나 Files를 열고 고정할 항목을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="7994370417837006925">멀티 로그인</translation>
 <translation id="7995804128062002838">화면을 캡처할 수 없습니다.</translation>
@@ -2088,6 +2094,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">시간이 다 되었습니다. 훌륭합니다. 🎉</translation>
+<translation id="8753368202781196133">현재 지원되지 않는 언어입니다.</translation>
 <translation id="8755498163081687682">본인 확인: <ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다</translation>
 <translation id="875593634123171288">VPN 설정 표시</translation>
 <translation id="8756799553341497810">이 뷰를 종료한 후 앱 레이아웃 맞춤설정을 시작할 수 있습니다.</translation>

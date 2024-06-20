@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1391102559483454063">Қосулы</translation>
 <translation id="1394698770495054737">Толық бұлдыр</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 күн бұрын}other{# күн бұрын}}</translation>
 <translation id="1404963891829069586">Зейін қоюға көмектесетін дыбыстар</translation>
 <translation id="1407069428457324124">Қараңғы режим</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндер арасында жылжу үшін бағыттауыш пернелерді пайдаланыңыз.</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">Белгілегіш өшірулі.</translation>
 <translation id="1743570585616704562">Анықталмады</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> хабарландыруын жию</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 сағат ішінде}=1{1 сағ бұрын}other{# сағат бұрын}}</translation>
 <translation id="1746730358044914197">Енгізу әдістерін әкімші конфигурациялайды.</translation>
 <translation id="1747336645387973286">орындалу мерзімі: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Экрандық пернетақта қосылды</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2360398059912971776">батарея</translation>
 <translation id="2361210043495191221">Wi-Fi функциясын қосу/өшіру. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> жіберген.</translation>
 <translation id="2367186422933365202">Chromebook құрылғысына кіру мүмкін емес.</translation>
 <translation id="2367972762794486313">Қолданбаларды көрсету</translation>
 <translation id="2368828502825385061">Телефонды табу</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Микрофонды пайдалану мүмкіндігін қосу керек пе?</translation>
 <translation id="296762781903199866">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынбады</translation>
+<translation id="2968761508099987738">Қазіргі уақытта ағымдағы локацияңызға қолдау көрсетілмейді.</translation>
 <translation id="2970920913501714344">Қолданбаларды, кеңейтімдерді және тақырыптарды орнатыңыз</translation>
 <translation id="2977598380246111477">Келесі сан</translation>
 <translation id="2985148236010982088">Барлық қолданбаны қарау</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">Телефондағы қолданбалар</translation>
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
+<translation id="4697357603686181098">Бұған көмектесе алмаймын. Басқа сұрау жіберіңіз.</translation>
 <translation id="4702647871202761252">Құпиялық экраны өшірулі.</translation>
 <translation id="4706121060329443414">Кейінірек жүктеп алынады. Айтылған сөз әзірше Google-дың өңдеуіне жіберіледі.</translation>
 <translation id="470644585772471629">Түс инверсиясы</translation>
@@ -1902,6 +1907,7 @@
 <translation id="7982878511129296052">Өшірілуде...</translation>
 <translation id="7984197416080286869">Саусақ ізі тым көп енгізілді</translation>
 <translation id="798779949890829624">Бұл параметрді әкімшіңіз басқарады</translation>
+<translation id="7989206653429884947">Жиі ашылған.</translation>
 <translation id="799296642788192631">Маңызды файлдарды бекітуге болады. Бекіту үшін элементке курсорды апарыңыз немесе Files қолданбасын ашыңыз және элементті тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="7994370417837006925">Бірнеше профильдердің кіруі</translation>
 <translation id="7995804128062002838">Экран түсірілмеді.</translation>
@@ -2088,6 +2094,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Уақыт бітті. Жарайсыз! 🎉</translation>
+<translation id="8753368202781196133">Қазіргі уақытта бұл тілге қолдау көрсетілмейді.</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
 <translation id="8756799553341497810">Бұл көріністен шыққаннан кейін, қолданба форматын бейімдеуді бастай аласыз.</translation>

@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">jaune pastel</translation>
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
+<translation id="1061864016440983342">Utiliser sans localisation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> sur <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2082932131694554252">Touche du clavier attribuée</translation>
 <translation id="2085089206770112532">Diminuer la luminosité de l'écran</translation>
+<translation id="2086091080968010660">Les modifications en fonction du temps peuvent ne pas être exactes. Activez l'accès à la position du système dans les paramètres.</translation>
 <translation id="2102231663024125441">Éditeur de texte</translation>
 <translation id="2105810540595158374">L'appareil est une manette de jeu.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Rétablir les paramètres par défaut</translation>
 <translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Aucune image proposée. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
+<translation id="2294577623958216786">La programmation actuelle est définie de <ph name="SUNRISE" /> à <ph name="SUNSET" />. Pour mettre à jour le programme de coucher et de lever du soleil automatiquement, activez l'accès à la position du système.</translation>
 <translation id="2305172810646967500">noir</translation>
 <translation id="2307344026739914387">Utiliser la biclé actuelle</translation>
 <translation id="2308243864813041101">Débranchez le câble USB de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">luminosité du clavier</translation>
 <translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
+<translation id="6419454453018688975">Activer l'accès à la position du système</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>

@@ -159,6 +159,7 @@
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3628308229821498208">عمليات البحث المُقترَحة</translation>
 <translation id="3697164069658504920">‏عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب استخدام أجهزة USB. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام تلك الأجهزة.</translation>
+<translation id="3701220924999499408">‫<ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">‏يمكن للمواقع الإلكترونية التي تزورها أن تحفظ قليلاً من المعلومات في متصفّح Chrome للتأكّد من أنّك لست برنامج تتبُّع بشكل رئيسي.</translation>
 <translation id="3721953990244350188">إغلاق الرسالة وعرض الإجراء المتاح التالي</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
@@ -228,6 +229,7 @@
 <translation id="4962975101802056554">إبطال جميع الأذونات للجهاز</translation>
 <translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4976702386844183910">تاريخ آخر زيارة للموقع الإلكتروني: <ph name="DATE" /></translation>
+<translation id="498287755803443017">‫<ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">لقد سمحت باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية في هذا الموقع الإلكتروني.</translation>
 <translation id="4994033804516042629">لم يتم العثور على أي جهات اتصال</translation>
 <translation id="4996978546172906250">المشاركة عن طريق</translation>

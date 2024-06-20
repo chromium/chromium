@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">အဝါဖျော့</translation>
 <translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
+<translation id="1061864016440983342">တည်နေရာမပါဘဲ သုံးရန်</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> အနက် <ph name="INDEX" />၊ <ph name="NAME" />။</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall တွေ့ရှိသည်</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">ဆက်တင်များ ပိုမိုပြရန်</translation>
 <translation id="2082932131694554252">သတ်မှတ်ထားသည့် ကီးဘုတ်ကီး</translation>
 <translation id="2085089206770112532">ဖန်သားပြင်တောက်ပမှု လျှော့ရန်</translation>
+<translation id="2086091080968010660">အချိန်အလိုက် ပြောင်းလဲမှုများသည် တိကျမှန်ကန်မှု မရှိနိုင်ပါ။ ဆက်တင်များတွင် စနစ်တည်နေရာသုံးခွင့် ဖွင့်ပါ။</translation>
 <translation id="2102231663024125441">စာသား တည်းဖြတ်ခြင်း</translation>
 <translation id="2105810540595158374">ကိရိယာသည် ဂိမ်းခလုတ်ဖြစ်သည်။</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />၊ ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">မူရင်းအခြေအနေ ပြန်ပြောင်းရန်</translation>
 <translation id="2286454467119466181">ရိုးရိုး</translation>
 <translation id="2287186687001756809">ပုံမရရှိနိုင်ပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
+<translation id="2294577623958216786">လက်ရှိအချိန်ဇယားကို <ph name="SUNRISE" />-<ph name="SUNSET" /> သို့ သတ်မှတ်ထားသည်။ နေဝင်ချိန်နှင့် နေထွက်ချိန် အချိန်ဇယားကို အလိုအလျောက်အပ်ဒိတ်လုပ်ရန် စနစ်တည်နေရာသုံးခွင့် ဖွင့်ပါ။</translation>
 <translation id="2305172810646967500">အနက်</translation>
 <translation id="2307344026739914387">လက်ရှိကီးအတွဲကို သုံးရန်</translation>
 <translation id="2308243864813041101">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပလတ်ဖြုတ်ပါ</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">ကီးဘုတ် တောက်ပမှု</translation>
 <translation id="6412715219990689313">အသင့်ပါကီးဘုတ်</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">စနစ်တည်နေရာ သုံးခွင့်ဖွင့်ရန်</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">အားမကောင်းပါ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">အကောင့်ဆက်တင်များသို့ သွားရန်</translation>

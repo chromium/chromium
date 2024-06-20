@@ -410,6 +410,7 @@
 <translation id="1293556467332435079">파일</translation>
 <translation id="1294807885394205587">이 과정은 몇 분 정도 걸릴 수 있습니다. 컨테이너 관리자를 시작합니다.</translation>
 <translation id="12951065153783848">조직에서 계정을 관리합니다</translation>
+<translation id="1296410481664942178">Google Calendar 표시 안함</translation>
 <translation id="1296911687402551044">선택한 탭 고정</translation>
 <translation id="1297175357211070620">대상</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />에 관한 의견 보내기</translation>
@@ -448,6 +449,7 @@
 <translation id="1327495825214193325">ADB 디버깅을 사용 설정하려면 이 <ph name="DEVICE_TYPE" /> 기기를 다시 시작해야 합니다. ADB 디버깅을 사용 중지하려면 초기화해야 합니다.</translation>
 <translation id="1327527584824210101">패스키 사용</translation>
 <translation id="1327794256477341646">위치가 필요한 기능이 작동하지 않음</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" />시간 후</translation>
 <translation id="1329466763986822896">이 핫스팟의 개인 정보 보호 개선</translation>
 <translation id="1331977651797684645">본인이 맞습니다.</translation>
 <translation id="1333489022424033687">기기에 저장된 다른 사이트의 데이터를 삭제할 때까지 <ph name="ORIGIN" />의 일부 기능을 사용하지 못할 수 있습니다.</translation>
@@ -1006,6 +1008,7 @@
 <translation id="1709762881904163296">네트워크 설정</translation>
 <translation id="1709916727352927457">패스키 삭제</translation>
 <translation id="1709972045049031556">공유할 수 없음</translation>
+<translation id="1712143791363119140">진행 중</translation>
 <translation id="1714644264617423774">기기를 더 편하게 이용하기 위한 접근성 기능을 사용 설정합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> 및 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
 <translation id="171826447717908393">분리형 웹 앱(베타)</translation>
@@ -1411,6 +1414,7 @@
 <translation id="200928901437634269">자녀의 Google 계정 또는 학교 계정을 사용합니다. 자녀 보호 기능을 설정할 수도 있습니다.</translation>
 <translation id="2009590708342941694">그림 이모티콘 도구</translation>
 <translation id="2010501376126504057">호환 기기</translation>
+<translation id="2010636492623189611">선택되었습니다.</translation>
 <translation id="201217432804812273">'그룹 저장'을 사용 설정합니다.</translation>
 <translation id="2012935757369720523">파일 삭제</translation>
 <translation id="2013467735169740431">사이트에서 키보드 잠금을 요청할 수 있음</translation>
@@ -2007,6 +2011,7 @@
 <translation id="2435248616906486374">네트워크 연결 끊김</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="2436385001956947090">링크 복사(&amp;L)</translation>
+<translation id="2437561292559037753">데이터 공유</translation>
 <translation id="2438853563451647815">프린터에 연결되어 있지 않음</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> 비밀번호 재설정</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> 로드 중</translation>
@@ -2584,6 +2589,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> 확보됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
 <translation id="2844809857160214557">인쇄 작업 보기 및 관리</translation>
+<translation id="2845276301195220700">Google Calendar 관련 작업 더보기</translation>
 <translation id="2845382757467349449">북마크바 항상 표시</translation>
 <translation id="2845751331501453107">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK1" />사이트 추천 광고<ph name="LINK_END1" />, 나의 <ph name="BEGIN_LINK2" />쿠키 설정<ph name="LINK_END2" />, 시청 중인 사이트에서 광고를 개인 최적화하는지 여부에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
 <translation id="284581348330507117">사용한 적이 없는 비밀번호를 만드세요.</translation>
@@ -3699,6 +3705,7 @@
 <translation id="3694590407685276748">텍스트 커서 강조표시</translation>
 <translation id="369489984217678710">비밀번호 및 기타 로그인 데이터</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{보안 확인이 완료되었습니다. 데이터가 업로드됩니다.}=1{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}other{보안 확인이 완료되었습니다. 파일이 업로드됩니다.}}</translation>
+<translation id="3695339288331169103"><ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> 제공</translation>
 <translation id="369736917241079046">런처 + 왼쪽 화살표</translation>
 <translation id="3697716475445175867">마지막으로 열어본 날짜</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
@@ -4997,6 +5004,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" />에서 휴대전화 연결 해제</translation>
 <translation id="4651484272688821107">데모 모드 리소스로 온라인 구성요소를 로드하지 못했습니다.</translation>
 <translation id="4651921906638302153">이 계정으로 로그인할 수 없음</translation>
+<translation id="4652921642122345344">음성 속도 <ph name="RATE" />배</translation>
 <translation id="4652935475563630866">카메라 설정을 변경하려면 Parallels Desktop을 다시 실행해야 합니다. 계속하려면 Parallels Desktop을 다시 실행하세요.</translation>
 <translation id="4653116291358041820">작은 음영</translation>
 <translation id="4653405415038586100">Linux 설정 중 오류 발생</translation>
@@ -5195,6 +5203,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4809927044794281115">밝은 테마</translation>
 <translation id="4811212958317149293">스위치 제어 키보드 자동 스캔</translation>
 <translation id="4811503964269049987">선택한 탭 그룹화</translation>
+<translation id="4812073856515324252"><ph name="APP_NAME" />의 패스키 저장 위치 선택</translation>
 <translation id="4813512666221746211">네트워크 오류</translation>
 <translation id="4814114628197290459">IBAN 삭제</translation>
 <translation id="4814327014588285482">건너뛰고 나중에 알림</translation>
@@ -5661,6 +5670,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5160634252433617617">물리적 키보드</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
 <translation id="5161251470972801814">USB 기기(업체: <ph name="VENDOR_NAME" />)</translation>
+<translation id="5161442190864186925">회의 참여</translation>
 <translation id="5161827038979306924">Chrome의 방문 기록과 검색 기록의 차이점은 무엇인가요?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 차단됨</translation>
 <translation id="5163910114647549394">탭스트립 끝으로 탭을 이동함</translation>
@@ -7968,6 +7978,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6912007319859991306">셀룰러 SIM PIN</translation>
 <translation id="6912380255120084882">다른 기기 사용</translation>
 <translation id="691289340230098384">자막 환경설정</translation>
+<translation id="6913051485529944333">이 페이지에 Google Calendar가 더 이상 표시되지 않습니다</translation>
 <translation id="6914812290245989348">안전하지 않은 사이트로 이동하기 전에 경고를 표시하지 않습니다.</translation>
 <translation id="6916590542764765824">확장 프로그램 관리</translation>
 <translation id="6918677045355889289">ChromeOS 업데이트 필요</translation>
@@ -9171,6 +9182,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
 <translation id="7810367892333449285">입력되는 내용은 <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 주소<ph name="LPA_2" />$<ph name="LPA_3" />일치 ID(선택사항)<ph name="LPA_4" /> 형식이어야 합니다.</translation>
 <translation id="7811263553491007091">다시 시도하거나 아래에서 이전에 생성한 테마 중 하나를 선택하세요.</translation>
+<translation id="7812170317334653156">Google Calendar 숨김</translation>
 <translation id="7814090115158024843">이 사이트에서 글쓰기 도움을 제공하지 않음</translation>
 <translation id="7814458197256864873">복사(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9229,6 +9241,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7853747251428735">도구 더보기(&amp;L)</translation>
 <translation id="7853999103056713222">더 안전한 비밀번호 사용</translation>
 <translation id="7855678561139483478">탭을 새 창으로 이동</translation>
+<translation id="7856117067008941054">Google Calendar 숨기기</translation>
 <translation id="7857004848504343806">컴퓨터에 보안 모듈이 있습니다. 이 모듈은 ChromeOS Flex에서 여러 중요한 보안 기능을 구현하는 데 사용됩니다. 자세히 알아보려면 Chromebook 고객센터의 다음 페이지를 방문하세요.
 https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">텍스트 추천</translation>
@@ -9238,6 +9251,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="786073089922909430">서비스: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">다운로드(&amp;D)</translation>
 <translation id="7861846108263890455">Google 계정 언어</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" />분 후</translation>
 <translation id="7864539943188674973">블루투스 사용 안 함</translation>
 <translation id="7864825798076155402">Google 계정에 저장하시겠습니까?</translation>
 <translation id="7865127013871431856">번역 옵션</translation>

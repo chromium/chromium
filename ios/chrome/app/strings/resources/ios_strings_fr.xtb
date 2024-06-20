@@ -531,6 +531,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="371398631992790800">Masquer les favoris</translation>
 <translation id="37207012422556617">Recherches populaires</translation>
 <translation id="3725081662140949903">Pour empêcher d'autres personnes d'utiliser votre mot de passe, modifiez-le dans l'appli <ph name="APP" /></translation>
+<translation id="372676576864368480">Saisir automatiquement le numéro de carte se terminant par <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Créé le <ph name="DATE" /></translation>
 <translation id="374357899112510277">Masquer les téléchargements</translation>
 <translation id="3745190878148784130">Masquer "Agrandir le texte"</translation>
@@ -1096,6 +1097,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" />. Options disponibles au bas de l'écran.</translation>
 <translation id="648164694371393720">Erreur d'authentification</translation>
 <translation id="6494931198667773526">Fin</translation>
+<translation id="6500795388871406244">Utiliser le mot de passe suggéré :</translation>
 <translation id="650279896687777322">En savoir plus…</translation>
 <translation id="6507973708545996744">Connectez-vous pour accéder à votre liste de lecture sur tous vos appareils.</translation>
 <translation id="6510072653668207258">Me le rappeler plus tard</translation>
@@ -1309,6 +1311,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7583004045319035904">Utilisez "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7598439272585186139">Renforcez la sécurité</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
+<translation id="7603308509262646847">Saisir automatiquement le titulaire de la carte <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-up bloqués (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Groupes d'onglets</translation>
 <translation id="7607521702806708809">Supprimer le mot de passe</translation>
@@ -1341,6 +1344,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7749790401023484470">Vous n'avez pas sélectionné de texte.</translation>
 <translation id="7752405526771734448">Recherche visuelle Lens</translation>
 <translation id="7756478488453921771">Menu → Paramètres → Modes de paiement</translation>
+<translation id="775755486779745798">Saisir automatiquement le mois d'expiration <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Verrouillage de la navigation privée</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
@@ -1406,7 +1410,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8027581147000338959">Ouvrir dans une nouvelle fenêtre</translation>
 <translation id="8032569120109842252">Suivi</translation>
 <translation id="8040207962129315716">Me demander à chaque fois</translation>
-<translation id="8041089156583427627">Envoyer</translation>
+<translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique des recherches<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Les onglets ouverts sur d'autres appareils s'afficheront ici</translation>
 <translation id="8044568254381073661">Enregistrer sans chiffrement</translation>
@@ -1517,6 +1521,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8556590991644167667">{count,plural, =1{Vous avez ignoré {count} avertissement}one{Vous avez ignoré {count} avertissement}other{Vous avez ignoré {count} avertissements}}</translation>
 <translation id="8560253818350321773">Afficher en premier les éléments fréquemment utilisés.</translation>
 <translation id="8569721750632860947">Quelle URL souhaitez-vous ajouter à votre liste de lecture ?</translation>
+<translation id="8577056989960190117">Saisir automatiquement l'année d'expiration <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Éteinte</translation>
 <translation id="8591976964826315682">Bloquer les cookies tiers en mode navigation privée</translation>
 <translation id="8593565399399144771">Vous pouvez ouvrir un nouvel onglet ici.</translation>

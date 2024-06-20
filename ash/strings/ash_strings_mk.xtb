@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1391102559483454063">Вклучено</translation>
 <translation id="1394698770495054737">Целосно замаглување</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Пред 1 ден}one{пред # ден}other{пред # дена}}</translation>
 <translation id="1404963891829069586">Звуци за „Режим за концентрација“</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Користете ги копчињата со стрелки за движење помеѓу датумите.</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">Означувачот е исклучен.</translation>
 <translation id="1743570585616704562">Не е препознаен</translation>
 <translation id="1743927604032653654">Собери го известувањето за <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Во рок од 1 ч.}=1{Пред 1 ч.}one{Пред # ч.}other{Пред # ч.}}</translation>
 <translation id="1746730358044914197">Методите на внесување ги конфигурира вашиот администратор.</translation>
 <translation id="1747336645387973286">рок <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Тастатурата на екранот е овозможена</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2360398059912971776">батерија</translation>
 <translation id="2361210043495191221">Вклучи/исклучи Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Испратено од <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Не може да се најавите на вашиот Chromebook</translation>
 <translation id="2367972762794486313">Покажи апликации</translation>
 <translation id="2368828502825385061">Лоцирање</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Да се вклучи пристап до микрофонот?</translation>
 <translation id="296762781903199866">Не може да се преземат датотеките за говор на <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Вашата тековна локација не е поддржана во моментов.</translation>
 <translation id="2970920913501714344">Инсталира апликации, екстензии и теми</translation>
 <translation id="2977598380246111477">Следен број</translation>
 <translation id="2985148236010982088">Приказ на сите апликации</translation>
@@ -987,6 +991,7 @@
 <translation id="468293128311738995">Апликации од телефонот</translation>
 <translation id="4690510401873698237">Полицата е најдолу</translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
+<translation id="4697357603686181098">Не можам да ви помогнам со ова. Обидете се со друго барање.</translation>
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
@@ -1903,6 +1908,7 @@
 <translation id="7982878511129296052">Се исклучува…</translation>
 <translation id="7984197416080286869">Премногу обиди за отпечаток</translation>
 <translation id="798779949890829624">Администраторот управува со поставкава</translation>
+<translation id="7989206653429884947">Често отворано</translation>
 <translation id="799296642788192631">Може да закачувате важни датотеки. За да закачите, наместете го курсорот врз ставка или отворете ја Files и кликнете со десното копче на ставка.</translation>
 <translation id="7994370417837006925">Повеќекратно пријавување</translation>
 <translation id="7995804128062002838">Не успеа да се сними екранот</translation>
@@ -2089,6 +2095,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Времето истече. Одлично сторено! 🎉</translation>
+<translation id="8753368202781196133">Јазиков не е поддржан во моментов.</translation>
 <translation id="8755498163081687682">Потврдете го вашиот идентитет: <ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
 <translation id="875593634123171288">Прикажи ги поставките за VPN</translation>
 <translation id="8756799553341497810">Може да започнете со приспособување на распоредот на апликациите штом ќе излезете од овој приказ.</translation>

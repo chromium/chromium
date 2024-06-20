@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">పాస్టెల్ పసుపు రంగు</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
+<translation id="1061864016440983342">లొకేషన్ లేకుండా ఉపయోగించండి</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />లో <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2082932131694554252">కేటాయించిన కీబోర్డ్ కీ</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
+<translation id="2086091080968010660">సమయ ఆధారిత మార్పులు ఖచ్చితమైనవి కాకపోవచ్చు. సెట్టింగ్‌లలో సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి.</translation>
 <translation id="2102231663024125441">టెక్స్ట్‌ను ఎడిట్ చేయడం</translation>
 <translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ఆటోమేటిక్ సెట్టింగ్‌లను రీస్టోర్ చేయండి</translation>
 <translation id="2286454467119466181">సరళం</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
+<translation id="2294577623958216786">ప్రస్తుత షెడ్యూల్‌ను <ph name="SUNRISE" />-<ph name="SUNSET" />‌కు సెట్ చేయడం జరిగింది. సన్‌సెట్, సన్‌రైజ్ షెడ్యూల్‌ను ఆటోమేటిక్‌గా అప్‌డేట్ చేయడానికి, సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి.</translation>
 <translation id="2305172810646967500">నలుపు రంగు</translation>
 <translation id="2307344026739914387">ప్రస్తుత కీపెయిర్‌ను ఉపయోగించండి</translation>
 <translation id="2308243864813041101">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> USB కేబుల్‌ను అన్‌ప్లగ్ చేయండి</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">కీబోర్డ్ బ్రైట్‌నెస్</translation>
 <translation id="6412715219990689313">బిల్ట్-ఇన్ కీబోర్డ్</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">బలహీనం (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ఖాతా సెట్టింగ్‌లకు వెళ్లండి</translation>

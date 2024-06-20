@@ -121,6 +121,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1391102559483454063">Ativado</translation>
 <translation id="1394698770495054737">Desfoque total</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 dia atrás}one{# dia atrás}other{# dias atrás}}</translation>
 <translation id="1404963891829069586">Sons de Foco</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use as teclas de seta para navegar entre as datas.</translation>
@@ -211,6 +212,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="174102739345480129">O marcador está desativado.</translation>
 <translation id="1743570585616704562">Não reconhecida</translation>
 <translation id="1743927604032653654">Fechar notificação <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Até 1 h}=1{Há 1 h}one{# h atrás}other{# h atrás}}</translation>
 <translation id="1746730358044914197">Os métodos de entrada são configurados pelo administrador.</translation>
 <translation id="1747336645387973286">data de entrega: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Teclado na tela ativado</translation>
@@ -348,6 +350,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Alternar o Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Enviado por <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Não foi possível fazer login no Chromebook</translation>
 <translation id="2367972762794486313">Mostrar aplicativos</translation>
 <translation id="2368828502825385061">Localizar</translation>
@@ -510,6 +513,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Ativar o acesso ao microfone?</translation>
 <translation id="296762781903199866">Não foi possível baixar os arquivos de fala em <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">No momento, não há suporte no seu local atual.</translation>
 <translation id="2970920913501714344">instalar apps, extensões e temas;</translation>
 <translation id="2977598380246111477">Próximo número</translation>
 <translation id="2985148236010982088">Mostrar todos os apps</translation>
@@ -986,6 +990,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="468293128311738995">Apps do smartphone</translation>
 <translation id="4690510401873698237">Estante na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear dispositivo usando o código de familiar responsável</translation>
+<translation id="4697357603686181098">Não posso ajudar. Tente algo diferente.</translation>
 <translation id="4702647871202761252">A tela de privacidade está desativada</translation>
 <translation id="4706121060329443414">O download será feito mais tarde. Por enquanto, a fala será enviada ao Google para processamento.</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
@@ -1902,6 +1907,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7982878511129296052">Desativando…</translation>
 <translation id="7984197416080286869">Muitas tentativas de usar impressão digital</translation>
 <translation id="798779949890829624">Esta configuração é gerenciada pelo administrador</translation>
+<translation id="7989206653429884947">Sites abertos com frequência</translation>
 <translation id="799296642788192631">Você pode fixar arquivos importantes. Para fazer isso, passe o cursor sobre um item ou abra o app Arquivos e clique com o botão direito do mouse em um item.</translation>
 <translation id="7994370417837006925">Login múltiplo</translation>
 <translation id="7995804128062002838">Falha na captura de tela</translation>
@@ -2088,6 +2094,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">O tempo acabou. Muito bem! 🎉</translation>
+<translation id="8753368202781196133">Esse idioma não está disponível no momento</translation>
 <translation id="8755498163081687682">Verifique sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
 <translation id="8756799553341497810">Você pode começar a personalizar o layout do app depois de sair desta visualização.</translation>

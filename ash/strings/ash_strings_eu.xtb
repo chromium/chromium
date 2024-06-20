@@ -121,6 +121,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1391102559483454063">Aktibatuta</translation>
 <translation id="1394698770495054737">Erabateko lausotzea</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Atzo}other{Duela # egun}}</translation>
 <translation id="1404963891829069586">Kontzentratzeko soinuak</translation>
 <translation id="1407069428457324124">Gai iluna</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Erabili gezi-teklak daten artean nabigatzeko.</translation>
@@ -211,6 +212,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="174102739345480129">Markatzailea desaktibatuta dago.</translation>
 <translation id="1743570585616704562">Ez da ezagutu</translation>
 <translation id="1743927604032653654">Tolestu <ph name="NOTIFICATION_TITLE" /> jakinarazpena</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Duela 1 h baino gutxiago}=1{Duela 1 h}other{Duela # h}}</translation>
 <translation id="1746730358044914197">Administratzaileak konfiguratzen ditu idazketa-metodoak.</translation>
 <translation id="1747336645387973286"><ph name="DUE_DATE" /> da epemuga</translation>
 <translation id="1747827819627189109">Pantailako teklatua gaitu egin da</translation>
@@ -348,6 +350,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Aktibatu/Desaktibatu wifia. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> gailutik bidalita</translation>
 <translation id="2367186422933365202">Ezin da hasi saioa Chromebook-ean</translation>
 <translation id="2367972762794486313">Erakutsi aplikazioak</translation>
 <translation id="2368828502825385061">Aurkitu</translation>
@@ -510,6 +513,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Mikrofonoa erabiltzeko baimena aktibatu nahi duzu?</translation>
 <translation id="296762781903199866">Ezin izan dira deskargatu hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
+<translation id="2968761508099987738">Une honetan ez da onartzen zure oraingo kokapena.</translation>
 <translation id="2970920913501714344">Instalatu aplikazioak, luzapenak eta gaiak</translation>
 <translation id="2977598380246111477">Hurrengo zenbakia</translation>
 <translation id="2985148236010982088">Ikusi aplikazio guztiak</translation>
@@ -987,6 +991,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="468293128311738995">Telefonoko aplikazioak</translation>
 <translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
+<translation id="4697357603686181098">Ezin dizut lagundu horrekin. Egin beste eskaera bat.</translation>
 <translation id="4702647871202761252">Desaktibatuta dago pribatutasun-pantaila</translation>
 <translation id="4706121060329443414">Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaliko da prozesatzeko, oraingoz.</translation>
 <translation id="470644585772471629">Koloreen alderantzikatzea</translation>
@@ -1903,6 +1908,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7982878511129296052">Desaktibatzen…</translation>
 <translation id="7984197416080286869">Saiakera gehiegi egin dira hatz-markarekin</translation>
 <translation id="798779949890829624">Administratzaileak kudeatzen du ezarpena</translation>
+<translation id="7989206653429884947">Maiz irekia</translation>
 <translation id="799296642788192631">Fitxategi garrantzitsuak aingura ditzakezu. Ainguratzeko, pasatu erakuslea elementu baten gainetik edo ireki Fitxategiak eta egin klik eskuineko botoiarekin elementu batean.</translation>
 <translation id="7994370417837006925">Saio bat baino gehiago hasteko eginbidea</translation>
 <translation id="7995804128062002838">Ezin izan da atera pantaila-argazkia</translation>
@@ -2089,6 +2095,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Agortu da denbora. Bikain aritu zara! 🎉</translation>
+<translation id="8753368202781196133">Une honetan ez da onartzen hizkuntza hau.</translation>
 <translation id="8755498163081687682">Egiaztatu zure identitatea: <ph name="ORIGIN_NAME" /> webguneak zeu zarela berretsi nahi du</translation>
 <translation id="875593634123171288">Erakutsi VPN ezarpenak</translation>
 <translation id="8756799553341497810">Ikuspegi honetatik irteten zarenean, aplikazioen diseinua pertsonalizatzen hasi ahal izango zara.</translation>

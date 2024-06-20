@@ -121,6 +121,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1391102559483454063">Açık</translation>
 <translation id="1394698770495054737">Tam Bulanıklaştırma</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 gün önce}other{# gün önce}}</translation>
 <translation id="1404963891829069586">Odaklanma sesleri</translation>
 <translation id="1407069428457324124">Koyu tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Tarihler arasında gezinmek için ok tuşlarını kullanın.</translation>
@@ -211,6 +212,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="174102739345480129">İşaretçi kapalı.</translation>
 <translation id="1743570585616704562">Tanınmadı</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> bildirimini daralt</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 sa. içinde}=1{1 sa. önce}other{# sa. önce}}</translation>
 <translation id="1746730358044914197">Giriş yöntemleri, yöneticiniz tarafından yapılandırılır.</translation>
 <translation id="1747336645387973286">son tarih <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Dokunmatik klavye etkin</translation>
@@ -348,6 +350,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2360398059912971776">pil</translation>
 <translation id="2361210043495191221">Kablosuz bağlantıyı aç/kapat. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> cihazından gönderildi</translation>
 <translation id="2367186422933365202">Chromebook'unuzda oturum açılamıyor</translation>
 <translation id="2367972762794486313">Uygulamaları göster</translation>
 <translation id="2368828502825385061">Yerini bul</translation>
@@ -510,6 +513,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Mikrofon erişimi açılsın mı?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> konuşma dosyaları indirilemedi</translation>
+<translation id="2968761508099987738">Bulunduğunuz konum şu anda desteklenmiyor.</translation>
 <translation id="2970920913501714344">Uygulama, uzantı ve tema yükleme</translation>
 <translation id="2977598380246111477">Sonraki sayı</translation>
 <translation id="2985148236010982088">Tüm uygulamaları göster</translation>
@@ -986,6 +990,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="468293128311738995">Telefonunuzdaki uygulamalar</translation>
 <translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
+<translation id="4697357603686181098">Bu isteğiniz için yardımcı olamıyoruz. Başka bir istekte bulunabilirsiniz.</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
 <translation id="4706121060329443414">İndirme işlemi daha sonra tekrar denenecek. Konuşma şimdilik işlenmek üzere Google'a gönderilecek.</translation>
 <translation id="470644585772471629">Rengi ters çevirme</translation>
@@ -1902,6 +1907,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7982878511129296052">Kapatılıyor...</translation>
 <translation id="7984197416080286869">Çok fazla parmak izi denemesi yapıldı</translation>
 <translation id="798779949890829624">Bu ayar, yöneticiniz tarafından yönetilir</translation>
+<translation id="7989206653429884947">Sık açıldı</translation>
 <translation id="799296642788192631">Önemli dosyaları sabitleyebilirsiniz. Sabitlemek için fareyle bir öğenin üzerine gelin veya Dosyalar'ı açıp öğeyi sağ tıklayın.</translation>
 <translation id="7994370417837006925">Çoklu oturum açma</translation>
 <translation id="7995804128062002838">Ekran görüntüsü alınamadı</translation>
@@ -2088,6 +2094,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Süre doldu. Mükemmel! 🎉</translation>
+<translation id="8753368202781196133">Bu dil şu anda desteklenmiyor.</translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>
 <translation id="8756799553341497810">Bu görünümden çıktıktan sonra uygulama düzeninizi özelleştirmeye başlayabilirsiniz.</translation>

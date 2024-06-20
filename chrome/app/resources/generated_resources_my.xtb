@@ -410,6 +410,7 @@
 <translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="1294807885394205587">ဤလုပ်ငန်းစဉ်က မိနစ်အနည်းငယ် ကြာနိုင်သည်။ ကွန်တိန်နာမန်နေဂျာကို စတင်နေသည်။</translation>
 <translation id="12951065153783848">သင့်အကောင့်ကို သင်၏အဖွဲ့အစည်းက စီမံသည်</translation>
+<translation id="1296410481664942178">Google Calendar ကို မပြပါနှင့်</translation>
 <translation id="1296911687402551044">ရွေးထားသောတဘ်ကို ပင်ထိုးရန်</translation>
 <translation id="1297175357211070620">ခရီးဆုံး</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> အတွက် အကြံပြုချက် ပို့ရန်</translation>
@@ -448,6 +449,7 @@
 <translation id="1327495825214193325">ADB အမှားရှာပြင်ခြင်းကို ဖွင့်ရန် ဤ <ph name="DEVICE_TYPE" /> ကို ပြန်လည်စတင်ရပါမည်။ ၎င်းကို ပိတ်ခြင်းက စက်ရုံထုတ်ဆက်တင်များသို့ ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်သည်။</translation>
 <translation id="1327527584824210101">သင့်လျှို့ဝှက်ကီးသုံးခြင်း</translation>
 <translation id="1327794256477341646">သင့်တည်နေရာ လိုအပ်သည့် ဝန်ဆောင်မှုများ အလုပ်လုပ်မည်မဟုတ်ပါ</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> နာရီအတွင်း</translation>
 <translation id="1329466763986822896">ဤဟော့စပေါ့အတွက် ကိုယ်ရေးအချက်အလက်လုံခြုံမှု တိုးမြှင့်ရန်</translation>
 <translation id="1331977651797684645">၎င်းသည် ကျွန်ုပ်ဖြစ်ပါသည်။</translation>
 <translation id="1333489022424033687">သင့်စက်ပေါ်တွင် အခြားဝဘ်ဆိုက်များက သိမ်းဆည်းထားသည့် ဒေတာများကို မဖျက်မချင်း <ph name="ORIGIN" /> ရှိ ဝန်ဆောင်မှုအချို့ကို အသုံးပြုနိုင်မည် မဟုတ်ပါ</translation>
@@ -1005,6 +1007,7 @@
 <translation id="1709762881904163296">ကွန်ရက်ဆက်တင်များ</translation>
 <translation id="1709916727352927457">လျှို့ဝှက်ကီး ဖျက်ရန်</translation>
 <translation id="1709972045049031556">မျှဝေ၍ မရပါ</translation>
+<translation id="1712143791363119140">ပြုလုပ်နေဆဲ</translation>
 <translation id="1714644264617423774">သင်၏စက်ကို ပိုမိုလွယ်ကူစွာ အသုံးပြုနိုင်ရန် အများသုံးစွဲနိုင်မှုဆိုင်ရာ ဝန်ဆောင်မှုများ ဖွင့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> နှင့် ၎င်းထည့်သွင်းထားသော အက်ပ်အတွက် ဝဘ်ဆိုက်ဒေတာနှင့် ခွင့်ပြုချက်များ ဖျက်မလား။</translation>
 <translation id="171826447717908393">သီးခြားခွဲထားသည့် ဝဘ်အက်ပ်များ (စမ်းသပ်)</translation>
@@ -1408,6 +1411,7 @@
 <translation id="200928901437634269">သင့်ကလေး၏ Google Account (သို့) ကျောင်းအကောင့် သုံးနိုင်သည်။ မိဘအထိန်းအချုပ်များလည်း သင်က သတ်မှတ်နိုင်သည်။</translation>
 <translation id="2009590708342941694">အီမိုဂျီ တူးလ်</translation>
 <translation id="2010501376126504057">တွဲသုံးနိုင်သည့် စက်များ</translation>
+<translation id="2010636492623189611">ရွေးထားသည်။</translation>
 <translation id="201217432804812273">"အုပ်စုသိမ်းရန်" ကို ဖွင့်သည်</translation>
 <translation id="2012935757369720523">ဖိုင်ဖျက်ရန်</translation>
 <translation id="2013467735169740431">ဝဘ်ဆိုက်များသည် သင့်ကီးဘုတ်ကို လော့ခ်ချရန် တောင်းဆိုနိုင်သည်</translation>
@@ -2003,6 +2007,7 @@
 <translation id="2435248616906486374">ကွန်ရက် ချိတ်ဆက်မှုပျက်တောက်</translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
 <translation id="2436385001956947090">&amp;လင့်ခ် မိတ္တူကူးရန်</translation>
+<translation id="2437561292559037753">ဒေတာ မျှဝေခြင်း</translation>
 <translation id="2438853563451647815">ပရင်တာသို့ ချိတ်ဆက်မထားပါ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ကို ဖွင့်နေသည်</translation>
@@ -2581,6 +2586,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> နေရာလွတ်သွားသည်</translation>
 <translation id="2844169650293029770">USB-C ကိရိယာ (အရှေ့ပိုင်း ဘယ် ပို့တ်)</translation>
 <translation id="2844809857160214557">ပရင့်ထုတ်ရန် ဖိုင်များ ကြည့်ရှုစီမံရန်</translation>
+<translation id="2845276301195220700">Google Calendar အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="2845382757467349449">စာညှပ် ဘားကို အမြဲတမ်း ပြရန်</translation>
 <translation id="2845751331501453107">သင်ကြည့်ရှုသည်နှင့်အမျှ သင်မြင်ရသည့် ကြော်ငြာ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ထားခြင်းရှိ၊ မရှိသည် ဤဆက်တင်၊ <ph name="BEGIN_LINK1" />ဝဘ်ဆိုက်က အကြံပြုထားသည့် ကြော်ငြာများ<ph name="LINK_END1" />၊ သင့် <ph name="BEGIN_LINK2" />ကွတ်ကီး ဆက်တင်<ph name="LINK_END2" /> နှင့် သင်ကြည့်ရှုသည့် ဝဘ်ဆိုက်က ကြော်ငြာကို ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ခြင်း ရှိ၊ မရှိတို့အပေါ် မူတည်သည်</translation>
 <translation id="284581348330507117">တစ်မူကွဲပြားသည့် စကားဝှက်များ ပြုလုပ်ပါ</translation>
@@ -3696,6 +3702,7 @@
 <translation id="3694590407685276748">စာသားကာဆာကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="369489984217678710">စကားဝှက်များနှင့် အခြား အကောင့်ဝင်ရောက်ခြင်း ဒေတာများ</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{လုံခြုံရေး စစ်ဆေးမှုများ လုပ်ပြီးပြီ။ သင့်ဒေတာကို အပ်လုဒ်လုပ်ပါမည်။}=1{လုံခြုံရေး စစ်ဆေးမှုများ လုပ်ပြီးပြီ။ သင့်ဖိုင်ကို အပ်လုဒ်လုပ်ပါမည်။}other{လုံခြုံရေး စစ်ဆေးမှုများ လုပ်ပြီးပြီ။ သင့်ဖိုင်များကို အပ်လုဒ်လုပ်ပါမည်။}}</translation>
+<translation id="3695339288331169103"><ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> မှ</translation>
 <translation id="369736917241079046">Launcher + ဘယ်ညွှန်မြား</translation>
 <translation id="3697716475445175867">နောက်ဆုံး ဖွင့်ခဲ့ချိန်</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{ဤဝဘ်ဆိုက်ထံမှ ပို့သည့် နောက်ထပ်အကြောင်းကြားချက်များကို ရပ်နိုင်သည်။}other{ဤဝဘ်ဆိုက်များထံမှ ပို့သည့် နောက်ထပ်အကြောင်းကြားချက်များကို ရပ်နိုင်သည်။}}</translation>
@@ -4994,6 +5001,7 @@
 <translation id="4650591383426000695">သင်၏ <ph name="DEVICE_TYPE" /> ကို သင့်ဖုန်းနှင့် ချိတ်ဆက်မှု ဖြုတ်မည်</translation>
 <translation id="4651484272688821107">သရုပ်ပြမုဒ်အရင်းအမြစ်များဖြင့် အွန်လိုင်းအစိတ်အပိုင်းကို ဖွင့်၍မရပါ။</translation>
 <translation id="4651921906638302153">ဤအကောင့်ဖြင့် လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
+<translation id="4652921642122345344">အသံမြန်နှုန်း <ph name="RATE" /> ဆ</translation>
 <translation id="4652935475563630866">ကင်မရာဆက်တင် ပြောင်းလဲမှု အကျိုးသက်ရောက်စေရန် Parallels Desktop ကို ပြန်ဖွင့်ရပါမည်။ ရှေ့ဆက်ရန် Parallels Desktop ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="4653116291358041820">အရိပ်သေး</translation>
 <translation id="4653405415038586100">Linux စီစဉ်သတ်မှတ်ရာတွင် အမှားအယွင်းရှိသည်</translation>
@@ -5192,6 +5200,7 @@
 <translation id="4809927044794281115">လင်းသည့် အပြင်အဆင်</translation>
 <translation id="4811212958317149293">ခလုတ်သုံးခြင်း လက်ကွက် အော်တိုရှာဖွေမှု</translation>
 <translation id="4811503964269049987">ရွေးထားသောတဘ်ကို အုပ်စုဖွဲ့ရန်</translation>
+<translation id="4812073856515324252"><ph name="APP_NAME" /> အတွက် သင့်လျှို့ဝှက်ကီးသိမ်းမည့်နေရာ ရွေးပါ</translation>
 <translation id="4813512666221746211">ကွန်ရက် ပြဿနာ</translation>
 <translation id="4814114628197290459">IBAN ဖျက်ခြင်း</translation>
 <translation id="4814327014588285482">ကျော်ပြီး နောက်မှသတိပေးပါ</translation>
@@ -5658,6 +5667,7 @@
 <translation id="5160634252433617617">စက်၏ ကီးဘုတ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> မှ USB ကိရိယာများ</translation>
+<translation id="5161442190864186925">အစည်းအဝေးတက်ရန်</translation>
 <translation id="5161827038979306924">Chrome နှင့် သင့်ရှာဖွေမှတ်တမ်းရှိ ကြည့်ရှုမှုမှတ်တမ်းအကြား ဘာကွာခြားသလဲ။</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ကို ပိတ်ထားလိုက်ပါပြီ</translation>
 <translation id="5163910114647549394">တဘ်အတန်း၏အဆုံးသို့ တဘ်ကို ရွှေ့လိုက်သည်</translation>
@@ -7963,6 +7973,7 @@
 <translation id="6912007319859991306">ဆယ်လူလာဆင်းမ် ပင်နံပါတ်</translation>
 <translation id="6912380255120084882">အခြားစက်နှင့် စမ်းကြည့်ပါ</translation>
 <translation id="691289340230098384">စာတန်း သတ်မှတ်ချက်များ</translation>
+<translation id="6913051485529944333">ဤစာမျက်နှာတွင် Google Calendar ကို ထပ်တွေ့ရမည် မဟုတ်ပါ</translation>
 <translation id="6914812290245989348">လုံခြုံမှုမရှိသော ဝဘ်ဆိုက်များသို့မသွားမီ သတိပေးချက် မမြင်ရရန်</translation>
 <translation id="6916590542764765824">Manage Extensions</translation>
 <translation id="6918677045355889289">ChromeOS အပ်ဒိတ် လိုအပ်သည်</translation>
@@ -9166,6 +9177,7 @@
 <translation id="7810202088502699111">ဤစာမျက်နှာတွင် ပေါ့ပ်အာ့ပ်များ ပိတ်ဆို့ထားသည်။</translation>
 <translation id="7810367892333449285">သင့်ထည့်သွင်းမှုသည် ဤပုံစံဖြစ်ရမည်- <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">ထပ်စမ်းကြည့်ပါ (သို့) ယခင်ထုတ်ထားသော အောက်ပါအပြင်အဆင်များထဲမှ တစ်ခုကိုရွေးပါ။</translation>
+<translation id="7812170317334653156">Google Calendar ဖျောက်လိုက်ပါပြီ</translation>
 <translation id="7814090115158024843">ဤဝဘ်ဆိုက်များတွင် စာသားရေးသားခြင်း အကူအညီကို ဘယ်တော့မှ မကမ်းလှမ်းပါနှင့်</translation>
 <translation id="7814458197256864873">&amp;ကူးယူ</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9224,6 +9236,7 @@
 <translation id="7853747251428735">ပိုမိုသော ကိရိ&amp;ယာများ</translation>
 <translation id="7853999103056713222">‘ပိုလုံခြုံသည့် စကားဝှက်’ ကိုသုံးနိုင်သည်</translation>
 <translation id="7855678561139483478">တဘ်ကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ခြင်း</translation>
+<translation id="7856117067008941054">Google Calendar ဖျောက်ရန်</translation>
 <translation id="7857004848504343806">သင့်ကွန်ပျူတာတွင် ChromeOS Flex ရှိ အရေးပါသော လုံခြုံရေးဝန်ဆောင်မှုများစွာ ဆောင်ရွက်ရာတွင် အသုံးပြုသည့် လုံခြုံရေး မော်ဂျူး ပါဝင်သည်။ ပိုမိုလေ့လာရန် Chromebook ကူညီရေးဌာနကို ဝင်ကြည့်ပါ- https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">စာသား အကြံပြုချက်များ</translation>
 <translation id="7858120906780498731">ChromeOS ချိတ်ဆက်ထားသော ထည့်သွင်းသည့် ကိရိယာများ</translation>
@@ -9232,6 +9245,7 @@
 <translation id="786073089922909430">ဝန်ဆောင်မှု − <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;​ဒေါင်းလုဒ်များ</translation>
 <translation id="7861846108263890455">Google Account ဘာသာစကား</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> မိနစ်အတွင်း</translation>
 <translation id="7864539943188674973">ဘလူးတုရှ် ပိတ်ရန်</translation>
 <translation id="7864825798076155402">သင့် Google Account တွင် သိမ်းမလား။</translation>
 <translation id="7865127013871431856">ဘာသာပြန်ရန် ရွေးစရာများ</translation>

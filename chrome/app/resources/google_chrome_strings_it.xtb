@@ -168,6 +168,7 @@
 <translation id="3261565993776444564">Prova un nuovo colore per personalizzare il browser</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
+<translation id="3292333338048274092">Dovrai quindi riavviare Chrome.</translation>
 <translation id="3360895254066713204">Supporto Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
@@ -212,6 +213,7 @@
 <translation id="4035053306113201399">Per applicare l'aggiornamento è necessario riavviare ChromeOS.</translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
 <translation id="4053720452172726777">Personalizza e controlla Google Chrome</translation>
+<translation id="4084404300720192944">Per condividere la finestra, consenti la Registrazione dello schermo per Chrome nelle Preferenze di sistema.</translation>
 <translation id="4106587138345390261">Chrome sta esaminando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
 <translation id="4110895483821904099">Configura il tuo nuovo profilo di Chrome</translation>
 <translation id="4111566860456076004">Chrome non può verificare la provenienza dell'estensione. Potrebbe non essere sicura. Rimuovila da Chrome in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le informazioni personali.</translation>
@@ -346,6 +348,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
 <translation id="6200139057479872438">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Per condividere lo schermo, consenti la Registrazione dello schermo per Chrome nelle Preferenze di sistema.</translation>
 <translation id="6235018212288296708">Regola inbound per consentire il traffico mDNS in Google Chrome.</translation>
 <translation id="624230925347970731">Chrome verrà chiuso a breve</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
