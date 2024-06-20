@@ -11,6 +11,16 @@ async function embedMall() {
 
   const mallFrame = document.createElement('iframe');
   mallFrame.src = mallUrl.url;
+  mallFrame.setAttribute('hidden', 'true');
+
+  mallFrame.addEventListener('load', () => {
+    mallFrame.removeAttribute('hidden');
+    const spinner = document.getElementById('spinner');
+    if (spinner) {
+      spinner.setAttribute('hidden', 'true');
+    }
+  });
+
   document.body.appendChild(mallFrame);
 }
 

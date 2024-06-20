@@ -3,19 +3,33 @@
      found in the LICENSE file. -->
 
 <style>
-    body {
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-    }
+  body {
+    align-items: center;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    margin: 0;
+    overflow: hidden;
+  }
 
-    /* index.ts appends a guest iframe to the document. */
-    iframe {
-      border: 0;
-      display: block;
-      height: 100%;
-      width: 100%;
-    }
+  /* index.ts appends a guest iframe to the document. */
+  iframe {
+    border: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  #spinner {
+    height: 28px;
+    width: 28px;
+  }
 </style>
+
+<img id="spinner" src="chrome://resources/images/throbber_medium.svg"></img>
 
 <script src="/index.js" type="module"></script>
