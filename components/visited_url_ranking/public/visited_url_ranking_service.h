@@ -26,12 +26,18 @@ const char kURLVisitDismissedEventName[] =
     "VisitedURLRanking.URLVisit.Dismissed";
 
 // An action performed by the user on a `URLVisit` through a UI surface.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.visited_url_ranking
+// LINT.IfChange(ScoredURLUserAction)
 enum ScoredURLUserAction {
-  kSeen = 0,
-  kActivated = 1,
-  kDismissed = 2,
+  kUnknown = 0,
+  kSeen = 1,
+  kActivated = 2,
+  kDismissed = 3,
+  kMaxValue = kDismissed,
 };
+// LINT.ThenChange(/tools/metrics/histograms/visited_url_ranking/enums.xml:ScoredURLUserAction)
 
 // Settings leveraged for ranking `URLVisitAggregate` objects.
 struct Config {
