@@ -55,9 +55,9 @@ bool PlusAddressCache::IsPlusAddress(
   return plus_addresses_.contains(potential_plus_address);
 }
 
-std::vector<PlusProfile> PlusAddressCache::GetPlusProfiles() const {
+base::span<const PlusProfile> PlusAddressCache::GetPlusProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::vector<PlusProfile>(plus_profiles_.begin(), plus_profiles_.end());
+  return plus_profiles_;
 }
 
 bool PlusAddressCache::IsEmpty() const {

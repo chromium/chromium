@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -41,7 +42,7 @@ class PlusProfileChecker : public StatusChangeChecker,
                            public PlusAddressService::Observer {
  public:
   PlusProfileChecker(PlusAddressService* service,
-                     testing::Matcher<std::vector<PlusProfile>> matcher)
+                     testing::Matcher<base::span<const PlusProfile>> matcher)
       : service_(service), matcher_(std::move(matcher)) {
     scoped_observation_.Observe(service_);
   }
@@ -65,7 +66,7 @@ class PlusProfileChecker : public StatusChangeChecker,
 
  private:
   const raw_ptr<PlusAddressService> service_;
-  const testing::Matcher<std::vector<PlusProfile>> matcher_;
+  const testing::Matcher<base::span<const PlusProfile>> matcher_;
   base::ScopedObservation<PlusAddressService, PlusAddressService::Observer>
       scoped_observation_{this};
 };

@@ -163,7 +163,7 @@ std::optional<std::string> PlusAddressService::GetPlusAddress(
   return profile ? std::make_optional(profile->plus_address) : std::nullopt;
 }
 
-std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
+base::span<const PlusProfile> PlusAddressService::GetPlusProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return plus_address_cache_.GetPlusProfiles();
 }

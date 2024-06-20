@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "components/plus_addresses/plus_address_types.h"
 
@@ -42,7 +43,7 @@ class PlusAddressCache {
   bool IsPlusAddress(const std::string& potential_plus_address) const;
 
   // Returns all the cached plus profiles.
-  std::vector<PlusProfile> GetPlusProfiles() const;
+  base::span<const PlusProfile> GetPlusProfiles() const;
 
   // Returns true if the cache is empty, false otherwise.
   bool IsEmpty() const;

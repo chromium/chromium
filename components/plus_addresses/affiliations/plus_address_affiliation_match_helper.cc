@@ -99,7 +99,8 @@ void PlusAddressAffiliationMatchHelper::ProcessExactAndPSLMatches(
     const FacetURI& facet,
     const base::flat_set<std::string>& psl_extensions) {
   std::vector<PlusProfile> matches;
-  for (PlusProfile& stored_profile : plus_address_service_->GetPlusProfiles()) {
+  for (const PlusProfile& stored_profile :
+       plus_address_service_->GetPlusProfiles()) {
     FacetURI stored_profile_facet = absl::get<FacetURI>(stored_profile.facet);
     // Note that exact matches are also PSL matches.
     if (affiliations::IsExtendedPublicSuffixDomainMatch(

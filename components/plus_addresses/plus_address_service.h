@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -128,7 +129,7 @@ class PlusAddressService : public KeyedService,
 
   // Returns all the cached plus profiles. There are no server requests
   // triggered by this method, only the cached responses are returned.
-  std::vector<PlusProfile> GetPlusProfiles() const;
+  base::span<const PlusProfile> GetPlusProfiles() const;
 
   // Saves a confirmed plus profile for its facet.
   void SavePlusProfile(const PlusProfile& profile);

@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 
+#include "base/containers/span.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -31,7 +32,7 @@ void PlusAddressAffiliationSourceAdapter::GetFacets(
     std::move(response_callback).Run({});
     return;
   }
-  std::vector<PlusProfile> profiles = service_->GetPlusProfiles();
+  base::span<const PlusProfile> profiles = service_->GetPlusProfiles();
   std::vector<FacetURI> facets;
   facets.reserve(profiles.size());
   for (const PlusProfile& profile : profiles) {
