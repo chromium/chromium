@@ -49,7 +49,7 @@
 
 namespace {
 
-constexpr char kUSMExperimentRoutingId[] = "screencast_experimental_usm2b";
+constexpr char kUSMExperimentRoutingId[] = "screencast_usm_rnnt";
 
 inline const std::string& GetLocale() {
   return g_browser_process->GetApplicationLocale();
