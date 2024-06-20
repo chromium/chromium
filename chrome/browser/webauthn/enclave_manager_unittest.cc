@@ -728,6 +728,16 @@ TEST_F(EnclaveManagerTest, SetupWithPIN) {
               GetAssertionResponseExpectation());
 }
 
+TEST_F(EnclaveManagerTest, SetupWithPIN_SecurityDomainFailure) {
+  security_domain_service_->fail_all_requests();
+
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("123456", setup_callback.callback());
+  setup_callback.WaitForCallback();
+  ASSERT_FALSE(std::get<0>(setup_callback.result().value()));
+  ASSERT_FALSE(manager_.is_ready());
+}
+
 TEST_F(EnclaveManagerTest, SetupWithPIN_CertXMLFailure) {
   recovery_key_store_->break_cert_xml_file();
 

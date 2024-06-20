@@ -50,6 +50,12 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
         weak_ptr_factory_.GetWeakPtr());
   }
 
+  void fail_all_requests() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    fail_all_requests_ = true;
+  }
+
   void pretend_there_are_members() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -88,6 +94,11 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     if (!request.url.has_host() || !request.url.has_path() ||
         request.url.host_piece() != "securitydomain-pa.googleapis.com") {
       return std::nullopt;
+    }
+
+    if (fail_all_requests_) {
+      return std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR,
+                            std::string("fail_all_requests() has been called"));
     }
 
     const std::string_view path = request.url.path_piece();
@@ -179,6 +190,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   }
 
   const int epoch_;
+  bool fail_all_requests_ = false;
   bool pretend_there_are_members_ = false;
   std::vector<trusted_vault_pb::SecurityDomainMember> members_;
   SEQUENCE_CHECKER(sequence_checker_);

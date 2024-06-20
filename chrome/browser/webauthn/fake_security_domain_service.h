@@ -46,6 +46,9 @@ class FakeSecurityDomainService {
       MaybeResponse(const network::ResourceRequest&)>
   GetCallback() = 0;
 
+  // If called, all future requests will return HTTP 500 errors.
+  virtual void fail_all_requests() = 0;
+
   // If called, the security domain will accept a join request with the correct
   // epoch, as if MagicArch had just completed.
   virtual void pretend_there_are_members() = 0;

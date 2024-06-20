@@ -1810,7 +1810,12 @@ class EnclaveManager::StateMachine {
     }
 
     manager_->WriteState(&local_state_);
-    state_ = State::kNextAction;
+
+    if (user_->joined()) {
+      state_ = State::kNextAction;
+    } else {
+      state_ = State::kStop;
+    }
   }
 
   void DoHashingPIN(Event event) {
