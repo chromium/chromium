@@ -7973,6 +7973,13 @@ interface RTCPeerConnectionIceEvent : Event
     attribute @@toStringTag
     getter candidate
     method constructor
+interface RTCRtpAcks
+    attribute @@toStringTag
+    getter explicitCongestionNotification
+    getter receivedTime
+    getter remoteSendTimestamp
+    method acks
+    method constructor
 interface RTCRtpReceiver
     static method getCapabilities
     attribute @@toStringTag
@@ -8021,6 +8028,7 @@ interface RTCRtpTransceiver
 interface RTCRtpTransport
     attribute @@toStringTag
     method constructor
+    method readReceivedAcks
 interface RTCSctpTransport : EventTarget
     attribute @@toStringTag
     getter maxChannels

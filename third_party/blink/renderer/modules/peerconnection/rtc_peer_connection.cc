@@ -583,7 +583,7 @@ RTCPeerConnection::RTCPeerConnection(
       suppress_events_(true),
       encoded_insertable_streams_(encoded_insertable_streams),
       rtp_transport_(RuntimeEnabledFeatures::RTCRtpTransportEnabled(context)
-                         ? MakeGarbageCollected<RTCRtpTransport>()
+                         ? MakeGarbageCollected<RTCRtpTransport>(context)
                          : nullptr) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 

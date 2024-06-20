@@ -63,6 +63,8 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/task_queue:task_queue",
   "//third_party/webrtc/api/transport:enums",
   "//third_party/webrtc/api/transport:field_trial_based_config",
+  "//third_party/webrtc/api/transport:goog_cc",
+  "//third_party/webrtc/api/transport:network_control",
   "//third_party/webrtc/api/transport/rtp:rtp_source",
   "//third_party/webrtc/api/units:data_rate",
   "//third_party/webrtc/api/units:time_delta",

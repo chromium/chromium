@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+enum ExplicitCongestionNotification {
+  // ECT = ECN-Capable Transport
+  "unset",  // AKA "Not-ECT";  Bits: 00
+  "scalable-congestion-not-experienced",  // AKA "ECT(1)" or "Scalable" or "L4S" ; Bits: 01
+  "classic-congestion-not-experienced", // AKA "ECT(0)" or "Classic" or "not L4S"; Bits: 10
+  "congestion-experienced" // AKA "CE" or "ECN-marked" or "marked"; Bits: 11
+};
+
+// Collection of RTP packet remote feedback, delivered in a single RTCP message.
+// TODO: crbug.com/345101934 - Improve name as the explainer evolves, https://github.com/w3c/webrtc-rtptransport/blob/main/explainer-use-case-2.md
+[
+    Exposed=(Window,Worker), RuntimeEnabled=RTCRtpTransport
+] interface RTCRtpAcks {
+  sequence<RTCRtpAck> acks();
+  readonly attribute unsigned long long remoteSendTimestamp;
+  readonly attribute DOMHighResTimeStamp receivedTime;
+  readonly attribute ExplicitCongestionNotification explicitCongestionNotification;  // AKA "ECN"
+};
