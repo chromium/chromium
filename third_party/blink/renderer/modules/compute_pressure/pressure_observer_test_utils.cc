@@ -29,7 +29,7 @@ void FakePressureService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
 
 void FakePressureService::AddClient(
     mojo::PendingRemote<device::mojom::blink::PressureClient> client,
-    device::mojom::PressureSource source,
+    device::mojom::blink::PressureSource source,
     AddClientCallback callback) {
   client_remote_.Bind(std::move(client));
   std::move(callback).Run(device::mojom::blink::PressureStatus::kOk);
