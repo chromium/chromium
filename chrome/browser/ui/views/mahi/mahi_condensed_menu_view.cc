@@ -105,8 +105,10 @@ class MahiCondensedMenuButton : public views::LabelButton {
 
   void SetBackgroundHighlighted(bool background_highlighted) {
     if (background_highlighted) {
-      SetBackground(views::CreateThemedSolidBackground(
-          ui::kColorMenuItemBackgroundHighlighted));
+      SetBackground(views::CreateThemedRoundedRectBackground(
+          ui::kColorMenuItemBackgroundHighlighted,
+          views::LayoutProvider::Get()->GetCornerRadiusMetric(
+              views::ShapeContextTokens::kMenuRadius)));
     } else {
       SetBackground(nullptr);
     }
