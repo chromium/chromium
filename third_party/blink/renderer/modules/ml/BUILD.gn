@@ -59,8 +59,8 @@ source_set("unit_tests") {
     "ml_trace_unittest.cc",
     "webnn/ml_graph_builder_test.cc",
     "webnn/ml_graph_builder_test.h",
-    "webnn/ml_graph_builder_utils.cc",
-    "webnn/ml_graph_builder_utils.h",
+    "webnn/ml_graph_builder_test_utils.cc",
+    "webnn/ml_graph_builder_test_utils.h",
     "webnn/ml_graph_test.cc",
   ]
 
@@ -89,8 +89,8 @@ if (use_fuzzing_engine_with_lpm) {
       "webnn/fuzzer/conv2d_fuzzer.cc",
       "webnn/fuzzer/utils.cc",
       "webnn/fuzzer/utils.h",
-      "webnn/ml_graph_builder_utils.cc",
-      "webnn/ml_graph_builder_utils.h",
+      "webnn/ml_graph_builder_test_utils.cc",
+      "webnn/ml_graph_builder_test_utils.h",
     ]
     deps = [
       ":webnn_proto",
@@ -107,8 +107,8 @@ if (use_fuzzing_engine_with_lpm) {
       "webnn/fuzzer/pool2d_fuzzer.cc",
       "webnn/fuzzer/utils.cc",
       "webnn/fuzzer/utils.h",
-      "webnn/ml_graph_builder_utils.cc",
-      "webnn/ml_graph_builder_utils.h",
+      "webnn/ml_graph_builder_test_utils.cc",
+      "webnn/ml_graph_builder_test_utils.h",
     ]
     deps = [
       ":webnn_proto",

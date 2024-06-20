@@ -145,28 +145,6 @@ MLOperand* BuildElementWiseBinaryOperator(
   }
 }
 
-// TODO: crbug.com/325598628 - Consolidate this with the method of the same name
-// in third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.cc.
-constexpr bool IsLogicalBinaryOperator(
-    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
-  switch (kind) {
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
-      return false;
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
-    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
-      return true;
-  }
-}
-
 MLOperand* BuildElementWiseBinary(
     V8TestingScope& scope,
     MLGraphBuilder* builder,

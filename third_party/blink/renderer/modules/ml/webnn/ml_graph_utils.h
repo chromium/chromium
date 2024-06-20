@@ -11,6 +11,7 @@
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_filter_operand_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"
@@ -97,6 +98,9 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
 
 V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type);
 webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type);
+
+MODULES_EXPORT bool IsLogicalBinaryOperator(
+    webnn::mojom::blink::ElementWiseBinary::Kind kind);
 
 }  // namespace blink
 
