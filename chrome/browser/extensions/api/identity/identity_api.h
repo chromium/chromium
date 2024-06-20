@@ -82,6 +82,11 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // account only.
   bool AreExtensionsRestrictedToPrimaryAccount();
 
+  // Returns accounts that extension have access to.
+  // This returns empty if Chrome is not signed in. Otherwise, returns all
+  // accounts in the `identity_manager_`.
+  std::vector<CoreAccountInfo> GetAccountsWithRefreshTokensForExtensions();
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the Chrome sign in dialog for extensions if:
   // - The dialog is not already showing
@@ -96,7 +101,6 @@ class IdentityAPI : public BrowserContextKeyedAPI,
       base::OnceCallback<void(base::OnceClosure)> callback) {
     skip_ui_for_testing_callback_ = std::move(callback);
   }
-
 #endif
 
  private:
@@ -116,10 +120,6 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // Returns true if extensions have access to Chrome accounts.
   // Access requires Chrome to be signed in.
   bool HasAccessToChromeAccounts() const;
-  // Returns accounts that extension have access to.
-  // This returns empty if Chrome is not signed in. Otherwise, returns all
-  // accounts in the `identity_manager_`.
-  std::vector<CoreAccountInfo> GetAccountsWithRefreshTokensForExtensions();
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

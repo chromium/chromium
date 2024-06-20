@@ -134,6 +134,14 @@ bool IdentityAPI::HasAccessToChromeAccounts() const {
   return identity_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
 }
 
+std::vector<CoreAccountInfo>
+IdentityAPI::GetAccountsWithRefreshTokensForExtensions() {
+  if (!HasAccessToChromeAccounts()) {
+    return {};
+  }
+  return identity_manager_->GetAccountsWithRefreshTokens();
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void IdentityAPI::MaybeShowChromeSigninDialog(std::string_view extension_name,
                                               base::OnceClosure on_complete) {
@@ -191,7 +199,6 @@ void IdentityAPI::HandleSkipUIForTesting(base::OnceClosure on_complete) {
                           weak_ptr_factory_.GetWeakPtr()));
   return;
 }
-
 #endif
 
 IdentityAPI::IdentityAPI(Profile* profile,
@@ -204,14 +211,6 @@ IdentityAPI::IdentityAPI(Profile* profile,
       event_router_(event_router) {
   identity_manager_->AddObserver(this);
   EraseStaleGaiaIdsForAllExtensions();
-}
-
-std::vector<CoreAccountInfo>
-IdentityAPI::GetAccountsWithRefreshTokensForExtensions() {
-  if (!HasAccessToChromeAccounts()) {
-    return {};
-  }
-  return identity_manager_->GetAccountsWithRefreshTokens();
 }
 
 void IdentityAPI::OnPrimaryAccountChanged(

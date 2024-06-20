@@ -30,20 +30,18 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
     return RespondNow(Error(identity_constants::kOffTheRecord));
   }
 
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  IdentityAPI* identity_api = IdentityAPI::GetFactoryInstance()->Get(profile);
   std::vector<CoreAccountInfo> accounts =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context()))
-          ->GetAccountsWithRefreshTokens();
+      identity_api->GetAccountsWithRefreshTokensForExtensions();
   base::Value::List infos;
 
   if (accounts.empty()) {
     return RespondNow(WithArguments(std::move(infos)));
   }
 
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  bool primary_account_only = IdentityAPI::GetFactoryInstance()
-                                  ->Get(profile)
-                                  ->AreExtensionsRestrictedToPrimaryAccount();
+  bool primary_account_only =
+      identity_api->AreExtensionsRestrictedToPrimaryAccount();
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   api::identity::AccountInfo account_info;
