@@ -243,7 +243,7 @@ void FederatedAuthUserInfoRequest::OnAccountsResponseReceived(
     LoginState login_state = LoginState::kSignUp;
     // Consider this a sign-in if we have seen a successful sign-up for
     // this account before.
-    if (permission_delegate_->HasSharingPermission(
+    if (permission_delegate_->GetLastUsedTimestamp(
             parent_frame_origin_, embedding_origin_,
             url::Origin::Create(idp_config_url_), account.id)) {
       login_state = LoginState::kSignIn;

@@ -126,9 +126,23 @@ void ShellFederatedPermissionContext::RemoveIdpSigninStatusObserver(
 bool ShellFederatedPermissionContext::HasSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider) {
+  return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
+                      [&](const auto& entry) {
+                        return relying_party_requester.Serialize() ==
+                                   std::get<0>(entry) &&
+                               relying_party_embedder.Serialize() ==
+                                   std::get<1>(entry) &&
+                               identity_provider.Serialize() ==
+                                   std::get<2>(entry);
+                      }) != sharing_permissions_.end();
+}
+
+std::optional<base::Time> ShellFederatedPermissionContext::GetLastUsedTimestamp(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
-    const std::optional<std::string>& account_id) {
-  bool skip_account_check = !account_id;
+    const std::string& account_id) {
   return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
                       [&](const auto& entry) {
                         return relying_party_requester.Serialize() ==
@@ -137,9 +151,10 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
                                    std::get<1>(entry) &&
                                identity_provider.Serialize() ==
                                    std::get<2>(entry) &&
-                               (skip_account_check ||
-                                account_id.value() == std::get<3>(entry));
-                      }) != sharing_permissions_.end();
+                               account_id == std::get<3>(entry);
+                      }) != sharing_permissions_.end()
+             ? std::make_optional<base::Time>()
+             : std::nullopt;
 }
 
 bool ShellFederatedPermissionContext::HasSharingPermission(

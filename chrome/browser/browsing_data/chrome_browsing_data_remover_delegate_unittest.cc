@@ -3251,7 +3251,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
 
       federated_context.GrantSharingPermission(rp_origin, rp_embedder_origin,
                                                idp_origin, account_id);
-      ASSERT_TRUE(federated_context.HasSharingPermission(
+      ASSERT_TRUE(federated_context.GetLastUsedTimestamp(
           rp_origin, rp_embedder_origin, idp_origin, account_id));
 
       host_content_settings_map->SetContentSettingDefaultScope(
@@ -3273,7 +3273,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFederatedContentSettings) {
       // ObjectPermissionContextBase cache.
       FederatedIdentityPermissionContext federated_context(GetProfile());
 
-      EXPECT_FALSE(federated_context.HasSharingPermission(
+      EXPECT_FALSE(federated_context.GetLastUsedTimestamp(
           rp_origin, rp_embedder_origin, idp_origin, account_id));
 
       // Content setting is on by default.

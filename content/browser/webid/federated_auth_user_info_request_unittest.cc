@@ -213,11 +213,9 @@ class TestApiPermissionDelegate : public MockApiPermissionDelegate {
 
 class TestPermissionDelegate : public MockPermissionDelegate {
  public:
-  bool HasSharingPermission(
-      const url::Origin& relying_party_requester,
-      const url::Origin& relying_party_embedder,
-      const url::Origin& identity_provider,
-      const std::optional<std::string>& account_id) override {
+  bool HasSharingPermission(const url::Origin& relying_party_requester,
+                            const url::Origin& relying_party_embedder,
+                            const url::Origin& identity_provider) override {
     url::Origin rp_origin_with_data = url::Origin::Create(GURL(kRpUrl));
     url::Origin idp_origin_with_data =
         url::Origin::Create(GURL(kPersonalizedButtonFrameUrl));
@@ -226,9 +224,25 @@ class TestPermissionDelegate : public MockPermissionDelegate {
         relying_party_embedder == rp_origin_with_data &&
         identity_provider == idp_origin_with_data;
     return has_granted_permission_per_profile &&
-           (account_id
-                ? accounts_with_sharing_permission_.count(account_id.value())
-                : !accounts_with_sharing_permission_.empty());
+           !accounts_with_sharing_permission_.empty();
+  }
+
+  std::optional<base::Time> GetLastUsedTimestamp(
+      const url::Origin& relying_party_requester,
+      const url::Origin& relying_party_embedder,
+      const url::Origin& identity_provider,
+      const std::string& account_id) override {
+    url::Origin rp_origin_with_data = url::Origin::Create(GURL(kRpUrl));
+    url::Origin idp_origin_with_data =
+        url::Origin::Create(GURL(kPersonalizedButtonFrameUrl));
+    bool has_granted_permission_per_profile =
+        relying_party_requester == rp_origin_with_data &&
+        relying_party_embedder == rp_origin_with_data &&
+        identity_provider == idp_origin_with_data;
+    return has_granted_permission_per_profile &&
+                   accounts_with_sharing_permission_.count(account_id)
+               ? std::make_optional<base::Time>()
+               : std::nullopt;
   }
 
   std::optional<bool> GetIdpSigninStatus(

@@ -36,11 +36,16 @@ class MockPermissionDelegate
                void(const url::Origin&,
                     const url::Origin&,
                     const std::string&));
-  MOCK_METHOD4(HasSharingPermission,
+  MOCK_METHOD3(HasSharingPermission,
                bool(const url::Origin&,
                     const url::Origin&,
-                    const url::Origin& identity_provider,
-                    const std::optional<std::string>& account_id));
+                    const url::Origin& identity_provider));
+  MOCK_METHOD4(
+      GetLastUsedTimestamp,
+      std::optional<base::Time>(const url::Origin& relying_party_requester,
+                                const url::Origin& relying_party_embedder,
+                                const url::Origin& identity_provider,
+                                const std::string& account_id));
   MOCK_METHOD1(HasSharingPermission, bool(const url::Origin&));
   MOCK_METHOD4(GrantSharingPermission,
                void(const url::Origin&,

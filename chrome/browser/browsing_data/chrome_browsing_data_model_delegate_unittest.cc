@@ -315,7 +315,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveFederatedIdentityData) {
       federated_identity_permission_context();
   context->GrantSharingPermission(kRequester, kEmbedder, kIdentityProvider,
                                   kAccountId);
-  EXPECT_TRUE(context->HasSharingPermission(kRequester, kEmbedder,
+  EXPECT_TRUE(context->GetLastUsedTimestamp(kRequester, kEmbedder,
                                             kIdentityProvider, kAccountId));
   EXPECT_TRUE(context->HasSharingPermission(kRequester));
   EXPECT_FALSE(context->HasSharingPermission(kEmbedder));
@@ -329,7 +329,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveFederatedIdentityData) {
       run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_FALSE(context->HasSharingPermission(kRequester, kEmbedder,
+  EXPECT_FALSE(context->GetLastUsedTimestamp(kRequester, kEmbedder,
                                              kIdentityProvider, kAccountId));
   EXPECT_FALSE(context->HasSharingPermission(kRequester));
 }

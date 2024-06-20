@@ -421,12 +421,18 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     const std::optional<std::string>& account_id,
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
-  bool has_access = api_permission_delegate->HasThirdPartyCookiesAccess(
-      host, provider_url, embedder_origin);
+  if (api_permission_delegate->HasThirdPartyCookiesAccess(host, provider_url,
+                                                          embedder_origin)) {
+    return true;
+  }
+  if (account_id) {
+    return sharing_permission_delegate
+        ->GetLastUsedTimestamp(requester_origin, embedder_origin,
+                               url::Origin::Create(provider_url), *account_id)
+        .has_value();
+  }
   return sharing_permission_delegate->HasSharingPermission(
-             requester_origin, embedder_origin,
-             url::Origin::Create(provider_url), account_id) ||
-         has_access;
+      requester_origin, embedder_origin, url::Origin::Create(provider_url));
 }
 
 bool IsFedCmAuthzEnabled(RenderFrameHost& host, const url::Origin& idp_origin) {

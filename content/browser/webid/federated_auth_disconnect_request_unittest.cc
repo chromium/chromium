@@ -354,7 +354,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   EXPECT_CALL(
       *permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
+                           OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
   EXPECT_CALL(*permission_delegate_,
               RevokeSharingPermission(OriginFromString(kRpUrl),
@@ -400,11 +400,6 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   EXPECT_CALL(*api_permission_delegate_,
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
       .WillOnce(Return(PermissionStatus::GRANTED));
-  EXPECT_CALL(
-      *permission_delegate_,
-      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
-      .WillOnce(Return(false));
 
   EXPECT_CALL(*permission_delegate_,
               RevokeSharingPermission(OriginFromString(kRpUrl),
@@ -432,7 +427,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
   EXPECT_CALL(*permission_delegate_,
               HasSharingPermission(OriginFromString(kSameSiteIframeUrl),
                                    OriginFromString(kRpUrl),
-                                   OriginFromString(kProviderUrl), _))
+                                   OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
 
   EXPECT_CALL(*permission_delegate_,
@@ -463,7 +458,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
   EXPECT_CALL(*permission_delegate_,
               HasSharingPermission(OriginFromString(kCrossSiteIframeUrl),
                                    OriginFromString(kRpUrl),
-                                   OriginFromString(kProviderUrl), _))
+                                   OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
   Config config = kValidConfig;
 
@@ -488,7 +483,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
   EXPECT_CALL(
       *permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
+                           OriginFromString(kProviderUrl)))
       .WillOnce(Return(false));
 
   RunDisconnectTest(config, DisconnectStatus::kError);
@@ -540,7 +535,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SuccessDespiteEmbargo) {
   EXPECT_CALL(
       *permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
+                           OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
   EXPECT_CALL(*permission_delegate_,
               RevokeSharingPermission(OriginFromString(kRpUrl),

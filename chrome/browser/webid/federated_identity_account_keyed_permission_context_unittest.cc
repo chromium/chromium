@@ -151,12 +151,17 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
 
   // Permissions in the old format should only be returned when
   // relying-party-requester == relying-party-embedder.
-  EXPECT_TRUE(context()->HasPermission(rp, rp, idp1, account_a));
-  EXPECT_TRUE(context()->HasPermission(rp, rp, idp1, account_b));
-  EXPECT_TRUE(context()->HasPermission(rp, rp, idp2, account_c));
-  EXPECT_FALSE(context()->HasPermission(rp, other_origin, idp1, account_a));
+  EXPECT_EQ(context()->GetLastUsedTimestamp(rp, rp, idp1, account_a),
+            base::Time());
+  EXPECT_EQ(context()->GetLastUsedTimestamp(rp, rp, idp1, account_b),
+            base::Time());
+  EXPECT_EQ(context()->GetLastUsedTimestamp(rp, rp, idp2, account_c),
+            base::Time());
+  EXPECT_EQ(context()->GetLastUsedTimestamp(rp, other_origin, idp1, account_a),
+            std::nullopt);
 
-  EXPECT_FALSE(context()->HasPermission(rp, rp, idp1, account_c));
+  EXPECT_EQ(context()->GetLastUsedTimestamp(rp, rp, idp1, account_c),
+            std::nullopt);
 }
 
 namespace {
@@ -177,10 +182,10 @@ void TestGrantAndRevoke(FederatedIdentityAccountKeyedPermissionContext* context,
                            grant1.relying_party_embedder,
                            grant1.identity_provider, grant1.account_id);
 
-  EXPECT_TRUE(context->HasPermission(
+  EXPECT_TRUE(context->GetLastUsedTimestamp(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id));
-  EXPECT_FALSE(context->HasPermission(
+  EXPECT_FALSE(context->GetLastUsedTimestamp(
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id));
 
@@ -188,30 +193,30 @@ void TestGrantAndRevoke(FederatedIdentityAccountKeyedPermissionContext* context,
                            grant2.relying_party_embedder,
                            grant2.identity_provider, grant2.account_id);
 
-  EXPECT_TRUE(context->HasPermission(
+  EXPECT_TRUE(context->GetLastUsedTimestamp(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id));
-  EXPECT_TRUE(context->HasPermission(
+  EXPECT_TRUE(context->GetLastUsedTimestamp(
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id));
 
   context->RevokePermission(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id, base::DoNothing());
-  EXPECT_FALSE(context->HasPermission(
+  EXPECT_FALSE(context->GetLastUsedTimestamp(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id));
-  EXPECT_TRUE(context->HasPermission(
+  EXPECT_TRUE(context->GetLastUsedTimestamp(
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id));
 
   context->RevokePermission(
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id, base::DoNothing());
-  EXPECT_FALSE(context->HasPermission(
+  EXPECT_FALSE(context->GetLastUsedTimestamp(
       grant1.relying_party_requester, grant1.relying_party_embedder,
       grant1.identity_provider, grant1.account_id));
-  EXPECT_FALSE(context->HasPermission(
+  EXPECT_FALSE(context->GetLastUsedTimestamp(
       grant2.relying_party_requester, grant2.relying_party_embedder,
       grant2.identity_provider, grant2.account_id));
 
@@ -312,7 +317,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
   context()->GrantObjectPermission(site, std::move(new_object));
 
   context()->GrantPermission(site, site, site, account);
-  EXPECT_TRUE(context()->HasPermission(site, site, site, account));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(site, site, site, account));
 }
 
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
@@ -353,15 +358,15 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
                               base::DoNothing());
 
   context()->GrantPermission(rpRequester, rpEmbedder, idp, kAccountId);
-  EXPECT_TRUE(
-      context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(rpRequester, rpEmbedder, idp,
+                                              kAccountId));
 
   // Revoke will remove the permission even if the account ID does not
   // match.
   context()->RevokePermission(rpRequester, rpEmbedder, idp, "noMatch",
                               base::DoNothing());
-  EXPECT_FALSE(
-      context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
+  EXPECT_FALSE(context()->GetLastUsedTimestamp(rpRequester, rpEmbedder, idp,
+                                               kAccountId));
 
   // Revoke will remove the permission when the account ID matches, but
   // only that permission.
@@ -369,9 +374,10 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RevokeNoMatch) {
   context()->GrantPermission(rpRequester, rpEmbedder, idp, "other");
   context()->RevokePermission(rpRequester, rpEmbedder, idp, kAccountId,
                               base::DoNothing());
-  EXPECT_FALSE(
-      context()->HasPermission(rpRequester, rpEmbedder, idp, kAccountId));
-  EXPECT_TRUE(context()->HasPermission(rpRequester, rpEmbedder, idp, "other"));
+  EXPECT_FALSE(context()->GetLastUsedTimestamp(rpRequester, rpEmbedder, idp,
+                                               kAccountId));
+  EXPECT_TRUE(
+      context()->GetLastUsedTimestamp(rpRequester, rpEmbedder, idp, "other"));
 }
 
 TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
@@ -474,18 +480,17 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   context()->GrantObjectPermission(relying_party_requester,
                                    std::move(new_object));
 
-  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
-                                       relying_party_embedder,
-                                       identity_provider, account_a));
-  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
-                                       relying_party_embedder,
-                                       identity_provider, account_b));
-  EXPECT_FALSE(context()->HasPermission(relying_party_requester,
-                                        relying_party_embedder,
-                                        identity_provider, account_c));
-  EXPECT_TRUE(
-      context()->HasPermission(relying_party_requester, relying_party_embedder,
-                               identity_provider, /*account_id=*/std::nullopt));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_a));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_b));
+  EXPECT_FALSE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                               relying_party_embedder,
+                                               identity_provider, account_c));
+  EXPECT_TRUE(context()->HasPermission(
+      relying_party_requester, relying_party_embedder, identity_provider));
 
   // RefreshExistingPermission works with an old account but does not work if
   // account does not exist.
@@ -500,15 +505,15 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   context()->GrantPermission(relying_party_requester, relying_party_embedder,
                              identity_provider, account_c);
 
-  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
-                                       relying_party_embedder,
-                                       identity_provider, account_a));
-  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
-                                       relying_party_embedder,
-                                       identity_provider, account_b));
-  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
-                                       relying_party_embedder,
-                                       identity_provider, account_c));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_a));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_b));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_c));
 
   // RefreshExistingPermission works with the new format.
   EXPECT_TRUE(context()->RefreshExistingPermission(
@@ -531,16 +536,15 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
                               future2.GetCallback());
   ASSERT_TRUE(future2.Wait());
 
-  EXPECT_FALSE(context()->HasPermission(relying_party_requester,
-                                        relying_party_embedder,
-                                        identity_provider, account_a));
-  EXPECT_TRUE(context()->HasPermission(relying_party_requester,
-                                       relying_party_embedder,
-                                       identity_provider, account_b));
-  EXPECT_FALSE(context()->HasPermission(relying_party_requester,
-                                        relying_party_embedder,
-                                        identity_provider, account_c));
-  EXPECT_TRUE(
-      context()->HasPermission(relying_party_requester, relying_party_embedder,
-                               identity_provider, /*account_id=*/std::nullopt));
+  EXPECT_FALSE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                               relying_party_embedder,
+                                               identity_provider, account_a));
+  EXPECT_TRUE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                              relying_party_embedder,
+                                              identity_provider, account_b));
+  EXPECT_FALSE(context()->GetLastUsedTimestamp(relying_party_requester,
+                                               relying_party_embedder,
+                                               identity_provider, account_c));
+  EXPECT_TRUE(context()->HasPermission(
+      relying_party_requester, relying_party_embedder, identity_provider));
 }

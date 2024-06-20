@@ -2181,8 +2181,12 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   for (auto& account : accounts) {
     // Record when IDP and browser have different user sign-in states.
     bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
-    bool browser_observed_sign_in = permission_delegate_->HasSharingPermission(
-        origin(), GetEmbeddingOrigin(), idp_origin, account.id);
+    // TODO(crbug.com/347963515): use the last used timestamp in the UI.
+    bool browser_observed_sign_in =
+        permission_delegate_
+            ->GetLastUsedTimestamp(origin(), GetEmbeddingOrigin(), idp_origin,
+                                   account.id)
+            .has_value();
 
     if (idp_claimed_sign_in == browser_observed_sign_in) {
       fedcm_metrics_->RecordSignInStateMatchStatus(

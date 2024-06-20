@@ -138,8 +138,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
-    const url::Origin& identity_provider,
-    const std::optional<std::string>& account_id) {
+    const url::Origin& identity_provider) {
   // TODO(crbug.com/40846157): This is currently origin-bound, but we would like
   // this grant to apply at the 'site' (aka eTLD+1) level. We should override
   // GetGrantedObject to find a grant that matches the RP's site rather
@@ -154,15 +153,48 @@ bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
 
   base::Value::List* account_list =
       granted_object->value.FindList(kAccountIdsKey);
+  return !!account_list;
+}
+
+std::optional<base::Time>
+FederatedIdentityAccountKeyedPermissionContext::GetLastUsedTimestamp(
+    const url::Origin& relying_party_requester,
+    const url::Origin& relying_party_embedder,
+    const url::Origin& identity_provider,
+    const std::string& account_id) {
+  std::string key = BuildKey(relying_party_requester, relying_party_embedder,
+                             identity_provider);
+  const auto granted_object = GetGrantedObject(relying_party_requester, key);
+
+  if (!granted_object) {
+    return std::nullopt;
+  }
+
+  base::Value::List* account_list =
+      granted_object->value.FindList(kAccountIdsKey);
   if (!account_list) {
-    return false;
+    return std::nullopt;
   }
 
-  if (!account_id) {
-    return true;
+  auto it = FindAccount(*account_list, account_id);
+  if (it == account_list->end()) {
+    return std::nullopt;
   }
 
-  return FindAccount(*account_list, *account_id) != account_list->end();
+  if (it->is_string()) {
+    // The account is returning but we do not have a timestamp.
+    return base::Time();
+  } else if (it->is_dict()) {
+    base::Value* timestamp = it->GetDict().Find(kTimestampKey);
+    CHECK(timestamp);
+    std::optional<base::Time> time = base::ValueToTime(timestamp);
+    // We stored a time in here, so it shouldn't fail when retrieving it.
+    DCHECK(time);
+    return time.value_or(base::Time());
+  }
+  // We do not expect this to happen, but account was found and no timestamp in
+  // this case.
+  return base::Time();
 }
 
 void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
