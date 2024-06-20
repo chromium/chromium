@@ -1052,16 +1052,18 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'base/containers/span.h',
         # Test base::span<> compatibility against std::span<>.
         r'base/containers/span_unittest.cc',
+        # //base/numerics can't use base or absl. So it uses std.
+        r'base/numerics/.*'
+
         # Needed to use QUICHE API.
-        r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
-        r'services/network/web_transport\.cc',
+        r'android_webview/browser/aw_ip_protection_config_provider.*',
         r'chrome/browser/ip_protection/.*',
         r'components/ip_protection/.*',
-        r'android_webview/browser/aw_ip_protection_config_provider.*',
+        r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
+        r'services/network/web_transport\.cc',
+
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK,
-        # //base/numerics can't use base or absl.
-        r'base/numerics/.*'
       ],
     ),
     BanRule(
@@ -1076,10 +1078,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'services/network/shared_dictionary/simple_url_pattern_matcher\.cc',
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
+
         # Needed to use QUICHE API.
+        r'android_webview/browser/aw_ip_protection_config_provider.*',
         r'chrome/browser/ip_protection/.*',
         r'components/ip_protection/.*',
-        r'android_webview/browser/aw_ip_protection_config_provider.*',
+
         # Needed to use MediaPipe API.
         r'components/media_effects/.*\.cc',
         # Not an error in third_party folders.
@@ -1120,11 +1124,13 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       [
         # Needed to use QUICHE API.
+        r'android_webview/browser/aw_ip_protection_config_provider.*',
         r'chrome/browser/ip_protection/.*',
         r'components/ip_protection/.*',
-        r'android_webview/browser/aw_ip_protection_config_provider.*',
+
         # Needed to integrate with //third_party/nearby
         r'components/cross_device/nearby/system_clock.cc',
+
         _THIRD_PARTY_EXCEPT_BLINK  # Not an error in third_party folders.
       ],
     ),
