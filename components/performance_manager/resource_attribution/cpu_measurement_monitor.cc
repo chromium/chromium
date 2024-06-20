@@ -14,6 +14,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
@@ -943,7 +945,17 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
     // No time has passed to measure.
     return;
   }
-  CHECK_LT(measurement_interval_start, measurement_interval_end);
+  // TODO(crbug.com/340226030): Replace with a CHECK.
+  if (measurement_interval_start > measurement_interval_end) {
+    SCOPED_CRASH_KEY_NUMBER(
+        "cpu_measurement", "start",
+        measurement_interval_start.since_origin().InMicroseconds());
+    SCOPED_CRASH_KEY_NUMBER(
+        "cpu_measurement", "end",
+        measurement_interval_end.since_origin().InMicroseconds());
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
 
   std::optional<base::TimeDelta> current_cpu_usage =
       base::OptionalFromExpected(delegate_->GetCumulativeCPUUsage());
