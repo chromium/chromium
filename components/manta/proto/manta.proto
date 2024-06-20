@@ -135,11 +135,12 @@ message OutputData {
 
 enum FilteredReason {
   UNSPECIFIED = 0;
+  IMAGE_SAFETY = 1;
   TEXT_SAFETY = 2;
   TEXT_LOW_QUALITY = 3;
   TEXT_BLOCKLIST = 4;
 
-  reserved 1, 5, 6, 7;
+  reserved 5, 6, 7;
 }
 
 message FilteredData {

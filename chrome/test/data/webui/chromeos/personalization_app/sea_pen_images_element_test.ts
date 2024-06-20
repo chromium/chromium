@@ -239,8 +239,6 @@ suite('SeaPenImagesElementTest', function() {
     assertTrue(feedbackButtons.length > 0);
   });
 
-
-
   test('hide error state on success', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
         MantaStatusCode.kOk;

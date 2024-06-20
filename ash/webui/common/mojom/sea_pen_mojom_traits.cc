@@ -18,26 +18,23 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
   switch (input) {
     case manta::MantaStatusCode::kOk:
       return MojomMantaStatusCode::kOk;
-    case manta::MantaStatusCode::kGenericError:
-      return MojomMantaStatusCode::kGenericError;
-    case manta::MantaStatusCode::kInvalidInput:
-      return MojomMantaStatusCode::kInvalidInput;
     case manta::MantaStatusCode::kResourceExhausted:
       return MojomMantaStatusCode::kResourceExhausted;
-    case manta::MantaStatusCode::kBackendFailure:
-      return MojomMantaStatusCode::kBackendFailure;
-    case manta::MantaStatusCode::kMalformedResponse:
-      return MojomMantaStatusCode::kMalformedResponse;
     case manta::MantaStatusCode::kNoInternetConnection:
       return MojomMantaStatusCode::kNoInternetConnection;
     case manta::MantaStatusCode::kUnsupportedLanguage:
       return MojomMantaStatusCode::kUnsupportedLanguage;
-    case manta::MantaStatusCode::kRestrictedCountry:
-      return MojomMantaStatusCode::kRestrictedCountry;
-    case manta::MantaStatusCode::kNoIdentityManager:
-      return MojomMantaStatusCode::kNoIdentityManager;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      return MojomMantaStatusCode::kBlockedOutputs;
     case manta::MantaStatusCode::kPerUserQuotaExceeded:
       return MojomMantaStatusCode::kPerUserQuotaExceeded;
+    case manta::MantaStatusCode::kGenericError:
+    case manta::MantaStatusCode::kInvalidInput:
+    case manta::MantaStatusCode::kBackendFailure:
+    case manta::MantaStatusCode::kMalformedResponse:
+    case manta::MantaStatusCode::kRestrictedCountry:
+    case manta::MantaStatusCode::kNoIdentityManager:
+      return MojomMantaStatusCode::kGenericError;
     default:
       NOTREACHED_IN_MIGRATION();
       return MojomMantaStatusCode::kGenericError;
@@ -51,20 +48,8 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
     case MojomMantaStatusCode::kOk:
       *output = manta::MantaStatusCode::kOk;
       return true;
-    case MojomMantaStatusCode::kGenericError:
-      *output = manta::MantaStatusCode::kGenericError;
-      return true;
-    case MojomMantaStatusCode::kInvalidInput:
-      *output = manta::MantaStatusCode::kInvalidInput;
-      return true;
     case MojomMantaStatusCode::kResourceExhausted:
       *output = manta::MantaStatusCode::kResourceExhausted;
-      return true;
-    case MojomMantaStatusCode::kBackendFailure:
-      *output = manta::MantaStatusCode::kBackendFailure;
-      return true;
-    case MojomMantaStatusCode::kMalformedResponse:
-      *output = manta::MantaStatusCode::kMalformedResponse;
       return true;
     case MojomMantaStatusCode::kNoInternetConnection:
       *output = manta::MantaStatusCode::kNoInternetConnection;
@@ -75,14 +60,16 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
     case MojomMantaStatusCode::kBlockedOutputs:
       *output = manta::MantaStatusCode::kBlockedOutputs;
       return true;
-    case MojomMantaStatusCode::kRestrictedCountry:
-      *output = manta::MantaStatusCode::kRestrictedCountry;
-      return true;
-    case MojomMantaStatusCode::kNoIdentityManager:
-      *output = manta::MantaStatusCode::kNoIdentityManager;
-      return true;
     case MojomMantaStatusCode::kPerUserQuotaExceeded:
       *output = manta::MantaStatusCode::kPerUserQuotaExceeded;
+      return true;
+    case MojomMantaStatusCode::kGenericError:
+    case MojomMantaStatusCode::kInvalidInput:
+    case MojomMantaStatusCode::kBackendFailure:
+    case MojomMantaStatusCode::kMalformedResponse:
+    case MojomMantaStatusCode::kRestrictedCountry:
+    case MojomMantaStatusCode::kNoIdentityManager:
+      *output = manta::MantaStatusCode::kGenericError;
       return true;
   }
   NOTREACHED_IN_MIGRATION();

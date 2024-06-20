@@ -131,6 +131,14 @@ std::unique_ptr<manta::proto::Response> CreateMantaResponse(
   return response;
 }
 
+std::unique_ptr<manta::proto::Response> CreateMantaResponseWithFilteredReason(
+    manta::proto::FilteredReason filteredReason) {
+  auto response = CreateMantaResponse(0);
+  auto* filtered_data = response->add_filtered_data();
+  filtered_data->set_reason(filteredReason);
+  return response;
+}
+
 MATCHER_P(AreJpgBytesClose, expected_bitmap, "") {
   std::unique_ptr<SkBitmap> actual_bitmap = gfx::JPEGCodec::Decode(
       reinterpret_cast<const unsigned char*>(arg.data()), arg.size());
@@ -212,8 +220,10 @@ class SeaPenFetcherTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
@@ -384,6 +394,145 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsError) {
                 [](manta::MantaProtoResponseCallback delayed_callback) {
                   std::move(delayed_callback)
                       .Run(CreateMantaResponse(0),
+                           {.status_code = manta::MantaStatusCode::kOk,
+                            .message = std::string()});
+                },
+                std::move(done_callback)));
+      });
+
+  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+                         manta::MantaStatusCode>
+      fetch_thumbnails_future;
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
+      fetch_thumbnails_future.GetCallback());
+
+  EXPECT_EQ(manta::MantaStatusCode::kGenericError,
+            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
+  EXPECT_EQ(std::nullopt,
+            fetch_thumbnails_future
+                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+
+  // Recorded an entry in the "0" thumbnail count bucket 1 time.
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kOk, 1);
+  histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
+                                        1);
+}
+
+TEST_F(SeaPenFetcherTest,
+       FreeformThumbnailsEmptyReturnsErrorDueToTextBlocklist) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
+       manta::features::kMantaService, ash::features::kSeaPenTextInput},
+      {});
+  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
+      .WillOnce([](const manta::proto::Request& request,
+                   net::NetworkTrafficAnnotationTag traffic_annotation,
+                   manta::MantaProtoResponseCallback done_callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](manta::MantaProtoResponseCallback delayed_callback) {
+                  std::move(delayed_callback)
+                      .Run(CreateMantaResponseWithFilteredReason(
+                               manta::proto::FilteredReason::TEXT_BLOCKLIST),
+                           {.status_code = manta::MantaStatusCode::kOk,
+                            .message = std::string()});
+                },
+                std::move(done_callback)));
+      });
+
+  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+                         manta::MantaStatusCode>
+      fetch_thumbnails_future;
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
+      fetch_thumbnails_future.GetCallback());
+
+  EXPECT_EQ(manta::MantaStatusCode::kBlockedOutputs,
+            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
+  EXPECT_EQ(std::nullopt,
+            fetch_thumbnails_future
+                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+
+  // Recorded an entry in the "0" thumbnail count bucket 1 time.
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kOk, 1);
+  histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
+                                        1);
+}
+
+TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToImageSafety) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
+       manta::features::kMantaService, ash::features::kSeaPenTextInput},
+      {});
+
+  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
+      .WillOnce([](const manta::proto::Request& request,
+                   net::NetworkTrafficAnnotationTag traffic_annotation,
+                   manta::MantaProtoResponseCallback done_callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](manta::MantaProtoResponseCallback delayed_callback) {
+                  std::move(delayed_callback)
+                      .Run(CreateMantaResponseWithFilteredReason(
+                               manta::proto::FilteredReason::IMAGE_SAFETY),
+                           {.status_code = manta::MantaStatusCode::kOk,
+                            .message = std::string()});
+                },
+                std::move(done_callback)));
+      });
+
+  base::test::TestFuture<std::optional<std::vector<ash::SeaPenImage>>,
+                         manta::MantaStatusCode>
+      fetch_thumbnails_future;
+  sea_pen_fetcher()->FetchThumbnails(
+      manta::proto::FeatureName::CHROMEOS_WALLPAPER, MakeFreeformQuery(),
+      fetch_thumbnails_future.GetCallback());
+
+  EXPECT_EQ(manta::MantaStatusCode::kBlockedOutputs,
+            fetch_thumbnails_future.Get<manta::MantaStatusCode>());
+  EXPECT_EQ(std::nullopt,
+            fetch_thumbnails_future
+                .Get<std::optional<std::vector<ash::SeaPenImage>>>());
+
+  // Recorded an entry in the "0" thumbnail count bucket 1 time.
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
+                                        manta::MantaStatusCode::kOk, 1);
+  histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
+  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
+                                        1);
+}
+
+TEST_F(SeaPenFetcherTest,
+       FreeformThumbnailsEmptyReturnsGenericErrorDueToOtherFilterReason) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kSeaPen, ash::features::kFeatureManagementSeaPen,
+       manta::features::kMantaService, ash::features::kSeaPenTextInput},
+      {});
+
+  EXPECT_CALL(snapper_provider(), Call(testing::_, testing::_, testing::_))
+      .WillOnce([](const manta::proto::Request& request,
+                   net::NetworkTrafficAnnotationTag traffic_annotation,
+                   manta::MantaProtoResponseCallback done_callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](manta::MantaProtoResponseCallback delayed_callback) {
+                  std::move(delayed_callback)
+                      .Run(CreateMantaResponseWithFilteredReason(
+                               manta::proto::FilteredReason::TEXT_LOW_QUALITY),
                            {.status_code = manta::MantaStatusCode::kOk,
                             .message = std::string()});
                 },

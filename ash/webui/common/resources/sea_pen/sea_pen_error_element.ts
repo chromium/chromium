@@ -12,6 +12,7 @@ import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {MantaStatusCode} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_error_element.html.js';
 
@@ -55,12 +56,22 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
       case MantaStatusCode.kPerUserQuotaExceeded:
       case MantaStatusCode.kResourceExhausted:
         return this.i18n('seaPenErrorResourceExhausted');
-      default:
-        return this.i18n('seaPenErrorGeneric');
     }
+
+    if (isSeaPenTextInputEnabled()) {
+      switch (statusCode) {
+        // TODO: b/345856242 - Update strings
+        case MantaStatusCode.kUnsupportedLanguage:
+          return 'unsupported language';
+        case MantaStatusCode.kBlockedOutputs:
+          return 'blocked outputs';
+      }
+    }
+    return this.i18n('seaPenErrorGeneric');
   }
 
   private getErrorIllo_(statusCode: MantaStatusCode): string {
+    // TODO: b/347965383 - Add error illustrations
     switch (statusCode) {
       case MantaStatusCode.kNoInternetConnection:
         return 'personalization-shared-illo:network_error';

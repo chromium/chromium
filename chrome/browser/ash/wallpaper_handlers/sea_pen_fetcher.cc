@@ -323,7 +323,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
             response->output_data_size(),
             base::BindOnce(&SeaPenFetcherImpl::OnThumbnailsSanitized,
                            fetch_thumbnails_weak_ptr_factory_.GetWeakPtr(),
-                           std::move(data_decoder), query_tag));
+                           std::move(data_decoder), query_tag,
+                           std::move(response->filtered_data())));
 
     for (auto& data : *response->mutable_output_data()) {
       SanitizeJpgBytes(data, data_decoder_pointer, barrier_callback);
@@ -333,6 +334,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   void OnThumbnailsSanitized(
       std::unique_ptr<data_decoder::DataDecoder> data_decoder,
       ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+      const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
+          filtered_data,
       const std::vector<std::optional<ash::SeaPenImage>>& optional_images) {
     std::vector<ash::SeaPenImage> filtered_images;
     for (auto& image : optional_images) {
@@ -345,13 +348,37 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     if (filtered_images.empty()) {
       LOG(WARNING) << "Got empty images from thumbnails request";
+      manta::MantaStatusCode status_code =
+          GetMantaStatusCodeForEmptyImageResponse(query_tag, filtered_data);
       std::move(pending_fetch_thumbnails_callback_)
-          .Run(std::nullopt, manta::MantaStatusCode::kGenericError);
+          .Run(std::nullopt, status_code);
       return;
     }
 
     std::move(pending_fetch_thumbnails_callback_)
         .Run(std::move(filtered_images), manta::MantaStatusCode::kOk);
+  }
+
+  manta::MantaStatusCode GetMantaStatusCodeForEmptyImageResponse(
+      ash::personalization_app::mojom::SeaPenQuery::Tag query_tag,
+      const ::google::protobuf::RepeatedPtrField<::manta::proto::FilteredData>&
+          filtered_data) {
+    if (!ash::features::IsSeaPenTextInputEnabled() ||
+        query_tag !=
+            ash::personalization_app::mojom::SeaPenQuery::Tag::kTextQuery) {
+      return manta::MantaStatusCode::kGenericError;
+    }
+    for (auto& filtered_datum : filtered_data) {
+      if (filtered_datum.reason() ==
+              manta::proto::FilteredReason::IMAGE_SAFETY ||
+          filtered_datum.reason() ==
+              manta::proto::FilteredReason::TEXT_BLOCKLIST) {
+        // If anything has been filtered due to safety, send the blocked
+        // outputs result.
+        return manta::MantaStatusCode::kBlockedOutputs;
+      }
+    }
+    return manta::MantaStatusCode::kGenericError;
   }
 
   void OnFetchThumbnailsTimeout(

@@ -107,4 +107,88 @@ suite('SeaPenErrorElementTest', function() {
         errorIllo.getAttribute('icon'),
         'personalization-shared-illo:generic_error');
   });
+
+  test('display generic error state for unsupported language', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
+    seaPenErrorElement = initElement(
+        SeaPenErrorElement,
+        {thumbnailResponseStatusCode: MantaStatusCode.kUnsupportedLanguage});
+    await waitAfterNextRender(seaPenErrorElement);
+
+    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
+
+    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
+                          'iron-icon') as HTMLElement;
+    assertTrue(!!errorIllo);
+    assertEquals(
+        errorIllo.getAttribute('icon'),
+        'personalization-shared-illo:generic_error');
+  });
+
+  test('display generic error state for blocked outputs', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
+    seaPenErrorElement = initElement(
+        SeaPenErrorElement,
+        {thumbnailResponseStatusCode: MantaStatusCode.kBlockedOutputs});
+    await waitAfterNextRender(seaPenErrorElement);
+
+    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenErrorElement.i18n('seaPenErrorGeneric'), errorMessage!.innerText);
+
+    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
+                          'iron-icon') as HTMLElement;
+    assertTrue(!!errorIllo);
+    assertEquals(
+        errorIllo.getAttribute('icon'),
+        'personalization-shared-illo:generic_error');
+  });
+
+  test(
+      'display unsupported language error state with SeaPenTextInput',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        seaPenErrorElement = initElement(SeaPenErrorElement, {
+          thumbnailResponseStatusCode: MantaStatusCode.kUnsupportedLanguage,
+        });
+        await waitAfterNextRender(seaPenErrorElement);
+
+        const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
+                                 '.error-message') as HTMLElement;
+        assertTrue(!!errorMessage, 'an error message should be displayed');
+        assertEquals('unsupported language', errorMessage!.innerText);
+
+        const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
+                              'iron-icon') as HTMLElement;
+        assertTrue(!!errorIllo);
+        assertEquals(
+            errorIllo.getAttribute('icon'),
+            'personalization-shared-illo:generic_error');
+      });
+
+  test('display blocked output error state with SeaPenTextInput', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+    seaPenErrorElement = initElement(
+        SeaPenErrorElement,
+        {thumbnailResponseStatusCode: MantaStatusCode.kBlockedOutputs});
+    await waitAfterNextRender(seaPenErrorElement);
+
+    const errorMessage = seaPenErrorElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals('blocked outputs', errorMessage!.innerText);
+
+    const errorIllo = seaPenErrorElement.shadowRoot!.querySelector(
+                          'iron-icon') as HTMLElement;
+    assertTrue(!!errorIllo);
+    assertEquals(
+        errorIllo.getAttribute('icon'),
+        'personalization-shared-illo:generic_error');
+  });
 });
