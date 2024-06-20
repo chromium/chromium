@@ -73,6 +73,7 @@
 
   [
     RuntimeEnabled=SharedStorageAPIM125,
+    Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
     MeasureAs=SharedStorageAPI_CreateWorklet_Method

@@ -512,6 +512,9 @@ class SharedStorageWorkletTest : public PageTestBase {
   }
 
  protected:
+  ScopedSharedStorageAPIM125ForTest shared_storage_m125_runtime_enabled_feature{
+      /*enabled=*/true};
+
   mojo::Remote<mojom::SharedStorageWorkletService>
       shared_storage_worklet_service_;
 
@@ -1527,6 +1530,7 @@ TEST_F(SharedStorageWorkletTest,
 
           // Those are either not implemented yet, or should stay undefined.
           var expectedUndefinedVariables = [
+            "sharedStorage.createWorklet",
             "sharedStorage.selectURL",
             "sharedStorage.run",
             "sharedStorage.worklet",
