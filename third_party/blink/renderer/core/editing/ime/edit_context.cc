@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -209,8 +211,7 @@ void EditContext::updateSelection(uint32_t start,
   TRACE_EVENT2("ime", "EditContext::updateSelection", "start",
                std::to_string(start), "end", std::to_string(end));
 
-  selection_start_ = std::min(start, text_.length());
-  selection_end_ = std::min(end, text_.length());
+  SetSelection(std::min(start, text_.length()), std::min(end, text_.length()));
   if (!has_composition_)
     return;
 
@@ -368,10 +369,11 @@ bool EditContext::SetComposition(
           update_text + text_.Substring(actual_replacement_range.EndOffset());
 
   // Fire textupdate and textformatupdate events to JS.
-  // Note selection_start_ is a global offset while selection_start is a local
-  // offset computed from the begninning of the inserted string.
-  selection_start_ = actual_replacement_range.StartOffset() + selection_start;
-  selection_end_ = actual_replacement_range.StartOffset() + selection_end;
+  // Note the EditContext's internal selection start is a global offset while
+  // selection_start is a local offset computed from the beginning of the
+  // inserted string.
+  SetSelection(actual_replacement_range.StartOffset() + selection_start,
+               actual_replacement_range.StartOffset() + selection_end);
   DispatchTextUpdateEvent(update_text, actual_replacement_range.StartOffset(),
                           actual_replacement_range.EndOffset(),
                           selection_start_, selection_end_);
@@ -447,8 +449,7 @@ void EditContext::CancelComposition() {
           text_.Substring(composition_range_end_);
 
   // Place the selection where the deleted composition had been
-  selection_start_ = composition_range_start_;
-  selection_end_ = composition_range_start_;
+  SetSelection(composition_range_start_, composition_range_start_);
   DispatchTextUpdateEvent(g_empty_string, composition_range_start_,
                           composition_range_end_, selection_start_,
                           selection_end_);
@@ -466,9 +467,8 @@ bool EditContext::InsertText(const WebString& text) {
           text_.Substring(OrderedSelectionEnd());
   uint32_t update_range_start = OrderedSelectionStart();
   uint32_t update_range_end = OrderedSelectionEnd();
-  selection_start_ = OrderedSelectionStart() + update_text.length();
-  selection_end_ = selection_start_;
-
+  SetSelection(OrderedSelectionStart() + update_text.length(),
+               OrderedSelectionStart() + update_text.length());
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
                           selection_start_, selection_end_);
   return true;
@@ -487,7 +487,7 @@ void EditContext::DeleteCurrentSelection() {
                           OrderedSelectionEnd(), OrderedSelectionStart(),
                           OrderedSelectionStart());
 
-  selection_end_ = selection_start_;
+  SetSelection(selection_start_, selection_start_);
 }
 
 template <typename StateMachine>
@@ -497,9 +497,9 @@ void EditContext::DeleteBackward() {
   // If the current selection is collapsed, delete one grapheme, otherwise,
   // delete whole selection.
   if (selection_start_ == selection_end_) {
-    selection_start_ =
-        FindNextBoundaryOffset<BackwardGraphemeBoundaryStateMachine>(
-            text_, selection_start_);
+    SetSelection(FindNextBoundaryOffset<BackwardGraphemeBoundaryStateMachine>(
+                     text_, selection_start_),
+                 selection_end_);
   }
 
   DeleteCurrentSelection();
@@ -507,9 +507,9 @@ void EditContext::DeleteBackward() {
 
 void EditContext::DeleteForward() {
   if (selection_start_ == selection_end_) {
-    selection_end_ =
-        FindNextBoundaryOffset<ForwardGraphemeBoundaryStateMachine>(
-            text_, selection_start_);
+    SetSelection(selection_start_,
+                 FindNextBoundaryOffset<ForwardGraphemeBoundaryStateMachine>(
+                     text_, selection_start_));
   }
 
   DeleteCurrentSelection();
@@ -520,8 +520,9 @@ void EditContext::DeleteWordBackward() {
     String text16bit(text_);
     text16bit.Ensure16Bit();
     // TODO(shihken): implement platform behaviors when the spec is finalized.
-    selection_start_ = FindNextWordBackward(text16bit.Characters16(),
-                                            text16bit.length(), selection_end_);
+    SetSelection(FindNextWordBackward(text16bit.Characters16(),
+                                      text16bit.length(), selection_end_),
+                 selection_end_);
   }
 
   DeleteCurrentSelection();
@@ -532,8 +533,9 @@ void EditContext::DeleteWordForward() {
     String text16bit(text_);
     text16bit.Ensure16Bit();
     // TODO(shihken): implement platform behaviors when the spec is finalized.
-    selection_end_ = FindNextWordForward(text16bit.Characters16(),
-                                         text16bit.length(), selection_start_);
+    SetSelection(selection_start_,
+                 FindNextWordForward(text16bit.Characters16(),
+                                     text16bit.length(), selection_start_));
   }
 
   DeleteCurrentSelection();
@@ -569,8 +571,8 @@ bool EditContext::CommitText(const WebString& text,
 
   text_ = text_.Substring(0, actual_replacement_range.StartOffset()) +
           update_text + text_.Substring(actual_replacement_range.EndOffset());
-  selection_start_ = selection_end_ =
-      actual_replacement_range.StartOffset() + update_text.length();
+  SetSelection(actual_replacement_range.StartOffset() + update_text.length(),
+               actual_replacement_range.StartOffset() + update_text.length());
 
   DispatchTextUpdateEvent(update_text, actual_replacement_range.StartOffset(),
                           actual_replacement_range.EndOffset(),
@@ -588,7 +590,6 @@ bool EditContext::CommitText(const WebString& text,
 bool EditContext::FinishComposingText(
     ConfirmCompositionBehavior selection_behavior) {
   TRACE_EVENT0("ime", "EditContext::FinishComposingText");
-
   int text_length = 0;
   if (has_composition_) {
     String text =
@@ -602,8 +603,7 @@ bool EditContext::FinishComposingText(
   }
 
   if (selection_behavior == kDoNotKeepSelection) {
-    selection_start_ = selection_start_ + text_length;
-    selection_end_ = selection_end_ + text_length;
+    SetSelection(selection_start_ + text_length, selection_end_ + text_length);
   }
 
   ClearCompositionState();
@@ -619,8 +619,8 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
           text_.Substring(OrderedSelectionEnd() + after);
   const uint32_t update_range_start = OrderedSelectionStart() - before;
   const uint32_t update_range_end = OrderedSelectionEnd() + after;
-  selection_start_ = OrderedSelectionStart() - before;
-  selection_end_ = selection_start_;
+  SetSelection(OrderedSelectionStart() - before,
+               OrderedSelectionStart() - before);
   DispatchTextUpdateEvent(g_empty_string, update_range_start, update_range_end,
                           selection_start_, selection_end_);
 }
@@ -633,9 +633,9 @@ void EditContext::DeleteSurroundingText(int before, int after) {
       std::max(OrderedSelectionStart() - before, 0U);
   const uint32_t update_range_end =
       std::min(OrderedSelectionEnd() + after, text_.length());
-  selection_end_ =
-      OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start);
-  selection_start_ = update_range_start;
+  SetSelection(
+      update_range_start,
+      OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start));
   CHECK_GE(selection_end_, selection_start_);
   text_ = text_.Substring(0, update_range_start) +
           text_.Substring(selection_start_, selection_end_ - selection_start_) +
@@ -644,23 +644,31 @@ void EditContext::DeleteSurroundingText(int before, int after) {
       text_.Substring(selection_start_, selection_end_ - selection_start_));
 
   if (is_backwards_selection) {
-    std::swap(selection_start_, selection_end_);
+    SetSelection(selection_end_, selection_start_);
   }
 
   DispatchTextUpdateEvent(update_event_text, update_range_start,
                           update_range_end, selection_start_, selection_end_);
 }
 
-void EditContext::SetSelection(int start, int end) {
+void EditContext::SetSelection(int start,
+                               int end,
+                               bool dispatch_text_update_event) {
   TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
                std::to_string(start) + ", " + std::to_string(end));
 
   selection_start_ = start;
   selection_end_ = end;
 
-  DispatchTextUpdateEvent(g_empty_string, /*update_range_start=*/0,
-                          /*update_range_end=*/0, selection_start_,
-                          selection_end_);
+  DomWindow()->GetFrame()->Client()->DidChangeSelection(
+      /*is_selection_empty=*/selection_start_ == selection_end_,
+      blink::SyncCondition::kNotForced);
+
+  if (dispatch_text_update_event) {
+    DispatchTextUpdateEvent(g_empty_string, /*update_range_start=*/0,
+                            /*update_range_end=*/0, selection_start_,
+                            selection_end_);
+  }
 }
 
 void EditContext::AttachElement(HTMLElement* element_to_attach) {

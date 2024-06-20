@@ -1422,8 +1422,16 @@ WebString WebLocalFrameImpl::SelectionAsText() const {
   GetFrame()->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  String text = GetFrame()->Selection().SelectedText(
-      TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
+  String text;
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    text = edit_context->text().Substring(
+        edit_context->selectionStart(),
+        edit_context->selectionEnd() - edit_context->selectionStart());
+  } else {
+    text = GetFrame()->Selection().SelectedText(
+        TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
+  }
 #if BUILDFLAG(IS_WIN)
   ReplaceNewlinesWithWindowsStyleNewlines(text);
 #endif
@@ -1535,17 +1543,23 @@ void WebLocalFrameImpl::SelectRange(
 }
 
 WebString WebLocalFrameImpl::RangeAsText(const WebRange& web_range) {
-  // TODO(editing-dev): The use of UpdateStyleAndLayout
-  // needs to be audited.  see http://crbug.com/590369 for more details.
-  GetFrame()->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kEditing);
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    return edit_context->text().Substring(web_range.StartOffset(),
+                                          web_range.length());
+  } else {
+    // TODO(editing-dev): The use of UpdateStyleAndLayout
+    // needs to be audited.  see http://crbug.com/590369 for more details.
+    GetFrame()->GetDocument()->UpdateStyleAndLayout(
+        DocumentUpdateReason::kEditing);
 
-  DocumentLifecycle::DisallowTransitionScope disallow_transition(
-      GetFrame()->GetDocument()->Lifecycle());
+    DocumentLifecycle::DisallowTransitionScope disallow_transition(
+        GetFrame()->GetDocument()->Lifecycle());
 
-  return PlainText(
-      web_range.CreateEphemeralRange(GetFrame()),
-      TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
+    return PlainText(
+        web_range.CreateEphemeralRange(GetFrame()),
+        TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
+  }
 }
 
 void WebLocalFrameImpl::MoveRangeSelectionExtent(const gfx::Point& point) {
@@ -1597,7 +1611,7 @@ bool WebLocalFrameImpl::SetEditableSelectionOffsets(int start, int end) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::setEditableSelectionOffsets");
   if (EditContext* edit_context =
           GetFrame()->GetInputMethodController().GetActiveEditContext()) {
-    edit_context->SetSelection(start, end);
+    edit_context->SetSelection(start, end, /*dispatch_text_update_event=*/true);
     return true;
   }
 
