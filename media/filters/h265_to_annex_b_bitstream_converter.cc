@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/hevc.h"
-#include "media/video/h265_nalu_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
 
 namespace media {
 namespace {

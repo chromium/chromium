@@ -9,7 +9,7 @@
 #include "base/containers/span.h"
 #include "media/base/media_util.h"
 #include "media/gpu/codec_picture.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

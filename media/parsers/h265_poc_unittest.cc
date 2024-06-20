@@ -4,8 +4,8 @@
 
 #include <stdint.h>
 
-#include "media/video/h265_parser.h"
-#include "media/video/h265_poc.h"
+#include "media/parsers/h265_parser.h"
+#include "media/parsers/h265_poc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

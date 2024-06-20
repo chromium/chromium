@@ -16,8 +16,8 @@
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/parsers/h265_parser.h"
 #include "media/parsers/vp9_parser.h"
-#include "media/video/h265_parser.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 

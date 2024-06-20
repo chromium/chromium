@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "media/video/h265_parser.h"
-#include "media/video/h265_poc.h"
+#include "media/parsers/h265_parser.h"
+#include "media/parsers/h265_poc.h"
 
 namespace media {
 

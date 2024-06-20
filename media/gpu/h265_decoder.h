@@ -20,7 +20,7 @@
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/h265_dpb.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

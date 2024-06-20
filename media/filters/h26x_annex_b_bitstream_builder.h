@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/parsers/h264_parser.h"
-#include "media/video/h265_nalu_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
 
 namespace media {
 

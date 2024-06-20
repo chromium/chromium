@@ -13,7 +13,7 @@
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 
 // Verbatim from va/va.h, where typedef is used.
 typedef struct _VAPictureHEVC VAPictureHEVC;

@@ -5,8 +5,8 @@
 // This file contains an implementation of an H265 Annex-B video stream parser,
 // but it only handles NALU parsing.
 
-#ifndef MEDIA_VIDEO_H265_NALU_PARSER_H_
-#define MEDIA_VIDEO_H265_NALU_PARSER_H_
+#ifndef MEDIA_PARSERS_H265_NALU_PARSER_H_
+#define MEDIA_PARSERS_H265_NALU_PARSER_H_
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -178,4 +178,4 @@ class MEDIA_EXPORT H265NaluParser {
 
 }  // namespace media
 
-#endif  // MEDIA_VIDEO_H265_NALU_PARSER_H_
+#endif  // MEDIA_PARSERS_H265_NALU_PARSER_H_

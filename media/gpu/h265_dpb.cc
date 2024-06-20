@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/h265_dpb.h"
+
 #include <algorithm>
 
 #include "base/logging.h"
-#include "media/gpu/h265_dpb.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 
 namespace media {
 

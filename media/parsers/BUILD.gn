@@ -34,6 +34,21 @@ source_set("parsers") {
     "webp_parser.cc",
     "webp_parser.h",
   ]
+  if (enable_platform_hevc) {
+    sources += [
+      "h265_nalu_parser.cc",
+      "h265_nalu_parser.h",
+    ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_parser.cc",
+        "h265_parser.h",
+        "h265_poc.cc",
+        "h265_poc.h",
+      ]
+    }
+  }
+
   configs += [ "//media:subcomponent_config" ]
 
   deps = [
@@ -56,6 +71,15 @@ source_set("unit_tests") {
     "vp9_uncompressed_header_parser_unittest.cc",
     "webp_parser_unittest.cc",
   ]
+  if (enable_platform_hevc) {
+    sources += [ "h265_nalu_parser_unittest.cc" ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_parser_unittest.cc",
+        "h265_poc_unittest.cc",
+      ]
+    }
+  }
   deps = [
     "//base/test:test_support",
     "//media:test_support",
@@ -70,6 +94,16 @@ fuzzer_test("media_h264_parser_fuzzer") {
     "//media",
     "//ui/gfx/geometry",
   ]
+}
+
+if (enable_hevc_parser_and_hw_decoder) {
+  fuzzer_test("media_h265_parser_fuzzer") {
+    sources = [ "h265_parser_fuzzertest.cc" ]
+    deps = [
+      "//base",
+      "//media",
+    ]
+  }
 }
 
 fuzzer_test("media_jpeg_parser_picture_fuzzer") {

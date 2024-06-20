@@ -4,8 +4,8 @@
 //
 // This file contains an implementation of an H265 Annex-B video stream parser.
 
-#ifndef MEDIA_VIDEO_H265_PARSER_H_
-#define MEDIA_VIDEO_H265_PARSER_H_
+#ifndef MEDIA_PARSERS_H265_PARSER_H_
+#define MEDIA_PARSERS_H265_PARSER_H_
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -20,7 +20,7 @@
 #include "media/base/video_types.h"
 #include "media/parsers/h264_bit_reader.h"
 #include "media/parsers/h264_parser.h"
-#include "media/video/h265_nalu_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
 
 namespace gfx {
 struct HdrMetadataCta861_3;
@@ -584,4 +584,4 @@ class MEDIA_EXPORT H265Parser : public H265NaluParser {
 
 }  // namespace media
 
-#endif  // MEDIA_VIDEO_H265_PARSER_H_
+#endif  // MEDIA_PARSERS_H265_PARSER_H_

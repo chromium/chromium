@@ -8,7 +8,7 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 
 namespace media {
 

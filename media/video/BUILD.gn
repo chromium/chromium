@@ -42,21 +42,6 @@ source_set("video") {
     "video_encoder_info.h",
   ]
 
-  if (enable_platform_hevc) {
-    sources += [
-      "h265_nalu_parser.cc",
-      "h265_nalu_parser.h",
-    ]
-    if (enable_hevc_parser_and_hw_decoder) {
-      sources += [
-        "h265_parser.cc",
-        "h265_parser.h",
-        "h265_poc.cc",
-        "h265_poc.h",
-      ]
-    }
-  }
-
   if (enable_platform_vvc) {
     sources += [
       "h266_nalu_parser.cc",
@@ -76,9 +61,6 @@ source_set("video") {
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//media/base",
-
-    # TODO(b/347112896): Remove one H265 parse code is moved to //media/parsers.
-    "//media/parsers",
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gl",
@@ -158,15 +140,6 @@ source_set("unit_tests") {
     "video_encode_accelerator_adapter_test.cc",
     "video_encoder_fallback_test.cc",
   ]
-  if (enable_platform_hevc) {
-    sources += [ "h265_nalu_parser_unittest.cc" ]
-    if (enable_hevc_parser_and_hw_decoder) {
-      sources += [
-        "h265_parser_unittest.cc",
-        "h265_poc_unittest.cc",
-      ]
-    }
-  }
   if (enable_platform_vvc) {
     sources += [
       "h266_nalu_parser_unittest.cc",
@@ -190,16 +163,6 @@ source_set("unit_tests") {
     "//third_party/libyuv:libyuv",
     "//ui/gfx",
   ]
-}
-
-if (enable_hevc_parser_and_hw_decoder) {
-  fuzzer_test("media_h265_parser_fuzzer") {
-    sources = [ "h265_parser_fuzzertest.cc" ]
-    deps = [
-      "//base",
-      "//media",
-    ]
-  }
 }
 
 if (enable_platform_vvc) {

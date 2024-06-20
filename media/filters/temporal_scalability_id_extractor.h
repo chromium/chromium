@@ -17,7 +17,7 @@
 #include "media/parsers/vp9_parser.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#include "media/video/h265_nalu_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
 #endif
 
 namespace media {

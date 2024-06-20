@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/test_data_util.h"
-#include "media/video/h265_nalu_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
