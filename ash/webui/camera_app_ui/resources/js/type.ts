@@ -222,8 +222,10 @@ export type FpsRangeList = FpsRange[];
  * Type for performance event.
  */
 export enum PerfEvent {
+  // In all modes, the duration between the camera switch button being clicked
+  // and the preview stream being updated.
   CAMERA_SWITCHING = 'camera-switching',
-  // In Doc Scan mode, the duration between the shutter sound playing and the
+  // In Doc Scan mode, the duration between a shutter sound playing and the
   // image appearing in the review page.
   DOCUMENT_CAPTURE_POST_PROCESSING = 'document-capture-post-processing',
   // In Doc Scan mode, the duration between "Save as PDF" button being clicked
@@ -235,9 +237,17 @@ export enum PerfEvent {
   // In GIF mode, the duration between "Save" button being clicked and the
   // result file saving finished.
   GIF_CAPTURE_SAVING = 'gif-capture-saving',
+  // Used for testing. The duration between app window being created and the app
+  // being launched.
   LAUNCHING_FROM_LAUNCH_APP_COLD = 'launching-from-launch-app-cold',
+  // Used for testing. The duration between app window being created and the app
+  // being launched.
   LAUNCHING_FROM_LAUNCH_APP_WARM = 'launching-from-launch-app-warm',
+  // The duration between CCA window being created and the preview stream
+  // appearing.
   LAUNCHING_FROM_WINDOW_CREATION = 'launching-from-window-creation',
+  // In all modes, the duration between the mode switch button being clicked and
+  // the preview stream being updated.
   MODE_SWITCHING = 'mode-switching',
   // In Photo mode, the duration between a snapshot of the preview being scanned
   // by OCR(automatically, with 500ms intervals) and the scanned result
@@ -247,6 +257,8 @@ export enum PerfEvent {
   // In Photo mode, the duration between a shutter sound playing and the
   // result file saving finished.
   PHOTO_CAPTURE_POST_PROCESSING_SAVING = 'photo-capture-post-processing-saving',
+  // In Photo, Doc Scan and Portrait mode, the duration between the shutter
+  // button being clicked or a timer expiring and a shutter sound playing.
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
   // In Portrait mode, the duration between a shutter sound playing and the
   // two result files saving finished.
