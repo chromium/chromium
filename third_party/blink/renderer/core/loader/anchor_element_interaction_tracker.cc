@@ -259,6 +259,11 @@ void AnchorElementInteractionTracker::OnPointerEvent(
   if (event_type == event_type_names::kPointerdown) {
     last_pointer_down_locations_[1] = last_pointer_down_locations_[0];
     last_pointer_down_locations_[0] = pointer_event.screenY();
+
+    if (auto* sender = AnchorElementMetricsSender::GetForFrame(
+            GetDocument()->GetFrame())) {
+      sender->RecordPointerDown(pointer_event);
+    }
   }
 
   HTMLAnchorElement* anchor = FirstAnchorElementIncludingSelf(target.ToNode());
@@ -362,12 +367,9 @@ void AnchorElementInteractionTracker::OnClickEvent(
 }
 
 void AnchorElementInteractionTracker::OnScrollEnd() {
-  if (last_pointer_down_locations_[0]) {
-    if (auto* sender = AnchorElementMetricsSender::GetForFrame(
-            GetDocument()->GetFrame())) {
-      sender->MaybeReportAnchorElementsPositionOnScrollEnd(
-          last_pointer_down_locations_[0].value());
-    }
+  if (auto* sender =
+          AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame())) {
+    sender->MaybeReportAnchorElementsPositionOnScrollEnd();
   }
 }
 

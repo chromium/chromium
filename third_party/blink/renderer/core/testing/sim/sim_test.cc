@@ -189,6 +189,10 @@ SimCompositor& SimTest::Compositor() {
   return *compositor_;
 }
 
+frame_test_helpers::WebViewHelper& SimTest::WebViewHelper() {
+  return *web_view_helper_;
+}
+
 Vector<String>& SimTest::ConsoleMessages() {
   return web_frame_client_->ConsoleMessages();
 }

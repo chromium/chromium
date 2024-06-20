@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -1192,18 +1194,19 @@ TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
   // ----------------------
   //   XXXX   |  anchor_3
   gfx::PointF coordinates(10.0f, pointer_down_y);
+  gfx::PointF screen_coordinates(coordinates.x(), coordinates.y() + 2 * unit);
   WebInputEvent::Modifiers modifier = WebInputEvent::kLeftButtonDown;
-  WebMouseEvent event(WebInputEvent::Type::kMouseDown, coordinates, coordinates,
-                      WebPointerProperties::Button::kLeft, 0, modifier,
-                      WebInputEvent::GetStaticTimeStampForTests());
+  WebMouseEvent event(WebInputEvent::Type::kMouseDown, coordinates,
+                      screen_coordinates, WebPointerProperties::Button::kLeft,
+                      0, modifier, WebInputEvent::GetStaticTimeStampForTests());
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
   VerticalScroll(-unit);
   ProcessPositionUpdates();
 
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
   EXPECT_EQ(2u, positions.size());
-  EXPECT_EQ(-2.5f * unit / kViewportHeight, get_ratio(anchor_1_id));
-  EXPECT_EQ(2.5f * unit / kViewportHeight, get_ratio(anchor_2_id));
+  EXPECT_FLOAT_EQ(-2.5f * unit / kViewportHeight, get_ratio(anchor_1_id));
+  EXPECT_FLOAT_EQ(2.5f * unit / kViewportHeight, get_ratio(anchor_2_id));
   // anchor_3 is not in the viewport, so a ratio isn't reported.
   EXPECT_TRUE(!base::Contains(positions, anchor_3_id));
   positions.clear();
@@ -1234,12 +1237,179 @@ TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
   ProcessPositionUpdates();
 
   EXPECT_EQ(2u, positions.size());
-  EXPECT_EQ(-2.0f * unit / kViewportHeight, get_ratio(anchor_1_id));
+  EXPECT_FLOAT_EQ(-2.0f * unit / kViewportHeight, get_ratio(anchor_1_id));
   // Note: anchor_2 is not in the visual viewport after the zoom, but is still
   // in the layout viewport (and will be considered as intersecting by
   // IntersectionObserver, so we still report a distance ratio).
-  EXPECT_EQ(8.0f * unit / kViewportHeight, get_ratio(anchor_2_id));
+  EXPECT_FLOAT_EQ(8.0f * unit / kViewportHeight, get_ratio(anchor_2_id));
   EXPECT_TRUE(!base::Contains(positions, anchor_3_id));
+}
+
+// TODO(crbug.com/347719430): This test can be removed if
+// LocalFrameView::FrameToViewport supports local root subframes with local
+// main frames.
+TEST_F(AnchorElementMetricsSenderTest,
+       PositionUpdate_IgnorePointerDownInsideLocalRootSubframe) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNavigationPredictorNewViewportFeatures);
+
+  ASSERT_EQ(0, kViewportHeight % 8);
+  int unit = kViewportHeight / 8;
+  int div_1_height = unit;
+  int anchor_height = unit;
+  int iframe_height = 3 * unit;
+  int div_2_height = 8 * unit;
+
+  // Navigate the main frame.
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"HTML(
+    <body style="margin: 0px">
+      <div style="height: %dpx"></div>
+      <a href="https://bar.com"
+         style="height: %dpx; display: block;">Bar</a>
+      <iframe height="%dpx;"></iframe>
+      <div style="height: %dpx;"></div>
+    </body>
+  )HTML",
+                                        div_1_height, anchor_height,
+                                        iframe_height, div_2_height));
+  EXPECT_EQ(1u, GetDocument().links()->length());
+
+  // Make the iframe remote, and add a local child to it (the child is a local
+  // root).
+  WebRemoteFrameImpl* remote_child = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(MainFrame().FirstChild(), remote_child);
+  EXPECT_TRUE(MainFrame().FirstChild()->IsWebRemoteFrame());
+  WebLocalFrameImpl* local_child =
+      WebViewHelper().CreateLocalChild(*remote_child);
+  local_child->FrameWidget()->Resize(gfx::Size(200, iframe_height));
+
+  // Navigate the local root iframe.
+  String iframe_source("https://foo.com/2");
+  SimRequest iframe_resource(iframe_source, "text/html");
+  frame_test_helpers::LoadFrameDontWait(local_child, KURL(iframe_source));
+  iframe_resource.Complete(String::Format(R"HTML(
+    <body>
+      <div height="%dpx"></div>
+    </body>
+  )HTML",
+                                          iframe_height * 2));
+
+  Compositor().BeginFrame();
+  ProcessEvents(/*expected_anchors=*/1);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  auto& positions = mock_host->positions_;
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, positions.size());
+
+  auto create_mouse_press = [](gfx::PointF coordinates) -> WebMouseEvent {
+    return WebMouseEvent(WebInputEvent::Type::kMouseDown, coordinates,
+                         coordinates, WebPointerProperties::Button::kLeft, 0,
+                         WebInputEvent::kLeftButtonDown,
+                         WebInputEvent::GetStaticTimeStampForTests());
+  };
+
+  // Dispatch 2 pointerdown events, the first to the main frame, and the second
+  // to the local root subframe.
+  WebMouseEvent press_1 = create_mouse_press(gfx::PointF(10.f, 6.f * unit));
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(press_1);
+  WebMouseEvent press_2 = create_mouse_press(gfx::PointF(10.f, 4.f * unit));
+  local_child->GetFrame()->GetEventHandler().HandleMousePressEvent(press_2);
+  // Scroll to trigger computation and dispatch of position updates.
+  VerticalScroll(-unit);
+  ProcessPositionUpdates();
+
+  EXPECT_EQ(1u, positions.size());
+  // The distance should be calculated using press_1's coordinates and not
+  // press_2 (even though press_2 was dispatched after) as press_2 was inside
+  // a subframe whose local root is not the main frame.
+  EXPECT_FLOAT_EQ(-5.5f * unit / kViewportHeight,
+                  positions.begin()->second->distance_from_pointer_down_ratio);
+}
+
+// TODO(crbug.com/347719430): This test can be removed if
+// LocalFrameView::FrameToViewport supports local root subframes with local
+// main frames.
+TEST_F(AnchorElementMetricsSenderTest,
+       PositionUpdateNotComputedForAnchorInsideLocalRootSubframe) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNavigationPredictorNewViewportFeatures);
+
+  // Navigate the main frame.
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"html(
+    <body>
+      <iframe></iframe>
+      <div style="height: 1000px"></div>
+    </body>
+  )html");
+
+  // Make the subframe a remote frame.
+  WebRemoteFrameImpl* remote_child = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(MainFrame().FirstChild(), remote_child);
+  EXPECT_TRUE(MainFrame().FirstChild()->IsWebRemoteFrame());
+  // Add a local subframe to the remote subframe, the local subframe is a local
+  // root.
+  WebLocalFrameImpl* local_child =
+      WebViewHelper().CreateLocalChild(*remote_child);
+  WebFrameWidget* widget = local_child->FrameWidget();
+  ASSERT_TRUE(widget);
+  gfx::Size local_child_size(200, 400);
+  widget->Resize(local_child_size);
+  // This is needed to make IntersectionObserver to observe the anchor element
+  // inside the local subframe as intersecting the viewport.
+  auto viewport_intersection_state =
+      mojom::blink::ViewportIntersectionState::New();
+  gfx::Rect viewport_intersection(local_child_size);
+  viewport_intersection_state->viewport_intersection = viewport_intersection;
+  viewport_intersection_state->main_frame_intersection = viewport_intersection;
+  viewport_intersection_state->compositor_visible_rect = viewport_intersection;
+  static_cast<WebFrameWidgetImpl*>(widget)->ApplyViewportIntersectionForTesting(
+      std::move(viewport_intersection_state));
+
+  // Navigate the local root.
+  String iframe_source("https://foo.com/2");
+  SimRequest iframe_resource(iframe_source, "text/html");
+  frame_test_helpers::LoadFrameDontWait(local_child, KURL(iframe_source));
+  iframe_resource.Complete(R"HTML(
+    <body>
+      <a href="https://bar.com"
+         style="height: 75px; width: 60px; display: block;">Link</a>
+    </body>
+  )HTML");
+
+  HTMLCollection* anchors = local_child->GetFrame()->GetDocument()->links();
+  EXPECT_EQ(1u, anchors->length());
+
+  Compositor().BeginFrame();
+  local_child->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
+  ProcessEvents(/*expected_anchors=*/1);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  auto& positions = mock_host->positions_;
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+
+  // Pointer down and scroll in the main frame.
+  gfx::PointF coordinates(10.0f, 100.0f);
+  WebInputEvent::Modifiers modifier = WebInputEvent::kLeftButtonDown;
+  WebMouseEvent event(WebInputEvent::Type::kMouseDown, coordinates, coordinates,
+                      WebPointerProperties::Button::kLeft, 0, modifier,
+                      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
+  VerticalScroll(-50.0f);
+  ProcessPositionUpdates();
+
+  // We should not get a position update for the anchor inside the local
+  // subframe because its local root is not the main frame.
+  EXPECT_EQ(0u, positions.size());
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
 }
 
 }  // namespace blink

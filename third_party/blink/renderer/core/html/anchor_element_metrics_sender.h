@@ -109,9 +109,13 @@ class CORE_EXPORT AnchorElementMetricsSender final
                                             const PointerEvent& pointer_event);
 
   // Record and send metrics to the browser process about the position of
-  // tracked anchor elements in the viewport. |pointerY| is the y-coordinate of
-  // the most recent pointerdown location (screen coordinates in DIPs).
-  void MaybeReportAnchorElementsPositionOnScrollEnd(double pointerY);
+  // tracked anchor elements in the viewport.
+  void MaybeReportAnchorElementsPositionOnScrollEnd();
+
+  // Called when a pointerdown is about to be dispatched to any Node in |this|'s
+  // document or local subframes. Record the location of the pointer event for
+  // future metrics computation.
+  void RecordPointerDown(const PointerEvent& pointer_event);
 
   void Trace(Visitor*) const override;
 
@@ -220,9 +224,9 @@ class CORE_EXPORT AnchorElementMetricsSender final
 
   bool intersection_observer_limit_exceeded_ = false;
 
-  // The y-coordinate of the last pointerdown (in screen coordinates) reported
-  // by AnchorElementInteractionTracker in DIPs. Used to compute
-  // |position_update_messages_|. The value is reset after metrics are computed.
+  // The y-coordinate of the last pointerdown (in the visual viewport coordinate
+  // space) reported in |RecordPointerDown|. Used to compute
+  // |position_update_messages_|.
   std::optional<float> last_pointer_down_ = std::nullopt;
   // Indicates that we should populate |position_update_messages_| in
   // |DidFinishLifecycleUpdate|.

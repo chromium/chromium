@@ -58,6 +58,7 @@ class SimTest : public testing::Test {
   frame_test_helpers::TestWebFrameClient& WebFrameClient();
   frame_test_helpers::TestWebFrameWidget& GetWebFrameWidget();
   SimCompositor& Compositor();
+  frame_test_helpers::WebViewHelper& WebViewHelper();
 
   Vector<String>& ConsoleMessages();
   void ResizeView(const gfx::Size&);

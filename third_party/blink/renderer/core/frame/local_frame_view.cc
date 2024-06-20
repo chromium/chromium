@@ -3813,6 +3813,13 @@ gfx::Point LocalFrameView::FrameToViewport(
       point_in_root_frame);
 }
 
+gfx::PointF LocalFrameView::FrameToViewport(
+    const gfx::PointF& point_in_frame) const {
+  gfx::PointF point_in_root_frame = ConvertToRootFrame(point_in_frame);
+  return frame_->GetPage()->GetVisualViewport().RootFrameToViewport(
+      point_in_root_frame);
+}
+
 gfx::Rect LocalFrameView::FrameToScreen(const gfx::Rect& rect) const {
   if (auto* client = GetChromeClient())
     return client->LocalRootToScreenDIPs(ConvertToRootFrame(rect), this);

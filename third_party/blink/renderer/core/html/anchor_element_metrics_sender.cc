@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -409,13 +411,15 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
   }
 }
 
-void AnchorElementMetricsSender::MaybeReportAnchorElementsPositionOnScrollEnd(
-    double pointer_y) {
+void AnchorElementMetricsSender::
+    MaybeReportAnchorElementsPositionOnScrollEnd() {
   if (!ShouldReportViewportPositions()) {
     return;
   }
 
-  last_pointer_down_ = pointer_y;
+  if (!last_pointer_down_.has_value()) {
+    return;
+  }
 
   // At this point, we're unsure of whether we have the latest
   // IntersectionObserver data or not (|intersection_observer_| is configured
@@ -434,6 +438,22 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementsPositionOnScrollEnd(
     position_update_timer_.StartOneShot(intersection_observer_delay_,
                                         FROM_HERE);
   }
+}
+
+void AnchorElementMetricsSender::RecordPointerDown(
+    const PointerEvent& pointer_event) {
+  CHECK_EQ(pointer_event.type(), event_type_names::kPointerdown);
+  Document* document = pointer_event.GetDocument();
+  // TODO(crbug.com/347719430): LocalFrameView::FrameToViewport called below
+  // doesn't work for subframes whose local root is not the main frame.
+  if (!document || !document->GetFrame()->LocalFrameRoot().IsMainFrame()) {
+    return;
+  }
+
+  gfx::PointF pointer_down_location = pointer_event.AbsoluteLocation();
+  pointer_down_location =
+      document->GetFrame()->View()->FrameToViewport(pointer_down_location);
+  last_pointer_down_ = pointer_down_location.y();
 }
 
 void AnchorElementMetricsSender::EnqueueLeftViewport(
@@ -508,29 +528,44 @@ void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
     return;
   }
 
-  const float screen_height = widget->DIPsToBlinkSpace(screen->height());
-  if (!screen_height) {
+  const int screen_height_dips = screen->height();
+  if (!screen_height_dips) {
     return;
   }
 
-  Page* page = GetSupplementable()->GetPage();
-  VisualViewport* visual_viewport = page ? &page->GetVisualViewport() : nullptr;
-  float pointer_y = widget->DIPsToBlinkSpace(last_pointer_down_.value());
-  last_pointer_down_ = std::nullopt;
+  const float screen_height = widget->DIPsToBlinkSpace(screen_height_dips);
+  float pointer_y = last_pointer_down_.value();
 
   for (const HTMLAnchorElement* anchor : anchors_in_viewport_) {
-    gfx::RectF rect(anchor->VisibleBoundsInLocalRoot());
+    LocalFrame* frame = anchor->GetDocument().GetFrame();
+    const LocalFrame& local_root = frame->LocalFrameRoot();
+    // TODO(crbug.com/347719430): LocalFrameView::FrameToViewport called below
+    // doesn't work for subframes whose local root is not the main frame.
+    if (!local_root.IsMainFrame()) {
+      continue;
+    }
+
+    gfx::Rect rect = anchor->VisibleBoundsInLocalRoot();
     if (rect.IsEmpty()) {
       continue;
     }
-    if (visual_viewport) {
-      // Adjusts to visual viewport coordinates (to account for pinch zoom).
-      rect = visual_viewport->RootFrameToViewport(rect);
-    }
+    rect = local_root.View()->FrameToViewport(rect);
+
+    // Note: Using viewport space coordinates (instead of screen) isn't always
+    // accurate, particularly if the viewport size changes between pointerdown
+    // and the scroll. This happens somewhat frequently on Android when the
+    // top-controls are hidden/shown in response to a scroll. Ideally we'd use
+    // screen coordinates here, but we don't have a way to compute it accurately
+    // right now; see crbug.com/347638530.
     float distance_from_pointer_down =
-        (rect.CenterPoint().y() - pointer_y) / screen_height;
+        gfx::RectF(rect).CenterPoint().y() - pointer_y;
+    // Note: Distances in viewport space should be the same as distances in
+    // screen space, so dividing by |screen_height| instead of viewport height
+    // is fine (and likely a more useful metric).
+    float distance_from_pointer_down_ratio =
+        distance_from_pointer_down / screen_height;
     auto position_update = mojom::blink::AnchorElementPositionUpdate::New(
-        AnchorElementId(*anchor), distance_from_pointer_down);
+        AnchorElementId(*anchor), distance_from_pointer_down_ratio);
     position_update_messages_.push_back(std::move(position_update));
   }
 }
