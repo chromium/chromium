@@ -177,4 +177,22 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     /* package */ boolean super_isFocused() {
         return super.isFocused();
     }
+
+    /** Set the lead-in spacing for the action chip carousel. */
+    public void setActionChipLeadInSpacing(int spacing) {
+        actionChipsView.setLeadInSpacing(spacing);
+    }
+
+    /**
+     * Sets whether the decoration should be "large" or not; see {@link
+     * SuggestionLayout#SuggestionLayout(Context)} for the exact size difference.
+     */
+    public void setUseLargeDecorationIcon(boolean useLargeDecorationIcon) {
+        if (useLargeDecorationIcon) {
+            decorationIcon.setLayoutParams(SuggestionLayout.LayoutParams.forLargeDecorationIcon());
+        } else {
+            decorationIcon.setLayoutParams(
+                    LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
+        }
+    }
 }

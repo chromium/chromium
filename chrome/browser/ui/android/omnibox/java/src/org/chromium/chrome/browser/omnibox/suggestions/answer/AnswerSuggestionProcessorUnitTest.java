@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -28,9 +30,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
@@ -49,18 +52,24 @@ import org.chromium.components.omnibox.AnswerTextType;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.SuggestionAnswer.ImageLine;
 import org.chromium.components.omnibox.SuggestionAnswer.TextField;
+import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -89,6 +98,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
     private AnswerSuggestionProcessor mProcessor;
     private Locale mDefaultLocale;
+    private Context mContext;
 
     /**
      * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
@@ -97,6 +107,7 @@ public class AnswerSuggestionProcessorUnitTest {
     class SuggestionTestHelper {
         // Stores created AutocompleteMatch
         protected final AutocompleteMatch mSuggestion;
+
         // Stores PropertyModel for the suggestion.
         protected final PropertyModel mModel;
 
@@ -196,7 +207,7 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     SuggestionTestHelper createRichAnswerSuggestion(
-            @AnswerType int type, String line1Text, String line2Text) {
+            @AnswerType int type, String line1Text, String line2Text, int numberOfActions) {
         RichAnswerTemplate answer =
                 RichAnswerTemplate.newBuilder()
                         .addAnswers(
@@ -210,10 +221,17 @@ public class AnswerSuggestionProcessorUnitTest {
                                                         .setText(line2Text)
                                                         .build()))
                         .build();
+        List<OmniboxAction> actions = new ArrayList<>();
+        for (int i = 0; i < numberOfActions; i++) {
+            actions.add(
+                    new OmniboxPedal(123L, "hint", "hint", OmniboxPedalId.CHANGE_GOOGLE_PASSWORD));
+        }
+
         AutocompleteMatch suggestion =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setSerializedAnswerTemplate(answer.toByteArray())
                         .setAnswerType(type)
+                        .setActions(actions)
                         .build();
         PropertyModel model = mProcessor.createModel();
         return new SuggestionTestHelper(suggestion, model, null);
@@ -232,13 +250,12 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
+        mDefaultLocale = Locale.getDefault();
+        mContext = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
         mProcessor =
                 new AnswerSuggestionProcessor(
-                        ContextUtils.getApplicationContext(),
-                        mSuggestionHost,
-                        mUrlStateProvider,
-                        Optional.of(mImageSupplier));
-        mDefaultLocale = Locale.getDefault();
+                        mContext, mSuggestionHost, mUrlStateProvider, Optional.of(mImageSupplier));
         OmniboxResourceProvider.disableCachesForTesting();
     }
 
@@ -328,10 +345,34 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void answerImage_fallbackIcons_richAnswerTemplate() {
         for (@AnswerType int type : ANSWER_TYPES) {
-            SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, "", "");
+            SuggestionTestHelper suggHelper = createRichAnswerSuggestion(type, "", "", 0);
             // Note: model is re-created on every iteration.
             Assert.assertNotNull("No icon associated with type: " + type, suggHelper.getIcon());
         }
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
+    public void richAnswerCard() {
+        OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
+        SuggestionTestHelper suggHelper =
+                createRichAnswerSuggestion(AnswerType.DICTIONARY, "", "", 1);
+        Assert.assertEquals(
+                suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.omnibox.R.dimen
+                                        .omnibox_simple_card_action_chip_leadin));
+        Assert.assertEquals(
+                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), true);
+
+        // A rich answer with no actions shouldn't get the card treatment.
+        suggHelper = createRichAnswerSuggestion(AnswerType.DICTIONARY, "", "", 0);
+        Assert.assertEquals(
+                suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
+                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
+        Assert.assertEquals(
+                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION), false);
     }
 
     @Test
@@ -384,10 +425,7 @@ public class AnswerSuggestionProcessorUnitTest {
         final String url = "http://site.com";
         mProcessor =
                 new AnswerSuggestionProcessor(
-                        ContextUtils.getApplicationContext(),
-                        mSuggestionHost,
-                        mUrlStateProvider,
-                        Optional.empty());
+                        mContext, mSuggestionHost, mUrlStateProvider, Optional.empty());
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.WEATHER, "", 1, "", 1, url);
         Assert.assertNotNull(suggHelper.getIcon());
@@ -472,7 +510,7 @@ public class AnswerSuggestionProcessorUnitTest {
     public void fetchAnswerImage_withoutSupplier() {
         mProcessor =
                 new AnswerSuggestionProcessor(
-                        ContextUtils.getApplicationContext(),
+                        mContext,
                         mSuggestionHost,
                         mUrlStateProvider,
                         /* imageSupplier= */ Optional.empty());

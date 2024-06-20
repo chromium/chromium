@@ -16,8 +16,10 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -82,6 +84,18 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                             suggestion.getAnswerTemplate(),
                             answerType,
                             suggestionTextColorReversal);
+
+            boolean useLargeDecoration =
+                    OmniboxFeatures.shouldShowRichAnswerCard()
+                            && suggestion.getActions().size() > 0;
+            model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, useLargeDecoration);
+            if (useLargeDecoration) {
+                model.set(
+                        BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING,
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_simple_card_action_chip_leadin));
+            }
         } else {
             details =
                     AnswerTextNewLayout.from(

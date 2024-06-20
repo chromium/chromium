@@ -93,7 +93,10 @@ public final class BaseSuggestionViewBinder<T extends View>
         mContentBinder.bind(model, view.contentView, propertyKey);
         ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
 
-        if (BaseSuggestionViewProperties.ICON == propertyKey) {
+        if (BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING == propertyKey) {
+            view.setActionChipLeadInSpacing(
+                    model.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING));
+        } else if (BaseSuggestionViewProperties.ICON == propertyKey) {
             updateSuggestionIcon(model, view);
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
@@ -143,6 +146,9 @@ public final class BaseSuggestionViewBinder<T extends View>
                             return false;
                         });
             }
+        } else if (BaseSuggestionViewProperties.USE_LARGE_DECORATION == propertyKey) {
+            view.setUseLargeDecorationIcon(
+                    model.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
         }
     }
 

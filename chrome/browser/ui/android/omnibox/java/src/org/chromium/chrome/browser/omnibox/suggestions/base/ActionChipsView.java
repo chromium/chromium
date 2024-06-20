@@ -96,4 +96,16 @@ public class ActionChipsView extends RecyclerView {
     void setSelectionControllerForTesting(RecyclerViewSelectionController controller) {
         mSelectionController = controller;
     }
+
+    public void setLeadInSpacing(int spacing) {
+        if (getItemDecorationCount() > 0) {
+            assert getItemDecorationCount() == 1 : "Expected at most 1 decoration";
+            removeItemDecorationAt(0);
+        }
+
+        addItemDecoration(
+                new SpacingRecyclerViewItemDecoration(
+                        spacing,
+                        getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing)));
+    }
 }
