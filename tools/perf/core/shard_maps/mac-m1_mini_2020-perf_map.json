@@ -35,6 +35,12 @@
                 ],
                 "path": "base_perftests"
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "1": {
@@ -67,6 +73,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -107,6 +119,12 @@
             "speedometer3-nominorms": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "3": {
@@ -133,6 +151,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -172,6 +196,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -229,6 +259,12 @@
                 ],
                 "path": "dawn_perf_tests"
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "6": {
@@ -255,6 +291,12 @@
             "speedometer3-nominorms": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "7": {
@@ -277,6 +319,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -304,6 +352,12 @@
             "speedometer3-nominorms": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "9": {
@@ -324,6 +378,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -346,6 +406,12 @@
             "speedometer3-nominorms": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "11": {
@@ -366,6 +432,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -388,6 +460,12 @@
             "speedometer3-nominorms": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "13": {
@@ -408,6 +486,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -430,6 +514,12 @@
             "speedometer3-nominorms": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "15": {
@@ -450,6 +540,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -473,6 +569,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -506,6 +608,12 @@
                 "end": 39,
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "18": {
@@ -526,6 +634,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -550,6 +664,12 @@
             },
             "speedometer3-nominorms": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },

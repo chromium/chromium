@@ -61,6 +61,12 @@
                 ],
                 "path": "base_perftests"
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "1": {
@@ -116,6 +122,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -175,6 +187,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -238,6 +256,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "4": {
@@ -290,6 +314,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -352,6 +382,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -417,6 +453,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -485,6 +527,12 @@
             "load_library_perf_tests": {
                 "path": "load_library_perf_tests"
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "8": {
@@ -535,6 +583,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "9": {
@@ -582,6 +636,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "10": {
@@ -621,6 +681,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "11": {
@@ -657,6 +723,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "12": {
@@ -686,6 +758,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -717,6 +795,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "14": {
@@ -746,6 +830,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -777,6 +867,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "16": {
@@ -807,6 +903,12 @@
             "speedometer3-predictable": {
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "17": {
@@ -836,6 +938,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -882,6 +990,12 @@
                 "end": 6,
                 "abridged": false
             }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            }
         }
     },
     "19": {
@@ -911,6 +1025,12 @@
             },
             "speedometer3-predictable": {
                 "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer_3.0": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
             }
         }
     },
@@ -988,7 +1108,7 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1326,
+        "num_stories": 1349,
         "predicted_min_shard_time": 1199.0,
         "predicted_min_shard_index": 8,
         "predicted_max_shard_time": 1647.0,

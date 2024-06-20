@@ -364,12 +364,29 @@ def _views_perftests(estimated_runtime=7):
 def _crossbench_speedometer3_0(estimated_runtime=60):
   return CrossbenchConfig('speedometer3.crossbench',
                           'speedometer_3.0',
-                          estimated_runtime=estimated_runtime,
-                          arguments=['--timeout-unit=60'])
+                          estimated_runtime=estimated_runtime)
 
 
-_CROSSBENCH_BENCHMARKS = frozenset([
+def _crossbench_motionmark1_3(estimated_runtime=360):
+  return CrossbenchConfig('motionmark1.3.crossbench',
+                          'motionmark_1.3',
+                          estimated_runtime=estimated_runtime)
+
+
+def _crossbench_jetstream2_1(estimated_runtime=180):
+  return CrossbenchConfig('jetstream2.crossbench',
+                          'jetstream_2.1',
+                          estimated_runtime=estimated_runtime)
+
+
+_CROSSBENCH_BENCHMARKS_SPEEDOMETER = frozenset([
     _crossbench_speedometer3_0(),
+])
+
+_CROSSBENCH_BENCHMARKS_ALL = frozenset([
+    _crossbench_speedometer3_0(),
+    _crossbench_motionmark1_3(),
+    _crossbench_jetstream2_1(),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite([
@@ -666,7 +683,8 @@ LINUX = PerfPlatform('linux-perf',
                      _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE,
                      26,
                      'linux',
-                     executables=_LINUX_EXECUTABLE_CONFIGS)
+                     executables=_LINUX_EXECUTABLE_CONFIGS,
+                     crossbench=_CROSSBENCH_BENCHMARKS_SPEEDOMETER)
 LINUX_PGO = PerfPlatform('linux-perf-pgo',
                          'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
                          _LINUX_BENCHMARK_CONFIGS,
@@ -719,7 +737,8 @@ MAC_M1_MINI_2020 = PerfPlatform(
     _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
     26,
     'mac',
-    executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS)
+    executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_SPEEDOMETER)
 MAC_M1_MINI_2020_PGO = PerfPlatform(
     'mac-m1_mini_2020-perf-pgo',
     'Mac M1 Mini 2020',
@@ -797,7 +816,8 @@ WIN_11 = PerfPlatform('win-11-perf',
                       _WIN_11_BENCHMARK_CONFIGS,
                       20,
                       'win',
-                      executables=_WIN_11_EXECUTABLE_CONFIGS)
+                      executables=_WIN_11_EXECUTABLE_CONFIGS,
+                      crossbench=_CROSSBENCH_BENCHMARKS_SPEEDOMETER)
 WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'Windows Dell PowerEdge R350',
                           _WIN_11_BENCHMARK_CONFIGS,
@@ -954,7 +974,7 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               _LINUX_PERF_FYI_BENCHMARK_CONFIGS,
                               4,
                               'linux',
-                              crossbench=_CROSSBENCH_BENCHMARKS,
+                              crossbench=_CROSSBENCH_BENCHMARKS_ALL,
                               is_fyi=True)
 
 # Calibration bots

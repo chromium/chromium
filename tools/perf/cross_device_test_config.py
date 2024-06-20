@@ -146,12 +146,15 @@ TARGET_DEVICES = {
         'speedometer3-predictable': {
             'Speedometer3': 20,
         },
+        'speedometer3.crossbench': 20,
     },
     'linux-perf-fyi': {
         'speedometer2': 4,
         'speedometer2-nominorms': 4,
         'speedometer3': 4,
         'speedometer3.crossbench': 4,
+        'jetstream2.crossbench': 4,
+        'motionmark13.crossbench': 4,
     },
     'win-10_laptop_low_end-perf': {
         'jetstream2': {
@@ -191,6 +194,7 @@ TARGET_DEVICES = {
         'speedometer3': {
             'Speedometer3': 20,
         },
+        'speedometer3.crossbench': 20,
     },
     'linux-perf-calibration': {
         'jetstream2': {
@@ -234,6 +238,7 @@ TARGET_DEVICES = {
         'speedometer3-nominorms': {
             'Speedometer3': 20,
         },
+        'speedometer3.crossbench': 20,
     },
     'mac-m1_mini_2020-perf-pgo': {
         'jetstream2': {
