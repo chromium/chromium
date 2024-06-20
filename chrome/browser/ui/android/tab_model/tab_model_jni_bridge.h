@@ -95,6 +95,8 @@ class TabModelJniBridge : public TabModel {
   // It corresponds to a Java observer that is registered with the corresponding
   // Java TabModelJniBridge.
   std::unique_ptr<TabModelObserverJniBridge> observer_bridge_;
+
+  bool track_in_native_model_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_JNI_BRIDGE_H_
