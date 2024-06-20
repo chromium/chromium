@@ -144,6 +144,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // platform's accessibility layer.
   virtual bool IsChildOfLeaf() const;
 
+  void SetReadOnly(bool read_only);
+
   // Returns true if we heuristically pruned (ignored) this view from the
   // accessibility tree.
   bool GetIsPruned() const;

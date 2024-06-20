@@ -339,6 +339,21 @@ bool ViewAccessibility::IsChildOfLeaf() const {
   return pruned_;
 }
 
+void ViewAccessibility::SetReadOnly(bool read_only) {
+  if ((read_only &&
+       data_.GetRestriction() == ax::mojom::Restriction::kReadOnly) ||
+      (!read_only &&
+       data_.GetRestriction() != ax::mojom::Restriction::kReadOnly)) {
+    return;
+  }
+
+  if (read_only) {
+    data_.SetRestriction(ax::mojom::Restriction::kReadOnly);
+  } else {
+    data_.RemoveIntAttribute(ax::mojom::IntAttribute::kRestriction);
+  }
+}
+
 bool ViewAccessibility::GetIsPruned() const {
   return pruned_;
 }
