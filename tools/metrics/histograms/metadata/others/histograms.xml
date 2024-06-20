@@ -11745,6 +11745,7 @@ regressions. -->
     <variant name="ShowBookmarkMgr"/>
     <variant name="ShowBookmarkSidePanel"/>
     <variant name="ShowChromeLabs"/>
+    <variant name="ShowCustomizeChromeSidePanel"/>
     <variant name="ShowDownloads"/>
     <variant name="ShowHistory"/>
     <variant name="ShowHistoryClustersSidePanel"/>

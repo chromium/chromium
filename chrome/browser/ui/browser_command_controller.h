@@ -16,6 +16,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -34,7 +35,8 @@ namespace chrome {
 // exposed).
 class BrowserCommandController : public CommandUpdater,
                                  public TabStripModelObserver,
-                                 public sessions::TabRestoreServiceObserver {
+                                 public sessions::TabRestoreServiceObserver,
+                                 public content::WebContentsObserver {
  public:
   explicit BrowserCommandController(Browser* browser);
 
@@ -111,6 +113,10 @@ class BrowserCommandController : public CommandUpdater,
   void TabRestoreServiceDestroyed(
       sessions::TabRestoreService* service) override;
   void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
+
+  // Overridden from WebContentsObserver:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
   // Returns true if the regular Chrome UI (not the fullscreen one and
   // not the single-tab one) is shown. Used for updating window command states

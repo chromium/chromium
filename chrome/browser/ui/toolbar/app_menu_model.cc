@@ -838,6 +838,12 @@ void ToolsMenuModel::Build(Browser* browser) {
       GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
       kReadingModeMenuItem);
 
+  if (base::FeatureList::IsEnabled(features::kToolbarPinning)) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+                                     IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
+                                     kEditChromeRefreshIcon);
+  }
+
   AddSeparator(ui::NORMAL_SEPARATOR);
   if (!features::IsExtensionMenuInRootAppMenu()) {
     AddItemWithStringId(IDC_MANAGE_EXTENSIONS, IDS_SHOW_EXTENSIONS);
@@ -1312,7 +1318,16 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       browser()->window()->NotifyFeatureEngagementEvent(
           feature_engagement::events::kSidePanelFromMenuShown);
       break;
-
+    case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL:
+      if (!uma_action_recorded_) {
+        base::UmaHistogramMediumTimes(
+            "WrenchMenu.TimeToAction.ShowCustomizeChromeSidePanel", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
+      // Close IPH for side panel menu, if shown.
+      browser()->window()->NotifyFeatureEngagementEvent(
+          feature_engagement::events::kSidePanelFromMenuShown);
+      break;
     // Zoom menu
     case IDC_ZOOM_MINUS:
       if (!uma_action_recorded_) {

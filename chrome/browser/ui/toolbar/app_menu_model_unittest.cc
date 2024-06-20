@@ -369,6 +369,30 @@ TEST_F(TestAppMenuModelCR2023, PerformanceItemElevated) {
   EXPECT_TRUE(model.IsEnabledAt(performance_index));
 }
 
+TEST_F(TestAppMenuModelCR2023, CustomizeChromeItem) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(features::kToolbarPinning);
+  AppMenuModel model(this, browser());
+  model.Init();
+  ToolsMenuModel tool_model(&model, browser());
+  ASSERT_TRUE(
+      tool_model.GetIndexOfCommandId(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL));
+  size_t customize_chrome_index =
+      tool_model.GetIndexOfCommandId(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL)
+          .value();
+  EXPECT_TRUE(tool_model.IsEnabledAt(customize_chrome_index));
+}
+
+TEST_F(TestAppMenuModelCR2023, CustomizeChromeLogMetrics) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(features::kToolbarPinning);
+
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  model.ExecuteCommand(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
+}
+
 TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());

@@ -175,6 +175,14 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
                  WaitForShow(kSidePanelElementId), FlushEvents());
   }
 
+  auto OpenCustomizeChromeSidePanel() {
+    return Steps(Do(base::BindLambdaForTesting([=]() {
+                   chrome::ExecuteCommand(browser(),
+                                          IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
+                 })),
+                 WaitForShow(kSidePanelElementId), FlushEvents());
+  }
+
   auto CheckPinnedToolbarActionsContainerChildInkDropState(int child_index,
                                                            bool is_active) {
     return Steps(CheckResult(base::BindLambdaForTesting([this, child_index]() {
@@ -215,6 +223,32 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
   EXPECT_EQ(SidePanelEntryKey(SidePanelEntryId::kReadAnything),
             coordinator->GetCurrentSidePanelEntryForTesting()->key());
+}
+
+// Verify that we can open the CustomizeChrome side panel from the 3dot -> More
+// tools context menu.
+IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
+                       OpenCustomizeChromeSidePanel) {
+  // Replace the contents of the CustomizeChrome side panel with an empty view
+  // so it loads faster.
+  auto* registry = SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
+  registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kCustomizeChrome,
+      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+
+  SidePanelCoordinator* const coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  coordinator->SetNoDelaysForTesting(true);
+
+  RunTestSequence(
+      EnsureNotPresent(kSidePanelElementId), OpenCustomizeChromeSidePanel(),
+      CheckResult(base::BindLambdaForTesting([coordinator]() {
+                    return coordinator->IsSidePanelEntryShowing(
+                        SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome));
+                  }),
+                  true));
 }
 
 // Verify that we can open the history cluster side panel from the app menu.

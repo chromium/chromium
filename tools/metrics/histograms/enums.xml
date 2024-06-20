@@ -35286,6 +35286,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="89" label="Show saved tab groups"/>
   <int value="90" label="Show Lens overlay"/>
   <int value="91" label="Open extension settings (Safety Hub)"/>
+  <int value="92" label="Show customize chrome side panel"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
