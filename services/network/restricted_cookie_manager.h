@@ -29,6 +29,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "services/network/counted_cookie_access_details_set.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/source_location.mojom.h"
@@ -41,23 +42,6 @@ class SiteForCookies;
 }  // namespace net
 
 namespace network {
-
-using CountedCookieAccessDetailsPtr =
-    std::pair<mojom::CookieAccessDetailsPtr, std::unique_ptr<size_t>>;
-
-struct CookieAccessDetailsPtrComparer {
-  bool operator()(const CountedCookieAccessDetailsPtr& lhs,
-                  const CountedCookieAccessDetailsPtr& rhs) const;
-};
-
-using CookieAccessDetails =
-    std::set<CountedCookieAccessDetailsPtr, CookieAccessDetailsPtrComparer>;
-
-struct CookieWithAccessResultComparer {
-  bool operator()(
-      const net::CookieWithAccessResult& cookie_with_access_result1,
-      const net::CookieWithAccessResult& cookie_with_access_result2) const;
-};
 
 using CookieAccessDetailsList =
     std::vector<network::mojom::CookieAccessDetailsPtr>;

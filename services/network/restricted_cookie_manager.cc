@@ -231,54 +231,6 @@ bool CookieWithAccessResultComparer::operator()(
   return cookie_with_access_result1.cookie < cookie_with_access_result2.cookie;
 }
 
-bool CookieAccessDetailsPrecede(const mojom::CookieAccessDetailsPtr& lhs,
-                                const mojom::CookieAccessDetailsPtr& rhs) {
-  const auto lhs_fields = std::make_tuple(
-      std::tie(lhs->type, lhs->url, lhs->site_for_cookies.site(),
-               lhs->devtools_request_id),
-      lhs->site_for_cookies.schemefully_same());
-  const auto rhs_fields = std::make_tuple(
-      std::tie(rhs->type, rhs->url, rhs->site_for_cookies.site(),
-               rhs->devtools_request_id),
-      rhs->site_for_cookies.schemefully_same());
-  if (lhs_fields < rhs_fields) {
-    return true;
-  }
-  if (rhs_fields < lhs_fields) {
-    return false;
-  }
-  return base::ranges::lexicographical_compare(
-      lhs->cookie_list.begin(), lhs->cookie_list.end(),
-      rhs->cookie_list.begin(), rhs->cookie_list.end(),
-      [](const mojom::CookieOrLineWithAccessResultPtr& lhs_cookie,
-         const mojom::CookieOrLineWithAccessResultPtr& rhs_cookie) {
-        const auto lhs_pair = std::make_pair(
-            lhs_cookie->access_result, lhs_cookie->cookie_or_line->which());
-        const auto rhs_pair = std::make_pair(
-            rhs_cookie->access_result, rhs_cookie->cookie_or_line->which());
-        if (lhs_pair < rhs_pair) {
-          return true;
-        }
-        if (rhs_pair < lhs_pair) {
-          return false;
-        }
-        switch (lhs_cookie->cookie_or_line->which()) {
-          case mojom::CookieOrLine::Tag::kCookie:
-            return lhs_cookie->cookie_or_line->get_cookie().DataMembersPrecede(
-                rhs_cookie->cookie_or_line->get_cookie());
-          case mojom::CookieOrLine::Tag::kCookieString:
-            return lhs_cookie->cookie_or_line->get_cookie_string() <
-                   rhs_cookie->cookie_or_line->get_cookie_string();
-        }
-        NOTREACHED_NORETURN();
-      });
-}
-
-bool CookieAccessDetailsPtrComparer::operator()(
-    const CountedCookieAccessDetailsPtr& lhs_counted,
-    const CountedCookieAccessDetailsPtr& rhs_counted) const {
-  return CookieAccessDetailsPrecede(lhs_counted.first, rhs_counted.first);
-}
 
 CookieAccesses* RestrictedCookieManager::GetCookieAccessesForURLAndSite(
     const GURL& url,

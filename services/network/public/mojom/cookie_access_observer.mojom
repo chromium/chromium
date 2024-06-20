@@ -11,6 +11,7 @@ import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/source_location.mojom";
 
+// LINT.IfChange(CookieAccessDetails)
 struct CookieAccessDetails {
   enum Type {
     kRead,
@@ -58,6 +59,7 @@ struct CookieAccessDetails {
   // This data can be user controlled.
   SourceLocation? source_location;
 };
+// LINT.ThenChange(/services/network/counted_cookie_access_details_set.cc:CookieAccessDetails)
 
 // Cloneable interface to observe the cookie reads or writes.
 // The user of the NetworkService should create a dedicated
