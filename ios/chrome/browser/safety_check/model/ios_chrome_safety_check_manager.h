@@ -97,6 +97,8 @@ class IOSChromeSafetyCheckManager
   // IOSChromePasswordCheckManager::Observer implementation.
   void PasswordCheckStatusChanged(PasswordCheckState state) override;
   void InsecureCredentialsChanged() override;
+  void ManagerWillShutdown(
+      IOSChromePasswordCheckManager* password_check_manager) override;
 
   // Adds/removes an observer to be notified of PasswordSafetyCheckState,
   // SafeBrowsingSafetyCheckState, UpdateChromeSafetyCheckState, and

@@ -177,6 +177,20 @@ IOSChromePasswordCheckManager::GetInsecureCredentials() const {
   return insecure_credentials_manager_.GetInsecureCredentialEntries();
 }
 
+void IOSChromePasswordCheckManager::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& observer : observers_) {
+    observer.ManagerWillShutdown(this);
+  }
+
+  DCHECK(observers_.empty());
+
+  observed_bulk_leak_check_service_.Reset();
+  observed_insecure_credentials_manager_.Reset();
+  observed_saved_passwords_presenter_.Reset();
+}
+
 void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
   // Observing saved passwords to update possible kNoPasswords state.
@@ -187,6 +201,8 @@ void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
 }
 
 void IOSChromePasswordCheckManager::OnInsecureCredentialsChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   for (auto& observer : observers_) {
     observer.InsecureCredentialsChanged();
   }
@@ -248,6 +264,8 @@ void IOSChromePasswordCheckManager::OnWeakOrReuseCheckFinished() {
 }
 
 void IOSChromePasswordCheckManager::NotifyPasswordCheckStatusChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   for (auto& observer : observers_) {
     observer.PasswordCheckStatusChanged(GetPasswordCheckState());
   }

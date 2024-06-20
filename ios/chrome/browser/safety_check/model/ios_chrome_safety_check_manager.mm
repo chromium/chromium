@@ -236,6 +236,12 @@ void IOSChromeSafetyCheckManager::InsecureCredentialsChanged() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void IOSChromeSafetyCheckManager::ManagerWillShutdown(
+    IOSChromePasswordCheckManager* password_check_manager) {
+  password_check_manager_observation_.Reset();
+  password_check_manager->RemoveObserver(this);
+}
+
 SafeBrowsingSafetyCheckState
 IOSChromeSafetyCheckManager::GetSafeBrowsingCheckState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

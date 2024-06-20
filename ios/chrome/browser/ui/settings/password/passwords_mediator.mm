@@ -287,6 +287,10 @@ struct PasswordManagerActiveWidgetPromoData
   [self updateConsumerPasswordCheckState:_currentState];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - Private Methods
 
 // Provides passwords and blocked forms to the '_consumer'.

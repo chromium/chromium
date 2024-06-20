@@ -21,7 +21,14 @@ class IOSChromePasswordCheckManagerProxy : public KeyedService {
   explicit IOSChromePasswordCheckManagerProxy(ChromeBrowserState* browser_state)
       : browser_state_(browser_state) {}
 
-  void Shutdown() override { browser_state_ = nullptr; }
+  void Shutdown() override {
+    if (instance_) {
+      // TODO(crbug.com/40282637): Convert IOSChromePasswordCheckManager to a
+      // KeyedService; deprecate IOSChromePasswordCheckManagerProxy.
+      instance_->Shutdown();
+    }
+    browser_state_ = nullptr;
+  }
 
   scoped_refptr<IOSChromePasswordCheckManager> GetOrCreateManager() {
     if (instance_) {

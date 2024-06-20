@@ -2519,6 +2519,10 @@ struct EnhancedSafeBrowsingActivePromoData
   [self updateSafetyCheckItemTrailingIcon];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

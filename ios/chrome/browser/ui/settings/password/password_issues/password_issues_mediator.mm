@@ -239,6 +239,10 @@ NSInteger GetDismissedWarningsCount(
   [self providePasswordsToConsumer];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - SavedPasswordsPresenterObserver
 
 - (void)savedPasswordsDidChange {

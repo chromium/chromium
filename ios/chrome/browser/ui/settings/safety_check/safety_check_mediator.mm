@@ -401,6 +401,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   [self reconfigurePasswordCheckItem];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - SafetyCheckServiceDelegate
 
 - (void)didSelectItem:(TableViewItem*)item {

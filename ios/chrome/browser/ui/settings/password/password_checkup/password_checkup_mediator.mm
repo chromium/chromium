@@ -108,6 +108,10 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
   [self updateConsumer];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - Setters
 
 - (void)setCurrentState:(PasswordCheckState)state {

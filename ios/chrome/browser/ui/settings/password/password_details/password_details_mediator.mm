@@ -446,6 +446,10 @@ bool ShouldDisplayCredentialAsMuted(
   [self providePasswordsToConsumer];
 }
 
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
+}
+
 #pragma mark - Private
 
 - (NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>*)

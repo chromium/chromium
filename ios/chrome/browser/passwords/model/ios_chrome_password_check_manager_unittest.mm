@@ -76,6 +76,10 @@ struct MockPasswordCheckManagerObserver
               PasswordCheckStatusChanged,
               (PasswordCheckState),
               (override));
+  MOCK_METHOD(void,
+              ManagerWillShutdown,
+              (IOSChromePasswordCheckManager*),
+              (override));
 };
 
 std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
