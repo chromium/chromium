@@ -35,6 +35,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -922,8 +923,11 @@ bool WebGLRenderingContextBase::MakeXrCompatibleSync(
   device::mojom::blink::XrCompatibleResult xr_compatible_result =
       device::mojom::blink::XrCompatibleResult::kNoDeviceAvailable;
 
-  if (XRSystem* xr = GetXrSystemFromHost(host))
-    xr->MakeXrCompatibleSync(&xr_compatible_result);
+  if constexpr (BUILDFLAG(ENABLE_VR)) {
+    if (XRSystem* xr = GetXrSystemFromHost(host)) {
+      xr->MakeXrCompatibleSync(&xr_compatible_result);
+    }
+  }
 
   return IsXrCompatibleFromResult(xr_compatible_result);
 }

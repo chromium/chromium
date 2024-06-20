@@ -1,5 +1,6 @@
 include_rules = [
     "+base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h",
+    "+device/vr/buildflags/buildflags.h",
     "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+gpu/GLES2/gl2extchromium.h",
     "+gpu/command_buffer/client/gles2_interface.h",

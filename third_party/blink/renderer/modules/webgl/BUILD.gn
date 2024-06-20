@@ -193,6 +193,7 @@ blink_modules_sources("webgl") {
   public_deps = [ "//device/vr/public/mojom:vr_service_blink" ]
   deps = [
     "//build:chromeos_buildflags",
+    "//device/vr/buildflags:buildflags",
     "//third_party/blink/renderer/modules/xr:xr",
   ]
   deps += [ "//third_party/blink/renderer/modules/webcodecs:webcodecs" ]
