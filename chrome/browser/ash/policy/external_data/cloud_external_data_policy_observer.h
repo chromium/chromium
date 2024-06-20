@@ -69,7 +69,7 @@ class CloudExternalDataPolicyObserver
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* device_local_account_policy_service,
       const std::string& policy,
-      Delegate* delegate);
+      std::unique_ptr<Delegate> delegate);
 
   CloudExternalDataPolicyObserver(const CloudExternalDataPolicyObserver&) =
       delete;
@@ -82,6 +82,9 @@ class CloudExternalDataPolicyObserver
 
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
+
+  void RemoveForAccountId(const AccountId& account_id,
+                          base::OnceClosure callback);
 
   // DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
@@ -123,7 +126,7 @@ class CloudExternalDataPolicyObserver
   // The policy that |this| observes.
   std::string policy_;
 
-  raw_ptr<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

@@ -15,15 +15,7 @@
 namespace policy {
 
 CrostiniAnsiblePlaybookExternalDataHandler::
-    CrostiniAnsiblePlaybookExternalDataHandler(
-        ash::CrosSettings* cros_settings,
-        DeviceLocalAccountPolicyService* policy_service)
-    : crostini_ansible_observer_(cros_settings,
-                                 policy_service,
-                                 key::kCrostiniAnsiblePlaybook,
-                                 this) {
-  crostini_ansible_observer_.Init();
-}
+    CrostiniAnsiblePlaybookExternalDataHandler() = default;
 
 CrostiniAnsiblePlaybookExternalDataHandler::
     ~CrostiniAnsiblePlaybookExternalDataHandler() = default;

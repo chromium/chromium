@@ -8,8 +8,6 @@
 
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/policy/policy_constants.h"
 
 namespace policy {
 
@@ -22,15 +20,8 @@ ash::UserImageManagerImpl* GetUserImageManager(const std::string& user_id) {
 
 }  // namespace
 
-UserAvatarImageExternalDataHandler::UserAvatarImageExternalDataHandler(
-    ash::CrosSettings* cros_settings,
-    DeviceLocalAccountPolicyService* policy_service)
-    : user_avatar_image_observer_(cros_settings,
-                                  policy_service,
-                                  key::kUserAvatarImage,
-                                  this) {
-  user_avatar_image_observer_.Init();
-}
+UserAvatarImageExternalDataHandler::UserAvatarImageExternalDataHandler() =
+    default;
 
 UserAvatarImageExternalDataHandler::~UserAvatarImageExternalDataHandler() =
     default;

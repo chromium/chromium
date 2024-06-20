@@ -233,33 +233,50 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
       kDeviceOwner, base::BindRepeating(&ChromeUserManagerImpl::UpdateOwnerId,
                                         weak_factory_.GetWeakPtr()));
 
-  policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceLocalAccountPolicyService();
-
   if (GetMinimumVersionPolicyHandler()) {
     GetMinimumVersionPolicyHandler()->AddObserver(this);
   }
 
-  cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::UserAvatarImageExternalDataHandler>(
-          cros_settings(), device_local_account_policy_service));
-  cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::WallpaperImageExternalDataHandler>(
-          cros_settings(), device_local_account_policy_service));
-  cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::PrintersExternalDataHandler>(
-          cros_settings(), device_local_account_policy_service));
-  cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::PrintServersExternalDataHandler>(
-          cros_settings(), device_local_account_policy_service));
-  cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::CrostiniAnsiblePlaybookExternalDataHandler>(
-          cros_settings(), device_local_account_policy_service));
-  cloud_external_data_policy_handlers_.push_back(
-      std::make_unique<policy::PreconfiguredDeskTemplatesExternalDataHandler>(
-          cros_settings(), device_local_account_policy_service));
+  // TODO(b/278643115): Move this out from ChromeUserManagerImpl.
+  policy::DeviceLocalAccountPolicyService* device_local_account_policy_service =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->GetDeviceLocalAccountPolicyService();
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings(), device_local_account_policy_service,
+          policy::key::kUserAvatarImage,
+          std::make_unique<policy::UserAvatarImageExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings(), device_local_account_policy_service,
+          policy::key::kWallpaperImage,
+          std::make_unique<policy::WallpaperImageExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings(), device_local_account_policy_service,
+          policy::key::kPrintersBulkConfiguration,
+          std::make_unique<policy::PrintersExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings(), device_local_account_policy_service,
+          policy::key::kExternalPrintServers,
+          std::make_unique<policy::PrintServersExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings(), device_local_account_policy_service,
+          policy::key::kCrostiniAnsiblePlaybook,
+          std::make_unique<
+              policy::CrostiniAnsiblePlaybookExternalDataHandler>()));
+  cloud_external_data_policy_observers_.push_back(
+      std::make_unique<policy::CloudExternalDataPolicyObserver>(
+          cros_settings(), device_local_account_policy_service,
+          policy::key::kPreconfiguredDeskTemplates,
+          std::make_unique<
+              policy::PreconfiguredDeskTemplatesExternalDataHandler>()));
+  for (auto& observer : cloud_external_data_policy_observers_) {
+    observer->Init();
+  }
 }
 
 void ChromeUserManagerImpl::UpdateOwnerId() {
@@ -294,11 +311,11 @@ void ChromeUserManagerImpl::Shutdown() {
     device_local_account_policy_service_->RemoveObserver(this);
   }
 
-  cloud_external_data_policy_handlers_.clear();
+  cloud_external_data_policy_observers_.clear();
 }
 
 void ChromeUserManagerImpl::StopPolicyObserverForTesting() {
-  cloud_external_data_policy_handlers_.clear();
+  cloud_external_data_policy_observers_.clear();
 }
 
 void ChromeUserManagerImpl::OwnershipStatusChanged() {
@@ -398,14 +415,14 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeData(
   // external data that might be associated with `account_id` are removed (in
   // case those removal operations are async).
   remove_non_cryptohome_data_barrier_ = base::BarrierClosure(
-      cloud_external_data_policy_handlers_.size(),
+      cloud_external_data_policy_observers_.size(),
       base::BindOnce(&ChromeUserManagerImpl::
                          RemoveNonCryptohomeDataPostExternalDataRemoval,
                      weak_factory_.GetWeakPtr(), account_id));
 
-  for (auto& handler : cloud_external_data_policy_handlers_) {
-    handler->RemoveForAccountId(account_id,
-                                remove_non_cryptohome_data_barrier_);
+  for (auto& observer : cloud_external_data_policy_observers_) {
+    observer->RemoveForAccountId(account_id,
+                                 remove_non_cryptohome_data_barrier_);
   }
 }
 

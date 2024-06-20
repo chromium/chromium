@@ -10,26 +10,18 @@
 
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_policy_observer.h"
 
-namespace ash {
-class CrosSettings;
-}  // namespace ash
-
 namespace policy {
-
-class DeviceLocalAccountPolicyService;
 
 class PrintersExternalDataHandler
     : public CloudExternalDataPolicyObserver::Delegate {
  public:
-  PrintersExternalDataHandler(ash::CrosSettings* cros_settings,
-                              DeviceLocalAccountPolicyService* policy_service);
-  ~PrintersExternalDataHandler() override;
-
+  PrintersExternalDataHandler();
   PrintersExternalDataHandler(const PrintersExternalDataHandler&) = delete;
   PrintersExternalDataHandler& operator=(const PrintersExternalDataHandler&) =
       delete;
+  ~PrintersExternalDataHandler() override;
 
-  // CloudExternalDataPolicyHandler:
+  // CloudExternalDataPolicyObserver::Delegate:
   void OnExternalDataSet(const std::string& policy,
                          const std::string& user_id) override;
   void OnExternalDataCleared(const std::string& policy,
@@ -40,9 +32,6 @@ class PrintersExternalDataHandler
                              const base::FilePath& file_path) override;
   void RemoveForAccountId(const AccountId& account_id,
                           base::OnceClosure on_removed) override;
-
- private:
-  CloudExternalDataPolicyObserver printers_observer_;
 };
 
 }  // namespace policy

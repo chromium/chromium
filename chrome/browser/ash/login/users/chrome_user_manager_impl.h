@@ -139,9 +139,8 @@ class ChromeUserManagerImpl
   base::CallbackListSubscription ephemeral_users_enabled_subscription_;
   base::CallbackListSubscription local_accounts_subscription_;
 
-  std::vector<
-      std::unique_ptr<policy::CloudExternalDataPolicyObserver::Delegate>>
-      cloud_external_data_policy_handlers_;
+  std::vector<std::unique_ptr<policy::CloudExternalDataPolicyObserver>>
+      cloud_external_data_policy_observers_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

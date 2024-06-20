@@ -9,8 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
 #include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/policy/policy_constants.h"
 
 namespace policy {
 
@@ -24,15 +22,7 @@ base::WeakPtr<ash::PrintServersProvider> GetPrintServersProvider(
 
 }  // namespace
 
-PrintServersExternalDataHandler::PrintServersExternalDataHandler(
-    ash::CrosSettings* cros_settings,
-    DeviceLocalAccountPolicyService* policy_service)
-    : print_servers_observer_(cros_settings,
-                              policy_service,
-                              key::kExternalPrintServers,
-                              this) {
-  print_servers_observer_.Init();
-}
+PrintServersExternalDataHandler::PrintServersExternalDataHandler() = default;
 
 PrintServersExternalDataHandler::~PrintServersExternalDataHandler() = default;
 

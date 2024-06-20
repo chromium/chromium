@@ -7,21 +7,11 @@
 #include <utility>
 
 #include "chrome/browser/ui/ash/desks/desks_client.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/policy/policy_constants.h"
 
 namespace policy {
 
 PreconfiguredDeskTemplatesExternalDataHandler::
-    PreconfiguredDeskTemplatesExternalDataHandler(
-        ash::CrosSettings* cros_settings,
-        DeviceLocalAccountPolicyService* policy_service)
-    : preconfigured_desk_templates_observer_(cros_settings,
-                                             policy_service,
-                                             key::kPreconfiguredDeskTemplates,
-                                             this) {
-  preconfigured_desk_templates_observer_.Init();
-}
+    PreconfiguredDeskTemplatesExternalDataHandler() = default;
 
 PreconfiguredDeskTemplatesExternalDataHandler::
     ~PreconfiguredDeskTemplatesExternalDataHandler() = default;

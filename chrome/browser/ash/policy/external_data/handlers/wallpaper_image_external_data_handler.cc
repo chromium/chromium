@@ -7,20 +7,11 @@
 #include <utility>
 
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/policy/policy_constants.h"
 
 namespace policy {
 
-WallpaperImageExternalDataHandler::WallpaperImageExternalDataHandler(
-    ash::CrosSettings* cros_settings,
-    DeviceLocalAccountPolicyService* policy_service)
-    : wallpaper_image_observer_(cros_settings,
-                                policy_service,
-                                key::kWallpaperImage,
-                                this) {
-  wallpaper_image_observer_.Init();
-}
+WallpaperImageExternalDataHandler::WallpaperImageExternalDataHandler() =
+    default;
 
 WallpaperImageExternalDataHandler::~WallpaperImageExternalDataHandler() =
     default;
