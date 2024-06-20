@@ -116,7 +116,14 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
 
   if (!pool_client_version_) {
     DVLOGF(3) << "Unknown pool client version. Discarding video frame.";
-    std::move(callback).Run(true);
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (!import_frame_cb_) {
+    DVLOGF(3) << "AddVideoFrame() can't be called before calling "
+                 "RequestVideoFrames(). Discarding video frame.";
+    std::move(callback).Run(false);
     return;
   }
 
@@ -228,7 +235,6 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
       std::move(origin_frame)));
 
   // Add the frame to the underlying video frame pool.
-  DCHECK(import_frame_cb_);
   import_frame_cb_.Run(
       media::VideoFrameResource::Create(std::move(wrapped_frame)));
 
