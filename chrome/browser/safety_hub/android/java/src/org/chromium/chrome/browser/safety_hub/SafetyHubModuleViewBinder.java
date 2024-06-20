@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -62,6 +63,36 @@ public class SafetyHubModuleViewBinder {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT == propertyKey) {
             updateNotificationsReviewModule(preference, model);
+        }
+    }
+
+    public static void bindSafeBrowsingProperties(
+            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+        bindCommonProperties(model, preference, propertyKey);
+        if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey) {
+            updateSafeBrowsingModule(preference, model);
+        }
+    }
+
+    private static void updateSafeBrowsingModule(Preference preference, PropertyModel model) {
+        @SafeBrowsingState
+        int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
+
+        switch (safeBrowsingState) {
+            case SafeBrowsingState.STANDARD_PROTECTION:
+                preference.setIcon(getCheckmarkIcon(preference));
+                preference.setTitle(R.string.safety_hub_safe_browsing_on_title);
+                preference.setSummary(R.string.safety_hub_safe_browsing_on_summary);
+                break;
+            case SafeBrowsingState.ENHANCED_PROTECTION:
+                preference.setIcon(getCheckmarkIcon(preference));
+                preference.setTitle(R.string.safety_hub_safe_browsing_enhanced_title);
+                preference.setSummary(R.string.safety_hub_safe_browsing_enhanced_summary);
+                break;
+            default:
+                preference.setIcon(getErrorIcon(preference));
+                preference.setTitle(R.string.prefs_safe_browsing_no_protection_summary);
+                preference.setSummary(R.string.safety_hub_safe_browsing_off_summary);
         }
     }
 

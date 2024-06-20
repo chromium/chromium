@@ -1751,6 +1751,22 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_BLOCK_SNACKBAR" translateable="false">
         Notifications not allowed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" translateable="false">
+        Safe Browsing is on
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_SUMMARY" translateable="false">
+        You're getting standard protection
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_TITLE" translateable="false">
+        Enhanced Safe Browsing is on
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ENHANCED_SUMMARY" translateable="false">
+        You have Chrome's strongest security
+      </message>
+      <message name="IDS_SAFETY_HUB_SAFE_BROWSING_OFF_SUMMARY" translateable="false">
+        Turn on Safe Browsing to get protection against dangerous sites
+      </message>
+
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

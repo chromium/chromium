@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 
 /** A delegate for Safety Hub to handle UI related behaviour. */
 public interface SafetyHubModuleDelegate {
@@ -31,4 +32,10 @@ public interface SafetyHubModuleDelegate {
      */
     @Nullable
     UpdateStatusProvider.UpdateStatus getUpdateStatus();
+
+    /**
+     * @return The current safe browsing state.
+     */
+    @SafeBrowsingState
+    int getSafeBrowsingState();
 }

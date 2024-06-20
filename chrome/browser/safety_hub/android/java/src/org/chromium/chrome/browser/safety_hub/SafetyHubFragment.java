@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -25,6 +27,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
     private static final String PREF_NOTIFICATIONS_REVIEW = "notifications_review";
+    private static final String PREF_SAFE_BROWSING = "safe_browsing";
 
     private SafetyHubModuleDelegate mDelegate;
     private SettingsLauncher mSettingsLauncher;
@@ -32,6 +35,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private PropertyModel mPermissionsModel;
     private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
     private PropertyModel mNotificationsModel;
+    private PropertyModel mSafeBrowsingPropertyModel;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -41,6 +45,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         setUpUpdateCheckModule();
         setUpPermissionsRevocationModule();
         setUpNotificationsReviewModule();
+        setUpSafeBrowsingModule();
     }
 
     private void setUpAccountPasswordCheckModule() {
@@ -130,12 +135,32 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationPermissionReviewBridge.addObserver(this);
     }
 
+    private void setUpSafeBrowsingModule() {
+        Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
+
+        mSafeBrowsingPropertyModel =
+                new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
+                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                        .with(
+                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
+                                () ->
+                                        mSettingsLauncher.launchSettingsActivity(
+                                                getContext(), SafeBrowsingSettingsFragment.class))
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                mSafeBrowsingPropertyModel,
+                safeBrowsingPreference,
+                SafetyHubModuleViewBinder::bindSafeBrowsingProperties);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         updatePermissionsPreference();
         updateNotificationsReviewPreference();
+        updateSafeBrowsingPreference();
     }
 
     @Override
@@ -171,5 +196,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mNotificationsModel.set(
                 SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
                 notificationPermissionsForReviewCount);
+    }
+
+    private void updateSafeBrowsingPreference() {
+        @SafeBrowsingState int safeBrowsingState = mDelegate.getSafeBrowsingState();
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
     }
 }

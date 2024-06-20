@@ -21,6 +21,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -40,6 +41,8 @@ public class SafetyHubModuleViewBinderTest {
     private Preference mPermissionsPreference;
     private PropertyModel mNotificationsReviewPropertyModel;
     private Preference mNotificationsReviewPreference;
+    private PropertyModel mSafeBrowsingPropertyModel;
+    private Preference mSafeBrowsingPreference;
 
     @Before
     public void setUp() {
@@ -89,6 +92,16 @@ public class SafetyHubModuleViewBinderTest {
                 mNotificationsReviewPropertyModel,
                 mNotificationsReviewPreference,
                 SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
+
+        // Set up safe browsing preference.
+        mSafeBrowsingPreference = new Preference(mActivity);
+        mSafeBrowsingPropertyModel =
+                new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                mSafeBrowsingPropertyModel,
+                mSafeBrowsingPreference,
+                SafetyHubModuleViewBinder::bindSafeBrowsingProperties);
     }
 
     @Test
@@ -240,5 +253,50 @@ public class SafetyHubModuleViewBinderTest {
         assertEquals(
                 WARNING_ICON,
                 shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testSafeBrowsingModule_StandardSafeBrowsing() {
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.STANDARD_PROTECTION;
+
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        String expectedTitle = mActivity.getString(R.string.safety_hub_safe_browsing_on_title);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_on_summary);
+
+        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
+        assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
+        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testSafeBrowsingModule_EnhancedSafeBrowsing() {
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.ENHANCED_PROTECTION;
+
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_title);
+        String expectedSummary =
+                mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary);
+
+        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
+        assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
+        assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testSafeBrowsingModule_SafeBrowsingOff() {
+        @SafeBrowsingState int safeBrowsingState = SafeBrowsingState.NO_SAFE_BROWSING;
+
+        mSafeBrowsingPropertyModel.set(
+                SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
+        String expectedTitle =
+                mActivity.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_off_summary);
+
+        assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
+        assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
+        assertEquals(ERROR_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
     }
 }

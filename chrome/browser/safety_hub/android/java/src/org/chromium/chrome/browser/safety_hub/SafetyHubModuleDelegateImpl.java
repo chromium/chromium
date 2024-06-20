@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -59,5 +60,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     @Override
     public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
         return SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus();
+    }
+
+    @Override
+    public int getSafeBrowsingState() {
+        return new SafeBrowsingBridge(mProfile).getSafeBrowsingState();
     }
 }

@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,8 +38,12 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -107,6 +112,9 @@ public final class SafetyHubTest {
                     .setRevision(1)
                     .build();
 
+    @Rule
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
             new FakeUnusedSitePermissionsBridge();
 
@@ -119,6 +127,8 @@ public final class SafetyHubTest {
         mJniMocker.mock(
                 NotificationPermissionReviewBridgeJni.TEST_HOOKS,
                 mNotificationPermissionReviewBridge);
+
+        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @Test
@@ -298,6 +308,29 @@ public final class SafetyHubTest {
         // again.
         onViewWaiting(withText(R.string.undo)).perform(click());
         onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SafetyHubSafeBrowsing"})
+    public void testSafeBrowsingModule() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
+                                .setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION));
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify the safe browsing module is displaying the enhanced protection state.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.safety_hub_safe_browsing_enhanced_title);
+        onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
+
+        // Open the Safe Browsing settings.
+        onView(withText(safeBrowsingTitle)).perform(click());
+
+        onViewWaiting(withText(R.string.prefs_safe_browsing_title)).check(matches(isDisplayed()));
     }
 
     private void clickOnButtonNextToText(String text) {
