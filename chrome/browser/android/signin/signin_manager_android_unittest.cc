@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -188,10 +190,17 @@ TEST_F(SigninManagerAndroidTest, WipePasswordsIfLocalUpmOff) {
 }
 
 class SigninManagerAndroidWithLocalUpmTest : public SigninManagerAndroidTest {
+ public:
+  SigninManagerAndroidWithLocalUpmTest() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SigninManagerAndroidWithLocalUpmTest, DoNotWipePasswordsIfLocalUpmOn) {

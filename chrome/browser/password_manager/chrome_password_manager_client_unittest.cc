@@ -1578,12 +1578,15 @@ class ChromePasswordManagerClientWithAccountStoreAndroidTest
     : public ChromePasswordManagerClientAndroidTest {
   void SetUp() override {
     // Using the account store on Android requires enabling the flag for UPM
-    // support of local passwords.
+    // support of local passwords. Skip the Gms version check, otherwise the
+    // flag won't do anything in bots that have outdated GmsCore.
     feature_list_.InitWithFeatures(
         {password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
          password_manager::features::kSharedPasswordNotificationUI},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
 
     ChromePasswordManagerClientAndroidTest::SetUp();
 

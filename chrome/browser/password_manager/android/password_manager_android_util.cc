@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/android/build_info.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -16,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_util_bridge.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/browser_sync/sync_to_signin_migration.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -82,6 +84,13 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
 // defers the base::Feature checks to avoid adding ineligible users to the A/B
 // experiment.
 ActivationError CheckMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipLocalUpmGmsCoreVersionCheckForTesting)) {
+    return base::FeatureList::IsEnabled(feature)
+               ? ActivationError::kNone
+               : ActivationError::kFlagDisabled;
+  }
+
   std::string gms_version_str =
       base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
@@ -406,6 +415,11 @@ UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
 bool AreMinUpmRequirementsMet() {
   if (!IsInternalBackendPresent()) {
     return false;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipLocalUpmGmsCoreVersionCheckForTesting)) {
+    return true;
   }
 
   int gms_version = 0;

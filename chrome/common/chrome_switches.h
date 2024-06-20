@@ -176,6 +176,7 @@ extern const char kSimulateOutdated[];
 extern const char kSimulateOutdatedNoAU[];
 extern const char kSimulateUpgrade[];
 extern const char kSimulateIdleTimeout[];
+extern const char kSkipLocalUpmGmsCoreVersionCheckForTesting[];
 extern const char kSSLVersionMax[];
 extern const char kSSLVersionMin[];
 extern const char kSSLVersionTLSv12[];
