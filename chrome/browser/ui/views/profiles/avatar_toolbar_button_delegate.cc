@@ -230,15 +230,22 @@ class PrivateStateProvider : public StateProvider, public BrowserListObserver {
 
 class ExplicitStateProvider : public StateProvider {
  public:
-  explicit ExplicitStateProvider(StateObserver& state_observer,
-                                 const std::u16string& explicit_text)
-      : StateProvider(state_observer), explicit_text_(explicit_text) {}
+  explicit ExplicitStateProvider(
+      StateObserver& state_observer,
+      const std::u16string& explicit_text,
+      std::optional<std::u16string> accessibility_label)
+      : StateProvider(state_observer),
+        explicit_text_(explicit_text),
+        accessibility_label_(accessibility_label) {}
   ~ExplicitStateProvider() override = default;
 
   // StateProvider:
   bool IsActive() const override { return active_; }
 
-  std::u16string GetExplicitText() const { return explicit_text_; }
+  std::u16string GetText() const { return explicit_text_; }
+  std::optional<std::u16string> GetAccessibiltyLabel() const {
+    return accessibility_label_;
+  }
 
   // Used as the callback closure to the setter of the explicit state,
   // or when overriding the explicit state by another one.
@@ -258,6 +265,7 @@ class ExplicitStateProvider : public StateProvider {
   bool active_ = true;
 
   const std::u16string explicit_text_;
+  const std::optional<std::u16string> accessibility_label_;
 
   base::WeakPtrFactory<ExplicitStateProvider> weak_ptr_factory_{this};
 };
@@ -1178,13 +1186,14 @@ void AvatarToolbarButtonDelegate::OnThemeChanged(
 }
 
 base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
-    const std::u16string& new_text) {
+    const std::u16string& new_text,
+    std::optional<std::u16string> accessibility_label) {
   CHECK(!new_text.empty());
 
   // Create the new explicit state with the clear text callback.
   std::unique_ptr<ExplicitStateProvider> explicit_state_provider =
       std::make_unique<ExplicitStateProvider>(
-          /*state_observer=*/*state_manager_, new_text);
+          /*state_observer=*/*state_manager_, new_text, accessibility_label);
 
   ExplicitStateProvider* explicit_state_provider_ptr =
       explicit_state_provider.get();
@@ -1227,7 +1236,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
               *state_manager_->GetActiveStateProvider())
               .AsExplicit();
       CHECK(explicit_state);
-      text = explicit_state->GetExplicitText();
+      text = explicit_state->GetText();
       color = color_provider->GetColor(kColorAvatarButtonHighlightExplicitText);
       break;
     }
@@ -1306,6 +1315,48 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
   }
 
   return {text, color};
+}
+
+std::optional<std::u16string>
+AvatarToolbarButtonDelegate::GetAccessibilityLabel() const {
+  std::optional<std::u16string> accessibility_label;
+
+  switch (state_manager_->GetButtonActiveState()) {
+    case ButtonState::kGuestSession:
+    case ButtonState::kShowIdentityName:
+    case ButtonState::kIncognitoProfile:
+    case ButtonState::kManagement:
+    case ButtonState::kSyncError:
+    case ButtonState::kNormal:
+      break;
+    case ButtonState::kSigninPending: {
+      const internal::SigninPendingStateProvider* signin_pending_state =
+          internal::StateProviderGetter(
+              *state_manager_->GetActiveStateProvider())
+              .AsSigninPending();
+      CHECK(signin_pending_state);
+      // Only set the accessibility label if the original text is not showing.
+      // We are setting the same string, this is done not to duplicate the
+      // message read by the screen reader.
+      if (!signin_pending_state->ShouldShowText()) {
+        // TODO(b/347011002): Final string to be added, condition will not hold
+        // if the text is different.
+        accessibility_label =
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED);
+      }
+      break;
+    }
+    case ButtonState::kExplicitTextShowing:
+      const internal::ExplicitStateProvider* explicit_state =
+          internal::StateProviderGetter(
+              *state_manager_->GetActiveStateProvider())
+              .AsExplicit();
+      CHECK(explicit_state);
+      accessibility_label = explicit_state->GetAccessibiltyLabel();
+      break;
+  }
+
+  return accessibility_label;
 }
 
 SkColor AvatarToolbarButtonDelegate::GetHighlightTextColor(

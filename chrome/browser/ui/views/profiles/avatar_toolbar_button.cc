@@ -175,6 +175,7 @@ void AvatarToolbarButton::UpdateText() {
   SetTooltipText(delegate_->GetAvatarTooltipText());
   auto [text, color] = delegate_->GetTextAndColor(color_provider);
   SetHighlight(text, color);
+  UpdateAccessibilityLabel();
   // Update the layout insets after `SetHighlight()` since
   // text might be updated by setting the highlight.
   UpdateLayoutInsets();
@@ -196,6 +197,27 @@ void AvatarToolbarButton::UpdateText() {
   // take over.
   SizeToPreferredSize();
   InvalidateLayout();
+}
+
+void AvatarToolbarButton::UpdateAccessibilityLabel() {
+  std::optional<std::u16string> accessibility_label =
+      delegate_->GetAccessibilityLabel();
+  // Setting std::nullopt is needed. Setting an empty string will suppress the
+  // messages.
+  std::optional<std::u16string> name;
+  std::optional<std::u16string> description;
+
+  // In order not to override the content of the view, set the accessibility
+  // label as the description. If the view text is empty, set the accessibility
+  // label as the main name in order be read first and not to override reading
+  // the tooltip as the description.
+  if (GetText().empty()) {
+    name = accessibility_label;
+  } else {
+    description = accessibility_label;
+  }
+
+  SetAccessibilityProperties(ax::mojom::Role::kButton, name, description);
 }
 
 std::optional<SkColor> AvatarToolbarButton::GetHighlightTextColor() const {
@@ -224,8 +246,9 @@ bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
 }
 
 base::ScopedClosureRunner AvatarToolbarButton::ShowExplicitText(
-    const std::u16string& text) {
-  return delegate_->ShowExplicitText(text);
+    const std::u16string& text,
+    std::optional<std::u16string> accessibility_label) {
+  return delegate_->ShowExplicitText(text, accessibility_label);
 }
 
 void AvatarToolbarButton::ResetButtonAction() {

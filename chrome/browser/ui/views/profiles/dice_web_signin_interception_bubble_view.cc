@@ -35,6 +35,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -73,6 +74,27 @@ std::u16string InterceptionTypeToIdentityPillText(
     case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
       return l10n_util::GetStringUTF16(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT);
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+      // These intercept type do not show a bubble and should not need to change
+      // the identity pill text.
+      NOTREACHED_NORETURN();
+  }
+}
+
+std::optional<std::u16string> InteractionTypeToIdentityPillAccessibilityLabel(
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
+  switch (interception_type) {
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      // TODO(b/347011002): Final string to be added.
+      return l10n_util::GetStringUTF16(IDS_CLOSE);
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+      return std::nullopt;
     case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
     case WebSigninInterceptor::SigninInterceptionType::
         kEnterpriseAcceptManagement:
@@ -413,8 +435,10 @@ void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
   if (ShouldUseFullDesign() || IsChromeSignin()) {
     // Adapt the identity pill, show the appropriate intercept text and
     // highlight the button as long as the text is shown.
-    hide_avatar_text_callback_ =
-        button->ShowExplicitText(InterceptionTypeToIdentityPillText(
+    hide_avatar_text_callback_ = button->ShowExplicitText(
+        InterceptionTypeToIdentityPillText(
+            bubble_parameters_.interception_type),
+        InteractionTypeToIdentityPillAccessibilityLabel(
             bubble_parameters_.interception_type));
   }
   // Avatar Button action behavior
