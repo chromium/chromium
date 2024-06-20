@@ -219,8 +219,7 @@ TEST_F(PlusAddressAffiliationMatchHelperTest, GroupedMatchesTest) {
       {profile1, android_profile, group_profile}));
 }
 
-// Verifies that elements in both group and PSL matches matches are returned
-// only once.
+// Verifies that elements in both group and PSL matches are returned only once.
 TEST_F(PlusAddressAffiliationMatchHelperTest,
        GroupedAndPSLMatchesIntersectTest) {
   PlusProfile profile1 = test::CreatePlusProfileWithFacet(
