@@ -86,9 +86,11 @@ IN_PROC_BROWSER_TEST_F(CustomTabSessionImplTest,
 
   // The base class has already attached a WebContents with the Browser object.
   // We replace it, to simulate the single-tab ARC custom tab browser.
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
-  browser()->tab_strip_model()->DiscardWebContentsAt(0,
-                                                     std::move(web_contents));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 1);
+  tab_strip_model->InsertWebContentsAt(0, std::move(web_contents),
+                                       AddTabTypes::ADD_ACTIVE);
+  tab_strip_model->DetachAndDeleteWebContentsAt(1);
   base::RunLoop webcontents_run_loop;
   web_contents_destroyed_closure_ = webcontents_run_loop.QuitClosure();
   TestBrowserClosedWaiter closed_waiter(browser());
