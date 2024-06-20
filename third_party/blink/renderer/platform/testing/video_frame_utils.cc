@@ -41,11 +41,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
                            << " has no corresponding gfx::BufferFormat";
       auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
           coded_size, buffer_format.value());
-      scoped_refptr<gpu::ClientSharedImage> empty_shared_image;
       return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          visible_rect, natural_size, std::move(gmb), empty_shared_image,
-          gpu::SyncToken(), /*texture_target=*/0, base::NullCallback(),
-          timestamp);
+          visible_rect, natural_size, std::move(gmb), timestamp);
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
       std::optional<gfx::BufferFormat> buffer_format =

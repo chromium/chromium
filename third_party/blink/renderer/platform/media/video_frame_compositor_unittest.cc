@@ -517,12 +517,10 @@ TEST_F(VideoFrameCompositorTest, OnContextLost) {
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       std::make_unique<media::FakeGpuMemoryBuffer>(
           encode_size, gfx::BufferFormat::YUV_420_BIPLANAR);
-  scoped_refptr<gpu::ClientSharedImage> empty_shared_image;
   scoped_refptr<media::VideoFrame> gpu_frame =
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(encode_size), encode_size, std::move(gmb),
-          empty_shared_image, gpu::SyncToken(), /*texture_target=*/0,
-          base::DoNothing(), base::TimeDelta());
+          base::TimeDelta());
 
   compositor_->set_background_rendering_for_testing(true);
 

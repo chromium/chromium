@@ -1160,11 +1160,8 @@ TEST_F(RTCVideoEncoderEncodeTest, NonZeroCopyEncodingIfFirstFrameisShmem) {
       std::make_unique<media::FakeGpuMemoryBuffer>(
           frame_size, gfx::BufferFormat::YUV_420_BIPLANAR,
           /*modifier=*/0u);
-  scoped_refptr<gpu::ClientSharedImage> place_holder_shared_image;
   auto gmb_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(frame_size), frame_size, std::move(gmb),
-      place_holder_shared_image, gpu::SyncToken(), /*texture_target=*/0,
-      base::DoNothing(), base::Milliseconds(1));
+      gfx::Rect(frame_size), frame_size, std::move(gmb), base::Milliseconds(1));
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(
       new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
           gmb_frame, new WebRtcVideoFrameAdapter::SharedResources(nullptr)));

@@ -1947,11 +1947,8 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
          gmb->stride(1) * gmb_size.height() / 2);
   gmb->Unmap();
 
-  scoped_refptr<gpu::ClientSharedImage> empty_shared_image;
   black_gmb_frame_ = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-      gfx::Rect(gmb_size), natural_size, std::move(gmb), empty_shared_image,
-      gpu::SyncToken(), /*texture_target=*/0, base::NullCallback(),
-      base::TimeDelta());
+      gfx::Rect(gmb_size), natural_size, std::move(gmb), base::TimeDelta());
   return true;
 }
 
