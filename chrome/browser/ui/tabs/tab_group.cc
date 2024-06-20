@@ -121,8 +121,9 @@ gfx::Range TabGroup::ListTabs() const {
   // If DCHECKs are enabled, check for group contiguity. The result
   // doesn't really make sense if the group is discontiguous.
   if (DCHECK_IS_ON()) {
-    for (int i = first_tab; i <= last_tab; ++i)
+    for (int i = first_tab; i <= last_tab; ++i) {
       DCHECK(controller_->GetTabGroupForTab(i) == id_);
+    }
   }
 
   return gfx::Range(first_tab, last_tab + 1);

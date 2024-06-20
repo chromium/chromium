@@ -76,8 +76,9 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   std::unique_ptr<WebContents> web_contents =
       WebContents::CreateWithSessionStorage(create_params,
                                             session_storage_namespace_map);
-  if (from_session_restore)
+  if (from_session_restore) {
     SessionRestore::OnWillRestoreTab(web_contents.get());
+  }
   apps::SetAppIdForWebContents(browser->profile(), web_contents.get(),
                                extension_app_id);
 
@@ -114,8 +115,9 @@ std::unique_ptr<WebContents> CreateRestoredTab(
 // cross-platform expectations about events it observes.
 void LoadRestoredTabIfVisible(Browser* browser,
                               content::WebContents* web_contents) {
-  if (web_contents->GetVisibility() != content::Visibility::VISIBLE)
+  if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
     return;
+  }
 
   DCHECK_EQ(browser->tab_strip_model()->GetActiveWebContents(), web_contents);
   // A layout should already have been performed to determine the contents size.
@@ -218,14 +220,16 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
 #else
         true;
 #endif
-    if (should_activate)
+    if (should_activate) {
       browser->window()->Activate();
+    }
   }
 
   SessionServiceBase* session_service =
       GetAppropriateSessionServiceIfExisting(browser);
-  if (session_service)
+  if (session_service) {
     session_service->TabRestored(raw_web_contents, pin);
+  }
 
 // On OS_MAC, app restorations take longer than the normal browser window to
 // be restored and that will cause LoadRestoredTabIfVisible() to fail.
