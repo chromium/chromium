@@ -236,6 +236,32 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   }
 
   /**
+   * Read the status message under the status node in a PDF accessibility tree
+   * if PDF content is still being loaded. In the loading phase, the PDF a11y
+   * tree will have one child node with the banner role, which contains the
+   * loading status message as follows:
+   * pdfRoot
+   * - banner
+   * -- status
+   * --- staticText: "Loading PDF"
+   */
+  private readPdfStatusNodeIfStillLoading_(pdfRoot: AutomationNode): boolean {
+    if (pdfRoot.role === RoleType.PDF_ROOT && pdfRoot.children.length === 1 &&
+        pdfRoot.firstChild!.role === RoleType.BANNER &&
+        pdfRoot.firstChild!.children.length === 1 &&
+        pdfRoot.firstChild!.firstChild!.role === RoleType.STATUS &&
+        pdfRoot.firstChild!.firstChild!.children.length === 1 &&
+        pdfRoot.firstChild!.firstChild!.firstChild!.role ===
+            RoleType.STATIC_TEXT) {
+      this.startSpeechQueue_([pdfRoot.firstChild!.firstChild!.firstChild!], {
+        clearFocusRing: true,
+      });
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Called in response to our hit test after the mouse is released,
    * when the user is in a mode where Select-to-speak is capturing
    * mouse events (for example holding down Search).
@@ -247,6 +273,19 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // container. In the future we might include other container-like
     // roles here.
     var root = evt.target;
+
+    // In Chrome PDF Viewer, PDF content for a large PDF might be still being
+    // loaded into a PDF accessibility tree when the user selects text on a PDF
+    // page. In this case, the PDF root has only one child node, which is the
+    // status node that contains a loading status message. Read this status
+    // message if the user tries selecting text during this loading phase.
+    if (root.role === RoleType.EMBEDDED_OBJECT && root.children.length === 1 &&
+        root.firstChild!.role === RoleType.PDF_ROOT &&
+        root.firstChild!.children.length === 1 &&
+        this.readPdfStatusNodeIfStillLoading_(root.firstChild!)) {
+      return;
+    }
+
     // TODO: Use AutomationPredicate.root instead?
     while (root.parent && root.role !== RoleType.WINDOW &&
            root.role !== RoleType.ROOT_WEB_AREA &&
