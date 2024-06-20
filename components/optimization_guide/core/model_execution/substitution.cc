@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/substitution.h"
 
+#include <sys/types.h>
+
 #include <optional>
 #include <sstream>
 #include <string>
@@ -14,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -28,11 +31,21 @@ namespace {
 
 using google::protobuf::RepeatedPtrField;
 
+// A context for resolving substitution expressions.
+struct ResolutionContext {
+  // The message we are resolving expressions against.
+  raw_ptr<const google::protobuf::MessageLite> message;
+
+  // 0-based index of 'message' in the repeated field that contains it.
+  // 0 for the top level message.
+  size_t offset = 0;
+};
+
 // Returns whether `condition` applies based on `message`.
-bool EvaluateCondition(const google::protobuf::MessageLite& message,
+bool EvaluateCondition(const ResolutionContext& ctx,
                        const proto::Condition& condition) {
   std::optional<proto::Value> proto_value =
-      GetProtoValue(message, condition.proto_field());
+      GetProtoValue(*ctx.message, condition.proto_field());
   if (!proto_value) {
     return false;
   }
@@ -48,20 +61,20 @@ bool EvaluateCondition(const google::protobuf::MessageLite& message,
   }
 }
 
-bool AndConditions(const google::protobuf::MessageLite& message,
+bool AndConditions(const ResolutionContext& ctx,
                    const RepeatedPtrField<proto::Condition>& conditions) {
   for (const auto& condition : conditions) {
-    if (!EvaluateCondition(message, condition)) {
+    if (!EvaluateCondition(ctx, condition)) {
       return false;
     }
   }
   return true;
 }
 
-bool OrConditions(const google::protobuf::MessageLite& message,
+bool OrConditions(const ResolutionContext& ctx,
                   const RepeatedPtrField<proto::Condition>& conditions) {
   for (const auto& condition : conditions) {
-    if (EvaluateCondition(message, condition)) {
+    if (EvaluateCondition(ctx, condition)) {
       return true;
     }
   }
@@ -69,7 +82,7 @@ bool OrConditions(const google::protobuf::MessageLite& message,
 }
 
 // Returns whether `conditions` apply based on `message`.
-bool DoConditionsApply(const google::protobuf::MessageLite& message,
+bool DoConditionsApply(const ResolutionContext& ctx,
                        const proto::ConditionList& conditions) {
   if (conditions.conditions_size() == 0) {
     return true;
@@ -77,9 +90,9 @@ bool DoConditionsApply(const google::protobuf::MessageLite& message,
 
   switch (conditions.condition_evaluation_type()) {
     case proto::CONDITION_EVALUATION_TYPE_OR:
-      return OrConditions(message, conditions.conditions());
+      return OrConditions(ctx, conditions.conditions());
     case proto::CONDITION_EVALUATION_TYPE_AND:
-      return AndConditions(message, conditions.conditions());
+      return AndConditions(ctx, conditions.conditions());
     default:
       base::debug::DumpWithoutCrashing();
       return false;
@@ -96,7 +109,7 @@ class StringBuilder {
     FAILED = 1,
   };
   StringBuilder() = default;
-  Error ResolveSubstitutedString(const google::protobuf::MessageLite& request,
+  Error ResolveSubstitutedString(const ResolutionContext& ctx,
                                  const proto::SubstitutedString& substitution);
 
   SubstitutionResult result() {
@@ -106,28 +119,28 @@ class StringBuilder {
   }
 
  private:
-  Error ResolveSubstitution(const google::protobuf::MessageLite& request,
+  Error ResolveSubstitution(const ResolutionContext& ctx,
                             const proto::StringSubstitution& arg);
+  Error ResolveStringArg(const ResolutionContext& ctx,
+                         const proto::StringArg& candidate);
 
-  // Resolve a StringArg, returns false on error.
-  Error ResolveArg(const google::protobuf::MessageLite& request,
-                   const proto::StringArg& candidate);
-
-  Error ResolveRangeExpr(const google::protobuf::MessageLite& request,
-                         const proto::RangeExpr& expr);
-
-  Error ResolveProtoField(const google::protobuf::MessageLite& request,
+  Error ResolveProtoField(const ResolutionContext& ctx,
                           const proto::ProtoField& field);
+  Error ResolveRangeExpr(const ResolutionContext& ctx,
+                         const proto::RangeExpr& expr);
+  Error ResolveIndexExpr(const ResolutionContext& ctx,
+                         const proto::IndexExpr& field);
 
   std::ostringstream out_;
   bool should_ignore_input_context_ = false;
 };
 
 StringBuilder::Error StringBuilder::ResolveProtoField(
-    const google::protobuf::MessageLite& request,
+    const ResolutionContext& ctx,
     const proto::ProtoField& field) {
-  std::optional<proto::Value> value = GetProtoValue(request, field);
+  std::optional<proto::Value> value = GetProtoValue(*ctx.message, field);
   if (!value) {
+    DVLOG(1) << "Invalid proto field of " << ctx.message->GetTypeName();
     return Error::FAILED;
   }
   out_ << GetStringFromValue(*value);
@@ -135,15 +148,19 @@ StringBuilder::Error StringBuilder::ResolveProtoField(
 }
 
 StringBuilder::Error StringBuilder::ResolveRangeExpr(
-    const google::protobuf::MessageLite& request,
+    const ResolutionContext& ctx,
     const proto::RangeExpr& expr) {
   std::vector<std::string> vals;
-  auto it = GetProtoRepeated(&request, expr.proto_field());
+  auto it = GetProtoRepeated(ctx.message, expr.proto_field());
   if (!it) {
+    DVLOG(1) << "Invalid proto field for RangeExpr over "
+             << ctx.message->GetTypeName();
     return Error::FAILED;
   }
+  size_t i = 0;
   for (const auto* msg : *it) {
-    Error error = ResolveSubstitutedString(*msg, expr.expr());
+    Error error =
+        ResolveSubstitutedString(ResolutionContext{msg, i++}, expr.expr());
     if (error != Error::OK) {
       return error;
     }
@@ -151,37 +168,47 @@ StringBuilder::Error StringBuilder::ResolveRangeExpr(
   return Error::OK;
 }
 
-StringBuilder::Error StringBuilder::ResolveArg(
-    const google::protobuf::MessageLite& request,
+StringBuilder::Error StringBuilder::ResolveIndexExpr(
+    const ResolutionContext& ctx,
+    const proto::IndexExpr& expr) {
+  out_ << base::NumberToString(ctx.offset + expr.one_based());
+  return Error::OK;
+}
+
+StringBuilder::Error StringBuilder::ResolveStringArg(
+    const ResolutionContext& ctx,
     const proto::StringArg& candidate) {
   switch (candidate.arg_case()) {
     case proto::StringArg::kRawString:
       out_ << candidate.raw_string();
       return Error::OK;
     case proto::StringArg::kProtoField:
-      return ResolveProtoField(request, candidate.proto_field());
+      return ResolveProtoField(ctx, candidate.proto_field());
     case proto::StringArg::kRangeExpr:
-      return ResolveRangeExpr(request, candidate.range_expr());
+      return ResolveRangeExpr(ctx, candidate.range_expr());
+    case proto::StringArg::kIndexExpr:
+      return ResolveIndexExpr(ctx, candidate.index_expr());
     case proto::StringArg::ARG_NOT_SET:
+      DVLOG(1) << "StringArg is incomplete.";
       return Error::FAILED;
   }
 }
 
 StringBuilder::Error StringBuilder::ResolveSubstitution(
-    const google::protobuf::MessageLite& request,
+    const ResolutionContext& ctx,
     const proto::StringSubstitution& arg) {
   for (const auto& candidate : arg.candidates()) {
-    if (DoConditionsApply(request, candidate.conditions())) {
-      return ResolveArg(request, candidate);
+    if (DoConditionsApply(ctx, candidate.conditions())) {
+      return ResolveStringArg(ctx, candidate);
     }
   }
   return Error::OK;
 }
 
 StringBuilder::Error StringBuilder::ResolveSubstitutedString(
-    const google::protobuf::MessageLite& request,
+    const ResolutionContext& ctx,
     const proto::SubstitutedString& substitution) {
-  if (!DoConditionsApply(request, substitution.conditions())) {
+  if (!DoConditionsApply(ctx, substitution.conditions())) {
     return Error::OK;
   }
   if (substitution.should_ignore_input_context()) {
@@ -200,13 +227,15 @@ StringBuilder::Error StringBuilder::ResolveSubstitutedString(
       continue;
     }
     if (token != "%s") {
+      DVLOG(1) << "Invalid Token";
       return Error::FAILED;  // Invalid token
     }
     if (substitution_idx >= substitution.substitutions_size()) {
+      DVLOG(1) << "Too many substitutions";
       return Error::FAILED;
     }
-    Error error = ResolveSubstitution(
-        request, substitution.substitutions(substitution_idx));
+    Error error =
+        ResolveSubstitution(ctx, substitution.substitutions(substitution_idx));
     if (error != Error::OK) {
       return error;
     }
@@ -214,6 +243,7 @@ StringBuilder::Error StringBuilder::ResolveSubstitutedString(
   }
   out_ << templ.substr(template_idx, std::string_view::npos);
   if (substitution_idx != substitution.substitutions_size()) {
+    DVLOG(1) << "Missing substitutions";
     return Error::FAILED;
   }
   return Error::OK;
@@ -227,7 +257,8 @@ std::optional<SubstitutionResult> CreateSubstitutions(
         config_substitutions) {
   StringBuilder builder;
   for (const auto& substitution : config_substitutions) {
-    auto error = builder.ResolveSubstitutedString(request, substitution);
+    auto error = builder.ResolveSubstitutedString(
+        ResolutionContext{&request, 0}, substitution);
     if (error != StringBuilder::Error::OK) {
       return std::nullopt;
     }

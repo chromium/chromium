@@ -13,6 +13,7 @@
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
+#include "components/optimization_guide/proto/substitution.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -178,42 +179,118 @@ TEST_F(SubstitutionTest, Conditions) {
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
-TEST_F(SubstitutionTest, Repeated) {
+// Make a simple request with two tabs.
+proto::TabOrganizationRequest TwoTabRequest() {
+  proto::TabOrganizationRequest request;
+  auto* tabs = request.mutable_tabs();
+  {
+    auto* t1 = tabs->Add();
+    t1->set_title("tabA");
+    t1->set_tab_id(10);
+  }
+  {
+    auto* t1 = tabs->Add();
+    t1->set_title("tabB");
+    t1->set_tab_id(20);
+  }
+  return request;
+}
+
+// Evaluate an expression over a list of tabs.
+// The substititon should produce a string like "Tabs: E,E,"
+// Where "E" is the 'expr' evaluated over the list of tabs.
+proto::SubstitutedString TabsExpr(const proto::StringSubstitution& expr) {
+  proto::SubstitutedString root;
+  root.set_string_template("Tabs: %s");
+  auto* range =
+      root.add_substitutions()->add_candidates()->mutable_range_expr();
+  MkProtoField(range->mutable_proto_field(), {1});  // tabs
+
+  auto* substitution = range->mutable_expr();
+  substitution->set_string_template("%s,");
+  substitution->add_substitutions()->MergeFrom(expr);
+
+  return root;
+}
+
+TEST_F(SubstitutionTest, RepeatedRawField) {
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   {
-    auto* s1 = subs.Add();
-    s1->set_string_template("hello this is a test: %s");
-    auto* re = s1->add_substitutions()->add_candidates()->mutable_range_expr();
-    MkProtoField(re->mutable_proto_field(), {1});  // tabs
-    auto* s2 = re->mutable_expr();
-    s2->set_string_template("%s-%s ");
-    MkProtoField(
-        s2->add_substitutions()->add_candidates()->mutable_proto_field(),
-        {1});  // tab_id
-    MkProtoField(
-        s2->add_substitutions()->add_candidates()->mutable_proto_field(),
-        {2});  // title
+    proto::StringSubstitution expr;
+    expr.add_candidates()->set_raw_string("E");
+    subs.Add()->MergeFrom(TabsExpr(expr));
   }
-
-  proto::TabOrganizationRequest request;
-  {
-    auto* tabs = request.mutable_tabs();
-    {
-      auto* t1 = tabs->Add();
-      t1->set_title("tabone");
-      t1->set_tab_id(1);
-    }
-    {
-      auto* t1 = tabs->Add();
-      t1->set_title("tabtwo");
-      t1->set_tab_id(2);
-    }
-  }
-
+  proto::TabOrganizationRequest request = TwoTabRequest();
   auto result = CreateSubstitutions(request, subs);
-
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->input_string, "hello this is a test: 1-tabone 2-tabtwo ");
+  EXPECT_EQ(result->input_string, "Tabs: E,E,");
+  EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(SubstitutionTest, RepeatedProtoField) {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  {
+    proto::StringSubstitution expr;
+    // Tab.title
+    MkProtoField(expr.add_candidates()->mutable_proto_field(), {2});
+    subs.Add()->MergeFrom(TabsExpr(expr));
+  }
+  proto::TabOrganizationRequest request = TwoTabRequest();
+  auto result = CreateSubstitutions(request, subs);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string, "Tabs: tabA,tabB,");
+  EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(SubstitutionTest, RepeatedZeroBasedIndexField) {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  {
+    proto::StringSubstitution expr;
+    expr.add_candidates()->mutable_index_expr();
+    subs.Add()->MergeFrom(TabsExpr(expr));
+  }
+  proto::TabOrganizationRequest request = TwoTabRequest();
+  auto result = CreateSubstitutions(request, subs);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string, "Tabs: 0,1,");
+  EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(SubstitutionTest, RepeatedOneBasedIndexField) {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  {
+    proto::StringSubstitution expr;
+    expr.add_candidates()->mutable_index_expr()->set_one_based(true);
+    subs.Add()->MergeFrom(TabsExpr(expr));
+  }
+  proto::TabOrganizationRequest request = TwoTabRequest();
+  auto result = CreateSubstitutions(request, subs);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string, "Tabs: 1,2,");
+  EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(SubstitutionTest, RepeatedCondition) {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  {
+    proto::StringSubstitution expr;
+    auto* c1 = expr.add_candidates();
+    auto* c2 = expr.add_candidates();
+    c1->set_raw_string("Ten");
+    auto* cond_list = c1->mutable_conditions();
+    cond_list->set_condition_evaluation_type(
+        proto::CONDITION_EVALUATION_TYPE_OR);
+    auto* cond = cond_list->add_conditions();
+    MkProtoField(cond->mutable_proto_field(), {1});
+    cond->set_operator_type(proto::OPERATOR_TYPE_EQUAL_TO);
+    cond->mutable_value()->set_int64_value(10);
+    c2->set_raw_string("NotTen");
+    subs.Add()->MergeFrom(TabsExpr(expr));
+  }
+  proto::TabOrganizationRequest request = TwoTabRequest();
+  auto result = CreateSubstitutions(request, subs);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->input_string, "Tabs: Ten,NotTen,");
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
