@@ -44,7 +44,6 @@ export enum State {
   MIC = 'mic',
   MIRROR = 'mirror',
   MULTI_CAMERA = 'multi-camera',
-  PHOTO_TAKING = 'photo-taking',
   RECORD_TYPE_GIF = 'record-type-gif',
   RECORD_TYPE_NORMAL = 'record-type-normal',
   RECORD_TYPE_TIME_LAPSE = 'record-type-time-lapse',
@@ -66,6 +65,7 @@ export enum State {
   TIMER = 'timer',
   TIMER_10SEC = 'timer-10s',
   TIMER_3SEC = 'timer-3s',
+  TIMER_TICK = 'timer-tick',
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 
