@@ -1913,6 +1913,7 @@ class TabListMediator {
     void setTabActionState(@TabActionState int tabActionState) {
         if (mTabActionState == tabActionState) return;
         mTabActionState = tabActionState;
+        getTabSelectionDelegate().clearSelection();
 
         for (int i = 0; i < mModel.size(); i++) {
             ListItem item = mModel.get(i);
@@ -1948,6 +1949,8 @@ class TabListMediator {
             model.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, null);
         } else if (TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND == propertyKey) {
             model.set(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND, null);
+        } else if (TabProperties.IS_SELECTED == propertyKey) {
+            model.set(TabProperties.IS_SELECTED, false);
         }
     }
 
@@ -1963,6 +1966,8 @@ class TabListMediator {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
             model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, null);
+        } else if (TabProperties.IS_SELECTED == propertyKey) {
+            model.set(TabProperties.IS_SELECTED, false);
         }
     }
 

@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -1883,6 +1884,46 @@ public class SelectableTabListEditorTest {
         mRobot.actionRobot.clickToolbarNavigationButton();
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         verifyBackgroundViewAccessibilityImportance(parentView, false, initialValues);
+    }
+
+    @Test
+    @MediumTest
+    public void testMoveToClosableState() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        showSelectionEditor(tabs, null);
+
+        mRobot.resultRobot.verifyItemNotSelectedAtAdapterPosition(0);
+
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(2)
+                .verifyItemSelectedAtAdapterPosition(0)
+                .verifyToolbarSelectionText("1 tab");
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabListEditorController.setTabActionState(TabActionState.CLOSABLE);
+                });
+
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(2)
+                .verifyItemNotSelectedAtAdapterPosition(0)
+                .verifyToolbarSelectionText("Select tabs");
+
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.resultRobot.verifyAdapterHasItemCount(1).verifyItemNotSelectedAtAdapterPosition(0);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabListEditorController.setTabActionState(TabActionState.SELECTABLE);
+                });
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.resultRobot
+                .verifyAdapterHasItemCount(1)
+                .verifyItemSelectedAtAdapterPosition(0)
+                .verifyToolbarSelectionText("1 tab");
     }
 
     private Map<View, Integer> getParentViewAccessibilityImportanceMap() {

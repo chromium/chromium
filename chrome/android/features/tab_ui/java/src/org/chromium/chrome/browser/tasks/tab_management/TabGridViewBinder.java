@@ -241,6 +241,15 @@ class TabGridViewBinder {
                     view,
                     model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
+        } else if (TabProperties.TAB_ACTION_STATE == propertyKey) {
+            updateColor(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
+            updateColorForSelectionToggleButton(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
         }
     }
 

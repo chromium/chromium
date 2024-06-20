@@ -110,6 +110,9 @@ class TabListEditorCoordinator {
 
         /** Sets a custom {@link NavigationProvider} to handle "back" actions. */
         void setNavigationProvider(@NonNull NavigationProvider navigationProvider);
+
+        /** Sets the {@link TabActionState} for the TabListEditor. */
+        void setTabActionState(@TabActionState int tabActionState);
     }
 
     /** An interface for embedders to provide navigation. */
@@ -192,6 +195,12 @@ class TabListEditorCoordinator {
                 public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
                     return mTabListEditorMediator.getHandleBackPressChangedSupplier();
                 }
+
+                @Override
+                public void setTabActionState(@TabActionState int tabActionState) {
+                    mTabActionState = tabActionState;
+                    mTabListEditorMediator.setTabActionState(tabActionState);
+                }
             };
 
     private final Context mContext;
@@ -206,13 +215,13 @@ class TabListEditorCoordinator {
 
     private final @TabListMode int mTabListMode;
     private final boolean mDisplayGroups;
-    private final @TabActionState int mInitialTabActionState;
     private final ViewGroup mRootView;
     private final TabContentManager mTabContentManager;
 
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private TabListCoordinator mTabListCoordinator;
     private PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
+    private @TabActionState int mTabActionState;
 
     public TabListEditorCoordinator(
             Context context,
@@ -234,7 +243,7 @@ class TabListEditorCoordinator {
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
             mTabListMode = mode;
             mDisplayGroups = displayGroups;
-            mInitialTabActionState = initialTabActionState;
+            mTabActionState = initialTabActionState;
             mRootView = rootView;
             mTabContentManager = tabContentManager;
             assert mode == TabListCoordinator.TabListMode.GRID
@@ -258,7 +267,7 @@ class TabListEditorCoordinator {
                             displayGroups,
                             snackbarManager,
                             mTabListEditorLayout,
-                            initialTabActionState);
+                            mTabActionState);
             mTabListEditorMediator.setNavigationProvider(
                     new TabListEditorNavigationProvider(mContext, mTabListEditorController));
         }
@@ -372,7 +381,7 @@ class TabListEditorCoordinator {
                         mDisplayGroups,
                         null,
                         null,
-                        mInitialTabActionState,
+                        mTabActionState,
                         this::getSelectionDelegate,
                         null,
                         mTabListEditorLayout,

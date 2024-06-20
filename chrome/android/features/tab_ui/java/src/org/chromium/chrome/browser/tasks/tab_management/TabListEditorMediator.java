@@ -68,6 +68,7 @@ class TabListEditorMediator
     private SnackbarManager mSnackbarManager;
     private TabListEditorToolbar mTabListEditorToolbar;
     private TabListEditorCoordinator.NavigationProvider mNavigationProvider;
+    private @TabActionState int mTabActionState;
 
     private final View.OnClickListener mNavigationClickListener =
             new View.OnClickListener() {
@@ -93,6 +94,7 @@ class TabListEditorMediator
         mActionOnRelatedTabs = actionOnRelatedTabs;
         mSnackbarManager = snackbarManager;
         mTabListEditorLayout = tabListEditorLayout;
+        mTabActionState = initialTabActionState;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -120,7 +122,7 @@ class TabListEditorMediator
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         // TODO(crbug.com/338103697): Query the TabList for the current tab action
                         // state.
-                        if (initialTabActionState != TabProperties.TabActionState.CLOSABLE) {
+                        if (mTabActionState != TabProperties.TabActionState.CLOSABLE) {
                             hide();
                         }
                     }
@@ -129,7 +131,7 @@ class TabListEditorMediator
                     // using a custom click handler when selecting tabs.
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        if (initialTabActionState == TabProperties.TabActionState.CLOSABLE
+                        if (mTabActionState == TabProperties.TabActionState.CLOSABLE
                                 && type == TabSelectionType.FROM_USER) {
                             hide();
                         }
@@ -334,6 +336,12 @@ class TabListEditorMediator
             @NonNull TabListEditorCoordinator.NavigationProvider navigationProvider) {
         assert navigationProvider != null;
         mNavigationProvider = navigationProvider;
+    }
+
+    @Override
+    public void setTabActionState(@TabActionState int tabActionState) {
+        mTabActionState = tabActionState;
+        mTabListCoordinator.setTabActionState(tabActionState);
     }
 
     @Override

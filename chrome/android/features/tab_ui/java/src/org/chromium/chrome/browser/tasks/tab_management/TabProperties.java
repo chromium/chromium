@@ -199,7 +199,8 @@ public class TabProperties {
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 CHECKED_DRAWABLE_STATE_LIST,
-                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND
+                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
+                IS_SELECTED
             };
 
     public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
@@ -208,6 +209,7 @@ public class TabProperties {
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 CONTENT_DESCRIPTION_STRING,
-                ACTION_BUTTON_DESCRIPTION_STRING
+                ACTION_BUTTON_DESCRIPTION_STRING,
+                IS_SELECTED
             };
 }
