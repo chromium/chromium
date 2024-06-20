@@ -73,11 +73,6 @@ BASE_FEATURE(kRestrictDownloadOnSyncedTabs,
              "RestrictDownloadOnSyncedTabs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature flag to defer media load on background tab.
-BASE_FEATURE(kDeferMediaLoadInBackgroundTab,
-             "DeferMediaLoadInBackgroundTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
@@ -96,10 +91,6 @@ bool AlwaysAcceptServerDataInModel() {
 
 bool RestrictDownloadOnSyncedTabs() {
   return base::FeatureList::IsEnabled(kRestrictDownloadOnSyncedTabs);
-}
-
-bool DeferMediaLoadInBackgroundTab() {
-  return base::FeatureList::IsEnabled(kDeferMediaLoadInBackgroundTab);
 }
 
 }  // namespace tab_groups
