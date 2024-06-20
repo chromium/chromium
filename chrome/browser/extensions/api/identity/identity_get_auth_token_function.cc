@@ -30,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -320,8 +321,16 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   waiting_on_account_ = true;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
   scoped_identity_manager_observation_.Observe(identity_manager);
-  // TODO(msalama): Check if the user is signed in on the web and show a
-  // different UI.
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      !identity_manager->GetAccountsWithRefreshTokens().empty() &&
+      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // The user is signed in on the web but not to Chrome.
+    MaybeShowChromeSigninDialog();
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   ShowExtensionLoginPrompt();
 #endif
 }
@@ -794,6 +803,33 @@ void IdentityGetAuthTokenFunction::StartGaiaRequest(
   mint_token_flow_->Start(GetProfile()->GetURLLoaderFactory(),
                           login_access_token);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void IdentityGetAuthTokenFunction::MaybeShowChromeSigninDialog() {
+  IdentityAPI* identity_api =
+      IdentityAPI::GetFactoryInstance()->Get(GetProfile());
+  identity_api->MaybeShowChromeSigninDialog(
+      extension()->name(),
+      base::BindOnce(
+          &IdentityGetAuthTokenFunction::OnChromeSigninDialogDestroyed,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IdentityGetAuthTokenFunction::OnChromeSigninDialogDestroyed() {
+  if (!IdentityManagerFactory::GetForProfile(GetProfile())
+           ->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user, cancelled or dismissed the Chrome sign in dialog for
+    // extensions.
+    waiting_on_account_ = false;
+    scoped_identity_manager_observation_.Reset();
+    CompleteFunctionWithError(IdentityGetAuthTokenError(
+        IdentityGetAuthTokenError::State::kSignInFailed));
+    return;
+  }
+  // Note: We rely on `OnPrimaryAccountChanged()` to detect that Chrome is
+  // signed in.
+}
+#endif
 
 void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
   const CoreAccountInfo& account = token_key_.account_info;

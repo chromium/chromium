@@ -99,6 +99,8 @@
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1074,7 +1076,8 @@ class GetAuthTokenFunctionTest
     std::move(on_access_token_requested_).Run();
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
   base::HistogramTester histogram_tester_;
   ExtensionId extension_id_;
   std::set<std::string> oauth_scopes_;
@@ -1434,6 +1437,145 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
       1);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SignedInWebOnlyAcceptPrompt) {
+  identity_test_env()->MakeAccountAvailable("account@gmail.com",
+                                            {.set_cookie = true});
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_test_env()
+                   ->identity_manager()
+                   ->GetAccountsWithRefreshTokens()
+                   .empty());
+
+  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
+  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
+  func->set_extension(extension.get());
+  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "ChromeSigninChoiceForExtensionsPrompt");
+
+  RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
+  views::Widget* confirmation_prompt = widget_waiter.WaitIfNeededAndGet();
+  views::DialogDelegate* dialog_delegate =
+      confirmation_prompt->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  dialog_delegate->AcceptDialog();
+
+  std::string access_token;
+  std::set<std::string> granted_scopes;
+  WaitForGetAuthTokenResults(func.get(), &access_token, &granted_scopes);
+  EXPECT_EQ(std::string(kAccessToken), access_token);
+  EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
+
+  EXPECT_FALSE(func->login_ui_shown());
+  EXPECT_FALSE(func->scope_ui_shown());
+  histogram_tester()->ExpectUniqueSample(
+      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, SignedInWebOnlyDeclinePrompt) {
+  identity_test_env()->MakeAccountAvailable("account@gmail.com",
+                                            {.set_cookie = true});
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_test_env()
+                   ->identity_manager()
+                   ->GetAccountsWithRefreshTokens()
+                   .empty());
+
+  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
+  scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
+  func->set_extension(extension.get());
+  func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "ChromeSigninChoiceForExtensionsPrompt");
+
+  RunFunctionAsync(func.get(), "[{\"interactive\": true}]");
+  views::Widget* confirmation_prompt = widget_waiter.WaitIfNeededAndGet();
+  views::DialogDelegate* dialog_delegate =
+      confirmation_prompt->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  dialog_delegate->CancelDialog();
+
+  EXPECT_EQ(std::string(errors::kUserNotSignedIn), WaitForError(func.get()));
+
+  EXPECT_FALSE(func->login_ui_shown());
+  EXPECT_FALSE(func->scope_ui_shown());
+  histogram_tester()->ExpectUniqueSample(
+      kGetAuthTokenResultHistogramName,
+      IdentityGetAuthTokenError::State::kSignInFailed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
+                       SignedInWebOnlyAcceptPromptMultipleFunctions) {
+  identity_test_env()->MakeAccountAvailable("account@gmail.com",
+                                            {.set_cookie = true});
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(identity_test_env()
+                   ->identity_manager()
+                   ->GetAccountsWithRefreshTokens()
+                   .empty());
+
+  scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
+  scoped_refptr<FakeGetAuthTokenFunction> func1(new FakeGetAuthTokenFunction());
+  func1->set_extension(extension.get());
+  func1->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+  scoped_refptr<FakeGetAuthTokenFunction> func2(new FakeGetAuthTokenFunction());
+  scoped_refptr<const Extension> extension2(
+      CreateExtension(CLIENT_ID | SCOPES));
+  func2->set_extension(extension2.get());
+  func2->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+  AsyncFunctionRunner func1_runner;
+  func1_runner.RunFunctionAsync(func1.get(), "[{\"interactive\": true}]",
+                                browser()->profile());
+
+  AsyncFunctionRunner func2_runner;
+  func2_runner.RunFunctionAsync(func2.get(), "[{\"interactive\": true}]",
+                                browser()->profile());
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "ChromeSigninChoiceForExtensionsPrompt");
+
+  views::Widget* confirmation_prompt = widget_waiter.WaitIfNeededAndGet();
+  views::DialogDelegate* dialog_delegate =
+      confirmation_prompt->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  dialog_delegate->AcceptDialog();
+
+  std::string access_token;
+  std::set<std::string> granted_scopes;
+  WaitForGetAuthTokenResults(func1.get(), &access_token, &granted_scopes,
+                             &func1_runner);
+  EXPECT_EQ(std::string(kAccessToken), access_token);
+  EXPECT_EQ(func1->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
+
+  EXPECT_FALSE(func1->login_ui_shown());
+  EXPECT_FALSE(func1->scope_ui_shown());
+
+  WaitForGetAuthTokenResults(func2.get(), &access_token, &granted_scopes,
+                             &func2_runner);
+  EXPECT_EQ(std::string(kAccessToken), access_token);
+  EXPECT_EQ(func2->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
+
+  EXPECT_FALSE(func2->login_ui_shown());
+  EXPECT_FALSE(func2->scope_ui_shown());
+
+  histogram_tester()->ExpectUniqueSample(
+      kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
+      2);
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        InteractiveLoginSuccessApprovalAborted) {

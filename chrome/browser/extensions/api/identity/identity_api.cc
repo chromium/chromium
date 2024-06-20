@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -38,6 +39,11 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#endif
 
 using signin::ConsentLevel;
 using signin::PrimaryAccountChangeEvent;
@@ -127,6 +133,66 @@ bool IdentityAPI::AreExtensionsRestrictedToPrimaryAccount() {
 bool IdentityAPI::HasAccessToChromeAccounts() const {
   return identity_manager_->HasPrimaryAccount(ConsentLevel::kSignin);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void IdentityAPI::MaybeShowChromeSigninDialog(std::string_view extension_name,
+                                              base::OnceClosure on_complete) {
+  if (HasAccessToChromeAccounts() ||
+      identity_manager_->GetAccountsWithRefreshTokens().empty()) {
+    DVLOG(1) << "The user is not signed in on the web!";
+    std::move(on_complete).Run();
+    return;
+  }
+
+  if (is_chrome_signin_dialog_open_) {
+    DVLOG(1) << "Chrome sign in dialog is already open, extensions are not "
+                "allowed to trigger more than one";
+    on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
+    return;
+  }
+
+  // Used in unittests to avoid creating a browser.
+  if (skip_ui_for_testing_callback_) {
+    HandleSkipUIForTesting(std::move(on_complete));  // IN-TEST
+    return;
+  }
+
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
+  Browser* browser = displayer.browser();
+  if (!browser) {
+    DVLOG(1) << "Could not create a browser to show Extensions Chrome Sign in "
+                "dialog.";
+    std::move(on_complete).Run();
+    return;
+  }
+  on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
+  is_chrome_signin_dialog_open_ = true;
+  browser->signin_view_controller()->MaybeShowChromeSigninDialogForExtensions(
+      extension_name,
+      base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void IdentityAPI::OnChromeSigninDialogDestroyed() {
+  is_chrome_signin_dialog_open_ = false;
+  std::vector<base::OnceClosure> callbacks;
+  std::swap(on_chrome_signin_dialog_completed_, callbacks);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run();
+  }
+}
+
+void IdentityAPI::HandleSkipUIForTesting(base::OnceClosure on_complete) {
+  is_chrome_signin_dialog_open_ = true;
+  on_chrome_signin_dialog_completed_.push_back(std::move(on_complete));
+  // Allow tests to complete the flow.
+  std::move(skip_ui_for_testing_callback_)
+      .Run(base::BindOnce(&IdentityAPI::OnChromeSigninDialogDestroyed,
+                          weak_ptr_factory_.GetWeakPtr()));
+  return;
+}
+
+#endif
 
 IdentityAPI::IdentityAPI(Profile* profile,
                          signin::IdentityManager* identity_manager,
