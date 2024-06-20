@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/common/pref_names.h"
+#include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -42,6 +43,13 @@ namespace {
 // Check whether the target origin is the same as the main application running
 // in the Kiosk session.
 bool IsEqualToKioskOrigin(const url::Origin& origin) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kAllowMultipleOriginsForWebKioskPermissions)) {
+    if (chrome::IsWebKioskOriginAllowed(origin.GetURL())) {
+      return true;
+    }
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const AccountId& account_id =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
