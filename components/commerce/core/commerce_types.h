@@ -220,7 +220,7 @@ struct ParcelTrackingStatus {
   std::string tracking_id;
   ParcelStatus::ParcelState state = ParcelStatus::UNKNOWN;
   GURL tracking_url;
-  base::Time estimated_delivery_time;
+  std::optional<base::Time> estimated_delivery_time;
 };
 
 // Details about a particular URL.

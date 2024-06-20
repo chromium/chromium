@@ -48,10 +48,15 @@ source_set("parcel_tracking") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "parcel_tracking_mediator_unittest.mm" ]
+  sources = [
+    "parcel_tracking_mediator_unittest.mm",
+    "parcel_tracking_view+testing.h",
+    "parcel_tracking_view_unittest.mm",
+  ]
   deps = [
     ":parcel_tracking",
     "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

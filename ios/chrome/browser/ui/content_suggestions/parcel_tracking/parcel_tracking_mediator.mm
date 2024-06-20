@@ -137,8 +137,8 @@
     item.commandHandler = self;
     [parcelItems addObject:item];
 
-    if (!iter->estimated_delivery_time.is_null() &&
-        iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
+    if (iter->estimated_delivery_time.has_value() &&
+        *iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
       // Parcel was delivered more than two days ago, make this the last time it
       // is shown by stopping tracking.
       _shoppingService->StopTrackingParcel(iter->tracking_id,
@@ -159,8 +159,9 @@
 - (void)logParcelTrackingFreshnessSignalIfApplicable {
   for (ParcelTrackingItem* item in _parcelTrackingItems) {
     base::Time now = base::Time::Now();
-    if (item.estimatedDeliveryTime > now &&
-        item.estimatedDeliveryTime < now + base::Days(2)) {
+    if (item.estimatedDeliveryTime.has_value() &&
+        *item.estimatedDeliveryTime > now &&
+        *item.estimatedDeliveryTime < now + base::Days(2)) {
       RecordModuleFreshnessSignal(
           ContentSuggestionsModuleType::kParcelTracking);
       return;
