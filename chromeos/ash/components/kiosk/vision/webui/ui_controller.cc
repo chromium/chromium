@@ -70,6 +70,7 @@ void UIController::BindPage(mojo::PendingRemote<mojom::Page> page_remote) {
       base::BindOnce([](UIController* self) { self->observation_.Reset(); },
                      // Safe because `this` owns `page_`.
                      base::Unretained(this)));
+  observation_.Reset();
 
   if (!IsInternalsPageEnabled()) {
     page_->Display(ToState(mojom::Status::kFeatureDisabled));
