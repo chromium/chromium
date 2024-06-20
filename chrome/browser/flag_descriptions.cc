@@ -7821,6 +7821,10 @@ const char kCrosMallName[] = "ChromeOS App Mall";
 const char kCrosMallDescription[] =
     "Enables an app to discover and install other apps.";
 
+const char kCrosMallSwaName[] = "ChromeOS App Mall System App";
+const char kCrosMallSwaDescription[] =
+    "Use System Web App for ChromeOS App Mall.";
+
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 

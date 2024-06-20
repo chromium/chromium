@@ -4528,6 +4528,9 @@ extern const char kCrOSDspBasedAgcAllowedDescription[];
 extern const char kCrosMallName[];
 extern const char kCrosMallDescription[];
 
+extern const char kCrosMallSwaName[];
+extern const char kCrosMallSwaDescription[];
+
 extern const char kCrosPrivacyHubName[];
 extern const char kCrosPrivacyHubDescription[];
 
