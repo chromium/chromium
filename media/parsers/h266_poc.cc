@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/video/h266_poc.h"
+#include "media/parsers/h266_poc.h"
 
 #include <stddef.h>
 
 #include <algorithm>
 
 #include "base/logging.h"
-#include "media/video/h266_parser.h"
+#include "media/parsers/h266_parser.h"
 
 namespace media {
 

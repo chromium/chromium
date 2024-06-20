@@ -4,8 +4,8 @@
 
 #include <stdint.h>
 
-#include "media/video/h266_parser.h"
-#include "media/video/h266_poc.h"
+#include "media/parsers/h266_parser.h"
+#include "media/parsers/h266_poc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

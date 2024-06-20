@@ -10,8 +10,8 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
-#include "media/video/h266_parser.h"
-#include "media/video/h266_poc.h"
+#include "media/parsers/h266_parser.h"
+#include "media/parsers/h266_poc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

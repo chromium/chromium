@@ -6,8 +6,8 @@
 // conforming to 04/2022 version of VVC spec at
 // https://www.itu.int/rec/recommendation.asp?lang=en&parent=T-REC-H.266-202204-I
 
-#ifndef MEDIA_VIDEO_H266_PARSER_H_
-#define MEDIA_VIDEO_H266_PARSER_H_
+#ifndef MEDIA_PARSERS_H266_PARSER_H_
+#define MEDIA_PARSERS_H266_PARSER_H_
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -23,7 +23,7 @@
 #include "media/base/video_types.h"
 #include "media/parsers/h264_bit_reader.h"
 #include "media/parsers/h264_parser.h"
-#include "media/video/h266_nalu_parser.h"
+#include "media/parsers/h266_nalu_parser.h"
 
 namespace media {
 
@@ -1070,4 +1070,4 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
 };
 
 }  // namespace media
-#endif  // MEDIA_VIDEO_H266_PARSER_H_
+#endif  // MEDIA_PARSERS_H266_PARSER_H_
