@@ -1606,6 +1606,29 @@
             ]
         }
     ],
+    "AutofillCreditCardUserPerceptionSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "Q13fLRHym0ugnJ3q1cK0Tm5d8fMW",
+                        "probability": "1"
+                    },
+                    "enable_features": [
+                        "AutofillCreditCardUserPerceptionSurvey"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillDetectRemovedFormControls": [
         {
             "platforms": [
@@ -2262,6 +2285,29 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillMoreProminentPopup"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillPasswordUserPerceptionSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "cLnNGzEX59NNVVEtwumiSF",
+                        "probability": "1"
+                    },
+                    "enable_features": [
+                        "AutofillPasswordUserPerceptionSurvey"
                     ]
                 }
             ]
