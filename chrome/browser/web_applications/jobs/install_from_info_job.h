@@ -55,6 +55,10 @@ class InstallFromInfoJob {
 
   void Start(WithAppResources* lock_with_app_resources);
 
+  webapps::WebappInstallSource install_surface() const {
+    return install_surface_;
+  }
+
  private:
   void OnInstallCompleted(const webapps::AppId& app_id,
                           webapps::InstallResultCode code);

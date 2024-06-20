@@ -823,6 +823,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Install.Source.Failure" enum="WebappInstallSource"
+    expires_after="2024-12-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the mechanism and source from which a web app installation was
+    triggered, when installation failed.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Install.Source.Success" enum="WebappInstallSource"
+    expires_after="2024-12-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the mechanism and source from which a web app installation was
+    triggered, when installation succeeded (this includes cases where the app
+    was already installed).
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Install.SyncFallbackInstallInitiated"
     enum="WebAppInstallResultCode" expires_after="2024-01-15">
   <owner>dmurph@chromium.org</owner>

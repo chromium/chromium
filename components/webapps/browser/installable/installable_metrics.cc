@@ -286,7 +286,13 @@ void InstallableMetrics::TrackUninstallEvent(WebappUninstallSource source) {
 }
 
 // static
-void InstallableMetrics::TrackInstallResult(bool result) {
+void InstallableMetrics::TrackInstallResult(bool result,
+                                            WebappInstallSource source) {
   base::UmaHistogramBoolean("WebApp.Install.Result", result);
+  if (IsReportableInstallSource(source)) {
+    base::UmaHistogramEnumeration(result ? "WebApp.Install.Source.Success"
+                                         : "WebApp.Install.Source.Failure",
+                                  source, WebappInstallSource::COUNT);
+  }
 }
 }  // namespace webapps

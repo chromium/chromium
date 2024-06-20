@@ -599,6 +599,12 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(true, 1)));
+  // IWA dev UI is not a reportable install source, so these installs should not
+  // be recorded in the install source success/failure metrics.
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Source.Success"),
+              BucketsAre());
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Source.Failure"),
+              BucketsAre());
 }
 
 TEST_F(InstallIsolatedWebAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {

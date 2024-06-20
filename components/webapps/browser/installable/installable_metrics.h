@@ -305,8 +305,10 @@ class InstallableMetrics {
   // Records |source| in the Webapp.Install.UninstallEvent histogram.
   static void TrackUninstallEvent(WebappUninstallSource source);
 
-  // Records the result for WebApp.Install.Result histogram.
-  static void TrackInstallResult(bool result);
+  // Records the result for WebApp.Install.Result,
+  // WebApp.Install.Source.Success and WebApp.Install.Source.Failure
+  // histograms.
+  static void TrackInstallResult(bool result, WebappInstallSource source);
 };
 
 }  // namespace webapps

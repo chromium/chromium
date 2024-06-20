@@ -203,7 +203,7 @@ FetchManifestAndInstallCommand::~FetchManifestAndInstallCommand() = default;
 
 void FetchManifestAndInstallCommand::OnShutdown(
     base::PassKey<WebAppCommandManager>) const {
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(false, install_surface_);
 }
 
 content::WebContents* FetchManifestAndInstallCommand::GetInstallingWebContents(
@@ -308,7 +308,7 @@ void FetchManifestAndInstallCommand::WebContentsDestroyed() {
 void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code,
                                            const base::Location& location) {
   GetMutableDebugValue().Set("result_code", base::ToString(code));
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(false, install_surface_);
   Observe(nullptr);
   MeasureUserInstalledAppHistogram(code);
   CompleteAndSelfDestruct(CommandResult::kFailure, webapps::AppId(), code,
@@ -709,7 +709,8 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
   }
   GetMutableDebugValue().Set("result_code", base::ToString(code));
 
-  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
+                                                  install_surface_);
   MeasureUserInstalledAppHistogram(code);
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
                                                    : CommandResult::kFailure,

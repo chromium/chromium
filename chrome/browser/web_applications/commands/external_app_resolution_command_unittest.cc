@@ -51,6 +51,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
+using base::BucketsAre;
 using testing::_;
 using testing::Return;
 
@@ -754,8 +755,11 @@ TEST_F(ExternalAppResolutionCommandTest, InstallWithWebAppInfoSucceeds) {
             webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
   // Ensure that the WebApp.Install.Result histogram is only measured once.
-  tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/true,
-                           /*expected_count=*/1);
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Source.Success"),
+              BucketsAre(base::Bucket(
+                  webapps::WebappInstallSource::EXTERNAL_DEFAULT, 1)));
 }
 
 TEST_F(ExternalAppResolutionCommandTest, InstallWithWebAppInfoFails) {
@@ -784,8 +788,11 @@ TEST_F(ExternalAppResolutionCommandTest, InstallWithWebAppInfoFails) {
   EXPECT_FALSE(result.app_id.has_value());
 
   EXPECT_FALSE(id.has_value());
-  tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/false,
-                           /*expected_count=*/1);
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(false, 1)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Source.Failure"),
+              BucketsAre(base::Bucket(
+                  webapps::WebappInstallSource::EXTERNAL_DEFAULT, 1)));
 }
 
 TEST_F(ExternalAppResolutionCommandTest, SucessInstallForcedContainerWindow) {

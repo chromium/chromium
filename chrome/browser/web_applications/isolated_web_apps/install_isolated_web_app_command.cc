@@ -91,10 +91,11 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
           AppLockDescription(url_info.app_id()),
           base::BindOnce(
               [](web_package::SignedWebBundleId web_bundle_id,
+                 webapps::WebappInstallSource install_source,
                  base::expected<InstallIsolatedWebAppCommandSuccess,
                                 InstallIsolatedWebAppCommandError> result) {
                 webapps::InstallableMetrics::TrackInstallResult(
-                    result.has_value());
+                    result.has_value(), install_source);
                 DVLOG(0) << "Install result of IWA "
                          << base::ToString(web_bundle_id) << ": "
                          << (result.has_value()
@@ -102,7 +103,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
                                  : base::ToString(result.error()));
                 return result;
               },
-              url_info.web_bundle_id())
+              url_info.web_bundle_id(),
+              install_source.install_surface())
               .Then(std::move(callback)),
           /*args_for_shutdown=*/
           base::unexpected(InstallIsolatedWebAppCommandError{

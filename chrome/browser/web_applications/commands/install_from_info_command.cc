@@ -61,7 +61,8 @@ InstallFromInfoCommand::~InstallFromInfoCommand() = default;
 
 void InstallFromInfoCommand::OnShutdown(
     base::PassKey<WebAppCommandManager>) const {
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(
+      false, install_from_info_job_->install_surface());
 }
 
 void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
@@ -78,7 +79,8 @@ void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
     return;
   }
 
-  webapps::InstallableMetrics::TrackInstallResult(was_install_success);
+  webapps::InstallableMetrics::TrackInstallResult(
+      was_install_success, install_from_info_job_->install_surface());
   CompleteAndSelfDestruct(CommandResult::kSuccess, app_id_, code);
 }
 

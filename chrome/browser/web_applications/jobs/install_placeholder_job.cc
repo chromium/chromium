@@ -82,7 +82,9 @@ void InstallPlaceholderJob::Abort(webapps::InstallResultCode code) {
   if (!callback_) {
     return;
   }
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(
+      false, ConvertExternalInstallSourceToInstallSource(
+                 install_options_.install_source));
   std::move(callback_).Run(code, std::move(app_id_));
 }
 
@@ -202,7 +204,9 @@ void InstallPlaceholderJob::OnInstallFinalized(
       ConvertExternalInstallSourceToInstallSource(
           install_options_.install_source));
 
-  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  webapps::InstallableMetrics::TrackInstallResult(
+      webapps::IsSuccess(code), ConvertExternalInstallSourceToInstallSource(
+                                    install_options_.install_source));
 
   std::move(callback_).Run(code, std::move(app_id));
 }

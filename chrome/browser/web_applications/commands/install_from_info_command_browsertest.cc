@@ -30,6 +30,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+using base::BucketsAre;
+
 namespace web_app {
 
 class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
@@ -82,8 +84,11 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
   EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(result_app_id));
 
   // Ensure histogram is only measured once.
-  tester.ExpectBucketCount("WebApp.Install.Result", /*sample=*/true,
-                           /*expected_count=*/1);
+
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+  EXPECT_THAT(tester.GetAllSamples("WebApp.Install.Source.Success"),
+              BucketsAre(base::Bucket(install_source, 1)));
 
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(result_app_id);

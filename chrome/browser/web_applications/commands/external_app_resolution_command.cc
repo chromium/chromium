@@ -97,7 +97,7 @@ void ExternalAppResolutionCommand::SetOnLockUpgradedCallbackForTesting(
 
 void ExternalAppResolutionCommand::OnShutdown(
     base::PassKey<WebAppCommandManager>) const {
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(false, install_surface_);
 }
 
 void ExternalAppResolutionCommand::StartWithLock(
@@ -132,7 +132,7 @@ WebAppProvider& ExternalAppResolutionCommand::provider() const {
 
 void ExternalAppResolutionCommand::Abort(webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("abort_result_code", base::ToString(code));
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(false, install_surface_);
   CompleteAndSelfDestruct(CommandResult::kFailure,
                           ExternallyManagedAppManager::InstallResult(
                               code, std::nullopt,
@@ -411,7 +411,8 @@ void ExternalAppResolutionCommand::OnInstallFinalized(
     }
   }
 
-  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
+                                                  install_surface_);
 
   CHECK(apps_lock_);
 
@@ -655,7 +656,8 @@ void ExternalAppResolutionCommand::OnInstallFromInfoCompleted(
     return;
   }
 
-  webapps::InstallableMetrics::TrackInstallResult(successful_install_from_info);
+  webapps::InstallableMetrics::TrackInstallResult(successful_install_from_info,
+                                                  install_surface_);
 
   uninstall_and_replace_job_.emplace(
       &profile_.get(),
