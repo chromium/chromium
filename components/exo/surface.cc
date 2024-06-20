@@ -57,12 +57,14 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -1728,14 +1730,16 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
 
   gfx::MaskFilterInfo msk;
   if (!state_.rounded_corners_bounds.IsEmpty()) {
-    // Set the mask.
-    msk = gfx::MaskFilterInfo(state_.rounded_corners_bounds +
-                              to_root_dp.OffsetFromOrigin());
-
+    // Rounded corner bounds are in the local space of the surface.
+    gfx::RRectF rounded_corner_bounds_local =
+        state_.rounded_corners_bounds + to_root_dp.OffsetFromOrigin();
     if (device_scale_factor.has_value()) {
-      msk.ApplyTransform(
-          gfx::Transform::MakeScale(device_scale_factor.value()));
+      rounded_corner_bounds_local.Scale(device_scale_factor.value());
     }
+
+    // Snap rounded corner bounds to pixel boundary. See b/40267343.
+    msk = gfx::MaskFilterInfo(gfx::RRectF::ToEnclosingRRectFIgnoringError(
+        rounded_corner_bounds_local));
   }
 
   // Compute the total transformation from post-transform buffer coordinates to

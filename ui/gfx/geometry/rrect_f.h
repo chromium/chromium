@@ -170,6 +170,8 @@ class GEOMETRY_SKIA_EXPORT RRectF {
   explicit operator SkRRect() const { return skrrect_; }
 
   static RRectF ToEnclosingRRectF(const RRectF& rrect);
+  static RRectF ToEnclosingRRectFIgnoringError(const RRectF& rrect,
+                                               float error = 0.001f);
 
  private:
   void GetAllRadii(SkVector radii[4]) const;

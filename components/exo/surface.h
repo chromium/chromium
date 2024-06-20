@@ -24,7 +24,6 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -641,7 +640,8 @@ class Surface final : public ui::PropertyHandler {
   void UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint);
 
   // Puts the current surface into a draw quad, and appends the draw quads into
-  // the |frame|.
+  // the `frame`. `device_scale_factor` is supplied if the client does not
+  // submit surfaces in pixel coordinates.
   void AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                              const gfx::PointF& to_parent_dp,
                              bool needs_full_damage,

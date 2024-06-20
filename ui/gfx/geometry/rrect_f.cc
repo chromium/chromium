@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 
@@ -228,6 +229,13 @@ bool RRectF::ApproximatelyEqual(const RRectF& rect, float tolerance) const {
 // static
 RRectF RRectF::ToEnclosingRRectF(const RRectF& rrect_f) {
   return RRectF(gfx::RectF(ToEnclosingRect(rrect_f.rect())),
+                rrect_f.GetRoundedCorners());
+}
+
+// static
+RRectF RRectF::ToEnclosingRRectFIgnoringError(const RRectF& rrect_f,
+                                              float error) {
+  return RRectF(gfx::RectF(ToEnclosingRectIgnoringError(rrect_f.rect(), error)),
                 rrect_f.GetRoundedCorners());
 }
 
