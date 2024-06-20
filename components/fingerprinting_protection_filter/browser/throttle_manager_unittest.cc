@@ -711,6 +711,24 @@ TEST_P(ThrottleManagerEnabledTest, ThrottleManagerLifetime_Subframe) {
   EXPECT_EQ(ThrottleManager::FromPage(main_rfh()->GetPage()), throttle_manager);
 }
 
+TEST_P(ThrottleManagerEnabledTest,
+       ThrottleManagerLifetime_DidFinishInFrameNavigationSucceeds) {
+  NavigateAndCommitMainFrame(GURL(kTestURLWithActivation));
+
+  auto* throttle_manager = ThrottleManager::FromPage(main_rfh()->GetPage());
+  ASSERT_TRUE(throttle_manager);
+
+  CreateSubframeWithTestNavigation(GURL("https://www.example.com/download"),
+                                   main_rfh());
+  navigation_simulator()->Start();
+
+  // Test that `DidFinishInFrameNavigation` does not crash when an uncommitted
+  // navigation is not the initial navigation.
+  throttle_manager->DidFinishInFrameNavigation(
+      navigation_simulator()->GetNavigationHandle(),
+      /*is_initial_navigation=*/false);
+}
+
 // Same document navigations are similar to subframes: do not create a new
 // throttle manager and FromNavigation gets the existing one.
 TEST_P(ThrottleManagerEnabledTest, ThrottleManagerLifetime_SameDocument) {

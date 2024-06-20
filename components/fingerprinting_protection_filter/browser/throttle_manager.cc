@@ -217,20 +217,6 @@ void ThrottleManager::DidFinishInFrameNavigation(
     SCOPED_CRASH_KEY_STRING256(
         "crbug40280666", "navigation-error-code",
         net::ErrorToString(navigation_handle->GetNetErrorCode()));
-    std::string previous_main_frame_url;
-    if (navigation_handle->IsInPrimaryMainFrame() ||
-        (navigation_handle->GetParentFrame() &&
-         navigation_handle->GetParentFrame()->GetPage().IsPrimary())) {
-      previous_main_frame_url =
-          navigation_handle->GetPreviousPrimaryMainFrameURL()
-              .possibly_invalid_spec();
-    }
-    SCOPED_CRASH_KEY_STRING1024("crbug40280666", "previous-main-frame-url",
-                                previous_main_frame_url);
-    SCOPED_CRASH_KEY_STRING1024("crbug40280666", "initiator-base-url",
-                                navigation_handle->GetInitiatorBaseUrl()
-                                    .value()
-                                    .possibly_invalid_spec());
     SCOPED_CRASH_KEY_STRING1024(
         "crbug40280666", "last-committed-url",
         frame_host->GetLastCommittedURL().possibly_invalid_spec());
