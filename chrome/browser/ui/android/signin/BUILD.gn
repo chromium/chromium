@@ -59,7 +59,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachine.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConsentTextTracker.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/FullScreenSyncPromoUtil.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoUtil.java",
     "java/src/org/chromium/chrome/browser/ui/signin/GoogleActivityController.java",
     "java/src/org/chromium/chrome/browser/ui/signin/MinorModeHelper.java",
     "java/src/org/chromium/chrome/browser/ui/signin/PersonalizedSigninPromoView.java",
@@ -185,7 +185,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.signin"
   sources = [
     "junit/src/org/chromium/chrome/browser/ui/signin/ConfirmSyncDataStateMachineTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/signin/FullScreenSyncPromoTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/FullscreenSigninPromoUtilTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninAccountPickerCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerTest.java",

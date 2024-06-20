@@ -50,13 +50,13 @@ import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.Set;
 
-/** Tests for {@link FullScreenSyncPromoUtil}. */
+/** Tests for {@link FullscreenSigninPromoUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS,
     ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO
 })
-public class FullScreenSyncPromoTest {
+public class FullscreenSigninPromoUtilTest {
     private static final int CURRENT_MAJOR_VERSION = 42;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -107,7 +107,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         mFakeAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -123,7 +123,7 @@ public class FullScreenSyncPromoTest {
     public void whenNoLastShownVersionShouldReturnFalseAndSaveVersion() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -139,7 +139,7 @@ public class FullScreenSyncPromoTest {
     public void promoVisibleWhenForcingSigninPromoAtStartup() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -160,7 +160,7 @@ public class FullScreenSyncPromoTest {
     public void promoVisibleWhenForcingSigninPromoAtStartup_replaceSyncWithSigninPromosEnabled() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -177,7 +177,7 @@ public class FullScreenSyncPromoTest {
                 .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -196,7 +196,7 @@ public class FullScreenSyncPromoTest {
                 .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail());
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -213,7 +213,7 @@ public class FullScreenSyncPromoTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(41);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -229,7 +229,7 @@ public class FullScreenSyncPromoTest {
     public void whenNoAccountsShouldReturnFalse() {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -251,7 +251,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         // Old implementation hasn't been storing account list
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -285,7 +285,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(40);
         // Old implementation hasn't been storing account list
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -305,7 +305,7 @@ public class FullScreenSyncPromoTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(40);
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -323,7 +323,7 @@ public class FullScreenSyncPromoTest {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
         mPrefManager.setSigninPromoLastShownVersion(40);
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -346,7 +346,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastAccountEmails(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -373,7 +373,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastAccountEmails(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -393,7 +393,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastAccountEmails(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -417,7 +417,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastAccountEmails(
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()));
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -443,7 +443,7 @@ public class FullScreenSyncPromoTest {
                         AccountManagerTestRule.TEST_ACCOUNT_1.getEmail(),
                         AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()));
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -467,7 +467,7 @@ public class FullScreenSyncPromoTest {
                         AccountManagerTestRule.TEST_ACCOUNT_1.getEmail(),
                         AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()));
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -490,7 +490,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
 
         Assert.assertFalse(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -511,7 +511,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
 
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -536,7 +536,7 @@ public class FullScreenSyncPromoTest {
                 .thenReturn(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
@@ -564,7 +564,7 @@ public class FullScreenSyncPromoTest {
                 .thenReturn(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertTrue(
-                FullScreenSyncPromoUtil.launchPromoIfNeeded(
+                FullscreenSigninPromoUtil.launchPromoIfNeeded(
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,

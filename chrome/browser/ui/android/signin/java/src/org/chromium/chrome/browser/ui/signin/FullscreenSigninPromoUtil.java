@@ -35,10 +35,9 @@ import java.util.Set;
  * SyncConsentActivity}. After UNO, this will launch the re-FRE with {@link
  * SigninAndHistoryOptInActivity}.
  */
-// TODO(b/41493788): Consider renaming this to UpgradePromoUtil.
-public final class FullScreenSyncPromoUtil {
+public final class FullscreenSigninPromoUtil {
     /**
-     * Launches the {@link SyncConsentActivity} if it needs to be displayed.
+     * Launches the {@link SyncConsentActivity}  or the {@link igninAndHistoryOptInActivity} if it needs to be displayed.
      *
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
      * @param profile The active user profile.
@@ -145,5 +144,5 @@ public final class FullScreenSyncPromoUtil {
                 || !previousAccountEmails.containsAll(currentAccountEmails);
     }
 
-    private FullScreenSyncPromoUtil() {}
+    private FullscreenSigninPromoUtil() {}
 }
