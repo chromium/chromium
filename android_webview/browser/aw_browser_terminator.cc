@@ -155,7 +155,7 @@ void AwBrowserTerminator::OnChildExit(
   // optimization.
   if (base::FeatureList::IsEnabled(
           features::kCreateSpareRendererOnBrowserContextCreation) &&
-      AwRenderProcess::IsUnused(rph)) {
+      rph && AwRenderProcess::IsUnused(rph)) {
     return;
   }
 
