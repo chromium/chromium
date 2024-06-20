@@ -35,16 +35,17 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
   if (type == Type::kExpandedBarMenu) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
-    AddItem(base::to_underlying(CommandId::kWeatherSuggestions), u"Weather");
+    bool enabled = IsWeatherAllowedByGeolocation();
+    AddItem(base::to_underlying(CommandId::kWeatherSuggestions),
+            enabled ? u"Weather" : u"Weather (not available)");
     auto weather_index = GetIndexOfCommandId(
         base::to_underlying(CommandId::kWeatherSuggestions));
-    bool enabled = IsWeatherAllowedByGeolocation();
     SetEnabledAt(weather_index.value(), enabled);
     if (!enabled) {
-      // TODO(b/328486578): Localize string once it is finalized.
+      // TODO(b/328486578): Localize string.
       SetMinorText(weather_index.value(),
-                   u"Weather is not available because location access is "
-                   u"turned off in settings");
+                   u"Weather isn't available because location access is "
+                   u"turned off. You can change this in settings.");
     }
 
     AddItem(base::to_underlying(CommandId::kCalendarSuggestions),
