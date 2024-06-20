@@ -16,6 +16,18 @@
 
 namespace autofill {
 
+namespace {
+
+bool MatchesPattern(std::u16string_view input, std::string_view pattern_name) {
+  static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
+  base::span<const MatchPatternRef> patterns = GetMatchPatterns(
+      pattern_name, /*language_code=*/std::nullopt, *GetActivePatternSource());
+  return base::ranges::any_of(patterns, [&](MatchPatternRef pattern_ref) {
+    return MatchesRegex(
+        input, *cache->GetRegexPattern((*pattern_ref).positive_pattern));
+  });
+}
+
 class NameFieldParserTest
     : public FormFieldParserTestBase,
       public testing::TestWithParam<PatternProviderFeatureState> {
@@ -188,18 +200,18 @@ TEST_P(NameFieldParserTest, HispanicLastNameRegexConverage) {
 
   for (const auto& string : first_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_TRUE(MatchesRegex<kNameLastFirstRe>(string));
+    EXPECT_TRUE(MatchesPattern(string, "LAST_NAME_FIRST"));
   }
 
   for (const auto& string : second_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_TRUE(MatchesRegex<kNameLastSecondRe>(string));
+    EXPECT_TRUE(MatchesPattern(string, "LAST_NAME_SECOND"));
   }
 
   for (const auto& string : neither_first_or_second_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_FALSE(MatchesRegex<kNameLastFirstRe>(string));
-    EXPECT_FALSE(MatchesRegex<kNameLastSecondRe>(string));
+    EXPECT_FALSE(MatchesPattern(string, "LAST_NAME_FIRST"));
+    EXPECT_FALSE(MatchesPattern(string, "LAST_NAME_SECOND"));
   }
 }
 
@@ -217,5 +229,7 @@ TEST_P(NameFieldParserTest, ContactNameFull) {
 
   ClassifyAndVerify(ParseResult::kParsed);
 }
+
+}  // namespace
 
 }  // namespace autofill
