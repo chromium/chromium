@@ -1012,7 +1012,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         String extractDomainName(@JniType("std::string") String email);
 
         void fetchAndApplyCloudPolicy(
-                long nativeSigninManagerAndroid, CoreAccountInfo account, Runnable callback);
+                long nativeSigninManagerAndroid,
+                CoreAccountInfo account,
+                @JniType("base::RepeatingClosure") Runnable callback);
 
         void stopApplyingCloudPolicy(long nativeSigninManagerAndroid);
 

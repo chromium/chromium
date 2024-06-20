@@ -60,7 +60,7 @@ class SigninManagerAndroid : public KeyedService {
   void FetchAndApplyCloudPolicy(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_account_info,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::RepeatingClosure& j_callback);
 
   void StopApplyingCloudPolicy(JNIEnv* env);
 
