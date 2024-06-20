@@ -398,14 +398,6 @@ static_library("ui") {
   }
 
   defines = []
-  if (is_mac) {
-    # For version_ui.cc:
-    if (use_lld) {
-      defines += [ "CHROMIUM_LINKER_NAME=\"lld\"" ]
-    } else {
-      defines += [ "CHROMIUM_LINKER_NAME=\"ld\"" ]
-    }
-  }
   libs = []
 
   configs += [
@@ -749,15 +741,6 @@ static_library("ui") {
     "//v8:v8_version",
   ]
 
-  if (is_win || is_linux || is_mac) {
-    sources += [
-      "shortcuts/desktop_shortcuts_utils.cc",
-      "shortcuts/desktop_shortcuts_utils.h",
-    ]
-
-    deps += [ "//chrome/browser/shortcuts:shortcuts" ]
-  }
-
   if (is_chrome_branded) {
     deps += [ "//components/plus_addresses/resources:vector_icons" ]
   }
@@ -780,17 +763,6 @@ static_library("ui") {
     deps += [ "//chrome/browser/vr:vr_base" ]
   }
 
-  if (is_win || is_linux || is_mac || is_chromeos) {
-    sources += [
-      "passwords/password_cross_domain_confirmation_popup_controller_impl.cc",
-      "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
-    ]
-    deps += [
-      "//chrome/browser/search/background",
-      "//chrome/browser/themes",
-    ]
-  }
-
   if (is_win || is_android || is_linux || is_chromeos) {
     sources += [
       "webui/sandbox/sandbox_internals_ui.cc",
@@ -798,53 +770,8 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_linux || is_mac || is_chromeos_ash) {
-    sources += [
-      "passwords/password_cross_domain_confirmation_popup_view.h",
-      "webui/connectors_internals/connectors_internals_page_handler.cc",
-      "webui/connectors_internals/connectors_internals_page_handler.h",
-      "webui/connectors_internals/connectors_internals_ui.cc",
-      "webui/connectors_internals/connectors_internals_ui.h",
-      "webui/connectors_internals/device_trust_utils.cc",
-      "webui/connectors_internals/device_trust_utils.h",
-    ]
-
-    deps += [
-      "//chrome/browser/enterprise/connectors/device_trust:features",
-      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
-      "//chrome/browser/enterprise/connectors/device_trust/common",
-      "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
-      "//components/device_signals/core/browser",
-    ]
-
-    if (enterprise_client_certificates) {
-      deps += [ "//components/enterprise/client_certificates/core" ]
-    }
-  }
-
   if (enterprise_data_controls) {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "chromeos/window_pin_util.h",
-      "webui/dlp_internals/dlp_internals_page_handler.cc",
-      "webui/dlp_internals/dlp_internals_page_handler.h",
-      "webui/dlp_internals/dlp_internals_ui.cc",
-      "webui/dlp_internals/dlp_internals_ui.h",
-      "webui/trusted_vault/trusted_vault_dialog_delegate.cc",
-      "webui/trusted_vault/trusted_vault_dialog_delegate.h",
-    ]
-    deps += [
-      "//chrome/browser/ui/webui/dlp_internals:mojo_bindings",
-      "//chromeos/components/kiosk",
-      "//chromeos/constants",
-      "//chromeos/crosapi/cpp",
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/dbus/dlp",
-      "//components/enterprise/data_controls:data_controls",
-    ]
   }
 
   if (is_android) {
@@ -2115,6 +2042,7 @@ static_library("ui") {
       "//chrome/browser/companion/text_finder",
       "//chrome/browser/companion/visual_query",
       "//chrome/browser/feedback:feedback_enum",
+      "//chrome/browser/headless:command_processor",
       "//chrome/browser/image_editor",
       "//chrome/browser/image_editor:image_editor_component_util",
       "//chrome/browser/lens/core/mojom:mojo_bindings",
@@ -2293,10 +2221,6 @@ static_library("ui") {
         "webui/new_tab_page/foo/foo_handler.h",
       ]
       deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
-    }
-
-    if (!is_android) {
-      deps += [ "//chrome/browser/headless:command_processor" ]
     }
   }
 
@@ -4180,6 +4104,7 @@ static_library("ui") {
       "//chrome/browser/chromeos",
     ]
     sources += [
+      "chromeos/window_pin_util.h",
       "platform_keys_certificate_selector_chromeos.h",
       "tabs/existing_window_sub_menu_model_chromeos.cc",
       "tabs/existing_window_sub_menu_model_chromeos.h",
@@ -4206,14 +4131,22 @@ static_library("ui") {
       "views/tabs/tab_scrubber_chromeos.h",
       "webui/certificate_provisioning_ui_handler.cc",
       "webui/certificate_provisioning_ui_handler.h",
+      "webui/dlp_internals/dlp_internals_page_handler.cc",
+      "webui/dlp_internals/dlp_internals_page_handler.h",
+      "webui/dlp_internals/dlp_internals_ui.cc",
+      "webui/dlp_internals/dlp_internals_ui.h",
       "webui/management/management_ui_handler_chromeos.cc",
       "webui/management/management_ui_handler_chromeos.h",
+      "webui/trusted_vault/trusted_vault_dialog_delegate.cc",
+      "webui/trusted_vault/trusted_vault_dialog_delegate.h",
       "webui/version/version_handler_chromeos.cc",
       "webui/version/version_handler_chromeos.h",
       "window_sizer/window_sizer_chromeos.cc",
       "window_sizer/window_sizer_chromeos.h",
     ]
     deps += [
+      "//ash/webui/settings/public/constants",
+      "//ash/webui/settings/public/constants:mojom",
       "//chrome/app:generated_resources",
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/chromeos",
@@ -4221,13 +4154,18 @@ static_library("ui") {
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/ui/views/editor_menu",
       "//chrome/browser/ui/views/mahi",
+      "//chrome/browser/ui/webui/dlp_internals:mojo_bindings",
       "//chromeos/components/kiosk",
       "//chromeos/components/security_token_pin",
       "//chromeos/constants",
+      "//chromeos/crosapi/cpp",
+      "//chromeos/crosapi/cpp:crosapi_constants",
+      "//chromeos/dbus/dlp",
       "//chromeos/dbus/power",
       "//chromeos/strings",
       "//chromeos/version",
       "//components/account_manager_core:account_manager_core",
+      "//components/enterprise/data_controls:data_controls",
       "//components/metrics/structured:structured_events",
       "//ui/chromeos/styles:cros_styles_views",
       "//ui/chromeos/styles:cros_tokens_color_mappings",
@@ -4244,7 +4182,10 @@ static_library("ui") {
       "startup/silent_sync_enabler.h",
       "views/chrome_browser_main_extra_parts_views_lacros.cc",
       "views/chrome_browser_main_extra_parts_views_lacros.h",
+      "views/chrome_views_delegate_lacros.cc",
       "views/eye_dropper/eye_dropper_lacros.cc",
+      "views/frame/browser_desktop_window_tree_host_lacros.cc",
+      "views/frame/browser_desktop_window_tree_host_lacros.h",
       "views/frame/browser_frame_lacros.cc",
       "views/frame/browser_frame_lacros.h",
       "views/frame/desktop_browser_frame_lacros.cc",
@@ -4277,13 +4218,6 @@ static_library("ui") {
     ]
   }
 
-  if (is_chromeos) {
-    deps += [
-      "//ash/webui/settings/public/constants",
-      "//ash/webui/settings/public/constants:mojom",
-    ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "autofill/payments/webauthn_dialog.h",
@@ -4297,6 +4231,8 @@ static_library("ui") {
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
       "incognito_clear_browsing_data_dialog_interface.h",
+      "passwords/password_cross_domain_confirmation_popup_controller_impl.cc",
+      "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
       "signin/signin_modal_dialog.cc",
       "signin/signin_modal_dialog.h",
       "signin/signin_modal_dialog_impl.cc",
@@ -4347,6 +4283,8 @@ static_library("ui") {
       "webui/signin/sync_confirmation_ui.h",
     ]
     deps += [
+      "//chrome/browser/search/background",
+      "//chrome/browser/themes",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//components/lens/proto/server:proto",
@@ -4361,8 +4299,54 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      "shortcuts/desktop_shortcuts_utils.cc",
+      "shortcuts/desktop_shortcuts_utils.h",
       "startup/default_browser_prompt/default_browser_prompt.cc",
       "startup/default_browser_prompt/default_browser_prompt.h",
+      "startup/web_app_info_recorder_utils.cc",
+      "startup/web_app_info_recorder_utils.h",
+      "views/media_preview/active_devices_media_coordinator.cc",
+      "views/media_preview/active_devices_media_coordinator.h",
+      "views/media_preview/camera_preview/camera_coordinator.cc",
+      "views/media_preview/camera_preview/camera_coordinator.h",
+      "views/media_preview/camera_preview/camera_mediator.cc",
+      "views/media_preview/camera_preview/camera_mediator.h",
+      "views/media_preview/camera_preview/camera_view_controller.cc",
+      "views/media_preview/camera_preview/camera_view_controller.h",
+      "views/media_preview/camera_preview/preview_badge.cc",
+      "views/media_preview/camera_preview/preview_badge.h",
+      "views/media_preview/camera_preview/video_format_comparison.cc",
+      "views/media_preview/camera_preview/video_format_comparison.h",
+      "views/media_preview/camera_preview/video_stream_coordinator.cc",
+      "views/media_preview/camera_preview/video_stream_coordinator.h",
+      "views/media_preview/camera_preview/video_stream_view.cc",
+      "views/media_preview/camera_preview/video_stream_view.h",
+      "views/media_preview/media_coordinator.cc",
+      "views/media_preview/media_coordinator.h",
+      "views/media_preview/media_preview_feature.cc",
+      "views/media_preview/media_preview_feature.h",
+      "views/media_preview/media_preview_metrics.cc",
+      "views/media_preview/media_preview_metrics.h",
+      "views/media_preview/media_view.cc",
+      "views/media_preview/media_view.h",
+      "views/media_preview/media_view_controller_base.cc",
+      "views/media_preview/media_view_controller_base.h",
+      "views/media_preview/mic_preview/audio_stream_coordinator.cc",
+      "views/media_preview/mic_preview/audio_stream_coordinator.h",
+      "views/media_preview/mic_preview/audio_stream_view.cc",
+      "views/media_preview/mic_preview/audio_stream_view.h",
+      "views/media_preview/mic_preview/mic_coordinator.cc",
+      "views/media_preview/mic_preview/mic_coordinator.h",
+      "views/media_preview/mic_preview/mic_mediator.cc",
+      "views/media_preview/mic_preview/mic_mediator.h",
+      "views/media_preview/mic_preview/mic_view_controller.cc",
+      "views/media_preview/mic_preview/mic_view_controller.h",
+      "views/media_preview/page_info_previews_coordinator.cc",
+      "views/media_preview/page_info_previews_coordinator.h",
+      "views/media_preview/permission_prompt_previews_coordinator.cc",
+      "views/media_preview/permission_prompt_previews_coordinator.h",
+      "views/media_preview/scroll_media_preview.cc",
+      "views/media_preview/scroll_media_preview.h",
       "views/web_apps/deprecated_apps_dialog_view.cc",
       "views/web_apps/deprecated_apps_dialog_view.h",
       "views/web_apps/force_installed_deprecated_apps_dialog_view.cc",
@@ -4391,18 +4375,40 @@ static_library("ui") {
 
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser/shortcuts",
       "//chrome/browser/ui/webui/app_home:mojo_bindings",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
+      "//components/capture_mode",
+      "//services/audio/public/mojom",
+      "//services/video_capture/public/mojom",
     ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos_ash) {
     sources += [
+      "passwords/password_cross_domain_confirmation_popup_view.h",
       "webui/app_management/app_management_page_handler_base.cc",
       "webui/app_management/app_management_page_handler_base.h",
       "webui/app_management/app_management_page_handler_factory.cc",
       "webui/app_management/app_management_page_handler_factory.h",
+      "webui/connectors_internals/connectors_internals_page_handler.cc",
+      "webui/connectors_internals/connectors_internals_page_handler.h",
+      "webui/connectors_internals/connectors_internals_ui.cc",
+      "webui/connectors_internals/connectors_internals_ui.h",
+      "webui/connectors_internals/device_trust_utils.cc",
+      "webui/connectors_internals/device_trust_utils.h",
     ]
+    deps += [
+      "//chrome/browser/enterprise/connectors/device_trust:features",
+      "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+      "//chrome/browser/enterprise/connectors/device_trust/common",
+      "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
+      "//components/device_signals/core/browser",
+    ]
+
+    if (enterprise_client_certificates) {
+      deps += [ "//components/enterprise/client_certificates/core" ]
+    }
   }
 
   if (is_win || is_mac || is_linux || is_chromeos_lacros) {
@@ -4747,6 +4753,13 @@ static_library("ui") {
     weak_frameworks = [
       "LocalAuthenticationEmbeddedUI.framework",  # macOS 12+
     ]
+
+    # For version_ui.cc:
+    if (use_lld) {
+      defines += [ "CHROMIUM_LINKER_NAME=\"lld\"" ]
+    } else {
+      defines += [ "CHROMIUM_LINKER_NAME=\"ld\"" ]
+    }
   }
 
   if (is_win) {
@@ -4877,6 +4890,8 @@ static_library("ui") {
 
   if (is_linux) {
     sources += [
+      "views/frame/browser_desktop_window_tree_host_linux.cc",
+      "views/frame/browser_desktop_window_tree_host_linux.h",
       "views/frame/desktop_browser_frame_aura_linux.cc",
       "views/frame/desktop_browser_frame_aura_linux.h",
       "views/status_icons/status_icon_button_linux.cc",
@@ -4893,11 +4908,8 @@ static_library("ui") {
   }
 
   if (is_linux || is_chromeos_lacros) {
-    sources += [ "views/apps/chrome_app_window_client_views_aura.cc" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
     sources += [
+      "views/apps/chrome_app_window_client_views_aura.cc",
       "views/frame/browser_desktop_window_tree_host.h",
       "webui/help/version_updater_basic.cc",
       "webui/settings/settings_utils_linux.cc",
@@ -4935,20 +4947,6 @@ static_library("ui") {
       defines += [ "USE_DBUS_MENU" ]
       deps += [ "//ui/gfx/x" ]
     }
-
-    if (is_linux) {
-      sources += [
-        "views/frame/browser_desktop_window_tree_host_linux.cc",
-        "views/frame/browser_desktop_window_tree_host_linux.h",
-      ]
-    }
-    if (is_chromeos_lacros) {
-      sources += [
-        "views/chrome_views_delegate_lacros.cc",
-        "views/frame/browser_desktop_window_tree_host_lacros.cc",
-        "views/frame/browser_desktop_window_tree_host_lacros.h",
-      ]
-    }
   }
 
   # Device signals sharing currently only supports win, mac, linux and
@@ -4959,60 +4957,6 @@ static_library("ui") {
       "device_signals_consent/consent_requester.h",
       "views/device_signals_consent/consent_dialog_coordinator.cc",
       "views/device_signals_consent/consent_dialog_coordinator.h",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "startup/web_app_info_recorder_utils.cc",
-      "startup/web_app_info_recorder_utils.h",
-      "views/media_preview/active_devices_media_coordinator.cc",
-      "views/media_preview/active_devices_media_coordinator.h",
-      "views/media_preview/camera_preview/camera_coordinator.cc",
-      "views/media_preview/camera_preview/camera_coordinator.h",
-      "views/media_preview/camera_preview/camera_mediator.cc",
-      "views/media_preview/camera_preview/camera_mediator.h",
-      "views/media_preview/camera_preview/camera_view_controller.cc",
-      "views/media_preview/camera_preview/camera_view_controller.h",
-      "views/media_preview/camera_preview/preview_badge.cc",
-      "views/media_preview/camera_preview/preview_badge.h",
-      "views/media_preview/camera_preview/video_format_comparison.cc",
-      "views/media_preview/camera_preview/video_format_comparison.h",
-      "views/media_preview/camera_preview/video_stream_coordinator.cc",
-      "views/media_preview/camera_preview/video_stream_coordinator.h",
-      "views/media_preview/camera_preview/video_stream_view.cc",
-      "views/media_preview/camera_preview/video_stream_view.h",
-      "views/media_preview/media_coordinator.cc",
-      "views/media_preview/media_coordinator.h",
-      "views/media_preview/media_preview_feature.cc",
-      "views/media_preview/media_preview_feature.h",
-      "views/media_preview/media_preview_metrics.cc",
-      "views/media_preview/media_preview_metrics.h",
-      "views/media_preview/media_view.cc",
-      "views/media_preview/media_view.h",
-      "views/media_preview/media_view_controller_base.cc",
-      "views/media_preview/media_view_controller_base.h",
-      "views/media_preview/mic_preview/audio_stream_coordinator.cc",
-      "views/media_preview/mic_preview/audio_stream_coordinator.h",
-      "views/media_preview/mic_preview/audio_stream_view.cc",
-      "views/media_preview/mic_preview/audio_stream_view.h",
-      "views/media_preview/mic_preview/mic_coordinator.cc",
-      "views/media_preview/mic_preview/mic_coordinator.h",
-      "views/media_preview/mic_preview/mic_mediator.cc",
-      "views/media_preview/mic_preview/mic_mediator.h",
-      "views/media_preview/mic_preview/mic_view_controller.cc",
-      "views/media_preview/mic_preview/mic_view_controller.h",
-      "views/media_preview/page_info_previews_coordinator.cc",
-      "views/media_preview/page_info_previews_coordinator.h",
-      "views/media_preview/permission_prompt_previews_coordinator.cc",
-      "views/media_preview/permission_prompt_previews_coordinator.h",
-      "views/media_preview/scroll_media_preview.cc",
-      "views/media_preview/scroll_media_preview.h",
-    ]
-    deps += [
-      "//components/capture_mode",
-      "//services/audio/public/mojom",
-      "//services/video_capture/public/mojom",
     ]
   }
 
