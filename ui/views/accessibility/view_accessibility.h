@@ -256,6 +256,9 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsEnabled(bool is_enabled);
   bool GetIsEnabled() const;
 
+  void SetTableRowCount(int row_count);
+  void SetTableColumnCount(int column_count);
+
   void SetDescription(const std::string& description,
                       const ax::mojom::DescriptionFrom description_from =
                           ax::mojom::DescriptionFrom::kAriaDescription);

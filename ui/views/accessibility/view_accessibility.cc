@@ -570,6 +570,15 @@ bool ViewAccessibility::GetIsEnabled() const {
   return data_.GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
 
+void ViewAccessibility::SetTableRowCount(int row_count) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, row_count);
+}
+
+void ViewAccessibility::SetTableColumnCount(int column_count) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount,
+                        column_count);
+}
+
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
