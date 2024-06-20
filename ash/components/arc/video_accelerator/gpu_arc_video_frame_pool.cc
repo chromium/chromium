@@ -391,11 +391,9 @@ scoped_refptr<media::VideoFrame> GpuArcVideoFramePool::CreateVideoFrame(
     return nullptr;
   }
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image;
   return media::VideoFrame::WrapExternalGpuMemoryBuffer(
       gfx::Rect(coded_size_), coded_size_, std::move(gpu_memory_buffer),
-      shared_image, gpu::SyncToken(), /*texture_target=*/0,
-      base::NullCallback(), base::TimeDelta());
+      base::TimeDelta());
 }
 
 }  // namespace arc
