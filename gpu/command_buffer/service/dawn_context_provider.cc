@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -64,9 +65,20 @@ BASE_FEATURE(kForceDawnInitializeFailure,
              "ForceDawnInitializeFailure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Sets crash key in thread safe manner. This should be used for any crash keys
+// set from dawn error or device lost callbacks that may run on multiple
+// threads.
+template <uint32_t KeySize>
+void SetCrashKeyThreadSafe(crash_reporter::CrashKeyString<KeySize>& crash_key,
+                           std::string_view message) {
+  static base::NoDestructor<base::Lock> lock;
+  base::AutoLock auto_lock(*lock.get());
+  crash_key.Set(message);
+}
+
 void SetDawnErrorCrashKey(std::string_view message) {
   static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
-  error_key.Set(message);
+  SetCrashKeyThreadSafe(error_key, message);
 }
 
 class Platform : public webgpu::DawnPlatform {
@@ -394,7 +406,7 @@ bool DawnSharedState::Initialize(
   descriptor.uncapturedErrorCallbackInfo = {
       .callback = &LogError, .userdata = static_cast<void*>(this)};
   descriptor.deviceLostCallbackInfo = {
-      .mode = wgpu::CallbackMode::AllowProcessEvents,
+      .mode = wgpu::CallbackMode::AllowSpontaneous,
       .callback = &LogDeviceLost,
       .userdata = static_cast<void*>(this)};
   descriptor.nextInChain = &cache_desc;
@@ -642,11 +654,11 @@ void DawnSharedState::OnError(WGPUErrorType error_type, const char* message) {
 
     if (const char* result_string = HRESULTToString(result)) {
       LOG(ERROR) << "Device removed reason: " << result_string;
-      reason_message_key.Set(result_string);
+      SetCrashKeyThreadSafe(reason_message_key, result_string);
     } else {
       auto unknown_error = base::StringPrintf("Unknown error(0x%08lX)", result);
       LOG(ERROR) << "Device removed reason: " << unknown_error;
-      reason_message_key.Set(unknown_error.c_str());
+      SetCrashKeyThreadSafe(reason_message_key, unknown_error.c_str());
     }
   }
 #endif
