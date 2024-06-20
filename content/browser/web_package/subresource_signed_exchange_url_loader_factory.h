@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/orb/orb_api.h"
@@ -19,7 +22,7 @@ namespace content {
 
 // A URLLoaderFactory which handles a signed exchange subresource request from
 // renderer process.
-class SubresourceSignedExchangeURLLoaderFactory
+class CONTENT_EXPORT SubresourceSignedExchangeURLLoaderFactory
     : public network::mojom::URLLoaderFactory {
  public:
   SubresourceSignedExchangeURLLoaderFactory(
@@ -52,7 +55,9 @@ class SubresourceSignedExchangeURLLoaderFactory
   std::unique_ptr<const PrefetchedSignedExchangeCacheEntry> entry_;
   const url::Origin request_initiator_origin_lock_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
-  network::orb::PerFactoryState orb_state_;
+  scoped_refptr<base::RefCountedData<network::orb::PerFactoryState>>
+      orb_state_ = base::MakeRefCounted<
+          base::RefCountedData<network::orb::PerFactoryState>>();
 };
 
 }  // namespace content

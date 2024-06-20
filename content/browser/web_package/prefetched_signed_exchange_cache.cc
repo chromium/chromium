@@ -5,9 +5,11 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -259,7 +261,8 @@ class PrefetchedNavigationLoaderInterceptor
 
     // Okay to use separate/empty ORB state for each navigation request.
     // (Because ORB doesn't apply to navigation requests.)
-    network::orb::PerFactoryState empty_orb_state;
+    auto empty_orb_state = base::MakeRefCounted<
+        base::RefCountedData<network::orb::PerFactoryState>>();
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<SignedExchangeInnerResponseURLLoader>(
@@ -267,7 +270,7 @@ class PrefetchedNavigationLoaderInterceptor
             std::make_unique<const storage::BlobDataHandle>(
                 *exchange_->blob_data_handle()),
             *exchange_->completion_status(), std::move(client),
-            true /* is_navigation_request */, empty_orb_state),
+            true /* is_navigation_request */, std::move(empty_orb_state)),
         std::move(receiver));
   }
 

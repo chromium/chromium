@@ -9,8 +9,11 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/loader/cross_origin_read_blocking_checker.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -25,7 +28,8 @@
 namespace content {
 
 // A URLLoader which returns the inner response of signed exchange.
-class SignedExchangeInnerResponseURLLoader : public network::mojom::URLLoader {
+class CONTENT_EXPORT SignedExchangeInnerResponseURLLoader
+    : public network::mojom::URLLoader {
  public:
   SignedExchangeInnerResponseURLLoader(
       const network::ResourceRequest& request,
@@ -34,7 +38,8 @@ class SignedExchangeInnerResponseURLLoader : public network::mojom::URLLoader {
       const network::URLLoaderCompletionStatus& completion_status,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       bool is_navigation_request,
-      network::orb::PerFactoryState& orb_state);
+      scoped_refptr<base::RefCountedData<network::orb::PerFactoryState>>
+          orb_state);
 
   SignedExchangeInnerResponseURLLoader(
       const SignedExchangeInnerResponseURLLoader&) = delete;
@@ -84,6 +89,10 @@ class SignedExchangeInnerResponseURLLoader : public network::mojom::URLLoader {
   std::unique_ptr<const storage::BlobDataHandle> blob_data_handle_;
   const network::URLLoaderCompletionStatus completion_status_;
   mojo::Remote<network::mojom::URLLoaderClient> client_;
+
+  // `orb_checker_` references `orb_state_` so it needs to be destroyed first
+  // (and therefore `orb_checker_`'s field declaration has to appear last).
+  scoped_refptr<base::RefCountedData<network::orb::PerFactoryState>> orb_state_;
   std::unique_ptr<CrossOriginReadBlockingChecker> orb_checker_;
 
   base::WeakPtrFactory<SignedExchangeInnerResponseURLLoader> weak_factory_{

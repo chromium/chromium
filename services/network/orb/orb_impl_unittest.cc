@@ -1866,7 +1866,7 @@ TEST_P(ResponseAnalyzerTest, OpaqueResponseBlocking) {
 
   PerFactoryState per_factory_state;
   auto analyzer =
-      std::make_unique<OpaqueResponseBlockingAnalyzer>(per_factory_state);
+      std::make_unique<OpaqueResponseBlockingAnalyzer>(&per_factory_state);
 
   RunAnalyzerOnScenario(scenario, *response, std::move(analyzer),
                         kVerifyWhenDecisionIsMade);
@@ -1907,7 +1907,7 @@ TEST(CrossOriginReadBlockingTest, OrbReportsIssuesOnARAResponse) {
   for (const auto& test_case : kTestCases) {
     PerFactoryState per_factory_state;
     auto analyzer =
-        std::make_unique<OpaqueResponseBlockingAnalyzer>(per_factory_state);
+        std::make_unique<OpaqueResponseBlockingAnalyzer>(&per_factory_state);
     auto ara_response = CreateResponse("HTTP/1.1 200 OK\n" + test_case.header);
 
     // Mark the response as empty s.t. it would normally not report.

@@ -2761,6 +2761,7 @@ test("content_unittests") {
     "../browser/web_package/signed_exchange_signature_header_field_unittest.cc",
     "../browser/web_package/signed_exchange_signature_verifier_unittest.cc",
     "../browser/web_package/signed_exchange_utils_unittest.cc",
+    "../browser/web_package/subresource_signed_exchange_url_loader_factory_unittest.cc",
     "../browser/webid/digital_credentials/digital_identity_request_impl_unittest.cc",
     "../browser/webid/federated_auth_disconnect_request_unittest.cc",
     "../browser/webid/federated_auth_request_impl_multiple_frames_unittest.cc",

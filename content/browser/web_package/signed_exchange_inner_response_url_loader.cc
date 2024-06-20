@@ -54,11 +54,13 @@ SignedExchangeInnerResponseURLLoader::SignedExchangeInnerResponseURLLoader(
     const network::URLLoaderCompletionStatus& completion_status,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     bool is_navigation_request,
-    network::orb::PerFactoryState& orb_state)
+    scoped_refptr<base::RefCountedData<network::orb::PerFactoryState>>
+        orb_state)
     : response_(std::move(inner_response)),
       blob_data_handle_(std::move(blob_data_handle)),
       completion_status_(completion_status),
-      client_(std::move(client)) {
+      client_(std::move(client)),
+      orb_state_(std::move(orb_state)) {
   DCHECK(response_->headers);
 
   // The `request.request_initiator` is assumed to be present and trustworthy
@@ -102,7 +104,7 @@ SignedExchangeInnerResponseURLLoader::SignedExchangeInnerResponseURLLoader(
   }
 
   orb_checker_ = std::make_unique<CrossOriginReadBlockingChecker>(
-      request, *response_, *blob_data_handle_, orb_state,
+      request, *response_, *blob_data_handle_, &orb_state_->data,
       base::BindOnce(&SignedExchangeInnerResponseURLLoader::
                          OnCrossOriginReadBlockingCheckComplete,
                      base::Unretained(this)));

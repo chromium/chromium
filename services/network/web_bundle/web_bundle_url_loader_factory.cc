@@ -919,7 +919,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     return;
   }
 
-  auto orb_analyzer = orb::ResponseAnalyzer::Create(orb_state_);
+  auto orb_analyzer = orb::ResponseAnalyzer::Create(&orb_state_);
   auto decision = orb_analyzer->Init(
       loader->url(), loader->request_initiator(), loader->request_mode(),
       loader->request_destination(), *response_head);

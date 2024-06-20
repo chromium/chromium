@@ -35,7 +35,7 @@ ResponseAnalyzer::~ResponseAnalyzer() = default;
 
 // static
 std::unique_ptr<ResponseAnalyzer> ResponseAnalyzer::Create(
-    PerFactoryState& state) {
+    PerFactoryState* state) {
   return std::make_unique<OpaqueResponseBlockingAnalyzer>(state);
 }
 

@@ -36,9 +36,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResponseAnalyzer {
  public:
   // Creates a ResponseAnalyzer.
   //
-  // The caller needs to guarantee that `state` lives as long as the
-  // ResponseAnalyzer (or longer).
-  static std::unique_ptr<ResponseAnalyzer> Create(PerFactoryState& state);
+  // The caller needs to guarantee that `state`'s lifetime is at least as long
+  // as the lifetime of `ResponseAnalyzer`.  `state` needs to be non-null.
+  static std::unique_ptr<ResponseAnalyzer> Create(PerFactoryState* state);
 
   // Decision for what to do with the HTTP response being analyzed.
   enum class Decision {

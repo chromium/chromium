@@ -1838,7 +1838,7 @@ void URLLoader::ContinueOnResponseStarted() {
     // TODO(ricea): Make ORB and ReadAndDiscardBody work together if necessary.
     CHECK(!(options_ & mojom::kURLLoadOptionReadAndDiscardBody))
         << "ORB is incompatible with the ReadAndDiscardBody option";
-    orb_analyzer_ = orb::ResponseAnalyzer::Create(*per_factory_orb_state_);
+    orb_analyzer_ = orb::ResponseAnalyzer::Create(&*per_factory_orb_state_);
     is_more_orb_sniffing_needed_ = true;
     auto decision =
         orb_analyzer_->Init(url_request_->url(), url_request_->initiator(),

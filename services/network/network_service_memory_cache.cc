@@ -128,7 +128,7 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   // URLLoader to CorsURLLoader. It will eliminate the need for ORB checks
   // here.
   orb::PerFactoryState state;
-  auto analyzer = orb::ResponseAnalyzer::Create(state);
+  auto analyzer = orb::ResponseAnalyzer::Create(&state);
   orb::ResponseAnalyzer::Decision decision = analyzer->Init(
       resource_request.url, resource_request.request_initiator,
       resource_request.mode, resource_request.destination, response);
