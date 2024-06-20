@@ -26,6 +26,7 @@ static_library("common") {
     "ruleset_dealer.cc",
     "ruleset_dealer.h",
     "scoped_timers.h",
+    "time_measurements.cc",
     "time_measurements.h",
     "unindexed_ruleset.cc",
     "unindexed_ruleset.h",
@@ -75,6 +76,7 @@ source_set("unit_tests") {
     "load_policy_unittest.cc",
     "ruleset_dealer_unittest.cc",
     "scoped_timers_unittest.cc",
+    "time_measurements_unittest.cc",
     "unindexed_ruleset_unittest.cc",
   ]
   deps = [

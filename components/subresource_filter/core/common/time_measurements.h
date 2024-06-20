@@ -145,6 +145,69 @@ using ExportMicrosecondsToHistogram = ExportTimeDeltaToHistogram<true>;
 
 }  // namespace impl
 
+// Classes for scoped thread timers --------------------------------------------
+
+// Creates a scoped object that measures its lifetime using base::ThreadTicks,
+// and reports the result in milliseconds as a UMA statistic to a histogram with
+// the provided `name` which is expected to be a runtime constant. The histogram
+// collects times up to 10 seconds in 50 buckets.
+//
+// Example:
+//   void Function() {
+//     auto scoped_timer =
+//       ScopedUmaHistogramThreadTimer("Component.FunctionTime");
+//     ... Useful things happen here ...
+//   }
+//
+// WARNING: The generated code is not thread-safe.
+class ScopedUmaHistogramThreadTimer {
+ public:
+  ScopedUmaHistogramThreadTimer() = delete;
+  explicit ScopedUmaHistogramThreadTimer(const std::string& name);
+
+  ScopedUmaHistogramThreadTimer(const ScopedUmaHistogramThreadTimer&) = delete;
+  ScopedUmaHistogramThreadTimer& operator=(
+      const ScopedUmaHistogramThreadTimer&) = delete;
+
+  ~ScopedUmaHistogramThreadTimer();
+
+ private:
+  impl::ScopedTimerImpl<base::ThreadTicks, impl::ExportMillisecondsToHistogram>
+      scoped_uma_histogram_thread_timer_;
+};
+
+// Creates a scoped object that measures its lifetime using base::ThreadTicks,
+// and reports the result in milliseconds as a UMA statistic to a histogram with
+// the provided `name` which is expected to be a runtime constant.
+//
+// Similar to ScopedUmaHistogramThreadTimer above, but the histogram
+// collects times in microseconds, up to 1 second, and using 50 buckets.
+//
+// Example:
+//   void Function() {
+//     auto scoped_timer =
+//       ScopedUmaHistogramMicroThreadTimer("Component.FunctionTime");
+//     ... Useful things happen here ...
+//   }
+//
+// WARNING: The generated code is not thread-safe.
+class ScopedUmaHistogramMicroThreadTimer {
+ public:
+  ScopedUmaHistogramMicroThreadTimer() = delete;
+  explicit ScopedUmaHistogramMicroThreadTimer(const std::string& name);
+
+  ScopedUmaHistogramMicroThreadTimer(
+      const ScopedUmaHistogramMicroThreadTimer&) = delete;
+  ScopedUmaHistogramMicroThreadTimer& operator=(
+      const ScopedUmaHistogramMicroThreadTimer&) = delete;
+
+  ~ScopedUmaHistogramMicroThreadTimer();
+
+ private:
+  impl::ScopedTimerImpl<base::ThreadTicks, impl::ExportMicrosecondsToHistogram>
+      scoped_uma_histogram_micro_thread_timer_;
+};
+
 }  // namespace subresource_filter
 
 #endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_TIME_MEASUREMENTS_H_
