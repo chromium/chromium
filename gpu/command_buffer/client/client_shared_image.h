@@ -234,6 +234,15 @@ class GPU_EXPORT ClientSharedImage
     return gpu_memory_buffer_->stride(plane_index);
   }
 
+  // Returns whether the underlying resource is shared memory without needing to
+  // Map() the shared image. This method is supposed to be used by VideoFrame
+  // temporarily as mentioned above in ::GetStrideForVideoFrame().
+  bool IsSharedMemoryForVideoFrame() const {
+    CHECK(gpu_memory_buffer_);
+    return gpu_memory_buffer_->GetType() ==
+           gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+  }
+
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
