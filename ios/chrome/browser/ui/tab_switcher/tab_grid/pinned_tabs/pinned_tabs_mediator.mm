@@ -360,56 +360,50 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 - (void)dropItem:(UIDragItem*)dragItem
                toIndex:(NSUInteger)destinationIndex
     fromSameCollection:(BOOL)fromSameCollection {
+  WebStateList* webStateList = self.webStateList;
+
   // Tab move operations only originate from Chrome so a local object is used.
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (!fromSameCollection) {
-      // Try to pin the tab. If the returned index is invalid that means the
-      // tab lives in another Browser.
-      int tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
-                                            /*pin_state=*/true);
-      if (tabIndex == WebStateList::kInvalidIndex) {
-        BrowserList* browserList =
-            BrowserListFactory::GetForBrowserState(self.browserState);
-        BrowserAndIndex tabBrowserAndIndex = FindBrowserAndIndex(
-            tabInfo.tabID, browserList->AllRegularBrowsers());
-        if (!tabBrowserAndIndex.browser) {
-          // This could happen if the tab is deleted during a drag-and-drop
-          // action.
-          return;
-        }
 
-        // Move tab across Browsers.
-        base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
-                                      DragItemOrigin::kOtherBrwoser);
-        const WebStateList::InsertionParams params =
-            WebStateList::InsertionParams::AtIndex(destinationIndex).Pinned();
-        MoveTabToBrowser(tabInfo.tabID, self.browser, params);
-        return;
-      }
-      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
-                                    DragItemOrigin::kSameBrowser);
-    } else {
-      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
-                                    DragItemOrigin::kSameCollection);
-    }
+    // Try to pin the tab, if pinned nothing happens.
+    SetWebStatePinnedState(webStateList, tabInfo.tabID,
+                           /*pin_state=*/true);
 
-    // Reorder tabs.
-    int sourceIndex = GetWebStateIndex(self.webStateList,
-                                       WebStateSearchCriteria{
+    int sourceWebStateIndex =
+        GetWebStateIndex(webStateList, WebStateSearchCriteria{
                                            .identifier = tabInfo.tabID,
                                            .pinned_state = PinnedState::kPinned,
                                        });
-    if (sourceIndex != WebStateList::kInvalidIndex &&
-        destinationIndex != NSNotFound &&
-        static_cast<int>(destinationIndex) <
-            self.webStateList->pinned_tabs_count()) {
-      self.webStateList->MoveWebStateAt(sourceIndex, destinationIndex);
+
+    if (sourceWebStateIndex == WebStateList::kInvalidIndex) {
+      // Move tab across Browsers.
+      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                    DragItemOrigin::kOtherBrowser);
+      const WebStateList::InsertionParams params =
+          WebStateList::InsertionParams::AtIndex(destinationIndex).Pinned();
+      MoveTabToBrowser(tabInfo.tabID, self.browser, params);
+      return;
     }
+
+    if (fromSameCollection) {
+      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                    DragItemOrigin::kSameCollection);
+    } else {
+      base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                    DragItemOrigin::kSameBrowser);
+    }
+
+    // Reorder tabs.
+    const auto insertionParams =
+        WebStateList::InsertionParams::AtIndex(destinationIndex);
+    MoveWebStateWithIdentifierToInsertionParams(
+        tabInfo.tabID, insertionParams, webStateList, fromSameCollection);
     return;
   }
+
   base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
                                 DragItemOrigin::kOther);
 
@@ -429,6 +423,8 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     [placeholderContext deletePlaceholder];
     return;
   }
+  base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
+                                DragItemOrigin::kOther);
 
   __weak __typeof(self) weakSelf = self;
   auto loadHandler =

@@ -215,32 +215,35 @@
     int destinationWebStateIndex =
         _tabGroup->range().range_begin() + destinationIndex;
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    // Reorder tab within same grid.
-    int sourceIndex =
+    int sourceWebStateIndex =
         GetWebStateIndex(webStateList, WebStateSearchCriteria{
                                            .identifier = tabInfo.tabID,
                                        });
-    if (sourceIndex == WebStateList::kInvalidIndex) {
+    const auto insertionParams =
+        WebStateList::InsertionParams::AtIndex(destinationWebStateIndex)
+            .InGroup(_tabGroup.get());
+    if (sourceWebStateIndex == WebStateList::kInvalidIndex) {
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
-      const auto insertionParams =
-          WebStateList::InsertionParams::AtIndex(destinationWebStateIndex)
-              .InGroup(_tabGroup.get());
+                                    DragItemOrigin::kOtherBrowser);
       MoveTabToBrowser(tabInfo.tabID, self.browser, insertionParams);
-    } else {
+      return;
+    }
+
+    if (fromSameCollection) {
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
-      if (_tabGroup.get() != webStateList->GetGroupOfWebStateAt(sourceIndex)) {
-        webStateList->MoveToGroup({sourceIndex}, _tabGroup.get());
-        sourceIndex =
-            GetWebStateIndex(webStateList, WebStateSearchCriteria{
-                                               .identifier = tabInfo.tabID,
-                                           });
-      }
-      webStateList->MoveWebStateAt(sourceIndex, destinationWebStateIndex);
+    } else {
+      base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                    DragItemOrigin::kSameBrowser);
     }
+
+    // Reorder tabs.
+    MoveWebStateWithIdentifierToInsertionParams(
+        tabInfo.tabID, insertionParams, webStateList, fromSameCollection);
     return;
   }
+  base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                DragItemOrigin::kOther);
 
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {

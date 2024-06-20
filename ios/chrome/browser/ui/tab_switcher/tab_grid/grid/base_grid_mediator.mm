@@ -1216,47 +1216,51 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 - (void)dropItem:(UIDragItem*)dragItem
                toIndex:(NSUInteger)destinationIndex
     fromSameCollection:(BOOL)fromSameCollection {
+  WebStateList* webStateList = self.webStateList;
 
   // Tab move operations only originate from Chrome so a local object is used.
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    if (!fromSameCollection) {
-      // Try to unpin the tab. If the returned index is invalid that means the
-      // tab lives in another Browser.
-      int tabIndex = WebStateList::kInvalidIndex;
-      if (IsPinnedTabsEnabled()) {
-        tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
-                                          /*pin_state=*/false);
-      }
-      if (tabIndex == WebStateList::kInvalidIndex) {
-        // Move tab across Browsers.
-        base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
-                                      DragItemOrigin::kOtherBrwoser);
-        int destinationWebStateIndex = WebStateIndexFromGridDropItemIndex(
-            self.webStateList, destinationIndex);
 
-        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationWebStateIndex);
-        return;
-      }
+    if (IsPinnedTabsEnabled()) {
+      // Try to unpin the tab, if not pinned nothing happens.
+      SetWebStatePinnedState(webStateList, tabInfo.tabID,
+                             /*pin_state=*/false);
+    }
+
+    int sourceWebStateIndex =
+        GetWebStateIndex(webStateList, WebStateSearchCriteria{
+                                           .identifier = tabInfo.tabID,
+                                       });
+
+    if (sourceWebStateIndex == WebStateList::kInvalidIndex) {
+      // Move tab across Browsers.
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
-                                    DragItemOrigin::kSameBrowser);
-    } else {
+                                    DragItemOrigin::kOtherBrowser);
+      int destinationWebStateIndex =
+          WebStateIndexFromGridDropItemIndex(webStateList, destinationIndex);
+
+      MoveTabToBrowser(tabInfo.tabID, self.browser, destinationWebStateIndex);
+      return;
+    }
+
+    if (fromSameCollection) {
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
+    } else {
+      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+                                    DragItemOrigin::kSameBrowser);
     }
 
-    // Reorder tab within same grid.
-    int sourceIndex =
-        GetWebStateIndex(self.webStateList, WebStateSearchCriteria{
-                                                .identifier = tabInfo.tabID,
-                                            });
-    if (sourceIndex != WebStateList::kInvalidIndex) {
-      int destinationWebStateIndex = WebStateIndexFromGridDropItemIndex(
-          self.webStateList, destinationIndex, sourceIndex);
-      self.webStateList->MoveWebStateAt(sourceIndex, destinationWebStateIndex);
-    }
+    // Reorder tabs.
+    int destinationWebStateIndex = WebStateIndexFromGridDropItemIndex(
+        webStateList, destinationIndex, sourceWebStateIndex);
+    const auto insertionParams =
+        WebStateList::InsertionParams::AtIndex(destinationWebStateIndex);
+    MoveWebStateWithIdentifierToInsertionParams(
+        tabInfo.tabID, insertionParams, webStateList, fromSameCollection);
     return;
   }
 
@@ -1268,7 +1272,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       return;
     }
     if (fromSameCollection) {
-      base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
+      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
       CHECK(tabGroupInfo.tabGroup);
       int sourceIndex = tabGroupInfo.tabGroup->range().range_begin();
@@ -1277,8 +1281,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       self.webStateList->MoveGroup(tabGroupInfo.tabGroup, nextWebStateIndex);
       return;
     } else {
-      base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
+      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+                                    DragItemOrigin::kOtherBrowser);
     }
 
     int destinationWebStateIndex = WebStateIndexAfterGridDropItemIndex(
@@ -1305,13 +1309,23 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return;
   }
 
+  if (_currentMode == TabGridModeGroup) {
+    base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                  DragItemOrigin::kOther);
+  } else {
+    base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+                                  DragItemOrigin::kOther);
+  }
+
+  __weak BaseGridMediator* weakSelf = self;
   auto loadHandler =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
           [placeholderContext deletePlaceholder];
           NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-          [self insertNewWebStateAtGridIndex:destinationIndex
-                                     withURL:net::GURLWithNSURL(droppedURL)];
+          [weakSelf
+              insertNewWebStateAtGridIndex:destinationIndex
+                                   withURL:net::GURLWithNSURL(droppedURL)];
         });
       };
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];

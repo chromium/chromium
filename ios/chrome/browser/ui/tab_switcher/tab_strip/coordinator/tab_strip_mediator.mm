@@ -839,7 +839,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     if (fromSameCollection) {
       base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
-      // Reorder tab within same grid.
+      // Reorder tabs.
       const WebStateList::InsertionParams insertionParams =
           [self insertionParamsForDestinationItemIndex:destinationIndex
                                                  items:_dragItems];
@@ -849,7 +849,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       // The tab lives in another Browser.
       // TODO(crbug.com/41488813): Need to be updated for pinned tabs.
       base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
+                                    DragItemOrigin::kOtherBrowser);
       [self moveItemWithIDFromDifferentBrowser:tabInfo.tabID
                                        toIndex:destinationIndex];
     }
@@ -871,7 +871,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
                                     DragItemOrigin::kSameCollection);
     } else {
       base::UmaHistogramEnumeration(kUmaTabStripViewGroupDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
+                                    DragItemOrigin::kOtherBrowser);
     }
     // Determine the tab strip item before which the group should be moved.
     NSArray<TabStripItemIdentifier*>* items = _dragItems;
@@ -907,6 +907,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     [placeholderContext deletePlaceholder];
     return;
   }
+  base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
+                                DragItemOrigin::kOther);
 
   __weak __typeof(self) weakSelf = self;
   auto loadHandler =

@@ -2,26 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/memory/raw_ptr.h"
+#import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drag_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drop_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_pinned_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
@@ -83,14 +87,22 @@ class PinnedTabsMediatorTest : public PlatformTest {
     return web_state;
   }
 
+  // Checks that the drag item origin metric is logged in UMA.
+  void ExpectThatDragItemOriginMetricLogged(DragItemOrigin origin,
+                                            int count = 1) {
+    histogram_tester_.ExpectUniqueSample(kUmaPinnedViewDragOrigin, origin,
+                                         count);
+  }
+
  protected:
   std::unique_ptr<TestBrowser> regular_browser_;
   std::unique_ptr<Browser> incognito_browser_;
   FakePinnedTabCollectionConsumer* consumer_;
   PinnedTabsMediator* mediator_;
+  base::HistogramTester histogram_tester_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -195,4 +207,170 @@ TEST_F(PinnedTabsMediatorTest, DragAndDropReorder) {
 
   EXPECT_EQ(web_state_to_move,
             regular_browser_->GetWebStateList()->GetWebStateAt(2));
+}
+
+// Tests dropping pinned tabs.
+TEST_F(PinnedTabsMediatorTest, DropPinnedTabs) {
+  // The Pinned Tabs feature is not available on iPad.
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+
+  WebStateList* web_state_list = regular_browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a* b c | d e f", regular_browser_->GetBrowserState()));
+
+  // Drop "A" after "C".
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:2 fromSameCollection:YES];
+  EXPECT_EQ("b c a* | d e f", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection, 1);
+
+  // Drop "C" before "B".
+  web_state_id = web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:YES];
+  EXPECT_EQ("c b a* | d e f", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection, 2);
+}
+
+// Tests dropping regular tabs .
+TEST_F(PinnedTabsMediatorTest, DropRegularTabs) {
+  // The Pinned Tabs feature is not available on iPad.
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+
+  WebStateList* web_state_list = regular_browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a* b c | d e f", regular_browser_->GetBrowserState()));
+
+  // Drop "E" after "C".
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:3 fromSameCollection:NO];
+  EXPECT_EQ("a* b c e | d f", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 1);
+
+  // Drop "D" after "E".
+  web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:4 fromSameCollection:NO];
+  EXPECT_EQ("a* b c e d | f", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 2);
+}
+
+// Tests dropping tabs from tab group.
+TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
+  // The Pinned Tabs feature is not available on iPad.
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTabGroupsInGrid);
+
+  WebStateList* web_state_list = regular_browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a* b c | d [ 0 e f ]", regular_browser_->GetBrowserState()));
+
+  // Drop "E" after "C".
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:3 fromSameCollection:NO];
+  EXPECT_EQ("a* b c e | d [ 0 f ]", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 1);
+
+  // Drop "D" after "E".
+  web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:4 fromSameCollection:NO];
+  EXPECT_EQ("a* b c e d | [ 0 f ]", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 2);
+
+  // Drop "F" after "D".
+  web_state_id = web_state_list->GetWebStateAt(5)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:regular_browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:5 fromSameCollection:NO];
+  EXPECT_EQ("a* b c e d f |", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 3);
+}
+
+// Tests dropping an external URL.
+TEST_F(PinnedTabsMediatorTest, DropExternalURL) {
+  // The Pinned Tabs feature is not available on iPad.
+  if (!IsPinnedTabsEnabled()) {
+    return;
+  }
+
+  WebStateList* web_state_list = regular_browser_->GetWebStateList();
+  CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "a* b c | d", regular_browser_->GetBrowserState()));
+  ASSERT_EQ(4, web_state_list->count());
+
+  NSItemProvider* item_provider = [[NSItemProvider alloc]
+      initWithContentsOfURL:[NSURL URLWithString:@"https://dragged_url.com"]];
+
+  // Drop item after "C".
+  [mediator_ dropItemFromProvider:item_provider
+                          toIndex:3
+               placeholderContext:nil];
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), ^bool(void) {
+        return web_state_list->count() == 5;
+      }));
+  web::WebState* web_state = web_state_list->GetWebStateAt(3);
+  EXPECT_EQ(GURL("https://dragged_url.com"),
+            web_state->GetNavigationManager()->GetPendingItem()->GetURL());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }

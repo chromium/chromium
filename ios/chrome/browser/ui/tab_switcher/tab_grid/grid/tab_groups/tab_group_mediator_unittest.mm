@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
@@ -61,12 +63,20 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     GridMediatorTestClass::TearDown();
   }
 
+  // Checks that the drag item origin metric is logged in UMA.
+  void ExpectThatDragItemOriginMetricLogged(DragItemOrigin origin,
+                                            int count = 1) {
+    histogram_tester_.ExpectUniqueSample(kUmaGroupViewDragOrigin, origin,
+                                         count);
+  }
+
  protected:
   TabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
   const TabGroup* tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests dropping a local tab (e.g. drag from same window) in the grid.
@@ -88,6 +98,38 @@ TEST_F(TabGroupMediatorTest, DropLocalTab) {
   [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
 
   EXPECT_EQ("| f [ 1 a* d b c ] e", builder_->GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection);
+}
+
+// Tests dropping tabs from the grid to a tab group.
+TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+
+  // Drop "F" before "A".
+  web::WebStateID web_state_id =
+      web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
+  id local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  NSItemProvider* item_provider = [[NSItemProvider alloc] init];
+  UIDragItem* drag_item =
+      [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:NO];
+  EXPECT_EQ("| [ 1 f a* b c ] d e", builder_->GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 1);
+
+  // Drop "D" before "B".
+  web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  local_object = [[TabInfo alloc]
+      initWithTabID:web_state_id
+          incognito:browser_->GetBrowserState()->IsOffTheRecord()];
+  item_provider = [[NSItemProvider alloc] init];
+  drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
+  drag_item.localObject = local_object;
+  [mediator_ dropItem:drag_item toIndex:2 fromSameCollection:NO];
+  EXPECT_EQ("| [ 1 f a* d b c ] e", builder_->GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 2);
 }
 
 // Tests dropping a tab from another browser (e.g. drag from another window) in
@@ -124,6 +166,7 @@ TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   EXPECT_EQ(0, other_browser->GetWebStateList()->count());
   EXPECT_EQ(url_to_load, web_state_list->GetWebStateAt(4)->GetVisibleURL());
   EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(4));
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
 }
 
 // Tests dropping an interal URL (e.g. drag from omnibox) in the grid.
@@ -139,13 +182,14 @@ TEST_F(TabGroupMediatorTest, DropInternalURL) {
   drag_item.localObject = local_object;
 
   // Drop item.
-  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
+  [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:NO];
 
   EXPECT_EQ(7, web_state_list->count());
   web::WebState* web_state = web_state_list->GetWebStateAt(2);
   EXPECT_EQ(url_to_load,
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
   EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(2));
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
 
 // Tests dropping an external URL in the grid.
@@ -169,4 +213,5 @@ TEST_F(TabGroupMediatorTest, DropExternalURL) {
   EXPECT_EQ(GURL("https://dragged_url.com"),
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
   EXPECT_EQ(tab_group_, web_state_list->GetGroupOfWebStateAt(2));
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
