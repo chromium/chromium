@@ -15,6 +15,10 @@
 // Command handler.
 @property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;
 
+// Animates the appearance of the sheet after the controller has been added to
+// its parent.
+- (void)animateAppearance;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_UI_CONTEXTUAL_SHEET_VIEW_CONTROLLER_H_

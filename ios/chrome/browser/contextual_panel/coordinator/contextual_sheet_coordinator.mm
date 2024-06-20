@@ -32,6 +32,8 @@
       initWithBaseViewController:_viewController
                          browser:self.browser];
   [_panelContentCoordinator start];
+
+  [_viewController animateAppearance];
 }
 
 - (void)stop {

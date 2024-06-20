@@ -23,6 +23,9 @@ const int kLargeDetentTopThreshold = 150;
 // Threshold for where ending a swipe gesture closes the sheet.
 const int kCloseBottomThreshold = 250;
 
+// Duration for the animation of the sheet's top margin.
+const CGFloat kTopMarginAnimationDuration = 0.2;
+
 }  // namespace
 
 @implementation ContextualSheetViewController {
@@ -75,14 +78,39 @@ const int kCloseBottomThreshold = 250;
 
   if (sender.state == UIGestureRecognizerStateEnded) {
     if (_topConstraint.constant < kLargeDetentTopThreshold) {
-      _topConstraint.constant = kLargeDetentTopMargin;
+      [self animateTopConstraintToConstant:kLargeDetentTopMargin];
     } else if (_topConstraint.constant >
                self.view.superview.frame.size.height - kCloseBottomThreshold) {
       [self.contextualSheetHandler closeContextualSheet];
     } else {
-      _topConstraint.constant = kMediumDetentTopMargin;
+      [self animateTopConstraintToConstant:kMediumDetentTopMargin];
     }
   }
+}
+
+- (void)animateAppearance {
+  _topConstraint.constant = self.view.superview.frame.size.height;
+  // Make sure the view is laid out offscreen to prepare for the animation in.
+  [self.view.superview layoutIfNeeded];
+
+  [self animateTopConstraintToConstant:kMediumDetentTopMargin];
+}
+
+- (void)animateTopConstraintToConstant:(CGFloat)constant {
+  __weak __typeof(self) weakSelf = self;
+  [UIView
+      animateWithDuration:kTopMarginAnimationDuration
+                    delay:0
+                  options:UIViewAnimationOptionCurveEaseInOut
+               animations:^{
+                 [weakSelf blockForAnimatingTopConstraintToConstant:constant];
+               }
+               completion:nil];
+}
+
+- (void)blockForAnimatingTopConstraintToConstant:(CGFloat)constant {
+  _topConstraint.constant = constant;
+  [self.view.superview layoutIfNeeded];
 }
 
 @end
