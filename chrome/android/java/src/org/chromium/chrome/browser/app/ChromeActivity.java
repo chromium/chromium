@@ -2761,7 +2761,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             TabUtils.switchUserAgent(
                     currentTab,
                     usingDesktopUserAgent,
-                    /* forcedByUser= */ false,
                     UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
             // TODO(crbug.com/40917998): Remove this IPH when the usage is low.
             RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(

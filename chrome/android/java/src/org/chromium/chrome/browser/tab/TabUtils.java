@@ -119,24 +119,13 @@ public class TabUtils {
      *
      * @param tab The tab to be switched the user agent.
      * @param switchToDesktop Whether switching the user agent to desktop.
-     * @param forcedByUser Whether this was triggered by users action.
      * @param caller The caller of this method.
      */
-    // TODO(crbug.com/40891239): Remove param forcedByUser from TabUtils#switchUserAgent.
-    public static void switchUserAgent(
-            Tab tab, boolean switchToDesktop, boolean forcedByUser, int caller) {
+    public static void switchUserAgent(Tab tab, boolean switchToDesktop, int caller) {
         final boolean reloadOnChange = !tab.isNativePage();
         tab.getWebContents()
                 .getNavigationController()
                 .setUseDesktopUserAgent(switchToDesktop, reloadOnChange, caller);
-        if (forcedByUser) {
-            @TabUserAgent
-            int tabUserAgent = switchToDesktop ? TabUserAgent.DESKTOP : TabUserAgent.MOBILE;
-            if (isDesktopSiteGlobalEnabled(tab.getProfile()) == switchToDesktop) {
-                tabUserAgent = TabUserAgent.DEFAULT;
-            }
-            tab.setUserAgent(tabUserAgent);
-        }
     }
 
     /**

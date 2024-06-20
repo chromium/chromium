@@ -168,83 +168,24 @@ public class TabUtilsUnitTest {
     }
 
     @Test
-    public void testSwitchUserAgent_NotForcedByUser() {
+    public void testSwitchUserAgent() {
         // Test non-native tab.
-        TabUtils.switchUserAgent(mTab, false, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTab, false, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
 
-        TabUtils.switchUserAgent(mTab, true, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTab, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
 
         // Test native tab.
-        TabUtils.switchUserAgent(mTabNative, false, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTabNative, false, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
 
-        TabUtils.switchUserAgent(mTabNative, true, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTabNative, true, UseDesktopUserAgentCaller.OTHER);
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
-
-        // Tab#setUserAgent should not be used when it is not forcedByUser.
-        verify(mTab, never()).setUserAgent(anyInt());
-    }
-
-    @Test
-    public void testSwitchUserAgent_ForcedByUser_DefaultMobile() {
-        // Global setting is Mobile.
-        mRdsDefault = false;
-
-        // Test non-native tab.
-        TabUtils.switchUserAgent(mTab, false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
-
-        TabUtils.switchUserAgent(mTab, true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mTab).setUserAgent(TabUserAgent.DESKTOP);
-
-        // Test native tab.
-        TabUtils.switchUserAgent(mTabNative, false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mTabNative).setUserAgent(TabUserAgent.DEFAULT);
-
-        TabUtils.switchUserAgent(mTabNative, true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mTabNative).setUserAgent(TabUserAgent.DESKTOP);
-    }
-
-    @Test
-    public void testSwitchUserAgent_ForcedByUser_DefaultDesktop() {
-        // Global setting is Desktop.
-        mRdsDefault = true;
-
-        // Test non-native tab.
-        TabUtils.switchUserAgent(mTab, false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mTab).setUserAgent(TabUserAgent.MOBILE);
-
-        TabUtils.switchUserAgent(mTab, true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
-
-        // Test native tab.
-        TabUtils.switchUserAgent(mTabNative, false, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mTabNative).setUserAgent(TabUserAgent.MOBILE);
-
-        TabUtils.switchUserAgent(mTabNative, true, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mTabNative).setUserAgent(TabUserAgent.DEFAULT);
     }
 
     @Test

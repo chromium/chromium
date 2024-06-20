@@ -259,20 +259,16 @@ public class NavigateTest {
         String url2 =
                 mTestServer.getURL(
                         "/echoheader?sec-ch-ua-arch&sec-ch-ua-mobile&sec-ch-ua-model&sec-ch-ua-platform");
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
         navigateAndObserve(url1);
-
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        TabUtils.switchUserAgent(
-                                tab,
-                                /* switchToDesktop= */ true,
-                                /* forcedByUser= */ true,
-                                UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
 
         navigateAndObserve(url2);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        TabUtils.switchUserAgent(
+                                tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         String content =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -295,15 +291,12 @@ public class NavigateTest {
         // implemented
         String url = mTestServer.getURL("/echocriticalheader");
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        navigateAndObserve(url);
         TestThreadUtils.runOnUiThreadBlocking(
                 () ->
                         TabUtils.switchUserAgent(
-                                tab,
-                                /* switchToDesktop= */ true,
-                                /* forcedByUser= */ true,
-                                UseDesktopUserAgentCaller.OTHER));
+                                tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
 
-        navigateAndObserve(url);
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
         String content =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(

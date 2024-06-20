@@ -2197,11 +2197,7 @@ class TabImpl implements Tab {
         }
         boolean usingDesktopUserAgent =
                 getWebContents().getNavigationController().getUseDesktopUserAgent();
-        TabUtils.switchUserAgent(
-                this,
-                /* switchToDesktop= */ !usingDesktopUserAgent,
-                /* forcedByUser= */ false,
-                caller);
+        TabUtils.switchUserAgent(this, /* switchToDesktop= */ !usingDesktopUserAgent, caller);
     }
 
     /** Sets the TabLaunchType for tabs launched with an unset launch type. */
