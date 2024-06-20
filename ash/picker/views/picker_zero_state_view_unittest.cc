@@ -280,6 +280,26 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
                                    IDS_PICKER_CHANGE_TONE_MENU_LABEL))))))))));
 }
 
+TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
+  MockZeroStateViewDelegate mock_delegate;
+  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kUpperCase}}, {},
+                           kPickerWidth, &asset_fetcher_);
+
+  EXPECT_THAT(
+      view.category_section_views_for_testing(),
+      ElementsAre(Pair(
+          PickerCategoryType::kCaseTransformations,
+          Pointee(AllOf(
+              Property("GetVisible", &views::View::GetVisible, true),
+              Property(
+                  "item_views_for_testing",
+                  &PickerSectionView::item_views_for_testing,
+                  ElementsAre(AsView<PickerItemWithSubmenuView>(Property(
+                      &PickerItemWithSubmenuView::GetTextForTesting,
+                      l10n_util::GetStringUTF16(
+                          IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))))))))));
+}
+
 TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingRecentItems) {
   MockZeroStateViewDelegate mock_delegate;
   PickerZeroStateViewDelegate::SearchResultsCallback recent_results_callback;

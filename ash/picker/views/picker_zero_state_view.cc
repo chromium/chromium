@@ -109,6 +109,16 @@ PickerZeroStateView::PickerZeroStateView(
         weak_ptr_factory_.GetWeakPtr(), PickerCategory::kEditorRewrite));
   }
 
+  // Case transformation results are shown in a submenu.
+  auto case_transform_submenu =
+      views::Builder<PickerItemWithSubmenuView>()
+          .SetSubmenuController(&submenu_controller_)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
+          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+              kPickerSentenceCaseIcon, cros_tokens::kCrosSysOnSurface))
+          .Build();
+
   for (PickerCategory category : available_categories) {
     // kEditorRewrite is not visible in the zero-state, since it's replaced with
     // the rewrite suggestions.
@@ -116,10 +126,27 @@ PickerZeroStateView::PickerZeroStateView(
       continue;
     }
 
-    GetOrCreateSectionView(category)->AddResult(
-        PickerSearchResult::Category(category), &preview_controller_,
-        base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
-                            weak_ptr_factory_.GetWeakPtr(), category));
+    auto result = PickerSearchResult::Category(category);
+    if (category == PickerCategory::kUpperCase ||
+        category == PickerCategory::kLowerCase ||
+        category == PickerCategory::kSentenceCase ||
+        category == PickerCategory::kTitleCase) {
+      case_transform_submenu->AddEntry(
+          std::move(result),
+          base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+                              weak_ptr_factory_.GetWeakPtr(), category));
+    } else {
+      GetOrCreateSectionView(category)->AddResult(
+          std::move(result), &preview_controller_,
+          base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+                              weak_ptr_factory_.GetWeakPtr(), category));
+    }
+  }
+
+  // Add the submenu for case transformation.
+  if (!case_transform_submenu->IsEmpty()) {
+    GetOrCreateSectionView(PickerCategoryType::kCaseTransformations)
+        ->AddItemWithSubmenu(std::move(case_transform_submenu));
   }
 }
 
@@ -191,8 +218,7 @@ bool PickerZeroStateView::ContainsItem(views::View* item) {
 }
 
 PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
-    PickerCategory category) {
-  const PickerCategoryType category_type = GetPickerCategoryType(category);
+    PickerCategoryType category_type) {
   auto section_view_iterator = category_section_views_.find(category_type);
   if (section_view_iterator != category_section_views_.end()) {
     return section_view_iterator->second;
@@ -203,6 +229,11 @@ PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
       GetSectionTitleForPickerCategoryType(category_type));
   category_section_views_.insert({category_type, section_view});
   return section_view;
+}
+
+PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(
+    PickerCategory category) {
+  return GetOrCreateSectionView(GetPickerCategoryType(category));
 }
 
 void PickerZeroStateView::OnCategorySelected(PickerCategory category) {

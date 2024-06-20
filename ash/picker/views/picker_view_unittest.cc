@@ -988,22 +988,6 @@ TEST_F(PickerViewTest, ShowsEditorWhenClickingOnEditor) {
   EXPECT_TRUE(delegate.showed_editor());
 }
 
-TEST_F(PickerViewTest,
-       CallsCasesTransformationWhenClickingOnCaseTransformation) {
-  FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kUpperCase},
-  });
-  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
-
-  LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
-
-  EXPECT_TRUE(widget->IsClosed());
-  EXPECT_TRUE(delegate.requested_case_transformation_category().has_value());
-  EXPECT_EQ(*delegate.requested_case_transformation_category(),
-            PickerCategory::kUpperCase);
-}
-
 TEST_F(PickerViewTest, TurnsOnCapsLockWhenClickingCapsOn) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kCapsOn},

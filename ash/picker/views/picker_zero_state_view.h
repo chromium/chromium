@@ -72,6 +72,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   void OnCategorySelected(PickerCategory category);
   void OnResultSelected(const PickerSearchResult& result);
 
+  // Gets or creates the category type section for `category_type`.
+  PickerSectionView* GetOrCreateSectionView(PickerCategoryType category_type);
+
   // Gets or creates the category type section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
