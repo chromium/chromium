@@ -859,6 +859,9 @@ const FeatureEntry::FeatureParam
     kWebIdentityDigitalIdentityCredentialNoDialogParam[] = {
         {"dialog", "no_dialog"}};
 const FeatureEntry::FeatureParam
+    kWebIdentityDigitalIdentityCredentialDefaultParam[] = {
+        {"dialog", "default"}};
+const FeatureEntry::FeatureParam
     kWebIdentityDigitalIdentityCredentialLowRiskDialogParam[] = {
         {"dialog", "low_risk"}};
 const FeatureEntry::FeatureParam
@@ -866,6 +869,9 @@ const FeatureEntry::FeatureParam
         {"dialog", "high_risk"}};
 const FeatureEntry::FeatureVariation
     kWebIdentityDigitalIdentityCredentialVariations[] = {
+        {"with dialog depending on what credentials are requested",
+         kWebIdentityDigitalIdentityCredentialDefaultParam,
+         std::size(kWebIdentityDigitalIdentityCredentialDefaultParam), nullptr},
         {"without dialog", kWebIdentityDigitalIdentityCredentialNoDialogParam,
          std::size(kWebIdentityDigitalIdentityCredentialNoDialogParam),
          nullptr},

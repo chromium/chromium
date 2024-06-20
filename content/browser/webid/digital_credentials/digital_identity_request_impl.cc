@@ -38,6 +38,7 @@ constexpr char kOpenid4vpAgeOverPathRegex[] =
     R"(\$\['org\.iso\.18013\.5\.1'\]\['age_over_\d\d'\])";
 
 constexpr char kDigitalIdentityDialogParam[] = "dialog";
+constexpr char kDigitalIdentityNoDialogParamValue[] = "no_dialog";
 constexpr char kDigitalIdentityLowRiskDialogParamValue[] = "low_risk";
 constexpr char kDigitalIdentityHighRiskDialogParamValue[] = "high_risk";
 
@@ -55,12 +56,12 @@ const base::Value::Dict* FindSingleElementListEntry(
 
 std::optional<InterstitialType> ComputeInterstitialType(
     bool is_only_requesting_age) {
-  if (!is_only_requesting_age) {
-    return InterstitialType::kHighRisk;
-  }
-
   std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
       features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
+  if (dialog_param_value == kDigitalIdentityNoDialogParamValue) {
+    return std::nullopt;
+  }
+
   if (dialog_param_value == kDigitalIdentityHighRiskDialogParamValue) {
     return InterstitialType::kHighRisk;
   }
@@ -69,7 +70,9 @@ std::optional<InterstitialType> ComputeInterstitialType(
     return InterstitialType::kLowRisk;
   }
 
-  return std::nullopt;
+  return is_only_requesting_age
+             ? std::nullopt
+             : std::optional<InterstitialType>(InterstitialType::kHighRisk);
 }
 
 }  // anonymous namespace

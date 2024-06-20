@@ -269,7 +269,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures("WebIdentityDigitalCredentials:dialog/high_risk")
+    @EnableFeatures("WebIdentityDigitalCredentials:dialog/default")
     public void testShowHighRiskInterstitialWhenRequestCredentialsOtherThanAge()
             throws TimeoutException {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
@@ -284,6 +284,18 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     public void testNoDialogByDefault() throws TimeoutException {
         checkDigitalIdentityRequestWithDialogFieldTrialParam(
                 "request_age_only_button", /* expectedInterstitialParagraph1ResourceId= */ -1);
+    }
+
+    /**
+     * Test that the feature param takes precedence over the digital credential request type (age or
+     * not).
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures("WebIdentityDigitalCredentials:dialog/no_dialog")
+    public void testFeatureParamTakesPrecedence() throws TimeoutException {
+        checkDigitalIdentityRequestWithDialogFieldTrialParam(
+                "request_age_and_name_button", /* expectedInterstitialParagraph1ResourceId= */ -1);
     }
 
     /**
