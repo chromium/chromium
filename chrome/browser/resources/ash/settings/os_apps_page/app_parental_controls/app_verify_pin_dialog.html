@@ -4,6 +4,8 @@
     color: var(--cros-text-color-alert);
     display: flex;
     flex-direction: row;
+    /* This max-width matches the width of the PIN input field. */
+    max-width: 200px;
     /* Enough height for two rows. */
     min-height: 48px;
   }
@@ -44,10 +46,6 @@
 
   #pinKeyboard {
     --cr-input-placeholder-letter-spacing: normal;
-  }
-
-  #verifyPinDialogSubtitle {
-    padding-bottom: 16px;
   }
 </style>
 <cr-dialog id="dialog" on-close="close" close-text="$i18n{close}">
