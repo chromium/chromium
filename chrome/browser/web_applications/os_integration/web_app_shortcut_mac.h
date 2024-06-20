@@ -171,9 +171,6 @@ void WaitForShimToQuitForTesting(const base::FilePath& shim_path,
 // Because shims created in ~/Applications will not be cleaned up.
 bool AppShimCreationAndLaunchDisabledForTest();
 
-// Returns a path to the Chrome Apps folder in ~/Applications.
-base::FilePath GetChromeAppsFolder();
-
 // Remove the specified app from the OS login item list.
 void RemoveAppShimFromLoginItems(const std::string& app_id);
 
@@ -198,10 +195,6 @@ class WebAppShortcutCreator {
   WebAppShortcutCreator& operator=(const WebAppShortcutCreator&) = delete;
 
   virtual ~WebAppShortcutCreator();
-
-  // This allows UpdateAppShortcutsSubdirLocalizedName to be called multiple
-  // times in a process, for unit tests.
-  static void ResetHaveLocalizedAppDirNameForTesting();
 
   // Returns the base name for the shortcut. This will be a sanitized version
   // of the application title.

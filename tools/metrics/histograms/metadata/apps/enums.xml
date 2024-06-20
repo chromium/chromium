@@ -718,7 +718,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="WebAppCreateShortcutLinuxResult">
-  <summary>Result of creating shortcut for web app on MacOS.</summary>
+  <summary>Result of creating shortcut for web app on Linux.</summary>
   <int value="0" label="Success"/>
   <int value="1" label="Fail to get shortcut file name"/>
   <int value="2" label="Fail to get chrome executable path"/>
@@ -737,7 +737,8 @@ chromium-metrics-reviews@google.com.
   <summary>Result of creating shortcut for web app on MacOS.</summary>
   <int value="0" label="Success"/>
   <int value="1" label="Couldn't find application directory to copy app to."/>
-  <int value="2" label="Fail to localize application"/>
+  <int value="2"
+      label="(Obsolete) Fail to localize application. Removed in 2024/06."/>
   <int value="3"
       label="(Obsolete) Fail to get application paths. Removed in 2024/06."/>
   <int value="4"

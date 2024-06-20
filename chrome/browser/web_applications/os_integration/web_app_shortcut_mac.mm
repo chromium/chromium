@@ -54,6 +54,7 @@
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
@@ -246,7 +247,7 @@ namespace {
 enum class CreateShortcutResult {
   kSuccess = 0,
   kApplicationDirNotFound = 1,
-  kFailToLocalizeApplication = 2,
+  // Obsolete: kFailToLocalizeApplication = 2,
   // Obsolete: kFailToGetApplicationPaths = 3,
   kFailToCreateTempDir = 4,
   kStagingDirectoryNotExist = 5,
@@ -287,22 +288,6 @@ bool AppShimRevealDisabledForTest() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kTestType) ||
          OsIntegrationTestOverride::Get();
-}
-
-base::FilePath GetWritableApplicationsDirectory() {
-  base::FilePath path;
-  if (base::apple::GetUserDirectory(NSApplicationDirectory, &path)) {
-    if (!base::DirectoryExists(path)) {
-      if (!base::CreateDirectory(path))
-        return base::FilePath();
-
-      // Create a zero-byte ".localized" file to inherit localizations from
-      // macOS for folders that have special meaning.
-      base::WriteFile(path.Append(".localized"), "");
-    }
-    return base::PathIsWritable(path) ? path : base::FilePath();
-  }
-  return base::FilePath();
 }
 
 // Given the path to an app bundle, return the resources directory.
@@ -546,126 +531,6 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
       std::move(terminated_callback));
 }
 
-base::FilePath GetLocalizableAppShortcutsSubdirName() {
-  static const char kChromiumAppDirName[] = "Chromium Apps.localized";
-  static const char kChromeAppDirName[] = "Chrome Apps.localized";
-  static const char kChromeCanaryAppDirName[] = "Chrome Canary Apps.localized";
-
-  switch (chrome::GetChannel()) {
-    case version_info::Channel::UNKNOWN:
-      return base::FilePath(kChromiumAppDirName);
-
-    case version_info::Channel::CANARY:
-      return base::FilePath(kChromeCanaryAppDirName);
-
-    default:
-      return base::FilePath(kChromeAppDirName);
-  }
-}
-
-// Helper function to extract the single NSImageRep held in a resource bundle
-// image.
-NSImageRep* ImageRepForGFXImage(const gfx::Image& image) {
-  NSArray* image_reps = image.AsNSImage().representations;
-  DCHECK_EQ(1u, image_reps.count);
-  return image_reps[0];
-}
-
-using ResourceIDToImage = std::map<int, NSImageRep*>;
-
-// Generates a map of NSImageReps used by SetWorkspaceIconOnWorkerThread and
-// passes it to |io_task|. Since ui::ResourceBundle can only be used on UI
-// thread, this function also needs to run on UI thread, and the gfx::Images
-// need to be converted to NSImageReps on the UI thread due to non-thread-safety
-// of gfx::Image.
-void GetImageResourcesOnUIThread(
-    base::OnceCallback<void(std::unique_ptr<ResourceIDToImage>)> io_task) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  std::unique_ptr<ResourceIDToImage> result =
-      std::make_unique<ResourceIDToImage>();
-
-  // These resource ID should match to the ones used by
-  // SetWorkspaceIconOnWorkerThread below.
-  for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32,
-                 IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
-    gfx::Image image = resource_bundle.GetNativeImageNamed(id);
-    (*result)[id] = ImageRepForGFXImage(image);
-  }
-
-  internals::GetShortcutIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(io_task), std::move(result)));
-}
-
-void SetWorkspaceIconOnWorkerThread(const base::FilePath& apps_directory,
-                                    std::unique_ptr<ResourceIDToImage> images) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  NSImage* folder_icon_image = [[NSImage alloc] init];
-  // Use complete assets for the small icon sizes. -[NSWorkspace setIcon:] has a
-  // bug when dealing with named NSImages where it incorrectly handles alpha
-  // premultiplication. This is most noticeable with small assets since the 1px
-  // border is a much larger component of the small icons.
-  // See http://crbug.com/305373 for details.
-  for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32}) {
-    const auto& found = images->find(id);
-    DCHECK(found != images->end());
-    [folder_icon_image addRepresentation:found->second];
-  }
-
-  // Brand larger folder assets with an embossed app launcher logo to
-  // conserve distro size and for better consistency with changing hue
-  // across macOS versions. The folder is textured, so compresses poorly
-  // without this.
-  NSImage* base_image = [NSImage imageNamed:NSImageNameFolder];
-  for (int id : {IDR_APPS_FOLDER_OVERLAY_128, IDR_APPS_FOLDER_OVERLAY_512}) {
-    const auto& found = images->find(id);
-    DCHECK(found != images->end());
-    NSImageRep* with_overlay = OverlayImageRep(base_image, found->second);
-    DCHECK(with_overlay);
-    if (with_overlay)
-      [folder_icon_image addRepresentation:with_overlay];
-  }
-  shortcuts::SetIconForFile(folder_icon_image, apps_directory,
-                            base::DoNothing());
-}
-
-// Adds a localized strings file for the Chrome Apps directory using the current
-// locale. macOS will use this for the display name.
-// + Chrome Apps.localized (|apps_directory|)
-// | + .localized
-// | | en.strings
-// | | de.strings
-bool UpdateAppShortcutsSubdirLocalizedName(
-    const base::FilePath& apps_directory) {
-  base::FilePath localized = apps_directory.Append(".localized");
-  if (!base::CreateDirectory(localized))
-    return false;
-
-  base::FilePath directory_name = apps_directory.BaseName().RemoveExtension();
-  std::u16string localized_name =
-      shell_integration::GetAppShortcutsSubdirName();
-  NSDictionary* strings_dict = @{
-    base::apple::FilePathToNSString(directory_name) :
-        base::SysUTF16ToNSString(localized_name)
-  };
-
-  std::string locale = l10n_util::NormalizeLocale(
-      l10n_util::GetApplicationLocale(std::string()));
-
-  NSURL* strings_url =
-      base::apple::FilePathToNSURL(localized.Append(locale + ".strings"));
-  [strings_dict writeToURL:strings_url error:nil];
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&GetImageResourcesOnUIThread,
-                                base::BindOnce(&SetWorkspaceIconOnWorkerThread,
-                                               apps_directory)));
-  return true;
-}
-
 base::FilePath GetMultiProfileAppDataDir(base::FilePath app_data_dir) {
   // The kCrAppModeUserDataDirKey is expected to be a path in kWebAppDirname,
   // and the true user data dir is extracted by going three directories up.
@@ -817,24 +682,6 @@ bool AppShimCreationAndLaunchDisabledForTest() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kTestType) &&
          !OsIntegrationTestOverride::Get();
-}
-
-base::FilePath GetChromeAppsFolder() {
-  scoped_refptr<OsIntegrationTestOverride> os_override =
-      OsIntegrationTestOverride::Get();
-  if (os_override) {
-    CHECK_IS_TEST();
-    if (os_override->IsChromeAppsValid()) {
-      return os_override->chrome_apps_folder();
-    }
-    return base::FilePath();
-  }
-
-  base::FilePath path = GetWritableApplicationsDirectory();
-  if (path.empty())
-    return path;
-
-  return path.Append(GetLocalizableAppShortcutsSubdirName());
 }
 
 WebAppShortcutCreator::WebAppShortcutCreator(const base::FilePath& app_data_dir,
@@ -1179,13 +1026,6 @@ bool WebAppShortcutCreator::CreateShortcuts(
   return true;
 }
 
-static bool g_have_localized_app_dir_name = false;
-
-// static
-void WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting() {
-  g_have_localized_app_dir_name = false;
-}
-
 bool WebAppShortcutCreator::UpdateShortcuts(
     bool create_if_needed,
     std::vector<base::FilePath>* updated_paths) {
@@ -1198,16 +1038,6 @@ bool WebAppShortcutCreator::UpdateShortcuts(
       RecordCreateShortcut(CreateShortcutResult::kApplicationDirNotFound);
       LOG(ERROR) << "Couldn't find an Applications directory to copy app to.";
       return false;
-    }
-    // Only set folder icons and a localized name once, as nothing should be
-    // changing the folder icon and name.
-    if (!g_have_localized_app_dir_name) {
-      g_have_localized_app_dir_name =
-          UpdateAppShortcutsSubdirLocalizedName(applications_dir);
-    }
-    if (!g_have_localized_app_dir_name) {
-      RecordCreateShortcut(CreateShortcutResult::kFailToLocalizeApplication);
-      LOG(ERROR) << "Failed to localize " << applications_dir.value();
     }
   }
 

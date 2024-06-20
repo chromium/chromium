@@ -113,7 +113,6 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   void TearDown() override {
     WebAppAutoLoginUtil::SetInstanceForTesting(nullptr);
     override_registration_.reset();
-    WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();
   }
 
