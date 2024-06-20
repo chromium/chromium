@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 
 #import <Cocoa/Cocoa.h>
 #include <errno.h>
@@ -35,6 +35,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -50,7 +51,9 @@ class WebAppShortcutCreatorMock : public WebAppShortcutCreator {
  public:
   WebAppShortcutCreatorMock(const base::FilePath& app_data_dir,
                             const ShortcutInfo* shortcut_info)
-      : WebAppShortcutCreator(app_data_dir, shortcut_info) {}
+      : WebAppShortcutCreator(app_data_dir,
+                              GetChromeAppsFolder(),
+                              shortcut_info) {}
 
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
   MOCK_CONST_METHOD1(RevealAppShimInFinder, void(const base::FilePath&));
@@ -64,7 +67,9 @@ class WebAppShortcutCreatorSortingMock : public WebAppShortcutCreator {
  public:
   WebAppShortcutCreatorSortingMock(const base::FilePath& app_data_dir,
                                    const ShortcutInfo* shortcut_info)
-      : WebAppShortcutCreator(app_data_dir, shortcut_info) {}
+      : WebAppShortcutCreator(app_data_dir,
+                              GetChromeAppsFolder(),
+                              shortcut_info) {}
 
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
 
@@ -198,13 +203,14 @@ class WebAppShortcutCreatorTest : public testing::Test {
 }  // namespace
 
 TEST_F(WebAppShortcutCreatorTest, CreateShortcuts) {
-  NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
-                                                       info_.get());
   base::FilePath strings_file =
       destination_dir_.Append(".localized").Append("en_US.strings");
 
   // The Chrome Apps folder shouldn't be localized yet.
   EXPECT_FALSE(base::PathExists(strings_file));
+
+  NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
+                                                       info_.get());
 
   EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
                                                ShortcutLocations()));
