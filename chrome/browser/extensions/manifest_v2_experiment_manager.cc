@@ -32,6 +32,23 @@ constexpr PrefMap kMV2DeprecationExtensionWarningAcknowledgedPref = {
     "mv2_deprecation_warning_ack", PrefType::kBool,
     PrefScope::kExtensionSpecific};
 
+// Stores a bit for whether the extension has been disabled as part of the
+// MV2 deprecation.
+constexpr PrefMap kMV2DeprecationDidDisablePref = {
+    "mv2_deprecation_did_disable", PrefType::kBool,
+    PrefScope::kExtensionSpecific};
+
+// Stores a bit for whether the extension was re-enabled after being previously
+// disabled as part of the MV2 deprecation.
+// We store this separately from kMV2DeprecationDidDisablePref (as opposed to
+// relying on an enum or a single bool) since there are multiple phases and
+// causes for extensions to be disabled and re-enabled, and we only want to
+// record that a user re-enables it if it was explicitly disabled by this phase
+// of the experiment.
+constexpr PrefMap kMV2DeprecationUserReEnabledPref = {
+    "mv2_deprecation_user_re_enabled", PrefType::kBool,
+    PrefScope::kExtensionSpecific};
+
 class ManifestV2ExperimentManagerFactory : public ProfileKeyedServiceFactory {
  public:
   ManifestV2ExperimentManagerFactory();
@@ -110,6 +127,8 @@ ManifestV2ExperimentManager::ManifestV2ExperimentManager(
           experiment_stage_,
           ExtensionManagementFactory::GetForBrowserContext(browser_context)),
       browser_context_(browser_context) {
+  registry_observation_.Observe(ExtensionRegistry::Get(browser_context));
+
   ExtensionSystem::Get(browser_context)
       ->ready()
       .Post(FROM_HERE,
@@ -192,8 +211,11 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
       continue;
     }
 
-    // TODO(https://crbug.com/339061151): Check if the extension has been
-    // explicitly re-enabled by the user.
+    if (DidUserReEnableExtension(extension->id())) {
+      // The user explicitly chose to re-enable the extension after it was
+      // disabled. Allow it to remain enabled.
+      continue;
+    }
 
     extensions_to_disable.insert(extension);
   }
@@ -203,7 +225,37 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
   for (const auto& extension : extensions_to_disable) {
     extension_service->DisableExtension(
         extension->id(), disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+    extension_prefs()->SetBooleanPref(extension->id(),
+                                      kMV2DeprecationDidDisablePref, true);
   }
+}
+
+bool ManifestV2ExperimentManager::DidUserReEnableExtension(
+    const ExtensionId& extension_id) {
+  bool acknowledged = false;
+  return extension_prefs()->ReadPrefAsBoolean(
+             extension_id, kMV2DeprecationUserReEnabledPref, &acknowledged) &&
+         acknowledged;
+}
+
+void ManifestV2ExperimentManager::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  bool was_extension_disabled_by_mv2_deprecation = false;
+  extension_prefs()->ReadPrefAsBoolean(
+      extension->id(), kMV2DeprecationDidDisablePref,
+      &was_extension_disabled_by_mv2_deprecation);
+  if (!was_extension_disabled_by_mv2_deprecation) {
+    return;
+  }
+
+  extension_prefs()->SetBooleanPref(extension->id(),
+                                    kMV2DeprecationUserReEnabledPref, true);
+}
+
+bool ManifestV2ExperimentManager::DidUserReEnableExtensionForTesting(
+    const ExtensionId& extension_id) {
+  return DidUserReEnableExtension(extension_id);
 }
 
 }  // namespace extensions

@@ -7,8 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/mv2_deprecation_impact_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
 class BrowserContextKeyedServiceFactory;
@@ -24,7 +27,8 @@ enum class MV2ExperimentStage;
 
 // The central class responsible for managing experiments related to the MV2
 // deprecation.
-class ManifestV2ExperimentManager : public KeyedService {
+class ManifestV2ExperimentManager : public KeyedService,
+                                    public ExtensionRegistryObserver {
  public:
   explicit ManifestV2ExperimentManager(
       content::BrowserContext* browser_context);
@@ -67,6 +71,8 @@ class ManifestV2ExperimentManager : public KeyedService {
   // warning.
   void MarkWarningAsAcknowledgedGlobally();
 
+  bool DidUserReEnableExtensionForTesting(const ExtensionId& extension_id);
+
  private:
   // Lazily initialize and access `extension_prefs_`. We do this lazily because:
   // - This service is created on Profile creation.
@@ -83,6 +89,14 @@ class ManifestV2ExperimentManager : public KeyedService {
   // if the user hasn't chosen to re-enable them.
   void DisableAffectedExtensions();
 
+  // Returns true if a user re-enabled an extension after it was explicitly
+  // disabled by the MV2 deprecation.
+  bool DidUserReEnableExtension(const ExtensionId& extension_id);
+
+  // ExtensionRegistry:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+
   // The current stage of the MV2 deprecation experiments.
   const MV2ExperimentStage experiment_stage_;
 
@@ -97,6 +111,9 @@ class ManifestV2ExperimentManager : public KeyedService {
   // The associated BrowserContext. Guaranteed to be safe to use since this is
   // a KeyedService for the context.
   raw_ptr<content::BrowserContext> browser_context_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   base::WeakPtrFactory<ManifestV2ExperimentManager> weak_factory_{this};
 };
