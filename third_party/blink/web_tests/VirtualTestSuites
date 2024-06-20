@@ -1211,14 +1211,6 @@
     "owners": ["chrome-first-party-sets@chromium.org"]
   },
   {
-    "prefix": "no-different-origin-dialogs",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html",
-              "external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html"],
-    "args": ["--enable-features=SuppressDifferentOriginSubframeJSDialogs"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "force-renderer-accessibility",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["accessibility/accessibility-beforematch-marker-crash.html",
