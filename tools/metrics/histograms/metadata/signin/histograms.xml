@@ -877,8 +877,8 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
     enum="BooleanCreated" expires_after="2024-12-08">
-  <owner>pastarmovj@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     Whether the user chose to create a new work profile after a signin while
     profile separation is enforced by policy. This is recorded after the user
@@ -888,9 +888,9 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Enterprise.WorkProfile.ProfileCreatedwithPolicyUnset"
-    enum="BooleanCreated" expires_after="2024-08-01">
-  <owner>pastarmovj@chromium.org</owner>
+    enum="BooleanCreated" expires_after="2025-06-01">
   <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <summary>
     Whether the user chose to create a new work profile after a signin while
     profile separation is not enforced by policy. This is recorded after the
