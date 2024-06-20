@@ -16,7 +16,8 @@ enum class EditorTone {
   kFormalize = 5,
   kFreeformRewrite = 6,
   kUnknown = 7,
-  kMaxValue = kUnknown,
+  kProofread = 8,
+  kMaxValue = kProofread,
 };
 
 // Must match with IMEEditorCriticalStates in enums.xml

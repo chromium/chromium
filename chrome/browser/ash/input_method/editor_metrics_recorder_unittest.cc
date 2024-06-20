@@ -279,6 +279,24 @@ TEST_P(EditorStateMetrics, RecordsFormalizeSegmentForRewrite) {
                                      1);
 }
 
+TEST_P(EditorStateMetrics, RecordsProofreadSegmentForRewrite) {
+  const EditorStates& state = GetParam();
+  FakeSystem system;
+  FakeContextObserver observer;
+  EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
+  EditorContext context(&observer, &system, &geolocation_provider);
+  EditorMetricsRecorder metrics_recorder(&context,
+                                         EditorOpportunityMode::kRewrite);
+
+  metrics_recorder.SetTone(EditorTone::kProofread);
+  metrics_recorder.LogEditorState(state);
+
+  histogram_tester_.ExpectBucketCount("InputMethod.Manta.Orca.States.Proofread",
+                                      state, 1);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Proofread",
+                                     1);
+}
+
 TEST_P(EditorStateMetrics, RecordsFreeformRewriteSegmentForRewrite) {
   const EditorStates& state = GetParam();
   FakeSystem system;
@@ -351,6 +369,8 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForWrite) {
   metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kFormalize);
   metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kProofread);
+  metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kFreeformRewrite);
   metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -367,6 +387,8 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForWrite) {
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Elaborate",
                                      0);
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Formalize",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Proofread",
                                      0);
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Manta.Orca.States.FreeformRewrite", 0);
@@ -394,6 +416,8 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForNotAllowed) {
   metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kFormalize);
   metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kProofread);
+  metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kFreeformRewrite);
   metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -410,6 +434,8 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForNotAllowed) {
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Elaborate",
                                      0);
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Formalize",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Proofread",
                                      0);
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Manta.Orca.States.FreeformRewrite", 0);
@@ -437,6 +463,8 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForInvalidInput) {
   metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kFormalize);
   metrics_recorder.LogEditorState(state);
+  metrics_recorder.SetTone(EditorTone::kProofread);
+  metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kFreeformRewrite);
   metrics_recorder.LogEditorState(state);
   metrics_recorder.SetTone(EditorTone::kUnset);
@@ -453,6 +481,8 @@ TEST_P(EditorStateMetrics, DoesNotRecordToneSegmentsForInvalidInput) {
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Elaborate",
                                      0);
   histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Formalize",
+                                     0);
+  histogram_tester_.ExpectTotalCount("InputMethod.Manta.Orca.States.Proofread",
                                      0);
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Manta.Orca.States.FreeformRewrite", 0);
@@ -522,6 +552,9 @@ INSTANTIATE_TEST_SUITE_P(
         {"Formalize", EditorOpportunityMode::kRewrite, EditorTone::kFormalize,
          /*number_of_characters=*/1,
          /*tone_string=*/"Formalize"},
+        {"Proofread", EditorOpportunityMode::kRewrite, EditorTone::kProofread,
+         /*number_of_characters=*/1,
+         /*tone_string=*/"Proofread"},
         {"FreeformRewrite", EditorOpportunityMode::kRewrite,
          EditorTone::kFreeformRewrite,
          /*number_of_characters=*/1,
@@ -608,6 +641,10 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                               /*query_tone_string=*/"FORMALIZE",
                               /*freeform_text=*/std::nullopt,
                               /*tone_string=*/"Formalize"},
+                             {"Proofread",
+                              /*query_tone_string=*/"PROOFREAD",
+                              /*freeform_text=*/std::nullopt,
+                              /*tone_string=*/"Proofread"},
                              {"FreeformRewrite",
                               /*query_tone_string=*/std::nullopt,
                               /*freeform_text=*/"write me a story",

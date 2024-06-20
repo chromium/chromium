@@ -37,6 +37,8 @@ std::string GetToneStringFromEnum(EditorTone tone) {
       return "Elaborate";
     case EditorTone::kFormalize:
       return "Formalize";
+    case EditorTone::kProofread:
+      return "Proofread";
     case EditorTone::kFreeformRewrite:
       return "FreeformRewrite";
     case EditorTone::kUnset:
@@ -61,6 +63,9 @@ EditorTone GetEditorToneFromString(std::string_view tone) {
   }
   if (tone == "FORMALIZE") {
     return EditorTone::kFormalize;
+  }
+  if (tone == "PROOFREAD") {
+    return EditorTone::kProofread;
   }
   return EditorTone::kUnknown;
 }
@@ -206,8 +211,8 @@ EditorTone ToEditorMetricTone(orca::mojom::TriggerContextPtr trigger_context) {
       return EditorTone::kFormalize;
     case orca::mojom::PresetTextQueryType::kEmojify:
       return EditorTone::kEmojify;
-    // TODO: b:329164491 - support metrics for proofread
     case orca::mojom::PresetTextQueryType::kProofread:
+      return EditorTone::kProofread;
     case orca::mojom::PresetTextQueryType::kUnknown:
       return EditorTone::kUnknown;
   }
