@@ -54,6 +54,7 @@
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
+#import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
@@ -313,104 +314,6 @@ NSURL* GetPlistURL(const base::FilePath& bundle_path) {
   return base::apple::FilePathToNSURL(
       bundle_path.Append("Contents").Append("Info.plist"));
 }
-
-// Data and helpers for an Info.plist under a given bundle path.
-class BundleInfoPlist {
- public:
-  // Retrieve info from all app shims found in |apps_path|.
-  static std::list<BundleInfoPlist> GetAllInPath(
-      const base::FilePath& apps_path,
-      bool recursive) {
-    std::list<BundleInfoPlist> bundles;
-    base::FileEnumerator enumerator(apps_path, recursive,
-                                    base::FileEnumerator::DIRECTORIES);
-    for (base::FilePath shim_path = enumerator.Next(); !shim_path.empty();
-         shim_path = enumerator.Next()) {
-      bundles.emplace_back(shim_path);
-    }
-    return bundles;
-  }
-
-  // Retrieve info from the specified app shim in |bundle_path|.
-  explicit BundleInfoPlist(const base::FilePath& bundle_path)
-      : bundle_path_(bundle_path) {
-    plist_ = [NSDictionary dictionaryWithContentsOfURL:GetPlistURL(bundle_path_)
-                                                 error:nil];
-  }
-  BundleInfoPlist(const BundleInfoPlist& other) = default;
-  BundleInfoPlist& operator=(const BundleInfoPlist& other) = default;
-  ~BundleInfoPlist() = default;
-
-  const base::FilePath& bundle_path() const { return bundle_path_; }
-
-  // Checks that the CrAppModeUserDataDir in the Info.plist is, or is a subpath
-  // of the current user_data_dir. This uses starts with instead of equals
-  // because the CrAppModeUserDataDir could be the user_data_dir or the
-  // |app_data_dir_|.
-  bool IsForCurrentUserDataDir() const {
-    base::FilePath user_data_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    DCHECK(!user_data_dir.empty());
-    return base::StartsWith(
-        base::SysNSStringToUTF8(plist_[app_mode::kCrAppModeUserDataDirKey]),
-        user_data_dir.value(), base::CompareCase::SENSITIVE);
-  }
-
-  // Checks if kCrAppModeProfileDirKey corresponds to the specified profile
-  // path.
-  bool IsForProfile(const base::FilePath& test_profile_path) const {
-    std::string profile_path =
-        base::SysNSStringToUTF8(plist_[app_mode::kCrAppModeProfileDirKey]);
-    return profile_path == test_profile_path.BaseName().value();
-  }
-
-  // Return the full profile path (as a subpath of the user_data_dir).
-  base::FilePath GetFullProfilePath() const {
-    // Figure out the profile_path. Since the user_data_dir could contain the
-    // path to the web app data dir.
-    base::FilePath user_data_dir = base::apple::NSStringToFilePath(
-        plist_[app_mode::kCrAppModeUserDataDirKey]);
-    base::FilePath profile_base_name = base::apple::NSStringToFilePath(
-        plist_[app_mode::kCrAppModeProfileDirKey]);
-    if (user_data_dir.DirName().DirName().BaseName() == profile_base_name)
-      return user_data_dir.DirName().DirName();
-    return user_data_dir.Append(profile_base_name);
-  }
-
-  std::string GetExtensionId() const {
-    return base::SysNSStringToUTF8(plist_[app_mode::kCrAppModeShortcutIDKey]);
-  }
-  std::string GetProfileName() const {
-    return base::SysNSStringToUTF8(plist_[app_mode::kCrAppModeProfileNameKey]);
-  }
-  GURL GetURL() const {
-    return GURL(
-        base::SysNSStringToUTF8(plist_[app_mode::kCrAppModeShortcutURLKey]));
-  }
-  std::u16string GetTitle() const {
-    return base::SysNSStringToUTF16(
-        plist_[app_mode::kCrAppModeShortcutNameKey]);
-  }
-  base::Version GetVersion() const {
-    NSString* version_string = plist_[app_mode::kCrBundleVersionKey];
-    if (!version_string) {
-      // Older bundles have the Chrome version in the following key.
-      version_string = plist_[app_mode::kCFBundleShortVersionStringKey];
-    }
-    return base::Version(base::SysNSStringToUTF8(version_string));
-  }
-  std::string GetBundleId() const {
-    return base::SysNSStringToUTF8(
-        plist_[base::apple::CFToNSPtrCast(kCFBundleIdentifierKey)]);
-  }
-
- private:
-  // The path of the app bundle from this this info was read.
-  base::FilePath bundle_path_;
-
-  // Data read from the Info.plist.
-  NSDictionary* __strong plist_;
-};
 
 bool HasExistingExtensionShimForDifferentProfile(
     const base::FilePath& destination_directory,
@@ -827,49 +730,6 @@ base::FilePath GetMultiProfileAppDataDir(base::FilePath app_data_dir) {
   return app_data_dir.Append(kNewProfilePath)
       .Append(web_app_dir)
       .Append(app_name_dir);
-}
-
-// Return all bundles with the specified |bundle_id| which are for the current
-// user data dir.
-std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
-  std::list<BundleInfoPlist> infos;
-
-  // First search using LaunchServices.
-  NSArray* bundle_urls;
-  if (@available(macOS 12.0, *)) {
-    bundle_urls = [NSWorkspace.sharedWorkspace
-        URLsForApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
-                                                    bundle_id)];
-  } else {
-    bundle_urls = base::apple::CFToNSOwnershipCast(
-        LSCopyApplicationURLsForBundleIdentifier(
-            base::SysUTF8ToCFStringRef(bundle_id).get(), /*outError=*/nullptr));
-  }
-  for (NSURL* url in bundle_urls) {
-    base::FilePath bundle_path = base::apple::NSURLToFilePath(url);
-    BundleInfoPlist info(bundle_path);
-    if (!info.IsForCurrentUserDataDir())
-      continue;
-    infos.push_back(info);
-  }
-  if (!infos.empty()) {
-    return infos;
-  }
-
-  // LaunchServices can fail to locate a recently-created bundle. Search
-  // for an app in the applications folder to handle this case.
-  // https://crbug.com/937703
-  infos = BundleInfoPlist::GetAllInPath(GetChromeAppsFolder(),
-                                        /*recursive=*/true);
-  for (auto it = infos.begin(); it != infos.end();) {
-    const BundleInfoPlist& info = *it;
-    if (info.GetBundleId() == bundle_id && info.IsForCurrentUserDataDir()) {
-      ++it;
-    } else {
-      infos.erase(it++);
-    }
-  }
-  return infos;
 }
 
 #if defined(COMPONENT_BUILD)
@@ -1856,14 +1716,16 @@ std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesByIdUnsorted()
   // Search using LaunchServices using the default bundle id.
   const std::string bundle_id = GetBundleIdentifierForShim(
       info_->app_id, IsMultiProfile() ? base::FilePath() : info_->profile_path);
-  auto bundle_infos = SearchForBundlesById(bundle_id);
+  auto bundle_infos =
+      BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
 
   // If in multi-profile mode, search using the profile-scoped bundle id, in
   // case the user has an old shim hanging around.
   if (bundle_infos.empty() && IsMultiProfile()) {
     const std::string profile_scoped_bundle_id =
         GetBundleIdentifierForShim(info_->app_id, info_->profile_path);
-    bundle_infos = SearchForBundlesById(profile_scoped_bundle_id);
+    bundle_infos = BundleInfoPlist::SearchForBundlesById(
+        profile_scoped_bundle_id, GetChromeAppsFolder());
   }
 
   std::vector<base::FilePath> bundle_paths;
@@ -2017,7 +1879,8 @@ void RemoveAppShimFromLoginItems(const std::string& app_id) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   const std::string bundle_id = GetBundleIdentifierForShim(app_id);
-  auto bundle_infos = SearchForBundlesById(bundle_id);
+  auto bundle_infos =
+      BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
         bundle_info.bundle_path());
@@ -2096,7 +1959,8 @@ void DeletePlatformShortcuts(const base::FilePath& app_data_path,
   }
   const std::string bundle_id = GetBundleIdentifierForShim(
       shortcut_info.app_id, shortcut_info.profile_path);
-  auto bundle_infos = SearchForBundlesById(bundle_id);
+  auto bundle_infos =
+      BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
   bool result = true;
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
@@ -2118,7 +1982,8 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
   const std::string bundle_id = GetBundleIdentifierForShim(app_id);
-  auto bundle_infos = SearchForBundlesById(bundle_id);
+  auto bundle_infos =
+      BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
         bundle_info.bundle_path());

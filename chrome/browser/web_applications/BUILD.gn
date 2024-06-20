@@ -388,6 +388,8 @@ source_set("web_applications") {
     sources += [
       "os_integration/mac/app_shim_registry.cc",
       "os_integration/mac/app_shim_registry.h",
+      "os_integration/mac/bundle_info_plist.h",
+      "os_integration/mac/bundle_info_plist.mm",
       "os_integration/mac/icns_encoder.cc",
       "os_integration/mac/icns_encoder.h",
       "os_integration/mac/web_app_auto_login_util.cc",
