@@ -16,9 +16,9 @@ export enum TabItemType {
 }
 
 export class ItemData {
-  inActiveWindow: boolean;
-  type: TabItemType;
-  a11yTypeText: string;
+  inActiveWindow: boolean = false;
+  type: TabItemType = TabItemType.OPEN_TAB;
+  a11yTypeText: string = '';
   tabGroup?: TabGroup|RecentlyClosedTabGroup;
   highlightRanges: {[key: string]: Array<{start: number, length: number}>} = {};
 }

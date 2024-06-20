@@ -136,7 +136,6 @@ ts_library("library") {
     "//chrome/browser/resources/signin/profile_picker:build_ts",
     "//chrome/browser/resources/suggest_internals:build_ts",
     "//chrome/browser/resources/support_tool:build_ts",
-    "//chrome/browser/resources/tab_search:build_ts",
     "//chrome/test/data/pdf:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/app_settings:build_ts",

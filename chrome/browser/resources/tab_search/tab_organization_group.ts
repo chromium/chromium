@@ -58,7 +58,7 @@ export class TabOrganizationGroupElement extends CrLitElement {
     };
   }
 
-  tabs: Tab[];
+  tabs: Tab[] = [];
   firstNewTabIndex: number = 0;
   name: string = '';
   multiTabOrganization: boolean = false;

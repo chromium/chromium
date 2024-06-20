@@ -55,13 +55,13 @@ export class TabOrganizationPageElement extends CrLitElement {
   private listenerIds_: number[] = [];
   private state_: TabOrganizationState = TabOrganizationState.kInitializing;
   protected availableHeight_: number = 0;
-  protected session_: TabOrganizationSession|null;
+  protected session_: TabOrganizationSession|null = null;
   protected showFRE_: boolean =
       loadTimeData.getBoolean('showTabOrganizationFRE');
   protected multiTabOrganization_: boolean =
       loadTimeData.getBoolean('multiTabOrganizationEnabled');
   private documentVisibilityChangedListener_: () => void;
-  private futureState_: TabOrganizationState|null;
+  private futureState_: TabOrganizationState|null = null;
 
   static override get styles() {
     return getCss();
@@ -115,7 +115,7 @@ export class TabOrganizationPageElement extends CrLitElement {
     } else {
       this.apiProxy_.rejectTabOrganization(
           this.session_.sessionId,
-          this.session_.organizations[0].organizationId);
+          this.session_.organizations[0]!.organizationId);
     }
   }
 

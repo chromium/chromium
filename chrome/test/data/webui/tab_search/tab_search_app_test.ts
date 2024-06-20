@@ -6,8 +6,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabSearchAppElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
@@ -27,7 +26,6 @@ suite('TabOrganizationPageTest', () => {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchApp);
-    await flushTasks();
   });
 
   test('Switching tabs calls setTabIndex', async () => {
@@ -56,7 +54,7 @@ suite('TabOrganizationPageTest', () => {
     assertEquals(0, crTabs.selected);
 
     testProxy.getCallbackRouterRemote().tabSearchTabIndexChanged(1);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(1, crTabs.selected);
   });
@@ -67,7 +65,7 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(isVisible(crTabs));
 
     testProxy.getCallbackRouterRemote().tabOrganizationEnabledChanged(false);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(isVisible(crTabs));
   });

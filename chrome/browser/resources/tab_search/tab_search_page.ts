@@ -126,10 +126,10 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   protected searchResultText_: string = '';
   protected activeSelectionId_?: string;
   protected shortcut_: string = loadTimeData.getString('shortcutText');
-  override autofocus: boolean;
+  override autofocus: boolean = false;
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
-  private metricsReporter_: MetricsReporter|null;
+  private metricsReporter_: MetricsReporter|null = null;
   private listenerIds_: number[] = [];
   private tabGroupsMap_: Map<string, TabGroup> = new Map();
   private recentlyClosedTabGroups_: TabGroupData[] = [];
@@ -140,7 +140,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private openTabsTitleItem_: TitleItem;
   private recentlyClosedTitleItem_: TitleItem;
   private filteredOpenTabsCount_: number = 0;
-  private filteredMediaTabsCount_: number = 0;
   private initiallySelectedTabIndex_: number = NO_SELECTION;
   private documentVisibilityChangedListener_: () => void;
   private elementVisibilityChangedListener_: IntersectionObserver;
@@ -721,8 +720,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
 
     this.filteredOpenTabsCount_ =
         filteredOpenTabs.length + filteredMediaTabs.length;
-
-    this.filteredMediaTabsCount_ = filteredMediaTabs.length;
 
     const recentlyClosedItems: Array<TabData|TabGroupData> =
         [...this.recentlyClosedTabs_, ...this.recentlyClosedTabGroups_];
