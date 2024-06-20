@@ -457,6 +457,7 @@ aom_dsp_common_intrin_avx2 = [
 aom_dsp_common_intrin_neon = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve_copy_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_scaled_convolve8_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/fwd_txfm_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/loopfilter_neon.c",
   "//third_party/libaom/source/libaom/aom_dsp/arm/intrapred_neon.c",
@@ -467,10 +468,12 @@ aom_dsp_common_intrin_neon = [
 
 aom_dsp_common_intrin_neon_dotprod = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon_dotprod.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_scaled_convolve8_neon_dotprod.c",
 ]
 
 aom_dsp_common_intrin_neon_i8mm = [
   "//third_party/libaom/source/libaom/aom_dsp/arm/aom_convolve8_neon_i8mm.c",
+  "//third_party/libaom/source/libaom/aom_dsp/arm/aom_scaled_convolve8_neon_i8mm.c",
 ]
 
 aom_dsp_common_intrin_sse2 = [
