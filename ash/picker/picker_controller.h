@@ -79,7 +79,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
 
   // PickerViewDelegate:
   std::vector<PickerCategory> GetAvailableCategories() override;
-  std::vector<PickerCategory> GetRecentResultsCategories() override;
+  void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override;
   void TransformSelectedText(PickerCategory category) override;

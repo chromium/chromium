@@ -88,8 +88,8 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               (SuggestedEditorResultsCallback),
               (override));
   MOCK_METHOD(void,
-              GetZeroStateRecentResults,
-              (PickerCategory, SearchResultsCallback),
+              GetZeroStateSuggestedResults,
+              (SuggestedResultsCallback),
               (override));
   MOCK_METHOD(void, RequestPseudoFocus, (views::View*), (override));
   MOCK_METHOD(PickerActionType,
@@ -108,7 +108,7 @@ class PickerZeroStateViewTest : public views::ViewsTestBase {
 
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateView view(&mock_delegate, kAllCategories, {}, kPickerWidth,
+  PickerZeroStateView view(&mock_delegate, kAllCategories, kPickerWidth,
                            &asset_fetcher_);
 
   EXPECT_THAT(view.category_section_views_for_testing(),
@@ -125,7 +125,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, std::vector<PickerCategory>{PickerCategory::kExpressions},
-      std::vector<PickerCategory>{}, kPickerWidth, &asset_fetcher_));
+      kPickerWidth, &asset_fetcher_));
   widget->Show();
   ASSERT_THAT(view->category_section_views_for_testing(),
               Contains(Key(PickerCategoryType::kGeneral)));
@@ -145,25 +145,22 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   LeftClickOn(*category_view);
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsRecentItems) {
+TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
   MockZeroStateViewDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate,
-              GetZeroStateRecentResults(PickerCategory::kDriveFiles, _))
-      .WillOnce([](PickerCategory category,
-                   MockZeroStateViewDelegate::SearchResultsCallback callback) {
-        std::move(callback).Run({PickerSearchResult::DriveFile(
-            /*title=*/u"test drive file",
-            /*url=*/GURL(), base::FilePath())});
-      });
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({PickerSearchResult::DriveFile(
+                /*title=*/u"test drive file",
+                /*url=*/GURL(), base::FilePath())});
+          });
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories,
-      std::vector<PickerCategory>{PickerCategory::kDriveFiles}, kPickerWidth,
-      &asset_fetcher_));
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_));
   widget->Show();
 
   EXPECT_CALL(mock_delegate,
@@ -189,7 +186,7 @@ TEST_F(PickerZeroStateViewTest,
       .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
                        callback) { std::move(callback).Run({}); });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           {}, kPickerWidth, &asset_fetcher_);
+                           kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
       view.category_section_views_for_testing(),
@@ -219,7 +216,7 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
         });
       });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           {}, kPickerWidth, &asset_fetcher_);
+                           kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
       view.category_section_views_for_testing(),
@@ -259,7 +256,7 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
         });
       });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           {}, kPickerWidth, &asset_fetcher_);
+                           kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
       view.category_section_views_for_testing(),
@@ -282,7 +279,7 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
 
 TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kUpperCase}}, {},
+  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kUpperCase}},
                            kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
@@ -300,27 +297,25 @@ TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
                           IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))))))))));
 }
 
-TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingRecentItems) {
+TEST_F(PickerZeroStateViewTest, RequestsPseudoFocusAfterGettingSuggestedItems) {
   MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateViewDelegate::SearchResultsCallback recent_results_callback;
-  EXPECT_CALL(mock_delegate,
-              GetZeroStateRecentResults(PickerCategory::kDriveFiles, _))
-      .WillOnce([&](PickerCategory category,
-                    MockZeroStateViewDelegate::SearchResultsCallback callback) {
-        recent_results_callback = std::move(callback);
-      });
+  PickerZeroStateViewDelegate::SuggestedResultsCallback
+      suggested_results_callback;
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
+      .WillOnce(
+          [&](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            suggested_results_callback = std::move(callback);
+          });
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
   widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories,
-      std::vector<PickerCategory>{PickerCategory::kDriveFiles}, kPickerWidth,
-      &asset_fetcher_));
+      &mock_delegate, kAllCategories, kPickerWidth, &asset_fetcher_));
   widget->Show();
 
   EXPECT_CALL(mock_delegate, RequestPseudoFocus(_));
 
-  recent_results_callback.Run({PickerSearchResult::DriveFile(
+  suggested_results_callback.Run({PickerSearchResult::DriveFile(
       /*title=*/u"test drive file",
       /*url=*/GURL(), base::FilePath())});
 }

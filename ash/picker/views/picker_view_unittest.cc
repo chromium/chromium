@@ -135,8 +135,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     requested_case_transformation_category_ = category;
   }
 
-  std::vector<PickerCategory> GetRecentResultsCategories() override {
-    return {PickerCategory::kDriveFiles};
+  void GetZeroStateSuggestedResults(
+      SuggestedResultsCallback callback) override {
+    callback.Run({});
   }
 
   void GetResultsForCategory(PickerCategory category,

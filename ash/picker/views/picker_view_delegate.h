@@ -30,14 +30,17 @@ class ASH_EXPORT PickerViewDelegate {
       base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
   using SuggestedEditorResultsCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
+  using SuggestedResultsCallback =
+      base::RepeatingCallback<void(std::vector<PickerSearchResult> results)>;
 
   virtual ~PickerViewDelegate() {}
 
   virtual std::vector<PickerCategory> GetAvailableCategories() = 0;
 
-  // Returns categories for which we should show recent results in zero state
-  // view.
-  virtual std::vector<PickerCategory> GetRecentResultsCategories() = 0;
+  // Gets suggested results for the zero-state. Results will be returned via
+  // `callback`, which may be called multiples times to update the results.
+  virtual void GetZeroStateSuggestedResults(
+      SuggestedResultsCallback callback) = 0;
 
   // Gets initially suggested results for category. Results will be returned via
   // `callback`, which may be called multiples times to update the results.

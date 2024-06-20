@@ -84,7 +84,6 @@ EditorSubmenu GetEditorSubmenu(
 PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
     base::span<const PickerCategory> available_categories,
-    base::span<const PickerCategory> recent_results_categories,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher)
     : delegate_(delegate) {
@@ -94,12 +93,9 @@ PickerZeroStateView::PickerZeroStateView(
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
       picker_view_width, asset_fetcher, &submenu_controller_));
 
-  for (PickerCategory category : recent_results_categories) {
-    delegate_->GetZeroStateRecentResults(
-        category,
-        base::BindRepeating(&PickerZeroStateView::OnFetchRecentResults,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  delegate_->GetZeroStateSuggestedResults(
+      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
     GetOrCreateSectionView(PickerCategory::kEditorRewrite)->SetVisible(false);
@@ -244,7 +240,7 @@ void PickerZeroStateView::OnResultSelected(const PickerSearchResult& result) {
   delegate_->SelectZeroStateResult(result);
 }
 
-void PickerZeroStateView::OnFetchRecentResults(
+void PickerZeroStateView::OnFetchSuggestedResults(
     std::vector<PickerSearchResult> results) {
   if (results.empty()) {
     return;

@@ -291,6 +291,18 @@ std::string ConvertToString(ui::EmojiPickerCategory category) {
   }
 }
 
+std::vector<PickerSearchResult> GetMostRecentResult(
+    std::vector<PickerSearchResultsSection> results) {
+  if (results.empty() || results[0].type() != PickerSectionType::kNone) {
+    return {};
+  }
+  base::span<const PickerSearchResult> search_results = results[0].results();
+  if (search_results.empty()) {
+    return {};
+  }
+  return {search_results[0]};
+}
+
 }  // namespace
 
 PickerController::PickerController()
@@ -372,9 +384,13 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
                            : model_->GetAvailableCategories();
 }
 
-std::vector<PickerCategory> PickerController::GetRecentResultsCategories() {
-  return model_ == nullptr ? std::vector<PickerCategory>{}
-                           : model_->GetRecentResultsCategories();
+void PickerController::GetZeroStateSuggestedResults(
+    SuggestedResultsCallback callback) {
+  // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
+  for (PickerCategory category : model_->GetRecentResultsCategories()) {
+    GetResultsForCategory(
+        category, base::BindRepeating(&GetMostRecentResult).Then(callback));
+  }
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,

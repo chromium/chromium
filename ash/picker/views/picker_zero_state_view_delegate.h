@@ -26,15 +26,15 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
   using SuggestedEditorResultsCallback =
       base::OnceCallback<void(std::vector<PickerSearchResult>)>;
 
-  using SearchResultsCallback =
+  using SuggestedResultsCallback =
       base::RepeatingCallback<void(std::vector<PickerSearchResult>)>;
 
   virtual void SelectZeroStateCategory(PickerCategory category) = 0;
 
   virtual void SelectZeroStateResult(const PickerSearchResult& result) = 0;
 
-  virtual void GetZeroStateRecentResults(PickerCategory category,
-                                         SearchResultsCallback callback) = 0;
+  virtual void GetZeroStateSuggestedResults(
+      SuggestedResultsCallback callback) = 0;
 
   virtual void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) = 0;

@@ -41,7 +41,6 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   explicit PickerZeroStateView(
       PickerZeroStateViewDelegate* delegate,
       base::span<const PickerCategory> available_categories,
-      base::span<const PickerCategory> recent_results_categories,
       int picker_view_width,
       PickerAssetFetcher* asset_fetcher);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
@@ -78,7 +77,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // Gets or creates the category type section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
-  void OnFetchRecentResults(std::vector<PickerSearchResult> result);
+  void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
 
   void OnFetchZeroStateEditorResults(PickerCategory category,
                                      std::vector<PickerSearchResult> result);

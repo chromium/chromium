@@ -149,18 +149,6 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   }
 }
 
-std::vector<PickerSearchResult> GetMostRecentResult(
-    std::vector<PickerSearchResultsSection> results) {
-  if (results.empty() || results[0].type() != PickerSectionType::kNone) {
-    return {};
-  }
-  base::span<const PickerSearchResult> search_results = results[0].results();
-  if (search_results.empty()) {
-    return {};
-  }
-  return {search_results[0]};
-}
-
 // TODO: b/331285414 - Finalize the search field placeholder text.
 std::u16string GetSearchFieldPlaceholderText() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -239,11 +227,9 @@ PickerActionType PickerView::GetActionForResult(
   return delegate_->GetActionForResult(result);
 }
 
-void PickerView::GetZeroStateRecentResults(PickerCategory category,
-                                           SearchResultsCallback callback) {
-  delegate_->GetResultsForCategory(
-      category,
-      base::BindRepeating(&GetMostRecentResult).Then(std::move(callback)));
+void PickerView::GetZeroStateSuggestedResults(
+    SuggestedResultsCallback callback) {
+  delegate_->GetZeroStateSuggestedResults(std::move(callback));
 }
 
 void PickerView::GetSuggestedZeroStateEditorResults(
@@ -541,8 +527,7 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
 
   zero_state_view_ =
       main_container_view_->AddPage(std::make_unique<PickerZeroStateView>(
-          this, delegate_->GetAvailableCategories(),
-          delegate_->GetRecentResultsCategories(), kPickerViewMaxSize.width(),
+          this, delegate_->GetAvailableCategories(), kPickerViewMaxSize.width(),
           delegate_->GetAssetFetcher()));
   category_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
