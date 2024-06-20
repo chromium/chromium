@@ -336,7 +336,15 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the context menu has the correct action and correctly hides the
 // tile.
-- (void)testTabResumptionTileLongPressTR2 {
+// TODO(crbug.com/333500324): Test flaky on official devices on iOS 16.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testTabResumptionTileLongPressTR2 \
+  testTabResumptionTileLongPressTR2
+#else
+#define MAYBE_testTabResumptionTileLongPressTR2 \
+  FLAKY_testTabResumptionTileLongPressTR2
+#endif
+- (void)MAYBE_testTabResumptionTileLongPressTR2 {
   [self testTabResumptionTileLongPress];
 }
 
