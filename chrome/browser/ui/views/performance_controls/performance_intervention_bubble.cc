@@ -74,7 +74,7 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   std::make_unique<TabListView>(tab_list_model),
-                  views::BubbleDialogModelHost::FieldType::kControl),
+                  views::BubbleDialogModelHost::FieldType::kMenuItem),
               kPerformanceInterventionTabList)
           .AddOkButton(
               base::BindOnce(&PerformanceInterventionBubbleDelegate::

@@ -35,6 +35,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -148,6 +149,14 @@ class PerformanceInterventionInteractiveTest
       TabStripModel* const tab_strip_model = browser()->tab_strip_model();
       return tab_strip_model->GetWebContentsAt(index)->WasDiscarded() ==
              discarded;
+    });
+  }
+
+  auto SimulateMouseEnterTabRow(const ElementSpecifier& tab_row_id) {
+    return WithView(tab_row_id, [](TabListRowView* tab_list_row) {
+      ui::MouseEvent e(ui::EventType::ET_MOUSE_ENTERED, gfx::Point(),
+                       gfx::Point(), ui::EventTimeForNow(), 0, 0);
+      tab_list_row->OnEvent(&e);
     });
   }
 
@@ -385,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 
 // The dialog should discard tabs suggested in the tab list
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       RemoveSuggestedTabFromLIst) {
+                       RemoveSuggestedTabFromList) {
+  const char kTabListRow[] = "TabListRow";
   const char kSuggestedCloseButton[] = "SuggestedCloseButton";
   auto waiter = std::make_unique<DiscardWaiter>();
 
@@ -396,14 +406,22 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionTabList),
+      FlushEvents(),
       NameViewRelative(
           PerformanceInterventionBubble::kPerformanceInterventionTabList,
-          kSuggestedCloseButton,
+          kTabListRow,
           [](TabListView* tab_list) {
-            TabListRowView* const first_row =
-                views::AsViewClass<TabListRowView>(tab_list->children()[0]);
-            return first_row->GetCloseButtonForTesting();
+            return views::AsViewClass<TabListRowView>(tab_list->children()[0]);
           }),
+      SimulateMouseEnterTabRow(kTabListRow), FlushEvents(),
+      CheckView(kTabListRow,
+                [](TabListRowView* tab_list_row) {
+                  return tab_list_row->GetCloseButtonForTesting()->GetVisible();
+                }),
+      NameViewRelative(kTabListRow, kSuggestedCloseButton,
+                       [](TabListRowView* tab_list_row) {
+                         return tab_list_row->GetCloseButtonForTesting();
+                       }),
       PressButton(kSuggestedCloseButton), WaitForHide(kSuggestedCloseButton),
       FlushEvents(),
       PressButton(PerformanceInterventionBubble::

@@ -16,6 +16,7 @@ class TabListModel;
 namespace views {
 class ImageButton;
 class Label;
+class InkDropContainerView;
 }  // namespace views
 
 class TabListRowView : public views::View {
@@ -34,6 +35,12 @@ class TabListRowView : public views::View {
   std::u16string GetDomainTextForTesting();
   views::ImageButton* GetCloseButtonForTesting();
 
+  // views::View override:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
+
  private:
   std::unique_ptr<views::View> CreateTextView(std::u16string title,
                                               GURL domain);
@@ -43,6 +50,7 @@ class TabListRowView : public views::View {
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> domain_ = nullptr;
+  raw_ptr<views::InkDropContainerView> inkdrop_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_TAB_LIST_ROW_VIEW_H_
