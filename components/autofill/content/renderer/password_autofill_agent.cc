@@ -1862,11 +1862,14 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   if (!form_data)
     return;
 
-  if (!IsRendererRecognizedCredentialForm(*form_data)) {
-    return;
+  // Notify the browser about user inputs if `form` is recognized as a
+  // credential form in the renderer, or if the browser has parsed `element` as
+  // password-related and provided filling data for it.
+  if (IsRendererRecognizedCredentialForm(*form_data) ||
+      (!element.IsNull() &&
+       web_input_to_password_info_.contains(FieldRef(element)))) {
+    GetPasswordManagerDriver().InformAboutUserInput(*form_data);
   }
-
-  GetPasswordManagerDriver().InformAboutUserInput(*form_data);
 }
 
 bool PasswordAutofillAgent::FillUserNameAndPassword(

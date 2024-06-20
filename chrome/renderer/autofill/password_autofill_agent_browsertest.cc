@@ -166,6 +166,12 @@ const char kSingleUsernameFormHTML[] =
     "  <INPUT type='submit' value='Login'/>"
     "</FORM>";
 
+const char kSingleTextInputFormHTML[] =
+    "<FORM name='LoginTestForm' action='http://www.bidule.com'>"
+    "  <INPUT type='text' id='username'/>"
+    "  <INPUT type='submit' value='Login'/>"
+    "</FORM>";
+
 const char kEmptyFormHTML[] =
     "<head> <style> form {display: inline;} </style> </head>"
     "<body> <form> </form> </body>";
@@ -5223,6 +5229,28 @@ TEST_F(PasswordAutofillAgentTest,
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
   CheckSuggestionsNotShown();
+}
+
+TEST_F(PasswordAutofillAgentTest, InformingBrowserAboutUsernameTextFields) {
+  LoadHTML(kSingleTextInputFormHTML);
+  UpdateOnlyUsernameElement();
+
+  // Simulate the browser parsing the text field as username and sending the
+  // correspondent fill data.
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  SimulateUsernameTyping(kUsernameName);
+  EXPECT_EQ(1, fake_driver_.called_inform_about_user_input_count());
+}
+
+TEST_F(PasswordAutofillAgentTest, InformingBrowserAboutIrrelevantTextFields) {
+  LoadHTML(kSingleTextInputFormHTML);
+  UpdateOnlyUsernameElement();
+
+  // The users types into a field that was not parsed as username.
+  SimulateUsernameTyping(kUsernameName);
+  EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
 }
 
 #if BUILDFLAG(IS_ANDROID)
