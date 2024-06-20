@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -122,7 +123,7 @@ class PrefServiceSyncable : public PrefService,
 
   void ConnectAssociatorsAndRegisterPreferences();
 
-  void AddRegisteredSyncablePreference(const std::string& path, uint32_t flags);
+  void AddRegisteredSyncablePreference(std::string_view path, uint32_t flags);
 
   // PrefServiceForAssociator:
   base::Value::Type GetRegisteredPrefType(

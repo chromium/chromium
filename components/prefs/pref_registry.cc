@@ -5,6 +5,8 @@
 #include "components/prefs/pref_registry.h"
 
 #include <ostream>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -80,5 +82,4 @@ void PrefRegistry::RegisterForeignPref(const std::string& path) {
   DCHECK(inserted);
 }
 
-void PrefRegistry::OnPrefRegistered(const std::string& path,
-                                    uint32_t flags) {}
+void PrefRegistry::OnPrefRegistered(std::string_view path, uint32_t flags) {}

@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <set>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/memory/ref_counted.h"
@@ -100,8 +102,7 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
                           uint32_t flags);
 
   // Allows subclasses to hook into pref registration.
-  virtual void OnPrefRegistered(const std::string& path,
-                                uint32_t flags);
+  virtual void OnPrefRegistered(std::string_view path, uint32_t flags);
 
   scoped_refptr<DefaultPrefStore> defaults_;
 

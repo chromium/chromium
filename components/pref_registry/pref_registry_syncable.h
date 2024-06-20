@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
@@ -64,7 +64,7 @@ class PrefRegistrySyncable : public PrefRegistrySimple {
   };
 
   using SyncableRegistrationCallback =
-      base::RepeatingCallback<void(const std::string& path, uint32_t flags)>;
+      base::RepeatingCallback<void(std::string_view path, uint32_t flags)>;
 
   PrefRegistrySyncable();
 
@@ -88,8 +88,7 @@ class PrefRegistrySyncable : public PrefRegistrySimple {
   ~PrefRegistrySyncable() override;
 
   // PrefRegistrySimple overrides.
-  void OnPrefRegistered(const std::string& path,
-                        uint32_t flags) override;
+  void OnPrefRegistered(std::string_view path, uint32_t flags) override;
 
   SyncableRegistrationCallback callback_;
 };

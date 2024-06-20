@@ -280,10 +280,9 @@ void PrefServiceSyncable::RemoveSyncedPrefObserver(
 #endif
 }
 
-void PrefServiceSyncable::AddRegisteredSyncablePreference(
-    const std::string& path,
-    uint32_t flags) {
-  DCHECK(FindPreference(path));
+void PrefServiceSyncable::AddRegisteredSyncablePreference(std::string_view path,
+                                                          uint32_t flags) {
+  DCHECK(FindPreference(std::string(path)));
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_PREF) {
     pref_sync_associator_.RegisterPref(path);
     return;
