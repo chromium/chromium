@@ -8007,6 +8007,11 @@ const char kPulseaudioLoopbackForScreenShareName[] =
 const char kPulseaudioLoopbackForScreenShareDescription[] =
     "Enable system audio sharing when screen sharing on Linux with pulseaudio.";
 
+const char kSimplifiedTabDragUIName[] = "Simplified tab dragging UI mode";
+const char kSimplifiedTabDragUIDescription[] =
+    "Enable simplified tab dragging UI mode as a fallback if the graphical "
+    "environment does not support the classic UI.";
+
 #endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------

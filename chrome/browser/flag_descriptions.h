@@ -4656,6 +4656,9 @@ extern const char kPulseaudioLoopbackForCastName[];
 extern const char kPulseaudioLoopbackForCastDescription[];
 extern const char kPulseaudioLoopbackForScreenShareName[];
 extern const char kPulseaudioLoopbackForScreenShareDescription[];
+
+extern const char kSimplifiedTabDragUIName[];
+extern const char kSimplifiedTabDragUIDescription[];
 #endif  // BUILDFLAG(IS_LINUX)
 
 // All views-based platforms --------------------------------------------------

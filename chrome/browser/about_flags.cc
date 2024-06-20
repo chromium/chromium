@@ -351,6 +351,10 @@
 #include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/ui_features.h"
+#endif
+
 #if defined(TOOLKIT_VIEWS)
 #include "ui/views/views_features.h"
 #include "ui/views/views_switches.h"
@@ -5303,6 +5307,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,
      flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
      MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},
+
+    {"simplified-tab-drag-ui", flag_descriptions::kSimplifiedTabDragUIName,
+     flag_descriptions::kSimplifiedTabDragUIDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kAllowWindowDragUsingSystemDragDrop)},
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

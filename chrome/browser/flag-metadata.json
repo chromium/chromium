@@ -8078,6 +8078,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "simplified-tab-drag-ui",
+    "owners": [ "max@igalia.com", "nickdiego@igalia.com", "thomasanderson@chromium.org"],
+    "expiry_milestone": 138
+  },
+  {
     "name": "site-instance-groups-for-data-urls",
     "owners": [ "yangsharon@chromium.org", "site-isolation-dev@chromium.org" ],
     "expiry_milestone": 140

@@ -16227,6 +16227,7 @@ from previous Chrome versions.
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
   <int value="-1846358874" label="ForgotPasswordFormSupport:enabled"/>
+  <int value="-1846070594" label="AllowWindowDragUsingSystemDragDrop:disabled"/>
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"
       label="NotificationsIgnoreRequireInteraction:disabled"/>
@@ -22516,6 +22517,7 @@ from previous Chrome versions.
   <int value="865952257" label="CrOSLateBootBluetoothTelephony:disabled"/>
   <int value="866313743" label="FingerprintingProtectionSetting:enabled"/>
   <int value="866536801" label="PDFViewerUpdate:disabled"/>
+  <int value="867061581" label="AllowWindowDragUsingSystemDragDrop:enabled"/>
   <int value="867512869" label="mark-non-secure-as"/>
   <int value="868009556" label="AutofillUpstream:enabled"/>
   <int value="868879861" label="TpcdMetadataGrants:disabled"/>
