@@ -16,6 +16,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/history/model/history_utils.h"
+#include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/web/public/thread/web_thread.h"
 
@@ -38,6 +39,7 @@ TopSitesFactory::TopSitesFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "TopSites",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
 }
 
@@ -51,10 +53,10 @@ scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  scoped_refptr<history::TopSitesImpl> top_sites(new history::TopSitesImpl(
+  auto top_sites = base::MakeRefCounted<history::TopSitesImpl>(
       browser_state->GetPrefs(), history_service,
-      /*template_url_service=*/nullptr, history::PrepopulatedPageList(),
-      base::BindRepeating(CanAddURLToHistory)));
+      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
+      history::PrepopulatedPageList(), base::BindRepeating(CanAddURLToHistory));
   top_sites->Init(
       browser_state->GetStatePath().Append(history::kTopSitesFilename));
   return top_sites;
