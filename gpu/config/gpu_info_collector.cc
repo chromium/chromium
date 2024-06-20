@@ -411,7 +411,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
         // Skip CPU adapters.
         break;
       default:
-        if (gpu::IsWebGPUAdapterBlocklisted(adapter)) {
+        if (gpu::IsWebGPUAdapterBlocklisted(adapter).blocked) {
           has_core_blocklisted_adapter = true;
         } else {
           has_core_adapter = true;
@@ -442,7 +442,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
         // Skip CPU adapters.
         break;
       default:
-        if (gpu::IsWebGPUAdapterBlocklisted(adapter)) {
+        if (gpu::IsWebGPUAdapterBlocklisted(adapter).blocked) {
           has_compat_blocklisted_adapter = true;
         } else {
           has_compat_adapter = true;
@@ -946,8 +946,9 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         dawn_info_list->push_back(gpu_str);
 
         dawn_info_list->push_back("[WebGPU Status]");
-        if (IsWebGPUAdapterBlocklisted(adapter)) {
-          dawn_info_list->push_back("Blocklisted");
+        auto blocklist_result = IsWebGPUAdapterBlocklisted(adapter);
+        if (blocklist_result.blocked) {
+          dawn_info_list->push_back("Blocklisted - " + blocklist_result.reason);
         } else {
           dawn_info_list->push_back("Available");
         }

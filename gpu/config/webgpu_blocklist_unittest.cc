@@ -18,11 +18,11 @@ namespace gpu {
 
 bool IsWebGPUAdapterBlocklisted(const WGPUAdapterInfo& info,
                                 const char* blocklist_string = "") {
-  return detail::IsWebGPUAdapterBlocklisted(
-      *reinterpret_cast<const wgpu::AdapterInfo*>(&info),
-      {
-          .blocklist_string = blocklist_string,
-      });
+  return detail::GetWebGPUAdapterBlocklistReason(
+             *reinterpret_cast<const wgpu::AdapterInfo*>(&info),
+             {
+                 .blocklist_string = blocklist_string,
+             }) != WebGPUBlocklistReason::None;
 }
 
 class WebGPUBlocklistTest : public testing::Test {};

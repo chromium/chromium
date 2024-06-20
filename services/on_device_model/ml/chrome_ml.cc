@@ -205,15 +205,17 @@ bool ChromeML::IsGpuBlocked() const {
             wgpu::Adapter adapter(cAdapter);
             auto* query_data = static_cast<QueryData*>(data);
 
-            query_data->blocklisted = gpu::IsWebGPUAdapterBlocklisted(
-                adapter,
-                {
-                    .blocklist_string = kGpuBlockList.Get(),
-                    .ignores =
-                        WebGPUBlocklistReason::IndirectComputeRootConstants |
-                        WebGPUBlocklistReason::Consteval22ndBit |
-                        WebGPUBlocklistReason::WindowsARM,
-                });
+            query_data->blocklisted =
+                gpu::IsWebGPUAdapterBlocklisted(
+                    adapter,
+                    {
+                        .blocklist_string = kGpuBlockList.Get(),
+                        .ignores = WebGPUBlocklistReason::
+                                       IndirectComputeRootConstants |
+                                   WebGPUBlocklistReason::Consteval22ndBit |
+                                   WebGPUBlocklistReason::WindowsARM,
+                    })
+                    .blocked;
             if (query_data->blocklisted) {
               wgpu::AdapterInfo info;
               adapter.GetInfo(&info);

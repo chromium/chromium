@@ -1750,7 +1750,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     wgpu::AdapterInfo adapter_info = {};
     adapter.GetInfo(&adapter_info);
 
-    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter)) {
+    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter).blocked) {
       return false;
     }
 
