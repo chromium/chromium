@@ -103,7 +103,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   ASSERT_TRUE(controller);
   ASSERT_TRUE(controller->IsVisible());
 
-  WebContents()->Close();
+  content::WebContents* web_contents = WebContents();
+  ClearWebContentsPtr();
+  web_contents->Close();
 }
 
 // Verify that controller is not crashed in case of insufficient vertical space

@@ -4551,6 +4551,7 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
     browser()->tab_strip_model()->AppendWebContents(
         std::move(owned_web_contents), true);
     if (preexisting_tab) {
+      ClearWebContentsPtr();
       browser()->tab_strip_model()->CloseWebContentsAt(
           0, TabCloseTypes::CLOSE_NONE);
     }

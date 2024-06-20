@@ -146,8 +146,8 @@ class SyncActiveWithoutPasswordsChecker
 // Note: This helper applies to ChromeOS too, but is currently unused there. So
 // define it out to prevent a compile error due to the unused function.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void GetNewTab(Browser* browser, content::WebContents** web_contents) {
-  PasswordManagerBrowserTestBase::GetNewTab(browser, web_contents);
+content::WebContents* GetNewTab(Browser* browser) {
+  return PasswordManagerBrowserTestBase::GetNewTab(browser);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -438,8 +438,7 @@ class PasswordManagerSyncExplicitParamTest
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ChooseDestinationStore) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   SetupSyncTransportWithPasswordAccountStorage();
 
@@ -517,8 +516,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInProfileStore) {
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form and submit a different password.
   NavigateToFile(web_contents, kExampleHostname,
@@ -544,8 +542,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, UpdateInAccountStore) {
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form and submit a different password.
   NavigateToFile(web_contents, kExampleHostname,
@@ -573,8 +570,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form and submit a different password.
   NavigateToFile(web_contents, kExampleHostname,
@@ -609,8 +605,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form and submit a different password.
   NavigateToFile(web_contents, kExampleHostname,
@@ -657,8 +652,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   ASSERT_THAT(GetAllLoginsFromAccountPasswordStore(),
               ElementsAre(MatchesLogin("user", "accountpass")));
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form and submit the version of the credentials from the profile
   // store.
@@ -696,8 +690,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   ASSERT_THAT(GetAllLoginsFromAccountPasswordStore(),
               ElementsAre(MatchesLogin("user", "accountpass")));
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form and submit the version of the credentials from the account
   // store.
@@ -724,8 +717,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form (on www.) and submit it with the saved credentials.
   NavigateToFile(web_contents, kExampleHostname,
@@ -755,8 +747,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form (on www.) and submit it with the saved credentials.
   NavigateToFile(web_contents, kExampleHostname,
@@ -786,8 +777,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Go to a form (on www.) and submit it with the saved credentials.
   NavigateToFile(web_contents, kExampleHostname,
@@ -812,8 +802,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Navigate to a Gaia signin form and submit a credential for the primary
   // account.
@@ -839,8 +828,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Navigate to a Gaia signin form and submit a credential for an account that
   // is *not* the primary one.
@@ -869,8 +857,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   SetupSyncTransportWithPasswordAccountStorage();
 
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   // Navigate to a Gaia signin form and submit a new password for the primary
   // account.
@@ -895,8 +882,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        SignOutWithUnsyncedPasswordsOpensBubble) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  content::WebContents* web_contents = nullptr;
-  GetNewTab(GetBrowser(0), &web_contents);
+  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
 
   SetupSyncTransportWithPasswordAccountStorage();
 

@@ -3052,8 +3052,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   base::HistogramTester histograms;
 
   // This is needed for tests using BubbleObserver
-  content::WebContents* contents = nullptr;
-  PasswordManagerBrowserTestBase::GetNewTab(browser(), &contents);
+  content::WebContents* contents =
+      PasswordManagerBrowserTestBase::GetNewTab(browser());
 
   // Navigate to the page.
   content::TestNavigationObserver observer1(contents);

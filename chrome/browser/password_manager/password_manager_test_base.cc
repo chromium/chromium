@@ -417,8 +417,7 @@ void BubbleObserver::WaitForSaveUnsyncedCredentialsPrompt() const {
 }
 
 PasswordManagerBrowserTestBase::PasswordManagerBrowserTestBase()
-    : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-      web_contents_(nullptr) {}
+    : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
 PasswordManagerBrowserTestBase::~PasswordManagerBrowserTestBase() = default;
 
@@ -446,10 +445,15 @@ void PasswordManagerBrowserTestBase::SetUpOnMainThread() {
   verify_result.verified_cert = cert;
   mock_cert_verifier()->AddResultForCert(cert.get(), verify_result, net::OK);
 
-  GetNewTab(browser(), &web_contents_);
+  web_contents_ = GetNewTab(browser());
+}
+
+void PasswordManagerBrowserTestBase::ClearWebContentsPtr() {
+  web_contents_ = nullptr;
 }
 
 void PasswordManagerBrowserTestBase::TearDownOnMainThread() {
+  ClearWebContentsPtr();
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 }
 
@@ -462,9 +466,8 @@ void PasswordManagerBrowserTestBase::SetUpCommandLine(
 }
 
 // static
-void PasswordManagerBrowserTestBase::GetNewTab(
-    Browser* browser,
-    content::WebContents** web_contents) {
+content::WebContents* PasswordManagerBrowserTestBase::GetNewTab(
+    Browser* browser) {
   // Add a tab with a customized ManagePasswordsUIController. Thus, we can
   // intercept useful UI events.
   content::WebContents* preexisting_tab =
@@ -472,25 +475,26 @@ void PasswordManagerBrowserTestBase::GetNewTab(
   std::unique_ptr<content::WebContents> owned_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser->profile()));
-  *web_contents = owned_web_contents.get();
-  ASSERT_TRUE(*web_contents);
+  content::WebContents* web_contents = owned_web_contents.get();
+  EXPECT_TRUE(web_contents);
 
   // ManagePasswordsUIController needs ChromePasswordManagerClient for logging.
-  autofill::ChromeAutofillClient::CreateForWebContents(*web_contents);
-  ChromePasswordManagerClient::CreateForWebContents(*web_contents);
-  ASSERT_TRUE(ChromePasswordManagerClient::FromWebContents(*web_contents));
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+  ChromePasswordManagerClient::CreateForWebContents(web_contents);
+  EXPECT_TRUE(ChromePasswordManagerClient::FromWebContents(web_contents));
   CustomManagePasswordsUIController* controller =
-      new CustomManagePasswordsUIController(*web_contents);
+      new CustomManagePasswordsUIController(web_contents);
   browser->tab_strip_model()->AppendWebContents(std::move(owned_web_contents),
                                                 true);
   if (preexisting_tab) {
     browser->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
   }
-  ASSERT_EQ(controller,
-            ManagePasswordsUIController::FromWebContents(*web_contents));
-  ASSERT_EQ(*web_contents, browser->tab_strip_model()->GetActiveWebContents());
-  ASSERT_FALSE((*web_contents)->IsLoading());
+  EXPECT_EQ(controller,
+            ManagePasswordsUIController::FromWebContents(web_contents));
+  EXPECT_EQ(web_contents, browser->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(web_contents->IsLoading());
+  return web_contents;
 }
 
 // static

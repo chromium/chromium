@@ -252,6 +252,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // The metrics are recorded when the form manager is destroyed. Closing the
   // tab enforces it.
+  ClearWebContentsPtr();
   CloseAllBrowsers();
   histogram_tester.ExpectUniqueSample(
       "PasswordGeneration.UserDecision",

@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/files/file_enumerator.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
@@ -208,7 +208,7 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    PasswordManagerBrowserTestBase::GetNewTab(browser(), &web_contents_);
+    web_contents_ = PasswordManagerBrowserTestBase::GetNewTab(browser());
     recipe_replayer_ =
         std::make_unique<captured_sites_test_utils::TestRecipeReplayer>(
             browser(), this);
@@ -244,6 +244,7 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
   void TearDownOnMainThread() override {
+    web_contents_ = nullptr;
     recipe_replayer_.reset();
     // Need to delete the URL loader and its underlying interceptor on the main
     // thread. Will result in a fatal crash otherwise. The pointer  has its
@@ -258,7 +259,6 @@ class CapturedSitesPasswordManagerBrowserTest
   }
 
   content::WebContents* WebContents() {
-    // return web_contents_;
     return web_contents_;
   }
 
@@ -269,9 +269,7 @@ class CapturedSitesPasswordManagerBrowserTest
   std::unique_ptr<captured_sites_test_utils::ProfileDataController>
       profile_controller_;
   base::test::ScopedFeatureList feature_list_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<ServerUrlLoader> server_url_loader_;
 
   base::CallbackListSubscription create_services_subscription_;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
@@ -132,9 +131,8 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  // Creates a new tab with all the password manager test hooks and returns it
-  // in |web_contents|.
-  static void GetNewTab(Browser* browser, content::WebContents** web_contents);
+  // Creates a new tab with all the password manager test hooks and returns it.
+  static content::WebContents* GetNewTab(Browser* browser);
 
   // Make sure that the password store associated with the given browser
   // processed all the previous calls, calls executed on another thread.
@@ -201,12 +199,12 @@ class PasswordManagerBrowserTestBase : public CertVerifierBrowserTest {
   content::RenderFrameHost* RenderFrameHost() const;
   net::EmbeddedTestServer& https_test_server() { return https_test_server_; }
 
+  void ClearWebContentsPtr();
+
  private:
   net::EmbeddedTestServer https_test_server_;
   // A tab with some hooks injected.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   base::CallbackListSubscription create_services_subscription_;
 };
