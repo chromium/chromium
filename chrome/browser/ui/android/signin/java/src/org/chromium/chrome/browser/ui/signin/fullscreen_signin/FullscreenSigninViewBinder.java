@@ -230,10 +230,15 @@ class FullscreenSigninViewBinder {
 
             int padding = ViewUtils.dpToPx(context, 16);
             accountPickerView.setPadding(padding, padding, padding, padding);
-            int margin = ViewUtils.dpToPx(context, 24);
+            int sideMargin = ViewUtils.dpToPx(context, 24);
+            // Total margin should be 24dp but the continue button xml file adds an 8dp top margin.
+            int bottomMargin = ViewUtils.dpToPx(context, 16);
             MarginLayoutParams params = (MarginLayoutParams) accountPickerView.getLayoutParams();
             params.setMargins(
-                    /* left= */ margin, /* top= */ 0, /* right= */ margin, /* bottom= */ margin);
+                    /* left= */ sideMargin,
+                    /* top= */ 0,
+                    /* right= */ sideMargin,
+                    /* bottom= */ bottomMargin);
 
             ImageView moreArrow =
                     accountPickerView.findViewById(R.id.signin_fre_selected_account_expand_icon);
