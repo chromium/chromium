@@ -55,6 +55,15 @@ class ManifestV2ExperimentManager : public KeyedService,
   // This may be false if, e.g., the extension is policy-installed.
   bool IsExtensionAffected(const Extension& extension);
 
+  // Returns true if a new installation of the given `extension_id` should be
+  // blocked.
+  bool ShouldBlockExtensionInstallation(
+      const ExtensionId& extension_id,
+      int manifest_version,
+      Manifest::Type manifest_type,
+      mojom::ManifestLocation manifest_location,
+      const HashedExtensionId& hashed_id);
+
   // Returns true if the given `extension_id` has been acknowledged by the user
   // during the warning stage of the MV2 deprecation.
   bool DidUserAcknowledgeWarning(const ExtensionId& extension_id);

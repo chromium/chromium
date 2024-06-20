@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/crx_file/id_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
@@ -131,6 +132,12 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest, MV2ExtensionsAreAffected) {
             .SetLocation(test_case.manifest_location)
             .Build();
     EXPECT_TRUE(experiment_manager()->IsExtensionAffected(*mv2_extension));
+    // Even though the MV2 extension is affected by the experiment, it should
+    // *not* be blocked from installation in the warning phase.
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+        mv2_extension->id(), mv2_extension->manifest_version(),
+        mv2_extension->GetType(), mv2_extension->location(),
+        mv2_extension->hashed_id()));
 
     scoped_refptr<const Extension> mv3_extension =
         ExtensionBuilder(test_case.name)
@@ -138,6 +145,10 @@ TEST_F(ManifestV2ExperimentManagerWarningUnitTest, MV2ExtensionsAreAffected) {
             .SetLocation(test_case.manifest_location)
             .Build();
     EXPECT_FALSE(experiment_manager()->IsExtensionAffected(*mv3_extension));
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+        mv3_extension->id(), mv3_extension->manifest_version(),
+        mv3_extension->GetType(), mv3_extension->location(),
+        mv3_extension->hashed_id()));
   }
 }
 
@@ -203,6 +214,10 @@ TEST_F(ManifestV2ExperimentManagerDisabledUnitTest, NoExtensionsAreAffected) {
             .SetLocation(test_case.manifest_location)
             .Build();
     EXPECT_FALSE(experiment_manager()->IsExtensionAffected(*mv2_extension));
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+        mv2_extension->id(), mv2_extension->manifest_version(),
+        mv2_extension->GetType(), mv2_extension->location(),
+        mv2_extension->hashed_id()));
 
     scoped_refptr<const Extension> mv3_extension =
         ExtensionBuilder(test_case.name)
@@ -210,6 +225,10 @@ TEST_F(ManifestV2ExperimentManagerDisabledUnitTest, NoExtensionsAreAffected) {
             .SetLocation(test_case.manifest_location)
             .Build();
     EXPECT_FALSE(experiment_manager()->IsExtensionAffected(*mv3_extension));
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+        mv3_extension->id(), mv3_extension->manifest_version(),
+        mv3_extension->GetType(), mv3_extension->location(),
+        mv3_extension->hashed_id()));
   }
 }
 
@@ -262,5 +281,92 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
     EXPECT_FALSE(experiment_manager()->IsExtensionAffected(*mv3_extension));
   }
 }
+
+// Tests the manager properly indicates when to block user-installed extensions
+// while the "soft disable" experiment stage is active.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       ShouldBlockInstallation_UserInstalledExtensions) {
+  constexpr bool kInstallShouldBeBlocked = true;
+  constexpr bool kInstallShouldBeAllowed = false;
+  struct {
+    mojom::ManifestLocation manifest_location;
+    int manifest_version;
+    const char* name;
+    bool should_block_install;
+  } test_cases[] = {
+      // Unpacked extensions (including commandline-loaded extensions) should
+      // still be installable. This allows developers to continue testing their
+      // extensions during the experiment periods.
+      {mojom::ManifestLocation::kUnpacked, 2, "unpacked - mv2",
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kUnpacked, 3, "unpacked - mv3",
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kCommandLine, 2, "command line - mv2",
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kCommandLine, 3, "command line - mv3",
+       kInstallShouldBeAllowed},
+
+      // Other user-visible extension types should only be blocked if they are
+      // MV2.
+      {mojom::ManifestLocation::kInternal, 2, "internal - mv2",
+       kInstallShouldBeBlocked},
+      {mojom::ManifestLocation::kInternal, 3, "internal - mv3",
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPref, 2, "external pref - mv2",
+       kInstallShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalPref, 3, "external pref - mv3",
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPref, 2, "external registry - mv2",
+       kInstallShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalRegistry, 3, "external registry - mv3",
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPrefDownload, 2,
+       "external download - mv2", kInstallShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalPrefDownload, 3,
+       "external download - mv3", kInstallShouldBeAllowed},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+
+    EXPECT_EQ(
+        test_case.should_block_install,
+        experiment_manager()->ShouldBlockExtensionInstallation(
+            extension_id, test_case.manifest_version, Manifest::TYPE_EXTENSION,
+            test_case.manifest_location, HashedExtensionId(extension_id)));
+  }
+}
+
+// Tests the manager never blocks component extensions from installing.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
+       ShouldBlockInstallation_ComponentExtensions) {
+  struct {
+    mojom::ManifestLocation manifest_location;
+    int manifest_version;
+    const char* name;
+  } test_cases[] = {
+      {mojom::ManifestLocation::kComponent, 2, "component - mv2"},
+      {mojom::ManifestLocation::kComponent, 3, "component - mv3"},
+      {mojom::ManifestLocation::kExternalComponent, 2,
+       "external component - mv2"},
+      {mojom::ManifestLocation::kExternalComponent, 3,
+       "external component - mv3"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+
+    // Component extensions are built-in parts of Chrome that are extensions as
+    // an implementation detail. They should always be allowed to install.
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+        extension_id, test_case.manifest_version, Manifest::TYPE_EXTENSION,
+        test_case.manifest_location, HashedExtensionId(extension_id)));
+  }
+}
+
+// TODO(https://crbug.com/339061151): Add tests for policy-installed and policy-
+// allowed extensions.
 
 }  // namespace extensions

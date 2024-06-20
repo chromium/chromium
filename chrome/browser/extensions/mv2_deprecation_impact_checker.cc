@@ -44,35 +44,46 @@ MV2DeprecationImpactChecker::~MV2DeprecationImpactChecker() = default;
 
 bool MV2DeprecationImpactChecker::IsExtensionAffected(
     const Extension& extension) {
+  return IsExtensionAffected(extension.id(), extension.manifest_version(),
+                             extension.GetType(), extension.location(),
+                             extension.hashed_id());
+}
+
+bool MV2DeprecationImpactChecker::IsExtensionAffected(
+    const ExtensionId& extension_id,
+    int manifest_version,
+    Manifest::Type manifest_type,
+    mojom::ManifestLocation manifest_location,
+    const HashedExtensionId& hashed_id) {
   // Only consider any extensions if the experiment is enabled.
   if (experiment_stage_ == MV2ExperimentStage::kNone) {
     return false;
   }
 
   // Only extensions < MV3.
-  if (extension.manifest_version() >= 3) {
+  if (manifest_version >= 3) {
     return false;
   }
 
   // Only extensions (not platform apps, etc).
-  if (!extension.is_extension() && !extension.is_login_screen_extension()) {
+  if (manifest_type != Manifest::TYPE_EXTENSION &&
+      manifest_type != Manifest::TYPE_LOGIN_SCREEN_EXTENSION) {
     return false;
   }
 
   // Ignore component extensions (they're implementation details of Chrome).
-  if (Manifest::IsComponentLocation(extension.location())) {
+  if (Manifest::IsComponentLocation(manifest_location)) {
     return false;
   }
 
   // Ignore MV2 extensions that are allowed by policy.
   if (extension_management_->IsExemptFromMV2DeprecationByPolicy(
-          extension.manifest_version(), extension.id(),
-          extension.manifest()->type())) {
+          manifest_version, extension_id, manifest_type)) {
     return false;
   }
 
   // Extensions with a temporary exception.
-  if (base::Contains(GetHashedExceptionList(), extension.hashed_id().value())) {
+  if (base::Contains(GetHashedExceptionList(), hashed_id.value())) {
     return false;
   }
 

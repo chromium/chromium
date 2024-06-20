@@ -160,6 +160,31 @@ bool ManifestV2ExperimentManager::IsExtensionAffected(
   return impact_checker_.IsExtensionAffected(extension);
 }
 
+bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
+    const ExtensionId& extension_id,
+    int manifest_version,
+    Manifest::Type manifest_type,
+    mojom::ManifestLocation manifest_location,
+    const HashedExtensionId& hashed_id) {
+  // Only block extension installation during the disablement phase.
+  if (experiment_stage_ != MV2ExperimentStage::kDisableWithReEnable) {
+    return false;
+  }
+
+  // Always allow unpacked extensions to be installed. Otherwise, there's no
+  // way for developers to support MV2 extensions (which may still be necessary
+  // for e.g. policy).
+  if (Manifest::IsUnpackedLocation(manifest_location)) {
+    return false;
+  }
+
+  // Otherwise, if the extension is affected by the deprecation, it should be
+  // blocked.
+  return impact_checker_.IsExtensionAffected(extension_id, manifest_version,
+                                             manifest_type, manifest_location,
+                                             hashed_id);
+}
+
 bool ManifestV2ExperimentManager::DidUserAcknowledgeWarning(
     const ExtensionId& extension_id) {
   bool acknowledged = false;
