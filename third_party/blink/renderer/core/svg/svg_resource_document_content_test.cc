@@ -150,4 +150,31 @@ TEST_F(SVGResourceDocumentContentTest, CacheCleanup) {
             nullptr);
 }
 
+TEST_F(SVGResourceDocumentContentTest, SecondLoadOfResourceInError) {
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+
+  const char kUrl[] = "data:image/svg+xml,a";
+  FetchParameters params1(ResourceRequest(kUrl), options);
+  params1.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+
+  auto* content1 = SVGResourceDocumentContent::Fetch(params1, GetDocument());
+  EXPECT_TRUE(content1->IsLoaded());
+
+  // Simulate a later failure.
+  content1->UpdateStatus(ResourceStatus::kLoadError);
+  EXPECT_TRUE(content1->ErrorOccurred());
+
+  FetchParameters params2(ResourceRequest(kUrl), options);
+  params2.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+
+  auto* content2 = SVGResourceDocumentContent::Fetch(params2, GetDocument());
+  EXPECT_TRUE(content2->IsLoaded());
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
 }  // namespace blink
