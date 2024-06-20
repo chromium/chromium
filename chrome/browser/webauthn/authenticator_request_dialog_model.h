@@ -409,12 +409,6 @@ struct AuthenticatorRequestDialogModel {
     CABLE_V2_2ND_FACTOR,
   };
 
-  // Possible error states during GPM pin entry / creation.
-  enum class GpmPinError {
-    kNone,
-    kWrongPin,
-  };
-
   explicit AuthenticatorRequestDialogModel(
       content::RenderFrameHost* render_frame_host);
   AuthenticatorRequestDialogModel(AuthenticatorRequestDialogModel&) = delete;
@@ -512,8 +506,10 @@ struct AuthenticatorRequestDialogModel {
   // The name of the current GPM account, or else empty. E.g.
   // "example@gmail.com".
   std::string account_name;
-  // Records the error during GPM pin entry / creation, if any.
-  GpmPinError gpm_pin_error = GpmPinError::kNone;
+
+  // Number of remaining GPM pin entry attempts before getting locked out or
+  // `std::nullopt` if there was no failed attempts during that request.
+  std::optional<int> gpm_pin_remaining_attempts_;
 
   // Whether the UI is currently in a disabled state, which is required for some
   // transitions (e.g. `Step::kWaitingForEnclave`). Each step UI that needs it

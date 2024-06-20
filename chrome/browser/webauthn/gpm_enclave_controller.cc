@@ -34,6 +34,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/browser/render_frame_host.h"
+#include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
@@ -1250,7 +1251,7 @@ void GPMEnclaveController::OnPasskeyCreated(
   }
 }
 
-bool GPMEnclaveController::GetFailedPINAttemptCount() {
+int GPMEnclaveController::GetFailedPINAttemptCount() {
   return GetProfile()->GetPrefs()->GetInteger(
       webauthn::pref_names::kEnclaveFailedPINAttemptsCount);
 }
@@ -1262,19 +1263,22 @@ void GPMEnclaveController::SetFailedPINAttemptCount(int count) {
 
 void GPMEnclaveController::HandlePINValidationResult(
     device::enclave::PINValidationResult result) {
-  using GpmPinError = AuthenticatorRequestDialogModel::GpmPinError;
-
   switch (result) {
     case device::enclave::PINValidationResult::kSuccess:
       SetFailedPINAttemptCount(0);
-      model_->gpm_pin_error = GpmPinError::kNone;
+      model_->gpm_pin_remaining_attempts_ = std::nullopt;
       break;
     case device::enclave::PINValidationResult::kIncorrect: {
       int count = GetFailedPINAttemptCount();
-      // TODO(enclave): If the new count is 5, go to the locked PIN UI.
       SetFailedPINAttemptCount(++count);
-      model_->gpm_pin_error = GpmPinError::kWrongPin;
-      PromptForPin();
+
+      if (count >= device::enclave::kMaxFailedPINAttempts) {
+        // TODO(enclave): If the new count is 5, go to the locked PIN UI.
+      } else {
+        model_->gpm_pin_remaining_attempts_ =
+            device::enclave::kMaxFailedPINAttempts - count;
+        PromptForPin();
+      }
       break;
     }
     case device::enclave::PINValidationResult::kLocked:

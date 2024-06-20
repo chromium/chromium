@@ -733,8 +733,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   explicit AuthenticatorGPMPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
       int pin_digits_count,
-      Mode mode,
-      AuthenticatorRequestDialogModel::GpmPinError error);
+      Mode mode);
   ~AuthenticatorGPMPinSheetModel() override;
 
   int pin_digits_count() const;
@@ -764,7 +763,6 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   std::u16string pin_;
   const int pin_digits_count_;
   const Mode mode_;
-  const AuthenticatorRequestDialogModel::GpmPinError error_;
 };
 
 // The sheet shown when the user is entering an arbitrary (alphanumeric) pin.
@@ -777,8 +775,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
   explicit AuthenticatorGPMArbitraryPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
-      Mode mode,
-      AuthenticatorRequestDialogModel::GpmPinError error);
+      Mode mode);
   ~AuthenticatorGPMArbitraryPinSheetModel() override;
 
   // Sets currently typed pin in the sheet.
@@ -805,7 +802,6 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
   std::u16string pin_;
   const Mode mode_;
-  const AuthenticatorRequestDialogModel::GpmPinError error_;
 };
 
 // The sheet shown for bootstrapping Google Password Manager passkeys during

@@ -1678,13 +1678,11 @@ void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
 AuthenticatorGPMPinSheetModel::AuthenticatorGPMPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
     int pin_digits_count,
-    Mode mode,
-    AuthenticatorRequestDialogModel::GpmPinError error)
+    Mode mode)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden),
       pin_digits_count_(pin_digits_count),
-      mode_(mode),
-      error_(error) {
+      mode_(mode) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LIGHT,
                                 IDR_WEBAUTHN_GPM_PIN_DARK);
 }
@@ -1743,12 +1741,12 @@ std::u16string AuthenticatorGPMPinSheetModel::GetStepDescription() const {
 }
 
 std::u16string AuthenticatorGPMPinSheetModel::GetError() const {
-  switch (error_) {
-    case AuthenticatorRequestDialogModel::GpmPinError::kNone:
-      return std::u16string();
-    case AuthenticatorRequestDialogModel::GpmPinError::kWrongPin:
-      return u"Wrong PIN (UNTRANSLATED)";
-  }
+  std::optional<int> remaining_attempts =
+      dialog_model()->gpm_pin_remaining_attempts_;
+  return remaining_attempts
+             ? l10n_util::GetPluralStringFUTF16(
+                   IDS_WEBAUTHN_GPM_WRONG_PIN_ERROR, *remaining_attempts)
+             : std::u16string();
 }
 
 bool AuthenticatorGPMPinSheetModel::IsAcceptButtonVisible() const {
@@ -1798,12 +1796,10 @@ void AuthenticatorGPMPinSheetModel::OnForgotGPMPin() const {
 
 AuthenticatorGPMArbitraryPinSheetModel::AuthenticatorGPMArbitraryPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
-    Mode mode,
-    AuthenticatorRequestDialogModel::GpmPinError error)
+    Mode mode)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden),
-      mode_(mode),
-      error_(error) {
+      mode_(mode) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_GPM_PIN_LIGHT,
                                 IDR_WEBAUTHN_GPM_PIN_DARK);
 }
@@ -1848,12 +1844,12 @@ std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepDescription()
 }
 
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetError() const {
-  switch (error_) {
-    case AuthenticatorRequestDialogModel::GpmPinError::kNone:
-      return std::u16string();
-    case AuthenticatorRequestDialogModel::GpmPinError::kWrongPin:
-      return u"Wrong PIN (UNTRANSLATED)";
-  }
+  std::optional<int> remaining_attempts =
+      dialog_model()->gpm_pin_remaining_attempts_;
+  return remaining_attempts
+             ? l10n_util::GetPluralStringFUTF16(
+                   IDS_WEBAUTHN_GPM_WRONG_PIN_ERROR, *remaining_attempts)
+             : std::u16string();
 }
 
 bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonVisible() const {

@@ -16480,6 +16480,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PIN_OPTIONS_BUTTON" desc="The label of a button that is displayed in a dialog that is shown when a user is creating a Google Password Manager PIN that allows to choose different PIN options (numeric vs. alphanumeric).">
         PIN options
       </message>
+      <message name="IDS_WEBAUTHN_GPM_WRONG_PIN_ERROR" desc="Error message. Displayed when the user enters the wrong GPM PIN explaining how many attempts are still remaining.">
+        {NUM_ATTEMPTS, plural,
+          =1 {Wrong PIN. 1 attempt remaining.}
+          other {Wrong PIN. # attempts remaining.}}
+      </message>
 
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE" translateable="false">

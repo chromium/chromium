@@ -207,7 +207,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
 
   // Accessors for the profile pref that counts the number of consecutive failed
   // PIN attempts to know when a lockout will happen.
-  bool GetFailedPINAttemptCount();
+  int GetFailedPINAttemptCount();
   void SetFailedPINAttemptCount(int count);
 
   // Invoked when a passkey request has been sent to the enclave service with

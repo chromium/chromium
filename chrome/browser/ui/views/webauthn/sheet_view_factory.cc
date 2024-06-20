@@ -353,43 +353,37 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGPMPinSheetModel>(
               dialog_model, kPinDigitCount,
-              AuthenticatorGPMPinSheetModel::Mode::kPinChange,
-              dialog_model->gpm_pin_error));
+              AuthenticatorGPMPinSheetModel::Mode::kPinChange));
       break;
     case Step::kGPMCreatePin:
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGPMPinSheetModel>(
               dialog_model, kPinDigitCount,
-              AuthenticatorGPMPinSheetModel::Mode::kPinCreate,
-              dialog_model->gpm_pin_error));
+              AuthenticatorGPMPinSheetModel::Mode::kPinCreate));
       break;
     case Step::kGPMEnterPin:
       sheet_view = std::make_unique<AuthenticatorGpmPinSheetView>(
           std::make_unique<AuthenticatorGPMPinSheetModel>(
               dialog_model, kPinDigitCount,
-              AuthenticatorGPMPinSheetModel::Mode::kPinEntry,
-              dialog_model->gpm_pin_error));
+              AuthenticatorGPMPinSheetModel::Mode::kPinEntry));
       break;
     case Step::kGPMChangeArbitraryPin:
       sheet_view = std::make_unique<AuthenticatorGPMArbitraryPinSheetView>(
           std::make_unique<AuthenticatorGPMArbitraryPinSheetModel>(
               dialog_model,
-              AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinChange,
-              dialog_model->gpm_pin_error));
+              AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinChange));
       break;
     case Step::kGPMCreateArbitraryPin:
       sheet_view = std::make_unique<AuthenticatorGPMArbitraryPinSheetView>(
           std::make_unique<AuthenticatorGPMArbitraryPinSheetModel>(
               dialog_model,
-              AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinCreate,
-              dialog_model->gpm_pin_error));
+              AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinCreate));
       break;
     case Step::kGPMEnterArbitraryPin:
       sheet_view = std::make_unique<AuthenticatorGPMArbitraryPinSheetView>(
           std::make_unique<AuthenticatorGPMArbitraryPinSheetModel>(
               dialog_model,
-              AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinEntry,
-              dialog_model->gpm_pin_error));
+              AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinEntry));
       break;
     case Step::kTrustThisComputerAssertion:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
