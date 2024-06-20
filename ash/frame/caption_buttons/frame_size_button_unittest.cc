@@ -6,6 +6,7 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/frame/snap_controller_impl.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -15,6 +16,7 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -24,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
@@ -45,6 +48,7 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
+#include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -505,6 +509,54 @@ TEST_F(FrameSizeButtonTest, SizeButtonPressedWhenSnapButtonHovered) {
   EXPECT_EQ(views::Button::STATE_NORMAL, minimize_button()->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
   EXPECT_EQ(views::Button::STATE_HOVERED, close_button()->GetState());
+}
+
+class SnapGroupFrameSizeButtonTest : public FrameSizeButtonTest {
+ public:
+  SnapGroupFrameSizeButtonTest() : scoped_feature_list_(features::kSnapGroup) {}
+  SnapGroupFrameSizeButtonTest(const SnapGroupFrameSizeButtonTest&) = delete;
+  SnapGroupFrameSizeButtonTest& operator=(const SnapGroupFrameSizeButtonTest&) =
+      delete;
+  ~SnapGroupFrameSizeButtonTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that long press caption button to show snap phantom bounds are updated.
+TEST_F(SnapGroupFrameSizeButtonTest, SnapCaptionButton) {
+  EXPECT_EQ(views::Button::STATE_NORMAL, size_button()->GetState());
+
+  // Create an opposite snapped window with non-default snap ratio.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_primary);
+
+  // Press on the size button and drag toward the close button to show the snap
+  // phantom bounds.
+  wm::ActivateWindow(GetWidget()->GetNativeWindow());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(CenterPointInScreen(size_button()));
+  generator->PressLeftButton();
+  generator->MoveMouseTo(CenterPointInScreen(close_button()));
+  ASSERT_EQ(views::Button::STATE_PRESSED, size_button()->GetState());
+  ASSERT_TRUE(
+      static_cast<FrameSizeButton*>(size_button())->in_snap_mode_for_testing());
+  auto* snap_controller =
+      static_cast<SnapControllerImpl*>(chromeos::SnapController::Get());
+  ASSERT_TRUE(snap_controller);
+
+  // Test the phantom bounds reflect the opposite snapped `w1`.
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect expected_bounds(work_area);
+  expected_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      snap_controller->phantom_window_controller_for_testing()
+          ->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
 }
 
 class FrameSizeButtonTestRTL : public FrameSizeButtonTest {
