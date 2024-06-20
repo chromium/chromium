@@ -27,6 +27,9 @@ class Properties {
             new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey BACKGROUND_COLOR_ARGB = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey HEIGHT = new WritableIntPropertyKey();
+    // The y-offset that mini player layout need to shift up.
+    public static final WritableIntPropertyKey Y_OFFSET = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         VISIBILITY,
         ANIMATE_VISIBILITY_CHANGES,
@@ -36,5 +39,6 @@ class Properties {
         CONTENTS_OPAQUE,
         BACKGROUND_COLOR_ARGB,
         HEIGHT,
+        Y_OFFSET
     };
 }

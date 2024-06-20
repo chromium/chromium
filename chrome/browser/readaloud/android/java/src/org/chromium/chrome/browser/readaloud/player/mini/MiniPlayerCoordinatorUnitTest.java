@@ -157,4 +157,11 @@ public class MiniPlayerCoordinatorUnitTest {
         mSharedModel.set(PlayerProperties.PROGRESS, 0.5f);
         verify(mLayout).setProgress(eq(0.5f));
     }
+
+    @Test
+    public void testBindYOffset() {
+        mCoordinator.show(/* animate= */ true);
+        mModel.set(Properties.Y_OFFSET, 100);
+        verify(mLayout).setYOffset(eq(100));
+    }
 }

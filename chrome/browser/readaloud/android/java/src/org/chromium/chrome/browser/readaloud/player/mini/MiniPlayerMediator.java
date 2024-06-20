@@ -54,11 +54,13 @@ public class MiniPlayerMediator implements BottomControlsLayer {
                     if (!mIsAnimationStarted) {
                         mIsAnimationStarted = true;
                     }
+                    // The yOffset represents there are other elements in the browser controls.
+                    int yOffset = getModel().get(Properties.Y_OFFSET);
                     if (getVisibility() == VisibilityState.HIDING
-                            && bottomControlsMinHeightOffset == 0) {
+                            && bottomControlsMinHeightOffset <= yOffset) {
                         onBottomControlsShrunk();
                     } else if (getVisibility() == VisibilityState.SHOWING
-                            && mLayoutHeightPx == bottomControlsMinHeightOffset) {
+                            && mLayoutHeightPx + yOffset == bottomControlsMinHeightOffset) {
                         onBottomControlsGrown();
                     }
                 }
@@ -102,6 +104,16 @@ public class MiniPlayerMediator implements BottomControlsLayer {
 
     void setCoordinator(MiniPlayerCoordinator coordinator) {
         mCoordinator = coordinator;
+    }
+
+    /**
+     * Set the yOffset that the mini player needs to move up. This is used when there are addition
+     * browser controls below the mini player.
+     *
+     * @param yOffset The Y Offset in pixels.
+     */
+    void setYOffset(int yOffset) {
+        mModel.set(Properties.Y_OFFSET, yOffset);
     }
 
     void destroy() {
@@ -207,16 +219,21 @@ public class MiniPlayerMediator implements BottomControlsLayer {
 
     private void growBottomControls() {
         mBottomControlsStacker.notifyBackgroundColor(mModel.get(Properties.BACKGROUND_COLOR_ARGB));
+        int minHeight = getBrowserControls().getBottomControlsMinHeight();
         setBottomControlsHeight(
-                getBrowserControls().getBottomControlsHeight() + mLayoutHeightPx, mLayoutHeightPx);
+                getBrowserControls().getBottomControlsHeight() + mLayoutHeightPx,
+                mLayoutHeightPx + minHeight);
     }
 
     private void shrinkBottomControls() {
         // Hack: Bottom controls animation doesn't work if the new height is 0. Shrink
         // to 1 pixel instead in this case.
         // TODO(b/320750931): fix the underlying issue in browser controls code
+        int minHeight = getBrowserControls().getBottomControlsMinHeight();
+        assert minHeight >= mLayoutHeightPx;
         setBottomControlsHeight(
-                Math.max(getBrowserControls().getBottomControlsHeight() - mLayoutHeightPx, 1), 0);
+                Math.max(getBrowserControls().getBottomControlsHeight() - mLayoutHeightPx, 1),
+                minHeight - mLayoutHeightPx);
     }
 
     private void setBottomControlsHeight(int height, int minHeight) {
@@ -236,6 +253,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         return LayerType.READ_ALOUD_PLAYER;
     }
 
+    /** Get the height represent the layer in the bottom controls, without the yOffset. */
     @Override
     public int getHeight() {
         return mLayoutHeightPx;
