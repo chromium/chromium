@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
@@ -283,33 +282,6 @@ public class PageStation extends Station {
 
         PageAppMenuFacility<PageStation> menu = new PageAppMenuFacility<>(this);
         return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
-    }
-
-    /** Opens the tab switcher by pressing the toolbar tab switcher button. */
-    public <T extends TabSwitcherStation> T openTabSwitcher(Class<T> expectedDestination) {
-        recheckActiveConditions();
-
-        TabModelSelector tabModelSelector = getActivity().getTabModelSelector();
-        boolean hasRegularTabs = tabModelSelector.getModel(/* incognito= */ false).getCount() > 0;
-        boolean hasIncognitoTabs = tabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
-
-        T destination;
-        if (isIncognito()) {
-            destination =
-                    expectedDestination.cast(
-                            IncognitoTabSwitcherStation.newBuilder()
-                                    .withIncognitoTabs(hasIncognitoTabs)
-                                    .withRegularTabs(hasRegularTabs)
-                                    .build());
-        } else {
-            destination =
-                    expectedDestination.cast(
-                            RegularTabSwitcherStation.newBuilder()
-                                    .withIncognitoTabs(hasIncognitoTabs)
-                                    .withRegularTabs(hasRegularTabs)
-                                    .build());
-        }
-        return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
     /** Opens the hub by pressing the toolbar tab switcher button. */

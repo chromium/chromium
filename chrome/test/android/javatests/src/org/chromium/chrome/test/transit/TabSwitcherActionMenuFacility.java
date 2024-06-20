@@ -18,7 +18,6 @@ import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** The action menu opened when long pressing the tab switcher button in a {@link PageStation}. */
@@ -62,16 +61,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 // No tabs left, so closing the last will either take us to a normal tab, or the tab
                 // switcher if no normal tabs exist.
                 if (tabModelSelector.getModel(/* incognito= */ false).getCount() == 0) {
-                    if (HubFieldTrial.isHubEnabled()) {
-                        destination = expectedDestination.cast(new HubTabSwitcherStation());
-                    } else {
-                        destination =
-                                expectedDestination.cast(
-                                        RegularTabSwitcherStation.newBuilder()
-                                                .withIncognitoTabs(false)
-                                                .withRegularTabs(false)
-                                                .build());
-                    }
+                    destination = expectedDestination.cast(new HubTabSwitcherStation());
                 } else {
                     destination =
                             expectedDestination.cast(
@@ -83,18 +73,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 }
             } else {
                 // No tabs left, so closing the last will take us to the tab switcher.
-                if (HubFieldTrial.isHubEnabled()) {
-                    destination = expectedDestination.cast(new HubTabSwitcherStation());
-                } else {
-                    boolean hasIncognitoTabs =
-                            tabModelSelector.getModel(/* incognito= */ true).getCount() > 0;
-                    destination =
-                            expectedDestination.cast(
-                                    RegularTabSwitcherStation.newBuilder()
-                                            .withIncognitoTabs(hasIncognitoTabs)
-                                            .withRegularTabs(false)
-                                            .build());
-                }
+                destination = expectedDestination.cast(new HubTabSwitcherStation());
             }
         } else {
             // Another tab will be displayed.

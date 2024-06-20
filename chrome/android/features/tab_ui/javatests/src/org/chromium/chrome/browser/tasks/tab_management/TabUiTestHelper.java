@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -86,7 +85,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -454,21 +452,14 @@ public class TabUiTestHelper {
      * @return View ID of the a nearby ancestor view.
      */
     public static int getTabSwitcherAncestorId(Context context) {
-        if (HubFieldTrial.isHubEnabled()) {
-            return org.chromium.chrome.browser.hub.R.id.hub_pane_host;
-        }
-
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            return R.id.tab_switcher_view_holder;
-        }
-
-        return R.id.compositor_view_holder;
+        return org.chromium.chrome.browser.hub.R.id.hub_pane_host;
     }
 
     /**
      * Verify there are correct number of favicons in tab strip.
-     * @param cta       The current running activity.
-     * @param count     The correct number of favicons in tab strip.
+     *
+     * @param cta The current running activity.
+     * @param count The correct number of favicons in tab strip.
      */
     static void verifyTabStripFaviconCount(ChromeTabbedActivity cta, int count) {
         assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
@@ -759,18 +750,12 @@ public class TabUiTestHelper {
                 isIncognito
                         ? R.string.accessibility_tab_switcher_incognito_stack
                         : R.string.accessibility_tab_switcher_standard_stack;
-        if (HubFieldTrial.isHubEnabled()) {
-            onView(
-                            allOf(
-                                    isDescendantOfA(
-                                            withId(
-                                                    org.chromium.chrome.browser.hub.R.id
-                                                            .hub_toolbar)),
-                                    withContentDescription(contentDescription)))
-                    .perform(click());
-        } else {
-            onView(withContentDescription(contentDescription)).perform(click());
-        }
+        onView(
+                        allOf(
+                                isDescendantOfA(
+                                        withId(org.chromium.chrome.browser.hub.R.id.hub_toolbar)),
+                                withContentDescription(contentDescription)))
+                .perform(click());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -778,13 +763,8 @@ public class TabUiTestHelper {
                             cta.getTabModelSelector().isIncognitoSelected(), is(isIncognito));
                 });
         // Wait for tab list recyclerView to finish animation after tab model switch.
-        RecyclerView recyclerView;
-        if (HubFieldTrial.isHubEnabled()) {
-            ViewGroup viewGroup = cta.findViewById(getTabSwitcherAncestorId(cta));
-            recyclerView = viewGroup.findViewById(R.id.tab_list_recycler_view);
-        } else {
-            recyclerView = cta.findViewById(R.id.tab_list_recycler_view);
-        }
+        ViewGroup viewGroup = cta.findViewById(getTabSwitcherAncestorId(cta));
+        RecyclerView recyclerView = viewGroup.findViewById(R.id.tab_list_recycler_view);
         waitForStableRecyclerView(recyclerView);
     }
 
@@ -908,11 +888,7 @@ public class TabUiTestHelper {
                     });
         }
         layout = layoutManager.getTabSwitcherLayoutForTesting();
-        if (HubFieldTrial.isHubEnabled()) {
-            assertTrue(layout instanceof HubLayout);
-        } else {
-            assertTrue(layout instanceof TabSwitcherLayout);
-        }
+        assertTrue(layout instanceof HubLayout);
         return layout;
     }
 

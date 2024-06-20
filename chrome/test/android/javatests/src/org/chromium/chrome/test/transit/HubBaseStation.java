@@ -32,7 +32,6 @@ import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -66,11 +65,6 @@ public abstract class HubBaseStation extends Station {
 
     protected Supplier<ChromeTabbedActivity> mActivitySupplier;
     protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
-
-    public HubBaseStation() {
-        super();
-        assert HubFieldTrial.isHubEnabled();
-    }
 
     /** Returns the station's {@link PaneId}. */
     public abstract @PaneId int getPaneId();

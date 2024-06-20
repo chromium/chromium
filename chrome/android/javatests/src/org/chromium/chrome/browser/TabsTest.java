@@ -237,13 +237,10 @@ public class TabsTest {
         LayoutTestUtils.waitForLayout(
                 sActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
 
-        int newTabButtonId = R.id.new_tab_view;
-        if (HubFieldTrial.isHubEnabled()) {
-            newTabButtonId =
-                    HubFieldTrial.usesFloatActionButton()
-                            ? R.id.host_action_button
-                            : R.id.toolbar_action_button;
-        }
+        int newTabButtonId =
+                HubFieldTrial.usesFloatActionButton()
+                        ? R.id.host_action_button
+                        : R.id.toolbar_action_button;
         onViewWaiting(withId(newTabButtonId)).check(matches(isDisplayed())).perform(click());
         LayoutTestUtils.waitForLayout(
                 sActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);

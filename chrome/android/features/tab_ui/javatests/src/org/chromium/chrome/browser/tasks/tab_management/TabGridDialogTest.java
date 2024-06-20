@@ -127,7 +127,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepagePolicyManager;
 import org.chromium.chrome.browser.hub.HubContainerView;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -2381,16 +2380,7 @@ public class TabGridDialogTest {
 
     private void verifyGlobalUndoBarAndClick() {
         // Verify that the dialog undo bar is showing and the default undo bar is hidden.
-        Matcher<View> expectedAncestor = null;
-        if (HubFieldTrial.isHubEnabled()) {
-            expectedAncestor = instanceOf(HubContainerView.class);
-        } else {
-            expectedAncestor =
-                    withId(
-                            isTablet(sActivityTestRule.getActivity())
-                                    ? R.id.tab_switcher_view_holder
-                                    : R.id.bottom_container);
-        }
+        Matcher<View> expectedAncestor = instanceOf(HubContainerView.class);
         onViewWaiting(
                 allOf(withId(R.id.snackbar), isDescendantOfA(expectedAncestor), isDisplayed()));
         onView(
