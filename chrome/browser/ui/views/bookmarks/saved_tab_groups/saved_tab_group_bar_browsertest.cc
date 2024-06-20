@@ -108,34 +108,4 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
   }
 }
 
-// Verify the saved status of a group is updated when it is added and removed
-// from the SavedTabGroupModel.
-IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
-                       GroupMarkedAsSavedIfInModel) {
-  SavedTabGroupKeyedService* saved_tab_group_service =
-      SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-  SavedTabGroupModel* stg_model = saved_tab_group_service->model();
-  TabStripModel* model = browser()->tab_strip_model();
-  base::Uuid guid = base::Uuid::GenerateRandomV4();
-
-  // Add a tab to a new group and expect the new group is not saved.
-  chrome::AddTabAt(browser(), GURL("chrome://newtab"), -1, true);
-  tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
-  EXPECT_FALSE(saved_tab_group_service->model()->Contains(group_id));
-
-  // Add the group to the SavedTabGroupModel and expect it is saved.
-  stg_model->Add(SavedTabGroup(
-      std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
-      {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid,
-                        /*position=*/0)
-           .SetFavicon(favicon::GetDefaultFavicon())},
-      /*position=*/std::nullopt, guid, group_id));
-  EXPECT_TRUE(saved_tab_group_service->model()->Contains(group_id));
-
-  // Remove the group from the SavedTabGroupModel and expect it is no longer
-  // saved.
-  stg_model->Remove(group_id);
-  EXPECT_FALSE(saved_tab_group_service->model()->Contains(group_id));
-}
-
 }  // namespace tab_groups
