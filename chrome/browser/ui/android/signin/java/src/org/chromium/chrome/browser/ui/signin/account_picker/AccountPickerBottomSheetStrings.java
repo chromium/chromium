@@ -3,29 +3,13 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.StringRes;
 
 /* Class containing string resource ids for the sign-in account picker bottom sheet. */
-public final class AccountPickerBottomSheetStrings implements Parcelable {
+public final class AccountPickerBottomSheetStrings {
     public final @StringRes int titleStringId;
     public final @StringRes int subtitleStringId;
     public final @StringRes int dismissButtonStringId;
-
-    public static final Parcelable.Creator<AccountPickerBottomSheetStrings> CREATOR =
-            new Parcelable.Creator<AccountPickerBottomSheetStrings>() {
-                @Override
-                public AccountPickerBottomSheetStrings createFromParcel(Parcel in) {
-                    return new AccountPickerBottomSheetStrings(in);
-                }
-
-                @Override
-                public AccountPickerBottomSheetStrings[] newArray(int size) {
-                    return new AccountPickerBottomSheetStrings[size];
-                }
-            };
 
     // Private constructor to enforce the use of the Builder.
     private AccountPickerBottomSheetStrings(
@@ -35,26 +19,6 @@ public final class AccountPickerBottomSheetStrings implements Parcelable {
         this.titleStringId = titleStringId;
         this.subtitleStringId = subtitleStringId;
         this.dismissButtonStringId = dismissButtonStringId;
-    }
-
-    private AccountPickerBottomSheetStrings(Parcel in) {
-        titleStringId = in.readInt();
-        subtitleStringId = in.readInt();
-        dismissButtonStringId = in.readInt();
-    }
-
-    /** Implements {@link Parcelable} */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /** Implements {@link Parcelable} */
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(titleStringId);
-        out.writeInt(subtitleStringId);
-        out.writeInt(dismissButtonStringId);
     }
 
     /**

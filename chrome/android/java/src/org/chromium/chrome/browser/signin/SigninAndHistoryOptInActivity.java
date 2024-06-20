@@ -122,9 +122,6 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         setStatusBarColor(Color.TRANSPARENT);
         int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
-
-        // TODO(crbug.com/346709145): Get Parcelable extra instead of parsing individual properties
-        // when the classloader issue will be fixed.
         int titleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, 0);
         int subtitleStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, 0);
         int dismissStringId = intent.getIntExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, 0);
@@ -281,15 +278,11 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         assert bottomSheetStrings != null;
 
         Intent intent = new Intent(context, SigninAndHistoryOptInActivity.class);
-
-        // TODO(crbug.com/346709145): Get Parcelable extra instead of parsing individual properties
-        // when the classloader issue will be fixed.
         intent.putExtra(ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE, bottomSheetStrings.titleStringId);
         intent.putExtra(
                 ARGUMENT_BOTTOM_SHEET_STRINGS_SUBTITLE, bottomSheetStrings.subtitleStringId);
         intent.putExtra(
                 ARGUMENT_BOTTOM_SHEET_STRINGS_DISMISS, bottomSheetStrings.dismissButtonStringId);
-
         intent.putExtra(ARGUMENT_NO_ACCOUNT_SIGNIN_MODE, noAccountSigninMode);
         intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
         intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
