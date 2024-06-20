@@ -55,6 +55,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -236,8 +237,6 @@ BASE_FEATURE(kWebAppMaskableIconsOnMac,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
-
-WebAppAutoLoginUtil* g_auto_login_util_for_testing = nullptr;
 
 // Result of creating app shortcut.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -1162,47 +1161,6 @@ base::FilePath GetChromeAppsFolder() {
     return path;
 
   return path.Append(GetLocalizableAppShortcutsSubdirName());
-}
-
-// static
-WebAppAutoLoginUtil* WebAppAutoLoginUtil::GetInstance() {
-  if (g_auto_login_util_for_testing)
-    return g_auto_login_util_for_testing;
-
-  static base::NoDestructor<WebAppAutoLoginUtil> instance;
-  return instance.get();
-}
-
-// static
-void WebAppAutoLoginUtil::SetInstanceForTesting(
-    WebAppAutoLoginUtil* auto_login_util) {
-  g_auto_login_util_for_testing = auto_login_util;
-}
-
-void WebAppAutoLoginUtil::AddToLoginItems(const base::FilePath& app_bundle_path,
-                                          bool hide_on_startup) {
-  scoped_refptr<OsIntegrationTestOverride> os_override =
-      OsIntegrationTestOverride::Get();
-  if (os_override) {
-    CHECK_IS_TEST();
-    os_override->EnableOrDisablePathOnLogin(app_bundle_path,
-                                            /*enable_on_login=*/true);
-  } else {
-    base::mac::AddToLoginItems(app_bundle_path, hide_on_startup);
-  }
-}
-
-void WebAppAutoLoginUtil::RemoveFromLoginItems(
-    const base::FilePath& app_bundle_path) {
-  scoped_refptr<OsIntegrationTestOverride> os_override =
-      OsIntegrationTestOverride::Get();
-  if (os_override) {
-    CHECK_IS_TEST();
-    os_override->EnableOrDisablePathOnLogin(app_bundle_path,
-                                            /*enable_on_login=*/false);
-  } else {
-    base::mac::RemoveFromLoginItems(app_bundle_path);
-  }
 }
 
 WebAppShortcutCreator::WebAppShortcutCreator(const base::FilePath& app_data_dir,
