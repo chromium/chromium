@@ -108,6 +108,10 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
 
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.Delay",
+      /*bucket_min_value=*/50, 1);
+
   // The selected pixel height is 720, so it will be logged in the 675 bucket.
   histogram_tester_.ExpectUniqueSample(
       "MediaPreviews.UI.Permissions.Camera.PixelHeight",

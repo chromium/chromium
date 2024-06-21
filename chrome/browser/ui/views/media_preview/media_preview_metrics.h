@@ -47,6 +47,8 @@ void RecordPreviewVideoFramesRenderedPercent(const Context& context,
                                              float percent);
 void RecordTotalVisiblePreviewDuration(const Context& context,
                                        const base::TimeDelta& delta);
+void RecordPreviewDelayTime(const Context& context,
+                            const base::TimeDelta& delta);
 
 void RecordOriginTrialAllowed(UiLocation location, bool allowed);
 

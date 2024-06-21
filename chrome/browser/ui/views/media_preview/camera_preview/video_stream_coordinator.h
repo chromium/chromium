@@ -89,6 +89,7 @@ class VideoStreamCoordinator
 
   const media_preview_metrics::Context metrics_context_;
   size_t video_stream_total_frames_;
+  std::optional<base::TimeTicks> video_stream_request_time_;
   std::optional<base::TimeTicks> video_stream_start_time_;
   base::TimeDelta total_visible_preview_duration_;
 

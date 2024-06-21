@@ -37,6 +37,10 @@ base::HistogramBase* GetTotalVisiblePreviewDurationHistogram(
       name, custom_ranges, base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
+base::HistogramBase* GetPreviewDelayTimeHistogram(const std::string& name) {
+  return GetTotalVisiblePreviewDurationHistogram(name);
+}
+
 const char* GetUiLocationString(UiLocation location) {
   switch (location) {
     case UiLocation::kPermissionPrompt:
@@ -171,6 +175,15 @@ void RecordTotalVisiblePreviewDuration(const Context& context,
               ".Video.TotalVisibleDuration"});
   GetTotalVisiblePreviewDurationHistogram(metric_name)
       ->Add(delta.InMilliseconds());
+}
+
+void RecordPreviewDelayTime(const Context& context,
+                            const base::TimeDelta& delta) {
+  CHECK_EQ(context.preview_type, PreviewType::kCamera);
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".Video.Delay"});
+  GetPreviewDelayTimeHistogram(metric_name)->Add(delta.InMilliseconds());
 }
 
 void RecordOriginTrialAllowed(UiLocation location, bool allowed) {
