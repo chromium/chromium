@@ -51,6 +51,8 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_lifecycle_lifecycle_process_java") {
       # Only useful for very old SDKs.
       ignore_proguard_configs = true
+    } else if (target_name == "androidx_graphics_graphics_path_java") {
+      ignore_native_libraries = true
     } else if (target_name == "androidx_media_media_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true

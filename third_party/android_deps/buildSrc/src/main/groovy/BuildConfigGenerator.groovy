@@ -119,6 +119,7 @@ class BuildConfigGenerator extends DefaultTask {
      * add it in //third_party/androidx/build.gradle.template
      */
     static final Set<String> ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES = [
+      'androidx_compose_material_material_icons_core_android',
       'androidx_constraintlayout',
       'androidx_documentfile',
       'androidx_legacy',
