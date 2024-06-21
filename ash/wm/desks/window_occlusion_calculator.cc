@@ -189,8 +189,31 @@ void WindowOcclusionCalculator::RemoveObserver(Observer* observer) {
   }
 }
 
-void WindowOcclusionCalculator::OnWindowAdded(aura::Window* window) {
-  ObserveWindow(window);
+// Although `OnWindowAdded()` may seem appropriate and equivalent here,
+// `OnWindowHierarchyChanged()` must be used due to the order in which
+// `aura::WindowObserver` notifications are sent. Specifically,
+// `WindowOcclusionTracker::OnWindowAddedToRootWindow()` must be called before
+// `WindowOcclusionCalculator` starts tracking a new window. If not,
+// `WindowOcclusionTracker`'s internal book-keeping becomes incorrect and
+// results in dangling `raw_ptr` failures.
+void WindowOcclusionCalculator::OnWindowHierarchyChanged(
+    const HierarchyChangeParams& params) {
+  // Only process hierarchy change notifications sent to the target window's
+  // parent. Additional notifications sent to the target window's other
+  // ancestors are ignored because they would be no-ops/duplicate notifications
+  // for the same hierarchy change.
+  if (params.new_parent == params.receiver) {
+    TrackOcclusionChangesForAllDescendants(params.target);
+  }
+  // Different case from the above:
+  // If a window is removed from a tracked parent window's hierarchy and
+  // re-parented in another window that's not of interest to the calculator,
+  // there is no action needed by `WindowOcclusionCalculator`. The calculator
+  // will continue to observe the removed window and the `occlusion_tracker_`
+  // will continue computing occlusion for it, so there indeed will be
+  // unnecessary computations under the hood, but these do not get propagated to
+  // `WindowOcclusionCalculator`'s caller. Updating the book-keeping here for
+  // this case introduces a lot of complexity for very little practical gain.
 }
 
 // Note `aura::WindowOcclusionTracker` automatically updates all of its

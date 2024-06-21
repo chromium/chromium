@@ -98,7 +98,7 @@ class ASH_EXPORT WindowOcclusionCalculator : public aura::WindowObserver {
       base::flat_map<raw_ptr<aura::Window>, aura::Window::OcclusionState>;
 
   // aura::WindowObserver:
-  void OnWindowAdded(aura::Window* window) override;
+  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
   void OnWindowDestroyed(aura::Window* window) override;
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,

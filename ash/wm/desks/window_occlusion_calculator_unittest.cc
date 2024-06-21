@@ -399,20 +399,93 @@ TEST_F(WindowOcclusionCalculatorTest,
       CreateWindow(gfx::Rect(100, 100), root_window());
   ScopedMockObserver observer(occlusion_calculator_.get(), {parent_window});
 
-  aura::Window* on_bottom_window =
-      CreateWindow(gfx::Rect(20, 20), parent_window);
+  aura::Window* on_bottom_window = CreateWindow(gfx::Rect(20, 20), nullptr);
+  aura::Window* on_bottom_child_window_1 =
+      CreateWindow(gfx::Rect(10, 10), on_bottom_window);
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(on_bottom_window));
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(on_bottom_child_window_1));
+  parent_window->AddChild(on_bottom_window);
+  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_window),
+            aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_child_window_1),
+            aura::Window::OcclusionState::VISIBLE);
+
+  // `on_bottom_child_window_2` should occlude `on_bottom_child_window_1`.
+  aura::Window* on_bottom_child_window_2 =
+      CreateWindow(on_bottom_child_window_1->bounds(), nullptr);
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(on_bottom_child_window_1));
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(on_bottom_child_window_2));
+  on_bottom_window->AddChild(on_bottom_child_window_2);
+  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_window),
+            aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_child_window_1),
+            aura::Window::OcclusionState::OCCLUDED);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_child_window_2),
+            aura::Window::OcclusionState::VISIBLE);
+
   aura::Window* on_top_window = CreateWindow(parent_window->bounds(), nullptr);
   on_top_window->SetProperty(kHideInDeskMiniViewKey, true);
   parent_window->AddChild(on_top_window);
 
   EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_window),
             aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_child_window_1),
+            aura::Window::OcclusionState::OCCLUDED);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_bottom_child_window_2),
+            aura::Window::OcclusionState::VISIBLE);
   EXPECT_EQ(occlusion_calculator_->GetOcclusionState(on_top_window),
             aura::Window::OcclusionState::HIDDEN);
 
   // Destroying tracked windows should not cause crashes.
   delete on_top_window;
+  delete on_bottom_child_window_2;
+  delete on_bottom_child_window_1;
   delete on_bottom_window;
+}
+
+TEST_F(WindowOcclusionCalculatorTest,
+       HandlesWindowsBeingRemovedWhileBeingTracked) {
+  aura::Window* tracked_parent_window =
+      CreateWindow(root_window()->bounds(), root_window());
+  aura::Window* child_window_1 =
+      CreateWindow(tracked_parent_window->bounds(), tracked_parent_window);
+  aura::Window* child_window_2 =
+      CreateWindow(tracked_parent_window->bounds(), tracked_parent_window);
+  tracked_parent_window->StackChildAtTop(child_window_2);
+  aura::Window* untracked_parent_window =
+      CreateWindow(root_window()->bounds(), root_window());
+
+  ScopedMockObserver observer(occlusion_calculator_.get(),
+                              {tracked_parent_window});
+
+  ASSERT_EQ(occlusion_calculator_->GetOcclusionState(tracked_parent_window),
+            aura::Window::OcclusionState::VISIBLE);
+  ASSERT_EQ(occlusion_calculator_->GetOcclusionState(child_window_1),
+            aura::Window::OcclusionState::OCCLUDED);
+  ASSERT_EQ(occlusion_calculator_->GetOcclusionState(child_window_2),
+            aura::Window::OcclusionState::VISIBLE);
+
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(child_window_1));
+  untracked_parent_window->AddChild(child_window_2);
+  Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(tracked_parent_window),
+            aura::Window::OcclusionState::VISIBLE);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(child_window_1),
+            aura::Window::OcclusionState::VISIBLE);
+
+  untracked_parent_window->AddChild(child_window_1);
+  EXPECT_EQ(occlusion_calculator_->GetOcclusionState(tracked_parent_window),
+            aura::Window::OcclusionState::VISIBLE);
+
+  // Since the window occlusion changes are no longer happening in the tracked
+  // parent window's hierarchy, there should be no observer notifications.
+  EXPECT_CALL(observer, OnWindowOcclusionChanged(_)).Times(0);
+  root_window()->StackChildAtTop(untracked_parent_window);
+  untracked_parent_window->StackChildAtTop(child_window_2);
+  untracked_parent_window->StackChildAtTop(child_window_1);
+  Mock::VerifyAndClearExpectations(&observer);
 }
 
 }  // namespace
