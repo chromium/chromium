@@ -2751,6 +2751,25 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithPasswordsTest,
                               std::move(builder));
 }
 
+TEST_F(ChromeBrowsingDataRemoverDelegateWithPasswordsTest,
+       RemovingProfileStorePasswordsTrackedInAPref) {
+  ExpectRemoveLoginsByURLAndTime(profile_password_store());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_PASSWORDS, false);
+
+  // Verify that password removal reason was tracked.
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetInteger(
+          password_manager::prefs::kPasswordRemovalReasonForProfile),
+      1 << static_cast<int>(
+          password_manager::metrics_util::
+              PasswordManagerCredentialRemovalReason::kClearBrowsingData));
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForAccount),
+            0);
+}
+
 TEST_F(ChromeBrowsingDataRemoverDelegateWithPasswordsTest, DisableAutoSignIn) {
   base::RepeatingCallback<bool(const GURL&)> empty_filter =
       BrowsingDataFilterBuilder::BuildNoopFilter();
@@ -4222,6 +4241,25 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
             constants::DATA_TYPE_ACCOUNT_PASSWORDS
 #endif
   );
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
+       RemovingAccountStorePasswordsTrackedInAPref) {
+  ExpectRemoveLoginsByURLAndTime(account_password_store());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_ACCOUNT_PASSWORDS, false);
+
+  // Verify that password removal reason was tracked.
+  EXPECT_EQ(
+      GetProfile()->GetPrefs()->GetInteger(
+          password_manager::prefs::kPasswordRemovalReasonForAccount),
+      1 << static_cast<int>(
+          password_manager::metrics_util::
+              PasswordManagerCredentialRemovalReason::kClearBrowsingData));
+  EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
+                password_manager::prefs::kPasswordRemovalReasonForProfile),
+            0);
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
