@@ -121,9 +121,6 @@ struct SchemeRegistry {
   std::vector<std::string> opaque_non_special_schemes = {
       // See https://crrev.com/c/5465607 for the reason.
       kAndroidScheme,
-      // Temporarily opted-out. See https://crrev.com/c/5547181.
-      kAlmanacScheme,
-      kCrosAppsScheme,
       // Temporarily opted-out. See https://crrev.com/c/5569365.
       kDrivefsScheme,
       // Temporarily opted-out. See https://crrev.com/c/5568919.

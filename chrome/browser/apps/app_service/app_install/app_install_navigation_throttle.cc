@@ -48,6 +48,7 @@ constexpr char kAppInstallParentWindowFound[] =
     "Apps.AppInstallParentWindowFound";
 #endif
 
+constexpr std::string_view kAppInstallHost = "install-app";
 constexpr std::string_view kAppInstallPath = "//install-app";
 constexpr std::string_view kAppInstallPackageIdParam = "package_id";
 constexpr std::string_view kAppInstallSourceParam = "source";
@@ -232,7 +233,10 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  if (url.path_piece() != kAppInstallPath) {
+  // We accept `cros-apps:install-app` or `cros-apps://install-app`, when parsed
+  // with an opaque path (no host, path starts with //) or not.
+  if (url.host() != kAppInstallHost && url.path_piece() != kAppInstallHost &&
+      url.path_piece() != kAppInstallPath) {
     return content::NavigationThrottle::PROCEED;
   }
 
