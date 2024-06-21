@@ -436,7 +436,8 @@ bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
 
 bool UtilitySandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
   // New utilities should use a font proxy rather than allowing direct access.
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor &&
+      !GetContentClient()->browser()->IsPdfFontProxyEnabled()) {
     return true;
   }
   return false;

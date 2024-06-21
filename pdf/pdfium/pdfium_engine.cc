@@ -97,6 +97,10 @@
 #include "pdf/pdfium/pdfium_font_linux.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "pdf/pdfium/pdfium_font_win.h"
+#endif
+
 using printing::ConvertUnit;
 using printing::ConvertUnitFloat;
 using printing::kPixelsPerInch;
@@ -521,6 +525,14 @@ void InitializeSDK(bool enable_v8,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   g_font_mapping_mode = font_mapping_mode;
   InitializeLinuxFontMapper();
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  if (font_mapping_mode == FontMappingMode::kBlink &&
+      base::FeatureList::IsEnabled(features::kWinPdfUseFontProxy)) {
+    g_font_mapping_mode = font_mapping_mode;
+    InitializeWindowsFontMapper();
+  }
 #endif
 
   InitializeUnsupportedFeaturesHandler();

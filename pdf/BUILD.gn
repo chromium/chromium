@@ -193,6 +193,15 @@ if (enable_pdf) {
       deps += [ "//components/services/font/public/cpp" ]
     }
 
+    if (is_win) {
+      sources += [
+        "pdfium/pdfium_font_helpers.cc",
+        "pdfium/pdfium_font_helpers.h",
+        "pdfium/pdfium_font_win.cc",
+        "pdfium/pdfium_font_win.h",
+      ]
+    }
+
     if (is_chromeos) {
       sources += [
         "flatten_pdf_result.cc",
@@ -402,6 +411,10 @@ if (enable_pdf) {
       "ui/file_name_unittest.cc",
       "ui/thumbnail_unittest.cc",
     ]
+
+    if (is_win) {
+      sources += [ "pdfium/pdfium_font_win_unittest.cc" ]
+    }
 
     data = [ "test/data/" ]
 

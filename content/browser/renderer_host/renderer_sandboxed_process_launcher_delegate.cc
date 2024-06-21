@@ -90,7 +90,8 @@ RendererSandboxedProcessLauncherDelegateWin::
 }
 
 bool RendererSandboxedProcessLauncherDelegateWin::AllowWindowsFontsDir() {
-  return is_pdf_renderer_;
+  return is_pdf_renderer_ &&
+         !GetContentClient()->browser()->IsPdfFontProxyEnabled();
 }
 
 std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {

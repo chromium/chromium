@@ -539,6 +539,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::wstring GetLPACCapabilityNameForNetworkService() override;
   bool IsUtilityCetCompatible(const std::string& utility_sub_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
+  bool IsPdfFontProxyEnabled() override;
   void SessionEnding(std::optional<DWORD> control_type) override;
   bool ShouldEnableAudioProcessHighPriority() override;
   bool ShouldUseSkiaFontManager(const GURL& site_url) override;

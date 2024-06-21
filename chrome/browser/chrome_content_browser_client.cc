@@ -687,6 +687,9 @@
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 #include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/constants.h"
+#if BUILDFLAG(IS_WIN)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 
@@ -5061,6 +5064,15 @@ bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
   // controlled pref being set to false.
   return !local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) ||
          local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled);
+}
+
+bool ChromeContentBrowserClient::IsPdfFontProxyEnabled() {
+#if BUILDFLAG(ENABLE_PDF)
+  return base::FeatureList::IsEnabled(
+      chrome_pdf::features::kWinPdfUseFontProxy);
+#else
+  return false;
+#endif
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.

@@ -1681,6 +1681,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI thread.
   virtual bool IsRendererCodeIntegrityEnabled();
 
+  // Returns whether PDF fallback fonts are proxied to child processes. If false
+  // they may require direct file system access. This is a short-term API and
+  // will be removed once crbug.com/344643689 is launched.
+  virtual bool IsPdfFontProxyEnabled();
+
   // Performs a fast and orderly shutdown of the browser. If present,
   // `control_type` is a CTRL_* value from a Windows console control handler;
   // see https://learn.microsoft.com/en-us/windows/console/handlerroutine.
