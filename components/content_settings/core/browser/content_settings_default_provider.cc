@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -146,6 +147,7 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
     : prefs_(prefs),
       is_off_the_record_(off_the_record),
       updating_preferences_(false) {
+  TRACE_EVENT_BEGIN("startup", "DefaultProvider::DefaultProvider");
   DCHECK(prefs_);
 
   // Remove the obsolete preferences from the pref file.
@@ -164,6 +166,7 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings)
     pref_change_registrar_.Add(info->default_value_pref_name(), callback);
+  TRACE_EVENT_END("startup");
 }
 
 DefaultProvider::~DefaultProvider() = default;
