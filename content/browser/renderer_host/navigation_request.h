@@ -2053,6 +2053,10 @@ class CONTENT_EXPORT NavigationRequest
   // Sets the expected process to the process of the current associated RFH.
   void SetExpectedProcessIfAssociated();
 
+  // Sets the Document-Isolation-Policy header to a default value in unsecure
+  // contexts or if DocumentIsolationPolicy is not supported.
+  void SanitizeDocumentIsolationPolicyHeader();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.

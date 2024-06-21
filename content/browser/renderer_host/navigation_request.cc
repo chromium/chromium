@@ -9562,6 +9562,7 @@ void NavigationRequest::ComputePoliciesToCommit() {
   // one in the network response. Otherwise, DIP should follow normal rules of
   // policy inheritance, which should be handled by the policy container.
   if (response_head_) {
+    SanitizeDocumentIsolationPolicyHeader();
     policy_container_builder_->SetDocumentIsolationPolicy(
         response_head_->parsed_headers->document_isolation_policy);
   }
@@ -10707,6 +10708,43 @@ void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
 
 #undef MAYBE_RECORD_TRACE_AND_HISTOGRAM0
 #undef MAYBE_RECORD_TRACE_AND_HISTOGRAM1
+}
+
+void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
+  if (!response_head_) {
+    return;
+  }
+
+  // Set DocumentIsolationPolicy to its default value if the feature is not
+  // enabled.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kDocumentIsolationPolicy)) {
+    response_head_->parsed_headers->document_isolation_policy =
+        network::DocumentIsolationPolicy();
+    return;
+  }
+
+  network::DocumentIsolationPolicy& dip =
+      response_head_->parsed_headers->document_isolation_policy;
+  bool has_dip_header =
+      dip.value != network::mojom::DocumentIsolationPolicyValue::kNone ||
+      dip.report_only_value !=
+          network::mojom::DocumentIsolationPolicyValue::kNone ||
+      dip.reporting_endpoint || dip.report_only_reporting_endpoint;
+
+  // DocumentIsolationPolicy should only be used by secure contexts.
+  if (!network::IsUrlPotentiallyTrustworthy(GetURL()) && has_dip_header) {
+    response_head_->parsed_headers->document_isolation_policy =
+        network::DocumentIsolationPolicy();
+    AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "The Document-Isolation-Policy header has been ignored because "
+        "the URL's origin was untrustworthy. Please deliver the response using "
+        "the HTTPS protocol. You can also use the 'localhost' origin "
+        "instead. See "
+        "https://www.w3.org/TR/powerful-features/"
+        "#potentially-trustworthy-origin.");
+  }
 }
 
 }  // namespace content

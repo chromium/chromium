@@ -53,10 +53,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   parsed_headers->cross_origin_opener_policy =
       ParseCrossOriginOpenerPolicy(*headers);
 
-  if (base::FeatureList::IsEnabled(features::kDocumentIsolationPolicy)) {
-    parsed_headers->document_isolation_policy =
-        ParseDocumentIsolationPolicy(*headers);
-  }
+  parsed_headers->document_isolation_policy =
+      ParseDocumentIsolationPolicy(*headers);
 
   std::string origin_agent_cluster;
   headers->GetNormalizedHeader("Origin-Agent-Cluster", &origin_agent_cluster);
