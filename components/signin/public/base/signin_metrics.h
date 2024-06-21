@@ -117,11 +117,11 @@ enum class ProfileSignout {
   kSignoutDuringProfileDeletion = 34,
   // Signout, in the account menu, as part of switching to a new primary
   // account.
-  kChangeAccountInAccountSwitcher = 35,
+  kChangeAccountInAccountMenu = 35,
   // User clicked to signout from the account menu view.
-  kUserClickedSignoutInAccountSwitcher = 36,
+  kUserClickedSignoutInAccountMenu = 36,
   // Keep this as the last enum.
-  kMaxValue = kUserClickedSignoutInAccountSwitcher
+  kMaxValue = kUserClickedSignoutInAccountMenu
 };
 
 // Enum values which enumerates all access points where sign in could be

@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
   <int value="66" label="Avatar bubble sign in with sync promo"/>
-  <int value="67" label="Account switcher"/>
+  <int value="67" label="Account menu"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
     In the account menu, the user switched their primary account. As a first
     step, they get signed-out of their previous primary account.
   </int>
-  <int value="36" label="Signed out from the account switcher">
+  <int value="36" label="Signed out from the account menu">
     In the account menu, the user selected the sign-out button.
   </int>
 </enum>
