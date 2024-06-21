@@ -163,6 +163,15 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
   virtual bool SetSyncedWallpaperInfo(const AccountId& account_id,
                                       const WallpaperInfo& info) = 0;
 
+  // Gets the wallpaper info from the deprecated synced prefs
+  // `kSyncableWallpaperInfo`.
+  virtual bool GetSyncedWallpaperInfoFromDeprecatedPref(
+      const AccountId& account_id,
+      WallpaperInfo* info) const = 0;
+
+  // Clears the deprecated synced prefs `kSyncableWallpaperInfo`.
+  virtual void ClearDeprecatedPref(const AccountId& account_id) = 0;
+
   // Returns the delta for the next daily refresh update for `account_id`.
   virtual base::TimeDelta GetTimeToNextDailyRefreshUpdate(
       const AccountId& account_id) const = 0;

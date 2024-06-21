@@ -1611,6 +1611,20 @@ void WallpaperControllerImpl::HandleSyncedWallpaperInfoAfterMigration(
   HandleWallpaperInfoSyncedIn(account_id, *synced_info);
 }
 
+void WallpaperControllerImpl::HandleDeprecatedSyncedWallpaperInfoAfterMigration(
+    const AccountId& account_id,
+    const std::optional<WallpaperInfo>& synced_info) {
+  if (!synced_info) {
+    LOG(WARNING) << __func__
+                 << " Unable to migrate synced info to the latest version";
+    return;
+  }
+
+  // Clears the deprecated pref to prevent further sync in the future.
+  pref_manager_->ClearDeprecatedPref(account_id);
+  HandleSyncedWallpaperInfoAfterMigration(account_id, *synced_info);
+}
+
 void WallpaperControllerImpl::OnWallpaperResized() {
   CalculateWallpaperColors();
   compositor_lock_.reset();
@@ -2925,15 +2939,26 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
   // Check if the synced info was set by another device, and if we have already
   // handled it locally.
   WallpaperInfo synced_info;
+  auto on_synced_info_migrated = base::BindOnce(
+      &WallpaperControllerImpl::HandleSyncedWallpaperInfoAfterMigration,
+      weak_factory_.GetWeakPtr(), account_id);
   if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info)) {
-    return;
+    if (!features::IsVersionWallpaperInfoEnabled()) {
+      return;
+    }
+    // Attempts to show the user's wallpaper from the previous pref.
+    if (!pref_manager_->GetSyncedWallpaperInfoFromDeprecatedPref(
+            account_id, &synced_info)) {
+      return;
+    }
+    on_synced_info_migrated =
+        base::BindOnce(&WallpaperControllerImpl::
+                           HandleDeprecatedSyncedWallpaperInfoAfterMigration,
+                       weak_factory_.GetWeakPtr(), account_id);
   }
   if (wallpaper_info_migrator_.ShouldMigrate(synced_info)) {
-    wallpaper_info_migrator_.Migrate(
-        account_id, synced_info,
-        base::BindOnce(
-            &WallpaperControllerImpl::HandleSyncedWallpaperInfoAfterMigration,
-            weak_factory_.GetWeakPtr(), account_id));
+    wallpaper_info_migrator_.Migrate(account_id, synced_info,
+                                     std::move(on_synced_info_migrated));
   } else {
     // If no migration is needed, proceed as before
     HandleSyncedWallpaperInfoAfterMigration(account_id, synced_info);

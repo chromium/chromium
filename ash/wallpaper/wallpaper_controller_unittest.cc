@@ -6619,4 +6619,38 @@ TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
                                       1);
 }
 
+TEST_F(WallpaperControllerVersionedWallpaperInfoTest,
+       ShowPreviouslySyncedWallpaperWhenUserLogsInANewDevice) {
+  WallpaperInfo prev_synced_info;
+  prev_synced_info.location = kDummyUrl;
+  prev_synced_info.layout = WALLPAPER_LAYOUT_CENTER_CROPPED;
+  prev_synced_info.type = WallpaperType::kOnline;
+  prev_synced_info.collection_id =
+      TestWallpaperControllerClient::kDummyCollectionId;
+  prev_synced_info.date = base::Time::Now();
+
+  ScopedDictPrefUpdate wallpaper_update(GetProfilePrefService(kAccountId1),
+                                        prefs::kSyncableWallpaperInfo);
+  wallpaper_update->Set(kAccountId1.GetUserEmail(), prev_synced_info.ToDict());
+
+  ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfoFromDeprecatedPref(
+      kAccountId1, &prev_synced_info));
+
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo local_info;
+  WallpaperInfo synced_info;
+  EXPECT_TRUE(pref_manager_->GetLocalWallpaperInfo(kAccountId1, &local_info));
+  EXPECT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &synced_info));
+  EXPECT_TRUE(local_info.MatchesAsset(synced_info));
+  EXPECT_TRUE(local_info.version.IsValid());
+  EXPECT_FALSE(local_info.variants.empty());
+  EXPECT_TRUE(local_info.unit_id.has_value());
+
+  // Expects deprecated pref to be cleared.
+  EXPECT_FALSE(pref_manager_->GetSyncedWallpaperInfoFromDeprecatedPref(
+      kAccountId1, &synced_info));
+}
+
 }  // namespace ash

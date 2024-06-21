@@ -441,6 +441,11 @@ class ASH_EXPORT WallpaperControllerImpl
       const AccountId& account_id,
       const std::optional<WallpaperInfo>& synced_info);
 
+  // Processes the deprecated synced wallpaper info after the migration.
+  void HandleDeprecatedSyncedWallpaperInfoAfterMigration(
+      const AccountId& account_id,
+      const std::optional<WallpaperInfo>& synced_info);
+
   // Callback after `WallpaperResizer` is done scaling the current wallpaper to
   // the current display size.
   void OnWallpaperResized();
