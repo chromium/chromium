@@ -363,6 +363,7 @@ chromium-metrics-reviews@google.com.
   <int value="1546" label="PDF OCR"/>
   <int value="1547" label="Enable overscroll to navigate"/>
   <int value="1548" label="Caret browsing"/>
+  <int value="1549" label="Magnifier follows ChromeVox focus"/>
   <int value="1600" label="Powerwash"/>
   <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>

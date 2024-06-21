@@ -327,6 +327,7 @@ enum Setting {
   // [Deprecated] kPdfOcrOnOff = 1546,
   kOverscrollEnabled = 1547,
   kCaretBrowsing = 1548,
+  kMagnifierFollowsChromeVox = 1549,
 
   // Reset section.
   kPowerwash = 1600,

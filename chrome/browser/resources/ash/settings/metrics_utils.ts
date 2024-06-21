@@ -151,6 +151,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kFullscreenMagnifierFocusFollowing,
     type: PrefType.BOOLEAN,
   },
+  'settings.a11y.screen_magnifier_chromevox_focus_following': {
+    setting: Setting.kMagnifierFollowsChromeVox,
+    type: PrefType.BOOLEAN,
+  },
   'settings.a11y.screen_magnifier_select_to_speak_focus_following': {
     setting: Setting.kAccessibilityMagnifierFollowsSts,
     type: PrefType.BOOLEAN,

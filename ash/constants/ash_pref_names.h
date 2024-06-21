@@ -537,6 +537,10 @@ inline constexpr char kAccessibilityScreenMagnifierEnabled[] =
 inline constexpr char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
     "settings.a11y.screen_magnifier_focus_following";
 // A boolean pref which determines whether the magnifiers should follow
+// ChromeVox focus changes.
+inline constexpr char kAccessibilityMagnifierFollowsChromeVox[] =
+    "settings.a11y.screen_magnifier_chromevox_focus_following";
+// A boolean pref which determines whether the magnifiers should follow
 // select to speak focus changes.
 inline constexpr char kAccessibilityMagnifierFollowsSts[] =
     "settings.a11y.screen_magnifier_select_to_speak_focus_following";

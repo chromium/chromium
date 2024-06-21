@@ -1662,6 +1662,9 @@
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables select to speak following in the docked or fullscreen magnifier">
       Magnifier follows the word being read by select-to-speak
   </message>
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING_LABEL" desc="Label for toggle which enables ChromeVox focus following in the docked or fullscreen magnifier">
+      Magnifier follows ChromeVox focus
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_LABEL" desc="Label for dropdown menu which contains zoom levels for the fullscreen magnifier">
     Zoom level
   </message>

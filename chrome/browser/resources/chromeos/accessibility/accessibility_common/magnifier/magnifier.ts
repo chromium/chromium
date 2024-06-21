@@ -25,9 +25,7 @@ export class Magnifier {
   private screenMagnifierFocusFollowing_: boolean|undefined;
   /**
    * Whether ChromeVox focus following is enabled or not.
-   * TODO(b/346584950): Add a preference for
-   * settings.a11y.screen_magnifier_chromevox_focus_following and base this on
-   * the pref.
+   * settings.a11y.screen_magnifier_chromevox_focus_following preference.
    */
   private screenMagnifierFollowsChromeVox_ = true;
   /**
@@ -240,6 +238,9 @@ export class Magnifier {
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
+        case Magnifier.Prefs.SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING:
+          this.screenMagnifierFollowsChromeVox_ = Boolean(pref.value);
+          break;
         case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
           this.screenMagnifierFocusFollowing_ = Boolean(pref.value);
           break;
@@ -390,8 +391,10 @@ export namespace Magnifier {
   export enum Prefs {
     SCREEN_MAGNIFIER_FOCUS_FOLLOWING =
         'settings.a11y.screen_magnifier_focus_following',
+    SCREEN_MAGNIFIER_CHROMEVOX_FOCUS_FOLLOWING =
+        'settings.a11y.screen_magnifier_chromevox_focus_following',
     SCREEN_MAGNIFIER_SELECT_TO_SPEAK_FOCUS_FOLLOWING =
-        'settings.a11y.screen_magnifier_select_to_speak_focus_following'
+        'settings.a11y.screen_magnifier_select_to_speak_focus_following',
   }
 
   /**

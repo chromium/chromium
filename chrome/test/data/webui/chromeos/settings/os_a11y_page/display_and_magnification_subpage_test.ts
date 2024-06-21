@@ -181,6 +181,238 @@ suite('<settings-display-and-magnification-subpage>', () => {
     }
   });
 
+  if (loadTimeData.getBoolean(
+          'isAccessibilityMagnifierFollowsChromeVoxEnabled')) {
+    test('Turns off docked magnifier follows ChromeVox', async () => {
+      await initPage();
+      const dockedMagnifierToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#dockedMagnifierToggle');
+
+      assert(dockedMagnifierToggle);
+
+      dockedMagnifierToggle.click();
+      await waitBeforeNextRender(page);
+
+      const dockedMagnifierFollowsChromeVoxToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#dockedMagnifierFollowsChromeVoxToggle');
+
+      assert(dockedMagnifierFollowsChromeVoxToggle);
+      assertTrue(isVisible(dockedMagnifierFollowsChromeVoxToggle));
+      // Docked magnifier follows ChromeVox toggle should be enabled by
+      // default.
+      assertTrue(page.prefs.settings.a11y
+                     .screen_magnifier_chromevox_focus_following.value);
+
+      dockedMagnifierFollowsChromeVoxToggle.click();
+      await waitBeforeNextRender(page);
+      flush();
+
+      assertFalse(page.prefs.settings.a11y
+                      .screen_magnifier_chromevox_focus_following.value);
+    });
+  } else {
+    test(
+        'Docked magnifier follows ChromeVox toggle does not appear',
+        async () => {
+          await initPage();
+          const dockedMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierToggle');
+
+          assert(dockedMagnifierToggle);
+
+          dockedMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          // Toggle shouldn't be available if flag is disabled.
+          const dockedMagnifierFollowsChromeVoxToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierFollowsChromeVoxToggle');
+
+          assertNull(dockedMagnifierFollowsChromeVoxToggle);
+        });
+  }
+
+  if (loadTimeData.getBoolean(
+          'isAccessibilityMagnifierFollowsChromeVoxEnabled')) {
+    test('Turns off fullscreen magnifier follows ChromeVox', async () => {
+      await initPage();
+
+      const fullScreenMagnifierToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#fullScreenMagnifierToggle');
+
+      assert(fullScreenMagnifierToggle);
+
+      fullScreenMagnifierToggle.click();
+      await waitBeforeNextRender(page);
+
+      const fullScreenMagnifierFollowsChromeVoxToggle =
+          page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#fullScreenMagnifierFollowsChromeVoxToggle');
+
+      assert(fullScreenMagnifierFollowsChromeVoxToggle);
+      assertTrue(isVisible(fullScreenMagnifierFollowsChromeVoxToggle));
+      // Full Screen magnifier follows ChromeVox toggle should be enabled by
+      // default.
+      assertTrue(page.prefs.settings.a11y
+                     .screen_magnifier_chromevox_focus_following.value);
+
+      fullScreenMagnifierFollowsChromeVoxToggle.click();
+      await waitBeforeNextRender(page);
+      flush();
+
+      assertFalse(page.prefs.settings.a11y
+                      .screen_magnifier_chromevox_focus_following.value);
+    });
+  } else {
+    test(
+        'Fullscreen magnifier follows ChromeVox toggle does not appear',
+        async () => {
+          await initPage();
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          // Toggle shouldn't be available if flag is disabled.
+          const fullScreenMagnifierFollowsChromeVoxToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsChromeVoxToggle');
+
+          assertNull(fullScreenMagnifierFollowsChromeVoxToggle);
+        });
+  }
+
+  if (loadTimeData.getBoolean(
+          'isAccessibilityMagnifierFollowsChromeVoxEnabled')) {
+    test(
+        'kMagnifierFollowsChromeVox is deep-linked from fullscreen magnifier',
+        async () => {
+          await initPage();
+          const setting = settingMojom.Setting.kMagnifierFollowsChromeVox;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsChromeVoxToggle');
+
+          assertTrue(!!deepLinkElement);
+
+          await waitAfterNextRender(deepLinkElement);
+          assertEquals(
+              deepLinkElement, page.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+  } else {
+    test(
+        'kMagnifierFollowsChromeVox not deep-linked from fullscreen magnifier',
+        async () => {
+          await initPage();
+
+          const setting = settingMojom.Setting.kMagnifierFollowsChromeVox;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const fullScreenMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierToggle');
+
+          assert(fullScreenMagnifierToggle);
+
+          fullScreenMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#fullScreenMagnifierFollowsChromeVoxToggle');
+
+          assertNull(deepLinkElement);
+        });
+  }
+
+  if (loadTimeData.getBoolean(
+          'isAccessibilityMagnifierFollowsChromeVoxEnabled')) {
+    test(
+        'kMagnifierFollowsChromeVox deep-linked from docked magnifier',
+        async () => {
+          await initPage();
+
+          const setting = settingMojom.Setting.kMagnifierFollowsChromeVox;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const dockedMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierToggle');
+
+          assert(dockedMagnifierToggle);
+
+          dockedMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierFollowsChromeVoxToggle');
+
+          assertTrue(!!deepLinkElement);
+
+          await waitAfterNextRender(deepLinkElement);
+          assertEquals(
+              deepLinkElement, page.shadowRoot!.activeElement,
+              `Element should be focused for settingId=${setting}.'`);
+        });
+  } else {
+    test(
+        'kMagnifierFollowsChromeVox is not deep-linked from docked magnifier',
+        async () => {
+          await initPage();
+
+          const setting = settingMojom.Setting.kMagnifierFollowsChromeVox;
+          const params = new URLSearchParams();
+          params.append('settingId', setting.toString());
+          Router.getInstance().navigateTo(
+              routes.A11Y_DISPLAY_AND_MAGNIFICATION, params);
+
+          const dockedMagnifierToggle =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierToggle');
+
+          assert(dockedMagnifierToggle);
+
+          dockedMagnifierToggle.click();
+          await waitBeforeNextRender(page);
+
+          const deepLinkElement =
+              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                  '#dockedMagnifierFollowsChromeVoxToggle');
+
+          assertNull(deepLinkElement);
+        });
+  }
+
   if (loadTimeData.getBoolean('isAccessibilityMagnifierFollowsStsEnabled')) {
     test('Turns off docked magnifier follows select to speak', async () => {
       await initPage();

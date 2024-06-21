@@ -267,6 +267,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityMouseKeysDominantHand,
     prefs::kAccessibilityScreenMagnifierEnabled,
     prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
+    prefs::kAccessibilityMagnifierFollowsChromeVox,
     prefs::kAccessibilityMagnifierFollowsSts,
     prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
     prefs::kAccessibilityScreenMagnifierScale,
@@ -1431,6 +1432,12 @@ void AccessibilityController::RegisterProfilePrefs(
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterBooleanPref(
         prefs::kAccessibilityFaceGazeAdjustSpeedSeparately, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  }
+
+  if (::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled()) {
+    registry->RegisterBooleanPref(
+        prefs::kAccessibilityMagnifierFollowsChromeVox, true,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 

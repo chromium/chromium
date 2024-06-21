@@ -351,6 +351,7 @@ enum {
   kDesktopToiOSAddressPromoImpressionsCounter = 100292,
   kDesktopToiOSAddressPromoOptOut = 100293,
   kMahiNudgeShownCount = 100294,
+  kAccessibilityMagnifierFollowsChromeVox = 100295,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -598,6 +599,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
      {syncable_prefs_ids::kAccessibilityScreenMagnifierFocusFollowingEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityMagnifierFollowsChromeVox,
+     {syncable_prefs_ids::kAccessibilityMagnifierFollowsChromeVox,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityMagnifierFollowsSts,

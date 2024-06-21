@@ -114,6 +114,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Accessibility.MagnifierFollowsChromeVox"
+    enum="BooleanToggled" expires_after="2024-10-16">
+  <owner>aldietz@google.com</owner>
+  <owner>chromium-accessibility@chromium.org</owner>
+  <summary>
+    Recorded when a user changes the value of the kMagnifierFollowsChromeVox
+    setting on the Accessibility page.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
     enum="BooleanToggled" expires_after="2024-12-15">
   <owner>katie@chromium.org</owner>
