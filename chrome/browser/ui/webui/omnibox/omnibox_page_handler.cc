@@ -547,9 +547,16 @@ void OmniboxPageHandler::StartMl(mojom::SignalsPtr mojom_signals,
 
 std::unique_ptr<AutocompleteController> OmniboxPageHandler::CreateController(
     bool ml_disabled) {
+  auto providers = AutocompleteClassifier::DefaultOmniboxProviders();
+  // `HistoryEmbeddingsProvider` only supports 1 query at a time. Running it for
+  // the traditional-scoring controller used in the ML before/after comparisons
+  // would break history embeddings for the other, more important controllers.
+  if (ml_disabled)
+    providers &= ~AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS;
+
   auto controller = std::make_unique<AutocompleteController>(
-      std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-      AutocompleteClassifier::DefaultOmniboxProviders(), false, ml_disabled);
+      std::make_unique<ChromeAutocompleteProviderClient>(profile_), providers,
+      false, ml_disabled);
   // We will observe our internal AutocompleteController directly, so there's
   // no reason to hook it up to the profile-keyed AutocompleteControllerEmitter.
   controller->AddObserver(this);
