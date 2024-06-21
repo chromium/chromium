@@ -16482,6 +16482,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was created and saved in Google Password Manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Passkey saved
       </message>
+      <message name="IDS_WEBAUTHN_GPM_PASSKEY_SAVED_PIN_CREATED_TITLE" desc="The title of a bubble that is displayed as a confirmation that a passkey was saved in Google Password Manager and the recovery PIN for Google Password Manager was also created in the same flow. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
+        Passkey saved and PIN created
+      </message>
       <message name="IDS_WEBAUTHN_MANAGE_PASSWORDS_AND_PASSKEYS" desc="The label of a button in a passkey saved confirmation bubble that leads to password manager. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         Manage passwords and passkeys
       </message>

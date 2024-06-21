@@ -89,6 +89,14 @@ class PasswordsModelDelegate {
   // Returns true iff the current bubble is the manual fallback for saving.
   virtual bool BubbleIsManualFallbackForSaving() const = 0;
 
+  // Returns true if GPM pin was created during the most recent passkey creation
+  // flow, applicable for PASSKEY_SAVED_CONFIRMATION_STATE only.
+  virtual bool GpmPinCreatedDuringRecentPasskeyCreation() const = 0;
+
+  // Returns username of a passkey that has just been saved, applicable for
+  // PASSKEY_SAVED_CONFIRMATION_STATE only.
+  virtual std::u16string GetRecentlySavedPasskeyUsername() const = 0;
+
   // Called from the model when the bubble is displayed.
   virtual void OnBubbleShown() = 0;
 

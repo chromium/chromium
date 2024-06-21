@@ -31,8 +31,8 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // TODO(b/345242100): Pass the username.
-  AddChildView(CreatePasskeyIconWithLabelRow(vector_icons::kPasskeyIcon, u""));
+  AddChildView(CreatePasskeyIconWithLabelRow(vector_icons::kPasskeyIcon,
+                                             controller_.GetUsername()));
 
   std::u16string button_label =
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_PASSWORDS_AND_PASSKEYS);

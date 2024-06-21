@@ -1958,6 +1958,26 @@ TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {
       /*message=*/u"Do you want to enable this feature", result_callback.Get());
 }
 
+TEST_F(ManagePasswordsUIControllerTest, PasskeySavedWithoutGpmPinCreation) {
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasskeySaved(kExampleUsername, /*gpm_pin_created=*/false);
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
+  EXPECT_EQ(controller()->GetRecentlySavedPasskeyUsername(), kExampleUsername);
+  EXPECT_FALSE(controller()->GpmPinCreatedDuringRecentPasskeyCreation());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, PasskeySavedWithGpmPinCreation) {
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasskeySaved(kExampleUsername, /*gpm_pin_created=*/true);
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
+  EXPECT_EQ(controller()->GetRecentlySavedPasskeyUsername(), kExampleUsername);
+  EXPECT_TRUE(controller()->GpmPinCreatedDuringRecentPasskeyCreation());
+}
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {

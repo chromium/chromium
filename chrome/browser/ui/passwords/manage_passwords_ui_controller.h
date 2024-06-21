@@ -119,7 +119,8 @@ class ManagePasswordsUIController
       const std::u16string& username,
       const password_manager::PasswordForm& form_to_update) override;
   void OnKeychainError() override;
-  void OnPasskeySaved() override;
+  void OnPasskeySaved(const std::u16string& username,
+                      bool gpm_pin_created) override;
 
   virtual void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials);
@@ -164,6 +165,8 @@ class ManagePasswordsUIController
   size_t GetTotalNumberCompromisedPasswords() const override;
   bool DidAuthForAccountStoreOptInFail() const override;
   bool BubbleIsManualFallbackForSaving() const override;
+  bool GpmPinCreatedDuringRecentPasskeyCreation() const override;
+  std::u16string GetRecentlySavedPasskeyUsername() const override;
   void OnBubbleShown() override;
   void OnBubbleHidden() override;
   void OnNoInteraction() override;

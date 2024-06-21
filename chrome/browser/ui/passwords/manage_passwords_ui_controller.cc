@@ -521,8 +521,9 @@ void ManagePasswordsUIController::OnKeychainError() {
 #endif
 }
 
-void ManagePasswordsUIController::OnPasskeySaved() {
-  passwords_data_.OnPasskeySaved();
+void ManagePasswordsUIController::OnPasskeySaved(const std::u16string& username,
+                                                 bool gpm_pin_created) {
+  passwords_data_.OnPasskeySaved(username, gpm_pin_created);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
 }
@@ -693,6 +694,18 @@ bool ManagePasswordsUIController::DidAuthForAccountStoreOptInFail() const {
 
 bool ManagePasswordsUIController::BubbleIsManualFallbackForSaving() const {
   return save_fallback_timer_.IsRunning();
+}
+
+bool ManagePasswordsUIController::GpmPinCreatedDuringRecentPasskeyCreation()
+    const {
+  CHECK_EQ(GetState(), password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
+  return passwords_data_.gpm_pin_created_during_recent_passkey_creation();
+}
+
+std::u16string ManagePasswordsUIController::GetRecentlySavedPasskeyUsername()
+    const {
+  CHECK_EQ(GetState(), password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
+  return passwords_data_.recently_saved_passkey_username();
 }
 
 void ManagePasswordsUIController::OnBubbleShown() {

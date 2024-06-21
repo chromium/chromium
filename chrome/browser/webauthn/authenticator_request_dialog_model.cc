@@ -1546,7 +1546,10 @@ void AuthenticatorRequestDialogController::OnPasskeySaved() {
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents);
   if (manage_passwords_ui_controller) {
-    manage_passwords_ui_controller->OnPasskeySaved();
+    // TODO(b/345242100): Pass whether gpm pin was actually created.
+    manage_passwords_ui_controller->OnPasskeySaved(
+        base::UTF8ToUTF16(model_->user_entity.name.value_or("")),
+        /*gpm_pin_created=*/false);
   }
 }
 

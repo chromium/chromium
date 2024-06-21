@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 
 PasskeySavedConfirmationController::PasskeySavedConfirmationController(
@@ -20,8 +21,14 @@ PasskeySavedConfirmationController::~PasskeySavedConfirmationController() {
 }
 
 std::u16string PasskeySavedConfirmationController::GetTitle() const {
-  // TODO(b/345242100): Add string version with pin created.
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE);
+  return l10n_util::GetStringUTF16(
+      delegate_->GpmPinCreatedDuringRecentPasskeyCreation()
+          ? IDS_WEBAUTHN_GPM_PASSKEY_SAVED_PIN_CREATED_TITLE
+          : IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE);
+}
+
+std::u16string PasskeySavedConfirmationController::GetUsername() const {
+  return delegate_->GetRecentlySavedPasskeyUsername();
 }
 
 void PasskeySavedConfirmationController::OnManagePasswordsAndPasskeysClicked() {

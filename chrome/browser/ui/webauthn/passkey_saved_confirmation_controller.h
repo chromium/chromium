@@ -18,6 +18,9 @@ class PasskeySavedConfirmationController : public PasswordBubbleControllerBase {
   // PasswordBubbleControllerBase:
   std::u16string GetTitle() const override;
 
+  // Returns username of the saved passkey.
+  std::u16string GetUsername() const;
+
   // Called by the view when the user clicks manage passwords and passkeys
   // button. Navigates to password manager main page.
   void OnManagePasswordsAndPasskeysClicked();
