@@ -142,8 +142,7 @@ UIColor* DimColorIncognito() {
         [[NSMutableAttributedString alloc] initWithString:@""];
     NSAttributedString* spacer = [[self class] spacerAttributedString];
 
-    if (_match.answer_template->answer_type() ==
-        omnibox::RichAnswerTemplate::DICTIONARY) {
+    if (_match.answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY) {
       auto subheadFragments =
           _match.answer_template->answers(0).subhead().fragments();
 
@@ -308,8 +307,7 @@ UIColor* DimColorIncognito() {
         [[NSMutableAttributedString alloc] initWithString:@""];
     NSAttributedString* spacer = [[self class] spacerAttributedString];
 
-    if (_match.answer_template->answer_type() ==
-        omnibox::RichAnswerTemplate::DICTIONARY) {
+    if (_match.answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY) {
       auto headlineFragments =
           _match.answer_template->answers(0).headline().fragments();
 
