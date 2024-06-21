@@ -216,7 +216,6 @@
 
     'internal.chromeos.fyi': {
       'chromeos-betty-arc-t-chrome-fyi': 'chromeos_betty-arc-t_include_unwind_tables_official_reclient',
-      'chromeos-betty-chrome': 'chromeos_betty_include_unwind_tables_official_reclient',
       'chromeos-betty-pi-arc-chrome-accessibility-fyi': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
