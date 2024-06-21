@@ -85,27 +85,12 @@ class WatermarkDisabledBrowserTest : public WatermarkBrowserTestBase {
 
 }  // namespace
 
-// TODO(crbug.com/343845142): Enable this test again.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_NoWatermarkShownAfterNavigation \
-  DISABLED_NoWatermarkShownAfterNavigation
-#else
-#define MAYBE_NoWatermarkShownAfterNavigation NoWatermarkShownAfterNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(WatermarkDisabledBrowserTest,
-                       MAYBE_NoWatermarkShownAfterNavigation) {
+                       NoWatermarkShownAfterNavigation) {
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/343845142): Enable this test again.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_WatermarkShownAfterNavigation \
-  DISABLED_WatermarkShownAfterNavigation
-#else
-#define MAYBE_WatermarkShownAfterNavigation WatermarkShownAfterNavigation
-#endif
-IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest,
-                       MAYBE_WatermarkShownAfterNavigation) {
+IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
   watermark_message_ = GetParam();
   ShowAndVerifyUi();
 }
