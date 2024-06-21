@@ -19,8 +19,7 @@ import java.util.Set;
 
 /**
  * Java version of the native SyncService interface. Must only be used on the UI thread.
- * TODO(crbug.com/40270701): Update to no reference UI thread. TODO(crbug.com/40161455): Document
- * the remaining methods.
+ * TODO(crbug.com/40161455): Document the remaining methods.
  */
 public interface SyncService {
     /** Listener for the underlying sync status. */
