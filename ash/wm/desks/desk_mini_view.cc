@@ -109,9 +109,11 @@ gfx::Rect DeskMiniView::GetDeskPreviewBounds(aura::Window* root_window) {
   return gfx::Rect(GetPreviewWidth(root_size, preview_height), preview_height);
 }
 
-DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
-                           aura::Window* root_window,
-                           Desk* desk)
+DeskMiniView::DeskMiniView(
+    DeskBarViewBase* owner_bar,
+    aura::Window* root_window,
+    Desk* desk,
+    WindowOcclusionCalculator* window_occlusion_calculator)
     : owner_bar_(owner_bar), root_window_(root_window), desk_(desk) {
   TRACE_EVENT0("ui", "DeskMiniView::DeskMiniView");
 
@@ -133,7 +135,7 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   desk_preview_ = AddChildView(std::make_unique<DeskPreviewView>(
       base::BindRepeating(&DeskMiniView::OnDeskPreviewPressed,
                           base::Unretained(this)),
-      this));
+      this, window_occlusion_calculator));
 
   views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
   preview_focus_ring->SetOutsetFocusRingDisabled(true);

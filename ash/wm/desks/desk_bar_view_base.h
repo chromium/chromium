@@ -29,6 +29,7 @@ namespace ash {
 
 class DeskBarHoverObserver;
 class OverviewGrid;
+class WindowOcclusionCalculator;
 
 // Base class for desk bar views, including desk bar view within overview and
 // desk bar view for the desk button.
@@ -438,6 +439,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // Test closure that runs after the UI has been updated asynchronously.
   base::OnceClosure on_update_ui_closure_for_testing_;
+
+  std::unique_ptr<WindowOcclusionCalculator> window_occlusion_calculator_;
 };
 
 }  // namespace ash

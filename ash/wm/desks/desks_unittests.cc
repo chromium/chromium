@@ -503,7 +503,8 @@ class DesksTest : public AshTestBase,
          {features::kPerDeskShelf, GetParam().per_desk_shelf},
          {features::kOverviewNewFocus, GetParam().overview_new_focus},
          {features::kSnapGroup, true},
-         {features::kOsSettingsRevampWayfinding, true}});
+         {features::kOsSettingsRevampWayfinding, true},
+         {features::kDeskBarWindowOcclusionOptimization, true}});
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);

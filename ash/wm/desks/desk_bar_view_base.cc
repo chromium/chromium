@@ -34,6 +34,7 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -49,6 +50,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "chromeos/utils/haptics_util.h"
@@ -505,6 +507,11 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
     : type_(type), state_(GetPreferredState(type)), root_(root) {
   CHECK(root && root->IsRootWindow());
 
+  if (features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
+    window_occlusion_calculator_ =
+        std::make_unique<WindowOcclusionCalculator>();
+  }
+
   // Background layer is needed for desk bar animation.
   if (type_ == Type::kDeskButton) {
     background_view_ = AddChildView(std::make_unique<views::View>());
@@ -613,6 +620,14 @@ DeskBarViewBase::~DeskBarViewBase() {
   DesksController::Get()->RemoveObserver(this);
   if (drag_view_) {
     EndDragDesk(drag_view_, /*end_by_user=*/false);
+  }
+
+  // `window_occlusion_calculator_` must be asynchronously deleted here to
+  // ensure it outlives all of `DeskBarViewBase`'s child views, which prevents
+  // use-after-free.
+  if (window_occlusion_calculator_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(window_occlusion_calculator_));
   }
 }
 
@@ -1179,8 +1194,8 @@ void DeskBarViewBase::InitDragDesk(DeskMiniView* mini_view,
       location_in_screen.x() - preview_origin_in_screen.x();
 
   // Create a drag proxy for the dragged desk.
-  drag_proxy_ =
-      std::make_unique<DeskDragProxy>(this, drag_view_, init_offset_x);
+  drag_proxy_ = std::make_unique<DeskDragProxy>(
+      this, drag_view_, init_offset_x, window_occlusion_calculator_.get());
 }
 
 void DeskBarViewBase::StartDragDesk(DeskMiniView* mini_view,
@@ -1433,7 +1448,8 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
   for (const auto& desk : desks) {
     if (!FindMiniViewForDesk(desk.get())) {
       DeskMiniView* mini_view = scroll_view_contents_->AddChildViewAt(
-          std::make_unique<DeskMiniView>(this, root_window, desk.get()),
+          std::make_unique<DeskMiniView>(this, root_window, desk.get(),
+                                         window_occlusion_calculator_.get()),
           mini_view_index);
       mini_views_.insert(mini_views_.begin() + mini_view_index, mini_view);
       new_mini_views.push_back(mini_view);

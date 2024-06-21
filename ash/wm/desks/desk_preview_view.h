@@ -10,8 +10,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
+#include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_focusable_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -60,11 +62,14 @@ class WallpaperBaseView;
 // implementation we must make them sibling layers, rather than one being a
 // descendant of the other. Otherwise, this will trigger a render surface.
 class ASH_EXPORT DeskPreviewView : public views::Button,
-                                   public OverviewFocusableView {
+                                   public OverviewFocusableView,
+                                   public WindowOcclusionCalculator::Observer {
   METADATA_HEADER(DeskPreviewView, views::Button)
 
  public:
-  DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
+  DeskPreviewView(PressedCallback callback,
+                  DeskMiniView* mini_view,
+                  WindowOcclusionCalculator* window_occlusion_calculator);
 
   DeskPreviewView(const DeskPreviewView&) = delete;
   DeskPreviewView& operator=(const DeskPreviewView&) = delete;
@@ -130,10 +135,14 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   void OnFocusableViewFocused() override;
   void OnFocusableViewBlurred() override;
 
+  // WindowOcclusionCalculator::Observer:
+  void OnWindowOcclusionChanged(aura::Window* window) override;
+
  private:
   friend class DesksTestApi;
 
   const raw_ptr<DeskMiniView, LeakedDanglingUntriaged> mini_view_;
+  const raw_ptr<WindowOcclusionCalculator> window_occlusion_calculator_;
 
   // A view that paints the wallpaper in the mini_view. It avoids the dimming
   // and blur overview mode adds to the original wallpaper. Owned by the views
@@ -169,6 +178,8 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   std::unique_ptr<SystemShadow> shadow_;
 
   std::optional<ui::ColorId> focus_color_id_;
+
+  base::WeakPtrFactory<DeskPreviewView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

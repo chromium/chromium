@@ -27,6 +27,7 @@ class DeskBarViewBase;
 class DeskNameView;
 class DeskPreviewView;
 class DeskProfilesButton;
+class WindowOcclusionCalculator;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -50,7 +51,8 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   DeskMiniView(DeskBarViewBase* owner_bar,
                aura::Window* root_window,
-               Desk* desk);
+               Desk* desk,
+               WindowOcclusionCalculator* window_occlusion_calculator);
 
   DeskMiniView(const DeskMiniView&) = delete;
   DeskMiniView& operator=(const DeskMiniView&) = delete;
