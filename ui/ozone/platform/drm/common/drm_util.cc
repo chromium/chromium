@@ -310,6 +310,18 @@ std::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
       base::TrimWhitespaceASCII(data, base::TrimPositions::TRIM_ALL));
 }
 
+// Sort modes in |modes_in_out| from largest to smallest as defined by
+// DisplayMode::operator>().
+void SortDisplayModeListDesc(
+    display::DisplaySnapshot::DisplayModeList& modes_in_out) {
+  std::stable_sort(
+      modes_in_out.begin(), modes_in_out.end(),
+      [](const std::unique_ptr<const display::DisplayMode>& left,
+         const std::unique_ptr<const display::DisplayMode>& right) {
+        return *left > *right;
+      });
+}
+
 // Given all |tiled_infos| belonging to the same display, select the "primary"
 // tile that will represent all the tiles. Primary tile is the only active tile
 // if the display is configured with a non-tile mode.
@@ -377,6 +389,143 @@ const HardwareDisplayControllerInfo* GetPrimaryTileInfo(
   }
 
   return tile_closest_to_origin;
+}
+bool ContainsModePtr(const display::DisplaySnapshot::DisplayModeList& modes,
+                     const display::DisplayMode* target_mode) {
+  for (const auto& mode : modes) {
+    if (mode.get() == target_mode) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ContainsModeEq(const display::DisplaySnapshot::DisplayModeList& modes,
+                    const display::DisplayMode& target_mode) {
+  for (const auto& mode : modes) {
+    if (*mode == target_mode) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Prune all tile modes in |primary_tile_modes_in_out| that doesn't show up in
+// all other tiles in the tiled display.
+void PruneTileModesNotPresentInAllTiles(
+    const HardwareDisplayControllerInfo& primary_tile_info,
+    display::DisplaySnapshot::DisplayModeList& primary_tile_modes_in_out) {
+  const std::optional<TileProperty>& primary_tile_property =
+      primary_tile_info.tile_property();
+  if (!primary_tile_property.has_value()) {
+    return;
+  }
+
+  const gfx::Size& tile_size = primary_tile_property->tile_size;
+  for (auto primary_tile_mode_it = primary_tile_modes_in_out.begin();
+       primary_tile_mode_it != primary_tile_modes_in_out.end();) {
+    // Skip non-tile modes.
+    if (!(*primary_tile_mode_it) ||
+        (*primary_tile_mode_it)->size() != tile_size) {
+      ++primary_tile_mode_it;
+      continue;
+    }
+
+    bool mode_found_in_all_tiles = true;
+    for (const auto& nonprimary_tile_info :
+         primary_tile_info.nonprimary_tile_infos()) {
+      const display::DisplaySnapshot::DisplayModeList nonprimary_tile_modes =
+          nonprimary_tile_info->GetModesOfSize(tile_size);
+      if (!ContainsModeEq(nonprimary_tile_modes, **primary_tile_mode_it)) {
+        mode_found_in_all_tiles = false;
+        break;
+      }
+    }
+
+    if (mode_found_in_all_tiles) {
+      ++primary_tile_mode_it;
+    } else {
+      primary_tile_mode_it =
+          primary_tile_modes_in_out.erase(primary_tile_mode_it);
+    }
+  }
+}
+
+// Prune all tile modes in |modes_in_out| if all tiles in a display are not
+// connected to prevent the display from having blank tiles.
+void PruneTileModesForIncompleteGroup(
+    const HardwareDisplayControllerInfo& tiled_display_info,
+    display::DisplaySnapshot::DisplayModeList& modes_in_out) {
+  const std::optional<TileProperty>& tile_property =
+      tiled_display_info.tile_property();
+  if (!tile_property.has_value()) {
+    return;
+  }
+
+  const ui::HardwareDisplayControllerInfoList& nonprimary_tiles =
+      tiled_display_info.nonprimary_tile_infos();
+  // Prune all tile modes if not all tiles in the display are connected yet.
+  if (tile_property->tile_layout.GetArea() !=
+      static_cast<int>(nonprimary_tiles.size()) + 1) {
+    modes_in_out.erase(
+        std::remove_if(
+            modes_in_out.begin(), modes_in_out.end(),
+            [&tile_property](
+                const std::unique_ptr<const display::DisplayMode>& mode) {
+              return mode->size() == tile_property->tile_size;
+            }),
+        modes_in_out.end());
+    return;
+  }
+}
+
+// Replaces all tile modes with the full tile composited mode.
+// Note that individual tiles in a tiled display advertise modes with size of
+// the tile instead of the full display.
+void ConvertTileModesToCompositedModes(
+    const HardwareDisplayControllerInfo& tiled_display_info,
+    display::DisplaySnapshot::DisplayModeList& modes_in_out,
+    const display::DisplayMode*& current_mode_out,
+    const display::DisplayMode*& native_mode_out) {
+  const std::optional<TileProperty>& tile_property =
+      tiled_display_info.tile_property();
+  if (!tile_property.has_value()) {
+    return;
+  }
+  // For every mode with same resolution as the tile size, replace with a a new,
+  // equivalent mode with the full tile-composited display resolution.
+  for (auto& mode : modes_in_out) {
+    if (mode->size() != tile_property->tile_size) {
+      continue;
+    }
+
+    std::unique_ptr<display::DisplayMode> tile_mode =
+        mode->CopyWithSize(GetTotalTileDisplaySize(*tile_property));
+    if (current_mode_out == mode.get()) {
+      current_mode_out = tile_mode.get();
+    }
+    if (native_mode_out == mode.get()) {
+      native_mode_out = tile_mode.get();
+    }
+
+    mode = std::move(tile_mode);
+  }
+
+  SortDisplayModeListDesc(modes_in_out);
+}
+
+std::unique_ptr<HardwareDisplayControllerInfo> PopPrimaryTileInfo(
+    const HardwareDisplayControllerInfo* primary_tile_info_ptr,
+    HardwareDisplayControllerInfoList& infos) {
+  std::unique_ptr<HardwareDisplayControllerInfo> primary_tile_info;
+  for (auto tile_info = infos.begin(); tile_info != infos.end(); tile_info++) {
+    if (tile_info->get() == primary_tile_info_ptr) {
+      primary_tile_info = std::move(*tile_info);
+      infos.erase(tile_info);
+      break;
+    }
+  }
+  return primary_tile_info;
 }
 }  // namespace
 
@@ -463,6 +612,25 @@ HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
       tile_property_(std::move(tile_property)) {}
 
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
+
+void HardwareDisplayControllerInfo::AcquireNonprimaryTileInfo(
+    std::unique_ptr<HardwareDisplayControllerInfo> tile_info) {
+  DCHECK(tile_info->tile_property().has_value());
+  nonprimary_tile_infos_.push_back(std::move(tile_info));
+}
+
+display::DisplaySnapshot::DisplayModeList
+HardwareDisplayControllerInfo::GetModesOfSize(const gfx::Size& size) {
+  display::DisplaySnapshot::DisplayModeList modes;
+  for (int i = 0; i < connector_->count_modes; ++i) {
+    const drmModeModeInfo& mode = connector_->modes[i];
+    if (ModeSize(mode) == size) {
+      modes.push_back(CreateDisplayMode(mode));
+    }
+  }
+
+  return modes;
+}
 
 std::pair<HardwareDisplayControllerInfoList, std::vector<uint32_t>>
 GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
@@ -771,6 +939,22 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const display::DrmFormatsAndModifiers drm_formats_and_modifiers =
       drm.GetFormatsAndModifiersForCrtc(info->crtc()->crtc_id);
 
+  if (info->tile_property().has_value()) {
+    PruneTileModesForIncompleteGroup(*info, modes);
+    PruneTileModesNotPresentInAllTiles(*info, modes);
+    ConvertTileModesToCompositedModes(*info, modes, current_mode, native_mode);
+
+    if (!ContainsModePtr(modes, native_mode)) {
+      // Fall back to first mode in |modes|.
+      native_mode = modes.front().get();
+    }
+
+    if (!ContainsModePtr(modes, current_mode)) {
+      // Fall back to using |native_mode|.
+      current_mode = native_mode;
+    }
+  }
+
   return std::make_unique<display::DisplaySnapshot>(
       port_display_id, port_display_id, edid_display_id, connector_index,
       gfx::Point(), physical_size, type, base_connector_id, path_topology,
@@ -1007,8 +1191,9 @@ std::vector<const char*> GetPreferredDrmDrivers() {
   // The iMac 12.1 and 12.2 have an integrated Intel GPU that isn't connected
   // to any real outputs. Prefer the Radeon card instead.
   if (sys_vendor == "Apple Inc." &&
-      (product_name == "iMac12,1" || product_name == "iMac12,2"))
+      (product_name == "iMac12,1" || product_name == "iMac12,2")) {
     return {"radeon"};
+  }
 
   // Default order.
   return {"i915", "amdgpu", "virtio_gpu"};
@@ -1018,6 +1203,7 @@ void ConsolidateTiledDisplayInfo(
     HardwareDisplayControllerInfoList& display_infos) {
   // Ignore all non-tiled displays, group all tile displays into |tile_groups|
   // by tile group IDs.
+  HardwareDisplayControllerInfoList new_display_infos;
   HardwareDisplayControllerInfoList nontiled_display_infos;
   std::unordered_map<int /*tile_group_id*/, HardwareDisplayControllerInfoList>
       tile_groups;
@@ -1029,19 +1215,32 @@ void ConsolidateTiledDisplayInfo(
       nontiled_display_infos.push_back(std::move(info));
     }
   }
-  display_infos = std::move(nontiled_display_infos);
+  new_display_infos = std::move(nontiled_display_infos);
 
   // For each tile display group, determine the primary tile and drop others in
   // the group.
-  for (auto& tile_group : tile_groups) {
-    const HardwareDisplayControllerInfo* primary_tiled_info_ptr =
-        GetPrimaryTileInfo(tile_group.second);
-    for (auto& tiled_info : tile_group.second) {
-      if (tiled_info.get() == primary_tiled_info_ptr) {
-        display_infos.push_back(std::move(tiled_info));
-        break;
-      }
+  for (auto& [_, tile_infos] : tile_groups) {
+    const HardwareDisplayControllerInfo* primary_tile_info_ptr =
+        GetPrimaryTileInfo(tile_infos);
+    std::unique_ptr<HardwareDisplayControllerInfo> primary_tile_info =
+        PopPrimaryTileInfo(primary_tile_info_ptr, tile_infos);
+
+    for (auto& nonprimary_tile_info : tile_infos) {
+      primary_tile_info->AcquireNonprimaryTileInfo(
+          std::move(nonprimary_tile_info));
     }
+
+    new_display_infos.push_back(std::move(primary_tile_info));
   }
+
+  display_infos = std::move(new_display_infos);
 }
+
+gfx::Size GetTotalTileDisplaySize(const TileProperty& tile_property) {
+  const gfx::Size& layout = tile_property.tile_layout;
+  const gfx::Size& tile_size = tile_property.tile_size;
+  return gfx::Size(tile_size.width() * layout.width(),
+                   tile_size.height() * layout.height());
+}
+
 }  // namespace ui

@@ -1121,12 +1121,10 @@ TEST_F(TiledDisplayGetDisplaysTest, SingleTile) {
 
   MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
 
-  // Expect only one of the tiles to be represented as display with their whole
-  // unmodified modes.
+  // Expect tiled modes to be pruned when not all tiles in a group are present.
   ASSERT_THAT(displays, SizeIs(1));
   EXPECT_THAT(displays[0]->modes(),
               UnorderedElementsAre(
-                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
                   Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60}))));
 }
 
@@ -1136,6 +1134,7 @@ TEST_F(TiledDisplayGetDisplaysTest, AllTilesPresent) {
 
   const TileProperty expected_primary_tile_prop = {
       .group_id = 1,
+      .scale_to_fit_display = true,
       .tile_size = gfx::Size(3840, 4320),
       .tile_layout = gfx::Size(2, 1),
       .location = gfx::Point(0, 0)};
@@ -1190,12 +1189,11 @@ TEST_F(TiledDisplayGetDisplaysTest, AllTilesPresent) {
 
   MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
 
-  // Expect only one of the tiles to be represented as display with their whole
-  // unmodified modes.
+  // Expect the tiled mode to have composited resolution.
   ASSERT_THAT(displays, SizeIs(1));
   EXPECT_THAT(displays[0]->modes(),
               UnorderedElementsAre(
-                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
+                  Pointee(EqResAndRefresh({gfx::Size(7680, 4320), 60})),
                   Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60}))));
 }
 
@@ -1272,9 +1270,10 @@ TEST_F(TiledDisplayGetDisplaysTest, PrimaryCanStretchToFit) {
 
   ASSERT_THAT(displays, SizeIs(1));
 
+  // Expect the tiled mode to have composited resolution.
   EXPECT_THAT(displays[0]->modes(),
               UnorderedElementsAre(
-                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
+                  Pointee(EqResAndRefresh({gfx::Size(7680, 4320), 60})),
                   Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60}))));
 }
 
@@ -1344,15 +1343,137 @@ TEST_F(TiledDisplayGetDisplaysTest, MoreModesInOneTile) {
 
   ASSERT_THAT(displays, SizeIs(1));
 
+  // Expect the tiled mode to have composited resolution, and to have modes from
+  // the primary tile.
   EXPECT_THAT(displays[0]->modes(),
               UnorderedElementsAre(
-                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
-                  Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60})),
+                  Pointee(EqResAndRefresh({gfx::Size(7680, 4320), 60})),
                   // The non-tile mode in the primary tile (but not in
                   // non-primary) should live.
+                  Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60})),
                   Pointee(EqResAndRefresh({gfx::Size(2560, 1440), 60}))));
 }
 
+TEST_F(TiledDisplayGetDisplaysTest, PruneTileModesNotInAllTiles) {
+  auto fake_drm = AddDrmDevice();
+  fake_drm->ResetStateWithAllProperties();
+
+  // Primary tile at (0,1) - has 2 modes - one of which is 3840x4320@48.
+  const TileProperty expected_primary_tile_prop = {
+      .group_id = 1,
+      .scale_to_fit_display = false,
+      .tile_size = gfx::Size(3840, 4320),
+      .tile_layout = gfx::Size(2, 1),
+      .location = gfx::Point(1, 0)};
+  ScopedDrmPropertyBlob primary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_primary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& primary_encoder = fake_drm->AddEncoder();
+    primary_encoder.possible_crtcs = 0b1;
+
+    auto& primary_connector = fake_drm->AddConnector();
+    primary_connector.connection = true;
+    primary_connector.modes = std::vector<ResolutionAndRefreshRate>{
+        {gfx::Size(3840, 4320), 60}, {gfx::Size(3840, 4320), 48}};
+    primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
+    primary_connector.edid_blob =
+        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+    fake_drm->AddProperty(
+        primary_connector.id,
+        {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
+  }
+
+  // Non-primary tile at (0,0) - has 1 mode.
+  TileProperty expected_nonprimary_tile_prop = expected_primary_tile_prop;
+  expected_nonprimary_tile_prop.location = gfx::Point(0, 0);
+  ScopedDrmPropertyBlob nonprimary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_nonprimary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& nonprimary_encoder = fake_drm->AddEncoder();
+    nonprimary_encoder.possible_crtcs = 0b10;
+
+    auto& nonprimary_connector = fake_drm->AddConnector();
+    nonprimary_connector.connection = true;
+    nonprimary_connector.modes =
+        std::vector<ResolutionAndRefreshRate>{{gfx::Size(3840, 4320), 60}};
+    nonprimary_connector.encoders =
+        std::vector<uint32_t>{nonprimary_encoder.id};
+    nonprimary_connector.edid_blob =
+        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+    fake_drm->AddProperty(
+        nonprimary_connector.id,
+        {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
+  }
+
+  fake_drm->InitializeState(/* use_atomic */ true);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kTiledDisplaySupport);
+  ASSERT_TRUE(display::features::IsTiledDisplaySupportEnabled());
+
+  MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
+
+  ASSERT_THAT(displays, SizeIs(1));
+
+  // 3840x4320@48 is pruned since it is not in all the tiles.
+  EXPECT_THAT(displays[0]->modes(),
+              UnorderedElementsAre(
+                  Pointee(EqResAndRefresh({gfx::Size(7680, 4320), 60}))));
+}
+
+TEST_F(TiledDisplayGetDisplaysTest, NonTileModeNotPruned) {
+  auto fake_drm = AddDrmDevice();
+  fake_drm->ResetStateWithAllProperties();
+
+  const TileProperty expected_primary_tile_prop = {
+      .group_id = 1,
+      .scale_to_fit_display = false,
+      .tile_size = gfx::Size(3840, 4320),
+      .tile_layout = gfx::Size(2, 1),
+      .location = gfx::Point(1, 0)};
+  ScopedDrmPropertyBlob primary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_primary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& primary_encoder = fake_drm->AddEncoder();
+    primary_encoder.possible_crtcs = 0b1;
+
+    auto& primary_connector = fake_drm->AddConnector();
+    primary_connector.connection = true;
+
+    // 7680x4320@30 has the same size as the tile composited mode (the total
+    // size of the tiled display), but is not a tile mode (3840x4320).
+    primary_connector.modes = std::vector<ResolutionAndRefreshRate>{
+        {gfx::Size(7680, 4320), 30}, {gfx::Size(3840, 4320), 60}};
+    primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
+    primary_connector.edid_blob =
+        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+    fake_drm->AddProperty(
+        primary_connector.id,
+        {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
+  }
+
+  fake_drm->InitializeState(/* use_atomic */ true);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kTiledDisplaySupport);
+  ASSERT_TRUE(display::features::IsTiledDisplaySupportEnabled());
+
+  MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
+
+  ASSERT_THAT(displays, SizeIs(1));
+
+  // 7680x4320@30 should not be pruned as it is not a tiled-composited mode
+  // (3840x4320), so does not get pruned when it is not present in all tiles.
+  EXPECT_THAT(displays[0]->modes(),
+              UnorderedElementsAre(
+                  Pointee(EqResAndRefresh({gfx::Size(7680, 4320), 30}))));
+}
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_DISPLAY_MANAGER_UNITTEST_CC_

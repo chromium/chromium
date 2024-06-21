@@ -116,7 +116,18 @@ class HardwareDisplayControllerInfo {
     return tile_property_;
   }
 
+  void AcquireNonprimaryTileInfo(
+      std::unique_ptr<HardwareDisplayControllerInfo> tile_info);
+
+  const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+  nonprimary_tile_infos() const {
+    return nonprimary_tile_infos_;
+  }
+
   ScopedDrmConnectorPtr ReleaseConnector() { return std::move(connector_); }
+
+  display::DisplaySnapshot::DisplayModeList GetModesOfSize(
+      const gfx::Size& size);
 
  private:
   ScopedDrmConnectorPtr connector_;
@@ -126,6 +137,11 @@ class HardwareDisplayControllerInfo {
   std::optional<display::EdidParser> edid_parser_;
   // Only populated for tiled displays.
   std::optional<TileProperty> tile_property_;
+
+  // HardwareDisplayControllerInfo of all the other tiles in the tiled display.
+  // Only populated for primary tile of the tiled display.
+  std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+      nonprimary_tile_infos_;
 };
 
 using HardwareDisplayControllerInfoList =
@@ -319,6 +335,9 @@ std::vector<const char*> GetPreferredDrmDrivers();
 // HardwareDisplayControllerInfo will not be altered.
 void ConsolidateTiledDisplayInfo(
     HardwareDisplayControllerInfoList& display_infos);
+
+// Get the total tile-composited size of a tiled display.
+gfx::Size GetTotalTileDisplaySize(const TileProperty& tile_property);
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_

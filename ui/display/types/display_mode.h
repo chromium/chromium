@@ -39,6 +39,7 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
 
   ~DisplayMode();
   std::unique_ptr<DisplayMode> Clone() const;
+  std::unique_ptr<DisplayMode> CopyWithSize(const gfx::Size& size) const;
 
   const gfx::Size& size() const { return size_; }
   bool is_interlaced() const { return is_interlaced_; }

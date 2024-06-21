@@ -31,6 +31,12 @@ std::unique_ptr<DisplayMode> DisplayMode::Clone() const {
                                           htotal_, vtotal_, clock_));
 }
 
+std::unique_ptr<DisplayMode> DisplayMode::CopyWithSize(
+    const gfx::Size& size) const {
+  return std::make_unique<DisplayMode>(size, is_interlaced_, refresh_rate_,
+                                       htotal_, vtotal_, clock_);
+}
+
 bool DisplayMode::operator<(const DisplayMode& other) const {
   if (size_.GetArea() < other.size_.GetArea())
     return true;

@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/common/tile_property.h"
@@ -57,6 +58,12 @@ testing::Matcher<HardwareDisplayControllerInfo> InfoEqCrtcConnectorIds(
                                       Eq(connector_id)))),
                Property(&HardwareDisplayControllerInfo::crtc,
                         Pointee(Field(&drmModeCrtc::crtc_id, Eq(crtc_id)))));
+}
+
+testing::Matcher<HardwareDisplayControllerInfo> InfoHasTilePropertyWithLocation(
+    const gfx::Point location) {
+  return Property(&HardwareDisplayControllerInfo::tile_property,
+                  Optional(Field(&TileProperty::location, Eq(location))));
 }
 
 }  // namespace
@@ -569,12 +576,13 @@ TEST(CreateDisplaySnapshotTest, TiledDisplay) {
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
   fake_drm->ResetStateWithAllProperties();
-  TileProperty tile_property{.group_id = 1,
-                             .tile_size = gfx::Size(3840, 4320),
-                             .tile_layout = gfx::Size(2, 1),
-                             .location = gfx::Point(0, 0)};
+  TileProperty primary_tile_property{.group_id = 1,
+                                     .scale_to_fit_display = true,
+                                     .tile_size = gfx::Size(3840, 4320),
+                                     .tile_layout = gfx::Size(2, 1),
+                                     .location = gfx::Point(0, 0)};
   ScopedDrmPropertyBlob tile_property_blob =
-      CreateTilePropertyBlob(*fake_drm, tile_property);
+      CreateTilePropertyBlob(*fake_drm, primary_tile_property);
   uint32_t primary_crtc_id = 0, primary_connector_id = 0;
   {
     auto& crtc = fake_drm->AddCrtc();
@@ -587,12 +595,38 @@ TEST(CreateDisplaySnapshotTest, TiledDisplay) {
     primary_connector_id = connector.id;
 
     connector.connection = true;
-    connector.modes = std::vector<ResolutionAndRefreshRate>{
-        {gfx::Size(1920, 1080), 60}, {gfx::Size(3840, 4320), 60}};
+    connector.modes =
+        std::vector<ResolutionAndRefreshRate>{{gfx::Size(1920, 1080), 60},
+                                              {gfx::Size(3840, 4320), 60},
+                                              {gfx::Size(3840, 4320), 48}};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     fake_drm->AddProperty(
         primary_connector_id,
         {.id = kTileBlobPropId, .value = tile_property_blob->id()});
+  }
+
+  TileProperty nonprimary_tile_property = primary_tile_property;
+  nonprimary_tile_property.location = gfx::Point(1, 0);
+  ScopedDrmPropertyBlob nonprimary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, nonprimary_tile_property);
+  uint32_t nonprimary_crtc_id = 0, nonprimary_connector_id = 0;
+  {
+    auto& nonprimary_crtc = fake_drm->AddCrtc();
+    nonprimary_crtc_id = nonprimary_crtc.id;
+
+    auto& nonprimary_encoder = fake_drm->AddEncoder();
+    nonprimary_encoder.possible_crtcs = 0b10;
+
+    auto& nonprimary_connector = fake_drm->AddConnector();
+    nonprimary_connector_id = nonprimary_connector.id;
+    nonprimary_connector.connection = true;
+    nonprimary_connector.modes = std::vector<ResolutionAndRefreshRate>{
+        {gfx::Size(1920, 1080), 60}, {gfx::Size(3840, 4320), 60}};
+    nonprimary_connector.encoders =
+        std::vector<uint32_t>{nonprimary_encoder.id};
+    fake_drm->AddProperty(
+        nonprimary_connector_id,
+        {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
   }
 
   fake_drm->InitializeState(/*use_atomic=*/true);
@@ -600,8 +634,16 @@ TEST(CreateDisplaySnapshotTest, TiledDisplay) {
   HardwareDisplayControllerInfo info(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, std::nullopt, tile_property);
+      /*index=*/0, std::nullopt, primary_tile_property);
 
+  {
+    std::unique_ptr<HardwareDisplayControllerInfo> nonprimary_info =
+        std::make_unique<HardwareDisplayControllerInfo>(
+            fake_drm->GetConnector(nonprimary_connector_id),
+            fake_drm->GetCrtc(nonprimary_crtc_id),
+            /*index=*/1, std::nullopt, nonprimary_tile_property);
+    info.AcquireNonprimaryTileInfo(std::move(nonprimary_info));
+  }
   std::unique_ptr<display::DisplaySnapshot> tile_snapshot =
       CreateDisplaySnapshot(*fake_drm, &info, /*device_index=*/0);
 
@@ -610,7 +652,8 @@ TEST(CreateDisplaySnapshotTest, TiledDisplay) {
       tile_snapshot->modes(),
       UnorderedElementsAre(
           Pointee(AllOf(
-              Property(&display::DisplayMode::size, Eq(gfx::Size(3840, 4320))),
+              // The mode is transformed to tile-composited mode.
+              Property(&display::DisplayMode::size, Eq(gfx::Size(7680, 4320))),
               Property(&display::DisplayMode::refresh_rate, Eq(60)))),
           Pointee(AllOf(
               Property(&display::DisplayMode::size, Eq(gfx::Size(1920, 1080))),
@@ -721,6 +764,7 @@ TEST(ConsolidateTiledDisplayInfoTest, SingleTiled) {
   ASSERT_THAT(infos, UnorderedElementsAre(Pointee(InfoEqCrtcConnectorIds(
                          primary_connector_id, primary_crtc_id))));
   EXPECT_TRUE(infos[0]->tile_property().has_value());
+  EXPECT_THAT(infos[0]->nonprimary_tile_infos(), IsEmpty());
 }
 
 TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresent) {
@@ -732,10 +776,10 @@ TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresent) {
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
   fake_drm->ResetStateWithAllProperties();
-  TileProperty tile_property{.group_id = 1,
-                             .tile_size = gfx::Size(3840, 4320),
-                             .tile_layout = gfx::Size(2, 1),
-                             .location = gfx::Point(0, 0)};
+  TileProperty primary_tile_property{.group_id = 1,
+                                     .tile_size = gfx::Size(3840, 4320),
+                                     .tile_layout = gfx::Size(2, 1),
+                                     .location = gfx::Point(0, 0)};
   uint32_t primary_crtc_id = 0, primary_connector_id = 0;
   {
     auto& crtc = fake_drm->AddCrtc();
@@ -752,13 +796,13 @@ TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresent) {
         {gfx::Size(1920, 1080), 60}, {gfx::Size(3840, 4320), 60}};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     ScopedDrmPropertyBlob tile_property_blob =
-        CreateTilePropertyBlob(*fake_drm, tile_property);
+        CreateTilePropertyBlob(*fake_drm, primary_tile_property);
     fake_drm->AddProperty(
         primary_connector_id,
         {.id = kTileBlobPropId, .value = tile_property_blob->id()});
   }
   uint32_t nonprimary_crtc_id = 0, nonprimary_connector_id = 0;
-  TileProperty nonprimary_tile_property = tile_property;
+  TileProperty nonprimary_tile_property = primary_tile_property;
   nonprimary_tile_property.location = gfx::Point(1, 0);
   {
     auto& crtc = fake_drm->AddCrtc();
@@ -788,7 +832,7 @@ TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresent) {
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, std::nullopt, tile_property));
+      /*index=*/0, std::nullopt, primary_tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(nonprimary_connector_id),
       fake_drm->GetCrtc(nonprimary_crtc_id),
@@ -801,6 +845,9 @@ TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresent) {
   ASSERT_THAT(infos, UnorderedElementsAre(Pointee(InfoEqCrtcConnectorIds(
                          primary_connector_id, primary_crtc_id))));
   EXPECT_EQ(infos[0]->tile_property()->location, gfx::Point(0, 0));
+  EXPECT_THAT(infos[0]->nonprimary_tile_infos(),
+              UnorderedElementsAre(
+                  Pointee(InfoHasTilePropertyWithLocation(gfx::Point(1, 0)))));
 }
 
 TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresentMultipleGroups) {
@@ -953,10 +1000,10 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferMoreModes) {
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
   fake_drm->ResetStateWithAllProperties();
-  TileProperty tile_property{.group_id = 1,
-                             .tile_size = gfx::Size(3840, 4320),
-                             .tile_layout = gfx::Size(2, 1),
-                             .location = gfx::Point(1, 0)};
+  TileProperty primary_tile_property{.group_id = 1,
+                                     .tile_size = gfx::Size(3840, 4320),
+                                     .tile_layout = gfx::Size(2, 1),
+                                     .location = gfx::Point(1, 0)};
   uint32_t primary_crtc_id = 0, primary_connector_id = 0;
   {
     auto& crtc = fake_drm->AddCrtc();
@@ -975,13 +1022,13 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferMoreModes) {
                                               {gfx::Size(3840, 4320), 60}};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     ScopedDrmPropertyBlob tile_property_blob =
-        CreateTilePropertyBlob(*fake_drm, tile_property);
+        CreateTilePropertyBlob(*fake_drm, primary_tile_property);
     fake_drm->AddProperty(
         primary_connector_id,
         {.id = kTileBlobPropId, .value = tile_property_blob->id()});
   }
   uint32_t nonprimary_crtc_id = 0, nonprimary_connector_id = 0;
-  TileProperty nonprimary_tile_property = tile_property;
+  TileProperty nonprimary_tile_property = primary_tile_property;
   nonprimary_tile_property.location = gfx::Point(0, 0);
   {
     auto& crtc = fake_drm->AddCrtc();
@@ -1011,7 +1058,7 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferMoreModes) {
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, std::nullopt, tile_property));
+      /*index=*/0, std::nullopt, primary_tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(nonprimary_connector_id),
       fake_drm->GetCrtc(nonprimary_crtc_id),
@@ -1022,6 +1069,9 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferMoreModes) {
   ASSERT_THAT(infos, UnorderedElementsAre(Pointee(InfoEqCrtcConnectorIds(
                          primary_connector_id, primary_crtc_id))));
   EXPECT_EQ(infos[0]->tile_property()->location, gfx::Point(1, 0));
+  EXPECT_THAT(infos[0]->nonprimary_tile_infos(),
+              UnorderedElementsAre(
+                  Pointee(InfoHasTilePropertyWithLocation(gfx::Point(0, 0)))));
 }
 
 TEST(ConsolidateTiledDisplayInfoTest, PreferScaleToFit) {
@@ -1033,11 +1083,11 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferScaleToFit) {
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
   fake_drm->ResetStateWithAllProperties();
-  TileProperty tile_property{.group_id = 1,
-                             .scale_to_fit_display = true,
-                             .tile_size = gfx::Size(3840, 4320),
-                             .tile_layout = gfx::Size(2, 1),
-                             .location = gfx::Point(1, 0)};
+  TileProperty primary_tile_property{.group_id = 1,
+                                     .scale_to_fit_display = true,
+                                     .tile_size = gfx::Size(3840, 4320),
+                                     .tile_layout = gfx::Size(2, 1),
+                                     .location = gfx::Point(1, 0)};
   uint32_t primary_crtc_id = 0, primary_connector_id = 0;
   {
     auto& crtc = fake_drm->AddCrtc();
@@ -1054,13 +1104,13 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferScaleToFit) {
         std::vector<ResolutionAndRefreshRate>{{gfx::Size(3840, 4320), 60}};
     connector.encoders = std::vector<uint32_t>{encoder.id};
     ScopedDrmPropertyBlob tile_property_blob =
-        CreateTilePropertyBlob(*fake_drm, tile_property);
+        CreateTilePropertyBlob(*fake_drm, primary_tile_property);
     fake_drm->AddProperty(
         primary_connector_id,
         {.id = kTileBlobPropId, .value = tile_property_blob->id()});
   }
   uint32_t nonprimary_crtc_id = 0, nonprimary_connector_id = 0;
-  TileProperty nonprimary_tile_property = tile_property;
+  TileProperty nonprimary_tile_property = primary_tile_property;
   nonprimary_tile_property.scale_to_fit_display = false;
   nonprimary_tile_property.location = gfx::Point(0, 0);
   {
@@ -1091,7 +1141,7 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferScaleToFit) {
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, std::nullopt, tile_property));
+      /*index=*/0, std::nullopt, primary_tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(nonprimary_connector_id),
       fake_drm->GetCrtc(nonprimary_crtc_id),
@@ -1104,4 +1154,65 @@ TEST(ConsolidateTiledDisplayInfoTest, PreferScaleToFit) {
   EXPECT_EQ(infos[0]->tile_property()->location, gfx::Point(1, 0));
   EXPECT_TRUE(infos[0]->tile_property()->scale_to_fit_display);
 }
+
+TEST(CreateDisplaySnapshotTest, TiledDisplayWithoutOtherTilesConnected) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
+
+  TileProperty tile_property{.group_id = 1,
+                             .scale_to_fit_display = true,
+                             .tile_size = gfx::Size(3840, 4320),
+                             .tile_layout = gfx::Size(2, 1),
+                             .location = gfx::Point(0, 0)};
+  ScopedDrmPropertyBlob tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, tile_property);
+
+  auto& crtc = fake_drm->AddCrtc();
+  auto& encoder = fake_drm->AddEncoder();
+  encoder.possible_crtcs = 1;
+
+  auto& connector = fake_drm->AddConnector();
+  connector.connection = true;
+  connector.modes = std::vector<ResolutionAndRefreshRate>{
+      {gfx::Size(1920, 1080), 60}, {gfx::Size(3840, 4320), 60}};
+  connector.encoders = std::vector<uint32_t>{encoder.id};
+  fake_drm->AddProperty(
+      connector.id, {.id = kTileBlobPropId, .value = tile_property_blob->id()});
+
+  fake_drm->InitializeState(/*use_atomic=*/true);
+
+  HardwareDisplayControllerInfo info(fake_drm->GetConnector(connector.id),
+                                     fake_drm->GetCrtc(crtc.id),
+                                     /*index=*/0, std::nullopt, tile_property);
+  std::unique_ptr<display::DisplaySnapshot> tile_snapshot =
+      CreateDisplaySnapshot(*fake_drm, &info, /*device_index=*/0);
+
+  ASSERT_NE(tile_snapshot, nullptr);
+  EXPECT_THAT(
+      tile_snapshot->modes(),
+      UnorderedElementsAre(
+          // 8k mode does not exist.
+          Pointee(AllOf(
+              Property(&display::DisplayMode::size, Eq(gfx::Size(1920, 1080))),
+              Property(&display::DisplayMode::refresh_rate, Eq(60))))));
+}
+
+TEST(GetTotalTileDisplaySizeTest, Empty) {
+  EXPECT_EQ(GetTotalTileDisplaySize(TileProperty()), gfx::Size(0, 0));
+}
+
+TEST(GetTotalTileDisplaySizeTest, Tile) {
+  TileProperty tile_property{.group_id = 1,
+                             .scale_to_fit_display = true,
+                             .tile_size = gfx::Size(200, 300),
+                             .tile_layout = gfx::Size(2, 4),
+                             .location = gfx::Point(0, 0)};
+
+  EXPECT_EQ(GetTotalTileDisplaySize(tile_property), gfx::Size(400, 1200));
+}
+
 }  // namespace ui
