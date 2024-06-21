@@ -206,8 +206,9 @@ class WPTResult(Result):
     def update_from_test(self, status: str, message: Optional[str] = None):
         self._maybe_add_testharness_result(status, message)
         self.actual = wptrunner_to_chromium_status(status)
-        if self.can_have_subtests and self.actual not in {
-                ResultType.Timeout, ResultType.Crash
+        if self.can_have_subtests and self.actual in {
+                ResultType.Pass,
+                ResultType.Failure,
         }:
             if self._baseline_matches():
                 self.actual = ResultType.Pass
@@ -398,7 +399,7 @@ class WPTResultsProcessor:
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
-        self.sink = sink or ResultSinkReporter()
+        self.sink = sink or ResultSinkReporter(host=port.typ_host())
         # This prefix does not actually exist on disk and only affects how the
         # results are reported.
         if test_name_prefix and not test_name_prefix.endswith('/'):
@@ -454,11 +455,6 @@ class WPTResultsProcessor:
         return sum(self._num_failures_by_status[status]
                    for status in failure_statuses)
 
-    @property
-    def num_regressions(self) -> int:
-        return sum(final_result.is_regression
-                   for *_, final_result in self._results_by_name.values())
-
     def copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
         for file in files_to_copy:
@@ -505,10 +501,12 @@ class WPTResultsProcessor:
             dest.write('ADD_RESULTS(')
             json.dump(final_result, dest)
             dest.write(');')
+        return final_result
 
     @contextlib.contextmanager
-    def stream_results(self,
-                       timeout: float = 3) -> Iterator[queue.SimpleQueue]:
+    def stream_results(
+            self,
+            timeout: Optional[float] = None) -> Iterator[queue.SimpleQueue]:
         """Asynchronously handle wptrunner test results.
 
         This context manager starts and cleans up a worker thread to write
@@ -524,6 +522,7 @@ class WPTResultsProcessor:
                 before this manager exited; a well-behaved caller should avoid
                 this.
         """
+        assert timeout is None or timeout >= 0, timeout
         events = queue.SimpleQueue()
         worker = threading.Thread(target=self._consume_events,
                                   args=(events, ),
@@ -532,12 +531,26 @@ class WPTResultsProcessor:
         worker.start()
         try:
             yield events
+        except KeyboardInterrupt:
+            # Use a greater default timeout on CI so that the processor has
+            # enough time to report all incomplete tests. Slow exit is less of a
+            # concern.
+            if timeout is None and self.sink.resultdb_supported:
+                timeout = 10
+            raise
         finally:
+            # Keep the default exit fast for local or completed runs.
+            if timeout is None:
+                timeout = 3
             # Send a shutdown event, if one has not been sent already, to tell
             # the worker to exit.
-            _log.info('Sending shutdown event to stop the worker...')
+            deadline = time.time() + timeout
             events.put(Event.make_raw_event('shutdown'), timeout=timeout)
-            worker.join(timeout=timeout)
+            worker.join(timeout=max(0, deadline - time.time()))
+            if worker.is_alive():
+                _log.warning('Results stream worker did not stop.')
+            else:
+                _log.info('Stopped results stream worker.')
 
     def _consume_events(self, events: queue.SimpleQueue):
         while True:
@@ -545,7 +558,6 @@ class WPTResultsProcessor:
             try:
                 self.process_event(event)
             except StreamShutdown:
-                _log.info('Stopping results stream worker thread.')
                 return
             except Exception as error:
                 _log.exception('Unable to process event %r: %s', event, error)
@@ -563,7 +575,6 @@ class WPTResultsProcessor:
         test = raw_event.pop('test', None)
         subsuite = raw_event.pop('subsuite', '')
         if test:
-            test = test[1:] if test.startswith('/') else test
             test = self._get_chromium_test_name(test, subsuite)
             raw_event['test'] = test
         status = raw_event.get('status')
@@ -582,14 +593,24 @@ class WPTResultsProcessor:
     def suite_start(self,
                     event: Event,
                     run_info: Optional[RunInfo] = None,
+                    tests: Optional[Dict[str, List[str]]] = None,
                     **_):
+        # Register tests that will run so that they can be reported as
+        # "unexpectedly skipped" if they have no results on shutdown.
+        for group_key, group_tests in (tests or {}).items():
+            subsuite, _, _ = group_key.rpartition(':')
+            for test_url in group_tests:
+                test = self._get_chromium_test_name(test_url, subsuite)
+                self._results_by_name[test] = []
+
         if run_info:
             self.run_info.update(run_info)
 
     def suite_end(self, event: Event, **_):
         self._iteration += 1
 
-    def _get_chromium_test_name(self, test: str, subsuite: str):
+    def _get_chromium_test_name(self, test: str, subsuite: str) -> str:
+        test = test[1:] if test.startswith('/') else test
         wpt_dir, _ = self.port.split_wpt_dir(test)
         if wpt_dir != 'wpt_internal':
             test = self.path_finder.wpt_prefix() + test
@@ -705,16 +726,32 @@ class WPTResultsProcessor:
             os.kill(os.getpid(), signum)
 
     def shutdown(self, event: Event, **_):
-        if self._results:
-            _log.warning('Some tests have unreported results:')
-            for test in sorted(self._results):
-                _log.warning('  %s', test)
+        incomplete_tests = {
+            test
+            for test, results in self._results_by_name.items() if not results
+        }
+        if incomplete_tests:
+            _log.warning(f'{len(incomplete_tests)} test(s) never completed.')
+            with self.sink.batch_results():
+                # Using the same timestamp for both events produces the desired
+                # test duration of zero.
+                start_event = Event(**Event.make_raw_event('test_start'))
+                end_event = Event('test_end', *start_event[1:])
+                for test in incomplete_tests:
+                    expected = chromium_to_wptrunner_statuses(
+                        self._expectations.get_expectations(test).results,
+                        self.get_test_type(test))
+                    self.test_start(start_event, test)
+                    self.test_end(end_event, test, 'SKIP', expected)
+
+        for test, results in self._results_by_name.items():
+            assert results, test
         raise StreamShutdown
 
     def create_final_results(self):
         # compute the tests dict
         tests = {}
-        num_passes = 0
+        num_passes = num_regressions = 0
         for test_name, results in self._results_by_name.items():
             # TODO: the expected result calculated this way could change each time
             expected = ' '.join(results[0].expected)
@@ -743,6 +780,7 @@ class WPTResultsProcessor:
                 test_dict['is_unexpected'] = True
             if results[-1].is_regression:
                 test_dict['is_regression'] = True
+                num_regressions += 1
             if results[0].image_diff_stats:
                 test_dict['image_diff_stats'] = results[0].image_diff_stats
 
@@ -772,7 +810,7 @@ class WPTResultsProcessor:
             'num_failures_by_type': self._num_failures_by_status,
             'num_passes': num_passes,
             'skipped': self._num_failures_by_status[ResultType.Skip],
-            'num_regressions': self.num_regressions,
+            'num_regressions': num_regressions,
             'tests': tests,
         }
         return final_results

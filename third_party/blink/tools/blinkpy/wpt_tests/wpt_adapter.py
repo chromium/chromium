@@ -570,17 +570,20 @@ class WPTAdapter:
             self.tools_root) != self.fs.realpath(vended_wpt)
 
     def run_tests(self) -> int:
-        with self.test_env() as runner_options:
-            run = _load_entry_point()
-            exit_code = run(**vars(runner_options))
-            # Reopen the `web-platform-tests` logger so that `update-metadata`
-            # can use it.
-            #
-            # TODO(crbug.com/1480061): Find a better way to handle logger
-            # lifecycles.
-            from wptrunner.metadata import logger
-            logger._state.has_shutdown = False
-            return 1 if exit_code or self._processor.num_regressions > 0 else 0
+        exit_code = 0
+        try:
+            with self.test_env() as runner_options:
+                run = _load_entry_point()
+                exit_code = 1 if run(**vars(runner_options)) else 0
+        except KeyboardInterrupt:
+            logger.critical('Harness exited after signal interrupt')
+            exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
+        # Write the partial results for an interrupted run. This also ensures
+        # the results directory is rotated next time.
+        self._processor.copy_results_viewer()
+        results_json = self._processor.process_results_json(
+            self.port.get_option('json_test_results'))
+        return exit_code or int(results_json['num_regressions'] > 0)
 
     def _initialize_tmp_dir(self, tmp_dir: str, tests_root: str):
         assert self.fs.isdir(tmp_dir), tmp_dir
@@ -621,15 +624,7 @@ class WPTAdapter:
     def process_and_upload_results(self, runner_options: argparse.Namespace):
         with self._processor.stream_results() as events:
             runner_options.log.add_handler(events.put)
-            try:
-                yield
-            finally:
-                # Always copy `results.html` into `layout-test-results/` so that
-                # the partial results can be viewed, and the directory is
-                # archived next run. See crbug.com/1475556.
-                self._processor.copy_results_viewer()
-                self._processor.process_results_json(
-                    self.port.get_option('json_test_results'))
+            yield
         if runner_options.log_wptreport:
             self._processor.process_wpt_report(
                 runner_options.log_wptreport[0].name)
@@ -794,7 +789,7 @@ def main(argv) -> int:
             adapter.set_up_derived_options()
             exit_code = adapter.run_tests()
     except KeyboardInterrupt:
-        logger.critical('Harness exited after signal interrupt')
+        # This clause catches interrupts outside `WPTAdapter.run_tests()`.
         exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:
         logger.exception(error)

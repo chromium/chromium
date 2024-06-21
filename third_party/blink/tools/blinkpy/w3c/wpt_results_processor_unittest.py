@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import base64
+import contextlib
 import json
 import re
 import textwrap
@@ -12,6 +13,7 @@ from unittest import mock
 from blinkpy.common.host_mock import MockHost as BlinkMockHost
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.w3c.wpt_results_processor import (
     EventProcessingError,
@@ -151,7 +153,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             port,
             artifacts_dir=self.fs.join('/mock-checkout', 'out', 'Default',
                                        'layout-test-results'),
-            sink=mock.Mock())
+            sink=mock.Mock(batch_results=contextlib.nullcontext))
         self.processor.sink.host = port.typ_host()
 
     def _event(self, **fields):
@@ -445,7 +447,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.actual, 'FAIL')
         self.assertEqual(result.expected, {'PASS'})
         self.assertTrue(result.unexpected)
-        self.assertEqual(self.processor.num_regressions, 1)
 
     def test_report_unexpected_fail_for_different_types(self):
         self._event(action='test_start', test='/reftest.html')
@@ -981,14 +982,44 @@ class WPTResultsProcessorTest(LoggingTestCase):
         with self.assertRaises(StreamShutdown):
             self._event(action='shutdown')
 
-    def test_shutdown_with_unreported_tests(self):
-        self._event(action='test_start', test='/test.html')
+    def test_shutdown_with_incomplete_tests(self):
+        self._event(action='suite_start',
+                    tests={
+                        'fake-vts:/': ['/reftest-multiple.html'],
+                        '/wpt_internal': ['/wpt_internal/reftest.html'],
+                        '/wpt_internal/dir':
+                        ['/wpt_internal/dir/multiglob.https.any.html'],
+                    })
+        self._event(action='test_start', test='/wpt_internal/reftest.html')
+        self._event(action='test_end',
+                    test='/wpt_internal/reftest.html',
+                    status='PASS')
+        self._event(action='test_start',
+                    test='/reftest-multiple.html',
+                    subsuite='fake-vts')
         with self.assertRaises(StreamShutdown):
             self._event(action='shutdown')
+
         self.assertLog([
-            'WARNING: Some tests have unreported results:\n',
-            'WARNING:   external/wpt/test.html\n',
+            'WARNING: 2 test(s) never completed.\n',
         ])
+        report_mock = self.processor.sink.report_individual_test_result
+        results = {
+            args.kwargs['result']
+            for args in report_mock.call_args_list
+        }
+        unexpected_skips = {
+            result.name: result
+            for result in results
+            if result.actual == ResultType.Skip and result.unexpected
+        }
+        self.assertEqual(
+            set(unexpected_skips), {
+                'virtual/fake-vts/external/wpt/reftest-multiple.html',
+                'wpt_internal/dir/multiglob.https.any.html',
+            })
+        for test_name, result in unexpected_skips.items():
+            self.assertEqual(result.took, 0, test_name)
 
     def test_early_exit_from_failures(self):
         self.fs.write_text_file(
