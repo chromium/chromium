@@ -113,12 +113,15 @@ found in the LICENSE file.
     The background is translucent since the parent activity content should be
     visible when the bottom sheet or the non-full-screen history sync opt-in
     dialog is shown on tablet. -->
-    <style name="Theme.Chromium.SigninAndHistoryOptInActivity"
+    <style name="Base.Theme.Chromium.SigninAndHistoryOptInActivity"
         parent="Theme.Chromium.Activity.Fullscreen">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:navigationBarColor">@macro/bottom_system_nav_color</item>
         <item name="android:windowAnimationStyle">@style/SigninAndHistoryOptInActivityAnimation</item>
     </style>
+    <style name="Theme.Chromium.SigninAndHistoryOptInActivity"
+        parent="Base.Theme.Chromium.SigninAndHistoryOptInActivity" />
 
     <!-- TODO(crbug.com/345176436): This animation style is used to set the
          enter animation for the history sync dialog. This animation should be
