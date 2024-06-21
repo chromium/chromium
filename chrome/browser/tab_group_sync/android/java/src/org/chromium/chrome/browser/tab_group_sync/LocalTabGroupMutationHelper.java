@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -71,6 +72,7 @@ public class LocalTabGroupMutationHelper {
                             savedTab.url, savedTab.title, /* parent= */ null, position++);
             tabs.add(newTab);
             tabIdMappings.put(savedTab.syncId, newTab.getId());
+            RecordUserAction.record("TabGroups.Sync.CreatedNewTab");
         }
 
         // Create a new tab group and add the tabs just created. Group ID is the ID of the first new
@@ -201,6 +203,7 @@ public class LocalTabGroupMutationHelper {
         Tab newTab =
                 mTabCreationDelegate.createBackgroundTab(
                         url, title, parentTab, desiredTabModelIndex);
+        RecordUserAction.record("TabGroups.Sync.CreatedNewTab");
 
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.add(newTab);

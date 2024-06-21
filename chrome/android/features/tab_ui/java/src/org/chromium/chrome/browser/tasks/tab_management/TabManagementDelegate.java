@@ -133,8 +133,6 @@ public interface TabManagementDelegate {
      * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
-     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
-     * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
      * @param tabContentManager Gives access to the tab content.
      * @param rootView The root view of the app.
@@ -153,8 +151,6 @@ public interface TabManagementDelegate {
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
             @NonNull ViewGroup rootView,

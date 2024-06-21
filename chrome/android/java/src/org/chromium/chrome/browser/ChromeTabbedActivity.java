@@ -2245,7 +2245,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mEdgeToEdgeControllerSupplier,
                 getActivityType(),
                 this::isInOverviewMode,
-                this::isWarmOnResume,
                 /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this,
                 new ObservableSupplierImpl<>(),
@@ -2370,6 +2369,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 new ChromeInactivityTracker(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
+        TabGroupUsageTracker.initialize(
+                this.getLifecycleDispatcher(), tabModelSelector, this::isWarmOnResume);
 
         assert getActivityTabStartupMetricsTracker() != null;
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();

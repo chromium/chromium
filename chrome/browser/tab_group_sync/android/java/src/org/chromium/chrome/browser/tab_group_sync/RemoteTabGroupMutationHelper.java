@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import android.util.Pair;
 
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
@@ -143,6 +144,9 @@ public class RemoteTabGroupMutationHelper {
         if (!wasHiding) {
             // When deleting drop the group from sync entirely.
             removeGroup(groupId);
+            RecordUserAction.record("TabGroups.Sync.LocalDeleted");
+        } else {
+            RecordUserAction.record("TabGroups.Sync.LocalHidden");
         }
     }
 

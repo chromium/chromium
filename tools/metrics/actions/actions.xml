@@ -40120,6 +40120,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroup.RenameDialog.ColorChanged">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Tab group color was changed using the tab group rename dialog on Android.
+  </description>
+</action>
+
+<action name="TabGroup.RenameDialog.TitleChanged">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Tab group title was changed using the tab group rename dialog on Android.
+  </description>
+</action>
+
 <action name="TabGroupConfirmation.DeleteGroup.Abort">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
@@ -40259,6 +40275,36 @@ should be able to be added at any place in this file.
     Recorded when a user clicks the ungroup option on a tab group item in the
     tab switcher.
   </description>
+</action>
+
+<action name="TabGroups.Sync.CreatedNewTab">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Tab was created for tab group sync.</description>
+</action>
+
+<action name="TabGroups.Sync.LocalDeleted">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Local version of a synced tab group was deleted.</description>
+</action>
+
+<action name="TabGroups.Sync.LocalHidden">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Local version of a synced tab group was hidden.</description>
+</action>
+
+<action name="TabGroups.Sync.SelectedTabInLocallyCreatedGroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Tab was selected in a locally created tab group.</description>
+</action>
+
+<action name="TabGroups.Sync.SelectedTabInRemotelyCreatedGroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>Tab was selected in a remotely created tab group.</description>
 </action>
 
 <action name="TabGroups_CannotCollapse">
@@ -44110,6 +44156,9 @@ should be able to be added at any place in this file.
       label="Users ungrouped tabs by clicking the ungroup option in the top
              toolbar menu in tab grid dialog and selecting tabs they want to
              ungroup."/>
+  <suffix name="ResetTabGroupName"
+      label="User reset the tab group name by using an empty or default
+             title."/>
   <suffix name="SharedGroupAsTextList"
       label="Users shared a tab group as a text list of links by clicking the
              share option in the top toolbar menu in tab grid dialog."/>

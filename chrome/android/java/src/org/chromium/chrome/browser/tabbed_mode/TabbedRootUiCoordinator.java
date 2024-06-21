@@ -271,7 +271,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
-     * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
@@ -326,7 +325,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
-            @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull
@@ -376,7 +374,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 edgeToEdgeSupplier,
                 activityType,
                 isInOverviewModeSupplier,
-                isWarmOnResumeSupplier,
                 appMenuDelegate,
                 statusBarColorProvider,
                 intentRequestTracker,

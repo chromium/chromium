@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,10 +30,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -40,6 +43,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
@@ -79,6 +83,8 @@ public class TabGroupSyncLocalObserverUnitTest {
     private Tab mTab1;
     private Tab mTab2;
 
+    private UserActionTester mActionTester;
+
     private static Tab prepareTab(int tabId, int rootId) {
         Tab tab = Mockito.mock(Tab.class);
         Mockito.doReturn(tabId).when(tab).getId();
@@ -90,11 +96,14 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Before
     public void setUp() {
+        mActionTester = new UserActionTester();
         mTabGroupSyncService = spy(new TestTabGroupSyncService());
         mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
         mTab2 = prepareTab(TAB_ID_2, ROOT_ID_2);
         Mockito.doReturn(TOKEN_1).when(mTab1).getTabGroupId();
 
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabGroupModelFilter.isTabInTabGroup(mTab2)).thenReturn(true);
         when(mTabGroupModelFilter.getRootIdFromStableId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
         when(mTabGroupModelFilter.getStableIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
 
@@ -123,6 +132,37 @@ public class TabGroupSyncLocalObserverUnitTest {
     @After
     public void tearDown() {
         mLocalObserver.destroy();
+        mActionTester.tearDown();
+    }
+
+    @Test
+    public void testDidSelectTabRemote() {
+        // Stub the bare minimum.
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.isRemoteGroup = true;
+        when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
+
+        String action = "TabGroups.Sync.SelectedTabInRemotelyCreatedGroup";
+        assertEquals(0, mActionTester.getActionCount(action));
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+        assertEquals(1, mActionTester.getActionCount(action));
+    }
+
+    @Test
+    public void testDidSelectTabLocal() {
+        // Stub the bare minimum.
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.isRemoteGroup = false;
+        when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedGroup);
+
+        String action = "TabGroups.Sync.SelectedTabInLocallyCreatedGroup";
+        assertEquals(0, mActionTester.getActionCount(action));
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+        assertEquals(1, mActionTester.getActionCount(action));
     }
 
     @Test
