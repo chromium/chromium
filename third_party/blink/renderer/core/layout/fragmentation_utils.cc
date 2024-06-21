@@ -1098,32 +1098,36 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
   // If breaking before is impossible, we have to move past.
   bool move_past = refuse_break_before;
 
-  if (!move_past && block_size <= space_left) {
-    if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
-      // The block child broke inside, either in this fragmentation context, or
-      // in an inner one. We now need to decide whether to keep that break, or
-      // if it would be better to break before it. Allow breaking inside if it
-      // has the same appeal or higher than breaking before or breaking earlier.
-      if (appeal_inside >= appeal_before) {
-        if (flex_column_break_info) {
-          if (!flex_column_break_info->early_break ||
-              appeal_inside >=
-                  flex_column_break_info->early_break->GetBreakAppeal()) {
+  if (!move_past) {
+    if (block_size <= space_left) {
+      if (IsBreakInside(break_token) || appeal_inside < kBreakAppealPerfect) {
+        // The block child broke inside, either in this fragmentation context,
+        // or in an inner one. We now need to decide whether to keep that break,
+        // or if it would be better to break before it. Allow breaking inside if
+        // it has the same appeal or higher than breaking before or breaking
+        // earlier.
+        if (appeal_inside >= appeal_before) {
+          if (flex_column_break_info) {
+            if (!flex_column_break_info->early_break ||
+                appeal_inside >=
+                    flex_column_break_info->early_break->GetBreakAppeal()) {
+              move_past = true;
+            }
+          } else if (!builder || !builder->HasEarlyBreak() ||
+                     appeal_inside >=
+                         builder->GetEarlyBreak().GetBreakAppeal()) {
             move_past = true;
           }
-        } else if (!builder || !builder->HasEarlyBreak() ||
-                   appeal_inside >= builder->GetEarlyBreak().GetBreakAppeal()) {
-          move_past = true;
         }
+      } else {
+        move_past = true;
       }
-    } else {
+    } else if (appeal_before == kBreakAppealLastResort && builder &&
+               builder->RequiresContentBeforeBreaking()) {
+      // The fragment doesn't fit, but we need to force it to stay here anyway.
+      builder->SetIsBlockSizeForFragmentationClamped();
       move_past = true;
     }
-  } else if (appeal_before == kBreakAppealLastResort && builder &&
-             builder->RequiresContentBeforeBreaking()) {
-    // The fragment doesn't fit, but we need to force it to stay here anyway.
-    builder->SetIsBlockSizeForFragmentationClamped();
-    move_past = true;
   }
 
   if (move_past) {
