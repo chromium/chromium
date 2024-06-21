@@ -26,10 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
-#include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -41,12 +38,10 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/media_router/browser/test/mock_media_router.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -477,26 +472,11 @@ class TabStripModelTest : public testing::Test,
     model->SetSelectionFromModel(selection_model);
   }
 
-  void InitMediaRoute() {
-    media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&media_router::MockMediaRouter::Create));
-    service_ = std::make_unique<MediaNotificationService>(profile(), false);
-  }
-
-  void CreateMediaRoute(media_router::MediaRoute::Id route_id) {
-    media_router::MediaRoute media_route(
-        route_id, media_router::MediaSource("cast:123456"), "sink_id",
-        "description", true);
-    media_route.set_controller_type(
-        media_router::RouteControllerType::kGeneric);
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<MediaNotificationService> service_;
 };
 
 TEST_P(TabStripModelTest, TestBasicAPI) {
@@ -4684,17 +4664,6 @@ TEST_P(TabStripModelTest, ToggleSiteMuted) {
   tabstrip.AddWebContents(std::move(new_tab_contents), -1,
                           ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
 
-  InitMediaRoute();
-  const std::string route_id = "route_id";
-  CreateMediaRoute(route_id);
-
-  // Validate that Web Contents without media don't enable the command
-  EXPECT_FALSE(tabstrip.IsContextMenuCommandEnabled(
-      0, TabStripModel::CommandToggleSiteMuted));
-
-  // Now Add a media session for the Web Contents
-  content::MediaSession::Get(tabstrip.GetActiveWebContents());
-
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
@@ -4730,11 +4699,6 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithLessSpecificRule) {
 
   tabstrip.AddWebContents(std::move(new_tab_contents), -1,
                           ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
-
-  InitMediaRoute();
-  const std::string route_id = "route_id";
-  CreateMediaRoute(route_id);
-  content::MediaSession::Get(tabstrip.GetActiveWebContents());
 
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
@@ -4786,11 +4750,6 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithOtherDisjointRule) {
   tabstrip.AddWebContents(std::move(new_tab_contents), -1,
                           ui::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
 
-  InitMediaRoute();
-  const std::string route_id = "route_id";
-  CreateMediaRoute(route_id);
-  content::MediaSession::Get(tabstrip.GetActiveWebContents());
-
   // Validate if the mute site menu item shows up and the site is unmuted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleSiteMuted));
@@ -4839,11 +4798,6 @@ TEST_P(TabStripModelTest, ToggleSiteMutedWithDifferentDefault) {
 
   settings->SetDefaultContentSetting(ContentSettingsType::SOUND,
                                      ContentSetting::CONTENT_SETTING_BLOCK);
-
-  InitMediaRoute();
-  const std::string route_id = "route_id";
-  CreateMediaRoute(route_id);
-  content::MediaSession::Get(tabstrip.GetActiveWebContents());
 
   // Validate if the mute site menu item shows up and the site is muted
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
