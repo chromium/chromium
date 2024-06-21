@@ -2014,6 +2014,10 @@ void ServiceWorkerClient::InheritControllerFrom(
   // Inherit the controller of the creator.
   if (creator_host.controller_registration()) {
     AddMatchingRegistration(creator_host.controller_registration());
+    // If the creator is in back forward cache, the client should also
+    // be in back forward cache. Otherwise, CHECK fail during restoring from
+    // back forward cache.
+    is_in_back_forward_cache_ = creator_host.is_in_back_forward_cache();
     SetControllerRegistration(creator_host.controller_registration(),
                               false /* notify_controllerchange */);
   }
