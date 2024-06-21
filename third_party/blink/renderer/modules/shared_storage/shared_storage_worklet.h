@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_fencedframeconfig_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
@@ -65,7 +66,8 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                        const String& module_url,
                        const WorkletOptions* options,
                        ExceptionState&,
-                       bool resolve_to_worklet);
+                       bool resolve_to_worklet,
+                       SharedStorageDataOrigin data_origin_type);
 
  private:
   // Set when addModule() was called and passed early renderer checks.

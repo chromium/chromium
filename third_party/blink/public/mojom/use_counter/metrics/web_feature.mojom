@@ -4374,6 +4374,7 @@ enum WebFeature {
   kZstdContentEncodingForSubresource = 5004,
   kEventTimingOrphanPointerupWithClick = 5005,
   kDisableReduceAcceptLanguage = 5006,
+  kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin = 5007,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

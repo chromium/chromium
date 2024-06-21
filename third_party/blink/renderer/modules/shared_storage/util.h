@@ -26,6 +26,13 @@ static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
 static constexpr char kOpaqueOriginCheckErrorMessage[] =
     "the method on sharedStorage is not allowed in an opaque origin context";
 
+// This enum corresponds to the IDL enum `SharedStorageDataOrigin` in
+// shared_storage_worklet_options.idl.
+enum class SharedStorageDataOrigin {
+  kContextOrigin = 0,
+  kScriptOrigin = 1,
+};
+
 // Helper method to convert v8 string to WTF::String.
 bool StringFromV8(v8::Isolate* isolate,
                   v8::Local<v8::Value> val,

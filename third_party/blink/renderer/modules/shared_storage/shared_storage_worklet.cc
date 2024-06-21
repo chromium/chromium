@@ -96,16 +96,19 @@ ScriptPromise<IDLUndefined> SharedStorageWorklet::addModule(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   AddModuleHelper(script_state, resolver, module_url, options, exception_state,
-                  /*resolve_to_worklet=*/false);
+                  /*resolve_to_worklet=*/false,
+                  SharedStorageDataOrigin::kContextOrigin);
   return promise;
 }
 
-void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
-                                           ScriptPromiseResolverBase* resolver,
-                                           const String& module_url,
-                                           const WorkletOptions* options,
-                                           ExceptionState& exception_state,
-                                           bool resolve_to_worklet) {
+void SharedStorageWorklet::AddModuleHelper(
+    ScriptState* script_state,
+    ScriptPromiseResolverBase* resolver,
+    const String& module_url,
+    const WorkletOptions* options,
+    ExceptionState& exception_state,
+    bool resolve_to_worklet,
+    SharedStorageDataOrigin data_origin_type) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -161,6 +164,22 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return;
   }
+
+  if (resolve_to_worklet &&
+      !execution_context->GetSecurityOrigin()->IsSameOriginWith(
+          script_security_origin.get()) &&
+      data_origin_type != SharedStorageDataOrigin::kScriptOrigin) {
+    // This `createWorklet()` call would be affected by the breaking change
+    // proposed in https://github.com/WICG/shared-storage/pull/158. Increment
+    // the use counter.
+    execution_context->CountUse(
+        WebFeature::
+            kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin);
+  }
+
+  // TODO(crbug.com/348445878): Make the `dataOrigin` option (which is parsed
+  // into `data_origin_type` in `SharedStorage::createWorklet()`) live for
+  // createWorklet after we determine what its default behavior should be.
 
   url::Origin shared_storage_origin = script_security_origin->ToUrlOrigin();
 

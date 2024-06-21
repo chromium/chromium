@@ -11081,6 +11081,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5004" label="ZstdContentEncodingForSubresource"/>
   <int value="5005" label="EventTimingOrphanPointerupWithClick"/>
   <int value="5006" label="DisableReduceAcceptLanguage"/>
+  <int value="5007"
+      label="SharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
