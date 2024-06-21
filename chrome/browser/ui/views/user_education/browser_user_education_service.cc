@@ -1158,7 +1158,7 @@ void MaybeRegisterChromeTutorials(
                                   std::move(tab_group_tutorial));
   }
 
-  {  // Saved Tab Group tutorial.
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {  // Saved Tab Group tutorial.
     auto saved_tab_group_tutorial =
         TutorialDescription::Create<kSavedTabGroupTutorialMetricPrefix>(
             IfView(kBrowserViewElementId, base::BindRepeating(&HasTabGroups))

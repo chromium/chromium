@@ -28,6 +28,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -112,7 +113,9 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = TutorialServiceExists();
       break;
     case Command::kStartSavedTabGroupTutorial:
-      can_execute = TutorialServiceExists() && BrowserSupportsSavedTabGroups();
+      can_execute = TutorialServiceExists() &&
+                    BrowserSupportsSavedTabGroups() &&
+                    !tab_groups::IsTabGroupsSaveV2Enabled();
       break;
     case Command::kOpenAISettings:
       can_execute = true;

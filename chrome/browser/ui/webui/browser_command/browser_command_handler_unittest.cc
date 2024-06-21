@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -10,11 +12,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/tutorial_identifier.h"
@@ -632,6 +634,12 @@ TEST_F(BrowserCommandHandlerTest, StartPasswordManagerTutorialCommand) {
 }
 
 TEST_F(BrowserCommandHandlerTest, StartSavedTabGroupTutorialCommand) {
+  // Skip test if Tab Groups Save V2 feature flag is enabled
+  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
+    GTEST_SKIP();
+  }
+
   // Command cannot be executed if the tutorial service doesn't exist.
   command_handler_->SetTutorialServiceExists(false);
   EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
