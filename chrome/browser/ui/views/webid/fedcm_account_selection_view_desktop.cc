@@ -35,9 +35,13 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
 // static
 int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
-  return (rp_mode == blink::mojom::RpMode::kButton ? kModalIdpIconSize
-                                                   : kBubbleIdpIconSize) /
-         FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
+  // TODO(crbug.com/348673144): Do not circle crop on widget mode to maintain
+  // consistency with button mode. kMaskableWebIconSafeZoneRatio is to ensure
+  // the icon is big enough post circle crop.
+  return rp_mode == blink::mojom::RpMode::kButton
+             ? kModalIdpIconSize
+             : kBubbleIdpIconSize /
+                   FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
 // static
