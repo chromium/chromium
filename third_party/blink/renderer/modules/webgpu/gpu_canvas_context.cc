@@ -450,15 +450,14 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   //   when we're ready to present.
   // * In the alternative scenario where the texture returned to the user will
   //   be the swap buffer texture, the texture will have various internal
-  //   operations done to it if the alpha mode is opaque.
+  //   operations done to it depending on the alpha mode.
 
   // First configure `texture_descriptor_` as necessary in the case where the
-  // swap buffer texture will be returned to the user and the alpha mode is
-  // opaque. Note that it is necessary to do this *before* copying
-  // `texture_descriptor_` to `swap_texture_descriptor_`: Each can end up being
-  // used in operations on the texture depending on whether the operation is on
-  // `texture_` or `swap_texture_` (which will of course be the same texture in
-  // this case).
+  // swap buffer texture will be returned to the user. Note that it is necessary
+  // to do this *before* copying `texture_descriptor_` to
+  // `swap_texture_descriptor_`: Each can end up being used in operations on the
+  // texture depending on whether the operation is on `texture_` or
+  // `swap_texture_` (which will of course be the same texture in this case).
   // NOTE: We gate these additions under the
   // `kDawnSIRepsUseClientProvidedInternalUsages` feature here just to be safe
   // while rolling out this feature. In reality, setting internal usages on
@@ -466,18 +465,24 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // SI rep backing the texture will use hardcoded internal usages rather than
   // taking them from the client.
   if (!copy_to_swap_texture_required_ &&
-      alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque &&
       base::FeatureList::IsEnabled(
           features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    // `texture_` will be used as the source of CopyTextureForBrowser()
-    // operations and will have alpha clearing done on it. The former requires
-    // the CopySrc and TextureBinding usages, while the latter requires
-    // RenderAttachment.
+    // `texture_` will be used as the source of either CopyTextureForBrowser()
+    // or CopyTextureToTexture() operations (the former if the alpha mode is
+    // opaque, the latter if it is not). In either case, CopySrc is required.
     texture_internal_usage_ = {{
-        .internalUsage = wgpu::TextureUsage::CopySrc |
-                         wgpu::TextureUsage::TextureBinding |
-                         wgpu::TextureUsage::RenderAttachment,
+        .internalUsage = wgpu::TextureUsage::CopySrc,
     }};
+    if (alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque) {
+      // `texture_` will be used as the source of CopyTextureForBrowser()
+      // operations and will have alpha clearing done on it. The former requires
+      // the TextureBinding usage (in addition to the already-present CopySrc),
+      // while the latter requires RenderAttachment.
+      texture_internal_usage_.internalUsage |=
+          wgpu::TextureUsage::TextureBinding |
+          wgpu::TextureUsage::RenderAttachment;
+    }
+
     texture_descriptor_.nextInChain = &texture_internal_usage_;
   }
 
