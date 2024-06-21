@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/observer_list_types.h"
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -20,6 +22,12 @@ class Profile;
 // status.
 class PerProfileWebUITracker {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a tracked WebContents is destroyed.
+    virtual void OnWebContentsDestroyed(content::WebContents* web_contents) = 0;
+  };
+
   static std::unique_ptr<PerProfileWebUITracker> Create();
 
   virtual ~PerProfileWebUITracker() = default;
@@ -34,6 +42,10 @@ class PerProfileWebUITracker {
   // state, crash state, or any errors.
   virtual bool ProfileHasWebUI(Profile* profile,
                                std::string webui_url) const = 0;
+
+  // Adds an observer that will be notified of tracked WebContents destroy.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_PER_PROFILE_WEBUI_TRACKER_H_

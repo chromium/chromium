@@ -36,6 +36,8 @@ class MockPerProfileWebUITracker : public PerProfileWebUITracker {
               ProfileHasWebUI,
               (Profile*, std::string webui_url),
               (const, override));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };
 
 }  // namespace

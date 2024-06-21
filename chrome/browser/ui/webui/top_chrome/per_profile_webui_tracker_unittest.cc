@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/top_chrome/per_profile_webui_tracker.h"
 
+#include "base/scoped_observation.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 constexpr char kWebUIUrl1[] = "chrome://example";
@@ -125,4 +127,27 @@ TEST_F(PerProfileWebUITrackerTest, Navigation) {
   content::WebContentsTester::For(web_contents.get())
       ->NavigateAndCommit(GURL("about:blank"));
   EXPECT_FALSE(tracker()->ProfileHasWebUI(profile(), kWebUIUrl1));
+}
+
+class MockTrackerObserver : public PerProfileWebUITracker::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnWebContentsDestroyed,
+              (content::WebContents*),
+              (override));
+};
+
+// Tests that the observer of tracker is notified of WebContents destroy.
+TEST_F(PerProfileWebUITrackerTest, Observer) {
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  ASSERT_EQ(web_contents->GetBrowserContext(), profile());
+  tracker()->AddWebContents(web_contents.get());
+
+  MockTrackerObserver mock_observer;
+  base::ScopedObservation<PerProfileWebUITracker,
+                          PerProfileWebUITracker::Observer>
+      observation{&mock_observer};
+  EXPECT_CALL(mock_observer, OnWebContentsDestroyed(web_contents.get()));
+  observation.Observe(tracker());
+  web_contents.reset();
 }
