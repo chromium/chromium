@@ -260,6 +260,7 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/Completable.java",
     "java/src/org/chromium/components/autofill/EditableOption.java",
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
+    "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/CardDetail.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
@@ -280,6 +281,7 @@ android_library("payments_autofill_java") {
 robolectric_library("payments_autofill_junit_tests") {
   sources = [
     "javatests/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfoTest.java",
+    "javatests/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfoTest.java",
     "javatests/src/org/chromium/components/autofill/payments/BankAccountTest.java",
     "javatests/src/org/chromium/components/autofill/payments/CardDetailTest.java",
     "javatests/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
@@ -302,6 +304,7 @@ robolectric_library("payments_autofill_junit_tests") {
 generate_jni("payments_jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
+    "java/src/org/chromium/components/autofill/payments/AutofillSaveIbanUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
