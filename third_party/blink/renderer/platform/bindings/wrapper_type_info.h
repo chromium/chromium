@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_WRAPPER_TYPE_INFO_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "gin/public/wrapper_info.h"
 #include "third_party/blink/renderer/platform/bindings/v8_interface_bridge_base.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -157,7 +158,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   bindings::V8InterfaceBridgeBase::InstallContextDependentPropertiesFuncType
       install_context_dependent_props_func;
   const char* interface_name;
-  const WrapperTypeInfo* parent_class;
+  raw_ptr<const WrapperTypeInfo> parent_class;
 
   // When wrapping, we provide `this_tag` to v8's type checking.
   // When unwrapping, we provide `this_tag` and `max_subclass_tag` as the valid
