@@ -127,6 +127,52 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
   std::optional<AudioFocusType> audio_focus_type_;
 };
 
+// Helper class to mock `GetVisibility` callbacks.
+class GetVisibilityWaiter {
+ public:
+  using GetVisibilityCallback = base::OnceCallback<void(bool)>;
+
+  GetVisibilityWaiter() = default;
+  GetVisibilityWaiter(const GetVisibilityWaiter&) = delete;
+  GetVisibilityWaiter(GetVisibilityWaiter&&) = delete;
+  GetVisibilityWaiter& operator=(const GetVisibilityWaiter&) = delete;
+
+  GetVisibilityCallback VisibilityCallback() {
+    meets_visibility_ = std::nullopt;
+    weak_factory_.InvalidateWeakPtrs();
+
+    // base::Unretained() is safe since no further tasks can run after
+    // RunLoop::Run() returns.
+    return base::BindOnce(&GetVisibilityWaiter::GetVisibility,
+                          weak_factory_.GetWeakPtr());
+  }
+
+  void WaitUntilDone() {
+    if (meets_visibility_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+  bool MeetsVisibility() {
+    DCHECK(meets_visibility_);
+    return meets_visibility_.value();
+  }
+
+ private:
+  void GetVisibility(bool meets_visibility) {
+    meets_visibility_ = meets_visibility;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  std::optional<bool> meets_visibility_;
+  base::WeakPtrFactory<GetVisibilityWaiter> weak_factory_{this};
+};
+
 }  // namespace
 
 namespace content {
@@ -3194,6 +3240,144 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   StartNewPlayer(player_observer.get());
   UIGetVisibility(base::DoNothing());
   EXPECT_EQ(1, player_observer->received_request_visibility_calls());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       GetVisibilityMultiplePlayersMeetsVisibility) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Set expectations, create waiter and start waiting.
+  player_observer->SetHasSufficientlyVisibleVideo(1, true);
+  GetVisibilityWaiter waiter;
+  UIGetVisibility(waiter.VisibilityCallback());
+  waiter.WaitUntilDone();
+
+  // Verify that the player observer received the corresponding request
+  // visibility calls.
+  EXPECT_EQ(3, player_observer->received_request_visibility_calls());
+
+  // Verify that the waiter meets visibility.
+  EXPECT_TRUE(waiter.MeetsVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       GetVisibilityMultiplePlayersDoesNotMeetVisibility) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Create waiter and start waiting. Since we do not set any visibility
+  // expectations, default is false.
+  GetVisibilityWaiter waiter;
+  UIGetVisibility(waiter.VisibilityCallback());
+  waiter.WaitUntilDone();
+
+  // Verify that the player observer received the corresponding request
+  // visibility calls.
+  EXPECT_EQ(3, player_observer->received_request_visibility_calls());
+
+  // Verify that the waiter does not meet visibility.
+  EXPECT_FALSE(waiter.MeetsVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       GetVisibilityMultiplePlayersEarlyCancelDoesNotCrash) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Set expectations and create waiter.
+  player_observer->SetHasSufficientlyVisibleVideo(1, true);
+  GetVisibilityWaiter waiter;
+
+  // Simulate the creation of two callbacks and start waiting.
+  auto callback_to_drop = waiter.VisibilityCallback();
+  UIGetVisibility(waiter.VisibilityCallback());
+  waiter.WaitUntilDone();
+
+  // Running this callback should be a no-op.
+  std::move(callback_to_drop).Run(false);
+
+  // Verify that the player observer received the corresponding request
+  // visibility calls.
+  EXPECT_EQ(3, player_observer->received_request_visibility_calls());
+
+  // Verify that the waiter meets visibility, despite running `callback_to_drop`
+  // with false.
+  EXPECT_TRUE(waiter.MeetsVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, GetVisibilityNoPlayers) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Create waiter and start waiting.
+  GetVisibilityWaiter waiter;
+  UIGetVisibility(waiter.VisibilityCallback());
+  waiter.WaitUntilDone();
+
+  // Verify the player observer did not receive any request visibility calls.
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Verify that the waiter meets visibility, despite running `callback_to_drop`
+  // with false.
+  EXPECT_FALSE(waiter.MeetsVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       GetVisibilityPlayersPausedDoesNotMeetVisibility) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+  StartNewPlayer(player_observer.get());
+
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Set one of the players to have a sufficiently visible video, and suspend
+  // the MediaSession.
+  player_observer->SetHasSufficientlyVisibleVideo(1, true);
+  SystemSuspend(true);
+
+  // Verify that all players were paused.
+  EXPECT_FALSE(player_observer->IsPlaying(0));
+  EXPECT_FALSE(player_observer->IsPlaying(1));
+  EXPECT_FALSE(player_observer->IsPlaying(2));
+
+  // Create waiter and start waiting.
+  GetVisibilityWaiter waiter;
+  UIGetVisibility(waiter.VisibilityCallback());
+  waiter.WaitUntilDone();
+
+  // Verify the player observer did not receive any request visibility calls,
+  // since all players are paused.
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  // Verify that the waiter does not meet visibility.
+  EXPECT_FALSE(waiter.MeetsVisibility());
 }
 
 class MediaSessionImplPrerenderingBrowserTest

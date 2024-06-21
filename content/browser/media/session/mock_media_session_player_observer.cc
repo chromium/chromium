@@ -105,6 +105,8 @@ void MockMediaSessionPlayerObserver::OnRequestVisibility(
     RequestVisibilityCallback request_visibility_callback) {
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  std::move(request_visibility_callback)
+      .Run(HasSufficientlyVisibleVideo(player_id));
   ++received_request_visibility_calls_;
 }
 
