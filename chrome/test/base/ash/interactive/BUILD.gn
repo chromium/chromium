@@ -38,6 +38,7 @@ source_set("test_support") {
     "//base/test:test_config",
     "//chrome/browser",
     "//chrome/browser/ash",
+    "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
