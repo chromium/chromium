@@ -629,6 +629,38 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                   .Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeleteAllPasskeys) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  sync_pb::WebauthnCredentialSpecifics passkey1 = NewPasskey();
+  sync_pb::WebauthnCredentialSpecifics passkey2 = NewPasskey();
+
+  GetModel().AddNewPasskeyForTesting(passkey1);
+  GetModel().AddNewPasskeyForTesting(passkey2);
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(EntityHasSyncId(passkey1.sync_id()),
+                                       EntityHasSyncId(passkey2.sync_id())))
+                  .Wait());
+
+  GetModel().DeleteAllPasskeys();
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
+  EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       DeleteAllPasskeysEmptyStore) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
+  EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
+
+  GetModel().DeleteAllPasskeys();
+
+  EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
+  EXPECT_TRUE(ServerPasskeysMatchChecker(IsEmpty()).Wait());
+}
+
 // Tests that deleting a passkey is persisted across browser restarts.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_DeletingPasskeysPersistsOverRestarts) {
