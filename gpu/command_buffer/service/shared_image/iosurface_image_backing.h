@@ -214,12 +214,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   template <typename Fn>
   void ProcessSharedEventsForBeginAccess(bool readonly, const Fn& fn);
 
-  // Updates the read and write accesses tracker variables on BeginAccess and
-  // waits on `release_fence_` if fence is not null.
-  bool HandleBeginAccessSync(bool readonly);
-
-  bool IsPassthrough() const { return true; }
-
   const gfx::ScopedIOSurface io_surface_;
   const uint32_t io_surface_plane_;
   const gfx::Size io_surface_size_;
@@ -296,7 +290,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   bool purgeable_ = false;
 
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
-  std::map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;
+  base::flat_map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;
 
   // GrContextType for SharedContextState used to distinguish between Ganesh
   // and Graphite.
@@ -306,25 +300,18 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // for the Skia GL context and reuses it (for that context) for its lifetime.
   scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_skia_gl_context_;
 
-  std::unique_ptr<gl::GLFence> last_write_gl_fence_;
-
-  // If this backing was displayed as an overlay, this fence may be set.
-  // Wait on this fence before allowing another access.
-  gfx::GpuFenceHandle release_fence_;
-
   // Tracks the displays to invoke eglWaitUntilWorkScheduledANGLE().
   base::flat_set<gl::GLDisplayEGL*> egl_displays_pending_flush_;
 
-  using ScopedMLTSharedEvent =
-      base::apple::scoped_nsprotocol<id<MTLSharedEvent>>;
+  using ScopedSharedEvent = base::apple::scoped_nsprotocol<id<MTLSharedEvent>>;
   struct SharedEventCompare {
-    bool operator()(const ScopedMLTSharedEvent& lhs,
-                    const ScopedMLTSharedEvent& rhs) const {
+    bool operator()(const ScopedSharedEvent& lhs,
+                    const ScopedSharedEvent& rhs) const {
       return lhs.get() < rhs.get();
     }
   };
   using SharedEventMap =
-      base::flat_map<ScopedMLTSharedEvent, uint64_t, SharedEventCompare>;
+      base::flat_map<ScopedSharedEvent, uint64_t, SharedEventCompare>;
   // Shared events and signals for exclusive accesses.
   SharedEventMap exclusive_shared_events_;
   // Shared events and signals for non-exclusive accesses.

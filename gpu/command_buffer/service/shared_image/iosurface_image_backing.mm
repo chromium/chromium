@@ -573,7 +573,7 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
     return {};
   }
 
-  if (!backing_impl()->HandleBeginAccessSync(/*readonly=*/false)) {
+  if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
     return {};
   }
 
@@ -601,7 +601,7 @@ IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess(
 
 std::vector<skgpu::graphite::BackendTexture>
 IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginWriteAccess() {
-  if (!backing_impl()->HandleBeginAccessSync(/*readonly=*/false)) {
+  if (!backing_impl()->BeginAccess(/*readonly=*/false)) {
     return {};
   }
   return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
@@ -619,7 +619,7 @@ void IOSurfaceImageBacking::SkiaGraphiteRepresentation::EndWriteAccess() {
 
 std::vector<skgpu::graphite::BackendTexture>
 IOSurfaceImageBacking::SkiaGraphiteRepresentation::BeginReadAccess() {
-  if (!backing_impl()->HandleBeginAccessSync(/*readonly=*/true)) {
+  if (!backing_impl()->BeginAccess(/*readonly=*/true)) {
     return {};
   }
   return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
@@ -684,19 +684,13 @@ bool IOSurfaceImageBacking::OverlayRepresentation::BeginReadAccess(
         std::move(backpressure_events));
   }
 
-  std::unique_ptr<gfx::GpuFence> fence =
-      iosurface_backing->GetLastWriteGpuFence();
-  if (fence) {
-    acquire_fence = fence->GetGpuFenceHandle().Clone();
-  }
   return true;
 }
 
 void IOSurfaceImageBacking::OverlayRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
-  auto* iosurface_backing = static_cast<IOSurfaceImageBacking*>(backing());
-  iosurface_backing->SetReleaseFence(std::move(release_fence));
-  iosurface_backing->EndAccess(/*readonly=*/true);
+  DCHECK(release_fence.is_null());
+  static_cast<IOSurfaceImageBacking*>(backing())->EndAccess(/*readonly=*/true);
 }
 
 gfx::ScopedIOSurface
@@ -1209,14 +1203,6 @@ void IOSurfaceImageBacking::ReleaseGLTexture(
   egl_state->gl_textures_.clear();
 }
 
-std::unique_ptr<gfx::GpuFence> IOSurfaceImageBacking::GetLastWriteGpuFence() {
-  return last_write_gl_fence_ ? last_write_gl_fence_->GetGpuFence() : nullptr;
-}
-
-void IOSurfaceImageBacking::SetReleaseFence(gfx::GpuFenceHandle release_fence) {
-  release_fence_ = std::move(release_fence);
-}
-
 base::trace_event::MemoryAllocatorDump* IOSurfaceImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
@@ -1401,6 +1387,8 @@ void IOSurfaceImageBacking::AddWGPUDeviceWithPendingCommands(
 
 void IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled(
     const wgpu::Device& device_to_exclude) {
+  TRACE_EVENT0("gpu",
+               "IOSurfaceImageBacking::WaitForDawnCommandsToBeScheduled");
   bool excluded_device_was_pending_flush = false;
   for (const auto& device : std::move(wgpu_devices_pending_flush_)) {
     if (device.Get() == device_to_exclude.Get()) {
@@ -1421,6 +1409,8 @@ void IOSurfaceImageBacking::AddEGLDisplayWithPendingCommands(
 }
 
 void IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled() {
+  TRACE_EVENT0("gpu",
+               "IOSurfaceImageBacking::WaitForANGLECommandsToBeScheduled");
   for (auto* display : std::move(egl_displays_pending_flush_)) {
     eglWaitUntilWorkScheduledANGLE(display->GetDisplay());
   }
@@ -1685,23 +1675,6 @@ bool IOSurfaceImageBacking::BeginAccess(bool readonly) {
   return true;
 }
 
-bool IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
-  if (!BeginAccess(readonly)) {
-    return false;
-  }
-
-  if (!release_fence_.is_null()) {
-    auto fence = gfx::GpuFence(std::move(release_fence_));
-    if (gl::GLFence::IsGpuFenceSupported()) {
-      gl::GLFence::CreateFromGpuFence(std::move(fence))->ServerWait();
-    } else {
-      fence.Wait();
-    }
-  }
-
-  return true;
-}
-
 void IOSurfaceImageBacking::EndAccess(bool readonly) {
   if (readonly) {
     CHECK_GT(num_ongoing_read_accesses_, 0u);
@@ -1723,7 +1696,7 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     bool readonly) {
   // It is in error to read or write an IOSurface while it is purgeable.
   CHECK(!purgeable_);
-  if (!HandleBeginAccessSync(readonly)) {
+  if (!BeginAccess(readonly)) {
     return false;
   }
 
@@ -1948,7 +1921,7 @@ void IOSurfaceImageBacking::AddSharedEventForEndAccess(
   SharedEventMap& shared_events =
       readonly ? non_exclusive_shared_events_ : exclusive_shared_events_;
   auto [it, _] = shared_events.insert(
-      {ScopedMLTSharedEvent(shared_event, base::scoped_policy::RETAIN), 0});
+      {ScopedSharedEvent(shared_event, base::scoped_policy::RETAIN), 0});
   it->second = std::max(it->second, signal_value);
 }
 
