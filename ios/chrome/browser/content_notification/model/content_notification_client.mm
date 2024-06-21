@@ -68,6 +68,7 @@ void ContentNotificationClient::HandleNotificationInteraction(
     loadUrlInNewTab(url);
   } else if ([response.actionIdentifier
                  isEqualToString:UNNotificationDismissActionIdentifier]) {
+    base::UmaHistogramBoolean("ContentNotifications.DismissAction", true);
     config.actionType = NAUActionTypeDismissed;
   }
   // TODO(crbug.com/337871560): Three way patch NAU and adding completion

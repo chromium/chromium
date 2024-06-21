@@ -164,6 +164,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentNotifications.DismissAction" enum="Boolean"
+    expires_after="2024-12-21">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>The user has dismissed a content notification.</summary>
+</histogram>
+
 <histogram name="ContentNotifications.EligibilityType"
     enum="ContentNotificationEligibilityType" expires_after="2024-12-20">
   <owner>tinazwang@google.com</owner>
