@@ -27,10 +27,10 @@ chromium-metrics-reviews@google.com.
 <enums>
 
 <enum name="PidReuseResult">
-  <int value="0" label="Pid not reused (request success)"/>
-  <int value="1" label="Pid reused (request success)"/>
-  <int value="2" label="Pid not reused (request fail)"/>
-  <int value="3" label="Pid reused (request fail)"/>
+  <int value="0" label="Pid not reused (request fail)"/>
+  <int value="1" label="Pid reused (request fail)"/>
+  <int value="2" label="Pid not reused (request success)"/>
+  <int value="3" label="Pid reused (request success)"/>
 </enum>
 
 </enums>
