@@ -204,6 +204,11 @@ void UrlLoaderNetworkServiceObserver::ContinueWithCertificate(
   mojo::Remote<network::mojom::ClientCertificateResponder> responder(
       std::move(client_cert_responder));
 
+  if (!client_cert || !private_key) {
+    responder->ContinueWithoutCertificate();
+    return;
+  }
+
   mojo::PendingRemote<network::mojom::SSLPrivateKey> ssl_private_key;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SSLPrivateKeyWrapper>(private_key),
