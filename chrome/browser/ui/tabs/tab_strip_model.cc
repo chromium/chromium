@@ -71,7 +71,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/media_session.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -1296,11 +1295,8 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandToggleSiteMuted: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
       for (int index : indices) {
-        content::WebContents* web_contents = GetWebContentsAt(index);
-        if (!web_contents->GetLastCommittedURL().is_empty() &&
-            content::MediaSession::GetIfExists(web_contents)) {
+        if (!GetWebContentsAt(index)->GetLastCommittedURL().is_empty())
           return true;
-        }
       }
       return false;
     }
