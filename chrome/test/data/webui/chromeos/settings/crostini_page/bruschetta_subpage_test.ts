@@ -28,7 +28,7 @@ suite('<settings-bruschetta-subpage>', () => {
   let subpage: BruschettaSubpageElement;
   let crostiniBrowserProxy: TestCrostiniBrowserProxy;
 
-  function setCrostiniPrefs(enabled: boolean, {
+  function setBruschettaPrefs(enabled: boolean, {
     sharedPaths = {},
     forwardedPorts = [],
     micAllowed = false,
@@ -71,7 +71,7 @@ suite('<settings-bruschetta-subpage>', () => {
     clearBody();
     subpage = document.createElement('settings-bruschetta-subpage');
     document.body.appendChild(subpage);
-    setCrostiniPrefs(false, {bruschettaInstalled: true});
+    setBruschettaPrefs(false, {bruschettaInstalled: true});
     await flushTasks();
   });
 
@@ -96,7 +96,7 @@ suite('<settings-bruschetta-subpage>', () => {
         subpage.shadowRoot!.querySelector('#bruschetta-mic-permission-dialog');
     assertNull(dialog);
 
-    setCrostiniPrefs(true, {micAllowed: false, bruschettaInstalled: true});
+    setBruschettaPrefs(true, {micAllowed: false, bruschettaInstalled: true});
     assertFalse(toggle.checked);
     assertFalse(subpage.get(MIC_ALLOWED_PREF_PATH));
 
@@ -142,7 +142,7 @@ suite('<settings-bruschetta-subpage>', () => {
         subpage.shadowRoot!.querySelector('#bruschetta-mic-permission-dialog');
     assertNull(dialog);
 
-    setCrostiniPrefs(true, {micAllowed: true, bruschettaInstalled: true});
+    setBruschettaPrefs(true, {micAllowed: true, bruschettaInstalled: true});
     assertTrue(toggle.checked);
     assertTrue(subpage.get(MIC_ALLOWED_PREF_PATH));
 
@@ -222,7 +222,7 @@ suite('<settings-bruschetta-subpage>', () => {
     assertEquals(
         1,
         crostiniBrowserProxy.getCallCount('requestBruschettaUninstallerView'));
-    setCrostiniPrefs(false, {bruschettaInstalled: false});
+    setBruschettaPrefs(false, {bruschettaInstalled: false});
     await eventToPromise('popstate', window);
   });
 });
