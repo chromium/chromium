@@ -33,11 +33,13 @@ CreatorResult ReadAndSignArchive(base::File* file,
   static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
   while ((read = file->ReadAtCurrentPos(reinterpret_cast<char*>(buffer),
                                         std::size(buffer))) > 0) {
-    if (!signer->Update(buffer, read))
+    if (!signer->Update(buffer, read)) {
       return CreatorResult::ERROR_SIGNING_FAILURE;
+    }
   }
-  if (read < 0)
+  if (read < 0) {
     return CreatorResult::ERROR_SIGNING_FAILURE;
+  }
   return signer->Final(signature) ? CreatorResult::OK
                                   : CreatorResult::ERROR_SIGNING_FAILURE;
 }
@@ -51,8 +53,9 @@ bool WriteArchive(base::File* out, base::File* in) {
   int read = 0;
   in->Seek(base::File::Whence::FROM_BEGIN, 0);
   while ((read = in->ReadAtCurrentPos(buffer, std::size(buffer))) > 0) {
-    if (out->WriteAtCurrentPos(buffer, read) != read)
+    if (out->WriteAtCurrentPos(buffer, read) != read) {
       return false;
+    }
   }
   return read == 0;
 }
@@ -90,13 +93,15 @@ CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
       reinterpret_cast<const uint8_t*>(signed_header_data_str.data()),
       signed_header_data_str.size());
 
-  if (!file->IsValid())
+  if (!file->IsValid()) {
     return CreatorResult::ERROR_FILE_NOT_READABLE;
+  }
   std::vector<uint8_t> signature;
   const CreatorResult signing_result =
       ReadAndSignArchive(file, signer.get(), &signature);
-  if (signing_result != CreatorResult::OK)
+  if (signing_result != CreatorResult::OK) {
     return signing_result;
+  }
   AsymmetricKeyProof* proof = header->add_sha256_with_rsa();
   proof->set_public_key(public_key_str);
   proof->set_signature(std::string(signature.begin(), signature.end()));
@@ -117,8 +122,9 @@ CreatorResult WriteCRX(const CrxFileHeader& header,
   const uint8_t format_version_octets[] = {3, 0, 0, 0};
   base::File crx(output_path,
                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (!crx.IsValid())
+  if (!crx.IsValid()) {
     return CreatorResult::ERROR_FILE_NOT_WRITABLE;
+  }
   static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
   if (!WriteBuffer(&crx, kCrxFileHeaderMagic, kCrxFileHeaderMagicSize) ||
       !WriteBuffer(&crx, reinterpret_cast<const char*>(format_version_octets),
@@ -146,8 +152,9 @@ CreatorResult CreateCrxWithVerifiedContentsInHeader(
       << "Failed to open " << zip_path << ": " << file.error_details();
   const CreatorResult signing_result =
       SignArchiveAndCreateHeader(output_path, &file, signing_key, &header);
-  if (signing_result != CreatorResult::OK)
+  if (signing_result != CreatorResult::OK) {
     return signing_result;
+  }
 
   // Inject the verified contents into the header.
   header.set_verified_contents(verified_contents);
@@ -165,8 +172,9 @@ CreatorResult Create(const base::FilePath& output_path,
       << "Failed to open " << zip_path << ": " << file.error_details();
   const CreatorResult signing_result =
       SignArchiveAndCreateHeader(output_path, &file, signing_key, &header);
-  if (signing_result != CreatorResult::OK)
+  if (signing_result != CreatorResult::OK) {
     return signing_result;
+  }
 
   const CreatorResult result = WriteCRX(header, output_path, &file);
   return result;

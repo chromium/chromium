@@ -57,8 +57,9 @@ int ReadAndHashBuffer(uint8_t* buffer,
                       crypto::SecureHash* hash) {
   static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
   int read = file->ReadAtCurrentPos(reinterpret_cast<char*>(buffer), length);
-  if (read > 0)
+  if (read > 0) {
     hash->Update(buffer, read);
+  }
   return read;
 }
 
@@ -67,8 +68,9 @@ int ReadAndHashBuffer(uint8_t* buffer,
 uint32_t ReadAndHashLittleEndianUInt32(base::File* file,
                                        crypto::SecureHash* hash) {
   uint8_t buffer[4] = {};
-  if (ReadAndHashBuffer(buffer, 4, file, hash) != 4)
+  if (ReadAndHashBuffer(buffer, 4, file, hash) != 4) {
     return UINT32_MAX;
+  }
   return buffer[3] << 24 | buffer[2] << 16 | buffer[1] << 8 | buffer[0];
 }
 
@@ -79,12 +81,14 @@ bool ReadHashAndVerifyArchive(base::File* file,
   uint8_t buffer[1 << 12] = {};
   size_t len = 0;
   while ((len = ReadAndHashBuffer(buffer, std::size(buffer), file, hash)) > 0) {
-    for (auto& verifier : verifiers)
+    for (auto& verifier : verifiers) {
       verifier->VerifyUpdate(base::make_span(buffer, len));
+    }
   }
   for (auto& verifier : verifiers) {
-    if (!verifier->VerifyFinal())
+    if (!verifier->VerifyFinal()) {
       return false;
+    }
   }
   return len == 0;
 }
@@ -106,8 +110,9 @@ VerifierResult VerifyCrx3(
   // Parse [header-size] and [header].
   int header_size =
       base::saturated_cast<int>(ReadAndHashLittleEndianUInt32(file, hash));
-  if (header_size == INT_MAX)
+  if (header_size == INT_MAX) {
     return VerifierResult::ERROR_HEADER_INVALID;
+  }
   std::vector<uint8_t> header_bytes(header_size);
   if (ReadAndHashBuffer(header_bytes.data(), header_size, file, hash) !=
       header_size) {
@@ -126,8 +131,9 @@ VerifierResult VerifyCrx3(
   }
 
   CrxFileHeader header;
-  if (!header.ParseFromArray(header_bytes.data(), header_size))
+  if (!header.ParseFromArray(header_bytes.data(), header_size)) {
     return VerifierResult::ERROR_HEADER_INVALID;
+  }
 
   // Parse [verified_contents].
   if (header.has_verified_contents() && compressed_verified_contents) {
@@ -139,8 +145,9 @@ VerifierResult VerifyCrx3(
   // Parse [signed-header].
   const std::string& signed_header_data_str = header.signed_header_data();
   SignedData signed_header_data;
-  if (!signed_header_data.ParseFromString(signed_header_data_str))
+  if (!signed_header_data.ParseFromString(signed_header_data_str)) {
     return VerifierResult::ERROR_HEADER_INVALID;
+  }
   const std::string& crx_id_encoded = signed_header_data.crx_id();
   const std::string declared_crx_id =
       id_util::GenerateIdFromHex(base::HexEncode(crx_id_encoded));
@@ -188,8 +195,9 @@ VerifierResult VerifyCrx3(
     for (const auto& proof : (header.*proof_type.first)()) {
       const std::string& key = proof.public_key();
       const std::string& sig = proof.signature();
-      if (id_util::GenerateId(key) == declared_crx_id)
+      if (id_util::GenerateId(key) == declared_crx_id) {
         public_key_bytes = key;
+      }
       std::vector<uint8_t> key_hash(crypto::kSHA256Length);
       crypto::SHA256HashString(key, key_hash.data(), key_hash.size());
       required_key_set.erase(key_hash);
@@ -202,23 +210,27 @@ VerifierResult VerifyCrx3(
                     "Unsupported char size.");
       if (!v->VerifyInit(proof_type.second,
                          base::as_bytes(base::make_span(sig)),
-                         base::as_bytes(base::make_span(key))))
+                         base::as_bytes(base::make_span(key)))) {
         return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
+      }
       v->VerifyUpdate(base::as_bytes(base::make_span(kSignatureContext)));
       v->VerifyUpdate(header_size_octets);
       v->VerifyUpdate(base::as_bytes(base::make_span(signed_header_data_str)));
       verifiers.push_back(std::move(v));
     }
   }
-  if (public_key_bytes.empty() || !required_key_set.empty())
+  if (public_key_bytes.empty() || !required_key_set.empty()) {
     return VerifierResult::ERROR_REQUIRED_PROOF_MISSING;
+  }
 
-  if (require_publisher_key && !found_publisher_key)
+  if (require_publisher_key && !found_publisher_key) {
     return VerifierResult::ERROR_REQUIRED_PROOF_MISSING;
+  }
 
   // Update and finalize the verifiers with [archive].
-  if (!ReadHashAndVerifyArchive(file, hash, verifiers))
+  if (!ReadHashAndVerifyArchive(file, hash, verifiers)) {
     return VerifierResult::ERROR_SIGNATURE_VERIFICATION_FAILED;
+  }
 
   *public_key = base::Base64Encode(public_key_bytes);
   *crx_id = declared_crx_id;
@@ -238,8 +250,9 @@ VerifierResult Verify(
   std::string public_key_local;
   std::string crx_id_local;
   base::File file(crx_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return VerifierResult::ERROR_FILE_NOT_READABLE;
+  }
 
   std::unique_ptr<crypto::SecureHash> file_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -248,12 +261,14 @@ VerifierResult Verify(
   bool diff = false;
   char buffer[kCrxFileHeaderMagicSize] = {};
   if (file.ReadAtCurrentPos(buffer, kCrxFileHeaderMagicSize) !=
-      kCrxFileHeaderMagicSize)
+      kCrxFileHeaderMagicSize) {
     return VerifierResult::ERROR_HEADER_INVALID;
-  if (!strncmp(buffer, kCrxDiffFileHeaderMagic, kCrxFileHeaderMagicSize))
+  }
+  if (!strncmp(buffer, kCrxDiffFileHeaderMagic, kCrxFileHeaderMagicSize)) {
     diff = true;
-  else if (strncmp(buffer, kCrxFileHeaderMagic, kCrxFileHeaderMagicSize))
+  } else if (strncmp(buffer, kCrxFileHeaderMagic, kCrxFileHeaderMagicSize)) {
     return VerifierResult::ERROR_HEADER_INVALID;
+  }
   file_hash->Update(buffer, sizeof(buffer));
 
   // Version number.
@@ -271,25 +286,30 @@ VerifierResult Verify(
   } else {
     result = VerifierResult::ERROR_HEADER_INVALID;
   }
-  if (result != VerifierResult::OK_FULL)
+  if (result != VerifierResult::OK_FULL) {
     return result;
+  }
 
   // Finalize file hash.
   uint8_t final_hash[crypto::kSHA256Length] = {};
   file_hash->Finish(final_hash, sizeof(final_hash));
   if (!required_file_hash.empty()) {
-    if (required_file_hash.size() != crypto::kSHA256Length)
+    if (required_file_hash.size() != crypto::kSHA256Length) {
       return VerifierResult::ERROR_EXPECTED_HASH_INVALID;
+    }
     if (!crypto::SecureMemEqual(final_hash, required_file_hash.data(),
-                                crypto::kSHA256Length))
+                                crypto::kSHA256Length)) {
       return VerifierResult::ERROR_FILE_HASH_FAILED;
+    }
   }
 
   // All is well. Set the out-params and return.
-  if (public_key)
+  if (public_key) {
     *public_key = public_key_local;
-  if (crx_id)
+  }
+  if (crx_id) {
     *crx_id = crx_id_local;
+  }
   return diff ? VerifierResult::OK_DELTA : VerifierResult::OK_FULL;
 }
 

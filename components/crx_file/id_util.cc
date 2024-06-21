@@ -77,8 +77,9 @@ base::FilePath MaybeNormalizePath(const base::FilePath& path) {
   // comparisons simpler.
   base::FilePath::StringType path_str = path.value();
   if (path_str.size() >= 2 && path_str[0] >= L'a' && path_str[0] <= L'z' &&
-      path_str[1] == L':')
+      path_str[1] == L':') {
     path_str[0] = absl::ascii_toupper(static_cast<unsigned char>(path_str[0]));
+  }
 
   return base::FilePath(path_str);
 #else
@@ -88,13 +89,15 @@ base::FilePath MaybeNormalizePath(const base::FilePath& path) {
 
 bool IdIsValid(std::string_view id) {
   // Verify that the id is legal.
-  if (id.size() != (crx_file::id_util::kIdSize * 2))
+  if (id.size() != (crx_file::id_util::kIdSize * 2)) {
     return false;
+  }
 
   for (char ch : id) {
     ch = base::ToLowerASCII(ch);
-    if (ch < 'a' || ch > 'p')
+    if (ch < 'a' || ch > 'p') {
       return false;
+    }
   }
 
   return true;
