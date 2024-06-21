@@ -5731,6 +5731,14 @@
     "expiry_milestone": 88
   },
   {
+    "name": "magic-boost",
+    "owners": [
+      "thanhdng@chromium.org",
+      "chrome-knowledge-eng@google.com"
+    ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "mahi",
     "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
     "expiry_milestone": 135

@@ -7165,6 +7165,9 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
+const char kMagicBoostName[] = "Magic Boost";
+const char kMagicBoostDescription[] = "Enable Magic Boost on ChromeOS.";
+
 const char kMahiName[] = "Mahi feature";
 const char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";
 

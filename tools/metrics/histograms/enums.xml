@@ -24758,6 +24758,7 @@ from previous Chrome versions.
   <int value="1820442907" label="CrostiniMultiContainer:disabled"/>
   <int value="1820445741" label="SwapAndroidShareHubRows:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>
+  <int value="1820940797" label="MagicBoost:enabled"/>
   <int value="1821723343" label="disable-saml-signin"/>
   <int value="1822184614" label="DeviceBoundSessions:enabled"/>
   <int value="1822452137" label="ClipboardHistoryLongpress:enabled"/>
@@ -25470,6 +25471,7 @@ from previous Chrome versions.
   <int value="2127648677" label="OmniboxExperimentalSuggestScoring:disabled"/>
   <int value="2127700228" label="NtpHistoryClustersModule:enabled"/>
   <int value="2129184006" label="NTPOfflinePageDownloadSuggestions:enabled"/>
+  <int value="2129190428" label="MagicBoost:disabled"/>
   <int value="2129524809" label="PasswordCheck:disabled"/>
   <int value="2129639191" label="ArcWindowPredictor:disabled"/>
   <int value="2129814401" label="SyncTrustedVaultPassphrasePromo:enabled"/>

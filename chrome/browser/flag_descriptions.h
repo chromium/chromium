@@ -4153,6 +4153,9 @@ extern const char kEnableHardwareMirrorModeDescription[];
 extern const char kLockScreenNotificationName[];
 extern const char kLockScreenNotificationDescription[];
 
+extern const char kMagicBoostName[];
+extern const char kMagicBoostDescription[];
+
 extern const char kMahiName[];
 extern const char kMahiDescription[];
 
