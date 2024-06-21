@@ -872,4 +872,62 @@ TEST_F(DisplaySettingsProviderTest, HasAmbientLightSensor) {
       }));
 }
 
+TEST_F(DisplaySettingsProviderTest, RecordUserInitiatedALSDisabledCause) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(
+      ash::features::kEnableBrightnessControlInSettings);
+
+  // No histograms should have been recorded yet.
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Settings.Display.Internal.UserInitiated."
+      "AmbientLightSensorDisabledCause",
+      /*expected_count=*/0);
+
+  // Verify histogram recording when ALS is disabled via settings app.
+  {
+    power_manager::AmbientLightSensorChange cause_settings_app;
+    cause_settings_app.set_sensor_enabled(false);
+    cause_settings_app.set_cause(
+        power_manager::
+            AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+    provider_->AmbientLightSensorEnabledChanged(cause_settings_app);
+    histogram_tester_.ExpectUniqueSample(
+        "ChromeOS.Settings.Display.Internal.UserInitiated."
+        "AmbientLightSensorDisabledCause",
+        DisplaySettingsProvider::
+            UserInitiatedDisplayAmbientLightSensorDisabledCause::
+                kUserRequestSettingsApp,
+        1);
+  }
+
+  // Ensure enabling ALS does not emit histogram.
+  {
+    power_manager::AmbientLightSensorChange cause_settings_app;
+    cause_settings_app.set_sensor_enabled(true);
+    cause_settings_app.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+    provider_->AmbientLightSensorEnabledChanged(cause_settings_app);
+    histogram_tester_.ExpectTotalCount(
+        "ChromeOS.Settings.Display.Internal.UserInitiated."
+        "AmbientLightSensorDisabledCause",
+        /*expected_count=*/1);
+  }
+
+  // Test histogram update when ALS is disabled due to brightness change.
+  {
+    power_manager::AmbientLightSensorChange cause_settings_app;
+    cause_settings_app.set_sensor_enabled(false);
+    cause_settings_app.set_cause(
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+    provider_->AmbientLightSensorEnabledChanged(cause_settings_app);
+    histogram_tester_.ExpectBucketCount(
+        "ChromeOS.Settings.Display.Internal.UserInitiated."
+        "AmbientLightSensorDisabledCause",
+        DisplaySettingsProvider::
+            UserInitiatedDisplayAmbientLightSensorDisabledCause::
+                kBrightnessUserRequest,
+        1);
+  }
+}
+
 }  // namespace ash::settings

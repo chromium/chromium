@@ -305,6 +305,20 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Settings.Display.Internal.UserInitiated.AmbientLightSensorDisabledCause"
+    enum="UserInitiatedAmbientLightSensorDisabledCause"
+    expires_after="2025-05-01">
+  <owner>longbowei@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the cause when the ambient light sensor was disabled by the user,
+    whether explicitly via the settings app or implicitly through brightness
+    adjustments. This histogram is triggered each time the ambient light sensor
+    is disabled due to user actions.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Display.MirrorModeStatus"
     enum="DisplaySettingsBoolean" expires_after="2024-12-28">
   <owner>zhangwenyu@google.com</owner>

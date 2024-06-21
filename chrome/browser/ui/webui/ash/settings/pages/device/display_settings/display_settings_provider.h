@@ -61,6 +61,21 @@ class DisplaySettingsProvider : public mojom::DisplaySettingsProvider,
     kMaxValue = kOverrideScaling,
   };
 
+  // Note that these values are persisted to histograms so existing values
+  // should remain unchanged and new values should be added to the end.
+  enum class UserInitiatedDisplayAmbientLightSensorDisabledCause {
+    // The ambient light sensor was disabled directly through the settings
+    // app by the user.
+    kUserRequestSettingsApp = 0,
+    // The ambient light sensor was disabled as a result of the user manually
+    // adjusting the brightness.
+    kBrightnessUserRequest = 1,
+    // The ambient light sensor was disabled as a result of the user adjusting
+    // the brightness through the settings app.
+    kBrightnessUserRequestSettingsApp = 2,
+    kMaxValue = kBrightnessUserRequestSettingsApp,
+  };
+
   // The UMA histogram that records display settings usage.
   static constexpr char kDisplaySettingsHistogramName[] =
       "ChromeOS.Settings.Display";

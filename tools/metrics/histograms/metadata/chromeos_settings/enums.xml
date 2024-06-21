@@ -594,6 +594,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Fastest"/>
 </enum>
 
+<enum name="UserInitiatedAmbientLightSensorDisabledCause">
+  <int value="0" label="UserRequestSettingsApp"/>
+  <int value="1" label="BrightnessUserRequest"/>
+  <int value="2" label="BrightnessUserRequestSettingsApp"/>
+</enum>
+
 <enum name="WebUIOSSettingsPathHashes">
   <int value="-2019732586" label="/printing"/>
   <int value="-1950073287" label="/crostini/details"/>
