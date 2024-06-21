@@ -2,7 +2,7 @@ Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
 URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/8e536ff968a249002e918fa88a0c2feb16a25c8e.zip
 Version: N/A
-Date: 2024-06-17
+Date: 2024-06-20
 Revision: 8e536ff968a249002e918fa88a0c2feb16a25c8e
 SHA-512: e8f9ef6a830b15c0677a86ac1d6da6483bc4f813621fffdbd7c4992968aa9fef90c31126e0219a149dba5dab8f344768f89a068921e20f0fb21dedd43f680b55
 License: Apache 2.0
@@ -38,6 +38,7 @@ Name: mitt
 URL: https://github.com/developit/mitt
 Version: 3.0.1
 License: MIT
+Revision: b240473b5707857ba2c6a8e6d707c28d1e39da49
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.mitt
@@ -48,6 +49,7 @@ Name: urlpattern-polyfill
 URL: https://github.com/kenchris/urlpattern-polyfill
 Version: 10.0.0
 License: MIT
+Revision: 039357b28b68e3d68f59d7c6af0138cd25a91914
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.urlpattern_polyfill
@@ -58,6 +60,7 @@ Name: zod
 URL: https://zod.dev
 Version: 3.23.8
 License: MIT
+Revision: ca42965df46b2f7e2747db29c40a26bcb32a51d5
 Security Critical: no
 Shipped: yes
 License File: licenses/LICENSE.zod

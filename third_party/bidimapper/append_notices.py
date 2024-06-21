@@ -6,11 +6,11 @@
 
 import argparse
 import io
-import os
+import json
 import pathlib
 import re
-import shutil
 import sys
+import urllib.request
 
 from typing import Optional
 
@@ -106,14 +106,16 @@ class ThirdPartyNoticeParser:
                 raise NoticeParsingException(
                     'Expected header is missing: "%s"' % header)
 
+        original_name_value = self._get_header_value('Name', lines)
+        original_version_value = self._get_header_value('Version', lines)
+
         print('\n' + _DEPENDENCY_DIVIDER + '\n', file=self._readme_file)
         for header in expected_headers:
             print(lines[self._headers[header]], file=self._readme_file)
+        print('Revision: '+self._get_revision(original_name_value, original_version_value), file=self._readme_file)
         print('Security Critical: no', file=self._readme_file)
         print('Shipped: yes', file=self._readme_file)
 
-        name_line = lines[self._headers['Name']]
-        original_name_value = name_line[len('Name:'):].strip()
         path_name_value = re.sub(r'[^\w_]', '_', original_name_value)
         name_value = path_name_value
         index = 0
@@ -125,10 +127,10 @@ class ThirdPartyNoticeParser:
         print(f'License File: {license_path}', file=self._readme_file)
 
         while self._license_begin < self._license_end and lines[
-                self._license_begin] == '':
+            self._license_begin] == '':
             self._license_begin += 1
         while self._license_begin < self._license_end and lines[
-                self._license_end - 1] == '':
+            self._license_end - 1] == '':
             self._license_end -= 1
         if self._license_begin == self._license_end:
             raise NoticeParsingException(
@@ -141,6 +143,26 @@ class ThirdPartyNoticeParser:
 
         return self._before_headers_state, line_index
 
+    def _get_header_value(self, name, lines):
+        header_line = lines[self._headers[name]]
+        return header_line[len(name+':'):].strip()
+
+    @staticmethod
+    def _get_revision(name, version):
+        """
+        Get the revision of the package from the npm registry. Required, as the
+        specific dependency revisions are required for the build. As long as the
+        information about the specific revision is not available on the local
+        npm package, this function fetches the revision from the npm registry.
+        Falls back to `N/A` if the revision cannot be fetched for any reason.
+        """
+        try:
+            registry_url = f"https://registry.npmjs.org/{name}/{version}"
+            with urllib.request.urlopen(registry_url) as registry_response:
+                registry_data = json.load(registry_response)
+                return registry_data["gitHead"] or 'N/A'
+        except:
+            return 'N/A'
 
 def main():
     parser = argparse.ArgumentParser()
