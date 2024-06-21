@@ -6,12 +6,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/common/features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -63,8 +64,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                     settingsView:(BOOL)settingsView {
   DCHECK(delegate);
 
-  self = [super initWithStyle:(settingsView ? ChromeTableViewStyle()
-                                            : UITableViewStylePlain)];
+  UITableViewStyle viewStyle =
+      (settingsView || base::FeatureList::IsEnabled(
+                           kAutofillDynamicallyLoadsFieldsForAddressInput))
+          ? ChromeTableViewStyle()
+          : UITableViewStylePlain;
+
+  self = [super initWithStyle:viewStyle];
   if (self) {
     _delegate = delegate;
     _currentlySelectedCountry = selectedCountry;
@@ -79,13 +85,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (!_settingsView) {
-    self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SELECT_COUNTRY);
+  self.title =
+      l10n_util::GetNSString(_settingsView ? IDS_IOS_AUTOFILL_EDIT_ADDRESS
+                                           : IDS_IOS_AUTOFILL_SELECT_COUNTRY);
+
+  if (!_settingsView && !base::FeatureList::IsEnabled(
+                            kAutofillDynamicallyLoadsFieldsForAddressInput)) {
     self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.tableView.sectionHeaderHeight = 0;
     self.tableView.sectionFooterHeight = 0;
-  } else {
-    self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS);
   }
 
   [self.tableView
