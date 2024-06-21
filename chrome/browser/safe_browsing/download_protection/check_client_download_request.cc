@@ -380,15 +380,15 @@ bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
     return false;
   }
 
+  if (!base::FeatureList::IsEnabled(kDeepScanningPromptRemoval)) {
+    return false;
+  }
+
   if (log_metrics) {
     LogNoticeSeenMetrics(profile->GetPrefs());
   }
   if (!profile->GetPrefs()->GetBoolean(
           prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen)) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kDeepScanningPromptRemoval)) {
     return false;
   }
 
