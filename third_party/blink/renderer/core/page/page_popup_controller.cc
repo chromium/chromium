@@ -115,8 +115,9 @@ void PagePopupController::ClearPagePopupClient() {
 void PagePopupController::setWindowRect(int x, int y, int width, int height) {
   popup_.SetWindowRect(gfx::Rect(x, y, width, height));
 
+  popup_origin_ = gfx::Point(x, y);
   popup_client_->SetMenuListOptionsBoundsInAXTree(options_bounds_,
-                                                  gfx::Point(x, y));
+                                                  *popup_origin_);
 }
 
 void PagePopupController::Trace(Visitor* visitor) const {
@@ -131,6 +132,14 @@ void PagePopupController::setMenuListOptionsBoundsInAXTree(
     options_bounds_.emplace_back(
         gfx::Rect(option_bounds->x(), option_bounds->y(),
                   option_bounds->width(), option_bounds->height()));
+  }
+
+  // The bounds can only be set if the origin is available, so setWindowRect
+  // handles the first call to set the bounds. Updates to the bounds are handled
+  // here.
+  if (popup_origin_) {
+    popup_client_->SetMenuListOptionsBoundsInAXTree(options_bounds_,
+                                                    *popup_origin_);
   }
 }
 

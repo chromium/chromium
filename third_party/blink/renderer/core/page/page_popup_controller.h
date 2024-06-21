@@ -80,6 +80,7 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
 
  private:
   PagePopup& popup_;
+  std::optional<gfx::Point> popup_origin_;
 
   WTF::Vector<gfx::Rect> options_bounds_;
 
