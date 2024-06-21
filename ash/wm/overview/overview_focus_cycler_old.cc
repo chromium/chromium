@@ -128,6 +128,7 @@ void OverviewFocusCyclerOld::MoveFocus(bool reverse) {
           ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
     SetFocusVisibility(false);
     focused_view_ = nullptr;
+    focused_view_tracker_.SetView(nullptr);
     return;
   }
 
@@ -181,6 +182,7 @@ void OverviewFocusCyclerOld::OnViewDestroyingOrDisabling(
   deleted_index_ = view_index;
   focused_view_->SetFocused(false);
   focused_view_ = nullptr;
+  focused_view_tracker_.SetView(nullptr);
 }
 
 void OverviewFocusCyclerOld::SetFocusVisibility(bool visible) {
@@ -242,6 +244,7 @@ void OverviewFocusCyclerOld::ResetFocusedView() {
   deleted_index_.reset();
   focused_view_->SetFocused(false);
   focused_view_ = nullptr;
+  focused_view_tracker_.SetView(nullptr);
 }
 
 std::vector<OverviewFocusableView*> OverviewFocusCyclerOld::GetTraversableViews()
@@ -305,6 +308,9 @@ void OverviewFocusCyclerOld::UpdateFocus(OverviewFocusableView* view_to_be_focus
 
   OverviewFocusableView* previous_view = focused_view_;
   focused_view_ = view_to_be_focused;
+  focused_view_tracker_.SetView(view_to_be_focused->GetView());
+  focused_view_tracker_.SetIsDeletingCallback(base::BindOnce(
+      &OverviewFocusCyclerOld::OnFocusedViewDeleting, base::Unretained(this)));
 
   // Perform accessibility related tasks.
   if (!suppress_accessibility_event) {
@@ -324,6 +330,10 @@ void OverviewFocusCyclerOld::UpdateFocus(OverviewFocusableView* view_to_be_focus
     previous_view->SetFocused(false);
   }
   focused_view_->SetFocused(true);
+}
+
+void OverviewFocusCyclerOld::OnFocusedViewDeleting() {
+  focused_view_ = nullptr;
 }
 
 }  // namespace ash

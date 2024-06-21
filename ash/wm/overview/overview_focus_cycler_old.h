@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/view_tracker.h"
 
 namespace ash {
 class OverviewFocusableView;
@@ -113,6 +114,8 @@ class ASH_EXPORT OverviewFocusCyclerOld {
   void UpdateFocus(OverviewFocusableView* view_to_be_focused,
                    bool suppress_accessibility_event = false);
 
+  void OnFocusedViewDeleting();
+
   // The overview session which owns this object. Guaranteed to be non-null for
   // the lifetime of `this`.
   const raw_ptr<OverviewSession> overview_session_;
@@ -124,6 +127,10 @@ class ASH_EXPORT OverviewFocusCyclerOld {
   // The current view that is being focused, if any.
   raw_ptr<OverviewFocusableView, LeakedDanglingUntriaged> focused_view_ =
       nullptr;
+  // Tracks the view associated with `focused_view_`. This is a strange pattern
+  // to have both an untriaged pointer and a view tracker, but it is temporary
+  // as this class is going away soon.
+  views::ViewTracker focused_view_tracker_;
 
   // Helps to update the current a11y override window. And accessibility
   // features will focus on the window that is being set. Once `this` goes out
