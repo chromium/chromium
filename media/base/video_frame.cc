@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/limits.h"
@@ -404,20 +405,34 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
   return frame;
 }
 
-scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
+scoped_refptr<VideoFrame>
+VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const bool enable_mappable_si,
     ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     base::TimeDelta timestamp) {
-  CHECK(gpu_memory_buffer);
+  if (enable_mappable_si) {
+    CHECK(shared_image && !gpu_memory_buffer);
+  } else {
+    CHECK(gpu_memory_buffer && !shared_image);
+  }
+
+  const gfx::BufferFormat buffer_format =
+      gpu_memory_buffer
+          ? gpu_memory_buffer->GetFormat()
+          : viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+                shared_image->format());
   const std::optional<VideoPixelFormat> format =
-      GfxBufferFormatToVideoPixelFormat(gpu_memory_buffer->GetFormat());
+      GfxBufferFormatToVideoPixelFormat(buffer_format);
   if (!format) {
     return nullptr;
   }
   constexpr StorageType storage = STORAGE_GPU_MEMORY_BUFFER;
-  const gfx::Size& coded_size = gpu_memory_buffer->GetSize();
+  const gfx::Size& coded_size =
+      gpu_memory_buffer ? gpu_memory_buffer->GetSize() : shared_image->size();
   if (!IsValidConfig(*format, storage, coded_size, visible_rect,
                      natural_size)) {
     DLOG(ERROR) << __func__ << " Invalid config"
@@ -426,16 +441,23 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
     return nullptr;
   }
 
-  const size_t num_planes =
-      NumberOfPlanesForLinearBufferFormat(gpu_memory_buffer->GetFormat());
+  const size_t num_planes = NumberOfPlanesForLinearBufferFormat(buffer_format);
   std::vector<ColorPlaneLayout> planes(num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
-    planes[i].stride = gpu_memory_buffer->stride(i);
+    planes[i].stride = gpu_memory_buffer
+                           ? gpu_memory_buffer->stride(i)
+                           : shared_image->GetStrideForVideoFrame(i);
   }
   uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
-    const auto gmb_handle = gpu_memory_buffer->CloneHandle();
+  bool is_native_buffer =
+      gpu_memory_buffer
+          ? (gpu_memory_buffer->GetType() != gfx::SHARED_MEMORY_BUFFER)
+          : !shared_image->IsSharedMemoryForVideoFrame();
+  if (is_native_buffer) {
+    const auto gmb_handle = gpu_memory_buffer
+                                ? gpu_memory_buffer->CloneHandle()
+                                : shared_image->CloneGpuMemoryBufferHandle();
     if (gmb_handle.is_null() ||
         gmb_handle.native_pixmap_handle.planes.empty()) {
       DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
@@ -474,6 +496,7 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForGpuMemoryBufferInternal(
   frame->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
   frame->mailbox_holders_and_gmb_release_cb_ =
       std::move(mailbox_holder_and_gmb_release_cb);
+  frame->is_mappable_si_enabled_ = enable_mappable_si;
   return frame;
 }
 
@@ -767,9 +790,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     base::TimeDelta timestamp) {
-  return CreateFrameForGpuMemoryBufferInternal(visible_rect, natural_size,
-                                               std::move(gpu_memory_buffer),
-                                               base::NullCallback(), timestamp);
+  return CreateFrameForGpuMemoryBufferOrMappableSIInternal(
+      visible_rect, natural_size, std::move(gpu_memory_buffer),
+      /*shared_image=*/nullptr,
+      /*enable_mappable_si=*/false, base::NullCallback(), timestamp);
 }
 
 // static
@@ -782,9 +806,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     uint32_t texture_target,
     ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForGpuMemoryBufferInternal(
-      visible_rect, natural_size, std::move(gpu_memory_buffer),
-      std::move(mailbox_holder_and_gmb_release_cb), timestamp);
+  scoped_refptr<VideoFrame> frame =
+      CreateFrameForGpuMemoryBufferOrMappableSIInternal(
+          visible_rect, natural_size, std::move(gpu_memory_buffer),
+          /*shared_image=*/nullptr,
+          /*enable_mappable_si=*/false,
+          std::move(mailbox_holder_and_gmb_release_cb), timestamp);
   if (!frame) {
     return nullptr;
   }
@@ -812,9 +839,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     uint32_t texture_target,
     ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame = CreateFrameForGpuMemoryBufferInternal(
-      visible_rect, natural_size, std::move(gpu_memory_buffer),
-      std::move(mailbox_holder_and_gmb_release_cb), timestamp);
+  scoped_refptr<VideoFrame> frame =
+      CreateFrameForGpuMemoryBufferOrMappableSIInternal(
+          visible_rect, natural_size, std::move(gpu_memory_buffer),
+          /*shared_image=*/nullptr,
+          /*enable_mappable_si=*/false,
+          std::move(mailbox_holder_and_gmb_release_cb), timestamp);
   if (!frame) {
     return nullptr;
   }

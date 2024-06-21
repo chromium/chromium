@@ -877,10 +877,18 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
 
-  static scoped_refptr<VideoFrame> CreateFrameForGpuMemoryBufferInternal(
+  // This method is used by ::WrapExternalGpuMemoryBuffer() as well as future
+  // apis added for MappableSI. ::WrapExternalGpuMemoryBuffer() can just pass
+  // |shared_image| param as nullptr here whereas MappableSharedImage apis will
+  // pass |gpu_memory_buffer| as nullptr. There are additional checks inside to
+  // ensure the correctness.
+  static scoped_refptr<VideoFrame>
+  CreateFrameForGpuMemoryBufferOrMappableSIInternal(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const bool enable_mappable_si,
       ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
       base::TimeDelta timestamp);
 
@@ -960,8 +968,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // This field will be set by clients when using MappableSI instead of
   // GpuMemoryBuffers. Clients will set this flag while creating a VideoFrame.
-  // For now it's set to false always until clients starts using it.
-  const bool is_mappable_si_enabled_ = false;
+  bool is_mappable_si_enabled_ = false;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
