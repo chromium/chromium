@@ -74,4 +74,14 @@ suite('SeaPenInputQueryElementTest', function() {
 
     assertTrue(!!seaPenSuggestions, 'suggestions element should exist');
   });
+
+  test('displays prompting guide link', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const promptingGuide =
+        seaPenInputQueryElement.shadowRoot!.getElementById('promptingGuide');
+
+    assertTrue(!!promptingGuide, 'prompting guide link should exist');
+  });
 });

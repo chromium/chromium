@@ -20,11 +20,18 @@
     display: flex;
     justify-content: center;
     margin-block: 24px;
+    position: relative;
+    width: 50%;
   }
 
   #searchButtons cr-button {
     margin: 0 4px;
     padding-inline-end: 16px;
+  }
+
+  #searchButtons #promptingGuide {
+    left: 0;
+    position: absolute;
   }
 
   #thumbnailsLoadingText {
@@ -54,6 +61,11 @@
       </span>
     </template>
     <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
+      <a id="promptingGuide"
+          href="chrome://help-app/help/sub/3399710/id/1251809"
+          target="_blank">
+        Prompting guide
+      </a>
       <cr-button
           id="searchButton"
           class="action-button"
