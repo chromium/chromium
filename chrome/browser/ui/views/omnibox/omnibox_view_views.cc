@@ -1743,7 +1743,7 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   ui::Clipboard* cb = ui::Clipboard::GetForCurrentThread();
   std::u16string selected_text;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   cb->ReadText(clipboard_buffer, &data_dst, &selected_text);
   GURL url;
   bool write_url = false;

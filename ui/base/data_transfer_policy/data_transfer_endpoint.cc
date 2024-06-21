@@ -13,20 +13,19 @@
 namespace ui {
 
 DataTransferEndpoint::DataTransferEndpoint(const GURL& url,
-                                           bool off_the_record,
-                                           bool notify_if_restricted)
+                                           DataTransferEndpointOptions options)
     : type_(EndpointType::kUrl),
       url_(url),
-      off_the_record_(off_the_record),
-      notify_if_restricted_(notify_if_restricted) {
+      off_the_record_(options.off_the_record),
+      notify_if_restricted_(options.notify_if_restricted) {
   CHECK(url.is_valid());
 }
 
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
-                                           bool notify_if_restricted)
+                                           DataTransferEndpointOptions options)
     : type_(type),
       url_(std::nullopt),
-      notify_if_restricted_(notify_if_restricted) {
+      notify_if_restricted_(options.notify_if_restricted) {
   CHECK_NE(type, EndpointType::kUrl);
 }
 

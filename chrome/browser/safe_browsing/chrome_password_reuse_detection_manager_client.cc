@@ -311,7 +311,7 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
     // if the clipboard is restricted by the rules of data leak prevention
     // policy.
     ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-        ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+        ui::EndpointType::kDefault, {.notify_if_restricted = false});
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, &data_dst, &text);
   }
 

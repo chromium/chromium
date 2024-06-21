@@ -95,8 +95,8 @@ TEST(WaylandExchangeDataProviderTest, AddAndExtractDataTransferEndpoint) {
       "{\"endpoint_type\":\"url\","
       "\"off_the_record\":false,"
       "\"url\":\"https://www.google.com/\"}";
-  const DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
-      GURL("https://www.google.com"), /*off_the_record=*/false);
+  const DataTransferEndpoint expected_dte =
+      ui::DataTransferEndpoint(GURL("https://www.google.com"));
 
   WaylandExchangeDataProvider provider;
   std::string extracted;
@@ -124,8 +124,8 @@ TEST(WaylandExchangeDataProviderTest, AddAndExtractMultipleData) {
       "{\"endpoint_type\":\"url\","
       "\"off_the_record\":false,"
       "\"url\":\"chrome://tab-strip.top-chrome\"}";
-  const DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
-      GURL("chrome://tab-strip.top-chrome"), /*off_the_record=*/false);
+  const DataTransferEndpoint expected_dte =
+      ui::DataTransferEndpoint(GURL("chrome://tab-strip.top-chrome"));
 
   WaylandExchangeDataProvider provider;
   std::string extracted;

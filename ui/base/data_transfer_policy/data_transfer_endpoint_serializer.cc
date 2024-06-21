@@ -135,7 +135,10 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
     }
 
     return std::make_unique<DataTransferEndpoint>(
-        url, dte_dictionary->GetDict().FindBool(kOffTheRecord).value_or(false));
+        url, DataTransferEndpointOptions{.off_the_record =
+                                             dte_dictionary->GetDict()
+                                                 .FindBool(kOffTheRecord)
+                                                 .value_or(false)});
   }
 
   auto type_enum = EndpointStringToType(*endpoint_type);

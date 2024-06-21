@@ -513,7 +513,7 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     case ui::TouchEditable::kPaste: {
       std::u16string result;
       ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-          ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+          ui::EndpointType::kDefault, {.notify_if_restricted = false});
       ui::Clipboard::GetForCurrentThread()->ReadText(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();

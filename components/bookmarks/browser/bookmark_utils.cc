@@ -152,8 +152,9 @@ std::string TruncateUrl(const std::string& url) {
 GURL GetUrlFromClipboard(bool notify_if_restricted) {
   std::u16string url_text;
 #if !BUILDFLAG(IS_IOS)
-  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, notify_if_restricted);
+  ui::DataTransferEndpoint data_dst =
+      ui::DataTransferEndpoint(ui::EndpointType::kDefault,
+                               {.notify_if_restricted = notify_if_restricted});
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &url_text);
 #endif

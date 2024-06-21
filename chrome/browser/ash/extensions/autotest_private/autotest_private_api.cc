@@ -2587,7 +2587,7 @@ AutotestPrivateGetClipboardTextDataFunction::Run() {
   // shouldn't see a notification if the clipboard is restricted by the rules of
   // data leak prevention policy.
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &data);
   return RespondNow(WithArguments(data));

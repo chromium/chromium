@@ -3946,7 +3946,8 @@ RenderViewContextMenu::CreateDataEndpoint(bool notify_if_restricted) const {
       !render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
     return std::make_unique<ui::DataTransferEndpoint>(
         render_frame_host->GetMainFrame()->GetLastCommittedURL(),
-        /*off_the_record=*/false, notify_if_restricted);
+        ui::DataTransferEndpointOptions{.notify_if_restricted =
+                                            notify_if_restricted});
   }
   return nullptr;
 }

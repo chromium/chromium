@@ -1939,8 +1939,9 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::COPY:
       return readable && HasSelection();
     case ui::TextEditCommand::PASTE: {
-      ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault,
-                                        show_rejection_ui_if_any_);
+      ui::DataTransferEndpoint data_dst(
+          ui::EndpointType::kDefault,
+          {.notify_if_restricted = show_rejection_ui_if_any_});
       ui::Clipboard::GetForCurrentThread()->ReadText(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
     }

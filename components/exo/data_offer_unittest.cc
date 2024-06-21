@@ -473,7 +473,7 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        GURL("https://www.google.com"), /*off_the_record=*/false));
+        GURL("https://www.google.com")));
     writer.WriteText(u"Test data");
   }
 
@@ -521,7 +521,7 @@ TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        GURL("https://www.google.com"), /*off_the_record=*/false));
+        GURL("https://www.google.com")));
     writer.WriteText(u"Test data");
   }
 
@@ -567,7 +567,7 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacrosSourceChanged) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        GURL("https://www.google.com"), /*off_the_record=*/false));
+        GURL("https://www.google.com")));
     writer.WriteText(u"Test data");
   }
 
@@ -626,7 +626,7 @@ TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {
   ui::OSExchangeData data;
   data.SetString(std::u16string(u"Test data"));
   data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      GURL("https://www.google.com"), /*off_the_record=*/false));
+      GURL("https://www.google.com")));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -682,7 +682,7 @@ TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
   ui::OSExchangeData data;
   data.SetString(std::u16string(u"Test data"));
   data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      GURL("https://www.google.com"), /*off_the_record=*/false));
+      GURL("https://www.google.com")));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);

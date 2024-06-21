@@ -42,7 +42,7 @@ void OnGetRecentImageFromClipboard(
 bool HasRecentURLFromClipboard() {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                       ui::ClipboardBuffer::kCopyPaste,
                                       &data_dst);
@@ -51,7 +51,7 @@ bool HasRecentURLFromClipboard() {
 bool HasRecentTextFromClipboard() {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                                       ui::ClipboardBuffer::kCopyPaste,
                                       &data_dst);
@@ -70,7 +70,7 @@ std::optional<GURL> ClipboardRecentContentGeneric::GetRecentURLFromClipboard() {
   std::string gurl_string;
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
 #if BUILDFLAG(IS_ANDROID)
   clipboard->ReadBookmark(&data_dst, nullptr, &gurl_string);
 #else
@@ -117,7 +117,7 @@ ClipboardRecentContentGeneric::GetRecentTextFromClipboard() {
 
   std::u16string text_from_clipboard;
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &text_from_clipboard);
   base::TrimWhitespace(text_from_clipboard, base::TrimPositions::TRIM_ALL,
@@ -135,7 +135,7 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
     return;
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   ui::Clipboard::GetForCurrentThread()->ReadPng(
       ui::ClipboardBuffer::kCopyPaste, &data_dst,
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
@@ -167,7 +167,7 @@ bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
     return false;
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::PngType(), ui::ClipboardBuffer::kCopyPaste,
       &data_dst);

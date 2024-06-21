@@ -156,7 +156,8 @@ ClipboardEndpoint GetSourceClipboardEndpoint(
     if (clipboard_source_dte->IsUrlType()) {
       source_dte = std::make_optional<ui::DataTransferEndpoint>(
           *clipboard_source_dte->GetURL(),
-          rfh->GetBrowserContext()->IsOffTheRecord());
+          ui::DataTransferEndpointOptions{
+              .off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
     } else {
       source_dte = std::move(clipboard_source_dte);
     }
@@ -185,7 +186,9 @@ ClipboardHostImpl::ClipboardHostImpl(
       ui::ClipboardBuffer::kCopyPaste,
       std::make_unique<ui::DataTransferEndpoint>(
           render_frame_host.GetMainFrame()->GetLastCommittedURL(),
-          render_frame_host.GetBrowserContext()->IsOffTheRecord()));
+          ui::DataTransferEndpointOptions{
+              .off_the_record =
+                  render_frame_host.GetBrowserContext()->IsOffTheRecord()}));
 }
 
 void ClipboardHostImpl::Create(
@@ -809,8 +812,12 @@ std::unique_ptr<ui::DataTransferEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
   return std::make_unique<ui::DataTransferEndpoint>(
       render_frame_host().GetMainFrame()->GetLastCommittedURL(),
-      render_frame_host().GetBrowserContext()->IsOffTheRecord(),
-      render_frame_host().HasTransientUserActivation());
+      ui::DataTransferEndpointOptions{
+          .notify_if_restricted =
+              render_frame_host().HasTransientUserActivation(),
+          .off_the_record =
+              render_frame_host().GetBrowserContext()->IsOffTheRecord(),
+      });
 }
 
 ClipboardEndpoint ClipboardHostImpl::CreateClipboardEndpoint() {

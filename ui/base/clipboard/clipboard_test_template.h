@@ -594,8 +594,7 @@ void WriteBitmap(Clipboard* clipboard,
   {
     ScopedClipboardWriter clipboard_writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(GURL("https://google.com/"),
-                                               /*off_the_record=*/false));
+        std::make_unique<DataTransferEndpoint>(GURL("https://google.com/")));
     SkBitmap bitmap;
     ASSERT_TRUE(bitmap.setInfo(info));
     bitmap.setPixels(const_cast<void*>(bitmap_data));
@@ -1193,8 +1192,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(GURL("https://www.google.com"),
-                                               /*off_the_record=*/false));
+        std::make_unique<DataTransferEndpoint>(GURL("https://www.google.com")));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1230,8 +1228,7 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(GURL("https://google.com/"),
-                                               /*off_the_record=*/false));
+        std::make_unique<DataTransferEndpoint>(GURL("https://google.com/")));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)

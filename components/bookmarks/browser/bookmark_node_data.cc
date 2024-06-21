@@ -142,7 +142,7 @@ BookmarkNodeData::~BookmarkNodeData() {
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, /*notify_if_restricted=*/false);
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
       ui::ClipboardFormatType::GetType(kClipboardFormatString),
       ui::ClipboardBuffer::kCopyPaste, &data_dst);

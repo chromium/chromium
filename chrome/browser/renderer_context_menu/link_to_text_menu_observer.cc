@@ -379,8 +379,9 @@ void LinkToTextMenuObserver::CopyTextToClipboard(const std::string& text) {
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
   CHECK(rfh);
 
-  ui::DataTransferEndpoint dte(rfh->GetMainFrame()->GetLastCommittedURL(),
-                               rfh->GetBrowserContext()->IsOffTheRecord());
+  ui::DataTransferEndpoint dte(
+      rfh->GetMainFrame()->GetLastCommittedURL(),
+      {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
   content::ClipboardEndpoint clipboard_endpoint(
       dte,
       base::BindRepeating(

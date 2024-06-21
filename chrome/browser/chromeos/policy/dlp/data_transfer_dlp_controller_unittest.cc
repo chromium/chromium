@@ -106,13 +106,10 @@ std::optional<ui::DataTransferEndpoint> CreateEndpoint(
     bool notify_if_restricted) {
   if (type && *type == ui::EndpointType::kUrl) {
     return ui::DataTransferEndpoint(
-        (GURL(kExample2Url)),
-        /*off_the_record=*/false,
-        /*notify_if_restricted=*/notify_if_restricted);
+        GURL(kExample2Url), {.notify_if_restricted = notify_if_restricted});
   } else if (type) {
     return ui::DataTransferEndpoint(
-        *type,
-        /*notify_if_restricted=*/notify_if_restricted);
+        *type, {.notify_if_restricted = notify_if_restricted});
   }
   return std::nullopt;
 }
@@ -745,7 +742,8 @@ class DlpControllerVMsTest : public DataTransferDlpControllerTest {
     drag_data_.SetSource(std::make_unique<ui::DataTransferEndpoint>(data_src_));
     std::tie(endpoint_type_, do_notify_) = GetParam();
     ASSERT_TRUE(endpoint_type_.has_value());
-    data_dst_ = ui::DataTransferEndpoint(endpoint_type_.value(), do_notify_);
+    data_dst_ = ui::DataTransferEndpoint(endpoint_type_.value(),
+                                         {.notify_if_restricted = do_notify_});
   }
 
   ui::DataTransferEndpoint data_src_{ui::EndpointType::kDefault};
@@ -767,7 +765,8 @@ TEST_P(DlpControllerVMsTest, Allow) {
   ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
   auto [endpoint_type, do_notify] = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
-  ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
+  ui::DataTransferEndpoint data_dst(endpoint_type.value(),
+                                    {.notify_if_restricted = do_notify});
 
   // IsClipboardReadAllowed
   EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
@@ -894,7 +893,8 @@ TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
   ui::DataTransferEndpoint data_src((GURL(kExample1Url)));
   auto [endpoint_type, do_notify] = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
-  ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
+  ui::DataTransferEndpoint data_dst(endpoint_type.value(),
+                                    {.notify_if_restricted = do_notify});
 
   // IsClipboardReadAllowed
   EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
