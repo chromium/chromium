@@ -52,6 +52,10 @@ void AppendWithSpace(const SuggestionAnswer::TextField* text,
   *output += text->text();
 }
 
+}  // namespace
+
+namespace omnibox::answer_data_parser {
+
 // If necessary, concatenate scheme and host/path using only ':' as
 // separator. This is due to the results delivering strings of the form
 // "//host/path", which is web-speak for "use the enclosing page's scheme",
@@ -62,10 +66,6 @@ GURL GetFormattedURL(const std::string* url_string) {
                   ? (std::string(url::kHttpsScheme) + ":" + *url_string)
                   : *url_string);
 }
-
-}  // namespace
-
-namespace omnibox::answer_data_parser {
 
 void SetColorType(int text_type,
                   omnibox::FormattedString::FormattedStringFragment* fragment) {
@@ -346,7 +346,8 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(
     if (!url_string || url_string->empty()) {
       return false;
     }
-    image_line->image_url_ = GetFormattedURL(url_string);
+    image_line->image_url_ =
+        omnibox::answer_data_parser::GetFormattedURL(url_string);
 
     if (!image_line->image_url_.is_valid()) {
       return false;

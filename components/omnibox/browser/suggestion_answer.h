@@ -52,6 +52,8 @@ enum TextType {
   SUGGESTION_SECONDARY_TEXT_MEDIUM = 20,
 };
 
+GURL GetFormattedURL(const std::string* url_string);
+
 bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
                            const std::u16string& answer_type_str,
                            omnibox::RichAnswerTemplate* answer_template);

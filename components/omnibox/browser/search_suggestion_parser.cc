@@ -218,6 +218,20 @@ bool DecodeProtoFromBase64(const std::string* encoded_data, T& result_proto) {
   return true;
 }
 
+// Format template image URLs that do not contain a scheme.
+// The call to GetFormattedURL() will return the URL with a scheme added or
+// return the same URL if no formatting is necessary.
+void FormatAnswerTemplateImageURL(
+    omnibox::RichAnswerTemplate* answer_template) {
+  if (!(answer_template->answers_size() > 0)) {
+    return;
+  }
+  std::string* url_string =
+      answer_template->mutable_answers(0)->mutable_image()->mutable_url();
+  answer_template->mutable_answers(0)->mutable_image()->set_url(
+      omnibox::answer_data_parser::GetFormattedURL(url_string).spec());
+}
+
 }  // namespace
 
 omnibox::SuggestSubtype SuggestSubtypeForNumber(int value) {
@@ -896,6 +910,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
                 DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(
                     answer_template_string, suggest_template);
             answer_template = suggest_template.rich_answer_template();
+            FormatAnswerTemplateImageURL(&answer_template);
             // TODO(327497146): Create histogram to log whether decoding was
             // successful.
           }

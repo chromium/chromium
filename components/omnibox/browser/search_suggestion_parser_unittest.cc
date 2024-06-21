@@ -832,6 +832,15 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
     // correctly parsed.
     ASSERT_EQ(3U, results.suggest_results.size());
     ASSERT_TRUE(results.suggest_results[0].answer_template().has_value());
+    // Protos should initially not be equal because there is formatting done to
+    // a templates URL after decoding.
+    ASSERT_FALSE(
+        ProtosAreEqual(results.suggest_results[0].answer_template().value(),
+                       *answer_template));
+    // Change `answer_data` image URL to formatted version to reflect formatting
+    // done when parsing results. Now the protos should be equal.
+    answer_data->mutable_image()->set_url(
+        "https://www.gstatic.com/images/image.png");
     ASSERT_TRUE(
         ProtosAreEqual(results.suggest_results[0].answer_template().value(),
                        *answer_template));
