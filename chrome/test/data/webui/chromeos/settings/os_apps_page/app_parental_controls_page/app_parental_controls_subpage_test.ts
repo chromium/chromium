@@ -109,6 +109,36 @@ suite('AppParentalControlsSubpage', () => {
     assertFalse(app.isBlocked);
   });
 
+  test('Clicking app row updates app blocked state', async () => {
+    const app = createApp('file-id', 'Files', false);
+    handler.addAppForTesting(app);
+
+    await createPage();
+
+    const apps = getApps();
+    assertEquals(1, apps.length);
+
+    const appElement = apps[0];
+    assertTrue(!!appElement);
+    appElement.click();
+
+    assertEquals(handler.getCallCount('updateApp'), 1);
+    const args1 = handler.getArgs('updateApp')[0];
+    assertEquals(2, args1.length);
+    assertEquals(app.id, args1[0]);
+    assertTrue(/*isBlocked*/ args1[1]);
+    assertTrue(app.isBlocked);
+
+    appElement.click();
+
+    assertEquals(handler.getCallCount('updateApp'), 2);
+    const args2 = handler.getArgs('updateApp')[1];
+    assertEquals(2, args2.length);
+    assertEquals(app.id, args2[0]);
+    assertFalse(/*isBlocked*/ args2[1]);
+    assertFalse(app.isBlocked);
+  });
+
   test('Remote app changes update toggle state', async () => {
     const app = createApp('file-id', 'Files', false);
     handler.addAppForTesting(app);

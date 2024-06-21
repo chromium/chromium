@@ -35,8 +35,12 @@ export class BlockAppItemElement extends PolymerElement {
     this.mojoInterfaceProvider = getAppParentalControlsProvider();
   }
 
-  override connectedCallback(): void {
-    super.connectedCallback();
+  override ready(): void {
+    super.ready();
+
+    this.addEventListener('click', () => {
+      this.updateBlockedState_(!this.app.isBlocked);
+    });
   }
 
   private isAllowed_(app: App): boolean {
@@ -45,6 +49,10 @@ export class BlockAppItemElement extends PolymerElement {
 
   private onToggleChange_(e: CustomEvent<boolean>): void {
     const isBlocked = !e.detail;
+    this.updateBlockedState_(isBlocked);
+  }
+
+  private updateBlockedState_(isBlocked: boolean): void {
     this.mojoInterfaceProvider.updateApp(this.app.id, isBlocked);
   }
 
