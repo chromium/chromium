@@ -5,6 +5,7 @@
 import './strings.m.js';
 
 import {assert, assertInstanceof} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -115,6 +116,7 @@ export class ObjectLayerElement extends PolymerElement {
     };
   }
 
+  private eventTracker_: EventTracker = new EventTracker();
   private canvasHeight: number;
   private canvasWidth: number;
   private canvasPhysicalHeight: number;
@@ -127,15 +129,17 @@ export class ObjectLayerElement extends PolymerElement {
   private screenshotDataUri: string;
   // The objects rendered in this layer.
   private renderedObjects: OverlayObject[];
-  // The last object clicked on. Gets reset whenever the selection overlay
-  // receives a pointer down event.
-  private lastSelectedObjectIndex?: number;
+  // The last post selection made. Updated by events from the post selection
+  // layer.
+  private lastPostSelection: PostSelectionBoundingBox|null = null;
   // Whether precise object highlighting is enabled.
   private preciseHighlight: boolean;
   // The overlay theme.
   private theme: OverlayTheme;
   private fadeOutAnimations: Animation[] = [];
   private fadeOutTimeoutIds: number[] = [];
+  private postSelectionComparisonThreshold: number =
+      loadTimeData.getValue('postSelectionComparisonThreshold');
 
   private readonly router: LensPageCallbackRouter =
       BrowserProxyImpl.getInstance().callbackRouter;
@@ -152,7 +156,11 @@ export class ObjectLayerElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-
+    this.eventTracker_.add(
+        document, 'post-selection-updated',
+        (e: CustomEvent<PostSelectionBoundingBox>) => {
+          this.lastPostSelection = e.detail;
+        });
     // Set up listener to receive objects from C++.
     this.objectsReceivedListenerId = this.router.objectsReceived.addListener(
         this.onObjectsReceived.bind(this));
@@ -194,7 +202,6 @@ export class ObjectLayerElement extends PolymerElement {
 
     recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.OBJECT_CLICK);
 
-    this.lastSelectedObjectIndex = objectIndex;
     return true;
   }
 
@@ -256,12 +263,13 @@ export class ObjectLayerElement extends PolymerElement {
     assertInstanceof(event.target, HTMLElement);
 
     // If the object being hovered is already selected, exit early.
-    const objectId = this.$.objectsContainer.indexForElement(event.target);
-    if (objectId === this.lastSelectedObjectIndex) {
+    const object = this.$.objectsContainer.itemForElement(event.target);
+    if (object &&
+        this.isRegionAlreadySelected(
+            this.getPostSelectionRegion(object.geometry!.boundingBox))) {
       return;
     }
 
-    const object = this.$.objectsContainer.itemForElement(event.target);
     if (this.preciseHighlight) {
       // Draw the object in the hidden canvas which is used to highlight the
       // object in the visible canvas when the pointer is inside the object.
@@ -269,6 +277,21 @@ export class ObjectLayerElement extends PolymerElement {
     } else {
       this.onSegmentationHovered(object);
     }
+  }
+
+  private isRegionAlreadySelected(boundingBox: PostSelectionBoundingBox):
+      boolean {
+    if (this.lastPostSelection === null) {
+      return false;
+    }
+    return Math.abs(boundingBox.top - this.lastPostSelection.top) <=
+        this.postSelectionComparisonThreshold &&
+        Math.abs(boundingBox.left - this.lastPostSelection.left) <=
+        this.postSelectionComparisonThreshold &&
+        Math.abs(boundingBox.width - this.lastPostSelection.width) <=
+        this.postSelectionComparisonThreshold &&
+        Math.abs(boundingBox.height - this.lastPostSelection.height) <=
+        this.postSelectionComparisonThreshold;
   }
 
   private handlePointerLeave() {
@@ -323,10 +346,6 @@ export class ObjectLayerElement extends PolymerElement {
       this.hiddenContext!.setTransform(
           window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
     }
-  }
-
-  clearSelectedObject() {
-    this.lastSelectedObjectIndex = undefined;
   }
 
   private drawObject(context: CanvasRenderingContext2D, object: OverlayObject) {
