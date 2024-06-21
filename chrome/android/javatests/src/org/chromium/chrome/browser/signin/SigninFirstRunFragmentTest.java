@@ -1330,7 +1330,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/347291782")
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testShowsTitleAndSubtitleWhenNativeInitializationFinished() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
