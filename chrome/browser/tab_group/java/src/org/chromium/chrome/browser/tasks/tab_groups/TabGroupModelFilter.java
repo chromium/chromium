@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -53,6 +54,16 @@ import java.util.stream.Collectors;
  * https://crbug.com/1523745.
  */
 public class TabGroupModelFilter extends TabModelFilter {
+    // This is not a great place for this, but due to dependency issues it cannot go in
+    // TabUiFeatureUtilities so this is the best place since we need it here.
+    private static final String SKIP_TAB_GROUP_CREATION_DIALOG_PARAM =
+            "skip_tab_group_creation_dialog";
+    public static final BooleanCachedFieldTrialParameter SKIP_TAB_GROUP_CREATION_DIALOG =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+                    SKIP_TAB_GROUP_CREATION_DIALOG_PARAM,
+                    false);
+
     /**
      * Class to hold metadata while fixRootIds still exists. Delete when rootId is removed.
      * Instanced to allow easy setting of fields in constructor.
@@ -192,8 +203,9 @@ public class TabGroupModelFilter extends TabModelFilter {
 
         tab.setTabGroupId(Token.createRandom());
 
-        // If this is a new tab group creation, do not trigger a snackbar.
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+        // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                && !SKIP_TAB_GROUP_CREATION_DIALOG.getValue()) {
             notify = false;
         }
 
@@ -333,8 +345,10 @@ public class TabGroupModelFilter extends TabModelFilter {
                 if (willMergingCreateNewGroup) {
                     observer.didCreateNewGroup(destinationTab, this);
 
-                    // If this is a new tab group creation, do not trigger a snackbar.
-                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                    // If this is a new tab group creation that will show a dialog, do not trigger a
+                    // snackbar.
+                    if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                            && !SKIP_TAB_GROUP_CREATION_DIALOG.getValue()) {
                         continue;
                     }
                 }
@@ -474,10 +488,12 @@ public class TabGroupModelFilter extends TabModelFilter {
                 observer.didCreateNewGroup(destinationTab, this);
             }
 
-            // If this is a new tab group creation, do not trigger a snackbar.
+            // If this is a new tab group creation that will show a dialog, do not trigger a
+            // snackbar.
             boolean skipSnackbarForCreation =
                     willMergingCreateNewGroup
-                            && ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
+                            && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
+                            && !SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
@@ -784,6 +800,9 @@ public class TabGroupModelFilter extends TabModelFilter {
                 Token newTabGroupId = getOrCreateTabGroupId(parentTab);
                 if (!Objects.equals(oldTabGroupId, newTabGroupId)) {
                     willMergingCreateNewGroup = true;
+                }
+                for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+                    observer.willMergeTabToGroup(tab, parentTab.getRootId());
                 }
                 tab.setRootId(parentTab.getRootId());
                 tab.setTabGroupId(newTabGroupId);
