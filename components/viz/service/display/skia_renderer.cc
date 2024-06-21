@@ -3391,12 +3391,13 @@ void SkiaRenderer::DrawRenderPassQuad(
     LOG(ERROR) << "Could not find render pass id # " << quad->render_pass_id
                << " in the render pass overlay backings";
 
-    if (base::FeatureList::IsEnabled(kTrackAllAllocatedRenderPassIds)) {
-      SCOPED_CRASH_KEY_STRING32(
-          "DrawRenderPassQuad", "backing not found",
-          base::StringPrintf("seen before = %d", seen_render_pass_ids_.contains(
-                                                     quad->render_pass_id)));
-    }
+    SCOPED_CRASH_KEY_STRING32(
+        "DrawRenderPassQuad", "backing not found",
+        "seen before = " +
+            (base::FeatureList::IsEnabled(kTrackAllAllocatedRenderPassIds)
+                 ? base::NumberToString(
+                       seen_render_pass_ids_.contains(quad->render_pass_id))
+                 : "unknown"));
 
     // Collect a dump so we can investigate the root cause, but fallback to a
     // solid color to avoid disrupting the user.
