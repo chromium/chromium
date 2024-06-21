@@ -1522,6 +1522,8 @@ class CONTENT_EXPORT WebContentsImpl
                            MaxFrameCountInjectedIframes);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            ForEachFrameTreeInnerContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
+                           UserAgentOverrideDuringDeferredNavigation);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameMPArchBrowserTest, FrameIteration);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameParameterizedBrowserTest,
                            ShouldIgnoreJsDialog);

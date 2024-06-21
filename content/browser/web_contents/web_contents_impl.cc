@@ -2217,6 +2217,13 @@ void WebContentsImpl::SetUserAgentOverride(
 
   should_override_user_agent_in_new_tabs_ = override_in_new_tabs;
 
+  // Update any in-flight load requests with overrides for new tabs.
+  if (delayed_load_url_params_.get()) {
+    delayed_load_url_params_->override_user_agent =
+        override_in_new_tabs ? NavigationController::UA_OVERRIDE_TRUE
+                             : NavigationController::UA_OVERRIDE_FALSE;
+  }
+
   renderer_preferences_.user_agent_override = ua_override;
 
   // Send the new override string to all renderers in the current page.

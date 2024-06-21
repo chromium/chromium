@@ -2510,6 +2510,68 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverride) {
             EvalJs(shell()->web_contents(), "document.body.textContent;"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       UserAgentOverrideDuringDeferredNavigation) {
+  // Validates that when a deferred navigation is pending (e.g. in the case of
+  // Android WebView popups), we respect any user agent overrides that are set
+  // to apply to new tabs during this time.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const std::string kHeaderPath =
+      base::StrCat({"/echoheader?", net::HttpRequestHeaders::kUserAgent});
+  const GURL kUrl(embedded_test_server()->GetURL(kHeaderPath));
+  const std::string kUserAgentOverride = "foo";
+
+  shell()->set_delay_popup_contents_delegate_for_testing(true);
+
+  EXPECT_TRUE(NavigateToURL(shell(), kUrl));
+
+  // Make a popup.
+  Shell* new_shell = nullptr;
+  WebContents* new_contents = nullptr;
+  {
+    ShellAddedObserver new_shell_observer;
+    // Set `noopener` to force a deferred navigation (setting
+    // `delayed_load_url_params_` rather than triggering the navigation from the
+    // renderer).
+    std::string popup_script = JsReplace("window.open($1,'','noopener')", kUrl);
+    EXPECT_TRUE(ExecJs(shell(), popup_script));
+    new_shell = new_shell_observer.GetShell();
+    new_contents = new_shell->web_contents();
+    // Delaying popup holds the initial load of `url`.
+    EXPECT_TRUE(WaitForLoadStop(new_contents));
+    EXPECT_TRUE(new_contents->GetController()
+                    .GetLastCommittedEntry()
+                    ->IsInitialEntry());
+  }
+  EXPECT_TRUE(
+      static_cast<WebContentsImpl*>(new_contents)->delayed_load_url_params_);
+  EXPECT_EQ(static_cast<WebContentsImpl*>(new_contents)
+                ->delayed_load_url_params_->override_user_agent,
+            NavigationController::UA_OVERRIDE_FALSE);
+
+  // After the popup has been created - but before the navigation is made -
+  // override the UA, akin to AwSettings application of user agent overrides.
+  new_contents->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("foo"), true);
+
+  // Validate that the pending request has been updated.
+  EXPECT_EQ(static_cast<WebContentsImpl*>(new_contents)
+                ->delayed_load_url_params_->override_user_agent,
+            NavigationController::UA_OVERRIDE_TRUE);
+
+  // Resume loading by setting the delegate (via
+  // `set_delay_popup_contents_delegate_for_testing()`).
+  EXPECT_FALSE(new_contents->GetDelegate());
+  new_contents->SetDelegate(new_shell);
+  new_contents->ResumeLoadingCreatedWebContents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+
+  // Ensure that the override was properly set, even when a navigation was
+  // enqueued.
+  EXPECT_EQ(kUserAgentOverride,
+            EvalJs(new_contents, "document.body.textContent;"));
+}
+
 // Verifies the user-agent string may be changed in DidStartNavigation().
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        SetUserAgentOverrideFromDidStartNavigation) {
