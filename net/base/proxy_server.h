@@ -16,6 +16,11 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 
+namespace base {
+class Pickle;
+class PickleIterator;
+}  // namespace base
+
 namespace net {
 
 // ProxyServer encodes the {type, host, port} of a proxy server.
@@ -58,6 +63,10 @@ class NET_EXPORT ProxyServer {
   static ProxyServer FromSchemeHostAndPort(Scheme scheme,
                                            std::string_view host,
                                            std::optional<uint16_t> port);
+
+  static ProxyServer CreateFromPickle(base::PickleIterator* pickle_iter);
+
+  void Persist(base::Pickle* pickle) const;
 
   // In URL format (with brackets around IPv6 literals). Must not call for
   // invalid ProxyServers.

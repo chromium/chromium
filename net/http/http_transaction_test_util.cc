@@ -27,6 +27,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/disk_cache/disk_cache.h"
@@ -628,8 +629,14 @@ int MockNetworkTransaction::DoSendRequest() {
   response_.was_cached = false;
   response_.network_accessed = true;
   response_.remote_endpoint = t->transport_info.endpoint;
-  response_.was_fetched_via_proxy =
-      t->transport_info.type == TransportType::kProxied;
+  if (t->transport_info.type == TransportType::kDirect) {
+    response_.proxy_chain = ProxyChain::Direct();
+  } else if (t->transport_info.type == TransportType::kProxied) {
+    response_.proxy_chain = ProxyChain::FromSchemeHostAndPort(
+        ProxyServer::SCHEME_HTTP,
+        t->transport_info.endpoint.ToStringWithoutPort(),
+        t->transport_info.endpoint.port());
+  }
 
   response_.response_time = transaction_factory_->Now();
   if (!t->response_time.is_null())

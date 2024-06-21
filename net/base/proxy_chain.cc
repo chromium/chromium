@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/proxy_server.h"
@@ -38,6 +39,36 @@ ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
     : proxy_server_list_(std::move(proxy_server_list)) {
   if (!IsValidInternal()) {
     proxy_server_list_ = std::nullopt;
+  }
+}
+
+bool ProxyChain::InitFromPickle(base::PickleIterator* pickle_iter) {
+  if (!pickle_iter->ReadInt(&ip_protection_chain_id_)) {
+    return false;
+  }
+  size_t chain_length = 0;
+  if (!pickle_iter->ReadLength(&chain_length)) {
+    return false;
+  }
+
+  std::vector<ProxyServer> proxy_server_list;
+  for (size_t i = 0; i < chain_length; ++i) {
+    proxy_server_list.push_back(ProxyServer::CreateFromPickle(pickle_iter));
+  }
+  proxy_server_list_ = std::move(proxy_server_list);
+  return true;
+}
+
+void ProxyChain::Persist(base::Pickle* pickle) const {
+  DCHECK(IsValid());
+  pickle->WriteInt(ip_protection_chain_id_);
+  if (length() > static_cast<size_t>(INT_MAX) - 1) {
+    pickle->WriteInt(0);
+    return;
+  }
+  pickle->WriteInt(static_cast<int>(length()));
+  for (const auto& proxy_server : proxy_server_list_.value()) {
+    proxy_server.Persist(pickle);
   }
 }
 

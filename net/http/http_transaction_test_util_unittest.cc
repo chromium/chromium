@@ -91,7 +91,7 @@ TEST_F(MockNetworkTransactionTest, Basic) {
   EXPECT_TRUE(transaction->GetResponseInfo()->network_accessed);
   EXPECT_EQ(mock_transaction.transport_info.endpoint,
             transaction->GetResponseInfo()->remote_endpoint);
-  EXPECT_FALSE(transaction->GetResponseInfo()->was_fetched_via_proxy);
+  EXPECT_FALSE(transaction->GetResponseInfo()->WasFetchedViaProxy());
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);

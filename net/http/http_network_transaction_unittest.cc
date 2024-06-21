@@ -19163,7 +19163,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
   EXPECT_TRUE(response->headers->IsKeepAlive());
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
-  EXPECT_TRUE(response->was_fetched_via_proxy);
+  EXPECT_TRUE(response->WasFetchedViaProxy());
   EXPECT_FALSE(response->proxy_chain.is_for_ip_protection());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
                        HostPortPair::FromString("myproxy:70")),
@@ -19250,7 +19250,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGet) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_TRUE(response->was_fetched_via_proxy);
+  EXPECT_TRUE(response->WasFetchedViaProxy());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
                        HostPortPair::FromString("myproxy:70")),
             response->proxy_chain);
@@ -19334,7 +19334,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyTunnelGetIPv6) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_TRUE(response->was_fetched_via_proxy);
+  EXPECT_TRUE(response->WasFetchedViaProxy());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
                        HostPortPair::FromString("myproxy:70")),
             response->proxy_chain);
@@ -23806,7 +23806,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
   EXPECT_EQ(200, response->headers->response_code());
-  EXPECT_TRUE(response->was_fetched_via_proxy);
+  EXPECT_TRUE(response->WasFetchedViaProxy());
 
   // No NEL header was set.
   EXPECT_EQ(0u, network_error_logging_service()->headers().size());
@@ -27432,7 +27432,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
   proxy_info.UseDirect();
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
-  EXPECT_EQ(response_info.was_fetched_via_proxy, false);
+  EXPECT_EQ(response_info.WasFetchedViaProxy(), false);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_EQ(response_info.proxy_chain, ProxyChain::Direct());
 }
@@ -27445,7 +27445,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
   proxy_info.UseProxyChain(proxy_chain);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
-  EXPECT_EQ(response_info.was_fetched_via_proxy, true);
+  EXPECT_EQ(response_info.WasFetchedViaProxy(), true);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_EQ(response_info.proxy_chain, proxy_chain);
 }
@@ -27456,7 +27456,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(empty_proxy_info,
                                                  &response_info);
-  EXPECT_EQ(response_info.was_fetched_via_proxy, false);
+  EXPECT_EQ(response_info.WasFetchedViaProxy(), false);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_FALSE(response_info.proxy_chain.IsValid());
 }
@@ -27471,7 +27471,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionProxied) {
   proxy_info.UseProxyChain(ip_protection_proxy_chain);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
-  EXPECT_EQ(response_info.was_fetched_via_proxy, true);
+  EXPECT_EQ(response_info.WasFetchedViaProxy(), true);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
   EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
 }
@@ -27484,7 +27484,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionDirect) {
   proxy_info.UseProxyChain(kIpProtectionDirectChain);
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
-  EXPECT_EQ(response_info.was_fetched_via_proxy, false);
+  EXPECT_EQ(response_info.WasFetchedViaProxy(), false);
   EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
   EXPECT_EQ(response_info.proxy_chain, kIpProtectionDirectChain);
 }

@@ -30,6 +30,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_response_headers.h"
@@ -94,7 +95,6 @@ class DomainReliabilityMonitorTest : public testing::Test {
         "HTTP/1.1 200 OK\n\n");
     request.response_info.was_cached = false;
     request.response_info.network_accessed = true;
-    request.response_info.was_fetched_via_proxy = false;
     request.allow_credentials = true;
     request.upload_depth = 0;
     return request;
@@ -228,7 +228,8 @@ TEST_F(DomainReliabilityMonitorTest, WasFetchedViaProxy) {
   request.net_error = net::ERR_CONNECTION_RESET;
   request.response_info.remote_endpoint =
       net::IPEndPoint(net::IPAddress(127, 0, 0, 1), 3128);
-  request.response_info.was_fetched_via_proxy = true;
+  request.response_info.proxy_chain = net::ProxyChain::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTP, "foo", 80);
   OnRequestLegComplete(request);
 
   BeaconVector beacons;

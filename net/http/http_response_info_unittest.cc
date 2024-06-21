@@ -5,6 +5,7 @@
 #include "net/http/http_response_info.h"
 
 #include "base/pickle.h"
+#include "net/base/proxy_chain.h"
 #include "net/cert/signed_certificate_timestamp.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/http_response_headers.h"
@@ -57,6 +58,36 @@ TEST_F(HttpResponseInfoTest, UnusedSincePrefetchPersistTrue) {
   HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
   EXPECT_TRUE(restored_response_info.unused_since_prefetch);
+}
+
+TEST_F(HttpResponseInfoTest, ProxyChainDefault) {
+  EXPECT_FALSE(response_info_.proxy_chain.IsValid());
+  EXPECT_FALSE(response_info_.WasFetchedViaProxy());
+}
+
+TEST_F(HttpResponseInfoTest, ProxyChainCopy) {
+  response_info_.proxy_chain =
+      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);
+  HttpResponseInfo response_info_clone(response_info_);
+  EXPECT_TRUE(response_info_clone.proxy_chain.IsValid());
+  EXPECT_TRUE(response_info_clone.WasFetchedViaProxy());
+}
+
+TEST_F(HttpResponseInfoTest, ProxyChainPersistDirect) {
+  response_info_.proxy_chain = ProxyChain::Direct();
+  HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_TRUE(restored_response_info.proxy_chain.IsValid());
+  EXPECT_FALSE(restored_response_info.WasFetchedViaProxy());
+}
+
+TEST_F(HttpResponseInfoTest, ProxyChainPersistProxy) {
+  response_info_.proxy_chain =
+      ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "foo", 80);
+  HttpResponseInfo restored_response_info;
+  PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_TRUE(restored_response_info.proxy_chain.IsValid());
+  EXPECT_TRUE(restored_response_info.WasFetchedViaProxy());
 }
 
 TEST_F(HttpResponseInfoTest, PKPBypassPersistTrue) {
