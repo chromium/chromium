@@ -2063,8 +2063,6 @@ enum HeaderBehaviour {
   }
   [_sideSwipeMediator setEnabled:NO];
 
-  // TODO(b/324393850): Remove this condition when Omnibox iPad popout is
-  // launched.
   if (!IsVisibleURLNewTabPage(self.currentWebState) ||
       IsIpadPopoutOmniboxEnabled()) {
     // Tapping on web content area should dismiss the keyboard. Tapping on NTP
