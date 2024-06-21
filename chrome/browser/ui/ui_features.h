@@ -133,6 +133,11 @@ extern const char kPreloadTopChromeWebUIModePreloadOnWarmupName[];
 extern const char kPreloadTopChromeWebUIModePreloadOnMakeContentsName[];
 extern const base::FeatureParam<PreloadTopChromeWebUIMode>
     kPreloadTopChromeWebUIMode;
+extern const char kPreloadTopChromeWebUISmartPreloadName[];
+// If smart preload is enabled, the preload WebUI is determined by historical
+// engagement scores and whether a WebUI is currently being shown.
+// If disabled, always preload Tab Search.
+extern const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload;
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
