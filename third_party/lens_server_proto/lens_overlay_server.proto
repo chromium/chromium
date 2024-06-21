@@ -8,6 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_client_logs.proto";
 import "lens_overlay_service_deps.proto";
 
 // An error encountered while handling a request.
@@ -22,13 +23,16 @@ message LensOverlayServerError {
   ErrorType error_type = 1;
 }
 
-// Next ID: 3
+// Next ID: 4
 message LensOverlayServerRequest {
   // Options for fetching objects.
   LensOverlayObjectsRequest objects_request = 1;
 
   // Options for fetching interactions.
   LensOverlayInteractionRequest interaction_request = 2;
+
+  // Client logs for the request.
+  LensOverlayClientLogs client_logs = 3;
 }
 
 // Response details for an LensOverlay request.
