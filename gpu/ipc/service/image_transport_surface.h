@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "ui/gl/gl_surface.h"
@@ -35,8 +34,7 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
       gl::GLDisplay* display,
       const GpuDriverBugWorkarounds& workarounds,
       const GpuFeatureInfo& gpu_feature_info,
-      SurfaceHandle surface_handle,
-      DawnContextProvider* dawn_context_provider);
+      SurfaceHandle surface_handle);
 
   // Creates the appropriate native surface depending on the GL implementation.
   // This will be implemented separately by each platform. On failure, a null

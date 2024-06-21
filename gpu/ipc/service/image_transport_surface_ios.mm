@@ -16,13 +16,11 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider) {
+    SurfaceHandle surface_handle) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLGLES2 ||
       gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    return base::MakeRefCounted<ImageTransportSurfaceOverlayMacEGL>(
-        dawn_context_provider);
+    return base::MakeRefCounted<ImageTransportSurfaceOverlayMacEGL>();
   }
 
   return nullptr;

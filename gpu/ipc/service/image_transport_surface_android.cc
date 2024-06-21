@@ -29,8 +29,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider) {
+    SurfaceHandle surface_handle) {
   if (gl::GetGLImplementation() == gl::kGLImplementationMockGL ||
       gl::GetGLImplementation() == gl::kGLImplementationStubGL)
     return nullptr;
