@@ -197,6 +197,10 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/34.0.0.yaml",
             },
             {
+                "sdk_package_name": "build-tools;35.0.0",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/35.0.0.yaml",
+            },
+            {
                 "sdk_package_name": "cmdline-tools;latest",
                 "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools.yaml",
             },
@@ -217,6 +221,10 @@ packager_builder(
             {
                 "sdk_package_name": "platforms;android-34",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-34.yaml",
+            },
+            {
+                "sdk_package_name": "platforms;android-35",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-35.yaml",
             },
             {
                 "sdk_package_name": "platform-tools",
@@ -303,10 +311,9 @@ packager_builder(
                 "sdk_package_name": "system-images;android-34;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis/x86_64.yaml",
             },
-            # TODO(crbug.com/337112189): Replace Android-V system images with the finalized API level once available
             {
-                "sdk_package_name": "system-images;android-VanillaIceCream;google_apis;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-VanillaIceCream/google_apis/x86_64.yaml",
+                "sdk_package_name": "system-images;android-35;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis/x86_64.yaml",
             },
         ],
     },
