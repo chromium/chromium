@@ -20,6 +20,9 @@ bool DeferMediaLoad(content::RenderFrame* render_frame,
                     bool has_played_media_before,
                     base::OnceClosure closure);
 
+// Sets whether media load should be deferred on a RenderFrame.
+void SetShouldDeferMediaLoad(content::RenderFrame* render_frame,
+                             bool should_defer);
 }  // namespace prerender
 
 #endif  // COMPONENTS_NO_STATE_PREFETCH_RENDERER_NO_STATE_PREFETCH_UTILS_H_

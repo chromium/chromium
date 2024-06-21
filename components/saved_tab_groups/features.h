@@ -31,6 +31,8 @@ BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
 BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
 
+BASE_DECLARE_FEATURE(kDeferMediaLoadInBackgroundTab);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
@@ -40,6 +42,8 @@ extern bool IsMigrationFromJavaSharedPrefsEnabled();
 extern bool AlwaysAcceptServerDataInModel();
 
 extern bool RestrictDownloadOnSyncedTabs();
+
+extern bool DeferMediaLoadInBackgroundTab();
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_FEATURES_H_
