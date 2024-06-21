@@ -19,6 +19,7 @@
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
+#include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -1214,7 +1215,9 @@ void ReadAnythingAppController::OnInstallVoicePackResponse(
 
 std::string ReadAnythingAppController::GetAltText(
     ui::AXNodeID ax_node_id) const {
-  return model_.GetAltText(ax_node_id);
+  ui::AXNode* node = model_.GetAXNode(ax_node_id);
+  CHECK(node);
+  return a11y::GetAltText(node);
 }
 
 bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
@@ -1281,7 +1284,9 @@ void ReadAnythingAppController::RequestImageDataUrl(
 
 std::string ReadAnythingAppController::GetImageDataUrl(
     ui::AXNodeID node_id) const {
-  return model_.GetImageDataUrl(node_id);
+  ui::AXNode* node = model_.GetAXNode(node_id);
+  CHECK(node);
+  return a11y::GetImageDataUrl(node);
 }
 
 const std::string ReadAnythingAppController::GetDisplayNameForLocale(

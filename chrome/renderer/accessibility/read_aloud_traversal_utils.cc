@@ -84,6 +84,8 @@ ui::AXNode* GetNextNodeFromPosition(
   return ax_position->GetAnchor();
 }
 
+// TODO(crbug.com/40927698): See if we can use string util here.
+// https://source.chromium.org/chromium/chromium/src/+/main:base/strings/string_util.h;l=448?q=string_util%20punctuation&ss=chromium
 bool IsOpeningPunctuation(char& c) {
   return (c == '(' || c == '{' || c == '[' || c == '<');
 }

@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_node_position.h"
 
 // Utilities for traversing the accessibility tree for Read Aloud.
+// TODO(crbug.com/346612365): Rename to util instead of utils.
 
 // A current segment of text that will be consumed by Read Aloud.
 struct ReadAloudTextSegment {

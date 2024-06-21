@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
+#include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -212,8 +213,8 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   // nodes. Since the start and end nodes might be in different section of the
   // tree, get the parents for start and end separately. Otherwise, the end
   // selection might not render.
-  ui::AXNode* start_parent = GetParentForSelection(start_node);
-  ui::AXNode* end_parent = GetParentForSelection(end_node);
+  ui::AXNode* start_parent = a11y::GetParentForSelection(start_node);
+  ui::AXNode* end_parent = a11y::GetParentForSelection(end_node);
 
   // If either parent is missing, selection is invalid and we should return
   // early.
@@ -248,29 +249,6 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
 
     first_sibling_node = first_sibling_node->GetNextUnignoredInTreeOrder();
   }
-}
-
-ui::AXNode* ReadAnythingAppModel::GetParentForSelection(ui::AXNode* node) {
-  ui::AXNode* parent = node->GetUnignoredParentCrossingTreeBoundary();
-  // For most nodes, the parent is the same as the most direct parent. However,
-  // to handle special types of text formatting such as links and custom spans,
-  // another parent may be needed. e.g. when a link is highlighted, the start
-  // node has an "inline" display but the parent we want would have a "block"
-  // display role, so in order to get the common parent of
-  // all sibling nodes, the grandparent should be used.
-  // Displays of type "list-item" is an exception to the "inline" display rule
-  // so that all siblings in a list can be shown correctly to avoid
-  //  misnumbering.
-  while (parent && parent->GetUnignoredParentCrossingTreeBoundary() &&
-         parent->HasStringAttribute(ax::mojom::StringAttribute::kDisplay) &&
-         ((parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
-               .find("inline") != std::string::npos) ||
-          (parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
-               .find("list-item") != std::string::npos))) {
-    parent = parent->GetUnignoredParentCrossingTreeBoundary();
-  }
-
-  return parent;
 }
 
 bool ReadAnythingAppModel::ContentNodesOnlyContainHeadings() {
@@ -1061,7 +1039,7 @@ std::string ReadAnythingAppModel::GetHtmlTag(
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
 
   if (is_pdf()) {
-    return GetHtmlTagForPDF(ax_node, html_tag);
+    return a11y::GetHtmlTagForPDF(ax_node, html_tag);
   }
 
   if (ui::IsTextField(ax_node->GetRole())) {
@@ -1090,90 +1068,6 @@ std::string ReadAnythingAppModel::GetHtmlTag(
     }
   }
 
-  return html_tag;
-}
-
-std::string ReadAnythingAppModel::GetAltText(
-    const ui::AXNodeID& ax_node_id) const {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  CHECK(ax_node);
-  std::string alt_text =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  return alt_text;
-}
-
-std::string ReadAnythingAppModel::GetImageDataUrl(
-    const ui::AXNodeID& ax_node_id) const {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  CHECK(ax_node);
-
-  std::string url =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
-  return url;
-}
-
-std::string ReadAnythingAppModel::GetHtmlTagForPDF(
-    ui::AXNode* ax_node,
-    const std::string& html_tag) const {
-  ax::mojom::Role role = ax_node->GetRole();
-
-  // Some nodes in PDFs don't have an HTML tag so use role instead.
-  switch (role) {
-    case ax::mojom::Role::kEmbeddedObject:
-    case ax::mojom::Role::kRegion:
-    case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kRootWebArea:
-      return "span";
-    case ax::mojom::Role::kParagraph:
-      return "p";
-    case ax::mojom::Role::kLink:
-      return "a";
-    case ax::mojom::Role::kStaticText:
-      return "";
-    case ax::mojom::Role::kHeading:
-      return GetHeadingHtmlTagForPDF(ax_node, html_tag);
-    // Add a line break after each page of an inaccessible PDF for readability
-    // since there is no other formatting included in the OCR output.
-    case ax::mojom::Role::kContentInfo:
-      if (ax_node->GetTextContentUTF8() ==
-          l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END)) {
-        return "br";
-      }
-      ABSL_FALLTHROUGH_INTENDED;
-    default:
-      return html_tag.empty() ? "span" : html_tag;
-  }
-}
-
-std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
-    ui::AXNode* ax_node,
-    const std::string& html_tag) const {
-  // Sometimes whole paragraphs can be formatted as a heading. If the text is
-  // longer than 2 lines, assume it was meant to be a paragragh,
-  if (ax_node->GetTextContentUTF8().length() > (2 * kMaxLineWidth)) {
-    return "p";
-  }
-
-  // A single block of text could be incorrectly formatted with multiple heading
-  // nodes (one for each line of text) instead of a single paragraph node. This
-  // case should be detected to improve readability. If there are multiple
-  // consecutive nodes with the same heading level, assume that they are all a
-  // part of one paragraph.
-  ui::AXNode* next = ax_node->GetNextUnignoredSibling();
-  ui::AXNode* prev = ax_node->GetPreviousUnignoredSibling();
-
-  if ((next && next->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag) ||
-      (prev && prev->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag) ==
-                   html_tag)) {
-    return "span";
-  }
-
-  int32_t hierarchical_level =
-      ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
-  if (hierarchical_level) {
-    return base::StringPrintf("h%" PRId32, hierarchical_level);
-  }
   return html_tag;
 }
 
@@ -1284,7 +1178,7 @@ a11y::ReadAloudCurrentGranularity ReadAnythingAppModel::GetNextNodes() {
 
       std::u16string base_text = anchor_node->GetTextContentUTF16();
 
-      bool is_superscript = IsSuperscript(anchor_node);
+      bool is_superscript = a11y::IsSuperscript(anchor_node);
 
       // Look at the text of the items we've already added to the
       // current sentence (current_text) combined with the text of the next
@@ -1681,9 +1575,4 @@ void ReadAnythingAppModel::LogSpeechEventCounts() {
   for (const auto& [metric, count] : metric_to_count_map_) {
     base::UmaHistogramCounts1000(metric, count);
   }
-}
-
-bool ReadAnythingAppModel::IsSuperscript(ui::AXNode* node) {
-  return node->data().GetTextPosition() ==
-         ax::mojom::TextPosition::kSuperscript;
 }

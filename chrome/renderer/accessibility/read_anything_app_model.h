@@ -243,8 +243,6 @@ class ReadAnythingAppModel {
   void ToggleImagesEnabled();
 
   std::string GetHtmlTag(const ui::AXNodeID& ax_node_id) const;
-  std::string GetAltText(const ui::AXNodeID& ax_node_id) const;
-  std::string GetImageDataUrl(const ui::AXNodeID& ax_node_id) const;
 
   // Given a text index for the current granularity, return the AXNodeID for
   // that part of the text.
@@ -352,12 +350,6 @@ class ReadAnythingAppModel {
                               size_t prev_tree_size,
                               size_t tree_size);
 
-  ui::AXNode* GetParentForSelection(ui::AXNode* node);
-  std::string GetHtmlTagForPDF(ui::AXNode* ax_node,
-                               const std::string& html_tag) const;
-  std::string GetHeadingHtmlTagForPDF(ui::AXNode* ax_node,
-                                      const std::string& html_tag) const;
-
   bool IsTextForReadAnything(const ui::AXNodeID& ax_node_id) const;
 
   bool ShouldSplitAtParagraph(
@@ -386,9 +378,6 @@ class ReadAnythingAppModel {
   bool IsValidAXPosition(
       const ui::AXNodePosition::AXPositionInstance& positin,
       const a11y::ReadAloudCurrentGranularity& current_granularity) const;
-
-  // We want to group superscripts with the utterance preceding it.
-  bool IsSuperscript(ui::AXNode* node);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
