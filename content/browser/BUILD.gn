@@ -3234,7 +3234,7 @@ source_set("browser") {
       "//build/config/freetype",
       "//cc/slim",
       "//components/tracing:graphics_provider",
-      "//content/public/android:jni",
+      "//content/public/android:browser_jni",
       "//device/gamepad/public/mojom",
       "//gpu/command_buffer/service:gles2",
       "//media",

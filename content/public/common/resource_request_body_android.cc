@@ -15,7 +15,7 @@
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "content/public/android/content_main_dex_jni/ResourceRequestBody_jni.h"
+#include "content/public/android/public_common_jni/ResourceRequestBody_jni.h"
 
 using base::android::JavaParamRef;
 

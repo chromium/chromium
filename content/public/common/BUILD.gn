@@ -295,7 +295,7 @@ source_set("common_sources") {
   }
 
   if (is_android) {
-    deps += [ "//content/public/android:jni" ]
+    deps += [ "//content/public/android:public_common_jni" ]
   }
 
   if (is_win) {

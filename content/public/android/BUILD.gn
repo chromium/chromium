@@ -72,12 +72,17 @@ java_group("content_java") {
   ]
 }
 
+generate_jni("common_jni") {
+  sources = [ "java/src/org/chromium/content/common/SurfaceWrapper.java" ]
+}
+generate_jni("public_common_jni") {
+  sources =
+      [ "java/src/org/chromium/content_public/common/ResourceRequestBody.java" ]
+}
 generate_jni("content_main_dex_jni") {
   sources = [
     "java/src/org/chromium/content/browser/BrowserStartupControllerImpl.java",
     "java/src/org/chromium/content/browser/TracingControllerAndroidImpl.java",
-    "java/src/org/chromium/content/common/SurfaceWrapper.java",
-    "java/src/org/chromium/content_public/common/ResourceRequestBody.java",
   ]
 }
 generate_jni("content_app_jni") {
@@ -91,9 +96,11 @@ generate_jni("content_app_jni") {
 # needed in child processes.
 android_library("content_main_dex_java") {
   deps = [
+    ":common_jni_java",
     ":content_app_jni_java",
     ":content_java_resources",
     ":content_main_dex_jni_java",
+    ":public_common_jni_java",
     "//base:base_java",
     "//base:process_launcher_java",
     "//base/version_info/android:version_constants_java",
@@ -540,7 +547,7 @@ generate_jni("content_jni_headers") {
   ]
 }
 
-group("jni") {
+group("browser_jni") {
   public_deps = [
     ":content_jni_headers",
     ":content_main_dex_jni",

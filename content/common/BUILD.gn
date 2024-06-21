@@ -380,7 +380,8 @@ source_set("common") {
   if (is_android) {
     deps += [
       "//content/public/android:common_aidl",
-      "//content/public/android:jni",
+      "//content/public/android:common_jni",
+      "//content/public/android:jar_jni",
     ]
 
     libs += [ "android" ]

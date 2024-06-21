@@ -525,6 +525,7 @@ robolectric_library("junit") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//content/public/android:content_main_dex_jni_java",
+    "//content/public/android:public_common_jni_java",
     "//content/public/test/android:content_java_test_support",
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:espresso_java",

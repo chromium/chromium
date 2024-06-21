@@ -1322,6 +1322,7 @@ if (current_toolchain == default_toolchain) {
       "//components/webapps/browser/android:webapps_jni_headers_java",
       "//content/public/android:content_java",
       "//content/public/android:content_main_dex_jni_java",
+      "//content/public/android:public_common_jni_java",
       "//content/public/common:common_java",
       "//content/public/test/android:content_java_test_support",
       "//mojo/public/java:bindings_java",
