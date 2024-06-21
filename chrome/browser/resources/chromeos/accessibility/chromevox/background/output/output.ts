@@ -1418,17 +1418,7 @@ export class Output extends OutputInterface {
    * @returns a human friendly string with the contents of output.
    */
   override toString(): string {
-    return this.speechBuffer_
-        .reduce((prev: Spannable|null, cur: Spannable|null) => {
-          if (prev === null || prev.toString() === '') {
-            // TODO(b/314203187): Determine if not null assertion is acceptable.
-            return cur!;
-          }
-          // TODO(b/314203187): Determine if not null assertion is acceptable.
-          prev.append(' ' + cur!.toString());
-          return prev;
-          // TODO(b/314203187): Determine if not null assertion is acceptable.
-        }, null)!.toString();
+    return this.speechBuffer_.map(v => v.toString()).join(' ');
   }
 
   /**

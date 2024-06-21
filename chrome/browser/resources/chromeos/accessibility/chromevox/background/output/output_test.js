@@ -1624,3 +1624,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'FocusFollowText', async function() {
   assertEquals(div.location.width, actualBounds.width);
   assertEquals(div.location.height, actualBounds.height);
 });
+
+AX_TEST_F('ChromeVoxOutputE2ETest', 'ToStringEmptyOutput', async function() {
+  assertEquals('', new Output().toString());
+});
