@@ -63,4 +63,35 @@ TEST(AXRolePropertiesTest, TestSupportsToggle) {
       EXPECT_FALSE(supports_toggle);
   }
 }
+
+TEST(AXRolePropertiesTest, TestIsTableWithColumns) {
+  // Test for iterating through all roles and validate if a role is
+  // considered a table which supports multiple columns.
+  std::unordered_set<ax::mojom::Role> roles_expected_is_table_with_columns = {
+      ax::mojom::Role::kGrid, ax::mojom::Role::kListGrid,
+      ax::mojom::Role::kTable, ax::mojom::Role::kTreeGrid};
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+  roles_expected_is_table_with_columns.insert(ax::mojom::Role::kLayoutTable);
+#endif
+
+  for (int role_idx = static_cast<int>(ax::mojom::Role::kMinValue);
+       role_idx <= static_cast<int>(ax::mojom::Role::kMaxValue); role_idx++) {
+    ax::mojom::Role role = static_cast<ax::mojom::Role>(role_idx);
+    bool is_table_with_columns = IsTableWithColumns(role);
+
+    SCOPED_TRACE(testing::Message()
+                 << "ax::mojom::Role=" << ToString(role)
+                 << ", Actual: isTableWithColumns=" << is_table_with_columns
+                 << ", Expected: isTableWithColumns="
+                 << !is_table_with_columns);
+
+    if (roles_expected_is_table_with_columns.find(role) !=
+        roles_expected_is_table_with_columns.end()) {
+      EXPECT_TRUE(is_table_with_columns);
+    } else {
+      EXPECT_FALSE(is_table_with_columns);
+    }
+  }
+}
 }  // namespace ui

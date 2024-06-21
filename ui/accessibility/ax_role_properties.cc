@@ -881,6 +881,20 @@ bool IsTableRow(ax::mojom::Role role) {
   }
 }
 
+bool IsTableWithColumns(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kGrid:
+    case ax::mojom::Role::kListGrid:
+    case ax::mojom::Role::kTable:
+    case ax::mojom::Role::kTreeGrid:
+      return true;
+    case ax::mojom::Role::kLayoutTable:
+      return kExposeLayoutTableAsDataTable;
+    default:
+      return false;
+  }
+}
+
 bool IsText(ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kInlineTextBox:
