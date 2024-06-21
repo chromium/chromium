@@ -1033,6 +1033,9 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.EVICTION_THROTTLES_DRAW,
                 "Enables Renderers to not draw and submit frames when they've been evicted by the"
                     + " GPU process."),
+        Flag.baseFeature(
+                CcFeatures.DONT_ALWAYS_PUSH_PICTURE_LAYER_IMPLS,
+                "Stop always pushing PictureLayerImpl properties on tree Activation."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
