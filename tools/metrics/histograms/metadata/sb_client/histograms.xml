@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ClientSideDetectionRequestType">
+  <variant name="" summary="all request types"/>
+  <variant name=".ForceRequest" summary="Force request"/>
+  <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
+  <variant name=".NotificationPermissionPrompt"
+      summary="Notification permission prompt"/>
+  <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
+  <variant name=".TriggerModel" summary="Trigger model"/>
+  <variant name=".Unknown" summary="Unknown"/>
+  <variant name=".VibrationApi" summary="Vibration API"/>
+</variants>
+
 <variants name="DownloadDangerTypeForBypassMetrics">
   <variant name="DangerousFileType" summary="dangerous file type"/>
   <variant name="Malicious" summary="malicious content"/>
@@ -656,6 +668,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.HighConfidenceAllowlistCheckDuration"
+    units="ms" expires_after="2025-06-17">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it takes for high confidence allowlist check to
+    complete. This occurs in the client side detection PreClassificationCheck.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ImageEmbedder.Event"
     enum="SBPhishingClassifierEvent" expires_after="2024-11-12">
   <owner>andysjlim@chromium.org</owner>
@@ -710,6 +732,17 @@ chromium-metrics-reviews@google.com.
 
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.MatchHighConfidenceAllowlist{RequestType}"
+    enum="ClientSideAllowlistMatchResult" expires_after="2025-06-17">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Record the match result of allowlists for specific {RequestType}. This is
+    logged during the client side detection host PreClassificationCheck.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.ModelDynamicUpdateSuccess"
@@ -769,19 +802,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the duration it takes for client side phishing detection requested
-    by {RequestType} to finish.
+    by {RequestType} to finish. This occurs at the client side detection
+    PreClassificationCheck.
   </summary>
-  <token key="RequestType">
-    <variant name="" summary="all request types"/>
-    <variant name=".ForceRequest" summary="Force request"/>
-    <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
-    <variant name=".NotificationPermissionPrompt"
-        summary="Notification permission prompt"/>
-    <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
-    <variant name=".TriggerModel" summary="Trigger model"/>
-    <variant name=".Unknown" summary="Unknown"/>
-    <variant name=".VibrationApi" summary="Vibration API"/>
-  </token>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectorResult{RequestType}"
@@ -796,17 +820,7 @@ chromium-metrics-reviews@google.com.
 
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
-  <token key="RequestType">
-    <variant name="" summary="all request types"/>
-    <variant name=".ForceRequest" summary="Force request"/>
-    <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
-    <variant name=".NotificationPermissionPrompt"
-        summary="Notification permission prompt"/>
-    <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
-    <variant name=".TriggerModel" summary="Trigger model"/>
-    <variant name=".Unknown" summary="Unknown"/>
-    <variant name=".VibrationApi" summary="Vibration API"/>
-  </token>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
@@ -857,17 +871,7 @@ chromium-metrics-reviews@google.com.
     for a specific {RequestType}. This histogram is logged each time we contact
     Safe Browsing to evaluate whether a site is phishing.
   </summary>
-  <token key="RequestType">
-    <variant name="" summary="all request types"/>
-    <variant name=".ForceRequest" summary="force request"/>
-    <variant name=".KeyboardLockRequested" summary="keyboard lock Request"/>
-    <variant name=".NotificationPermissionPrompt"
-        summary="notification permission prompt"/>
-    <variant name=".PointerLockRequested" summary="pointer lock request"/>
-    <variant name=".TriggerModel" summary="trigger model"/>
-    <variant name=".Unknown" summary="Unknown"/>
-    <variant name=".VibrationApi" summary="Vibration API"/>
-  </token>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.SkipPhishingRequestCheck"

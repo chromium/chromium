@@ -287,6 +287,18 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
   friend class base::RefCountedThreadSafe<
       ClientSideDetectionHost::ShouldClassifyUrlRequest>;
 
+  // This enum is used to track the result of the allowlists we use before we
+  // decide to classify. Currently, only the CSD match can halt classification
+  // from going forward. These values are persisted to logs. Entries should not
+  // be renumbered and numeric values should never be reused.
+  enum class ClientSideAllowlistMatchResult {
+    kNoMatch = 0,
+    kCsdMatch = 1,
+    kHighConfidenceMatch = 2,
+    kCsdAndHighConfidenceMatch = 3,
+    kMaxValue = kCsdAndHighConfidenceMatch
+  };
+
   // The destructor can be called either from the UI or the IO thread.
   ~ShouldClassifyUrlRequest() = default;
 
@@ -373,6 +385,40 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
       phishing_reason =
           PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
     }
+
+    // This check is for logging purposes only. Once it completes,
+    // preclassification will continue.
+    database_manager_->CheckUrlForHighConfidenceAllowlist(
+        url, base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
+                                OnHighConfidenceAllowlistCheckDone,
+                            this, phishing_reason, base::TimeTicks::Now()));
+  }
+
+  void OnHighConfidenceAllowlistCheckDone(
+      PreClassificationCheckResult phishing_reason,
+      base::TimeTicks check_start_time,
+      bool did_match_high_confidence_allowlist) {
+    UmaHistogramMediumTimes(
+        "SBClientPhishing.HighConfidenceAllowlistCheckDuration",
+        base::TimeTicks::Now() - check_start_time);
+
+    // TODO(andysjlim): This histogram will be logged to
+    // PreClassificationCheckResult through |phishing_reason|, but logged
+    // separately now because a new field PreClassificationCheckResult results
+    // in a new server data to be sent through debugging metadata.
+    ClientSideAllowlistMatchResult match_result =
+        GetClientSideAllowlistMatchResult(
+            phishing_reason ==
+                PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST,
+            did_match_high_confidence_allowlist);
+
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.MatchHighConfidenceAllowlist", match_result);
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.MatchHighConfidenceAllowlist." +
+            GetRequestTypeName(phishing_detection_request_type_),
+        match_result);
+
     CheckCache(phishing_reason);
   }
 
@@ -442,6 +488,20 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
            IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs()) &&
            base::RandDouble() <= kProbabilityForSendingSampleRequest &&
            base::FeatureList::IsEnabled(kClientSideDetectionSamplePing);
+  }
+
+  ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
+      bool match_csd_allowlist,
+      bool match_hc_allowlist) {
+    if (match_csd_allowlist && match_hc_allowlist) {
+      return ClientSideAllowlistMatchResult::kCsdAndHighConfidenceMatch;
+    } else if (match_csd_allowlist) {
+      return ClientSideAllowlistMatchResult::kCsdMatch;
+    } else if (match_hc_allowlist) {
+      return ClientSideAllowlistMatchResult::kHighConfidenceMatch;
+    } else {
+      return ClientSideAllowlistMatchResult::kNoMatch;
+    }
   }
 
   const GURL url_;

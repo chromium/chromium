@@ -82,6 +82,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="CancellationSucceeded"/>
 </enum>
 
+<enum name="ClientSideAllowlistMatchResult">
+  <int value="0" label="No match"/>
+  <int value="1" label="CSD match"/>
+  <int value="2" label="High confidence match"/>
+  <int value="3" label="CSD and high confidence match"/>
+</enum>
+
 <enum name="ClientSideDetectionType">
   <int value="0" label="CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED"/>
   <int value="1" label="FORCE_REQUEST"/>
