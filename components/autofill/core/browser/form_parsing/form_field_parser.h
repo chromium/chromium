@@ -141,7 +141,6 @@ class FormFieldParser {
   static void ParseSingleFieldForms(
       ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
-      bool is_form_tag,
       FieldCandidatesMap& field_candidates);
 
   // Search for standalone CVC fields inside `fields`. Standalone CVC fields

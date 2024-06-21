@@ -186,7 +186,7 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   // Single fields pass.
-  ParseSingleFieldForms(context, fields, is_form_tag, field_candidates);
+  ParseSingleFieldForms(context, fields, field_candidates);
 
   ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
       context, fields, field_candidates, is_form_tag);
@@ -297,7 +297,6 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 void FormFieldParser::ParseSingleFieldForms(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
-    bool is_form_tag,
     FieldCandidatesMap& field_candidates) {
   std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
       RemoveCheckableFields(fields);

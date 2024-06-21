@@ -657,8 +657,7 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     FormFieldParser::ParseFormFields(context, fields_, is_form_element(),
                                      field_type_map);
   } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormFieldParser::ParseSingleFieldForms(context, fields_, is_form_element(),
-                                           field_type_map);
+    FormFieldParser::ParseSingleFieldForms(context, fields_, field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
     // For standalone email fields inside a form tag, allow heuristics even

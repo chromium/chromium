@@ -47,7 +47,6 @@ class FormFieldParserTest
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternSource().value());
     FormFieldParser::ParseSingleFieldForms(context, fields_,
-                                           /*is_form_tag=*/true,
                                            field_candidates_map_);
     return field_candidates_map_.size();
   }
