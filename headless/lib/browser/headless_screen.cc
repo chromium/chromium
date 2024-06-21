@@ -11,11 +11,6 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if !BUILDFLAG(IS_MAC)
-#include "ui/aura/env.h"
-#include "ui/aura/window.h"
-#endif
-
 namespace headless {
 
 // static
@@ -26,13 +21,7 @@ HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size) {
 HeadlessScreen::~HeadlessScreen() = default;
 
 gfx::Point HeadlessScreen::GetCursorScreenPoint() {
-#if BUILDFLAG(IS_MAC)
   return gfx::Point();
-#else
-  // This does not look right: headless screen abstraction should not depend on
-  // a higher level window manager abstraction. See https://crbug.com/347789968.
-  return aura::Env::GetInstance()->last_mouse_location();
-#endif
 }
 
 bool HeadlessScreen::IsWindowUnderCursor(gfx::NativeWindow window) {
