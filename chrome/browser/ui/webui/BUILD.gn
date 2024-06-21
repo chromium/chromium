@@ -78,6 +78,12 @@ source_set("configs") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/eche_app",
       "//chrome/browser/ash/mall",
+      "//chrome/browser/ash/system_web_apps/apps/camera_app",
+      "//chrome/browser/ash/system_web_apps/apps/media_app",
+      "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+      "//chrome/browser/ash/system_web_apps/apps/projector_app",
+      "//chrome/browser/ash/system_web_apps/apps/recorder_app",
+      "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
       "//chromeos/ash/components/kiosk/vision/webui",
       "//components/cross_device/logging",
     ]

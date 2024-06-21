@@ -3215,7 +3215,6 @@ if (!is_android) {
         "//ash/webui/system_apps/public:system_web_app_type",
         "//chrome/browser/apps/app_service/app_install",
         "//chrome/browser/apps/app_service/app_install:proto",
-        "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ash/system_web_apps/test_support",
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/ash/system_web_apps/types",
@@ -4890,7 +4889,6 @@ if (!is_android) {
         "../browser/ash/system/timezone_resolver_manager_browsertest.cc",
         "../browser/ash/system/tray_accessibility_browsertest.cc",
         "../browser/ash/system_logs/crosapi_system_log_source_browsertest.cc",
-        "../browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_sea_pen_provider_impl_browsertest.cc",
         "../browser/ash/url_handler_browsertest.cc",
         "../browser/ash/video_conference/video_conference_app_service_client_browsertest.cc",
         "../browser/ash/video_conference/video_conference_ash_feature_client_browsertest.cc",
@@ -5217,6 +5215,7 @@ if (!is_android) {
         "//chrome/browser/ash/geolocation:browser_tests",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",
         "//chrome/browser/ash/privacy_hub:browser_tests",
+        "//chrome/browser/ash/system_web_apps:browser_tests",
         "//chrome/browser/ash/system_web_apps/types:types",
         "//chrome/browser/ash/wallpaper:browser_tests",
         "//chrome/browser/ash/wallpaper_handlers:test_support",
@@ -8900,6 +8899,8 @@ test("unit_tests") {
       "//chrome/browser/ash/customization",
       "//chrome/browser/ash/eche_app",
       "//chrome/browser/ash/magic_boost:magic_boost_ash",
+      "//chrome/browser/ash/system_web_apps/apps/camera_app",
+      "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/wallpaper_handlers:test_support",
       "//chrome/browser/chromeos",
@@ -9644,7 +9645,6 @@ test("unit_tests") {
       ]
 
       deps += [
-        "//chrome/browser/ash/system_web_apps:unit_tests",
         "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",
         "//chrome/common/chromeos/extensions",
         "//chromeos/ash/components/dbus/image_burner",

@@ -89,7 +89,7 @@ source_set("implementation") {
   visibility = [
     ":*",
     "//chrome/browser",
-    "//chrome/browser/ash/system_web_apps/apps:browser_tests",
+    "//chrome/browser/ash/system_web_apps/apps/help_app:browser_tests",
   ]
 }
 

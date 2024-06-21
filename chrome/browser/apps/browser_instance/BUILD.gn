@@ -71,6 +71,8 @@ source_set("browser_tests") {
       "//base",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/browser_instance",
+      "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",

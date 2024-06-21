@@ -220,6 +220,9 @@ source_set("app_service") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/system_web_apps/apps",
+      "//chrome/browser/ash/system_web_apps/apps/camera_app",
+      "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/metrics/structured:features",
@@ -245,7 +248,12 @@ source_set("app_service") {
     ]
 
     # TODO(crbug.com/40251079): Remove circular dependencies.
-    allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps/apps",
+      "//chrome/browser/ash/system_web_apps/apps/camera_app",
+      "//chrome/browser/ash/system_web_apps/apps/media_app",
+    ]
   }
 
   if (is_chromeos_lacros) {

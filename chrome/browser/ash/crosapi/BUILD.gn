@@ -342,8 +342,11 @@ source_set("crosapi") {
     "//chrome/browser/ash/mahi:mahi_ash",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/smart_reader",
-    "//chrome/browser/ash/system_web_apps:system_web_apps",
-    "//chrome/browser/ash/system_web_apps/types:types",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ash/system_web_apps/apps/media_app",
+    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",
@@ -353,7 +356,7 @@ source_set("crosapi") {
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",
-    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
@@ -406,7 +409,7 @@ source_set("crosapi") {
     "//chromeos/startup",
     "//chromeos/startup:constants",
     "//chromeos/ui/clipboard_history",
-    "//chromeos/ui/wm:wm",
+    "//chromeos/ui/wm",
     "//chromeos/version",
     "//components/app_restore",
     "//components/arc",
@@ -418,7 +421,7 @@ source_set("crosapi") {
     "//components/flags_ui",
     "//components/global_media_controls",
     "//components/keyed_service/content",
-    "//components/language/core/browser:browser",
+    "//components/language/core/browser",
     "//components/live_caption:utils",
     "//components/metrics",
     "//components/metrics/structured",
@@ -431,7 +434,7 @@ source_set("crosapi") {
     "//components/services/app_service/public/cpp:instance_update",
     "//components/session_manager/core",
     "//components/ukm:ukm",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//components/variations",
     "//components/variations/service",
     "//components/version_info:channel",
@@ -446,10 +449,10 @@ source_set("crosapi") {
     "//media/mojo/mojom/stable:stable_video_decoder",
     "//printing/backend",
     "//remoting/host/chromeos:remoting_service",
-    "//services/data_decoder/public/cpp:cpp",
+    "//services/data_decoder/public/cpp",
     "//services/device/wake_lock/power_save_blocker",
     "//services/video_capture:lib",
-    "//services/video_capture/public/cpp:cpp",
+    "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",
     "//ui/base",
     "//ui/message_center",
@@ -476,7 +479,12 @@ source_set("crosapi") {
     "//printing",
   ]
 
-  allow_circular_includes_from = [ "//chrome/browser/ash/accessibility" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ash/system_web_apps/apps/media_app",
+  ]
 }
 
 source_set("test_support") {

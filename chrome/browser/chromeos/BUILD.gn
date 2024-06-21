@@ -432,6 +432,8 @@ source_set("chromeos") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/system_web_apps/apps",
+      "//chrome/browser/ash/system_web_apps/apps/help_app",
     ]
     public_deps += [
       "//ash/constants",
@@ -448,7 +450,9 @@ source_set("chromeos") {
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/mahi:mahi_ash",
-      "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
+      "//chrome/browser/ash/system_web_apps/apps",
+      "//chrome/browser/ash/system_web_apps/apps/help_app",
+      "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util",
       "//chromeos/ash/components/login/auth/public:authpublic",
