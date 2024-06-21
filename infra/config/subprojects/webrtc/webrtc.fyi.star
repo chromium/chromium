@@ -84,6 +84,7 @@ builder(
             "remoteexec",
             "minimal_symbols",
             "strip_debug_info",
+            "arm",
         ],
     ),
 )
@@ -115,6 +116,7 @@ builder(
             "android_builder",
             "debug_static_builder",
             "remoteexec",
+            "arm",
         ],
     ),
 )
@@ -227,6 +229,8 @@ builder(
             "gpu_tests",
             "release_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
 )
@@ -251,6 +255,8 @@ builder(
         configs = [
             "debug_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
 )
@@ -299,6 +305,8 @@ builder(
             "gpu_tests",
             "release_builder",
             "remoteexec",
+            "mac",
+            "x64",
         ],
     ),
     os = os.MAC_ANY,
@@ -324,6 +332,8 @@ builder(
         configs = [
             "debug_builder",
             "remoteexec",
+            "mac",
+            "x64",
         ],
     ),
     os = os.MAC_ANY,
@@ -376,6 +386,8 @@ builder(
             "minimal_symbols",
             "no_com_init_hooks",
             "chrome_with_codecs",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -403,6 +415,8 @@ builder(
             "remoteexec",
             "no_com_init_hooks",
             "chrome_with_codecs",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
