@@ -2635,9 +2635,6 @@ BASE_FEATURE(kSeaPenDemoMode,
              "SeaPenDemoMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables sea pen feature with new UI enhancement.
-BASE_FEATURE(kSeaPenUINext, "SeaPenUINext", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables sea pen feature with next templates.
 BASE_FEATURE(kSeaPenUseExptTemplate,
              "SeaPenUseExptTemplate",
@@ -4444,10 +4441,6 @@ bool IsSeaPenEnabled() {
 
 bool IsSeaPenTextInputEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenTextInput);
-}
-
-bool IsSeaPenUINextEnabled() {
-  return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenUINext);
 }
 
 bool IsSeaPenUseExptTemplateEnabled() {

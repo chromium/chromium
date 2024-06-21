@@ -22,7 +22,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SeaPenImageId} from './constants.js';
-import {isSeaPenUINextEnabled} from './load_time_booleans.js';
+import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import {RecentSeaPenThumbnailData, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {deleteRecentSeaPenImage, fetchRecentSeaPenData, getSeaPenThumbnails, selectRecentSeaPenImage} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
@@ -85,10 +85,10 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
 
       pendingSelected_: Object,
 
-      isSeaPenUINextEnabled_: {
+      isSeaPenTextInputEnabled_: {
         type: Boolean,
         value() {
-          return isSeaPenUINextEnabled();
+          return isSeaPenTextInputEnabled();
         },
       },
     };
@@ -102,7 +102,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private currentShowWallpaperInfoDialog_: number|null;
   private currentSelected_: SeaPenImageId|null;
   private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
-  private isSeaPenUINextEnabled_: boolean;
+  private isSeaPenTextInputEnabled_: boolean;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];
@@ -407,7 +407,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       recentImage: SeaPenImageId,
       recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>,
       recentImageDataLoading: Record<SeaPenImageId, boolean>): boolean {
-    if (!this.isSeaPenUINextEnabled_ || !recentImage ||
+    if (!this.isSeaPenTextInputEnabled_ || !recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return false;
     }

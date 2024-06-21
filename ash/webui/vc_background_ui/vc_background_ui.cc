@@ -124,9 +124,6 @@ void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenTextInputEnabled() &&
                          sea_pen_provider_->IsEligibleForSeaPenTextInput());
-  source->AddBoolean(
-      "isSeaPenUINextEnabled",
-      common_sea_pen_requirements && ::ash::features::IsSeaPenUINextEnabled());
   source->AddBoolean("isSeaPenUseExptTemplateEnabled",
                      common_sea_pen_requirements &&
                          ::ash::features::IsSeaPenUseExptTemplateEnabled());

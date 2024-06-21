@@ -599,7 +599,7 @@ suite('sea pen', () => {
   });
 
   teardown(() => {
-    loadTimeData.overrideValues({isSeaPenUINextEnabled: false});
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
   });
 
   suite('feedback', async () => {
@@ -882,7 +882,7 @@ suite('sea pen', () => {
   });
 
   test('create more template generated recent image', async () => {
-    loadTimeData.overrideValues({isSeaPenUINextEnabled: true});
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
     const seaPenRouter = await getSeaPenRouter();
     const recentImages = await waitUntil(
         () => seaPenRouter.shadowRoot
@@ -943,8 +943,7 @@ suite('sea pen', () => {
   });
 
   test('create more free text generated recent image', async () => {
-    loadTimeData.overrideValues(
-        {isSeaPenUINextEnabled: true, isSeaPenTextInputEnabled: true});
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
     const seaPenRouter = await getSeaPenRouter();
     const recentImages = await waitUntil(
         () => seaPenRouter.shadowRoot

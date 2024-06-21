@@ -50,7 +50,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     await teardownElement(seaPenRecentWallpapersElement);
     seaPenRecentWallpapersElement = null;
     loadTimeData.overrideValues({
-      isSeaPenUINextEnabled: false,
+      isSeaPenTextInputEnabled: false,
     });
   });
 
@@ -323,7 +323,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
   });
 
   test(
-      'disables SeaPenUiNext to hide Create more option for recent image',
+      'disables SeaPenTextInput to hide Create more option for recent image',
       async () => {
         personalizationStore.data.wallpaper.seaPen.recentImages =
             seaPenProvider.recentImageIds;
@@ -377,10 +377,10 @@ suite('SeaPenRecentWallpapersElementTest', function() {
       });
 
   test(
-      'enables SeaPenUINext to show Create more option for recent image',
+      'enables SeaPenTextInput to show Create more option for recent image',
       async () => {
         loadTimeData.overrideValues({
-          isSeaPenUINextEnabled: true,
+          isSeaPenTextInputEnabled: true,
         });
         personalizationStore.data.wallpaper.seaPen.recentImages =
             seaPenProvider.recentImageIds;
