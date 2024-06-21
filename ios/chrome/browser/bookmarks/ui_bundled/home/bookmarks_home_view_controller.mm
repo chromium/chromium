@@ -470,6 +470,21 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [IntentDonationHelper donateIntent:IntentType::kOpenBookmarks];
 }
 
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (_isShutDown) {
+    return;
+  }
+
+  if (parent) {
+    // This view controller is added to the navigation controller.
+    return;
+  }
+
+  // This view controller is removed from its parent, shutdown can be done.
+  [self shutdown];
+}
+
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   // Check that the tableView still contains as many rows, and that
