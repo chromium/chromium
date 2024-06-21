@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
@@ -150,6 +151,27 @@ class TestSelfShareProvider : public BirchDataProvider {
                        GURL("https://favicon.com/"), base::DoNothing());
     Shell::Get()->birch_model()->SetSelfShareItems(std::move(items));
   }
+};
+
+class TestLostMediaProvider : public BirchDataProvider {
+ public:
+  TestLostMediaProvider() = default;
+  ~TestLostMediaProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    std::vector<BirchLostMediaItem> items;
+    items.emplace_back(u"source title", u"media title", ui::ImageModel(),
+                       base::BindRepeating(&TestLostMediaProvider::OnActivation,
+                                           weak_factory_.GetWeakPtr()));
+    Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));
+  }
+
+  // Activation callback for the test lost media item.
+  void OnActivation() { did_activate_ = true; }
+
+  bool did_activate_ = false;
+  base::WeakPtrFactory<TestLostMediaProvider> weak_factory_{this};
 };
 
 class TestReleaseNotesProvider : public BirchDataProvider {
@@ -615,6 +637,55 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
   // Clicking the button should attempt to open the URL.
   EXPECT_EQ(mock_new_window_delegate_->opened_url_,
             GURL("http://example.com/"));
+}
+
+IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LostMediaChip) {
+  // Set up a provider that provides a single chip.
+  auto* birch_keyed_service = GetBirchKeyedService();
+  TestLostMediaProvider lost_media_provider;
+  birch_keyed_service->set_lost_media_provider_for_test(&lost_media_provider);
+
+  // Disable the prefs for data providers other than lost media. This ensures
+  // the data is fresh once the lost media provider replies.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
+  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Ensure the item remover is initialized, otherwise data fetches won't
+  // complete.
+  EnsureItemRemoverInitialized();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Enter overview, which triggers a birch data fetch.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  BirchChipButtonBase* button = GetBirchChipButton();
+  EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kLostMedia);
+
+  // Clicking the button closes overview and destroys the button, so avoid a
+  // dangling pointer with std::exchange.
+  ClickOnView(std::exchange(button, nullptr));
+
+  // Clicking the button should activate the item. In this test the activation
+  // callback is bound to the provider.
+  EXPECT_TRUE(lost_media_provider.did_activate_);
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {

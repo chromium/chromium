@@ -115,6 +115,9 @@ BirchDataProvider* BirchKeyedService::GetSelfShareProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetLostMediaProvider() {
+  if (lost_media_provider_for_test_) {
+    return lost_media_provider_for_test_;
+  }
   return lost_media_provider_.get();
 }
 
