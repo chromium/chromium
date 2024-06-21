@@ -17,6 +17,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/facilitated_payments/BankAccountViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsFopSelectorScreen.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerBridge.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsCoordinator.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsMediator.java",
