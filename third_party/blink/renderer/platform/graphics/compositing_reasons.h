@@ -129,11 +129,14 @@ class PLATFORM_EXPORT CompositingReason {
         kFixedPosition | kAffectedByOuterViewportBoundsDelta | kUndoOverscroll |
         kVideo | kCanvas | kPlugin | kIFrame,
     // TODO(dbaron): kWillChangeOther probably shouldn't be in this list.
+    // TODO(vmpstr): kViewTransitionElement is needed to make sure that the
+    // capture escapes clips when view transition has a descendant that
+    // naturally escapes clips. See crbug.com/348590918 for details.
     kDirectReasonsForTransformProperty =
         k3DTransform | kTrivial3DTransform | kWillChangeTransform |
         kWillChangeOther | kPerspectiveWith3DDescendants |
         kPreserve3DWith3DDescendants | kActiveTransformAnimation |
-        kViewTransitionElementDescendantWithClipPath,
+        kViewTransitionElementDescendantWithClipPath | kViewTransitionElement,
     kDirectReasonsForScaleProperty =
         k3DScale | kWillChangeScale | kActiveScaleAnimation,
     kDirectReasonsForRotateProperty =
