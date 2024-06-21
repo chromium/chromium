@@ -410,11 +410,15 @@ bool CookieSettingsBase::ShouldConsiderMitigationsFor3pcd(
 
 bool CookieSettingsBase::IsBlockedByTopLevel3pcdOriginTrial(
     const GURL& first_party_url) const {
+#if BUILDFLAG(IS_IOS)
+  return false;
+#else
   return base::FeatureList::IsEnabled(
              net::features::kTopLevelTpcdOriginTrial) &&
          GetContentSetting(first_party_url, first_party_url,
                            ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL,
                            /*info=*/nullptr) == CONTENT_SETTING_BLOCK;
+#endif
 }
 
 bool CookieSettingsBase::IsAllowedBy3pcdTrialSettings(
