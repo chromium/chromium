@@ -37,6 +37,14 @@ typedef NS_ENUM(NSInteger, FeedUpdateType) {
   FeedUpdateTypeResumeFromBackground,
 };
 
+// Enum representing the different types of updates to the feed layout.
+typedef NS_ENUM(NSInteger, FeedLayoutUpdateType) {
+  FeedLayoutUpdateTypeUnknown = 0,
+  FeedLayoutUpdateTypeAdd,
+  FeedLayoutUpdateTypeDelete,
+  FeedLayoutUpdateTypeReload,
+};
+
 // The types of sorting for the Following feed.
 typedef NS_ENUM(NSInteger, FollowingFeedSortType) {
   // Does not provide a sort type. Used for non-Following feeds.

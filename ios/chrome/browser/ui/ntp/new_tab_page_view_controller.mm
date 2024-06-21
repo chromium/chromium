@@ -688,7 +688,7 @@ const CGFloat kModuleMinMargin = 16;
   }
 }
 
-- (void)feedLayoutDidEndUpdates {
+- (void)feedLayoutDidEndUpdatesWithType:(FeedLayoutUpdateType)type {
   if (_feedContainer) {
     // Feed content gets added to the top of the subview array, so after content
     // loads the feed container needs to be sent to the back so that it isn't

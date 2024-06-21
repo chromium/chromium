@@ -84,8 +84,10 @@ class WebState;
 // feed.
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
 
-// Called when the given `feedType` has completed updates.
-- (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
+// Called when the given `feedType` has completed layout updates of type
+// `updateType`.
+- (void)handleFeedModelOfType:(FeedType)feedType
+                didEndUpdates:(FeedLayoutUpdateType)updateType;
 
 // Checks if there are any WebStates showing an NTP at this time. If not, then
 // stops the NTP.

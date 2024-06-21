@@ -3327,7 +3327,13 @@ enum class ToolbarKind {
 }
 
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
-  [_NTPCoordinator handleFeedModelDidEndUpdates:feedType];
+  [self handleFeedModelOfType:feedType
+                didEndUpdates:FeedLayoutUpdateTypeUnknown];
+}
+
+- (void)handleFeedModelOfType:(FeedType)feedType
+                didEndUpdates:(FeedLayoutUpdateType)updateType {
+  [_NTPCoordinator handleFeedModelOfType:feedType didEndUpdates:updateType];
 }
 
 - (void)scrollToNTPAfterPresentedStateCleared:(FeedType)feedType {

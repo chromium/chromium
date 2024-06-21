@@ -15,6 +15,7 @@
 @class FeedHeaderViewController;
 @class FeedMetricsRecorder;
 @class FeedWrapperViewController;
+typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 @class MagicStackCollectionViewController;
 @protocol NewTabPageContentDelegate;
 @class NewTabPageHeaderViewController;
@@ -140,7 +141,7 @@
 - (void)updateScrollPositionForFeedTopSectionClosed;
 
 // Signals that the feed has completed its updates (i.e. loading cards).
-- (void)feedLayoutDidEndUpdates;
+- (void)feedLayoutDidEndUpdatesWithType:(FeedLayoutUpdateType)type;
 
 // Clears state and delegates.
 - (void)invalidate;

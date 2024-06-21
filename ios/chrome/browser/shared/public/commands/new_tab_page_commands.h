@@ -9,6 +9,8 @@
 
 #include "ios/chrome/browser/discover_feed/model/feed_constants.h"
 
+typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
+
 // Commands related to the new tab page.
 @protocol NewTabPageCommands
 
@@ -22,6 +24,10 @@
 // Notifies the new tab page that the `feedType`'s model has completed updates.
 // This can include, initial loading of cards, pagination, card removal, and
 // refreshes.
+- (void)handleFeedModelOfType:(FeedType)feedType
+                didEndUpdates:(FeedLayoutUpdateType)updateType;
+
+// TODO(crbug.com/348427964): Deprecated. Use method above.
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
 @end

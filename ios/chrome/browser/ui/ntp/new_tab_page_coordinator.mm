@@ -518,14 +518,15 @@
   }
 }
 
-- (void)handleFeedModelDidEndUpdates:(FeedType)feedType {
+- (void)handleFeedModelOfType:(FeedType)feedType
+                didEndUpdates:(FeedLayoutUpdateType)updateType {
   DCHECK(self.NTPViewController);
   if (!self.feedViewController) {
     return;
   }
   // When the visible feed has been updated, recalculate the minimum NTP height.
   if (feedType == self.selectedFeed) {
-    [self.NTPViewController feedLayoutDidEndUpdates];
+    [self.NTPViewController feedLayoutDidEndUpdatesWithType:updateType];
   }
 }
 
