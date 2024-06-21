@@ -274,6 +274,45 @@ TEST_F(ShellSurfaceTest, SetParent) {
   EXPECT_FALSE(shell_surface->CanActivate());
 }
 
+// Tests that pareting the shell surface to its transient ancestor is not
+// allowed.
+TEST_F(ShellSurfaceTest, DoNotParentToTransientAncestor) {
+  constexpr gfx::Size kBufferSize(256, 256);
+  auto grandparent_shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
+
+  auto parent_shell_surface = test::ShellSurfaceBuilder(kBufferSize)
+                                  .SetParent(grandparent_shell_surface.get())
+                                  .BuildShellSurface();
+  EXPECT_EQ(grandparent_shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                parent_shell_surface->GetWidget()->GetNativeWindow()));
+
+  auto shell_surface = test::ShellSurfaceBuilder(kBufferSize)
+                           .SetParent(parent_shell_surface.get())
+                           .BuildShellSurface();
+  EXPECT_EQ(
+      parent_shell_surface->GetWidget()->GetNativeWindow(),
+      wm::GetTransientParent(shell_surface->GetWidget()->GetNativeWindow()));
+
+  // Cannot parent to grandparent or parent.
+  grandparent_shell_surface->SetParent(shell_surface.get());
+  EXPECT_NE(shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                grandparent_shell_surface->GetWidget()->GetNativeWindow()));
+  EXPECT_EQ(
+      parent_shell_surface->GetWidget()->GetNativeWindow(),
+      wm::GetTransientParent(shell_surface->GetWidget()->GetNativeWindow()));
+
+  parent_shell_surface->SetParent(shell_surface.get());
+  EXPECT_NE(shell_surface->GetWidget()->GetNativeWindow(),
+            wm::GetTransientParent(
+                parent_shell_surface->GetWidget()->GetNativeWindow()));
+  EXPECT_EQ(
+      parent_shell_surface->GetWidget()->GetNativeWindow(),
+      wm::GetTransientParent(shell_surface->GetWidget()->GetNativeWindow()));
+}
+
 TEST_F(ShellSurfaceTest, DeleteShellSurfaceWithTransientChildren) {
   constexpr gfx::Size kBufferSize(256, 256);
   auto parent_shell_surface =
