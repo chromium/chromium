@@ -16,6 +16,7 @@
 #include "android_webview/browser/aw_contents_origin_matcher.h"
 #include "android_webview/browser/aw_download_manager_delegate.h"
 #include "android_webview/browser/aw_form_database_service.h"
+#include "android_webview/browser/aw_ip_protection_config_provider.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_quota_manager_bridge.h"
 #include "android_webview/browser/aw_web_ui_controller_factory.h"
@@ -581,6 +582,18 @@ void AwBrowserContext::ConfigureNetworkContextParams(
 
   context_params->check_clear_text_permitted =
       AwContentBrowserClient::get_check_cleartext_permitted();
+
+  AwIpProtectionConfigProvider* aw_ipp_config_provider =
+      AwIpProtectionConfigProvider::Get(this);
+  if (aw_ipp_config_provider) {
+    aw_ipp_config_provider->AddNetworkService(
+        context_params->ip_protection_config_getter
+            .InitWithNewPipeAndPassReceiver(),
+        context_params->ip_protection_proxy_delegate
+            .InitWithNewPipeAndPassRemote());
+    context_params->enable_ip_protection =
+        aw_ipp_config_provider->IsIpProtectionEnabled();
+  }
 
   // Add proxy settings
   AwProxyConfigMonitor::GetInstance()->AddProxyToNetworkContextParams(

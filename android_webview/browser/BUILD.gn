@@ -81,6 +81,8 @@ source_set("browser") {
     "aw_http_auth_handler.h",
     "aw_ip_protection_config_provider.cc",
     "aw_ip_protection_config_provider.h",
+    "aw_ip_protection_config_provider_factory.cc",
+    "aw_ip_protection_config_provider_factory.h",
     "aw_ip_protection_proxy_bypass_info.cc",
     "aw_ip_protection_proxy_bypass_info.h",
     "aw_javascript_dialog_manager.cc",

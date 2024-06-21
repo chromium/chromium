@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_ip_protection_config_provider_factory.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -324,6 +326,13 @@ void AwIpProtectionConfigProvider::Shutdown() {
   blind_sign_auth_ = nullptr;
 }
 
+// static
+AwIpProtectionConfigProvider* AwIpProtectionConfigProvider::Get(
+    AwBrowserContext* aw_browser_context) {
+  return AwIpProtectionConfigProviderFactory::GetForAwBrowserContext(
+      aw_browser_context);
+}
+
 void AwIpProtectionConfigProvider::AddNetworkService(
     mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
         pending_receiver,
@@ -335,12 +344,17 @@ void AwIpProtectionConfigProvider::AddNetworkService(
   remotes_.Add(std::move(pending_remote));
 }
 
+// static
+bool AwIpProtectionConfigProvider::CanIpProtectionBeEnabled() {
+  return base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy);
+}
+
 // TODO(b/335420700): Update to return feature flag.
 bool AwIpProtectionConfigProvider::IsIpProtectionEnabled() {
   if (is_shutting_down_) {
     return false;
   }
-  return base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy);
+  return CanIpProtectionBeEnabled();
 }
 
 }  // namespace android_webview

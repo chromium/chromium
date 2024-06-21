@@ -93,6 +93,11 @@ class AwIpProtectionConfigProvider
   // once.
   void Shutdown() override;
 
+  static AwIpProtectionConfigProvider* Get(
+      AwBrowserContext* aw_browser_context);
+
+  static bool CanIpProtectionBeEnabled();
+
   // Checks if IP Protection is disabled.
   bool IsIpProtectionEnabled();
 
