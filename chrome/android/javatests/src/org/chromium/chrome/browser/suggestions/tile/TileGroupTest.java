@@ -15,7 +15,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -83,8 +82,6 @@ public class TileGroupTest {
 
     @Before
     public void setUp() {
-        Assume.assumeFalse(sActivityTestRule.getActivity().isTablet());
-
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
