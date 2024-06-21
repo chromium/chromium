@@ -123,7 +123,9 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
 
   app_platform_metrics_service_->Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
-      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
+      AppServiceProxyFactory::GetForProfile(profile())
+          ->AppCapabilityAccessCache());
 }
 
 void AppPlatformMetricsServiceTestBase::TearDown() {
@@ -158,7 +160,9 @@ void AppPlatformMetricsServiceTestBase::ResetAppPlatformMetricsService() {
 
   app_platform_metrics_service_->Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
-      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
+      AppServiceProxyFactory::GetForProfile(profile())
+          ->AppCapabilityAccessCache());
 }
 
 void AppPlatformMetricsServiceTestBase::ModifyInstance(

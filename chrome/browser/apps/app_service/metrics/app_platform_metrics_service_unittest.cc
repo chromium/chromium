@@ -2924,7 +2924,9 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnDestruction) {
       apps::AppServiceProxyFactory::GetForProfile(profile())
           ->AppRegistryCache(),
       apps::AppServiceProxyFactory::GetForProfile(profile())
-          ->InstanceRegistry());
+          ->InstanceRegistry(),
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppCapabilityAccessCache());
   app_platform_metrics_service->AppPlatformMetrics()->AddObserver(&observer_);
 
   EXPECT_CALL(observer_, OnAppPlatformMetricsDestroyed()).Times(1);
@@ -3435,7 +3437,9 @@ TEST_P(AppPlatformMetricsServiceObserverTest,
       });
   app_platform_metrics_service.Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
-      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
+      AppServiceProxyFactory::GetForProfile(profile())
+          ->AppCapabilityAccessCache());
 }
 
 TEST_P(AppPlatformMetricsServiceObserverTest,
@@ -3450,7 +3454,9 @@ TEST_P(AppPlatformMetricsServiceObserverTest,
   EXPECT_CALL(*observer_ptr, OnAppPlatformMetricsInit(_)).Times(0);
   app_platform_metrics_service.Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
-      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
+      AppServiceProxyFactory::GetForProfile(profile())
+          ->AppCapabilityAccessCache());
 }
 
 TEST_P(AppPlatformMetricsServiceObserverTest,
@@ -3477,7 +3483,9 @@ TEST_P(AppPlatformMetricsServiceObserverTest,
       });
   app_platform_metrics_service.Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
-      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry());
+      AppServiceProxyFactory::GetForProfile(profile())->InstanceRegistry(),
+      AppServiceProxyFactory::GetForProfile(profile())
+          ->AppCapabilityAccessCache());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

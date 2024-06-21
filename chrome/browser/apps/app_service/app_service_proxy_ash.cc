@@ -1079,8 +1079,8 @@ void AppServiceProxyAsh::RecordAppPlatformMetrics(
 
 void AppServiceProxyAsh::InitAppPlatformMetrics() {
   if (app_platform_metrics_service_) {
-    app_platform_metrics_service_->Start(app_registry_cache_,
-                                         instance_registry_);
+    app_platform_metrics_service_->Start(
+        app_registry_cache_, instance_registry_, app_capability_access_cache_);
   }
 }
 

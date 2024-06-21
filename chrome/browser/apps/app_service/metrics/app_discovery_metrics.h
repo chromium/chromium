@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
@@ -33,12 +34,15 @@ enum class AppStateChange {
 //
 // No metrics should be recorded if app-sync is off.
 class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
+                            public apps::AppCapabilityAccessCache::Observer,
                             InstanceRegistry::Observer {
  public:
-  AppDiscoveryMetrics(Profile* profile,
-                      const apps::AppRegistryCache& app_registry_cache,
-                      InstanceRegistry& instance_registry,
-                      AppPlatformMetrics* app_platform_metrics);
+  AppDiscoveryMetrics(
+      Profile* profile,
+      const apps::AppRegistryCache& app_registry_cache,
+      InstanceRegistry& instance_registry,
+      AppPlatformMetrics* app_platform_metrics,
+      apps::AppCapabilityAccessCache& app_capability_access_cache);
   ~AppDiscoveryMetrics() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -69,6 +73,12 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
                         AppType app_type,
                         UninstallSource app_uninstall_source) override;
   void OnAppPlatformMetricsDestroyed() override;
+
+  // apps::AppCapabilityAccessCache::Observer
+  void OnCapabilityAccessUpdate(
+      const apps::CapabilityAccessUpdate& update) override;
+  void OnAppCapabilityAccessCacheWillBeDestroyed(
+      apps::AppCapabilityAccessCache* cache) override;
 
   // InstanceRegistry::Observer
   void OnInstanceUpdate(const InstanceUpdate& instance_update) override;
@@ -164,6 +174,10 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   std::map<std::string, std::set<base::UnguessableToken>>
       app_id_to_instance_ids_;
 
+  // Observations.
+  base::ScopedObservation<apps::AppCapabilityAccessCache,
+                          apps::AppCapabilityAccessCache::Observer>
+      app_capability_observation_{this};
   base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
       instance_registry_observation_{this};
 };

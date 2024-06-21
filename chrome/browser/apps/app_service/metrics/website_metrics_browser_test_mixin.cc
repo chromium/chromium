@@ -84,8 +84,10 @@ void WebsiteMetricsBrowserTestMixin::SetUpOnMainThread() {
     app_service_proxy->SetAppPlatformMetricsServiceForTesting(
         std::move(metrics_service));
   }
-  app_platform_metrics_service_->Start(app_service_proxy->AppRegistryCache(),
-                                       app_service_proxy->InstanceRegistry());
+  app_platform_metrics_service_->Start(
+      app_service_proxy->AppRegistryCache(),
+      app_service_proxy->InstanceRegistry(),
+      app_service_proxy->AppCapabilityAccessCache());
 #endif
 }
 

@@ -73,8 +73,10 @@ TEST_F(AppPlatformMetricsRetrieverTest,
       app_platform_metrics_service_));
 
   // Simulate init and verify callback is triggered with initialized component.
-  app_platform_metrics_service_->Start(app_service_proxy_->AppRegistryCache(),
-                                       app_service_proxy_->InstanceRegistry());
+  app_platform_metrics_service_->Start(
+      app_service_proxy_->AppRegistryCache(),
+      app_service_proxy_->InstanceRegistry(),
+      app_service_proxy_->AppCapabilityAccessCache());
   ASSERT_THAT(initialized_app_platform_metrics,
               Eq(app_platform_metrics_service_->AppPlatformMetrics()));
   EXPECT_FALSE(app_platform_metrics_retriever_->IsObservingSourceForTest(
@@ -84,8 +86,10 @@ TEST_F(AppPlatformMetricsRetrieverTest,
 TEST_F(AppPlatformMetricsRetrieverTest, ReturnAppPlatformMetricsIfInitialized) {
   // Simulate `AppPlatformMetrics` component initialization before we test this
   // scenario.
-  app_platform_metrics_service_->Start(app_service_proxy_->AppRegistryCache(),
-                                       app_service_proxy_->InstanceRegistry());
+  app_platform_metrics_service_->Start(
+      app_service_proxy_->AppRegistryCache(),
+      app_service_proxy_->InstanceRegistry(),
+      app_service_proxy_->AppCapabilityAccessCache());
   ASSERT_THAT(app_platform_metrics_service_->AppPlatformMetrics(), NotNull());
 
   // Verify retriever returns initialized component without observing init.
@@ -128,8 +132,10 @@ TEST_F(AppPlatformMetricsRetrieverTest,
 
   // Simulate init and verify both callbacks are triggered with initialized
   // component.
-  app_platform_metrics_service_->Start(app_service_proxy_->AppRegistryCache(),
-                                       app_service_proxy_->InstanceRegistry());
+  app_platform_metrics_service_->Start(
+      app_service_proxy_->AppRegistryCache(),
+      app_service_proxy_->InstanceRegistry(),
+      app_service_proxy_->AppCapabilityAccessCache());
   ASSERT_THAT(initialized_app_platform_metrics_1,
               Eq(app_platform_metrics_service_->AppPlatformMetrics()));
   ASSERT_THAT(initialized_app_platform_metrics_2,

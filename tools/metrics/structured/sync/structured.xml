@@ -989,7 +989,7 @@
   </event>
 </project>
 
-<project name="CrOSEvents" cros_events="true" targets="chromium,webui">
+<project name="CrOSEvents" cros_events="true" targets="webui,chromium">
   <owner>jongahn@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
@@ -1362,6 +1362,17 @@
     <metric name="AppState" type="int">
       <summary>
         Denotes a change in an app state. 0 - INACTIVE, 1 - ACTIVE, 2 - CLOSED.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.ArcAppCameraAccessed">
+    <summary>
+      Recorded when a camera is accessed from an ARC app.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
       </summary>
     </metric>
   </event>

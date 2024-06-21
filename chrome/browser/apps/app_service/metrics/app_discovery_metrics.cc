@@ -8,8 +8,6 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -53,7 +51,8 @@ AppDiscoveryMetrics::AppDiscoveryMetrics(
     Profile* profile,
     const apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry,
-    AppPlatformMetrics* app_platform_metrics)
+    AppPlatformMetrics* app_platform_metrics,
+    apps::AppCapabilityAccessCache& app_capability_access_cache)
     : profile_(profile),
       app_registry_cache_(app_registry_cache),
       app_platform_metrics_(app_platform_metrics) {
@@ -67,6 +66,8 @@ AppDiscoveryMetrics::AppDiscoveryMetrics(
 
   instance_registry_observation_.Observe(&instance_registry);
   app_platform_metrics_->AddObserver(this);
+
+  app_capability_observation_.Observe(&app_capability_access_cache);
 }
 
 AppDiscoveryMetrics::~AppDiscoveryMetrics() {
@@ -416,6 +417,32 @@ std::string AppDiscoveryMetrics::GetAppStringToRecord(
     default:
       return "";
   }
+}
+
+void AppDiscoveryMetrics::OnCapabilityAccessUpdate(
+    const CapabilityAccessUpdate& update) {
+  if (!update.CameraChanged() && update.Camera().value_or(false)) {
+    return;
+  }
+
+  std::string app_id = update.AppId();
+  // Do not record cros-events if app-sync is disabled.
+  if (!ShouldRecordAppKMForAppId(app_id)) {
+    return;
+  }
+
+  AppType app_type = GetAppType(profile_, app_id);
+  if (app_type == AppType::kArc) {
+    std::string arc_app_name = GetAppStringToRecord(app_id, app_type);
+    metrics::structured::StructuredMetricsClient::Record(
+        std::move(cros_events::AppDiscovery_ArcAppCameraAccessed().SetAppId(
+            arc_app_name)));
+  }
+}
+
+void AppDiscoveryMetrics::OnAppCapabilityAccessCacheWillBeDestroyed(
+    AppCapabilityAccessCache* cache) {
+  app_capability_observation_.Reset();
 }
 
 bool AppDiscoveryMetrics::AddAppInstall(const std::string& id) {
