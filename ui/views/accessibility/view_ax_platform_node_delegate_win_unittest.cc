@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/accessibility/view_ax_platform_node_delegate_win.h"
 
 #include <oleacc.h>
@@ -346,8 +340,14 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(
                       alerts_bstr.Get(), 0, &targets, &n_targets));
   ASSERT_EQ(2, n_targets);
-  ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets[0]));
-  ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets[1]));
+  {
+    // SAFETY: get_relationTargetsOfType() is a COM interface which guarantees
+    // that exactly n_targets pointers are available starting at targets.
+    UNSAFE_BUFFERS(base::span<IUnknown*> targets_span(
+                       targets, base::checked_cast<size_t>(n_targets));)
+    ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets_span[0]));
+    ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets_span[1]));
+  }
   CoTaskMemFree(targets);
 
   // If we set max_targets to 1, we should only get the first one.
@@ -635,11 +635,11 @@ class TestTableModel : public ui::TableModel {
   size_t RowCount() override { return 3; }
 
   std::u16string GetText(size_t row, int column_id) override {
-    const char* const cells[5][3] = {
-        {"Australia", "24,584,620", "1,323,421,072,479"},
-        {"Spain", "46,647,428", "1,314,314,164,402"},
-        {"Nigeria", "190.873,244", "375,745,486,521"},
-    };
+    constexpr std::array<std::array<const char* const, 5>, 3> cells = {{
+        {{"Australia", "24,584,620", "1,323,421,072,479"}},
+        {{"Spain", "46,647,428", "1,314,314,164,402"}},
+        {{"Nigeria", "190.873,244", "375,745,486,521"}},
+    }};
 
     return base::ASCIIToUTF16(cells[row % 5][column_id]);
   }

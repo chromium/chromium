@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/win/pen_event_processor.h"
 
 #include "base/test/task_environment.h"
@@ -297,20 +291,19 @@ TEST_F(PenProcessorTest, MultiPenDMEnabled) {
   PenEventProcessor processor(&id_generator,
                               /*direct_manipulation_enabled*/ true);
 
-  const int kPenCount = 3;
-  POINTER_PEN_INFO pen_info[kPenCount];
+  std::array<POINTER_PEN_INFO, 3> pen_info;
   for (auto& i : pen_info) {
     memset(&i, 0, sizeof(POINTER_PEN_INFO));
   }
 
   gfx::Point point(100, 100);
 
-  for (int i = 0; i < kPenCount; i++) {
+  for (size_t i = 0; i < pen_info.size(); i++) {
     pen_info[i].pointerInfo.pointerFlags =
         POINTER_FLAG_INCONTACT | POINTER_FLAG_FIRSTBUTTON;
     pen_info[i].pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_DOWN;
 
-    int pointer_id = i;
+    size_t pointer_id = i;
     std::unique_ptr<ui::Event> event =
         processor.GenerateEvent(WM_POINTERDOWN, pointer_id, pen_info[i], point);
     ASSERT_TRUE(event);
@@ -318,11 +311,11 @@ TEST_F(PenProcessorTest, MultiPenDMEnabled) {
     EXPECT_EQ(ui::ET_TOUCH_PRESSED, event->AsTouchEvent()->type());
   }
 
-  for (int i = 0; i < kPenCount; i++) {
+  for (size_t i = 0; i < pen_info.size(); i++) {
     pen_info[i].pointerInfo.pointerFlags = POINTER_FLAG_UP;
     pen_info[i].pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_UP;
 
-    int pointer_id = i;
+    size_t pointer_id = i;
     std::unique_ptr<ui::Event> event =
         processor.GenerateEvent(WM_POINTERUP, pointer_id, pen_info[i], point);
     ASSERT_TRUE(event);
