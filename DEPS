@@ -4569,7 +4569,7 @@ deps = {
 
   'src/chrome/browser/resources/settings/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/settings_internal.git' + '@' +
-        '24ae61004f7df1476ead870e1e448ef6ba4c1a1d', # from svn revision 41419
+        '2735f17dcd23dba5f7564e54a8e82fee3368a7ad', # from svn revision 41419
       'condition': 'checkout_src_internal',
   },
 
