@@ -140,7 +140,6 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   // textfield is not empty and the text is editable.
   bool IsInputSubmittable() const;
 
-  //  raw_ptr<LoginPasswordRow> password_row_ = nullptr;
   raw_ptr<AuthTextfield> textfield_ = nullptr;
   raw_ptr<IconButton> submit_button_ = nullptr;
   raw_ptr<views::ToggleImageButton> display_text_button_ = nullptr;

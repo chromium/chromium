@@ -170,6 +170,7 @@ void AuthInputRowView::CreateAndConfigureInputRow() {
       input_row_container->AddChildView(std::make_unique<NonAccessibleView>());
   input_row_->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kInputRowCornerRadiusDp));
+
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(0, kIntenalHorizontalPaddingInputRowDp),
@@ -285,7 +286,7 @@ void AuthInputRowView::OnContentsChanged(const std::u16string& new_contents) {
 
   if (!enable_buttons) {
     // If the submit or eye icon had the focus we should pass the focus to the
-    // textfield_
+    // textfield_.
     if (submit_button_->HasFocus() || display_text_button_->HasFocus()) {
       RequestFocus();
     }
@@ -363,7 +364,6 @@ bool AuthInputRowView::IsInputSubmittable() const {
 
 void AuthInputRowView::Submit() {
   DCHECK(IsInputSubmittable());
-  // textfield_->SetReadOnly(true);
   for (auto& observer : observers_) {
     observer.OnSubmit(textfield_->GetText());
   }
