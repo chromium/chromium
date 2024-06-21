@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.util.Size;
@@ -14,7 +13,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -211,19 +209,6 @@ public interface TabSwitcher {
          * @param r Runnable executed on next layout pass to run a show animation.
          */
         void runAnimationOnNextLayout(Runnable r);
-
-        /**
-         * Set a hook to receive all the {@link Bitmap}s returned by
-         * {@link ThumbnailFetcher} for testing.
-         * @param callback The callback to send bitmaps through.
-         */
-        void setBitmapCallbackForTesting(Callback<Bitmap> callback);
-
-        /** Returns the number of thumbnail fetching for testing. */
-        int getBitmapFetchCountForTesting();
-
-        /** Reset the current count of thumbnail fetches for testing. */
-        default void resetBitmapFetchCountForTesting() {}
 
         /** Returns the mode of the list of Tabs. */
         int getListModeForTesting();

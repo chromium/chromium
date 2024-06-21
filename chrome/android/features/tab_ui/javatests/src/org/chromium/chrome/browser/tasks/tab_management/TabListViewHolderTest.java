@@ -195,8 +195,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                                 int tabId,
                                 Size thumbnailSize,
                                 Callback<Bitmap> callback,
-                                boolean forceUpdate,
-                                boolean writeToCache,
                                 boolean isSelected) {
                             Bitmap bitmap =
                                     mShouldReturnBitmap
@@ -206,9 +204,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
                             mThumbnailFetchedCount.incrementAndGet();
                         }
                     },
-                    Tab.INVALID_TAB_ID,
-                    false,
-                    false);
+                    Tab.INVALID_TAB_ID);
     private AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
 
     private TabListMediator.TabActionListener mMockCloseListener =

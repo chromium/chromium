@@ -237,8 +237,6 @@ public class SingleTabSwitcherOnNtpMediator {
                 (Bitmap tabThumbnail) -> {
                     mPropertyModel.set(TAB_THUMBNAIL, tabThumbnail);
                 },
-                /* forceUpdate= */ true,
-                /* writeToCache= */ true,
                 /* isSelected= */ false);
     }
 

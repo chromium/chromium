@@ -170,9 +170,7 @@ public class TabSwitcherMediatorUnitTest {
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
 
-        doNothing()
-                .when(mTabContentManager)
-                .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
+        doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
         doReturn(mResources).when(mContext).getResources();
 
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();

@@ -15,10 +15,5 @@ public interface ThumbnailProvider {
      * @see TabContentManager#getTabThumbnailWithCallback
      */
     void getTabThumbnailWithCallback(
-            int tabId,
-            Size thumbnailSize,
-            Callback<Bitmap> callback,
-            boolean forceUpdate,
-            boolean writeToCache,
-            boolean isSelected);
+            int tabId, Size thumbnailSize, Callback<Bitmap> callback, boolean isSelected);
 }

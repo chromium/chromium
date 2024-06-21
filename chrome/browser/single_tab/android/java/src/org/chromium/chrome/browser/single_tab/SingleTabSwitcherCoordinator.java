@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.single_tab;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.Size;
 import android.view.LayoutInflater;
@@ -119,17 +118,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                 new TabSwitcher.TabListDelegate() {
                     @Override
                     public int getResourceId() {
-                        return 0;
-                    }
-
-                    @Override
-                    public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
-                        assert false : "should not reach here";
-                    }
-
-                    @Override
-                    public int getBitmapFetchCountForTesting() {
-                        assert false : "should not reach here";
                         return 0;
                     }
 

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -122,9 +121,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         doReturn(mTitle2).when(mTab2).getTitle();
         doReturn(true).when(mIncognitoTabModel).isIncognito();
 
-        doNothing()
-                .when(mTabContentManager)
-                .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
+        doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
 
         mPropertyModel = new PropertyModel(SingleTabViewProperties.ALL_KEYS);
         mMediator =
@@ -199,8 +196,7 @@ public class SingleTabSwitcherMediatorUnitTest {
         int height = width;
         Size thumbnailSize = new Size(width, height);
         verify(mTabContentManager)
-                .getTabThumbnailWithCallback(
-                        eq(mTabId), eq(thumbnailSize), any(), anyBoolean(), anyBoolean());
+                .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
 
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         verify(mTabSwitcherViewObserver).startedShowing();

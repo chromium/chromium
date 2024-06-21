@@ -226,8 +226,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                 (Bitmap tabThumbnail) -> {
                     mPropertyModel.set(TAB_THUMBNAIL, tabThumbnail);
                 },
-                /* forceUpdate= */ true,
-                /* writeToCache= */ true,
                 /* isSelected= */ false);
     }
 
@@ -415,9 +413,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
         if (tabContentManager == null) return null;
 
-        return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
-            tabContentManager.getTabThumbnailWithCallback(
-                    tabId, thumbnailSize, callback, forceUpdate, writeBack);
+        return (tabId, thumbnailSize, callback, isSelected) -> {
+            tabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
         };
     }
 

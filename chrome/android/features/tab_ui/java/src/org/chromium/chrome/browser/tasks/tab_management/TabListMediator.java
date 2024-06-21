@@ -246,32 +246,17 @@ class TabListMediator {
      * obtain the thumbnail asynchronously.
      */
     static class ThumbnailFetcher {
-        static Callback<Bitmap> sBitmapCallbackForTesting;
-        static int sFetchCountForTesting;
         private ThumbnailProvider mThumbnailProvider;
         private int mId;
-        private boolean mForceUpdate;
-        private boolean mWriteToCache;
 
-        ThumbnailFetcher(
-                ThumbnailProvider provider, int id, boolean forceUpdate, boolean writeToCache) {
+        ThumbnailFetcher(ThumbnailProvider provider, int id) {
             mThumbnailProvider = provider;
             mId = id;
-            mForceUpdate = forceUpdate;
-            mWriteToCache = writeToCache;
         }
 
         void fetch(Callback<Bitmap> callback, Size thumbnailSize, boolean isSelected) {
-            Callback<Bitmap> forking =
-                    (bitmap) -> {
-                        if (sBitmapCallbackForTesting != null) {
-                            sBitmapCallbackForTesting.onResult(bitmap);
-                        }
-                        callback.onResult(bitmap);
-                    };
-            sFetchCountForTesting++;
             mThumbnailProvider.getTabThumbnailWithCallback(
-                    mId, thumbnailSize, forking, mForceUpdate, mWriteToCache, isSelected);
+                    mId, thumbnailSize, callback, isSelected);
         }
     }
 
@@ -491,8 +476,7 @@ class TabListMediator {
                                 .model
                                 .set(
                                         TabProperties.THUMBNAIL_FETCHER,
-                                        new ThumbnailFetcher(
-                                                mThumbnailProvider, tabId, false, false));
+                                        new ThumbnailFetcher(mThumbnailProvider, tabId));
                     }
                 }
             };
@@ -570,8 +554,7 @@ class TabListMediator {
                             PropertyModel model = mModel.get(indexAndTab.first).model;
                             model.set(
                                     TabProperties.THUMBNAIL_FETCHER,
-                                    new ThumbnailFetcher(
-                                            mThumbnailProvider, tab.getId(), false, false));
+                                    new ThumbnailFetcher(mThumbnailProvider, tab.getId()));
                         }
                     } else {
                         tab = updatedTab;
@@ -684,10 +667,7 @@ class TabListMediator {
                                 .set(
                                         TabProperties.THUMBNAIL_FETCHER,
                                         new ThumbnailFetcher(
-                                                mThumbnailProvider,
-                                                lastShownTab.getId(),
-                                                true,
-                                                false));
+                                                mThumbnailProvider, lastShownTab.getId()));
                         return;
                     }
 
@@ -1300,7 +1280,7 @@ class TabListMediator {
                         .model
                         .set(
                                 TabProperties.THUMBNAIL_FETCHER,
-                                new ThumbnailFetcher(mThumbnailProvider, lastId, true, false));
+                                new ThumbnailFetcher(mThumbnailProvider, lastId));
             }
         }
 
@@ -1312,7 +1292,7 @@ class TabListMediator {
                         .model
                         .set(
                                 TabProperties.THUMBNAIL_FETCHER,
-                                new ThumbnailFetcher(mThumbnailProvider, newId, true, false));
+                                new ThumbnailFetcher(mThumbnailProvider, newId));
             }
         }
     }
@@ -1707,15 +1687,7 @@ class TabListMediator {
                         || isUpdatingId
                         || forceUpdateLastSelected
                         || isInTabGroup)) {
-            boolean isSelectable = mTabActionState == TabActionState.SELECTABLE;
-            ThumbnailFetcher callback =
-                    new ThumbnailFetcher(
-                            mThumbnailProvider,
-                            tab.getId(),
-                            (forceUpdate || forceUpdateLastSelected) && !isSelectable,
-                            forceUpdate
-                                    && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
-                                    && !isSelectable);
+            ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, tab.getId());
             mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
     }
@@ -2015,7 +1987,6 @@ class TabListMediator {
             @TabActionState int tabActionState, Tab tab, PropertyModel model) {
         model.set(TabProperties.IS_SELECTED, isTabSelected(tabActionState, tab));
 
-        boolean isInTabGroup = isTabInTabGroup(tab);
         model.set(
                 TabProperties.TAB_ACTION_BUTTON_LISTENER,
                 getTabActionButtonListener(tab, tabActionState));
@@ -2201,15 +2172,7 @@ class TabListMediator {
             }
         }
         if (mThumbnailProvider != null && mShowingTabs) {
-            boolean isSelectable = mTabActionState == TabActionState.SELECTABLE;
-            ThumbnailFetcher callback =
-                    new ThumbnailFetcher(
-                            mThumbnailProvider,
-                            tab.getId(),
-                            isSelected && !isSelectable,
-                            isSelected
-                                    && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
-                                    && !isSelectable);
+            ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, tab.getId());
             tabInfo.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
     }

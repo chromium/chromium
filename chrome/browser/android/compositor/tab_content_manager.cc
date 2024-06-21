@@ -248,7 +248,6 @@ void TabContentManager::CaptureThumbnail(
     JNIEnv* env,
     const JavaParamRef<jobject>& tab,
     jfloat thumbnail_scale,
-    jboolean write_to_cache,
     jboolean return_bitmap,
     const base::android::JavaParamRef<jobject>& j_callback) {
   // Ensure capture only happens on UI thread.
@@ -268,22 +267,18 @@ void TabContentManager::CaptureThumbnail(
     }
     return;
   }
-  if (write_to_cache &&
-      !thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
+  if (!thumbnail_cache_->CheckAndUpdateThumbnailMetaData(
           tab_id, tab_android->GetURL(), /*force_update=*/false)) {
     return;
   }
   std::unique_ptr<thumbnail::ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
       tracker(nullptr, base::OnTaskRunnerDeleter(
                            base::SequencedTaskRunner::GetCurrentDefault()));
-  if (write_to_cache) {
-    tracker = TrackCapture(tab_id);
-  }
-  TabReadbackCallback readback_done_callback =
-      base::BindOnce(&TabContentManager::OnTabReadback,
-                     weak_factory_.GetWeakPtr(), tab_id, std::move(tracker),
-                     base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-                     write_to_cache, return_bitmap);
+  tracker = TrackCapture(tab_id);
+  TabReadbackCallback readback_done_callback = base::BindOnce(
+      &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), tab_id,
+      std::move(tracker),
+      base::android::ScopedJavaGlobalRef<jobject>(j_callback), return_bitmap);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
       rwhv, thumbnail_scale, std::move(readback_done_callback));
 }
@@ -307,7 +302,6 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
           tab_id, url, tab_android->IsNativePage())) {
     OnTabReadback(tab_id, TrackCapture(tab_id),
                   /*j_callback=*/nullptr,
-                  /*write_to_cache=*/true,
                   /*return_bitmap=*/false, thumbnail_scale, skbitmap);
   }
 }
@@ -393,17 +387,17 @@ void TabContentManager::OnTabReadback(
     std::unique_ptr<thumbnail::ThumbnailCaptureTracker,
                     base::OnTaskRunnerDeleter> tracker,
     base::android::ScopedJavaGlobalRef<jobject> j_callback,
-    bool write_to_cache,
     bool return_bitmap,
     float thumbnail_scale,
     const SkBitmap& bitmap) {
   pending_tab_readbacks_.erase(tab_id);
 
   if (j_callback) {
-    SendThumbnailToJava(j_callback, write_to_cache, return_bitmap, bitmap);
+    SendThumbnailToJava(j_callback, /*need_downsampling=*/true, return_bitmap,
+                        bitmap);
   }
 
-  if (write_to_cache && thumbnail_scale > 0 && !bitmap.empty()) {
+  if (thumbnail_scale > 0 && !bitmap.empty()) {
     thumbnail_cache_->Put(tab_id, std::move(tracker), bitmap, thumbnail_scale);
   } else if (tracker) {
     tracker->MarkCaptureFailed();

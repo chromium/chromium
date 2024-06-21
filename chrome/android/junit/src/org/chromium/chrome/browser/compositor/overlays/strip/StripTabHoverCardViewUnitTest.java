@@ -163,9 +163,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(mBitmap);
 
         assertEquals(
@@ -212,9 +210,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(null);
         assertFalse(
                 "Thumbnail drawable should not contain a bitmap.",
@@ -237,9 +233,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(mBitmap);
         assertFalse(
                 "Thumbnail drawable should not contain a bitmap.",
@@ -269,9 +263,7 @@ public class StripTabHoverCardViewUnitTest {
                 .getTabThumbnailWithCallback(
                         anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(false),
-                        eq(false));
+                        mGetThumbnailCallbackCaptor.capture());
         mGetThumbnailCallbackCaptor.getValue().onResult(mBitmap);
         assertFalse(
                 "Thumbnail drawable should not contain a bitmap.",

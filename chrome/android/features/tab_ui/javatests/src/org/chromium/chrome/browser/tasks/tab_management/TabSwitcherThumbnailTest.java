@@ -62,11 +62,8 @@ public class TabSwitcherThumbnailTest {
 
     private TabListMediator.ThumbnailFetcher mNullThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(
-                    (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected) ->
-                            callback.onResult(null),
-                    Tab.INVALID_TAB_ID,
-                    false,
-                    false);
+                    (tabId, thumbnailSize, callback, isSelected) -> callback.onResult(null),
+                    Tab.INVALID_TAB_ID);
 
     @Before
     public void setUp() {

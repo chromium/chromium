@@ -69,8 +69,6 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private class MultiThumbnailFetcher {
         private final Tab mInitialTab;
         private final Callback<Bitmap> mFinalCallback;
-        private final boolean mForceUpdate;
-        private final boolean mWriteToCache;
         private final boolean mIsTabSelected;
         private final List<Tab> mTabs = new ArrayList<>(4);
         private final AtomicInteger mThumbnailsToFetch = new AtomicInteger();
@@ -92,20 +90,15 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
          * @param initialTab Thumbnail is generated for tabs related to initialTab.
          * @param thumbnailSize Desired size of multi-thumbnail.
          * @param finalCallback Callback which receives generated bitmap.
-         * @param forceUpdate, writeToCache Required for bitmap generator.
          * @param isTabSelected Whether the thumbnail is for a currently selected tab.
          */
         MultiThumbnailFetcher(
                 Tab initialTab,
                 Size thumbnailSize,
                 Callback<Bitmap> finalCallback,
-                boolean forceUpdate,
-                boolean writeToCache,
                 boolean isTabSelected) {
             mFinalCallback = finalCallback;
             mInitialTab = initialTab;
-            mForceUpdate = forceUpdate;
-            mWriteToCache = writeToCache;
             mIsTabSelected = isTabSelected;
 
             if (thumbnailSize == null
@@ -268,9 +261,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                                                 drawFaviconThenMaybeSendBack(favicon, index);
                                             });
                                 }
-                            },
-                            mForceUpdate && i == 0,
-                            mWriteToCache && i == 0);
+                            });
                 } else {
                     drawThumbnailBitmapOnCanvasWithFrame(null, i);
                     if (mText != null && i == 3) {
@@ -449,29 +440,16 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
     @Override
     public void getTabThumbnailWithCallback(
-            int tabId,
-            Size thumbnailSize,
-            Callback<Bitmap> finalCallback,
-            boolean forceUpdate,
-            boolean writeToCache,
-            boolean isSelected) {
+            int tabId, Size thumbnailSize, Callback<Bitmap> finalCallback, boolean isSelected) {
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
         assert filter.isTabModelRestored();
         Tab tab = TabModelUtils.getTabById(filter.getTabModel(), tabId);
         boolean useMultiThumbnail = filter.isTabInTabGroup(tab);
         if (useMultiThumbnail) {
             assert tab != null;
-            new MultiThumbnailFetcher(
-                            tab,
-                            thumbnailSize,
-                            finalCallback,
-                            forceUpdate,
-                            writeToCache,
-                            isSelected)
-                    .fetch();
+            new MultiThumbnailFetcher(tab, thumbnailSize, finalCallback, isSelected).fetch();
             return;
         }
-        mTabContentManager.getTabThumbnailWithCallback(
-                tabId, thumbnailSize, finalCallback, forceUpdate, writeToCache);
+        mTabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, finalCallback);
     }
 }

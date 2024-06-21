@@ -358,9 +358,7 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
 
-        doNothing()
-                .when(mTabContentManager)
-                .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
+        doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
         // Mock that tab restoring stage is over.
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         doReturn(true).when(mIncognitoTabGroupModelFilter).isTabModelRestored();
@@ -4474,9 +4472,8 @@ public class TabListMediatorUnitTest {
     }
 
     private ThumbnailProvider getTabThumbnailCallback() {
-        return (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected) -> {
-            mTabContentManager.getTabThumbnailWithCallback(
-                    tabId, thumbnailSize, callback, forceUpdate, writeToCache);
+        return (tabId, thumbnailSize, callback, isSelected) -> {
+            mTabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
         };
     }
 

@@ -147,9 +147,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                         /* uiConfig= */ null,
                         isTablet,
                         moduleDelegate);
-        doNothing()
-                .when(mTabContentManager)
-                .getTabThumbnailWithCallback(anyInt(), any(), any(), anyBoolean(), anyBoolean());
+        doNothing().when(mTabContentManager).getTabThumbnailWithCallback(anyInt(), any(), any());
         assertNull(mPropertyModel.get(FAVICON));
         assertNull(mPropertyModel.get(TAB_THUMBNAIL));
         assertNull(mPropertyModel.get(TITLE));
@@ -171,8 +169,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 .getFaviconDrawableForUrlAsync(
                         eq(mUrl), eq(false), mFaviconCallbackCaptor.capture());
         verify(mTabContentManager)
-                .getTabThumbnailWithCallback(
-                        eq(mTabId), eq(thumbnailSize), any(), anyBoolean(), anyBoolean());
+                .getTabThumbnailWithCallback(eq(mTabId), eq(thumbnailSize), any());
         assertEquals(mPropertyModel.get(TITLE), mTitle);
         assertEquals(mUrlHost, mPropertyModel.get(URL));
         assertTrue(mPropertyModel.get(IS_VISIBLE));

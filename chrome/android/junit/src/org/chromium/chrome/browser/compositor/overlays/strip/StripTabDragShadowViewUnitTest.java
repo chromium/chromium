@@ -180,11 +180,7 @@ public class StripTabDragShadowViewUnitTest {
 
         verify(mMockTabContentManager)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID),
-                        any(Size.class),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(true),
-                        eq(true));
+                        eq(TAB_ID), any(Size.class), mGetThumbnailCallbackCaptor.capture());
 
         mGetThumbnailCallbackCaptor.getValue().onResult(mMockThumbnailBitmap);
         assertEquals(
@@ -198,11 +194,7 @@ public class StripTabDragShadowViewUnitTest {
         mStripTabDragShadowView.prepareForDrag(mMockTab, 0);
         verify(mMockTabContentManager)
                 .getTabThumbnailWithCallback(
-                        eq(TAB_ID),
-                        any(Size.class),
-                        mGetThumbnailCallbackCaptor.capture(),
-                        eq(true),
-                        eq(true));
+                        eq(TAB_ID), any(Size.class), mGetThumbnailCallbackCaptor.capture());
 
         mGetThumbnailCallbackCaptor.getValue().onResult(null);
         assertEquals(

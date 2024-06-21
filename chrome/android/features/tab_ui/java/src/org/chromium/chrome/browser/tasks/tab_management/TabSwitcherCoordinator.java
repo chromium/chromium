@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -18,9 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -487,23 +484,6 @@ public class TabSwitcherCoordinator
     @Override
     public int getResourceId() {
         return mTabListCoordinator.getResourceId();
-    }
-
-    @Override
-    public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
-        TabListMediator.ThumbnailFetcher.sBitmapCallbackForTesting = callback;
-        ResettersForTesting.register(
-                () -> TabListMediator.ThumbnailFetcher.sBitmapCallbackForTesting = null);
-    }
-
-    @Override
-    public int getBitmapFetchCountForTesting() {
-        return TabListMediator.ThumbnailFetcher.sFetchCountForTesting;
-    }
-
-    @Override
-    public void resetBitmapFetchCountForTesting() {
-        TabListMediator.ThumbnailFetcher.sFetchCountForTesting = 0;
     }
 
     // ResetHandler implementation.

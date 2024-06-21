@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -331,7 +330,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         doCallback(2, (Callback<Bitmap> callback) -> callback.onResult(bitmap))
                 .when(mTabContentManager)
-                .getTabThumbnailWithCallback(eq(tabId), any(), any(), anyBoolean(), anyBoolean());
+                .getTabThumbnailWithCallback(eq(tabId), any(), any());
         mCoordinator.resetWithTabList(mTabModelFilter);
 
         TabListRecyclerView recyclerView =
@@ -346,8 +345,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         // This gets called three times
         // 1) Once when the fetcher is set.
         // 2) Twice due to thumbnail size changes on initial and repeat layout.
-        verify(mTabContentManager, times(3))
-                .getTabThumbnailWithCallback(eq(tabId), any(), any(), anyBoolean(), anyBoolean());
+        verify(mTabContentManager, times(3)).getTabThumbnailWithCallback(eq(tabId), any(), any());
 
         TabThumbnailView thumbnailView =
                 (TabThumbnailView) mActivity.findViewById(R.id.tab_thumbnail);

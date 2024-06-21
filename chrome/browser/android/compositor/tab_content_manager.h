@@ -75,7 +75,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void CaptureThumbnail(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& tab,
                         jfloat thumbnail_scale,
-                        jboolean write_to_cache,
                         jboolean return_bitmap,
                         const base::android::JavaParamRef<jobject>& j_callback);
   void CacheTabWithBitmap(JNIEnv* env,
@@ -126,7 +125,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                      std::unique_ptr<thumbnail::ThumbnailCaptureTracker,
                                      base::OnTaskRunnerDeleter> tracker,
                      base::android::ScopedJavaGlobalRef<jobject> j_callback,
-                     bool write_to_cache,
                      bool return_bitmap,
                      float thumbnail_scale,
                      const SkBitmap& bitmap);

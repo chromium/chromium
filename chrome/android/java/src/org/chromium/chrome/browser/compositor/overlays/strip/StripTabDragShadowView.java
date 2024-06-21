@@ -212,9 +212,7 @@ public class StripTabDragShadowView extends FrameLayout {
                                 mThumbnailView.setImageDrawable(null);
                             }
                             mShadowUpdateHost.requestUpdate();
-                        },
-                        /* forceUpdate= */ true,
-                        /* writeBack= */ true);
+                        });
 
         // Update title and set original favicon.
         LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();

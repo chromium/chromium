@@ -194,14 +194,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             mBrowserControlsStateProvider,
                             currentTabModelFilterSupplier,
-                            (tabId,
-                                    thumbnailSize,
-                                    callback,
-                                    forceUpdate,
-                                    writeBack,
-                                    isSelected) -> {
+                            (tabId, thumbnailSize, callback, isSelected) -> {
                                 tabContentManager.getTabThumbnailWithCallback(
-                                        tabId, thumbnailSize, callback, forceUpdate, writeBack);
+                                        tabId, thumbnailSize, callback);
                             },
                             false,
                             gridCardOnClickListenerProvider,

@@ -115,11 +115,7 @@ public class TabContentManagerTest {
                                                             .getBrowserControlsManager()));
                     tabContentManager.cacheTabThumbnail(currentTab);
                     tabContentManager.getTabThumbnailWithCallback(
-                            currentTab.getId(),
-                            new Size(width, height),
-                            bitmapCallback,
-                            /* forceUpdate= */ false,
-                            /* writeToCache= */ false);
+                            currentTab.getId(), new Size(width, height), bitmapCallback);
                 });
 
         helper.waitForFirst();

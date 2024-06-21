@@ -444,9 +444,8 @@ class TabListEditorCoordinator {
                             mCurrentTabModelFilterSupplier);
             return mMultiThumbnailCardProvider;
         }
-        return (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
-            tabContentManager.getTabThumbnailWithCallback(
-                    tabId, thumbnailSize, callback, forceUpdate, writeBack);
+        return (tabId, thumbnailSize, callback, isSelected) -> {
+            tabContentManager.getTabThumbnailWithCallback(tabId, thumbnailSize, callback);
         };
     }
 
