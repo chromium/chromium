@@ -89,6 +89,8 @@ class AXTreeSourceAndroid
     // To ensure the node re-serialized, the class must return |true| on
     // PreDispatchEvent() if the event is NOT coming from its ancestry.
     virtual void PostSerializeNode(ui::AXNodeData* out_data) const = 0;
+
+    virtual bool ShouldDestroy(AXTreeSourceAndroid* tree_source) const = 0;
   };
 
   AXTreeSourceAndroid(

@@ -168,4 +168,9 @@ void AutoCompleteHandler::PostSerializeNode(ui::AXNodeData* out_data) const {
   }
 }
 
+bool AutoCompleteHandler::ShouldDestroy(
+    AXTreeSourceAndroid* tree_source) const {
+  return tree_source->GetFromId(anchored_node_id_) == nullptr;
+}
+
 }  // namespace ax::android

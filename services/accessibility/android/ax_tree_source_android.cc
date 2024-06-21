@@ -529,7 +529,7 @@ bool AXTreeSourceAndroid::UpdateAndroidFocusedId(
 std::vector<int32_t> AXTreeSourceAndroid::ProcessHooksOnEvent(
     const AXEventData& event_data) {
   base::EraseIf(hooks_, [this](const auto& it) {
-    return this->GetFromId(it.first) == nullptr;
+    return it.second->ShouldDestroy(this);
   });
 
   std::vector<int32_t> serialization_needed_ids;
