@@ -41,6 +41,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -881,5 +883,97 @@ public class CustomTabsConnectionTest {
                         token,
                         Uri.parse(INVALID_SCHEME_URL),
                         new PrefetchOptions.Builder().build()));
+    }
+
+    @Test
+    @SmallTest
+    public void testverifySourceOriginOfPrefetch() throws Exception {
+        String sourceOrigin = URL;
+        String invalidSourceOrigin = URL2;
+        String packageName = "app";
+
+        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        Assert.assertTrue(mCustomTabsConnection.newSession(token));
+        mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                packageName,
+                                Origin.create(sourceOrigin),
+                                CustomTabsService.RELATION_USE_AS_ORIGIN));
+
+        PrefetchOptions prefetchOptionsEmptySourceOrigin = new PrefetchOptions.Builder().build();
+        PrefetchOptions prefetchOptionsValidSourceOrigin =
+                new PrefetchOptions.Builder().setSourceOrigin(Uri.parse(sourceOrigin)).build();
+        PrefetchOptions prefetchOptionsInvalidSourceOrigin =
+                new PrefetchOptions.Builder()
+                        .setSourceOrigin(Uri.parse(invalidSourceOrigin))
+                        .build();
+
+        Assert.assertFalse(
+                mCustomTabsConnection.verifySourceOriginOfPrefetch(
+                        token, prefetchOptionsEmptySourceOrigin.sourceOrigin));
+        Assert.assertTrue(
+                mCustomTabsConnection.verifySourceOriginOfPrefetch(
+                        token, prefetchOptionsValidSourceOrigin.sourceOrigin));
+        Assert.assertFalse(
+                mCustomTabsConnection.verifySourceOriginOfPrefetch(
+                        token, prefetchOptionsInvalidSourceOrigin.sourceOrigin));
+    }
+
+    /** Tests that prefetch() with valid Uri and valid sourceOrigin succeeds. */
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
+        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
+    })
+    public void testPrefetchWithValidSourceOriginUri() throws Exception {
+        String sourceOrigin = URL;
+        String prefetchUrl = URL2;
+        String packageName = "app";
+
+        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        Assert.assertTrue(mCustomTabsConnection.newSession(token));
+        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                packageName,
+                                Origin.create(sourceOrigin),
+                                CustomTabsService.RELATION_USE_AS_ORIGIN));
+        Assert.assertTrue(
+                mCustomTabsConnection.prefetch(
+                        token,
+                        Uri.parse(prefetchUrl),
+                        new PrefetchOptions.Builder()
+                                .setSourceOrigin(Uri.parse(sourceOrigin))
+                                .build()));
+    }
+
+    /** Tests that prefetch() with valid Uri and invalid sourceOrigin succeeds. */
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PREFETCH_BROWSER_INITIATED_TRIGGERS,
+        ChromeFeatureList.CCT_NAVIGATIONAL_PREFETCH
+    })
+    public void testPrefetchWithInvalidSourceOriginUri() throws Exception {
+        String invalidSourceOrigin = URL;
+        String prefetchUrl = URL2;
+        String packageName = "app";
+
+        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
+        Assert.assertTrue(mCustomTabsConnection.newSession(token));
+        Assert.assertTrue(mCustomTabsConnection.warmup(0));
+        mCustomTabsConnection.overridePackageNameForSessionForTesting(token, packageName);
+        Assert.assertTrue(
+                mCustomTabsConnection.prefetch(
+                        token,
+                        Uri.parse(prefetchUrl),
+                        new PrefetchOptions.Builder()
+                                .setSourceOrigin(Uri.parse(invalidSourceOrigin))
+                                .build()));
     }
 }

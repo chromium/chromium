@@ -679,11 +679,10 @@ public class CustomTabsConnection {
         if (uriString == null) return false;
 
         boolean usePrefetchProxy = options.requiresAnonymousIpWhenCrossOrigin;
-        String verifiedSourceOrigin = null;
-        if (options.sourceOrigin != null) {
-            // TODO(crbug.com/40288091): Perform origin verification of `options.SourceOrigin`.
-        }
-
+        String verifiedSourceOrigin =
+                verifySourceOriginOfPrefetch(session, options.sourceOrigin)
+                        ? options.sourceOrigin.toString()
+                        : null;
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -692,6 +691,17 @@ public class CustomTabsConnection {
                                     uriString, usePrefetchProxy, verifiedSourceOrigin);
                 });
         return true;
+    }
+
+    @VisibleForTesting
+    @androidx.browser.customtabs.ExperimentalPrefetch
+    boolean verifySourceOriginOfPrefetch(
+            CustomTabsSessionToken session, @Nullable Uri rawSourceOrigin) {
+        if (rawSourceOrigin == null) return false;
+        String sourceOriginString = rawSourceOrigin.toString();
+        Origin sourceOrigin = Origin.create(sourceOriginString);
+        return sourceOrigin != null
+                && mClientManager.isFirstPartyOriginForSession(session, sourceOrigin);
     }
 
     private void enableExperimentIdsIfNecessary(Bundle extras) {
