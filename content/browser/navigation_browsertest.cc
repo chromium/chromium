@@ -9095,8 +9095,16 @@ class DeferSpeculativeRFHCreationTest : public NavigationBrowserTest {
 // Verify the common flow for with DeferSpeculativeRFHCreation feature.
 // The creation of the speculative RFH will be deferred until the network
 // request is sent.
+// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
+// bfcache bots.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#define MAYBE_SpeculativeRFHCreationDeferred \
+  DISABLED_SpeculativeRFHCreationDeferred
+#else
+#define MAYBE_SpeculativeRFHCreationDeferred SpeculativeRFHCreationDeferred
+#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       SpeculativeRFHCreationDeferred) {
+                       MAYBE_SpeculativeRFHCreationDeferred) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9229,8 +9237,17 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 
 // Verify that the creation of the speculative RFH is not deferred for the
 // pages without a URL loader.
+// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
+// bfcache bots.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#define MAYBE_CreationNotDeferredWithoutURLLoader \
+  DISABLED_CreationNotDeferredWithoutURLLoader
+#else
+#define MAYBE_CreationNotDeferredWithoutURLLoader \
+  CreationNotDeferredWithoutURLLoader
+#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       CreationNotDeferredWithoutURLLoader) {
+                       MAYBE_CreationNotDeferredWithoutURLLoader) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9254,8 +9271,15 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 
 // Verify that the created speculative RFH after the network request will
 // be correctly replaced if the redirection points to a different site.
+// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
+// bfcache bots.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#define MAYBE_SpeculativeRFHWithRedirect DISABLED_SpeculativeRFHWithRedirect
+#else
+#define MAYBE_SpeculativeRFHWithRedirect SpeculativeRFHWithRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       SpeculativeRFHWithRedirect) {
+                       MAYBE_SpeculativeRFHWithRedirect) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9318,8 +9342,15 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 // Test that if there is a navigation pending for commit, the deferred
 // speculative RFH will not be created event after the request is sent. The new
 // navigation will be queued until the pending navigation commits.
+// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
+// bfcache bots.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#define MAYBE_NavigateWithPendingCommit DISABLED_NavigateWithPendingCommit
+#else
+#define MAYBE_NavigateWithPendingCommit NavigateWithPendingCommit
+#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       NavigateWithPendingCommit) {
+                       MAYBE_NavigateWithPendingCommit) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
