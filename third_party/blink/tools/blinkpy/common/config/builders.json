@@ -29,10 +29,10 @@
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Release"]
     },
-    "mac-arm64-rel-tests": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac11-arm64",
-        "specifiers": ["Mac11-arm64", "Release"]
+    "mac14-arm64-rel-tests": {
+        "main": "chromium.mac",
+        "port_name": "mac-mac14-arm64",
+        "specifiers": ["Mac14-arm64", "Release"]
     },
     "Win10 Tests x64": {
         "main": "chromium.win",
