@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <attr name="defaultFontFamily" format="reference" />
-  <attr name="defaultMediumFontFamily" format="reference" />
+  <attr name="defaultFontFamily" format="reference|string" />
+  <attr name="defaultMediumFontFamily" format="reference|string" />
 </resources>

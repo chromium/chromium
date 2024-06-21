@@ -62,8 +62,8 @@ found in the LICENSE file.
         <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
 
         <item name="android:elegantTextHeight">false</item>
-        <item name="defaultFontFamily">@font/default_font</item>
-        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
+        <item name="defaultFontFamily">sans-serif</item>
+        <item name="defaultMediumFontFamily">sans-serif-medium</item>
 
         <item name="actionBarSize">@dimen/default_action_bar_height</item>
 
@@ -173,8 +173,8 @@ found in the LICENSE file.
         <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
 
         <item name="android:elegantTextHeight">false</item>
-        <item name="defaultFontFamily">@font/default_font</item>
-        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
+        <item name="defaultFontFamily">sans-serif</item>
+        <item name="defaultMediumFontFamily">sans-serif-medium</item>
     </style>
     <style name="Theme.BrowserUI.DialogWhenLarge.V35" parent="Theme.BrowserUI.DialogWhenLarge" />
     <!-- Overridden by night mode. -->
@@ -256,8 +256,8 @@ found in the LICENSE file.
         <item name="windowActionBar">false</item>
 
         <item name="android:elegantTextHeight">false</item>
-        <item name="defaultFontFamily">@font/default_font</item>
-        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
+        <item name="defaultFontFamily">sans-serif</item>
+        <item name="defaultMediumFontFamily">sans-serif-medium</item>
     </style>
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.V35" parent="Theme.BrowserUI.AlertDialog.NoActionBar" />
     <!-- Overridden by night mode. -->
@@ -294,12 +294,12 @@ found in the LICENSE file.
     <!-- TODO(https://crbug.com/346850440): Simplify once flag guarding is removed. -->
     <!-- Overridden downstream to reference Google Sans Text and Google Sans Text Medium. -->
     <style name="ThemeOverlay.BrowserUI.DefaultFontFamilyThemeOverlay" parent="">
-        <item name="defaultFontFamily">@font/default_font</item>
-        <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
+        <item name="defaultFontFamily">sans-serif</item>
+        <item name="defaultMediumFontFamily">sans-serif-medium</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.DevTestingDefaultFontFamilyThemeOverlay" parent="">
-        <item name="defaultFontFamily">@string/casual</item>
-        <item name="defaultMediumFontFamily">@string/cursive</item>
+        <item name="defaultFontFamily">casual</item>
+        <item name="defaultMediumFontFamily">cursive</item>
     </style>
 </resources>
