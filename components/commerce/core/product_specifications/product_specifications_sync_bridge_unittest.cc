@@ -143,6 +143,10 @@ void VerifyCompareSpecifics(const sync_pb::ProductComparisonSpecifics& expected,
   }
 }
 
+MATCHER_P(IsMetadataSize, size, "") {
+  return arg.get()->GetAllMetadata().size() == size;
+}
+
 }  // namespace
 
 namespace commerce {
@@ -290,10 +294,19 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return bridge().entries_;
   }
 
+  // Number of entries in an arbitrary |bridge|.
+  static uint64_t bridge_entries_size(ProductSpecificationsSyncBridge* bridge) {
+    return bridge->entries_.size();
+  }
+
   void ProcessorNotTrackingMetadata() {
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(false));
   }
+
+  syncer::ModelTypeStore* store() { return store_.get(); }
+
+  syncer::MockModelTypeChangeProcessor& processor() { return processor_; }
 
  private:
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
@@ -556,6 +569,54 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   EXPECT_FALSE(
       trimmed.product_comparison().has_update_time_unix_epoch_millis());
   EXPECT_EQ(0, trimmed.product_comparison().data_size());
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest, TestSupportedFieldsMetadataCache) {
+  sync_pb::EntityMetadata entity_metadata;
+  // Simulate entity with supported field in cache.
+  entity_metadata.mutable_possibly_trimmed_base_specifics()
+      ->mutable_product_comparison()
+      ->set_name(kInitName[0]);
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store()->CreateWriteBatch();
+  batch->GetMetadataChangeList()->UpdateMetadata(kInitUuid[0], entity_metadata);
+  CommitToStoreAndWait(std::move(batch));
+
+  EXPECT_CALL(processor(), ModelReadyToSync(IsMetadataSize(0u)));
+
+  // Simulate creating bridge with entity with supported field in cache.
+  base::RunLoop loop;
+  std::unique_ptr<ProductSpecificationsSyncBridge> new_bridge =
+      std::make_unique<ProductSpecificationsSyncBridge>(
+          syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
+          processor().CreateForwardingProcessor(),
+          base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
+                         loop.QuitClosure()));
+  loop.Run();
+  EXPECT_EQ(0u, bridge_entries_size(new_bridge.get()));
+}
+
+TEST_F(ProductSpecificationsSyncBridgeTest,
+       TestNoSupportedFieldsMetadataCache) {
+  sync_pb::EntityMetadata entity_metadata;
+  // Simulate entity with no supported field in cache.
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+      store()->CreateWriteBatch();
+  batch->GetMetadataChangeList()->UpdateMetadata(kInitUuid[0], entity_metadata);
+  CommitToStoreAndWait(std::move(batch));
+
+  EXPECT_CALL(processor(), ModelReadyToSync(IsMetadataSize(1u)));
+
+  // Simulate creating bridge with no entity with supported field in cache.
+  base::RunLoop loop;
+  std::unique_ptr<ProductSpecificationsSyncBridge> new_bridge =
+      std::make_unique<ProductSpecificationsSyncBridge>(
+          syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
+          processor().CreateForwardingProcessor(),
+          base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
+                         loop.QuitClosure()));
+  loop.Run();
+  EXPECT_EQ(3u, bridge_entries_size(new_bridge.get()));
 }
 
 }  // namespace commerce

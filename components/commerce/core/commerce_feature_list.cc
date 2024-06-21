@@ -200,6 +200,12 @@ BASE_FEATURE(kPriceTrackingIconColors,
 BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for unsupported fields becoming supported in the event of a
+// browser upgrade.
+BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
+             "ProductSpecificationsClearMetadataOnNewlySupportedFields",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kProductSpecificationsRegionLaunched,
              "ProductSpecificationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);

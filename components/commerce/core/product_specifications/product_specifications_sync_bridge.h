@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/entity_data.h"
@@ -89,6 +90,9 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
       std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+  bool SyncMetadataCacheContainsSupportedFields(
+      const syncer::EntityMetadataMap& metadata_map) const;
+
   void OnCommit(const std::optional<syncer::ModelError>& error);
 
   void AddObserver(commerce::ProductSpecificationsSet::Observer* observer);

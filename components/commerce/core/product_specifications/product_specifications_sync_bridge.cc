@@ -7,14 +7,18 @@
 #include <optional>
 #include <set>
 
+#include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
 
@@ -273,6 +277,17 @@ void ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata(
     return;
   }
 
+  // If Metadata cache contains supported fields it is because the browser
+  // has been upgraded. metadata_batch and record_list are no longer usable.
+  if (base::FeatureList::IsEnabled(
+          kProductSpecificationsClearMetadataOnNewlySupportedFields) &&
+      SyncMetadataCacheContainsSupportedFields(
+          metadata_batch->GetAllMetadata())) {
+    store_->DeleteAllDataAndMetadata(base::DoNothing());
+    metadata_batch = std::make_unique<syncer::MetadataBatch>();
+    record_list = std::make_unique<syncer::ModelTypeStore::RecordList>();
+  }
+
   for (const syncer::ModelTypeStore::Record& record : *record_list) {
     sync_pb::ProductComparisonSpecifics product_comparison_specifics;
     if (!product_comparison_specifics.ParseFromString(record.value)) {
@@ -296,6 +311,30 @@ void ProductSpecificationsSyncBridge::Commit(
       std::move(batch),
       base::BindOnce(&ProductSpecificationsSyncBridge::OnCommit,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool ProductSpecificationsSyncBridge::SyncMetadataCacheContainsSupportedFields(
+    const syncer::EntityMetadataMap& metadata_map) const {
+  for (const auto& metadata_entry : metadata_map) {
+    // Serialize the cached specifics and parse them back to a proto. Fields
+    // which were unsupported that have become supported should be parsed
+    // correctly.
+    std::string serialized_specifics;
+    metadata_entry.second->possibly_trimmed_base_specifics().SerializeToString(
+        &serialized_specifics);
+    sync_pb::EntitySpecifics parsed_specifics;
+    parsed_specifics.ParseFromString(serialized_specifics);
+
+    // If `parsed_specifics` contain any supported fields, they would be cleared
+    // by the trimming function.
+    if (parsed_specifics.ByteSizeLong() !=
+        TrimAllSupportedFieldsFromRemoteSpecifics(parsed_specifics)
+            .ByteSizeLong()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void ProductSpecificationsSyncBridge::OnCommit(
