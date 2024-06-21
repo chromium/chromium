@@ -126,7 +126,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents);
 
-  base::android::ScopedJavaGlobalRef<jstring> GetSupportedHtmlElementTypes(
+  base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
 
   void SetAllowImageDescriptions(JNIEnv* env,
@@ -300,26 +300,23 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Note: This cache is only meant for common strings that might be shared
   //       across many nodes (e.g. role or role description), which have a
   //       finite number of possibilities. Do not use it for page content.
-  base::android::ScopedJavaGlobalRef<jstring> GetCanonicalJNIString(
+  const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
       std::string str) {
     return GetCanonicalJNIString(env, base::UTF8ToUTF16(str));
   }
 
-  base::android::ScopedJavaGlobalRef<jstring> GetCanonicalJNIString(
+  const base::android::ScopedJavaGlobalRef<jstring>& GetCanonicalJNIString(
       JNIEnv* env,
       std::u16string str) {
-    // Check if this string has already been added to the cache.
-    auto it = common_string_cache_.find(str);
-    if (it != common_string_cache_.end()) {
-      return it->second;
+    auto& slot = common_string_cache_[str];
+    if (!slot) {
+      // Otherwise, convert the string and add it to the cache, then return.
+      slot = base::android::ConvertUTF16ToJavaString(env, str);
+      DCHECK(common_string_cache_.size() < 500);
     }
 
-    // Otherwise, convert the string and add it to the cache, then return.
-    common_string_cache_[str] =
-        base::android::ConvertUTF16ToJavaString(env, str);
-    DCHECK(common_string_cache_.size() < 500);
-    return common_string_cache_[str];
+    return slot;
   }
 
   void RequestAccessibilityTreeSnapshot(

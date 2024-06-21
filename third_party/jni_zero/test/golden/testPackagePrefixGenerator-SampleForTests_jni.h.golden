@@ -80,7 +80,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero
   auto _ret = JNI_SampleForTests_GetClass(
       env,
       jni_zero::JavaParamRef<jclass>(env, static_cast<jclass>(_env)));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
@@ -120,7 +120,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero
   auto _ret = JNI_SampleForTests_GetNonPODDatatype(
       env,
       jni_zero::JavaParamRef<jobject>(env, _jcaller));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
@@ -135,7 +135,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero
   auto _ret = JNI_SampleForTests_GetThrowable(
       env,
       jni_zero::JavaParamRef<jthrowable>(env, static_cast<jthrowable>(arg0)));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
@@ -308,7 +308,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero
   auto _ret = reinterpret_cast<CPPClass*>(nativeCPPClass)->ReturnAString(
       env,
       jni_zero::JavaParamRef<jobject>(env, caller));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.

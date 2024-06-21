@@ -44,7 +44,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero
       env,
       jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
       jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
@@ -62,7 +62,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero
       env,
       jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(a)),
       jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(b)));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.
@@ -113,7 +113,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero
   auto _ret = JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(
       env,
       jni_zero::JavaParamRef<jobjectArray>(env, static_cast<jobjectArray>(arg)));
-  return _ret.Release();
+  return _ret.ReleaseLocal();
 }
 
 // Forward declaration. To be implemented by the including .cc file.

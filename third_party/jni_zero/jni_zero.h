@@ -361,6 +361,9 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   // is *not* a transfer of ownership and Release() should not be used.
   T Release() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
 
+  // Alias for Release(). For use in templates when global refs are invalid.
+  T ReleaseLocal() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
+
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
@@ -486,6 +489,16 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   // global reference when it is done with it. Note that calling a Java method
   // is *not* a transfer of ownership and Release() should not be used.
   T Release() { return static_cast<T>(JavaRef<T>::ReleaseInternal()); }
+
+  // Create a local reference.
+  ScopedJavaLocalRef<T> AsLocalRef(JNIEnv* env) const {
+    T j_obj = JavaRef<T>::obj();
+    if (!j_obj) {
+      return nullptr;
+    }
+    return ScopedJavaLocalRef<T>::Adopt(
+        env, static_cast<T>(env->NewLocalRef(j_obj)));
+  }
 };
 
 // Wrapper for a jobjectArray which supports input iteration, allowing Java

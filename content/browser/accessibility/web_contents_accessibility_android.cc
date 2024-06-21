@@ -613,10 +613,10 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
           env, obj, unique_id));
 }
 
-base::android::ScopedJavaGlobalRef<jstring>
+base::android::ScopedJavaLocalRef<jstring>
 WebContentsAccessibilityAndroid::GetSupportedHtmlElementTypes(JNIEnv* env) {
   InitSearchKeyToPredicateMapIfNeeded();
-  return GetCanonicalJNIString(env, g_all_search_keys.Get());
+  return GetCanonicalJNIString(env, g_all_search_keys.Get()).AsLocalRef(env);
 }
 
 jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
