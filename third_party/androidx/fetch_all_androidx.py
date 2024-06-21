@@ -153,7 +153,7 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
             name, version = m.groups()
             if version == '{{androidx_dependency_version}}':
                 new_version = dependency_version_map.get(name)
-                if version is None:
+                if new_version is None:
                     raise Exception(f'Version for {name} not found.')
                 line = line.replace(version, new_version)
             else:
