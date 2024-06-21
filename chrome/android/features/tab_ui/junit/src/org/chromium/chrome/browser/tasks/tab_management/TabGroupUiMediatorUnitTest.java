@@ -117,6 +117,11 @@ public class TabGroupUiMediatorUnitTest {
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
 
+    private final ObservableSupplierImpl<Boolean> mTabGridDialogBackPressSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mTabGridDialogShowingOrAnimationSupplier =
+            new ObservableSupplierImpl<>();
+
     private Tab mTab1;
     private Tab mTab2;
     private Tab mTab3;
@@ -129,8 +134,6 @@ public class TabGroupUiMediatorUnitTest {
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController> mDialogControllerSupplier;
-    private final ObservableSupplierImpl<Boolean> mTabGridDialogBackPressSupplier =
-            new ObservableSupplierImpl<>();
 
     private Tab prepareTab(int tabId, int rootId) {
         Tab tab = TabUiUnitTestUtils.prepareTab(tabId, rootId);
@@ -180,6 +183,9 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(mTabGridDialogBackPressSupplier)
                 .when(mTabGridDialogController)
                 .getHandleBackPressChangedSupplier();
+        doReturn(mTabGridDialogShowingOrAnimationSupplier)
+                .when(mTabGridDialogController)
+                .getShowingOrAnimationSupplier();
         mTabGroupUiMediator =
                 new TabGroupUiMediator(
                         mContext,
@@ -338,6 +344,25 @@ public class TabGroupUiMediatorUnitTest {
 
         listener.onClick(mView);
 
+        verify(mResetHandler).resetGridWithListOfTabs(mTabGroup2);
+    }
+
+    @Test
+    public void onClickLeftButton_TabGroup_ShowingOrAnimation() {
+        initAndAssertProperties(mTab2);
+        mDialogControllerSupplier.get();
+        mTabGridDialogShowingOrAnimationSupplier.set(true);
+
+        View.OnClickListener listener =
+                mModel.get(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER);
+        assertThat(listener, instanceOf(View.OnClickListener.class));
+
+        listener.onClick(mView);
+        verify(mResetHandler, never()).resetGridWithListOfTabs(any());
+
+        mTabGridDialogShowingOrAnimationSupplier.set(false);
+
+        listener.onClick(mView);
         verify(mResetHandler).resetGridWithListOfTabs(mTabGroup2);
     }
 

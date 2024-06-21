@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.tab_ui.R;
@@ -98,8 +99,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final BottomControlsCoordinator.BottomControlsVisibilityController
             mVisibilityController;
     private final IncognitoStateProvider mIncognitoStateProvider;
-    private final LazyOneshotSupplier<TabGridDialogMediator.DialogController>
-            mTabGridDialogControllerSupplier;
+    private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final IncognitoStateObserver mIncognitoStateObserver;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -406,6 +406,12 @@ public class TabGroupUiMediator implements BackPressHandler {
     private void setupToolbarButtons() {
         View.OnClickListener leftButtonOnClickListener =
                 view -> {
+                    // Don't handle taps until fully visible and done animating.
+                    @Nullable DialogController controller = getTabGridDialogControllerIfExists();
+                    if (controller != null && controller.getShowingOrAnimationSupplier().get()) {
+                        return;
+                    }
+
                     Tab currentTab = mTabModelSelector.getCurrentTab();
                     if (currentTab == null) return;
                     mResetHandler.resetGridWithListOfTabs(getTabsToShowForId(currentTab.getId()));
@@ -498,16 +504,15 @@ public class TabGroupUiMediator implements BackPressHandler {
     public boolean onBackPressed() {
         // TODO(crbug.com/40099884): add a regression test to make sure that the back button closes
         // the dialog when the dialog is showing.
-        return mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()
-                && mTabGridDialogControllerSupplier.get().handleBackPressed();
+        @Nullable DialogController controller = getTabGridDialogControllerIfExists();
+        return controller != null ? controller.handleBackPressed() : false;
     }
 
     @Override
     public @BackPressResult int handleBackPress() {
-        if (mTabGridDialogControllerSupplier != null
-                && mTabGridDialogControllerSupplier.hasValue()) {
-            return mTabGridDialogControllerSupplier.get().handleBackPress();
+        @Nullable DialogController controller = getTabGridDialogControllerIfExists();
+        if (controller != null) {
+            return controller.handleBackPress();
         }
         return BackPressResult.FAILURE;
     }
@@ -549,5 +554,11 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     boolean getIsShowingOverViewModeForTesting() {
         return mIsShowingOverViewMode;
+    }
+
+    private @Nullable DialogController getTabGridDialogControllerIfExists() {
+        if (mTabGridDialogControllerSupplier == null) return null;
+        if (!mTabGridDialogControllerSupplier.hasValue()) return null;
+        return mTabGridDialogControllerSupplier.get();
     }
 }
