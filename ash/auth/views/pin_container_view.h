@@ -31,6 +31,20 @@ class ASH_EXPORT PinContainerView : public views::View {
  public:
   using Observer = AuthInputRowView::Observer;
 
+  class TestApi {
+   public:
+    explicit TestApi(PinContainerView* view);
+    ~TestApi();
+    TestApi(const TestApi&) = delete;
+    TestApi& operator=(const TestApi&) = delete;
+
+    raw_ptr<AuthInputRowView> GetAuthInputRowView();
+    raw_ptr<PinKeyboardView> GetPinKeyboardView();
+
+   private:
+    const raw_ptr<PinContainerView> view_;
+  };
+
   PinContainerView();
 
   PinContainerView(const PinContainerView&) = delete;

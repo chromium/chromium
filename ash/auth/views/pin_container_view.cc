@@ -7,6 +7,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/auth/views/auth_input_row_view.h"
+#include "ash/auth/views/pin_keyboard_input_bridge.h"
+#include "ash/auth/views/pin_keyboard_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
@@ -34,6 +37,18 @@ constexpr int kVerticalSeparatorInputAndKeyboardDp = 32;
 constexpr int kNonEmptyWidth = 1;
 
 }  // namespace
+
+PinContainerView::TestApi::TestApi(PinContainerView* view) : view_(view) {}
+
+PinContainerView::TestApi::~TestApi() = default;
+
+raw_ptr<AuthInputRowView> PinContainerView::TestApi::GetAuthInputRowView() {
+  return view_->auth_input_;
+}
+
+raw_ptr<PinKeyboardView> PinContainerView::TestApi::GetPinKeyboardView() {
+  return view_->pin_keyboard_;
+}
 
 PinContainerView::PinContainerView() {
   auto layout = std::make_unique<views::BoxLayout>(

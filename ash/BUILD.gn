@@ -3608,6 +3608,7 @@ test("ash_unittests") {
     "auth/views/auth_input_row_view_unittest.cc",
     "auth/views/auth_textfield_timer_unittest.cc",
     "auth/views/auth_textfield_unittest.cc",
+    "auth/views/pin_container_view_unittest.cc",
     "auth/views/pin_keyboard_view_unittest.cc",
     "birch/birch_icon_cache_unittest.cc",
     "birch/birch_item_remover_unittest.cc",
