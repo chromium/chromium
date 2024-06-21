@@ -76,6 +76,8 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -112,6 +114,8 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -147,6 +151,7 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -358,6 +363,8 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -397,6 +404,7 @@ ci.gpu.linux_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -629,6 +637,8 @@ ci.gpu.linux_builder(
             "dcheck_off",
             "no_symbols",
             "is_skylab",
+            "chromeos",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -777,6 +787,7 @@ ci.gpu.mac_builder(
             "remoteexec",
             "arm64",
             "gpu_tests",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -813,6 +824,7 @@ ci.gpu.mac_builder(
             "remoteexec",
             "arm64",
             "gpu_tests",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -944,6 +956,7 @@ ci.gpu.mac_builder(
             "remoteexec",
             "x64",
             "gpu_tests",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -980,6 +993,7 @@ ci.gpu.mac_builder(
             "remoteexec",
             "x64",
             "gpu_tests",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1192,6 +1206,8 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1294,6 +1310,8 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1330,6 +1348,8 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1371,6 +1391,7 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1407,6 +1428,7 @@ ci.gpu.windows_builder(
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1639,6 +1661,7 @@ ci.gpu.windows_builder(
             "remoteexec",
             "x86",
             "gpu_tests",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1675,6 +1698,7 @@ ci.gpu.windows_builder(
             "remoteexec",
             "x86",
             "gpu_tests",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
