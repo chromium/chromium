@@ -152,13 +152,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
                                           base::TimeTicks deadline,
                                           base::TimeDelta vsync_interval);
 
-    void set_dynamic_begin_frame_deadline_offset_source(
-        DynamicBeginFrameDeadlineOffsetSource*
-            dynamic_begin_frame_deadline_offset_source) {
-      dynamic_begin_frame_deadline_offset_source_ =
-          dynamic_begin_frame_deadline_offset_source;
-    }
-
    private:
     static uint64_t EstimateTickCountsBetween(
         base::TimeTicks frame_time,
@@ -175,9 +168,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
     // number assigned relative to this, based on how many intervals the frame
     // time is off.
     uint64_t next_sequence_number_ = BeginFrameArgs::kStartingFrameNumber;
-
-    raw_ptr<DynamicBeginFrameDeadlineOffsetSource, DanglingUntriaged>
-        dynamic_begin_frame_deadline_offset_source_ = nullptr;
   };
 
   // This restart_id should be used for BeginFrameSources that don't have to
@@ -221,10 +211,6 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   virtual void AsProtozeroInto(
       perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameSourceStateV2* state) const;
-
-  virtual void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source);
 
   // Update the display ID for the source. This can change, e.g, as a window
   // moves across displays.
@@ -362,9 +348,6 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void OnGpuNoLongerBusy() override;
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
 
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,

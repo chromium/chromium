@@ -85,11 +85,6 @@ namespace {
 constexpr base::TimeDelta kAllowedDeltaFromFuture = base::Milliseconds(16);
 #endif
 
-// A lower bounds for GetEstimatedDisplayDrawTime, influenced by
-// Compositing.Display.DrawToSwapUs.
-constexpr base::TimeDelta kMinEstimatedDisplayDrawTime =
-    base::Microseconds(250);
-
 // Assign each Display instance a starting value for the the display-trace id,
 // so that multiple Displays all don't start at 0, because that makes it
 // difficult to associate the trace-events with the particular displays.
@@ -1158,7 +1153,6 @@ void Display::DidReceiveSwapBuffersAck(
   // the swap was triggered. Note that not all output surfaces provide timing
   // information, hence the check for a valid swap_start.
 
-  base::TimeDelta draw_start_to_swap_end;
   if (!timings.swap_start.is_null()) {
     DCHECK_LE(draw_start_timestamp, timings.swap_start);
     base::TimeDelta draw_start_to_swap_start =
@@ -1166,14 +1160,12 @@ void Display::DidReceiveSwapBuffersAck(
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.Display.DrawToSwapUs", draw_start_to_swap_start,
         kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
-    draw_start_to_swap_end = timings.swap_end - draw_start_timestamp;
   }
 
-  base::TimeDelta schedule_draw_to_gpu_start;
   if (!timings.viz_scheduled_draw.is_null()) {
     DCHECK(!timings.gpu_started_draw.is_null());
     DCHECK_LE(timings.viz_scheduled_draw, timings.gpu_started_draw);
-    schedule_draw_to_gpu_start =
+    base::TimeDelta schedule_draw_to_gpu_start =
         timings.gpu_started_draw - timings.viz_scheduled_draw;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.Display.VizScheduledDrawToGpuStartedDrawUs",
@@ -1196,13 +1188,6 @@ void Display::DidReceiveSwapBuffersAck(
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs",
         scheduling_delta, kDrawToSwapMin, kDrawToSwapMax, kDrawToSwapUsBuckets);
-  }
-
-  if (!timings.swap_start.is_null()) {
-    draw_time_without_scheduling_waits_.InsertSample(
-        draw_start_to_swap_end - schedule_draw_to_gpu_start);
-    // These two values can be equal in unit tests.
-    DCHECK_GE(draw_start_to_swap_end, schedule_draw_to_gpu_start);
   }
 }
 
@@ -1273,22 +1258,6 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   }
 
   frame_sequence_number_ = ack.frame_id.sequence_number;
-}
-
-base::TimeDelta Display::GetEstimatedDisplayDrawTime(base::TimeDelta interval,
-                                                     double percentile) const {
-  base::TimeDelta default_estimate =
-      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
-  if (draw_time_without_scheduling_waits_.sample_count() >= 60 &&
-      default_estimate > kMinEstimatedDisplayDrawTime) {
-    // We do not want the deadline adjustmens to exceed a default of 1/3 VSync,
-    // as we would not give other processes enough time to produce content. So
-    // this would make high latency situations worse.
-    return std::clamp(
-        draw_time_without_scheduling_waits_.Percentile(percentile),
-        kMinEstimatedDisplayDrawTime, default_estimate);
-  }
-  return default_estimate;
 }
 
 const SurfaceId& Display::CurrentSurfaceId() const {

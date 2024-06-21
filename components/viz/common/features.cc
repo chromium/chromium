@@ -23,14 +23,6 @@
 #include "base/android/build_info.h"
 #endif
 
-namespace {
-
-// FieldTrialParams for `DynamicSchedulerForDraw` and
-// `kDynamicSchedulerForClients`.
-const char kDynamicSchedulerPercentile[] = "percentile";
-
-}  // namespace
-
 namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -179,15 +171,6 @@ const char kPredictorLinearResampling[] = "linear-resampling";
 const char kPredictorLinear1[] = "linear-1";
 const char kPredictorLinear2[] = "linear-2";
 const char kPredictorLsq[] = "lsq";
-
-// Used by Viz to parameterize adjustments to scheduler deadlines.
-BASE_FEATURE(kDynamicSchedulerForDraw,
-             "DynamicSchedulerForDraw",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// User to parameterize adjustments to clients' deadlines.
-BASE_FEATURE(kDynamicSchedulerForClients,
-             "DynamicSchedulerForClients",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
 // Increase the max CALayer number allowed for CoreAnimation.
@@ -502,32 +485,6 @@ bool UseSurfaceLayerForVideo() {
 #else
   return true;
 #endif
-}
-
-// Used by Viz to determine if viz::DisplayScheduler should dynamically adjust
-// its frame deadline. Returns the percentile of historic draw times to base the
-// deadline on. Or std::nullopt if the feature is disabled.
-std::optional<double> IsDynamicSchedulerEnabledForDraw() {
-  if (!base::FeatureList::IsEnabled(kDynamicSchedulerForDraw))
-    return std::nullopt;
-  double result = base::GetFieldTrialParamByFeatureAsDouble(
-      kDynamicSchedulerForDraw, kDynamicSchedulerPercentile, -1.0);
-  if (result < 0.0)
-    return std::nullopt;
-  return result;
-}
-
-// Used by Viz to determine if the frame deadlines provided to CC should be
-// dynamically adjusted. Returns the percentile of historic draw times to base
-// the deadline on. Or std::nullopt if the feature is disabled.
-std::optional<double> IsDynamicSchedulerEnabledForClients() {
-  if (!base::FeatureList::IsEnabled(kDynamicSchedulerForClients))
-    return std::nullopt;
-  double result = base::GetFieldTrialParamByFeatureAsDouble(
-      kDynamicSchedulerForClients, kDynamicSchedulerPercentile, -1.0);
-  if (result < 0.0)
-    return std::nullopt;
-  return result;
 }
 
 int MaxOverlaysConsidered() {

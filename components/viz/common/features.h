@@ -52,8 +52,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSurfaceLayerForVideoDefault);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPF);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebViewEnableADPFRendererMain);
 #endif
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicSchedulerForDraw);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDynamicSchedulerForClients);
 #if BUILDFLAG(IS_APPLE)
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCALayerNewLimit);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kCALayerNewLimitDefault;
@@ -129,8 +127,6 @@ VIZ_COMMON_EXPORT std::optional<int> ShouldDrawPredictedInkPoints();
 VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool UseWebViewNewInvalidateHeuristic();
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
-VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForDraw();
-VIZ_COMMON_EXPORT std::optional<double> IsDynamicSchedulerEnabledForClients();
 VIZ_COMMON_EXPORT int MaxOverlaysConsidered();
 VIZ_COMMON_EXPORT bool ShouldOnBeginFrameThrottleVideo();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

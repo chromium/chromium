@@ -41,11 +41,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
                jlong period_micros);
   void UpdateRefreshRate(float refresh_rate) override;
 
-  // BeginFrameSource:
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
-
  private:
   class AChoreographerImpl;
 

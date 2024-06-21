@@ -99,29 +99,17 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     last_begin_frame_ack_ = ack;
   }
 
-  base::TimeDelta GetEstimatedDisplayDrawTime(
-      const base::TimeDelta interval,
-      double percentile) const override {
-    return estimated_display_draw_time_;
-  }
-
   int draw_and_swap_count() const { return draw_and_swap_count_; }
 
   void SetNextDrawAndSwapFails() { next_draw_and_swap_fails_ = true; }
 
   const BeginFrameAck& last_begin_frame_ack() { return last_begin_frame_ack_; }
 
-  void set_estimated_display_draw_time(
-      base::TimeDelta estimated_display_draw_time) {
-    estimated_display_draw_time_ = estimated_display_draw_time;
-  }
-
  protected:
   raw_ptr<TestDisplayDamageTracker> damage_tracker_ = nullptr;
   int draw_and_swap_count_;
   bool next_draw_and_swap_fails_;
   BeginFrameAck last_begin_frame_ack_;
-  base::TimeDelta estimated_display_draw_time_;
 };
 
 class TestDisplayScheduler : public DisplayScheduler {
@@ -937,40 +925,6 @@ TEST_F(DisplaySchedulerTest, DefaultBeginFrameArgsDeadline) {
       fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
           frame_time, next_frame_time, kVSyncInterval);
   EXPECT_EQ(args.deadline, next_frame_time);
-}
-
-// Tests the DisplayScheduler when we enable dynamic adjustments of begin
-// frames.
-class DynamicDisplaySchedulerTest : public DisplaySchedulerTest {
- public:
-  DynamicDisplaySchedulerTest();
-  ~DynamicDisplaySchedulerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-DynamicDisplaySchedulerTest::DynamicDisplaySchedulerTest() {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kDynamicSchedulerForClients, {{"percentile", "90"}});
-  client_.set_estimated_display_draw_time(base::Milliseconds(2));
-}
-
-// Tests that when we are dynamically adjusting begin frames, that the deadline
-// is shifted.
-TEST_F(DynamicDisplaySchedulerTest, DynamicBeginFrameArgsDeadline) {
-  const base::TimeTicks frame_time = base::TimeTicks() + k1Usec;
-  const base::TimeTicks next_frame_time = frame_time + kVSyncInterval;
-  BeginFrameArgs args =
-      fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
-          frame_time, next_frame_time, kVSyncInterval);
-  EXPECT_LT(args.deadline, next_frame_time);
-  EXPECT_GT(args.deadline, args.frame_time);
-  // We expect that the deadlines will be offset by the `client_` estimate of
-  // draw time.
-  EXPECT_EQ(args.deadline,
-            next_frame_time -
-                client_.GetEstimatedDisplayDrawTime(kVSyncInterval, 0.0));
 }
 
 // Tests the DisplayScheduler when we enable drawing immediately when

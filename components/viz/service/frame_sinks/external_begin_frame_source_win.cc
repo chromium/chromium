@@ -107,13 +107,6 @@ void ExternalBeginFrameSourceWin::SetPreferredInterval(
   skip_next_vsync_ = false;
 }
 
-void ExternalBeginFrameSourceWin::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
-}
-
 void ExternalBeginFrameSourceWin::OnNeedsBeginFrames(bool needs_begin_frames) {
   if (observing_vsync_ == needs_begin_frames) {
     return;

@@ -85,13 +85,6 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
   }
 }
 
-void ExternalBeginFrameSourceMac::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
-}
-
 void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
   if (display_id_ == display_id) {
     return;

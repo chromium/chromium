@@ -152,11 +152,6 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   std::unique_ptr<HintSession> hint_session_;
   bool create_session_for_current_thread_ids_failed_ = false;
 
-  // If set, we are dynamically adjusting our frame deadline, by the percentile
-  // of historic draw times to base the adjustment on.
-  const std::optional<double> dynamic_cc_deadlines_percentile_;
-  const std::optional<double> dynamic_scheduler_deadlines_percentile_;
-
   base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 };
 

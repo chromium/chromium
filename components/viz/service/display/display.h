@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "cc/base/rolling_time_delta_history.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -161,8 +160,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap(const DrawAndSwapParams& params) override;
   void DidFinishFrame(const BeginFrameAck& ack) override;
-  base::TimeDelta GetEstimatedDisplayDrawTime(const base::TimeDelta interval,
-                                              double percentile) const override;
 
   // OutputSurfaceClient implementation.
   void DidReceiveSwapBuffersAck(const gpu::SwapBuffersCompleteParams& params,
@@ -346,10 +343,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   int pending_swaps_ = 0;
 
   uint64_t frame_sequence_number_ = 0;
-
-  // The historical drawing times of the most recent 100 frames. Recorded
-  // without the delays caused by waiting for scheduling.
-  cc::RollingTimeDeltaHistory draw_time_without_scheduling_waits_{100};
 
   // A subsampler for potential quad information logging.
   base::MetricsSubSampler metrics_subsampler_;

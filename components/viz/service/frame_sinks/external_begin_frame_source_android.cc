@@ -283,13 +283,6 @@ void ExternalBeginFrameSourceAndroid::UpdateRefreshRate(float refresh_rate) {
   }
 }
 
-void ExternalBeginFrameSourceAndroid::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
-}
-
 void ExternalBeginFrameSourceAndroid::OnNeedsBeginFrames(
     bool needs_begin_frames) {
   SetEnabled(needs_begin_frames);

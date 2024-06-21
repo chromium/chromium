@@ -37,9 +37,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   ~ExternalBeginFrameSourceMac() override;
 
   // BeginFrameSource implementation.
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
   void SetVSyncDisplayID(int64_t display_id) override;
 
   // ExternalBeginFrameSourceClient implementation.

@@ -74,13 +74,6 @@ void FakeExternalBeginFrameSource::DidFinishFrame(BeginFrameObserver* obs) {
   pending_frames_[obs]--;
 }
 
-void FakeExternalBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
-}
-
 BeginFrameArgs FakeExternalBeginFrameSource::CreateBeginFrameArgs(
     BeginFrameArgs::CreationLocation location,
     const base::TickClock* now_src) {

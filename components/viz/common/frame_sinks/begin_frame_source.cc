@@ -118,17 +118,6 @@ BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
       next_sequence_number_ +
       EstimateTickCountsBetween(frame_time, next_expected_frame_time_,
                                 vsync_interval);
-  // This is utilized by ExternalBeginFrameSourceAndroid,
-  // ExternalBeginFrameSourceWin, and DelayBasedBeginFrameSource. Which covers
-  // the main Viz use cases. BackToBackBeginFrameSource is not relevant. We also
-  // are not looking to adjust ExternalBeginFrameSourceMojo which is used in
-  // headless.
-  if (dynamic_begin_frame_deadline_offset_source_) {
-    base::TimeDelta deadline_offset =
-        dynamic_begin_frame_deadline_offset_source_->GetDeadlineOffset(
-            vsync_interval);
-    deadline -= deadline_offset;
-  }
   next_expected_frame_time_ = deadline;
   next_sequence_number_ = sequence_number + 1;
   return BeginFrameArgs::Create(BEGINFRAME_FROM_HERE, source_id,
@@ -213,10 +202,6 @@ void BeginFrameSource::AsProtozeroInto(
   // The lower 32 bits of source_id are the interesting piece of |source_id_|.
   state->set_source_id(static_cast<uint32_t>(source_id_));
 }
-
-void BeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {}
 
 #if BUILDFLAG(IS_MAC)
 void BeginFrameSource::RecordBeginFrameSourceAccuracy(base::TimeDelta delta) {
@@ -414,13 +399,6 @@ void DelayBasedBeginFrameSource::RemoveObserver(BeginFrameObserver* obs) {
 
 void DelayBasedBeginFrameSource::OnGpuNoLongerBusy() {
   OnTimerTick();
-}
-
-void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
 }
 
 void DelayBasedBeginFrameSource::SetMaxVrrInterval(

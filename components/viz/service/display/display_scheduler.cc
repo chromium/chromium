@@ -82,14 +82,8 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       pending_swap_params_(std::move(pending_swap_params)),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false),
-      hint_session_factory_(hint_session_factory),
-      dynamic_cc_deadlines_percentile_(
-          features::IsDynamicSchedulerEnabledForClients()),
-      dynamic_scheduler_deadlines_percentile_(
-          features::IsDynamicSchedulerEnabledForDraw()) {
+      hint_session_factory_(hint_session_factory) {
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
-  if (dynamic_cc_deadlines_percentile_.has_value())
-    begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
 }
@@ -143,10 +137,6 @@ void DisplayScheduler::OnPendingSurfacesChanged() {
 
 base::TimeDelta DisplayScheduler::GetDeadlineOffset(
     base::TimeDelta interval) const {
-  if (client_ && dynamic_cc_deadlines_percentile_.has_value()) {
-    return client_->GetEstimatedDisplayDrawTime(
-        interval, dynamic_cc_deadlines_percentile_.value());
-  }
   return BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
 }
 
@@ -269,15 +259,8 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
     hint_session_->UpdateTargetDuration(ComputeAdpfTarget(save_args));
   }
 
-  base::TimeDelta delta;
-  if (client_ && dynamic_scheduler_deadlines_percentile_.has_value() &&
-      !dynamic_cc_deadlines_percentile_.has_value()) {
-    delta = client_->GetEstimatedDisplayDrawTime(
-        save_args.interval, dynamic_scheduler_deadlines_percentile_.value());
-  } else {
-    delta = BeginFrameArgs::DefaultEstimatedDisplayDrawTime(save_args.interval);
-  }
-  current_begin_frame_args_.deadline -= delta;
+  current_begin_frame_args_.deadline -=
+      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(save_args.interval);
 
   inside_begin_frame_deadline_interval_ = true;
 
