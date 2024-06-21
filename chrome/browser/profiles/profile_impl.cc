@@ -139,6 +139,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/metrics/metrics_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/payments/core/payment_prefs.h"
 #include "components/permissions/permission_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
@@ -846,6 +847,8 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   }
 
   NotifyProfileInitializationComplete();
+
+  RecordPrefValuesAfterProfileInitialization();
 
   SharingServiceFactory::GetForBrowserContext(this);
 
@@ -1662,5 +1665,21 @@ void ProfileImpl::UpdateIsEphemeralInStorage() {
   if (entry && !entry->IsOmitted()) {
     entry->SetIsEphemeral(
         GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles));
+  }
+}
+
+void ProfileImpl::RecordPrefValuesAfterProfileInitialization() {
+  // Measure whether users have the "Allow sites to check if you have payment
+  // methods saved" toggle enabled or disabled in chrome://settings/payments
+  //
+  // This is only relevant for regular profiles, as guest and incognito profiles
+  // do not have access to this settings page nor will any changes to the pref
+  // in those profiles affect future browsing sessions.
+  if (IsRegularProfile()) {
+    const bool can_make_payment_enabled =
+        GetPrefs()->GetBoolean(payments::kCanMakePaymentEnabled);
+    base::UmaHistogramBoolean(
+        "PaymentRequest.IsCanMakePaymentAllowedByPref.Startup",
+        can_make_payment_enabled);
   }
 }

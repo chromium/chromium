@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.CertificateChainHelper;
@@ -1183,6 +1184,9 @@ public class PaymentRequestService
 
         mIsCanMakePaymentResponsePending = false;
 
+        RecordHistogram.recordBooleanHistogram(
+                "PaymentRequest.CanMakePayment.CallAllowedByPref", mDelegate.prefsCanMakePayment());
+
         boolean response = mCanMakePayment && mDelegate.prefsCanMakePayment();
         mClient.onCanMakePayment(
                 response
@@ -1202,6 +1206,13 @@ public class PaymentRequestService
     /** Responds to the HasEnrolledInstrument query from the merchant page. */
     public void respondHasEnrolledInstrumentQuery() {
         if (mClient == null) return;
+
+        // The pref is checked in onDoneCreatingPaymentApps, but we explicitly want to measure
+        // calls to hasEnrolledInstrument() that are affected by it.
+        RecordHistogram.recordBooleanHistogram(
+                "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+                mDelegate.prefsCanMakePayment());
+
         boolean response = mHasEnrolledInstrument;
         mIsHasEnrolledInstrumentResponsePending = false;
 

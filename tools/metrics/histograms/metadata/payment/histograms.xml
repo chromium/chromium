@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="PaymentRequest.CanMakePayment.CallAllowedByPref"
+    enum="Boolean" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not a call to the PaymentRequest.canMakePayment() API was allowed
+    by the kCanMakePaymentEnabled user preference. This histogram does not
+    reflect what the outcome of the canMakePayment call would have been, only if
+    it was allowed or blocked by the preference. It is recorded once per
+    PaymentRequest.canMakePayment call.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.CheckoutFunnel"
     enum="PaymentRequestCheckoutFunnelSteps" expires_after="2024-11-03">
   <owner>rouslan@chromium.org</owner>
@@ -68,6 +81,50 @@ chromium-metrics-reviews@google.com.
   <summary>
     The 2.0 version of Events. A bitfield representing the different events that
     happened during the Payment Request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.HasEnrolledInstrument.CallAllowedByPref"
+    enum="Boolean" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not a call to the PaymentRequest.hasEnrolledInstrument() API was
+    allowed by the kCanMakePaymentEnabled user preference. This histogram does
+    not reflect what the outcome of the hasEnrolledInstrument call would have
+    been, only if it was allowed or blocked by the preference. It is recorded
+    once per PaymentRequest.hasEnrolledInstrument call.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once"
+    enum="Boolean" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not the 'payments.can_make_payment_enabled' pref is enabled when
+    a PaymentRequest object is constructed. Recorded only when a PaymentRequest
+    object is first constructed, and approximately once per startup
+    (specifically, once per BrowserContext).
+
+    The difference between this histogram and
+    PaymentRequest.IsCanMakePaymentAllowedByPref.Startup is that this histogram
+    is only recorded if/when the user visits a page that constructs a
+    PaymentRequest object, which means that it sub-selects for users who are
+    likely to be in a payment context.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
+    enum="Boolean" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not the 'payments.can_make_payment_enabled' pref is enabled.
+    Recorded approximately once per startup (specifically, when
+    ProfileKeyedServiceFactory subclasses are created for a new browser
+    context).
   </summary>
 </histogram>
 
