@@ -825,8 +825,27 @@ TEST_F(ChromePasswordManagerClientTest,
   EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
 }
 
+// Test that authentication is not possible if the
+// `CanAuthenticateWithBiometrics` returns `true`, but the
+// `kBiometricReauthBeforePwdFilling` pref is set to false when
+// `kBiometricTouchToFill` is enabled.
+TEST_F(ChromePasswordManagerClientTest,
+       CanUseBiometricAuthAndroidPrefDisabled) {
+  // Authentication is always available for automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
+  base::test::ScopedFeatureList enabled_features(
+      password_manager::features::kBiometricTouchToFill);
+  device_reauth::MockDeviceAuthenticator authenticator;
+  ON_CALL(authenticator, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
 // Test that authentication is possible if the `CanAuthenticateWithBiometrics`
-// returns `true` when `kBiometricTouchToFill` is enabled.
+// returns `true` and the `kBiometricReauthBeforePwdFilling` pref is set to true
+// when `kBiometricTouchToFill` is enabled.
 TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   // Authentication is always available for automotive.
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
@@ -834,6 +853,22 @@ TEST_F(ChromePasswordManagerClientTest, CanUseBiometricAuthAndroidAuthEnabled) {
   }
   base::test::ScopedFeatureList enabled_features(
       password_manager::features::kBiometricTouchToFill);
+  device_reauth::MockDeviceAuthenticator authenticator;
+  profile()->GetTestingPrefService()->SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+  ON_CALL(authenticator, CanAuthenticateWithBiometrics)
+      .WillByDefault(Return(true));
+  EXPECT_TRUE(GetClient()->CanUseBiometricAuthForFilling(&authenticator));
+}
+
+// Test that authentication is possible if the `CanAuthenticateWithBiometrics`
+// returns `true` on auto regardless of the pref and flag value.
+TEST_F(ChromePasswordManagerClientTest,
+       CanUseBiometricAuthAndroidAlwaysTrueOnAutomotive) {
+  // Authentication is always available for automotive.
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP();
+  }
   device_reauth::MockDeviceAuthenticator authenticator;
   ON_CALL(authenticator, CanAuthenticateWithBiometrics)
       .WillByDefault(Return(true));

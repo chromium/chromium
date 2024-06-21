@@ -571,9 +571,14 @@ bool ChromePasswordManagerClient::CanUseBiometricAuthForFilling(
     CHECK(authenticator);
     return true;
   }
-  return authenticator && authenticator->CanAuthenticateWithBiometrics() &&
+  if (!authenticator || !GetPrefs()) {
+    return false;
+  }
+  return authenticator->CanAuthenticateWithBiometrics() &&
          base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricTouchToFill);
+             password_manager::features::kBiometricTouchToFill) &&
+         GetPrefs()->GetBoolean(
+             password_manager::prefs::kBiometricAuthenticationBeforeFilling);
 #else
   return false;
 #endif
