@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 @interface LensOverlayCoordinator () <LensOverlayCommands>
+
+// The tab helper for the instance for the active web state.
+@property(nonatomic, readonly, assign) LensOverlayTabHelper* tabHelper;
 
 @end
 
@@ -33,6 +38,21 @@
       UIModalPresentationOverFullScreen;
   _containerViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
+}
+
+- (LensOverlayTabHelper*)tabHelper {
+  if (!self.browser) {
+    return nullptr;
+  }
+
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  LensOverlayTabHelper* tabHelper =
+      LensOverlayTabHelper::FromWebState(activeWebState);
+
+  DCHECK(tabHelper);
+
+  return tabHelper;
 }
 
 #pragma mark - ChromeCoordinator
@@ -65,6 +85,14 @@
     // animation.
     [self destroyLensUI:NO];
   }
+
+  if (LensOverlayTabHelper* tabHelper = self.tabHelper) {
+    // The instance that creates the Lens UI designates itself as the command
+    // handler for the associated tab.
+    tabHelper->SetLensOverlayCommandsHandler(self);
+    tabHelper->SetLensOverlayShown(true);
+  }
+
   [self createContainerViewController];
   [self showLensUI:animated];
 }
@@ -90,6 +118,10 @@
 }
 
 - (void)destroyLensUI:(BOOL)animated {
+  if (LensOverlayTabHelper* tabHelper = self.tabHelper) {
+    tabHelper->SetLensOverlayShown(false);
+  }
+
   if (_containerViewController.presentingViewController) {
     [_containerViewController.presentingViewController
         dismissViewControllerAnimated:animated
