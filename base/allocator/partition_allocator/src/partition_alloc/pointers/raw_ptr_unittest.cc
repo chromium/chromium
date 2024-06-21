@@ -1751,6 +1751,33 @@ TEST_F(BackupRefPtrTest, QuarantinedBytes) {
             0U);
 }
 
+TEST_F(BackupRefPtrTest, SameSlotAssignmentWhenDangling) {
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator_.root()->Alloc(sizeof(uint64_t), ""));
+  raw_ptr<uint64_t, DisableDanglingPtrDetection> wrapped_ptr = ptr;
+  ASSERT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+                std::memory_order_relaxed),
+            0U);
+
+  // Make the pointer dangle. Memory will get quarantined.
+  allocator_.root()->Free(ptr);
+  ASSERT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+                std::memory_order_relaxed),
+            1U);
+
+  // Test for crbug.com/347461704 which caused the ref-count to be first
+  // dropped, leading to dequarantining and releasing the memory, then
+  // increasing ref-count on an already released memory.
+  wrapped_ptr = ptr;
+
+  // Many things may go wrong after the above instruction (particularly on
+  // DCHECK builds), but just in case check that memory continues to be
+  // quarantined.
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+                std::memory_order_relaxed),
+            1U);
+}
+
 void RunBackupRefPtrImplAdvanceTest(
     partition_alloc::PartitionAllocator& allocator,
     size_t requested_size) {

@@ -52,3 +52,14 @@ TEST(RawSpan, ExtractAsDangling) {
   base::raw_span<int> span(arr, 3u);
   delete[] base::ExtractAsDanglingSpan(span).data();
 }
+
+TEST(RawSpan, SameSlotAssignmentWhenDangling) {
+  int* arr = new int[3];
+  base::raw_span<int, DisableDanglingPtrDetection> span(arr, 3u);
+  delete[] arr;  // Make the pointer dangle.
+
+  // This test is designed to test for crbug.com/347461704, but as #comment13
+  // explains, `raw_span<>` doesn't exhibit the suspected buggy behavior. Keep
+  // the test just in case the implementation changes in the future.
+  span = span.subspan(1);
+}
