@@ -134,6 +134,11 @@ const char kGStatic[] = ".gstatic.com";
   std::string _sessionTag;
   BOOL _isOffTheRecord;
 
+  // The last item that is returned by the model.
+  // The URL/title will be used to not fetch again images if the same item is
+  // returned twice, or to ignore update on obsolete items.
+  TabResumptionItem* _pendingItem;
+
   // The owning Browser.
   raw_ptr<Browser> _browser;
   raw_ptr<PrefService> _localState;
@@ -395,6 +400,8 @@ const char kGStatic[] = ".gstatic.com";
 }
 
 #pragma mark - Private
+
+// Fetches the item to display from the model.
 - (void)fetchLastTabResumptionItem {
   if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
     return;
@@ -474,6 +481,11 @@ const char kGStatic[] = ".gstatic.com";
 
 // Fetches a relevant image for the `item` to display.
 - (void)fetchImageForItem:(TabResumptionItem*)item {
+  if ([self isPendingItem:item]) {
+    // The item was already fetched or is being fetched, ignore it.
+    return;
+  }
+  _pendingItem = item;
   if (ShouldShowItemImmediately()) {
     [self showItem:item];
   }
@@ -596,6 +608,10 @@ const char kGStatic[] = ".gstatic.com";
 
 // Sends `item` to  TabResumption to be displayed.
 - (void)showItem:(TabResumptionItem*)item {
+  if (![self isPendingItem:item]) {
+    // A new item has been fetched, ignore.
+    return;
+  }
   if (!self.itemConfig || !IsIOSMagicStackCollectionViewEnabled()) {
     self.itemConfig = item;
     [self.delegate tabResumptionHelperDidReceiveItem];
@@ -652,6 +668,15 @@ const char kGStatic[] = ".gstatic.com";
   item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
   // Fetch the image.
   [self fetchImageForItem:item];
+}
+
+// Compares `item` and `_pendingItem` on tabURL and tabTitle field.
+- (BOOL)isPendingItem:(TabResumptionItem*)item {
+  if (_pendingItem == nil) {
+    return NO;
+  }
+  return item.tabURL == _pendingItem.tabURL &&
+         [item.tabTitle isEqualToString:_pendingItem.tabTitle];
 }
 
 #pragma mark - Private method for Tab resumption 2.0 tab fetch.
