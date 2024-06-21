@@ -84,7 +84,7 @@ export class OsSettingsMenuItemElement extends PolymerElement {
   label: string;
   sublabel: string;
   override ariaDescription: string|null;
-  tooltipPosition: 'right'|'bottom';
+  tooltipPosition: 'right'|'left'|'bottom';
 
   override ready(): void {
     super.ready();

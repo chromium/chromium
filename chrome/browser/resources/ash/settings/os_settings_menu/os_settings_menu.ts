@@ -227,6 +227,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         type: String,
         value: '',
       },
+
+      isRtl_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -236,6 +241,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private basicMenuItems_: MenuItemData[];
   private advancedMenuItems_: MenuItemData[];
   private isRevampWayfindingEnabled_: boolean;
+  private isRtl_: boolean;
   private selectedItemPath_: string;
   private aboutMenuItemPath_: string;
 
@@ -338,6 +344,8 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
             this.updateMultideviceMenuItemDescription_.bind(this));
       }
     }
+
+    this.isRtl_ = window.getComputedStyle(this).direction === 'rtl';
   }
 
   override disconnectedCallback(): void {
@@ -650,8 +658,12 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     return bool.toString();
   }
 
-  private getMenuItemTooltipPosition_(): 'right'|'bottom' {
-    return this.isDrawerMenu ? 'bottom' : 'right';
+  private getMenuItemTooltipPosition_(): 'right'|'left'|'bottom' {
+    if (this.isDrawerMenu) {
+      return 'bottom';
+    }
+
+    return this.isRtl_ ? 'left' : 'right';
   }
 
   /**

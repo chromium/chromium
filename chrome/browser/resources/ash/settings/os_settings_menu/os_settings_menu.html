@@ -106,7 +106,7 @@
         icon="[[item.icon]]"
         label="[[item.label]]"
         sublabel="[[item.sublabel]]"
-        tooltip-position="[[getMenuItemTooltipPosition_()]]">
+        tooltip-position="[[getMenuItemTooltipPosition_(isRtl_)]]">
     </os-settings-menu-item>
   </template>
 
@@ -129,7 +129,7 @@
               icon="[[item.icon]]"
               label="[[item.label]]"
               sublabel="[[item.sublabel]]"
-              tooltip-position="[[getMenuItemTooltipPosition_()]]">
+              tooltip-position="[[getMenuItemTooltipPosition_(isRtl_)]]">
           </os-settings-menu-item>
         </template>
       </iron-selector>
