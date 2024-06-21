@@ -48,6 +48,7 @@ void AddCertificateManagerStrings(content::WebUIDataSource* html_source) {
 void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"opensInNewTab", IDS_SETTINGS_OPENS_IN_NEW_TAB},
+      {"certificateManagerV2Title", IDS_SETTINGS_CERTIFICATE_MANAGER_V2_TITLE},
       {"certificateManagerV2ClientCerts",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES},
       {"certificateManagerV2LocalCerts",

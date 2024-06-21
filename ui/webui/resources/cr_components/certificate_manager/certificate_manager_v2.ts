@@ -12,6 +12,7 @@ import './certificate_list_v2.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
+import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
@@ -70,6 +71,11 @@ export class CertificateManagerV2Element extends
       tabNames_: Array,
 
       toastMessage_: String,
+
+      showSearch_: {
+        type: Boolean,
+        value: false,
+      },
 
       importOsCertsEnabled_: {
         type: Boolean,
