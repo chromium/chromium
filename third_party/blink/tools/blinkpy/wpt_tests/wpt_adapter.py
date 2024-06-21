@@ -238,8 +238,7 @@ class WPTAdapter:
                 mozlog.commandline.log_formatters[name][1],
             )
 
-        product_name = 'chrome' if self.product.name == 'headless_shell' else self.product.name
-        runner_options = parser.parse_args(['--product', product_name])
+        runner_options = parser.parse_args(['--product', self.product.name])
         runner_options.include = []
         runner_options.exclude = []
 

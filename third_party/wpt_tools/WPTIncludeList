@@ -369,6 +369,7 @@
 ./tools/wptrunner/wptrunner/browsers/chrome_ios.py
 ./tools/wptrunner/wptrunner/browsers/chrome_spki_certs.py
 ./tools/wptrunner/wptrunner/browsers/content_shell.py
+./tools/wptrunner/wptrunner/browsers/headless_shell.py
 ./tools/wptrunner/wptrunner/browsers/edge.py
 ./tools/wptrunner/wptrunner/browsers/edge_webdriver.py
 ./tools/wptrunner/wptrunner/browsers/edgechromium.py

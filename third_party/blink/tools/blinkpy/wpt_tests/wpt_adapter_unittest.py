@@ -169,7 +169,7 @@ class WPTAdapterTest(unittest.TestCase):
             # `run_wpt_tests.py` treats `chrome` and `headless_shell` as
             # distinct products, but `wpt run` does not.
             self.assertEqual(
-                options.product, 'chrome',
+                options.product, 'headless_shell',
                 'adapter did not coerce `headless_shell` to `chrome`')
             self.assertEqual(options.processes, 5)
             self.assertEqual(options.repeat, 7)
