@@ -486,6 +486,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="319" label="RFPH_POST_MESSAGE_PDF_CONTENT_FRAME"/>
   <int value="320"
       label="PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE"/>
+  <int value="321" label="RFH_INITIATOR_BASE_URL_IS_EMPTY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

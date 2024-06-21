@@ -648,8 +648,13 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       has_download_sandbox_flag, from_ad);
 
   std::optional<GURL> initiator_base_url;
-  if (info->requestor_base_url.IsValid()) {
-    initiator_base_url = info->requestor_base_url;
+  GURL requestor_base_url(info->requestor_base_url);
+  // Make sure the url length doesn't exceed the limit enforced by Mojo when
+  // it's sent to the browser process.
+  if (requestor_base_url.is_valid() &&
+      requestor_base_url.possibly_invalid_spec().length() <=
+          url::kMaxURLChars) {
+    initiator_base_url = requestor_base_url;
   }
   return blink::mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),

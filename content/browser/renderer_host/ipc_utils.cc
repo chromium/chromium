@@ -326,6 +326,17 @@ bool VerifyBeginNavigationCommonParams(
     return false;
   }
 
+  // Verify |initiator_base_url|. The value is allowed to be nullopt, but if it
+  // isn't then it's required to be non-empty (the renderer is supposed to
+  // guarantee this). If this condition isn't met, CHECK in NavigationRequest's
+  // constructor will fail.
+  if (common_params->initiator_base_url &&
+      common_params->initiator_base_url->is_empty()) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::RFH_INITIATOR_BASE_URL_IS_EMPTY);
+    return false;
+  }
+
   // Asynchronous (browser-controlled, but) renderer-initiated navigations can
   // not be same-document. Allowing this incorrectly could have us try to
   // navigate an existing document to a different site.

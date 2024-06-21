@@ -36,6 +36,48 @@ class BaseUrlInheritanceIframeTest : public ContentBrowserTest {
   }
 };  // class BaseUrlInheritanceIframeTest
 
+// A test to ensure that a baseURI exceeding chromium's maximum length for urls
+// is not inherited.
+IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceIframeTest,
+                       InheritedBaseUrlIsLessThan2MB) {
+  StartEmbeddedServer();
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // The following JS modifies the document state so its baseURL exceeds the
+  // maximum length of URL that chromium supports.
+  EXPECT_LT(url::kMaxURLChars, EvalJs(root,
+                                      R"(
+                                        path = "xxxxxxxx";
+                                        for (i = 0; i < 18; i++) {
+                                          path = path + path;
+                                        }
+                                        history.replaceState(
+                                            "", "", "path_" + path);
+                                        document.baseURI
+                                      )")
+                                   .ExtractString()
+                                   .length());
+  // Navigate frame to about:blank. Normally it should inherit its baseURI from
+  // the document initiating the navigation, but since it is too long, no
+  // baseURI is sent, and the about:blank frame falls back to a baseURI of
+  // 'about:blank'.
+  {
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, "location.href = 'about:blank';"));
+    iframe_observer.Wait();
+  }
+  // If we get here without a crash, we didn't hit the CHECK in
+  // NavigationRequest for the initiator base url being either nulopt, or
+  // non-empty.
+  GURL new_frame_url = root->current_frame_host()->GetLastCommittedURL();
+  EXPECT_TRUE(new_frame_url.IsAboutBlank());
+  EXPECT_EQ("about:blank", EvalJs(root, "document.baseURI").ExtractString());
+}
+
 // A test to make sure that restoring a session history entry that was saved
 // with an about:blank subframe never results in an initiator_base_url of
 // an empty string. std::nullopt is expected instead of an empty GURL with

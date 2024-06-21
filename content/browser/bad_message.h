@@ -346,7 +346,7 @@ enum BadMessageReason {
   SSHO_RECEIVED_SHARED_STORAGE_WRITE_HEADER_WITH_PERMISSION_DISABLED = 318,
   RFPH_POST_MESSAGE_PDF_CONTENT_FRAME = 319,
   PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE = 320,
-
+  RFH_INITIATOR_BASE_URL_IS_EMPTY = 321,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
