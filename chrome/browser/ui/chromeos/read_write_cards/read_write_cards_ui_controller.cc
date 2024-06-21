@@ -32,7 +32,7 @@ namespace chromeos {
 
 namespace {
 
-constexpr int kQuickAnswersAndMahiSpacing = 10;
+constexpr int kQuickAnswersAndMahiSpacing = 8;
 
 views::Widget::InitParams CreateWidgetInitParams() {
   views::Widget::InitParams params(

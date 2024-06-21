@@ -23,7 +23,7 @@ namespace chromeos::mahi {
 
 namespace {
 
-constexpr int kQuickAnswersAndMahiSpacing = 10;
+constexpr int kQuickAnswersAndMahiSpacing = 8;
 constexpr int kDefaultWidth = 100;
 
 class TestReadWriteCardsView : public ReadWriteCardsView {

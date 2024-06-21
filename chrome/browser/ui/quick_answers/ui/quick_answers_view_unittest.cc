@@ -29,7 +29,7 @@
 namespace quick_answers {
 namespace {
 
-constexpr int kMarginDip = 10;
+constexpr int kMarginDip = 8;
 constexpr int kSmallTop = 30;
 constexpr gfx::Rect kDefaultAnchorBoundsInScreen =
     gfx::Rect(gfx::Point(500, 250), gfx::Size(80, 140));
