@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -88,8 +89,8 @@ class FakeClient : public InkModule::Client {
   // Provide the sequence of pages and the coordinates and dimensions for how
   // they are laid out in a viewer plane.  It is upon the caller to ensure the
   // positioning makes sense (e.g., pages do not overlap).
-  void set_page_layouts(const std::vector<gfx::RectF>& page_layouts) {
-    page_layouts_ = page_layouts;
+  void set_page_layouts(base::span<const gfx::RectF> page_layouts) {
+    page_layouts_ = base::ToVector(page_layouts);
   }
 
   void set_orientation(PageOrientation orientation) {
@@ -297,7 +298,7 @@ class InkModuleStrokeTest : public InkModuleTest {
   void InitializeSimpleSinglePageBasicLayout() {
     // Single page layout that matches visible area.
     constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
-    client().set_page_layouts({kPage});
+    client().set_page_layouts(base::span_from_ref(kPage));
   }
 
   void ApplyInkStrokeWithMousePoints(
@@ -364,7 +365,7 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   constexpr gfx::SizeF kPageSize(100.0f, 120.0f);
   constexpr gfx::PointF kPageOrigin(5.0f, -15.0f);
   constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
-  client().set_page_layouts({kPageLayout});
+  client().set_page_layouts(base::span_from_ref(kPageLayout));
   client().set_orientation(PageOrientation::kClockwise180);
   client().set_zoom(2.0f);
 
@@ -393,7 +394,7 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
   constexpr gfx::PointF kPageOrigin(0.0f, -15.0f);
   constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
   constexpr gfx::Vector2dF kViewportOrigin(5.0f, 0.0f);
-  client().set_page_layouts({kPageLayout});
+  client().set_page_layouts(base::span_from_ref(kPageLayout));
   client().set_orientation(PageOrientation::kClockwise180);
   client().set_viewport_origin_offset(kViewportOrigin);
 
