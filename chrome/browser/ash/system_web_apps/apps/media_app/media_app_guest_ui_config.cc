@@ -20,6 +20,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -58,8 +59,11 @@ bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
   return photos_version >= base::Version(kMinPhotosVersion);
 }
 
-bool IsLensInGalleryEnabled(Profile* profile) {
+bool IsLensInGalleryEnabled(Profile* profile, PrefService* pref_service) {
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppLens)) {
+    return false;
+  }
+  if (!pref_service->GetBoolean(prefs::kMediaAppLensEnabled)) {
     return false;
   }
 
@@ -73,6 +77,11 @@ bool IsLensInGalleryEnabled(Profile* profile) {
 }  // namespace
 
 ChromeMediaAppGuestUIDelegate::ChromeMediaAppGuestUIDelegate() = default;
+
+void ChromeMediaAppGuestUIDelegate::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kMediaAppLensEnabled, true);
+}
 
 void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
     content::WebUI* web_ui,
@@ -90,7 +99,8 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
       });
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
-  source->AddBoolean("lensInGallery", IsLensInGalleryEnabled(profile));
+  source->AddBoolean("lensInGallery",
+                     IsLensInGalleryEnabled(profile, pref_service));
   source->AddBoolean("pdfReadonly",
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
   version_info::Channel channel = chrome::GetChannel();

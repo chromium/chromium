@@ -2048,6 +2048,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPdfAnnotationsEnabled,
     prefs::kPdfAnnotationsEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kLensOnGalleryEnabled,
+    prefs::kMediaAppLensEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   { key::kCORSNonWildcardRequestHeadersSupport,

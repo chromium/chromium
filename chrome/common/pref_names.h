@@ -3958,6 +3958,11 @@ inline constexpr char kFetchKeepaliveDurationOnShutdown[] =
 inline constexpr char kPdfAnnotationsEnabled[] = "pdf.enable_annotations";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Boolean pref to control whether to enable Lens integration with media app
+inline constexpr char kMediaAppLensEnabled[] = "media_app.enable_lens";
+#endif
+
 // A comma-separated list of ports on which outgoing connections will be
 // permitted even if they would otherwise be blocked.
 inline constexpr char kExplicitlyAllowedNetworkPorts[] =

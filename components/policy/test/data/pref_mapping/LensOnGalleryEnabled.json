@@ -1,0 +1,16 @@
+[
+    {
+      "can_be_recommended": true,
+      "os": [
+        "chromeos_ash"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "media_app.enable_lens",
+        "default_value": true,
+        "values_to_test": [
+          true,
+          false
+        ]
+      }
+    }
+  ]

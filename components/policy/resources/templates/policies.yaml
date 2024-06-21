@@ -1272,6 +1272,7 @@ policies:
   1271: ExtensionDeveloperModeSettings
   1272: LocalUserFilesMigrationDestination
   1273: KioskBrowserPermissionsAllowedForOrigins
+  1274: LensOnGalleryEnabled
 
 atomic_groups:
   1: Homepage
