@@ -267,6 +267,13 @@ id<GREYMatcher> DeleteBlockedSiteButton() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the "Delete" associated with the blocked site.
+id<GREYMatcher> DeletePasskeyButton() {
+  return grey_allOf(ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_CONFIRM_PASSKEY_DELETION)),
+                    grey_interactable(), nullptr);
+}
+
 // Matcher for the "View Password" Button presented when a duplicated credential
 // is found in the add credential flow.
 id<GREYMatcher> DuplicateCredentialViewPasswordButton() {
@@ -737,7 +744,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   }
 
   if ([self isRunningTest:@selector(testEditPasskeyUsername)] ||
-      [self isRunningTest:@selector(testEditPasskeyUserDisplayName)]) {
+      [self isRunningTest:@selector(testEditPasskeyUserDisplayName)] ||
+      [self isRunningTest:@selector(testDeletePasskey)]) {
     config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
   }
 
@@ -2218,6 +2226,35 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+- (void)testDeletePasskey {
+  SaveExamplePasskeyToStore();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  TapNavigationBarEditButton();
+
+  id<GREYMatcher> userDisplayName = PasskeyDetailUserDisplayName();
+
+  // Verify that the passkey exists.
+  [[EarlGrey selectElementWithMatcher:userDisplayName]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the delete button of the credential.
+  [[EarlGrey selectElementWithMatcher:DeletePasskeyButton()]
+      performAction:grey_tap()];
+
+  // Tap on the Delete confirmation button of the alert dialog.
+  [[EarlGrey selectElementWithMatcher:BatchDeleteConfirmationButton()]
+      performAction:grey_tap()];
+
+  // Verify that the passkey no longer exists.
+  [[EarlGrey selectElementWithMatcher:userDisplayName]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 // Checks that attempts to edit a username provide appropriate feedback.

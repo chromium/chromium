@@ -47,14 +47,18 @@ using password_manager::CredentialUIEntry;
 
 namespace {
 
-bool MatchesRealmUsernameAndPassword(CredentialDetails* credentialDetails,
-                                     const CredentialUIEntry& credential) {
+bool MatchesRealmUsernamePasswordAndCreationTime(
+    CredentialDetails* credentialDetails,
+    const CredentialUIEntry& credential) {
   return base::SysNSStringToUTF8(credentialDetails.signonRealm) ==
              credential.GetFirstSignonRealm() &&
          base::SysNSStringToUTF16(credentialDetails.username) ==
              credential.username &&
          base::SysNSStringToUTF16(credentialDetails.password) ==
-             credential.password;
+             credential.password &&
+         base::SysNSStringToUTF16(credentialDetails.userDisplayName) ==
+             credential.user_display_name &&
+         credentialDetails.creationTime == credential.creation_time;
 }
 
 // Whether displaying a credential as compromised is supported in the current
@@ -263,7 +267,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   // Map from CredentialDetails to CredentialUIEntry. Should support blocklists.
   auto it = base::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
-        return MatchesRealmUsernameAndPassword(credentialDetails, credential);
+        return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
+                                                           credential);
       });
   if (it == _credentials.end()) {
     // TODO(crbug.com/40862365): Convert into DCHECK.
@@ -291,7 +296,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   // Map from CredentialDetails to CredentialUIEntry.
   auto it = base::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
-        return MatchesRealmUsernameAndPassword(credentialDetails, credential);
+        return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
+                                                           credential);
       });
 
   if (it == _credentials.end()) {
@@ -309,7 +315,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
     (CredentialDetails*)credentialDetails {
   auto localCredential = base::ranges::find_if(
       _credentials, [credentialDetails](const CredentialUIEntry& credential) {
-        return MatchesRealmUsernameAndPassword(credentialDetails, credential);
+        return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
+                                                           credential);
       });
   std::optional<CredentialUIEntry> accountCredential =
       [self conflictingAccountPassword:credentialDetails];
@@ -334,7 +341,8 @@ bool AreMatchingCredentials(const CredentialUIEntry& credential,
   auto it = base::ranges::find_if(
       _credentials, [credentialDetails](
                         const password_manager::CredentialUIEntry& credential) {
-        return MatchesRealmUsernameAndPassword(credentialDetails, credential);
+        return MatchesRealmUsernamePasswordAndCreationTime(credentialDetails,
+                                                           credential);
       });
 
   if (it == _credentials.end()) {
