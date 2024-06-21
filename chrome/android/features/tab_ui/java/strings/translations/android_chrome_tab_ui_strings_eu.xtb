@@ -86,12 +86,12 @@
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
 <translation id="6333260925957816943">Denda honi buruzko informazioa</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desegin hautatutako <ph name="TABS_COUNT_ONE" /> fitxaren taldea}other{Desegin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen taldea}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome-ren menu nagusiko Azken fitxak atalean ikusiko dituzu itxitako fitxak. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Chrome-ren menu nagusiko Azken fitxak atalean ikusiko dituzu itxitako fitxak. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
+<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome-ren menu nagusiko Azkenaldiko fitxak atalean ikusiko dituzu itxitako fitxak. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Chrome-ren menu nagusiko Azkenaldiko fitxak atalean ikusiko dituzu itxitako fitxak. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="6549021453810473782">Ikusi dendari buruzko informazioa</translation>
 <translation id="6562820390860419811">Eraman fitxa ezkerrera</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
-<translation id="661742612106409204">Chrome-ren menu nagusiko Azken fitxak atalean ikusiko dituzu itxitako fitxak.</translation>
+<translation id="661742612106409204">Chrome-ren menu nagusiko Azkenaldiko fitxak atalean ikusiko dituzu itxitako fitxak.</translation>
 <translation id="6744956528665271406">Editatu taldearen kolorea</translation>
 <translation id="6840760312327750441">Fitxak taldekatzeko, eduki fitxa bat sakatuta eta, ondoren, arrasta ezazu beste batera.</translation>
 <translation id="6856809498882026482">Ezkutatu hautespen anizkoitzeko modua</translation>

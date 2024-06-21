@@ -235,7 +235,7 @@
 <translation id="2258326562203545455">{count,plural, =1{Pots desar l'adreça d'interès al teu Compte de Google ({email}).}other{Pots desar les adreces d'interès al teu Compte de Google ({email}).}}</translation>
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Afegeix un compte</translation>
-<translation id="2268044343513325586">Restringeix</translation>
+<translation id="2268044343513325586">Refina</translation>
 <translation id="2269277877025820298">Mostra'n més</translation>
 <translation id="2273327106802955778">Més opcions del menú</translation>
 <translation id="2274800392139890332">Deixa de fer el seguiment d'aquest paquet</translation>
@@ -1238,7 +1238,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7402602673739047753">{count,plural, =1{Hi ha 1 adreça d'interès desada només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google ({email}).}other{Hi ha {count} adreces d'interès desades només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google ({email}).}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles sense llegir.</translation>
 <translation id="7412027924265291969">Continua</translation>
-<translation id="741204030948306876">Sí, ho accepto</translation>
+<translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7417689656810783109">Canvia el nom del grup</translation>
 <translation id="7418640008860669073">Desa a...</translation>
 <translation id="7425346204213733349">Els canvis que es facin a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració es deixaran de sincronitzar amb el Compte de Google. No obstant això, les dades actuals hi continuaran emmagatzemades.</translation>
@@ -1411,7 +1411,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8211030355252954494">Has rebut contrasenyes per a <ph name="WEBSITE" /></translation>
 <translation id="8214293972734702249">Fixada, <ph name="TAB_TITLE" /></translation>
-<translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
+<translation id="8225985093977202398">Imatges i fitxers a memòria cau</translation>
 <translation id="823133356836493038">La llista de lectura està amagada</translation>
 <translation id="8237382152611443140">Obre la configuració de l'emplenament automàtic de contrasenyes.</translation>
 <translation id="8248969482078657578">Les pestanyes inactives t'ajuden a concentrar-te</translation>
@@ -1558,7 +1558,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8909135823018751308">Comparteix...</translation>
 <translation id="8909459547399237818">Selecciona Gestor de contrasenyes i, a continuació, toca Afegeix un widget</translation>
 <translation id="891282356902782456">La contrasenya només es desarà en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google <ph name="EMAIL" />.</translation>
-<translation id="8917490105272468696">Sí, ho accepto</translation>
+<translation id="8917490105272468696">Sí, endavant</translation>
 <translation id="8928133177108699615">Ordinador</translation>
 <translation id="8937676484307616731">Activa les notificacions per a <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Crea contrasenyes segures</translation>

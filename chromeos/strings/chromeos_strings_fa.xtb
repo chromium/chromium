@@ -165,7 +165,7 @@
 <translation id="1801418420130173017">غیرفعال کردن زمینه تاریک</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1808803439260407870">هنر کلاسیک</translation>
-<translation id="1815850098929213707">کلید انتخاب‌شده <ph name="KEYS" /> است. برای ویرایش کنترل، روی دکمه ضربه بزنید</translation>
+<translation id="1815850098929213707">کلید انتخاب‌شده <ph name="KEYS" /> است. برای ویرایش کنترل، روی دکمه تک‌ضرب بزنید</translation>
 <translation id="1823120442877418684">شخصیت‌ها</translation>
 <translation id="1827738518074806965">گالری هنری</translation>
 <translation id="1836553715834333258">رنگ سیستم</translation>
@@ -541,7 +541,7 @@
 <translation id="4130035430755296270">برای گزینه‌های طرح‌بندی بیشتر، همچنان نشانگر را نگه دارید</translation>
 <translation id="4130750466177569591">موافقم</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
-<translation id="4143226836069425823">برای جایگزین کردن کلیدی دیگر، روی آن کلید در صفحه‌کلید ضربه بزنید</translation>
+<translation id="4143226836069425823">برای جایگزین کردن کلیدی دیگر، روی آن کلید در صفحه‌کلید تک‌ضرب بزنید</translation>
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
@@ -637,7 +637,7 @@
 <translation id="4665014895760275686">سازنده</translation>
 <translation id="467510802200863975">گذرواژه‌ها با هم مطابقت ندارند</translation>
 <translation id="467715984478005772">احتمال وجود مشکل در دیوار آتش</translation>
-<translation id="4683762547447150570">برای کانونی کردن اختصاص کلید، روی دکمه ضربه بزنید</translation>
+<translation id="4683762547447150570">برای کانونی کردن اختصاص کلید، روی دکمه تک‌ضرب بزنید</translation>
 <translation id="4691278870498629773">متوقف شد - سینی موجود نیست</translation>
 <translation id="469379815867856270">قدرت سیگنال</translation>
 <translation id="4697260493945012995">نوع کنترل را انتخاب کنید</translation>
@@ -839,7 +839,7 @@
 <translation id="5860491529813859533">روشن کردن</translation>
 <translation id="5876385649737594562">برای انتخاب گزینه‌ها، این حالت را روشن کنید</translation>
 <translation id="588258955323874662">تمام صفحه</translation>
-<translation id="5893975327266416093">برای اختصاص دادن، روی یکی از کلیدهای صفحه‌کلید ضربه بزنید.</translation>
+<translation id="5893975327266416093">برای اختصاص دادن، روی یکی از کلیدهای صفحه‌کلید تک‌ضرب بزنید.</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5901630391730855834">زرد</translation>
 <translation id="5903200662178656908">دستگاه ترکیبی از صفحه‌کلید و موشواره است.</translation>
@@ -1457,7 +1457,7 @@
 <translation id="9188992814426075118">صفحه‌کلیدتان می‌تواند به‌طور خودکار با کاغذدیواری منطبق شود</translation>
 <translation id="9189000703457422362">نمی‌توان بااستفاده از نقطه‌های «نام نقطه دستیابی» که به‌طور خودکار شناسایی شده است به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="9193744392140377127">«نام نقطه دستیابی»*</translation>
-<translation id="9195918315673527512">کلیدهای دسته کنترل انتخاب‌شده <ph name="KEYS" /> هستند. برای ویرایش کنترل، روی دکمه ضربه بزنید</translation>
+<translation id="9195918315673527512">کلیدهای دسته کنترل انتخاب‌شده <ph name="KEYS" /> هستند. برای ویرایش کنترل، روی دکمه تک‌ضرب بزنید</translation>
 <translation id="9204237731135241582">‏نمی‌توان از برنامه‌های Android با دروازه تماس گرفت</translation>
 <translation id="921080052717160800">تصویر به‌عنوان پس‌زمینه دوربین تنظیم شد</translation>
 <translation id="9211490828691860325">همه میزکارها</translation>

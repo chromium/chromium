@@ -20,7 +20,7 @@
 <translation id="168356808214100546">Trykk og hold på <ph name="ALT" />, trykk på <ph name="TAB" /> til du kommer til vinduet du vil åpne, og slipp tastene.</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Legg til www. og .com i det du har skrevet i adressefeltet, og åpne siden</translation>
-<translation id="1768987374400973299">Ta skjermdump eller opptak</translation>
+<translation id="1768987374400973299">Ta skjermbilde eller opptak</translation>
 <translation id="1872219238824176091">Fjern det aktive skrivebordet</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og så <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> eller <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Gå til neste fane</translation>
@@ -133,7 +133,7 @@
 <translation id="5899919361772749550">Vis eller skjul konsollen for utviklerverktøy</translation>
 <translation id="5919628958418675842">Slå personvernskjermen av eller på</translation>
 <translation id="5921745308587794300">Rotér vinduet</translation>
-<translation id="5926306472221400972">Ta skjermdump av hele skjermen</translation>
+<translation id="5926306472221400972">Ta skjermbilde av hele skjermen</translation>
 <translation id="6022924867608035986">Fjern teksten i søkefeltet</translation>
 <translation id="6052614013050385269">Høyreklikk på en link</translation>
 <translation id="6143669479988153888">Zoom inn på siden</translation>
@@ -151,7 +151,7 @@
 <translation id="6474744297082284761">Zoom ut (når dokket ELLER forstørrelse med fullskjerm er på)</translation>
 <translation id="649811797655257835">Velg en fil og trykk på <ph name="SPACE" /></translation>
 <translation id="6515089016094047210">Åpne eller lukk kalendermodulen.</translation>
-<translation id="6551886416582667425">Ta delvis skjermdump eller opptak</translation>
+<translation id="6551886416582667425">Ta delvis skjermbilde eller opptak</translation>
 <translation id="6556040137485212400">Åpne vinduet som har vært ubrukt lengst</translation>
 <translation id="666343722268997814">Åpne høyreklikkmenyen for elementet som er fremhevet</translation>
 <translation id="6671538777808758331">Gå til det neste treffet for søket</translation>
@@ -178,7 +178,7 @@
 <translation id="7611271430932669992">Flytt fokus til forgrunnsvinduer og dialogbokser</translation>
 <translation id="7635348532214572995">Flytt et appikon rundt i apprutenettet</translation>
 <translation id="766326951329901120">Lim inn innholdet fra utklippstavlen som ren tekst</translation>
-<translation id="7673453620027697230">Ta skjermdump eller opptak av vinduet</translation>
+<translation id="7673453620027697230">Ta skjermbilde eller opptak av vinduet</translation>
 <translation id="7703010453515335249">venstre hakeparentes</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og så <ph name="SPACE" /> eller <ph name="ENTER" /></translation>
