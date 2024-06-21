@@ -43,6 +43,7 @@
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_metrics.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
@@ -501,6 +502,8 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
   // need to wait until the window is fully unminimized before activation as
   // opposed to having two consecutive calls.
   auto* window_state = WindowState::Get(window);
+  SplitViewController* split_view_controller = SplitViewController::Get(window);
+  const bool in_split_view = split_view_controller->InSplitViewMode();
   if (window_state->IsMinimized()) {
     wm::ScopedAnimationDisabler disabler(window);
     // The following instance self-destructs when the window state changed.
@@ -515,12 +518,29 @@ void OverviewSession::SelectWindow(OverviewItemBase* item) {
 
     // If we are in split mode, use Show() here to delegate un-minimizing to
     // SplitViewController as it handles auto snapping cases.
-    if (SplitViewController::Get(window)->InSplitViewMode()) {
+    if (in_split_view) {
       window->Show();
     } else {
       window_state->Unminimize();
     }
     return;
+  }
+
+  // If any window within a snap group is selected for snapping in partial
+  // Overview, break the Snap Group it belongs to in order to form a new Snap
+  // Group between the already snapped window and the newly selected window.
+  if (in_split_view) {
+    if (SnapGroupController* snap_group_controller =
+            SnapGroupController::Get()) {
+      if (SnapGroup* snap_group =
+              snap_group_controller->GetSnapGroupForGivenWindow(window);
+          snap_group &&
+          window != split_view_controller->GetDefaultSnappedWindow()) {
+        snap_group_controller->RemoveSnapGroup(
+            snap_group,
+            SnapGroupExitPoint::kSelectWindowInSnapGroupInPartialOverview);
+      }
+    }
   }
 
   wm::ActivateWindow(window);
@@ -1744,6 +1764,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
   aura::Window* window2 = snap_group->window2();
 
   OverviewItemBase* overview_group_item = GetOverviewItemForWindow(window1);
+  if (!overview_group_item) {
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   overview_grid->RemoveItem(overview_group_item, /*item_destroying=*/false,
                             /*reposition=*/false);
 

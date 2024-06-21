@@ -311,6 +311,34 @@ void DragGroupItemToPoint(OverviewItemBase* item,
   }
 }
 
+// Activates the given 'window' hosted by an `OverviewGroupItem`.
+void ActivateWindowInOverviewGroupItem(
+    aura::Window* window,
+    ui::test::EventGenerator* event_generator,
+    bool by_touch_gestures) {
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(window));
+  ASSERT_TRUE(overview_group_item);
+
+  const auto& overview_items =
+      overview_group_item->overview_items_for_testing();
+  const std::unique_ptr<OverviewItem>& selected_item =
+      overview_items[0]->GetWindow() == window ? overview_items[0]
+                                               : overview_items[1];
+  ASSERT_EQ(window, selected_item->GetWindow());
+
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(selected_item->target_bounds().CenterPoint()));
+  if (by_touch_gestures) {
+    event_generator->PressTouch();
+    event_generator->ReleaseTouch();
+  } else {
+    event_generator->ClickLeftButton();
+  }
+}
+
 // Gets a point to drag `window` by the header.
 gfx::Point GetDragPoint(aura::Window* window) {
   auto* frame = NonClientFrameViewAsh::Get(window);
@@ -7082,11 +7110,117 @@ TEST_F(SnapGroupMultipleSnapGroupsTest, MultipleSnapGroupsRecall) {
             w2->GetBoundsInScreen().x());
 }
 
-// Tests that the snap groups will be hidden with two snapped window invisible
-// in partial Overview. The visibility of the two snapped windows in snap group
-// will be restored on overview ended. It only applies to partial Overview, the
-// snap group will still be visible in full Overview.
-TEST_F(SnapGroupMultipleSnapGroupsTest, DoNotShowSnapGroupsInPartialOverview) {
+// In the faster split screen setup, selecting an individual window within an
+// existing Snap Group forms a **new** Snap Group combining the already snapped
+// window (from the partial overview) and the newly selected window.
+TEST_F(SnapGroupMultipleSnapGroupsTest,
+       SelectWindowInSnapGroupInFasterPartialOverview) {
+  UpdateDisplay("800x600");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  // Create `w3` to partially occlude primary snapped `w1`.
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(200, 200, 200, 200)));
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+
+  // Round #1: Test that selecting a snapped window doesn't change its snap
+  // position (snap state) to fill the opposite snapped area case.
+  // Snap `w4` to secondary to start the partial Overview and verify that the
+  // snap group is visible;
+  //                                |
+  //                                |-------+
+  //     +----+    +------+------+  |       |
+  //     | w3 |    |  w1  |  w2  |  |   w4  |
+  //     |    |    |      |      |  |       |
+  //     +----+    +------+------+  |       |
+  //                                |-------+
+  //                                |
+
+  SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio);
+  ASSERT_TRUE(IsInOverviewSession());
+  VerifySplitViewOverviewSession(w4.get());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+
+  // Select `w1` in the Snap Group, which remains as primary snapped.
+  auto* event_generator = GetEventGenerator();
+  ActivateWindowInOverviewGroupItem(w1.get(), event_generator,
+                                    /*by_touch_gestures=*/false);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  ASSERT_FALSE(IsInOverviewSession());
+  VerifyNotSplitViewOverviewSession(w1.get());
+
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+
+  // A new Snap Group comprising windows `w1` and `w4` will be created.
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w4.get()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w4.get(), snap_group_divider());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Round #2: Test that selecting a snapped window that changes its snap
+  // position (snap state) to fill the opposite snapped area case.
+  wm::ActivateWindow(w3.get());
+  // Set bounds on `w3` to partially occlude secondary snapped window `w2`.
+  w3->SetBounds(gfx::Rect(500, 200, 100, 200));
+  wm::ActivateWindow(w2.get());
+
+  // Snap `w2` to primary to start the partial Overview and verify that the
+  // snap group is visible;
+  //
+  //               |
+  //               |
+  //     +---------+
+  //     |         | +----+    +------+------+
+  //     |   w2    | | w3 |    |  w1  |  w4  |
+  //     |         | |    |    |      |      |
+  //     |         | +----+    +------+------+
+  //     +---------+
+  //               |
+  //               |
+  SnapOneTestWindow(w2.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  ASSERT_TRUE(IsInOverviewSession());
+  VerifySplitViewOverviewSession(w2.get());
+
+  overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(2u, overview_grid->window_list().size());
+  EXPECT_TRUE(w2->IsVisible());
+  EXPECT_TRUE(w4->IsVisible());
+
+  // Select `w1` in the Snap Group, which changes its snapped state from primary
+  // snapped to secondary snapped.
+  ActivateWindowInOverviewGroupItem(w1.get(), event_generator,
+                                    /*by_touch_gestures=*/false);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  ASSERT_FALSE(IsInOverviewSession());
+  VerifyNotSplitViewOverviewSession(w2.get());
+
+  // A new Snap Group comprising windows `w2` and `w1` will be created.
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+}
+
+//  In the Overview, after manually setting up a partial overview by dragging to
+//  snap a window, selecting a window from an existing Snap Group creates a
+//  **new** Snap Group. This new group combines the selected window in the
+//  previous Snap Group with the window already snapped in the partial overview.
+TEST_F(SnapGroupMultipleSnapGroupsTest,
+       SelectWindowInSnapGroupInManualPartialOverview) {
+  UpdateDisplay("800x600");
+
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get());
@@ -7094,37 +7228,105 @@ TEST_F(SnapGroupMultipleSnapGroupsTest, DoNotShowSnapGroupsInPartialOverview) {
   std::unique_ptr<aura::Window> w3(
       CreateAppWindow(gfx::Rect(200, 200, 200, 200)));
 
-  // Snap `w4` to start the partial Overview and verify that the snap group will
-  // not show.
-  std::unique_ptr<aura::Window> w4(CreateAppWindow());
-  SnapOneTestWindow(w4.get(), WindowStateType::kSecondarySnapped,
-                    chromeos::kOneThirdSnapRatio);
+  // Start full Overview and verify that snap group will show.
+  ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
 
   auto* root_window = Shell::GetPrimaryRootWindow();
   const auto* overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 1u);
-  EXPECT_FALSE(w1->IsVisible());
-  EXPECT_FALSE(w2->IsVisible());
-
-  // The visibility of the snapped windows in a snap group will be restored on
-  // Overview exit.
-  OverviewController::Get()->EndOverview(OverviewEndAction::kKeyEscapeOrBack);
+  EXPECT_EQ(overview_grid->window_list().size(), 2u);
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
-  EXPECT_TRUE(
-      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
-  // Start full Overview and verify that snap group will show.
-  OverviewController::Get()->StartOverview(
-      OverviewStartAction::kOverviewButton);
+  // Round #1: Test that selecting a snapped window that doesn't change its snap
+  // position (snap state) to fill the opposite snapped area case.
+  // Drag to snap `w3` to primary position to start the partial Overview.
+  //
+  //               |
+  //               |
+  //     +---------+
+  //     |         |    +------+------+
+  //     |   w3    |    |  w1  |  w2  |
+  //     |         |    |      |      |
+  //     |         |    +------+------+
+  //     +---------+
+  //               |
+  //               |
+
+  auto* event_generator = GetEventGenerator();
+  DragItemToPoint(GetOverviewItemForWindow(w3.get()), gfx::Point(0, 300),
+                  event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
   ASSERT_TRUE(IsInOverviewSession());
+  VerifySplitViewOverviewSession(w3.get(), /*faster_split_screen_setup=*/false);
+
   overview_grid = GetOverviewGridForRoot(root_window);
   ASSERT_TRUE(overview_grid);
-  EXPECT_EQ(overview_grid->window_list().size(), 3u);
+  EXPECT_EQ(1u, overview_grid->window_list().size());
   EXPECT_TRUE(w1->IsVisible());
   EXPECT_TRUE(w2->IsVisible());
+
+  // Select `w2` in the Snap Group, which remains as secondary snapped.
+  ActivateWindowInOverviewGroupItem(w2.get(), event_generator,
+                                    /*by_touch_gestures=*/false);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  ASSERT_FALSE(IsInOverviewSession());
+  VerifyNotSplitViewOverviewSession(w3.get());
+
+  // A new Snap Group comprising windows `w3` and `w2` will be created.
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  UnionBoundsEqualToWorkAreaBounds(w3.get(), w2.get(), snap_group_divider());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Round #2: Test that selecting a snapped window that changes its snap
+  // position (snap state) to fill the opposite snapped area case.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+
+  // Drag to snap `w1` to secondary position to start the partial Overview.
+  //                        |
+  //                        |---------+
+  //     +------+------+    |         |
+  //     |  w3  |  w2  |    |   w1    |
+  //     |      |      |    |         |
+  //     +------+------+    |         |
+  //                        |---------+
+  //                        |
+
+  DragItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(800, 300),
+                  event_generator, /*by_touch_gestures=*/false, /*drop=*/true);
+  ASSERT_TRUE(IsInOverviewSession());
+  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+
+  overview_grid = GetOverviewGridForRoot(root_window);
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(1u, overview_grid->window_list().size());
+  EXPECT_TRUE(w1->IsVisible());
+  EXPECT_TRUE(w2->IsVisible());
+
+  // Select `w2` in the Snap Group, which changes its snapped state from
+  // secondary snapped to primary snapped.
+  ActivateWindowInOverviewGroupItem(w2.get(), event_generator,
+                                    /*by_touch_gestures=*/false);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  ASSERT_FALSE(IsInOverviewSession());
+  VerifyNotSplitViewOverviewSession(w1.get());
+
+  // A new Snap Group comprising windows `w2` and `w1` will be created.
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
 }
 
 // -----------------------------------------------------------------------------

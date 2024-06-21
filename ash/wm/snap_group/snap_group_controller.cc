@@ -130,6 +130,7 @@ bool SnapGroupController::OnWindowSnapped(
         break;
       case WindowSnapActionSource::kDragWindowToEdgeToSnap:
       case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+      case WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap:
         // Else respect the opposite window's snap ratio. This is to give the
         // impression of filling the layout and feels more intuitive to the
         // user.
@@ -396,7 +397,6 @@ void SnapGroupController::OnOverviewModeStarting() {
   }
 
   for (const auto& snap_group : snap_groups_) {
-    snap_group->OnOverviewModeStarting();
     snap_group->HideDivider();
   }
 }
@@ -407,8 +407,15 @@ void SnapGroupController::OnOverviewModeEnding(
     return;
   }
 
+  // On Overview mode ending, call `RefreshSnapGroup()` to refresh the bounds
+  // of the snapped windows and divider. This ensures they either maintain a
+  // proper fit within the work area or are gracefully broken from the group
+  // if they no longer fit due to potential device scale factor in Overview.
+  // By doing this refresh after exiting Overview, we prevent heavy visual
+  // updates and re-layout (break `OverviewGroupItem` back to two individual
+  // `Overviewitem`s) while in Overview mode.
   for (const auto& snap_group : snap_groups_) {
-    snap_group->OnOverviewModeEnding();
+    snap_group->RefreshSnapGroup();
   }
 }
 

@@ -428,31 +428,21 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
 
   // A window should be excluded from being shown in Overview in clamshell mode
   // when:
-  // 1. In partial Overview:
-  //   - The window itself is the snapped window;
-  //   - The window belongs to a snap group.
+  // 1. The window itself is the snapped window in partial Overview;
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   SplitViewController::State split_view_state = split_view_controller->state();
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  if (split_view_state == SplitViewController::State::kPrimarySnapped ||
-      split_view_state == SplitViewController::State::kSecondarySnapped) {
-    if (window == split_view_controller->GetDefaultSnappedWindow()) {
-      return true;
-    }
-
-    if (snap_group_controller &&
-        snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      return true;
-    }
-
-    return false;
+  const bool in_partial_overview =
+      split_view_state == SplitViewController::State::kPrimarySnapped ||
+      split_view_state == SplitViewController::State::kSecondarySnapped;
+  if (in_partial_overview &&
+      window == split_view_controller->GetDefaultSnappedWindow()) {
+    return true;
   }
 
-  // 2. In full Overview:
-  //   -  The window is not the most recently used (MRU) window within its snap
-  //   group. i.e. the corresponding overview item representation for the snap
-  //   group has been created.
-  if (snap_group_controller) {
+  // 2. The window is not the most recently used (MRU) window within its snap
+  // group. i.e. the corresponding overview item representation for the snap
+  // group has been created.
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
       return window != snap_group->GetTopMostWindowInGroup();

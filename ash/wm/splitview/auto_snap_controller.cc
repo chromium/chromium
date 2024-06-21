@@ -171,19 +171,6 @@ bool AutoSnapController::AutoSnapWindowIfNeeded(aura::Window* window) {
     return false;
   }
 
-  // TODO(michelefan): This logic is currently added to avoid auto snapping on
-  // 3rd window open with an existing snap group. This logic can be removed when
-  // `SnapGroup` owns the divider and split view can be safely ended upon snap
-  // group creation.
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  if (state == SplitViewController::State::kBothSnapped &&
-      snap_group_controller &&
-      snap_group_controller->AreWindowsInSnapGroup(
-          split_view_controller->primary_window(),
-          split_view_controller->secondary_window())) {
-    return false;
-  }
-
   if (DesksController::Get()->AreDesksBeingModified()) {
     // Activating a desk from its mini view will activate its most-recently
     // used window, but this should not result in snapping and ending overview
