@@ -57,8 +57,8 @@ class FakeClient : public InkModule::Client {
 
   gfx::Rect GetPageContentsRect(int index) override {
     CHECK_GE(index, 0);
-    CHECK_LT(static_cast<size_t>(index), pages_layout_.size());
-    return gfx::ToEnclosedRect(pages_layout_[index]);
+    CHECK_LT(static_cast<size_t>(index), page_layouts_.size());
+    return gfx::ToEnclosedRect(page_layouts_[index]);
   }
 
   float GetZoom() const override { return zoom_; }
@@ -71,8 +71,8 @@ class FakeClient : public InkModule::Client {
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
     // Assumes that all pages are visible.
-    for (size_t i = 0; i < pages_layout_.size(); ++i) {
-      if (pages_layout_[i].Contains(point)) {
+    for (size_t i = 0; i < page_layouts_.size(); ++i) {
+      if (page_layouts_[i].Contains(point)) {
         return i;
       }
     }
@@ -88,8 +88,8 @@ class FakeClient : public InkModule::Client {
   // Provide the sequence of pages and the coordinates and dimensions for how
   // they are laid out in a viewer plane.  It is upon the caller to ensure the
   // positioning makes sense (e.g., pages do not overlap).
-  void set_pages_layout(const std::vector<gfx::RectF>& pages_layout) {
-    pages_layout_ = pages_layout;
+  void set_page_layouts(const std::vector<gfx::RectF>& page_layouts) {
+    page_layouts_ = page_layouts;
   }
 
   void set_orientation(PageOrientation orientation) {
@@ -104,7 +104,7 @@ class FakeClient : public InkModule::Client {
 
  private:
   int ink_stroke_finished_count_ = 0;
-  std::vector<gfx::RectF> pages_layout_;
+  std::vector<gfx::RectF> page_layouts_;
   PageOrientation orientation_ = PageOrientation::kOriginal;
   gfx::Vector2dF viewport_origin_offset_;
   float zoom_ = 1.0f;
@@ -297,7 +297,7 @@ class InkModuleStrokeTest : public InkModuleTest {
   void InitializeSimpleSinglePageBasicLayout() {
     // Single page layout that matches visible area.
     constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
-    client().set_pages_layout({kPage});
+    client().set_page_layouts({kPage});
   }
 
   void ApplyInkStrokeWithMousePoints(
@@ -364,7 +364,7 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   constexpr gfx::SizeF kPageSize(100.0f, 120.0f);
   constexpr gfx::PointF kPageOrigin(5.0f, -15.0f);
   constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
-  client().set_pages_layout({kPageLayout});
+  client().set_page_layouts({kPageLayout});
   client().set_orientation(PageOrientation::kClockwise180);
   client().set_zoom(2.0f);
 
@@ -393,7 +393,7 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
   constexpr gfx::PointF kPageOrigin(0.0f, -15.0f);
   constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
   constexpr gfx::Vector2dF kViewportOrigin(5.0f, 0.0f);
-  client().set_pages_layout({kPageLayout});
+  client().set_page_layouts({kPageLayout});
   client().set_orientation(PageOrientation::kClockwise180);
   client().set_viewport_origin_offset(kViewportOrigin);
 
