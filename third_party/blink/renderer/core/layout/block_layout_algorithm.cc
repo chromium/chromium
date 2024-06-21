@@ -2996,9 +2996,8 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
           !IsParallelWritingMode(constraint_space.GetWritingMode(),
                                  child_writing_direction.GetWritingMode()))) {
     SetOrthogonalFallbackInlineSize(Style(), child, &builder);
-  } else if ((RuntimeEnabledFeatures::LayoutBlockButtonEnabled() &&
-              child.IsInline()) ||
-             ShouldBlockContainerChildStretchAutoInlineSize(child)) {
+  } else if (child.IsInline() || ShouldBlockContainerChildStretchAutoInlineSize(
+                                     To<BlockNode>(child))) {
     builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
   }
 

@@ -101,7 +101,6 @@ class CORE_EXPORT LayoutInputNode {
     DCHECK(IsListMarker());
     return To<LayoutOutsideListMarker>(box_.Get())->NeedsOccupyWholeLine();
   }
-  bool IsButton() const { return IsBlock() && box_->IsButton(); }
   bool IsButtonOrInputButton() const {
     return IsBlock() && box_->IsButtonOrInputButton();
   }

@@ -3017,15 +3017,6 @@ void LayoutBox::InflateVisualRectForFilter(
       gfx::QuadF(gfx::RectF(Layer()->MapRectForFilter(rect))));
 }
 
-bool LayoutBox::AutoWidthShouldFitContent() const {
-  NOT_DESTROYED();
-  return GetNode() &&
-         (IsA<HTMLInputElement>(*GetNode()) ||
-          IsA<HTMLSelectElement>(*GetNode()) ||
-          IsA<HTMLButtonElement>(*GetNode()) ||
-          IsA<HTMLTextAreaElement>(*GetNode()) || IsRenderedLegend());
-}
-
 LayoutBlock* LayoutBox::FindAnonymousContentBox() const {
   if (!IsFieldset() && !IsScrollContainerWithMarkers()) {
     return nullptr;

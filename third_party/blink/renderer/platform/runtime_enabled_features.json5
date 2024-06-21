@@ -2326,10 +2326,6 @@
       status: "stable",
     },
     {
-      name: "LayoutBlockButton",
-      status: "stable",
-    },
-    {
       name: "LayoutFlexNewRowAlgorithmV3",
       status: "test",
     },

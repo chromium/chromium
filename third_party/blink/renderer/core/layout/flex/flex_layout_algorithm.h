@@ -99,8 +99,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // Set reading flow so they can be accessed by LayoutBox.
   void SetReadingFlowElements(const HeapVector<NGFlexLine>& flex_line_outputs);
 
-  void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
-
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
 

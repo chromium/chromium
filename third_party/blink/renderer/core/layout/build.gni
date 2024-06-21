@@ -127,8 +127,6 @@ blink_core_sources_layout = [
   "forms/fieldset_break_token_data.h",
   "forms/fieldset_layout_algorithm.cc",
   "forms/fieldset_layout_algorithm.h",
-  "forms/layout_button.cc",
-  "forms/layout_button.h",
   "forms/layout_fieldset.cc",
   "forms/layout_fieldset.h",
   "forms/layout_text_control.cc",

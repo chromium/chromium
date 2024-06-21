@@ -198,8 +198,7 @@ LayoutObject* FirstInFlowInlineDescendantForFirstLetter(LayoutObject& parent) {
       // first formatted line.
       return nullptr;
     }
-    if (RuntimeEnabledFeatures::LayoutBlockButtonEnabled() &&
-        first_inline->IsButtonOrInputButton()) {
+    if (first_inline->IsButtonOrInputButton()) {
       // Buttons do not accept the first-letter.
       return nullptr;
     }
@@ -306,7 +305,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
           return nullptr;
         }
       } else if (inline_child->IsAtomicInlineLevel() ||
-                 inline_child->IsButton() || inline_child->IsMenuList()) {
+                 inline_child->IsMenuList()) {
         return nullptr;
       }
       inline_child = inline_child->NextInPreOrder(stay_inside);

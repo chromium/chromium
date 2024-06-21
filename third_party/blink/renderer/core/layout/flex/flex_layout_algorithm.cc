@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/layout/flex/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/flex/ng_flex_line.h"
-#include "third_party/blink/renderer/core/layout/forms/layout_button.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -119,18 +118,6 @@ class BaselineAccumulator {
   std::optional<LayoutUnit> last_minor_baseline_;
   std::optional<LayoutUnit> last_fallback_baseline_;
 };
-
-bool ContainsNonWhitespace(const LayoutBox* box) {
-  const LayoutObject* next = box;
-  while ((next = next->NextInPreOrder(box))) {
-    if (const auto* text = DynamicTo<LayoutText>(next)) {
-      if (!text->TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
 
 }  // anonymous namespace
 
@@ -605,16 +592,6 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
   space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size_);
   space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
-
-  // For a button child, we need the baseline type same as the container's
-  // baseline type for UseCounter. For example, if the container's display
-  // property is 'inline-block', we need the last-line baseline of the
-  // child. See the bottom of GiveItemsFinalPositionAndSize().
-  if (Node().IsButton()) {
-    space_builder.SetBaselineAlgorithmType(
-        GetConstraintSpace().GetBaselineAlgorithmType());
-  }
-
   return space_builder.ToConstraintSpace();
 }
 
@@ -1514,10 +1491,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     container_builder_.SetLastBaseline(*last_baseline);
 
   // TODO(crbug.com/1131352): Avoid control-specific handling.
-  if (Node().IsButton()) {
-    DCHECK(!InvolvedInBlockFragmentation(container_builder_));
-    AdjustButtonBaseline(final_content_cross_size);
-  } else if (Node().IsSlider()) {
+  if (Node().IsSlider()) {
     DCHECK(!InvolvedInBlockFragmentation(container_builder_));
     container_builder_.ClearBaselines();
   }
@@ -2064,63 +2038,6 @@ LayoutResult::EStatus FlexLayoutAlgorithm::PropagateFlexItemInfo(
               ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_));
   }
   return status;
-}
-
-void FlexLayoutAlgorithm::AdjustButtonBaseline(
-    LayoutUnit final_content_cross_size) {
-  // See LayoutButton::BaselinePosition()
-  if (!Node().HasLineIfEmpty() && !Node().ShouldApplyLayoutContainment() &&
-      !container_builder_.FirstBaseline()) {
-    return;
-  }
-
-  // Apply flexbox's baseline as is.  That is to say, the baseline of the
-  // first line.
-  // However, we count the differences between it and the last-line baseline
-  // of the anonymous block. crbug.com/690036.
-  // We also have a difference in empty buttons. See crbug.com/304848.
-
-  const LayoutObject* parent = Node().GetLayoutBox()->Parent();
-  if (!LayoutButton::ShouldCountWrongBaseline(
-          *Node().GetLayoutBox(), Style(),
-          parent ? parent->Style() : nullptr)) {
-    return;
-  }
-
-  // The button should have at most one child.
-  const FragmentBuilder::ChildrenVector& children =
-      container_builder_.Children();
-  if (children.size() < 1) {
-    const LayoutBlock* layout_block = To<LayoutBlock>(Node().GetLayoutBox());
-    std::optional<LayoutUnit> baseline = layout_block->BaselineForEmptyLine();
-    if (container_builder_.FirstBaseline() != baseline) {
-      UseCounter::Count(Node().GetDocument(),
-                        WebFeature::kWrongBaselineOfEmptyLineButton);
-    }
-    return;
-  }
-  DCHECK_EQ(children.size(), 1u);
-  const LogicalFragmentLink& child = children[0];
-  DCHECK(!child.fragment->IsLineBox());
-  const auto& space = GetConstraintSpace();
-  LogicalBoxFragment fragment(space.GetWritingDirection(),
-                              To<PhysicalBoxFragment>(*child.fragment));
-  std::optional<LayoutUnit> child_baseline =
-      space.GetBaselineAlgorithmType() == BaselineAlgorithmType::kDefault
-          ? fragment.FirstBaseline()
-          : fragment.LastBaseline();
-  if (child_baseline)
-    child_baseline = *child_baseline + child.offset.block_offset;
-  if (container_builder_.FirstBaseline() != child_baseline) {
-    UseCounter::Count(Node().GetDocument(),
-                      WebFeature::kWrongBaselineOfMultiLineButton);
-    String text = Node().GetDOMNode()->textContent();
-    if (ContainsNonWhitespace(Node().GetLayoutBox())) {
-      UseCounter::Count(
-          Node().GetDocument(),
-          WebFeature::kWrongBaselineOfMultiLineButtonWithNonSpace);
-    }
-  }
 }
 
 MinMaxSizesResult
