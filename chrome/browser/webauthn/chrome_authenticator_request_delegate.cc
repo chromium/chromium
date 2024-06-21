@@ -1458,10 +1458,6 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
           ->GetInteger(
               webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount) >=
       device::enclave::kMaxGPMBootstrapPrompts;
-  FIDO_LOG(EVENT) << "b/342399396: considering whether GPM credentials are "
-                     "enclave; have controller: "
-                  << static_cast<bool>(enclave_controller_)
-                  << " bootstrap limit: " << enclave_bootstrap_limit_reached;
   if (enclave_controller_ && !enclave_bootstrap_limit_reached &&
       enclave_controller_->is_active()) {
     credentials = enclave_controller_->creds();

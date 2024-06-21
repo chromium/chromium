@@ -848,15 +848,11 @@ void AuthenticatorRequestDialogController::
             if (absl::get<Mechanism::Credential>(type)->source ==
                 device::AuthenticatorType::kEnclave) {
               CHECK(will_do_uv);
-              FIDO_LOG(EVENT) << "b/342399396: triggering enclave credential "
-                                 "due to allowlist match";
               mechanism.callback.Run();
               return;
             }
             if (absl::get<Mechanism::Credential>(type)->source ==
                 device::AuthenticatorType::kPhone) {
-              FIDO_LOG(EVENT) << "b/342399396: triggering phone credential due "
-                                 "to allowlist match";
               SetCurrentStep(Step::kPhoneConfirmationSheet);
               return;
             }

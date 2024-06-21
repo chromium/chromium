@@ -887,8 +887,6 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kNone:
       if (model_->priority_phone_name.has_value()) {
-        FIDO_LOG(EVENT) << "b/342399396: triggering priority phone because "
-                           "account state is kNone";
         model_->ContactPriorityPhone();
       } else {
         // This can happen if a passkey is selected after the enclave times out.
@@ -903,8 +901,6 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kEmpty:
       if (model_->priority_phone_name.has_value()) {
-        FIDO_LOG(EVENT) << "b/342399396: triggering priority phone because "
-                           "account state is kEmpty";
         model_->ContactPriorityPhone();
       } else {
         // The security domain is empty but there were
