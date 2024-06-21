@@ -316,6 +316,7 @@ class NetworkHandler : public DevToolsDomainHandler,
       const std::string& error_message,
       const std::optional<std::string>& bundle_request_devtools_id);
 
+  void OnPolicyContainerHostUpdated();
   bool enabled() const { return enabled_; }
 
   Network::Frontend* frontend() const { return frontend_.get(); }

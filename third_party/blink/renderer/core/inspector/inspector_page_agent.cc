@@ -1101,6 +1101,7 @@ void InspectorPageAgent::WillCommitLoad(LocalFrame*, DocumentLoader* loader) {
   }
   GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()),
                                 protocol::Page::NavigationTypeEnum::Navigation);
+  GetFrontend()->flush();
 }
 
 void InspectorPageAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {

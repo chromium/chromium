@@ -715,6 +715,15 @@ void DidActivatePrerender(const NavigationRequest& nav_request,
   UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
 }
 
+void DidUpdatePolicyContainerHost(FrameTreeNode* ftn) {
+  if (!ftn) {
+    return;
+  }
+
+  DispatchToAgents(ftn,
+                   &protocol::NetworkHandler::OnPolicyContainerHostUpdated);
+}
+
 void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
