@@ -24,7 +24,16 @@ std::u16string PasskeySavedConfirmationController::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_SAVED_TITLE);
 }
 
+void PasskeySavedConfirmationController::OnManagePasswordsAndPasskeysClicked() {
+  dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
+  if (delegate_) {
+    delegate_->NavigateToPasswordManagerSettingsPage(
+        password_manager::ManagePasswordsReferrer::
+            kPasskeySavedConfirmationBubble);
+  }
+}
+
 void PasskeySavedConfirmationController::ReportInteractions() {
   password_manager::metrics_util::LogGeneralUIDismissalReason(
-      password_manager::metrics_util::NO_DIRECT_INTERACTION);
+      dismissal_reason_);
 }

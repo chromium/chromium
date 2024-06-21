@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -11,7 +12,9 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/fill_layout.h"
 
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
@@ -31,15 +34,16 @@ PasskeySavedConfirmationView::PasskeySavedConfirmationView(
   // TODO(b/345242100): Pass the username.
   AddChildView(CreatePasskeyIconWithLabelRow(vector_icons::kPasskeyIcon, u""));
 
+  std::u16string button_label =
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_PASSWORDS_AND_PASSKEYS);
   SetFootnoteView(std::make_unique<RichHoverButton>(
-      // TODO(b/345242100): Add handling clicks once it's decided whether they
-      // should open password manager main page or passkey details page.
-      base::RepeatingClosure(),
+      base::BindRepeating(
+          &PasskeySavedConfirmationView::OnManagePasswordsAndPasskeysClicked,
+          base::Unretained(this)),
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
                                      ui::kColorIcon),
-      // TODO(b/345242100): Add button label string once it's finalised.
-      u"Manage passkeys (UT)",
-      /*secondary_text=*/std::u16string(), u"Manage passkeys (UT)",
+      button_label,
+      /*secondary_text=*/std::u16string(), button_label,
       /*subtitle_text=*/std::u16string(),
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                      ui::kColorIconSecondary),
@@ -62,4 +66,9 @@ PasskeySavedConfirmationView::GetController() const {
 ui::ImageModel PasskeySavedConfirmationView::GetWindowIcon() {
   return ui::ImageModel::FromVectorIcon(GooglePasswordManagerVectorIcon(),
                                         ui::kColorIcon);
+}
+
+void PasskeySavedConfirmationView::OnManagePasswordsAndPasskeysClicked() {
+  controller_.OnManagePasswordsAndPasskeysClicked();
+  CloseBubble();
 }

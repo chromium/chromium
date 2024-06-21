@@ -21,6 +21,9 @@ class PasskeySavedConfirmationView : public PasswordBubbleViewBase {
   const PasskeySavedConfirmationController* GetController() const override;
   ui::ImageModel GetWindowIcon() override;
 
+  // Notifies the `controller_` to open password manager and closes the bubble.
+  void OnManagePasswordsAndPasskeysClicked();
+
   PasskeySavedConfirmationController controller_;
 };
 
