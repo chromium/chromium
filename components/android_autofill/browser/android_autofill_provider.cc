@@ -173,12 +173,14 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
         }
       });
 
+  current_field_ = {field.global_id(),
+                    manager->ComputeFieldTypeGroupForField(form, field),
+                    field.origin()};
+
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
   if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field);
-  } else {
-    last_focused_field_id_ = field.global_id();
   }
 
   if (field.datalist_options().empty()) {
@@ -237,9 +239,6 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
     return;
   }
 
-  last_focused_field_id_ = field.global_id();
-  field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
-  triggered_origin_ = field.origin();
   check_submission_ = false;
   manager_ = manager->GetWeakPtrToLeafClass();
 
@@ -308,8 +307,8 @@ void AndroidAutofillProvider::OnAutofillAvailable() {
   was_bottom_sheet_just_shown_ = false;
   if (manager_ && form_) {
     form_->UpdateFromJava();
-    FillOrPreviewForm(manager_.get(), form_->form(), field_type_group_,
-                      triggered_origin_);
+    FillOrPreviewForm(manager_.get(), form_->form(), current_field_.group,
+                      current_field_.origin);
   }
 }
 
@@ -317,8 +316,8 @@ void AndroidAutofillProvider::OnAcceptDatalistSuggestion(
     const std::u16string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager_) {
-    RendererShouldAcceptDataListSuggestion(manager_.get(),
-                                           last_focused_field_id_, value);
+    RendererShouldAcceptDataListSuggestion(manager_.get(), current_field_.id,
+                                           value);
   }
 }
 
@@ -619,9 +618,7 @@ gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
 void AndroidAutofillProvider::Reset() {
   manager_ = nullptr;
   form_.reset();
-  last_focused_field_id_ = {};
-  field_type_group_ = FieldTypeGroup::kNoGroup;
-  triggered_origin_ = {};
+  current_field_ = {};
   check_submission_ = false;
   was_shown_bottom_sheet_timer_.Stop();
   was_bottom_sheet_just_shown_ = false;
