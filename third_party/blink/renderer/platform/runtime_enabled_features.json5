@@ -2581,6 +2581,10 @@
       base_feature: "EnableModelExecutionAPI",
     },
     {
+      name: "ModifyParagraphCrossEditingoundary",
+      status: "stable",
+    },
+    {
       name: "MojoJS",
       status: "test",
       is_protected_feature: true,

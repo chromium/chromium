@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -94,7 +95,11 @@ VisiblePositionInFlatTree SelectionModifier::PreviousParagraphPosition(
         new_position.DeepEquivalent() == position.DeepEquivalent())
       break;
     position = new_position;
-  } while (InSameParagraph(passed_position, position));
+  } while (InSameParagraph(
+      passed_position, position,
+      RuntimeEnabledFeatures::ModifyParagraphCrossEditingoundaryEnabled()
+          ? kCanCrossEditingBoundary
+          : kCannotCrossEditingBoundary));
   return position;
 }
 
@@ -111,7 +116,11 @@ VisiblePositionInFlatTree SelectionModifier::NextParagraphPosition(
         new_position.DeepEquivalent() == position.DeepEquivalent())
       break;
     position = new_position;
-  } while (InSameParagraph(passed_position, position));
+  } while (InSameParagraph(
+      passed_position, position,
+      RuntimeEnabledFeatures::ModifyParagraphCrossEditingoundaryEnabled()
+          ? kCanCrossEditingBoundary
+          : kCannotCrossEditingBoundary));
   return position;
 }
 

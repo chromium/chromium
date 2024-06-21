@@ -16,6 +16,53 @@ test(() => {
 
 test(() => {
   assert_selection(
+  [
+    '<div contenteditable><p>P1</p><p>',
+      'Paragraph 1: Hello World Test\n',
+      'Paragraph 2: <span contenteditable="false">Hello</span> World|',
+    '</p></div>',
+  ],
+  selection => selection.modify('move', 'backward', 'paragraph'),
+  [
+    '<div contenteditable><p>P1|</p><p>',
+      'Paragraph 1: Hello World Test\n',
+      'Paragraph 2: <span contenteditable="false">Hello</span> World',
+    '</p></div>',
+  ]);
+}, 'Selection.modify move backward by paragraph cross non-editable element');
+
+test(() => {
+  assert_selection(
+  [
+    '<div><p>Paragraph 1</p>',
+      '<p>Paragraph 2\nHello <span contenteditable>World|</span></p>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'paragraph'),
+  [
+    '<div><p>Paragraph 1</p>',
+      '<p>Paragraph 2\nHello <span contenteditable>|World</span></p>',
+    '</div>',
+  ]);
+}, 'Selection.modify move backward by paragraph in editable boundary');
+
+test(() => {
+  assert_selection(
+  [
+    '<div><p contenteditable>Paragraph 1</p>',
+      '<p contenteditable>Paragraph 2\nHello World|</p>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'backward', 'paragraph'),
+  [
+    '<div><p contenteditable>Paragraph 1</p>',
+      '<p contenteditable>|Paragraph 2\nHello World</p>',
+    '</div>',
+  ]);
+}, 'Selection.modify move backward by paragraph not cross different paragraph');
+
+test(() => {
+  assert_selection(
     '<div>foo<div>|bar</div>baz</div>',
     selection => selection.modify('move', 'forward', 'paragraph'),
     '<div>foo<div>bar</div>|baz</div>');
@@ -24,4 +71,56 @@ test(() => {
     selection => selection.modify('move', 'forward', 'paragraph'),
     '<div>foo<span>bar</span>baz|</div>');
 }, 'Selection.modify move forward by paragraph');
+
+test(() => {
+  assert_selection(
+  [
+    '<div contenteditable><p>',
+      'Paragraph| 1: <span contenteditable="false">Hello</span> World\n',
+      'Paragraph 2: Hello World Test',
+      '</p><p>P2</p></div>',
+  ],
+  selection => selection.modify('move', 'forward', 'paragraph'),
+  [
+    '<div contenteditable><p>',
+      'Paragraph 1: <span contenteditable="false">Hello</span> World\n',
+      'Paragraph 2: Hello World Test',
+    '</p><p>P2|</p></div>',
+  ]);
+}, 'Selection.modify move forward by paragraph cross non-editable element');
+
+test(() => {
+  assert_selection(
+  [
+    '<div>',
+      '<p>L1: Hello <span contenteditable>|World</span>\nL2</p>',
+      '<p>Paragraph 2</p>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'forward', 'paragraph'),
+  [
+    '<div>',
+      '<p>L1: Hello <span contenteditable>World|</span>\nL2</p>',
+      '<p>Paragraph 2</p>',
+    '</div>',
+  ]);
+}, 'Selection.modify move forward by paragraph in editable boundary');
+
+test(() => {
+  assert_selection(
+  [
+    '<div>',
+      '<p contenteditable>L1: |Hello World\nL2</p>',
+      '<p contenteditable>Paragraph 2</p>',
+    '</div>',
+  ],
+  selection => selection.modify('move', 'forward', 'paragraph'),
+  [
+    '<div>',
+      '<p contenteditable>L1: Hello World\nL2|</p>',
+      '<p contenteditable>Paragraph 2</p>',
+    '</div>',
+  ]);
+}, 'Selection.modify move forward by paragraph not cross different paragraph');
+
 </script>
