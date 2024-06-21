@@ -758,7 +758,7 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --appid {8237E44A-0054-442C-B6B6-EA0509993955}
     --product_custom_params "&brand=GCEA"
     --product_uninstaller_additional_args=--force-uninstall
-    --product_installer_data "%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D"
+    --product_installer_data "%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D"
     --standalone_installer_path ChromeBetaOfflineSetup.exe
     --custom_action_dll_path out/Default/msi_custom_action.dll
     --msi_base_name GoogleChromeBetaStandaloneEnterprise
@@ -777,7 +777,7 @@ metainstaller with the following parameters:
       appname=GoogleChromeBeta&needsAdmin=True&brand=GCEA
 --installsource=enterprisemsi
 --appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
-          installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
+          installerdata=%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
 
 This MSI can be tagged using `tag.exe` as follows:
@@ -800,7 +800,7 @@ the following parameters:
       appname=Google%20Chrome%20Beta&needsAdmin=True&brand=GGLL
 --installsource enterprisemsi
 --appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
-          installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
+          installerdata=%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
 
 ### Enterprise Enrollment
