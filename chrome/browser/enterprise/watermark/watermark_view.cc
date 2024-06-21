@@ -70,8 +70,7 @@ void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   // Trying to render an empty string in Skia will fail. A string is required
   // to create the command buffer for the renderer.
   DrawWatermark(canvas, text_fill_.get(), text_outline_.get(), block_height_,
-                background_color_, GetContentsBounds(), GetLocalBounds(),
-                kWatermarkBlockWidth);
+                background_color_, GetContentsBounds(), kWatermarkBlockWidth);
 }
 
 void WatermarkView::SetBackgroundColor(SkColor background_color) {

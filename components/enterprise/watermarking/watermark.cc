@@ -208,7 +208,6 @@ void DrawWatermark(gfx::Canvas* canvas,
                    int block_height,
                    SkColor background_color,
                    const gfx::Rect& contents_bounds,
-                   const gfx::Rect& local_bounds,
                    int block_width) {
   if (!text_fill) {
     DCHECK(!text_outline);
@@ -238,7 +237,7 @@ void DrawWatermark(gfx::Canvas* canvas,
   cc::PaintFlags bgflags;
   bgflags.setColor(background_color);
   bgflags.setStyle(cc::PaintFlags::kFill_Style);
-  canvas->DrawRect(local_bounds, bgflags);
+  canvas->DrawRect(contents_bounds, bgflags);
 }
 
 }  // namespace enterprise_watermark

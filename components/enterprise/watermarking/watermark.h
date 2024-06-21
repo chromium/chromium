@@ -34,7 +34,6 @@ void DrawWatermark(gfx::Canvas* canvas,
                    int block_height,
                    SkColor background_color,
                    const gfx::Rect& contents_bounds,
-                   const gfx::Rect& local_bounds,
                    int block_width);
 
 // Returns the default, hard-coded font list for Chrome watermarks.
