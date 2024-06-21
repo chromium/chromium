@@ -5979,8 +5979,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
-                    "disable_features": [
+                    "name": "Enabled_20240621",
+                    "enable_features": [
                         "CookieAccessDetailsNotificationDeDuping"
                     ]
                 }
