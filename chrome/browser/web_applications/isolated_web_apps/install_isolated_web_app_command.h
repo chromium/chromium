@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -122,15 +123,34 @@ class InstallIsolatedWebAppCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
-  void ReportFailure(std::string_view message);
+  // This enum lists the error types that can occur during the installation of
+  // an isolated web apps.
+  //
+  // These values are persisted to logs and the values match the entries of
+  // `enum IsolatedWebAppInstallError` in
+  // `tools/metrics/histograms/metadata/webapps/enums.xml`.
+  // Entries should not be renumbered and numeric values should never be reused.
+  enum class InstallIwaError {
+    kCantCopyToProfileDirectory = 1,
+    kTrustCheckFailed = 2,
+    kCantLoadInstallUrl = 3,
+    kAppIsNotInstallable = 4,
+    kCantValidateManifest = 5,
+    kCantRetrieveIcons = 6,
+    kCantInstall = 7,
+    kMaxValue = kCantInstall
+  };
+
+  void ReportFailure(InstallIwaError error, std::string_view message);
   void ReportSuccess();
 
   template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>
   void RunNextStepOnSuccess(base::OnceClosure next_step_callback,
+                            InstallIwaError error,
                             base::expected<T, std::string> status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!status.has_value()) {
-      ReportFailure(status.error());
+      ReportFailure(error, status.error());
     } else {
       std::move(next_step_callback).Run();
     }
@@ -138,10 +158,11 @@ class InstallIsolatedWebAppCommand
 
   template <typename T, std::enable_if_t<!std::is_void_v<T>, bool> = true>
   void RunNextStepOnSuccess(base::OnceCallback<void(T)> next_step_callback,
+                            InstallIwaError error,
                             base::expected<T, std::string> status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!status.has_value()) {
-      ReportFailure(status.error());
+      ReportFailure(error, status.error());
     } else {
       std::move(next_step_callback).Run(std::move(*status));
     }
