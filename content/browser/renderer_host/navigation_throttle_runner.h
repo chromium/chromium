@@ -111,6 +111,12 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   // The time a throttle started deferring the navigation.
   base::Time defer_start_time_;
 
+  // The total duration time that throttles deferred the navigation.
+  base::TimeDelta total_defer_duration_time_;
+
+  // The total count to know how many times a throttle defer the navigation.
+  size_t defer_count_ = 0;
+
   // This test-only callback will be run the first time a NavigationThrottle
   // defers this navigation.
   base::OnceClosure first_deferral_callback_for_testing_;

@@ -98,18 +98,19 @@ const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
   return "";
 }
 
-void RecordHistogram(NavigationThrottleRunner::Event event,
-                     base::Time start,
-                     const std::string& metric_type) {
+base::TimeDelta RecordHistogram(NavigationThrottleRunner::Event event,
+                                base::Time start,
+                                const std::string& metric_type) {
   base::TimeDelta delta = base::Time::Now() - start;
   base::UmaHistogramTimes(base::StrCat({"Navigation.Throttle", metric_type, ".",
                                         GetEventNameForHistogram(event)}),
                           delta);
+  return delta;
 }
 
-void RecordDeferTimeHistogram(NavigationThrottleRunner::Event event,
-                              base::Time start) {
-  RecordHistogram(event, start, "DeferTime");
+base::TimeDelta RecordDeferTimeHistogram(NavigationThrottleRunner::Event event,
+                                         base::Time start) {
+  return RecordHistogram(event, start, "DeferTime");
 }
 
 void RecordExecutionTimeHistogram(NavigationThrottleRunner::Event event,
@@ -126,7 +127,12 @@ NavigationThrottleRunner::NavigationThrottleRunner(Delegate* delegate,
       navigation_id_(navigation_id),
       is_primary_main_frame_(is_primary_main_frame) {}
 
-NavigationThrottleRunner::~NavigationThrottleRunner() = default;
+NavigationThrottleRunner::~NavigationThrottleRunner() {
+  base::UmaHistogramTimes("Navigation.ThrottleTotalDeferTime",
+                          total_defer_duration_time_);
+  base::UmaHistogramCounts100("Navigation.ThrottleTotalDeferCount",
+                              defer_count_);
+}
 
 void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
   DCHECK_NE(Event::NoEvent, event);
@@ -138,7 +144,9 @@ void NavigationThrottleRunner::ProcessNavigationEvent(Event event) {
 void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
     NavigationThrottle* deferring_throttle) {
   DCHECK_EQ(GetDeferringThrottle(), deferring_throttle);
-  RecordDeferTimeHistogram(current_event_, defer_start_time_);
+  total_defer_duration_time_ +=
+      RecordDeferTimeHistogram(current_event_, defer_start_time_);
+  defer_count_++;
   RecordDeferTimeUKM();
   ProcessInternal();
 }
@@ -249,6 +257,8 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
   throttles_.insert(throttles_.end(),
                     std::make_move_iterator(testing_throttles.begin()),
                     std::make_move_iterator(testing_throttles.end()));
+
+  base::UmaHistogramCounts100("Navigation.ThrottleCount", throttles_.size());
 }
 
 void NavigationThrottleRunner::
@@ -296,8 +306,9 @@ void NavigationThrottleRunner::
 }
 
 NavigationThrottle* NavigationThrottleRunner::GetDeferringThrottle() const {
-  if (next_index_ == 0)
+  if (next_index_ == 0) {
     return nullptr;
+  }
   return throttles_[next_index_ - 1].get();
 }
 
@@ -384,9 +395,7 @@ void NavigationThrottleRunner::InformDelegate(
 }
 
 void NavigationThrottleRunner::RecordDeferTimeUKM() {
-  if (!is_primary_main_frame_)
-    return;
-  if (!GetDeferringThrottle()) {
+  if (!is_primary_main_frame_ || !GetDeferringThrottle()) {
     return;
   }
   ukm::builders::NavigationThrottleDeferredTime builder(

@@ -1685,26 +1685,69 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.ThrottleCount" units="throttles"
+    expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the total count of navigation throttles that are actually
+    registered for a navigation request. Recorded per navigation on destructing
+    NavigationThrottleRunner.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.ThrottleDeferTime.{Event}" units="ms"
-    expires_after="2023-02-11">
+    expires_after="2024-12-01">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures time a navigation throttle was deferred when on {Event}. Logged
     every time a throttle defers a navigation.
+
+    Warning: this histogram was expired from 2023-02-11 to 2024-06-17; data may
+    be missing.
   </summary>
   <token key="Event" variants="NavigationThrottleEvents"/>
 </histogram>
 
 <histogram name="Navigation.ThrottleExecutionTime.{Event}" units="ms"
-    expires_after="2023-02-11">
+    expires_after="2024-12-01">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures time a navigation throttle took to execute {Event}. Logged every
     time a throttle runs.
+
+    Warning: this histogram was expired from 2023-02-11 to 2024-06-17; data may
+    be missing.
   </summary>
   <token key="Event" variants="NavigationThrottleEvents"/>
+</histogram>
+
+<histogram name="Navigation.ThrottleTotalDeferCount" units="throttles"
+    expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures total count of deferral request that a throttle runner asked by any
+    throttle per navigation. Recorded per navigation on destructing
+    NavigationThrottleRunner.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.ThrottleTotalDeferTime" units="ms"
+    expires_after="2024-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures total duration time that a throttle runner took to wait for
+    deferral request from all throttles. Recorded per navigation on destructing
+    NavigationThrottleRunner.
+  </summary>
 </histogram>
 
 <histogram name="Navigation.TimeToActivatePrerender{PreloadingTriggerType}"
