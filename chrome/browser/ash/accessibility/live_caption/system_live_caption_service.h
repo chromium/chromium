@@ -17,6 +17,8 @@
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/live_caption/live_translate_controller.h"
+#include "components/live_caption/translation_util.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -95,6 +97,12 @@ class SystemLiveCaptionService
   void OnNonChromeOutputStopped() override;
 
  private:
+  void OnTranslationCallback(const std::string& cached_translation,
+                             const std::string& original_transcription,
+                             const std::string& source_language,
+                             const std::string& target_language,
+                             bool is_final,
+                             const std::string& result);
   // The source language code of the audio stream.
   std::string source_language_;
   SpeechRecognizerStatus current_recognizer_status_ =
@@ -109,12 +117,20 @@ class SystemLiveCaptionService
   void CreateClient();
   void StopTimeoutFinished();
 
+  ::captions::TranslationCache translation_cache_;
+
   const raw_ptr<Profile> profile_;
   raw_ptr<::captions::LiveCaptionController> controller_;
-
   ash::captions::CaptionBubbleContextAsh context_;
 
   std::unique_ptr<SpeechRecognitionRecognizerClientImpl> client_;
+
+  // The number of characters sent to the translation service.
+  int characters_translated_ = 0;
+
+  // The number of characters omitted from the translation by the text
+  // stabilization policy. Used by metrics only.
+  int translation_characters_erased_ = 0;
 
   mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver>
       browser_observer_receiver_{this};

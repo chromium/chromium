@@ -166,35 +166,11 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
       prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(target_language) !=
           l10n_util::GetLanguage(source_language_)) {
-    std::vector<std::string> sentences =
-        SplitSentences(result.transcription, source_language_);
+    auto cache_result = translation_cache_.FindCachedTranslationOrRemaining(
+        result.transcription, source_language_, target_language);
 
-    std::string cached_translation;
-    std::string string_to_translate;
-    bool cached_translation_found = true;
-    for (const std::string& sentence : sentences) {
-      if (cached_translation_found) {
-        std::string trailing_space =
-            ContainsTrailingSpace(sentence)
-                ? sentence.substr(sentence.length() - 1, sentence.length())
-                : std::string();
-        auto translation_cache_key = GetTranslationCacheKey(
-            source_language_, target_language,
-            trailing_space.empty() ? sentence : RemoveTrailingSpace(sentence));
-        auto iter = translation_cache_.find(translation_cache_key);
-        if (iter != translation_cache_.end()) {
-          cached_translation += iter->second;
-          if (!trailing_space.empty()) {
-            cached_translation += trailing_space;
-          }
-
-          continue;
-        }
-        cached_translation_found = false;
-      }
-
-      string_to_translate = base::StrCat({string_to_translate, sentence});
-    }
+    std::string cached_translation = cache_result.second;
+    std::string string_to_translate = cache_result.first;
 
     if (!string_to_translate.empty()) {
       characters_translated_ += string_to_translate.size();
@@ -309,23 +285,11 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
   // translate ideographic punctuation marks.
   if (!IsIdeographicLocale(source_language) ||
       IsIdeographicLocale(target_language)) {
-    auto original_sentences =
-        SplitSentences(original_transcription, source_language);
-    auto translated_sentences = SplitSentences(result, target_language);
     if (is_final) {
-      translation_cache_.clear();
+      translation_cache_.Clear();
     } else {
-      if (original_sentences.size() > 1 &&
-          original_sentences.size() == translated_sentences.size()) {
-        for (size_t i = 0; i < original_sentences.size() - 1; i++) {
-          // Sentences are always cached without the trailing space.
-          std::string sentence = RemoveTrailingSpace(original_sentences[i]);
-          translation_cache_.insert(
-              {GetTranslationCacheKey(source_language, target_language,
-                                      sentence),
-               RemoveTrailingSpace(translated_sentences[i])});
-        }
-      }
+      translation_cache_.InsertIntoCache(original_transcription, result,
+                                         source_language, target_language);
     }
   } else {
     // Append a space after final results when translating from an ideographic

@@ -90,4 +90,72 @@ bool IsIdeographicLocale(const std::string& locale) {
           script_code[0] == USCRIPT_YI || script_code[0] == USCRIPT_KATAKANA);
 }
 
+TranslationCache::TranslationCache() {}
+TranslationCache::~TranslationCache() {}
+
+std::pair<std::string, std::string>
+TranslationCache::FindCachedTranslationOrRemaining(
+    const std::string& transcript,
+    const std::string& source_language,
+    const std::string& target_language) const {
+  std::vector<std::string> sentences =
+      SplitSentences(transcript, source_language);
+
+  std::string cached_translation;
+  std::string string_to_translate;
+  bool cached_translation_found = true;
+  for (const std::string& sentence : sentences) {
+    if (cached_translation_found) {
+      std::string trailing_space =
+          ContainsTrailingSpace(sentence)
+              ? sentence.substr(sentence.length() - 1, sentence.length())
+              : std::string();
+      auto translation_cache_key = GetTranslationCacheKey(
+          source_language, target_language,
+          trailing_space.empty() ? sentence : RemoveTrailingSpace(sentence));
+      auto iter = translation_cache_.find(translation_cache_key);
+      if (iter != translation_cache_.end()) {
+        cached_translation += iter->second;
+        if (!trailing_space.empty()) {
+          cached_translation += trailing_space;
+        }
+
+        continue;
+      }
+      cached_translation_found = false;
+    }
+
+    string_to_translate = base::StrCat({string_to_translate, sentence});
+  }
+  if (cached_translation_found) {
+    return std::make_pair("", cached_translation);
+  } else {
+    return std::make_pair(string_to_translate, cached_translation);
+  }
+}
+
+void TranslationCache::InsertIntoCache(
+    const std::string& original_transcription,
+    const std::string& result,
+    const std::string& source_language,
+    const std::string& target_language) {
+  auto original_sentences =
+      SplitSentences(original_transcription, source_language);
+  auto translated_sentences = SplitSentences(result, target_language);
+  if (original_sentences.size() > 1 &&
+      original_sentences.size() == translated_sentences.size()) {
+    for (size_t i = 0; i < original_sentences.size() - 1; i++) {
+      // Sentences are always cached without the trailing space.
+      std::string sentence = RemoveTrailingSpace(original_sentences[i]);
+      translation_cache_.insert(
+          {GetTranslationCacheKey(source_language, target_language, sentence),
+           RemoveTrailingSpace(translated_sentences[i])});
+    }
+  }
+}
+
+void TranslationCache::Clear() {
+  translation_cache_.clear();
+}
+
 }  // namespace captions

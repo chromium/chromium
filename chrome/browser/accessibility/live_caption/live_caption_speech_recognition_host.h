@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "components/live_caption/translation_util.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
@@ -104,13 +105,9 @@ class LiveCaptionSpeechRecognitionHost
   // should stop.
   bool stop_transcriptions_ = false;
 
-  // Used to cache translations to avoid retranslating the same string. The key
-  // is the source and target language codes followed by a `|` separator
-  // character and the original text. The value is the translated text. This
-  // cache is cleared upon receiving a final recognition event. The size of this
-  // cache depends on the frequency of partial and final recognition events, but
-  // is typically under ~10.
-  std::unordered_map<std::string, std::string> translation_cache_;
+  // Used to cache translations to avoid retranslating the same string. Cleared
+  // after every Final to manage the size appropriately.
+  TranslationCache translation_cache_;
 
   // The source language code of the audio stream.
   std::string source_language_;
