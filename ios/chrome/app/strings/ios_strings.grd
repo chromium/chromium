@@ -173,6 +173,9 @@
       <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_CHOOSE_ACCOUNT" desc="Label at the top an account list. The user has to select one of the accounts to sign-in. [Length: 20em] [iOS only]">
         Choose an Account
       </message>
+      <message name="IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST" desc="In account menu, context menu entry. It opens the view to edit the list of accounts. [iOS only]">
+        Edit Account List
+      </message>
       <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
         Action in progress…
       </message>

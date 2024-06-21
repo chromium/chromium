@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
+#define IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_
+
+// Presentation delegate for the account menu.
+@protocol AccountMenuViewControllerPresentationDelegate <NSObject>
+
+// The user tapped the close button.
+- (void)viewControllerWantsToBeClosed;
+
+// Shows https://myaccount.google.com/ for the account currently signed-in
+// to Chrome. The content is displayed in a new view in the stack, i.e.
+// it doesn't close the current view.
+- (void)didTapManageYourGoogleAccount;
+
+// The user tapped on "Edit account list".
+- (void)didTapEditAccountList;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_MENU_ACCOUNT_MENU_VIEW_CONTROLLER_PRESENTATION_DELEGATE_H_

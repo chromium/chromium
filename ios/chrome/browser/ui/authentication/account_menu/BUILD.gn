@@ -13,8 +13,14 @@ source_set("account_menu") {
     ":account_menu_ui",
     ":constants",
     "//base",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/ui/settings/google_services/manage_accounts",
   ]
 }
 
@@ -22,14 +28,18 @@ source_set("account_menu_ui") {
   sources = [
     "account_menu_view_controller.h",
     "account_menu_view_controller.mm",
+    "account_menu_view_controller_presentation_delegate.h",
   ]
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
   ]
   public_deps = [ "//ios/chrome/browser/shared/ui/table_view" ]
 }

@@ -9,7 +9,13 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol AccountMenuViewControllerPresentationDelegate;
+
 @interface AccountMenuViewController : ChromeTableViewController
+
+// The delegate for the view controller.
+@property(nonatomic, weak) id<AccountMenuViewControllerPresentationDelegate>
+    delegate;
 
 @end
 
