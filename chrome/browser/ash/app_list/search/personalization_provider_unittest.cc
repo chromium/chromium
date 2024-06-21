@@ -92,7 +92,7 @@ class PersonalizationProviderTest : public testing::Test {
 
     mock_handler_ = std::make_unique<MockSearchHandler>();
     auto provider = std::make_unique<PersonalizationProvider>(profile_);
-    provider->Initialize(mock_handler_.get());
+    provider->MaybeInitialize(mock_handler_.get());
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
     task_environment_.RunUntilIdle();

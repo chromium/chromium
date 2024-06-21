@@ -96,7 +96,7 @@ class HelpAppProviderTest : public AppListTestBase {
     stub_icon_loader.update_version_by_app_id_[web_app::kHelpAppId] = 1;
 
     auto provider = std::make_unique<HelpAppProvider>(profile());
-    provider->Initialize(&mock_handler_);
+    provider->MaybeInitialize(&mock_handler_);
     provider_ = provider.get();
     search_controller_.AddProvider(std::move(provider));
   }

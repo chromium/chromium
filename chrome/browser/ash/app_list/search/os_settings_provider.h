@@ -71,9 +71,12 @@ class OsSettingsProvider : public SearchProvider,
 
   // Initialize the provider. It should be called when:
   //    1. User session start up tasks has completed.
-  //    2. In tests with fake search handler and hierarchy provided.
-  void Initialize(ash::settings::SearchHandler* fake_search_handler = nullptr,
-                  const ash::settings::Hierarchy* fake_hierarchy = nullptr);
+  //    2. User session start up tasks has not completed, but user has start to
+  //    search in launcher.
+  //    3. In tests with fake search handler and hierarchy provided.
+  void MaybeInitialize(
+      ash::settings::SearchHandler* fake_search_handler = nullptr,
+      const ash::settings::Hierarchy* fake_hierarchy = nullptr);
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
@@ -128,6 +131,7 @@ class OsSettingsProvider : public SearchProvider,
   float min_score_ = 0.4f;
   float min_score_for_alternates_ = 0.4f;
 
+  bool has_initialized = false;
   const raw_ptr<Profile> profile_;
   raw_ptr<ash::settings::SearchHandler> search_handler_ = nullptr;
   raw_ptr<const ash::settings::Hierarchy> hierarchy_ = nullptr;

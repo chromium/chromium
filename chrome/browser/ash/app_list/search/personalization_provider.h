@@ -69,8 +69,10 @@ class PersonalizationProvider
 
   // Initialize the provider. It should be called when:
   //    1. User session start up tasks has completed.
-  //    2. In tests with fake search handler provided.
-  void Initialize(
+  //    2. User session start up tasks has not completed, but user has start to
+  //    search in launcher.
+  //    3. In tests with fake search handler provided.
+  void MaybeInitialize(
       ::ash::personalization_app::SearchHandler* fake_search_handler = nullptr);
 
   // SearchProvider:
@@ -101,6 +103,7 @@ class PersonalizationProvider
   const raw_ptr<Profile> profile_;
   std::u16string current_query_;
   gfx::ImageSkia icon_;
+  bool has_initialized = false;
 
   raw_ptr<::ash::personalization_app::SearchHandler> search_handler_ = nullptr;
   mojo::Receiver<::ash::personalization_app::mojom::SearchResultsObserver>

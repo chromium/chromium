@@ -106,7 +106,7 @@ HelpAppProvider::HelpAppProvider(Profile* profile)
   if (session_manager->IsUserSessionStartUpTaskCompleted()) {
     // If user session start up task has completed, the initialization can
     // start.
-    Initialize();
+    MaybeInitialize();
   } else {
     // Wait for the user session start up task completion to prioritize
     // resources for them.
@@ -116,8 +116,14 @@ HelpAppProvider::HelpAppProvider(Profile* profile)
 
 HelpAppProvider::~HelpAppProvider() = default;
 
-void HelpAppProvider::Initialize(
+void HelpAppProvider::MaybeInitialize(
     ash::help_app::SearchHandler* fake_search_handler) {
+  // Ensures that the provider can be initialized once only.
+  if (has_initialized) {
+    return;
+  }
+  has_initialized = true;
+
   // Initialization is happening, so we no longer need to wait for user session
   // start up task completion.
   session_manager_observation_.Reset();
@@ -166,6 +172,11 @@ void HelpAppProvider::Start(const std::u16string& query) {
   //  - we don't have an icon to display with results.
   if (!search_handler_) {
     LogListSearchResultState(ListSearchResultState::kSearchHandlerUnavailable);
+    // If user has started to user launcher search before the user session
+    // startup tasks completed, we should honor this user action and
+    // initialize the provider. It makes the help app search available
+    // earlier.
+    MaybeInitialize();
     return;
   } else if (icon_.IsEmpty()) {
     LogListSearchResultState(ListSearchResultState::kNoHelpAppIcon);
@@ -241,7 +252,7 @@ void HelpAppProvider::OnSearchResultAvailabilityChanged() {
 }
 
 void HelpAppProvider::OnUserSessionStartUpTaskCompleted() {
-  Initialize();
+  MaybeInitialize();
 }
 
 void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {

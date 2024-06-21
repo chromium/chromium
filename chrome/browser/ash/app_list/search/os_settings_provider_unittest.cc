@@ -185,7 +185,7 @@ class OsSettingsProviderTest : public testing::Test {
         std::make_optional(mojom::Subpage::kBluetoothSavedDevices));
 
     auto provider = std::make_unique<OsSettingsProvider>(profile_);
-    provider->Initialize(&mock_handler_, &fake_hierarchy_);
+    provider->MaybeInitialize(&mock_handler_, &fake_hierarchy_);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
     task_environment_.RunUntilIdle();

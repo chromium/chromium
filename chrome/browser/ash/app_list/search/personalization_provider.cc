@@ -79,7 +79,7 @@ PersonalizationProvider::PersonalizationProvider(Profile* profile)
   if (session_manager->IsUserSessionStartUpTaskCompleted()) {
     // If user session start up task has completed, the initialization can
     // start.
-    Initialize();
+    MaybeInitialize();
   } else {
     // Wait for the user session start up task completion to prioritize
     // resources for them.
@@ -89,8 +89,14 @@ PersonalizationProvider::PersonalizationProvider(Profile* profile)
 
 PersonalizationProvider::~PersonalizationProvider() = default;
 
-void PersonalizationProvider::Initialize(
+void PersonalizationProvider::MaybeInitialize(
     ::ash::personalization_app::SearchHandler* fake_search_handler) {
+  // Ensures that the provider can be initialized once only.
+  if (has_initialized) {
+    return;
+  }
+  has_initialized = true;
+
   // Initialization is happening, so we no longer need to wait for user session
   // start up task completion.
   session_manager_observation_.Reset();
@@ -117,6 +123,11 @@ void PersonalizationProvider::Initialize(
 
 void PersonalizationProvider::Start(const std::u16string& query) {
   if (!search_handler_) {
+    // If user has started to user launcher search before the user session
+    // startup tasks completed, we should honor this user action and
+    // initialize the provider. It makes the personalization search available
+    // earlier.
+    MaybeInitialize();
     return;
   }
 
@@ -188,7 +199,7 @@ void PersonalizationProvider::OnSearchDone(
 }
 
 void PersonalizationProvider::OnUserSessionStartUpTaskCompleted() {
-  Initialize();
+  MaybeInitialize();
 }
 
 void PersonalizationProvider::StartLoadIcon() {

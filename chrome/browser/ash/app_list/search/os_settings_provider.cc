@@ -206,7 +206,7 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
   if (session_manager->IsUserSessionStartUpTaskCompleted()) {
     // If user session start up task has completed, the initialization can
     // start.
-    Initialize();
+    MaybeInitialize();
   } else {
     // Wait for the user session start up task completion to prioritize
     // resources for them.
@@ -216,9 +216,15 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
 
 OsSettingsProvider::~OsSettingsProvider() = default;
 
-void OsSettingsProvider::Initialize(
+void OsSettingsProvider::MaybeInitialize(
     ash::settings::SearchHandler* fake_search_handler,
     const ash::settings::Hierarchy* fake_hierarchy) {
+  // Ensures that the provider can be initialized once only.
+  if (has_initialized) {
+    return;
+  }
+  has_initialized = true;
+
   // Initialization is happening, so we no longer need to wait for user session
   // start up task completion.
   session_manager_observation_.Reset();
@@ -278,6 +284,11 @@ void OsSettingsProvider::Start(const std::u16string& query) {
   //  - the settings app isn't ready
   //  - we don't have an icon to display with results.
   if (!search_handler_) {
+    // If user has started to user launcher search before the user session
+    // startup tasks completed, we should honor this user action and
+    // initialize the provider. It makes the os setting search available
+    // earlier.
+    MaybeInitialize();
     return;
   } else if (icon_.IsEmpty()) {
     LogStatus(Status::kNoSettingsIcon);
@@ -365,7 +376,7 @@ void OsSettingsProvider::OnSearchResultsChanged() {
 }
 
 void OsSettingsProvider::OnUserSessionStartUpTaskCompleted() {
-  Initialize();
+  MaybeInitialize();
 }
 
 void OsSettingsProvider::OnSearchReturned(

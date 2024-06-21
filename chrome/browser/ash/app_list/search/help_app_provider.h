@@ -71,8 +71,11 @@ class HelpAppProvider : public SearchProvider,
 
   // Initialize the provider. It should be called when:
   //    1. User session start up tasks has completed.
-  //    2. In tests with fake search handler provided.
-  void Initialize(ash::help_app::SearchHandler* fake_search_handler = nullptr);
+  //    2. User session start up tasks has not completed, but user has start to
+  //    search in launcher.
+  //    3. In tests with fake search handler provided.
+  void MaybeInitialize(
+      ash::help_app::SearchHandler* fake_search_handler = nullptr);
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
@@ -99,6 +102,7 @@ class HelpAppProvider : public SearchProvider,
   void LoadIcon();
 
   const raw_ptr<Profile> profile_;
+  bool has_initialized = false;
 
   raw_ptr<ash::help_app::SearchHandler> search_handler_ = nullptr;
   ui::ImageModel icon_;

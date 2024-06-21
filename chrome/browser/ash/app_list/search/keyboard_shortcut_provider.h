@@ -30,8 +30,10 @@ class KeyboardShortcutProvider
 
   // Initialize the provider. It should be called when:
   //    1. User session start up tasks has completed.
-  //    2. In tests with fake search handler provided.
-  void Initialize(
+  //    2. User session start up tasks has not completed, but user has start to
+  //    search in launcher.
+  //    3. In tests with fake search handler provided.
+  void MaybeInitialize(
       ash::shortcut_ui::SearchHandler* fake_search_handler = nullptr);
 
   // SearchProvider:
@@ -51,6 +53,7 @@ class KeyboardShortcutProvider
       std::vector<ash::shortcut_customization::mojom::SearchResultPtr>);
 
   const raw_ptr<Profile> profile_;
+  bool has_initialized = false;
 
   // The |search_handler_| is managed by ShortcutsAppManager which is
   // implemented as a KeyedService, active for the lifetime of a logged-in user.

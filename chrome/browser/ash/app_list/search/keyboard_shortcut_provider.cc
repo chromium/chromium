@@ -65,7 +65,7 @@ KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
   if (session_manager->IsUserSessionStartUpTaskCompleted()) {
     // If user session start up task has completed, the initialization can
     // start.
-    Initialize();
+    MaybeInitialize();
   } else {
     // Wait for the user session start up task completion to prioritize
     // resources for them.
@@ -75,9 +75,16 @@ KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
 
 KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
 
-void KeyboardShortcutProvider::Initialize(
+void KeyboardShortcutProvider::MaybeInitialize(
     ash::shortcut_ui::SearchHandler* fake_search_handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Ensures that the provider can be initialized once only.
+  if (has_initialized) {
+    return;
+  }
+  has_initialized = true;
+
   // Initialization is happening, so we no longer need to wait for user session
   // start up task completion.
   session_manager_observation_.Reset();
@@ -108,6 +115,11 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
 
   if (ash::features::IsSearchCustomizableShortcutsInLauncherEnabled()) {
     if (!search_handler_) {
+      // If user has started to user launcher search before the user session
+      // startup tasks completed, we should honor this user action and
+      // initialize the provider. It makes the key shortcut search available
+      // earlier.
+      MaybeInitialize();
       return;
     }
 
@@ -128,7 +140,7 @@ ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
 }
 
 void KeyboardShortcutProvider::OnUserSessionStartUpTaskCompleted() {
-  Initialize();
+  MaybeInitialize();
 }
 
 void KeyboardShortcutProvider::OnShortcutsSearchComplete(
