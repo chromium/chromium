@@ -1019,4 +1019,31 @@ void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {
   FrameOwner::Trace(visitor);
 }
 
+// static
+ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
+  ParsedPermissionsPolicy container_policy;
+  {
+    // Legacy frames are not allowed to enable the fullscreen feature. Add an
+    // empty allowlist for the fullscreen feature so that the nested browsing
+    //  context is unable to use the API, regardless of origin.
+    // https://fullscreen.spec.whatwg.org/#model
+    ParsedPermissionsPolicyDeclaration allowlist(
+        mojom::blink::PermissionsPolicyFeature::kFullscreen);
+    container_policy.push_back(allowlist);
+  }
+  {
+    // Legacy frames are unable to enable the unload feature via permissions
+    // policy as they have no `allow` attribute. To make it possible to continue
+    // to enable unload handlers, this pushes an allowlist to allow it for all
+    // origins. Even with this, it still requires permission from the containing
+    // frame for the origin.
+    // https://fergald.github.io/docs/explainers/permissions-policy-deprecate-unload.html
+    ParsedPermissionsPolicyDeclaration allowlist(
+        mojom::blink::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
+        /*allowed_by_default=*/true, /*matches_all_origins=*/true);
+    container_policy.push_back(allowlist);
+  }
+  return container_policy;
+}
+
 }  // namespace blink

@@ -205,6 +205,9 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Checks that the number of frames on the page are within the current limit.
   bool IsCurrentlyWithinFrameLimit() const;
 
+  // Pre-iframe frame-owning elements have certain policies by default.
+  static ParsedPermissionsPolicy GetLegacyFramePolicies();
+
  private:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

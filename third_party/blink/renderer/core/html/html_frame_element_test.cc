@@ -37,7 +37,7 @@ TEST_F(HTMLFrameElementTest, DefaultContainerPolicy) {
 
   const ParsedPermissionsPolicy& container_policy =
       frame_element->GetFramePolicy().container_policy;
-  EXPECT_EQ(1UL, container_policy.size());
+  EXPECT_EQ(2UL, container_policy.size());
   // Fullscreen should be disabled in this frame
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy[0].feature);

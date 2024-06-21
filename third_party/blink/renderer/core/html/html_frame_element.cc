@@ -80,15 +80,7 @@ void HTMLFrameElement::ParseAttribute(
 }
 
 ParsedPermissionsPolicy HTMLFrameElement::ConstructContainerPolicy() const {
-  // Frame elements are not allowed to enable the fullscreen feature. Add an
-  // empty allowlist for the fullscreen feature so that the framed content is
-  // unable to use the API, regardless of origin.
-  // https://fullscreen.spec.whatwg.org/#model
-  ParsedPermissionsPolicy container_policy;
-  ParsedPermissionsPolicyDeclaration allowlist(
-      mojom::blink::PermissionsPolicyFeature::kFullscreen);
-  container_policy.push_back(allowlist);
-  return container_policy;
+  return GetLegacyFramePolicies();
 }
 
 }  // namespace blink
