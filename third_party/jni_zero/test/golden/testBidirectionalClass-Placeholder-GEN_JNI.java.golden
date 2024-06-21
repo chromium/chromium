@@ -9,6 +9,7 @@ public class GEN_JNI {
   public static boolean REQUIRE_MOCK;
 
   public static native void org_jni_1zero_SampleForTests_addStructB(long nativeCPPClass, Object caller, Object b);
+  public static native void org_jni_1zero_SampleForTests_classUnderSamePackageTest(Object arg);
   public static native void org_jni_1zero_SampleForTests_destroy(long nativeCPPClass, Object caller, Object bytes);
   public static native Object org_jni_1zero_SampleForTests_getClass(Object env);
   public static native double org_jni_1zero_SampleForTests_getDoubleFunction(Object ret);

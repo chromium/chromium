@@ -27,6 +27,7 @@ android_library("test_java") {
   sources = [
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
     "java/src/org/jni_zero/SampleForTests.java",
+    "java/src/org/jni_zero/SampleUnderSamePackage.java",
   ]
 
   deps = [

@@ -118,6 +118,9 @@ def _imports(sb, ctx):
     classes.add(ctx.gen_jni_class.full_name_with_dots)
 
   for c in ctx.type_resolver.imports:
+    # Since this is pure Java, the class generated here will go through jarjar
+    # and thus we want to avoid prefixes.
+    c = c.class_without_prefix
     if c.is_nested:
       # We will refer to all nested classes by OuterClass.InnerClass. We do this
       # to reduce risk of naming collisions.

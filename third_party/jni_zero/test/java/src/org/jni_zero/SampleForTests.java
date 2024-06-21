@@ -350,6 +350,9 @@ class SampleForTests {
         Map<String, String> mapTest2(
                 @JniType("std::map<std::string, std::string>") Map<String, String> arg0);
 
+        // Test class under the same package
+        void classUnderSamePackageTest(SampleUnderSamePackage arg);
+
         // Similar to nativeDestroy above, this will cast nativeCPPClass into pointer of CPPClass
         // type and call its Method member function. Replace "CPPClass" with your particular class
         // name!

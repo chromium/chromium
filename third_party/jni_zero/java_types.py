@@ -61,7 +61,7 @@ class JavaClass:
   """Represents a reference type."""
   _fqn: str
   # This is only meaningful if make_prefix have been called on the original class.
-  _class_without_prefix: 'JavaClass' = None
+  _prefix: str = None
 
   def __post_init__(self):
     assert '.' not in self._fqn, f'{self._fqn} should have / and $, but not .'
@@ -98,8 +98,14 @@ class JavaClass:
     return self._fqn.replace('/', '.').replace('$', '.')
 
   @property
+  def prefix_with_dots(self):
+    return self._prefix.replace('/', '.') if self._prefix else self._prefix
+
+  @property
   def class_without_prefix(self):
-    return self._class_without_prefix if self._class_without_prefix else self
+    if not self._prefix:
+      return self
+    return JavaClass(self._fqn[len(self._prefix) + 1:])
 
   @property
   def outer_class_name(self):
@@ -122,11 +128,11 @@ class JavaClass:
   def as_type(self):
     return JavaType(java_class=self)
 
-  def make_prefixed(self, prefix=None):
+  def make_prefixed(self, prefix):
     if not prefix:
       return self
     prefix = prefix.replace('.', '/')
-    return JavaClass(f'{prefix}/{self._fqn}', self)
+    return JavaClass(f'{prefix}/{self._fqn}', prefix)
 
   def make_nested(self, name):
     return JavaClass(f'{self._fqn}${name}')
@@ -386,7 +392,10 @@ class TypeResolver:
       return JavaClass(f'java/lang/{name}')
 
     # Type not found, falling back to same package as this class.
-    return JavaClass(f'{self.java_class.package_with_slashes}/{name}')
+    # Set the same prefix with this class.
+    ret = JavaClass(
+        f'{self.java_class.class_without_prefix.package_with_slashes}/{name}')
+    return ret.make_prefixed(self.java_class.prefix_with_dots)
 
 
 CLASS_CLASS = JavaClass('java/lang/Class')

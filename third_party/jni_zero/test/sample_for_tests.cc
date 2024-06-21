@@ -94,6 +94,10 @@ static jlong JNI_SampleForTests_Init(
   return static_cast<jlong>(bytes.size());
 }
 
+static void JNI_SampleForTests_ClassUnderSamePackageTest(
+    JNIEnv*,
+    const JavaParamRef<jobject>&) {}
+
 static jdouble JNI_SampleForTests_GetDoubleFunction(
     JNIEnv*,
     const JavaParamRef<jobject>&) {

@@ -53,6 +53,20 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
       jni_zero::JavaParamRef<jobject>(env, b));
 }
 
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleForTests_ClassUnderSamePackageTest(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& arg);
+
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1classUnderSamePackageTest(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject arg) {
+  JNI_SampleForTests_ClassUnderSamePackageTest(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, arg));
+}
+
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1destroy(
     JNIEnv* env,
     jclass jcaller,
