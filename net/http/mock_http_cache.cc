@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -720,7 +721,7 @@ MockHttpCache::MockHttpCache(
 
 disk_cache::Backend* MockHttpCache::backend() {
   TestCompletionCallback cb;
-  disk_cache::Backend* backend;
+  raw_ptr<disk_cache::Backend> backend;
   int rv = http_cache_.GetBackend(&backend, cb.callback());
   rv = cb.GetResult(rv);
   return (rv == OK) ? backend : nullptr;

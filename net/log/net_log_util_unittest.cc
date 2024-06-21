@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,7 +56,7 @@ TEST(NetLogUtil, GetNetInfo) {
   EXPECT_GT(net_info_without_cache.size(), 0u);
 
   // Force creation of a cache backend, and get NetInfo again.
-  disk_cache::Backend* backend = nullptr;
+  raw_ptr<disk_cache::Backend> backend = nullptr;
   EXPECT_EQ(OK, context->http_transaction_factory()->GetCache()->GetBackend(
                     &backend, TestCompletionCallback().callback()));
   EXPECT_TRUE(http_cache->GetCurrentBackend());

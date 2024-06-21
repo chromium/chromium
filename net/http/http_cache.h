@@ -181,7 +181,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // `callback` will be notified when the operation completes. The pointer that
   // receives the `backend` must remain valid until the operation completes.
   // `callback` will get cancelled if the HttpCache is destroyed.
-  int GetBackend(disk_cache::Backend** backend,
+  int GetBackend(raw_ptr<disk_cache::Backend>* backend,
                  CompletionOnceCallback callback);
 
   // Returns the current backend (can be NULL).
@@ -505,7 +505,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // operation completes. Returns an error code.
   int CreateBackend(CompletionOnceCallback callback);
 
-  void ReportGetBackendResult(disk_cache::Backend** backend,
+  void ReportGetBackendResult(raw_ptr<disk_cache::Backend>* backend,
                               CompletionOnceCallback callback,
                               int net_error);
 

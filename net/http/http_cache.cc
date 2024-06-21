@@ -449,7 +449,7 @@ HttpCache::~HttpCache() {
   }
 }
 
-int HttpCache::GetBackend(disk_cache::Backend** backend,
+int HttpCache::GetBackend(raw_ptr<disk_cache::Backend>* backend,
                           CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
 
@@ -467,7 +467,7 @@ int HttpCache::GetBackend(disk_cache::Backend** backend,
   return rv;
 }
 
-void HttpCache::ReportGetBackendResult(disk_cache::Backend** backend,
+void HttpCache::ReportGetBackendResult(raw_ptr<disk_cache::Backend>* backend,
                                        CompletionOnceCallback callback,
                                        int net_error) {
   *backend = disk_cache_.get();

@@ -237,7 +237,7 @@ class CacheCounterTest : public PlatformTest {
   CacheEntryCreationStep next_step_;
 
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
-  disk_cache::Backend* backend_;
+  raw_ptr<disk_cache::Backend> backend_;
   raw_ptr<disk_cache::Entry> entry_;
 
   bool finished_ = false;

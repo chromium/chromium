@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -38,16 +39,16 @@ std::unique_ptr<HttpCacheDataCounter> HttpCacheDataCounter::CreateAndStart(
     // While it can be transferred to the callback to GetBackend, that callback
     // also needs to be kept alive for the duration of this method in order to
     // get at the backend pointer in the synchronous result case.
-    auto backend = std::make_unique<disk_cache::Backend*>();
-    disk_cache::Backend** backend_ptr = backend.get();
+    auto backend = std::make_unique<raw_ptr<disk_cache::Backend>>();
+    raw_ptr<disk_cache::Backend>* backend_ptr = backend.get();
 
     auto get_backend_callback =
         base::BindRepeating(&HttpCacheDataCounter::GotBackend,
                             instance->GetWeakPtr(), base::Passed(&backend));
     int rv = http_cache->GetBackend(backend_ptr, get_backend_callback);
     if (rv != net::ERR_IO_PENDING) {
-      instance->GotBackend(std::make_unique<disk_cache::Backend*>(*backend_ptr),
-                           rv);
+      instance->GotBackend(
+          std::make_unique<raw_ptr<disk_cache::Backend>>(*backend_ptr), rv);
     }
   }
 
@@ -65,7 +66,7 @@ HttpCacheDataCounter::HttpCacheDataCounter(
 HttpCacheDataCounter::~HttpCacheDataCounter() {}
 
 void HttpCacheDataCounter::GotBackend(
-    std::unique_ptr<disk_cache::Backend*> backend,
+    std::unique_ptr<raw_ptr<disk_cache::Backend>> backend,
     int error_code) {
   DCHECK_LE(error_code, 0);
   bool is_upper_limit = false;

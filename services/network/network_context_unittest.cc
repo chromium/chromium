@@ -1059,7 +1059,7 @@ TEST_F(NetworkContextTest, MemoryCache) {
                               ->GetCache();
   ASSERT_TRUE(cache);
 
-  disk_cache::Backend* backend = nullptr;
+  raw_ptr<disk_cache::Backend> backend = nullptr;
   net::TestCompletionCallback callback;
   int rv = cache->GetBackend(&backend, callback.callback());
   EXPECT_EQ(net::OK, callback.GetResult(rv));
@@ -1085,7 +1085,7 @@ TEST_F(NetworkContextTest, DiskCache) {
                               ->GetCache();
   ASSERT_TRUE(cache);
 
-  disk_cache::Backend* backend = nullptr;
+  raw_ptr<disk_cache::Backend> backend = nullptr;
   net::TestCompletionCallback callback;
   int rv = cache->GetBackend(&backend, callback.callback());
   EXPECT_EQ(net::OK, callback.GetResult(rv));
@@ -1129,7 +1129,7 @@ class DiskCacheSizeTest : public NetworkContextTest {
                                 ->GetCache();
     EXPECT_TRUE(cache);
 
-    disk_cache::Backend* backend = nullptr;
+    raw_ptr<disk_cache::Backend> backend = nullptr;
     net::TestCompletionCallback callback;
     int rv = cache->GetBackend(&backend, callback.callback());
     EXPECT_EQ(net::OK, callback.GetResult(rv));
@@ -1179,7 +1179,7 @@ TEST_F(NetworkContextTest, SimpleCache) {
                               ->GetCache();
   ASSERT_TRUE(cache);
 
-  disk_cache::Backend* backend = nullptr;
+  raw_ptr<disk_cache::Backend> backend = nullptr;
   net::TestCompletionCallback callback;
   int rv = cache->GetBackend(&backend, callback.callback());
   EXPECT_EQ(net::OK, callback.GetResult(rv));
@@ -1779,7 +1779,7 @@ TEST_F(NetworkContextTest, ClearHttpCache) {
       "http://localhost:1234",    "https://localhost:1234",
   };
   ASSERT_TRUE(cache);
-  disk_cache::Backend* backend = nullptr;
+  raw_ptr<disk_cache::Backend> backend = nullptr;
   net::TestCompletionCallback callback;
   int rv = cache->GetBackend(&backend, callback.callback());
   EXPECT_EQ(net::OK, callback.GetResult(rv));
@@ -1868,7 +1868,7 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
       net::HttpCache* cache = network_context->url_request_context()
                                   ->http_transaction_factory()
                                   ->GetCache();
-      disk_cache::Backend* backend = nullptr;
+      raw_ptr<disk_cache::Backend> backend = nullptr;
       // We expect that every cache operation below is done synchronously
       // because we're using an in-memory backend.
 
@@ -1924,7 +1924,7 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit_IsSubframeDocumentResource) {
   net::HttpCache* cache = network_context->url_request_context()
                               ->http_transaction_factory()
                               ->GetCache();
-  disk_cache::Backend* backend = nullptr;
+  raw_ptr<disk_cache::Backend> backend = nullptr;
   // We expect that every cache operation below is done synchronously
   // because we're using an in-memory backend.
 

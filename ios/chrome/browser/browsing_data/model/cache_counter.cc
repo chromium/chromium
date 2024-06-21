@@ -108,7 +108,7 @@ class IOThreadCacheCounter {
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
   net::Int64CompletionRepeatingCallback result_callback_;
   int64_t result_;
-  disk_cache::Backend* backend_;
+  raw_ptr<disk_cache::Backend> backend_;
 };
 
 }  // namespace

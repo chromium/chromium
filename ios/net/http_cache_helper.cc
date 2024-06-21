@@ -33,7 +33,7 @@ void PostCallback(const scoped_refptr<base::TaskRunner>& task_runner,
 }
 
 // Clears the disk_cache::Backend on the IO thread and deletes |backend|.
-void DoomHttpCache(std::unique_ptr<disk_cache::Backend*> backend,
+void DoomHttpCache(std::unique_ptr<raw_ptr<disk_cache::Backend>> backend,
                    const scoped_refptr<base::TaskRunner>& client_task_runner,
                    const base::Time& delete_begin,
                    const base::Time& delete_end,
@@ -74,9 +74,9 @@ void ClearHttpCacheOnIOThread(
       ->ClearCachedStatesInCryptoConfig(
           base::RepeatingCallback<bool(const GURL&)>());
 
-  std::unique_ptr<disk_cache::Backend*> backend(
-      new disk_cache::Backend*(nullptr));
-  disk_cache::Backend** backend_ptr = backend.get();
+  std::unique_ptr<raw_ptr<disk_cache::Backend>> backend(
+      new raw_ptr<disk_cache::Backend>(nullptr));
+  raw_ptr<disk_cache::Backend>* backend_ptr = backend.get();
 
   auto doom_callback_pair = base::SplitOnceCallback(
       base::BindOnce(&DoomHttpCache, std::move(backend), client_task_runner,

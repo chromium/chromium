@@ -12,7 +12,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -85,11 +85,9 @@ class HttpCacheDataCounterTest : public testing::Test {
     ASSERT_TRUE(cache);
     {
       net::TestCompletionCallback callback;
-      disk_cache::Backend* backend = nullptr;
-      int rv = cache->GetBackend(&backend, callback.callback());
+      int rv = cache->GetBackend(&backend_, callback.callback());
       ASSERT_EQ(net::OK, callback.GetResult(rv));
-      ASSERT_TRUE(backend);
-      backend_ = backend;
+      ASSERT_TRUE(backend_);
     }
 
     // Create some entries in the cache.
@@ -204,8 +202,7 @@ class HttpCacheDataCounterTest : public testing::Test {
   // Stores the mojo::Remote<mojom::NetworkContext> of the most recently created
   // NetworkContext.
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+
   raw_ptr<disk_cache::Backend> backend_ = nullptr;
 };
 

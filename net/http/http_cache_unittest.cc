@@ -151,7 +151,7 @@ void DeferCallback(bool* defer) {
 class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
  public:
   explicit DeleteCacheCompletionCallback(std::unique_ptr<MockHttpCache> cache)
-      : cache_(std::move(cache)) {}
+      : backend_(nullptr), cache_(std::move(cache)) {}
 
   DeleteCacheCompletionCallback(const DeleteCacheCompletionCallback&) = delete;
   DeleteCacheCompletionCallback& operator=(
@@ -162,12 +162,16 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
                           base::Unretained(this));
   }
 
+  raw_ptr<disk_cache::Backend>* backend() { return &backend_; }
+
  private:
   void OnComplete(int result) {
+    backend_ = nullptr;
     cache_.reset();
     SetResult(result);
   }
 
+  raw_ptr<disk_cache::Backend> backend_;
   std::unique_ptr<MockHttpCache> cache_;
 };
 
@@ -834,7 +838,7 @@ TEST_F(HttpCacheTest, CreateThenDestroy) {
 TEST_F(HttpCacheTest, GetBackend) {
   MockHttpCache cache(HttpCache::DefaultBackend::InMemory(0));
 
-  disk_cache::Backend* backend;
+  raw_ptr<disk_cache::Backend> backend;
   TestCompletionCallback cb;
   // This will lazily initialize the backend.
   int rv = cache.http_cache()->GetBackend(&backend, cb.callback());
@@ -6052,8 +6056,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
   auto* cache_ptr = cache.get();
 
   DeleteCacheCompletionCallback cb(std::move(cache));
-  disk_cache::Backend* backend;
-  int rv = cache_ptr->http_cache()->GetBackend(&backend, cb.callback());
+  int rv = cache_ptr->http_cache()->GetBackend(cb.backend(), cb.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Now let's queue a regular transaction
@@ -6067,7 +6070,7 @@ TEST_F(HttpCacheTest, DeleteCacheWaitingForBackend2) {
 
   // And another direct backend request.
   TestCompletionCallback cb2;
-  rv = cache_ptr->http_cache()->GetBackend(&backend, cb2.callback());
+  rv = cache_ptr->http_cache()->GetBackend(cb.backend(), cb2.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Just to make sure that everything is still pending.
