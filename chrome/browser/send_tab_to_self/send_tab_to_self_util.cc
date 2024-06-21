@@ -21,7 +21,6 @@ namespace send_tab_to_self {
 
 std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     content::WebContents* web_contents) {
-  // TODO(crbug.com/40206671): This can probably be a DCHECK instead.
   if (!web_contents)
     return std::nullopt;
 

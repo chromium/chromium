@@ -115,7 +115,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   // The coordinator for the Personalize Google Services view.
   PersonalizeGoogleServicesCoordinator* _personalizeGoogleServicesCoordinator;
   // Prevents any data from syncing while the UI is open.
-  // TODO(crbug.com/330772894): This is currently needed for syncing users,
+  // TODO(crbug.com/40066949): This is currently needed for syncing users,
   // otherwise accidentally touching a toggle immediately uploads existing data.
   // For non-syncing users that's not true. So remove this after the syncing
   // state is gone on iOS.
