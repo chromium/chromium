@@ -18,6 +18,8 @@
 #include "services/accessibility/android/android_accessibility_util.h"
 #include "services/accessibility/android/auto_complete_handler.h"
 #include "services/accessibility/android/drawer_layout_handler.h"
+#include "services/accessibility/android/pane_title_handler.h"
+#include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/gfx/geometry/rect.h"
@@ -104,6 +106,21 @@ bool AXTreeSourceAndroid::IsRootOfNodeTree(int32_t id) const {
   const auto& parent_tree_it = tree_map_.find(parent_it->second);
   CHECK(parent_tree_it != tree_map_.end());
   return !parent_tree_it->second->IsNode();
+}
+
+void AXTreeSourceAndroid::SetVirtualNode(
+    int32_t parent_id,
+    std::unique_ptr<AccessibilityInfoDataWrapper> child) {
+  auto* parent_node = GetFromId(parent_id);
+  // TODO support any node as a parent, not limiting to a window.
+  CHECK(parent_node);
+  CHECK(parent_node->GetWindow());
+
+  int32_t node_id = child->GetId();
+  tree_map_[node_id] = std::move(child);
+  parent_map_[node_id] = parent_node->GetId();
+  static_cast<AccessibilityWindowInfoDataWrapper*>(parent_node)
+      ->AddVirtualChild(node_id);
 }
 
 AccessibilityInfoDataWrapper* AXTreeSourceAndroid::GetFirstImportantAncestor(
@@ -552,6 +569,11 @@ std::vector<int32_t> AXTreeSourceAndroid::ProcessHooksOnEvent(
     if (hooks_.count(modifier.first) == 0) {
       hooks_.insert(std::move(modifier));
     }
+  }
+
+  auto pane_title_hook = PaneTitleHandler::CreateIfNecessary(this, event_data);
+  if (pane_title_hook) {
+    hooks_.insert(std::move(*pane_title_hook));
   }
 
   return serialization_needed_ids;

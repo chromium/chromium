@@ -21,6 +21,9 @@ AccessibilityWindowInfoDataWrapper::AccessibilityWindowInfoDataWrapper(
     mojom::AccessibilityWindowInfoData* window)
     : AccessibilityInfoDataWrapper(tree_source), window_ptr_(window) {}
 
+AccessibilityWindowInfoDataWrapper::~AccessibilityWindowInfoDataWrapper() =
+    default;
+
 bool AccessibilityWindowInfoDataWrapper::IsNode() const {
   return false;
 }
@@ -189,10 +192,30 @@ void AccessibilityWindowInfoDataWrapper::GetChildren(
                       "GetChildren";
     }
   }
+
+  for (int32_t vitual_child_id : virtual_child_ids_) {
+    auto* child_node = tree_source_->GetFromId(vitual_child_id);
+    if (child_node != nullptr) {
+      children->push_back(child_node);
+    } else {
+      LOG(WARNING)
+          << "Unexpected nullptr found while populating virtual child node for "
+             "GetChildren";
+    }
+  }
 }
 
 int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {
   return window_ptr_->window_id;
+}
+
+void AccessibilityWindowInfoDataWrapper::AddVirtualChild(int32_t child_id) {
+  if (base::ranges::find(virtual_child_ids_, child_id) !=
+      virtual_child_ids_.end()) {
+    LOG(ERROR) << "Given child id already exists as a virtual child.";
+  } else {
+    virtual_child_ids_.push_back(child_id);
+  }
 }
 
 bool AccessibilityWindowInfoDataWrapper::GetProperty(

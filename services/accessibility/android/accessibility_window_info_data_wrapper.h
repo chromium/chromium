@@ -23,6 +23,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
       AXTreeSourceAndroid* tree_source,
       mojom::AccessibilityWindowInfoData* window);
 
+  ~AccessibilityWindowInfoDataWrapper() override;
+
   AccessibilityWindowInfoDataWrapper(
       const AccessibilityWindowInfoDataWrapper&) = delete;
   AccessibilityWindowInfoDataWrapper& operator=(
@@ -49,6 +51,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
           children) const override;
   int32_t GetWindowId() const override;
 
+  void AddVirtualChild(int32_t child_id);
+
  private:
   bool GetProperty(mojom::AccessibilityWindowBooleanProperty prop) const;
   bool GetProperty(mojom::AccessibilityWindowIntProperty prop,
@@ -61,6 +65,8 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
 
   raw_ptr<mojom::AccessibilityWindowInfoData, DanglingUntriaged> window_ptr_ =
       nullptr;
+
+  std::vector<int32_t> virtual_child_ids_ = std::vector<int32_t>(0);
 };
 
 }  // namespace ax::android

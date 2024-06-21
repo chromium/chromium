@@ -633,11 +633,7 @@ void AccessibilityNodeInfoDataWrapper::Serialize(
 
 std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
     bool do_recursive) const {
-  // Accessible name computation is a concatenated string comprising of:
-  // content description, text, labeled by text, pane title, and cached name
-  // from previous events.
-
-  // TODO(sarakato): Exposing all possible labels for a node, may result in
+  // TODO(hirokisato): Exposing all possible labels for a node, may result in
   // too much being spoken. For ARC ++, this may result in divergent behaviour
   // from Talkback.
   std::string text;
@@ -655,9 +651,6 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
     }
   }
 
-  std::string pane_title;
-  GetProperty(AXStringProperty::PANE_TITLE, &pane_title);
-
   // |hint_text| attribute in Android is often used as a placeholder text within
   // textfields.
   std::string hint_text;
@@ -670,9 +663,6 @@ std::string AccessibilityNodeInfoDataWrapper::ComputeAXName(
   }
   if (!label.empty()) {
     names.push_back(label);
-  }
-  if (!pane_title.empty()) {
-    names.push_back(pane_title);
   }
   if (!text.empty() && !GetProperty(AXBooleanProperty::EDITABLE)) {
     // EDITABLE is checked here, as EDITABLE field will have text set as value,
