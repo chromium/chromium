@@ -212,13 +212,6 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kMissingPlayStoreVersion"/>
 </enum>
 
-<enum name="ArcFileSystemWatcherExceedLimitState">
-  <int value="0"
-      label="inotify exceeds its limit when ArcFileSystemWatcher is started"/>
-  <int value="1"
-      label="inotify exceeds its limit while processing a filesystem change"/>
-</enum>
-
 <enum name="ArcKeyMintError">
   <int value="0" label="Other unspecified error code"/>
   <int value="1" label="OK"/>

@@ -1044,32 +1044,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.FileSystemWatcher.Created" enum="BooleanEnabled"
-    expires_after="2023-03-19">
-  <owner>risan@google.com</owner>
-  <owner>youkichihosoi@google.com</owner>
-  <owner>arc-storage@google.com</owner>
-  <summary>
-    How many times ArcFileSystemWatcher is created. Used as baseline for
-    Arc.FileSystemWatcher.ExceedLimit.
-  </summary>
-</histogram>
-
-<histogram name="Arc.FileSystemWatcher.ExceedLimit"
-    enum="ArcFileSystemWatcherExceedLimitState" expires_after="2024-02-11">
-  <owner>risan@google.com</owner>
-  <owner>youkichihosoi@google.com</owner>
-  <owner>arc-storage@google.com</owner>
-  <summary>
-    How many times inotify in ArcFileSystemWatcher exceeds its limit.
-    ArcFileSystemWatcher watches file system events on files shared with ARC by
-    using inotify, and requests MediaFileProvider in ARC to index media files
-    when needed. But the FilePathWatcher imposes a limit for the number of
-    watches that can be used by ArcFileSystemWatcher. Therefore, it is probable
-    that some media files are left unindexed.
-  </summary>
-</histogram>
-
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
     expires_after="2024-11-17">
   <owner>khmel@google.com</owner>

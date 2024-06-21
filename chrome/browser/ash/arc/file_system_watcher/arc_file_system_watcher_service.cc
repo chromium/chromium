@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -177,21 +176,6 @@ class ArcFileSystemWatcherServiceFactory
   ~ArcFileSystemWatcherServiceFactory() override = default;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "ArcFileSystemWatcherExceedLimitState" in
-// src/tools/metrics/histograms/enums.xml.
-enum class ArcFileSystemWatcherExceedLimitState {
-  kOnStart = 0,
-  kOnFilePathChanged = 1,
-  kMaxValue = kOnFilePathChanged,
-};
-
-void RecordArcFileSystemWatcherExceedLimit(
-    const ArcFileSystemWatcherExceedLimitState status) {
-  base::UmaHistogramEnumeration("Arc.FileSystemWatcher.ExceedLimit", status);
-}
-
 }  // namespace
 
 // The core part of ArcFileSystemWatcherService to watch for file changes in
@@ -265,8 +249,6 @@ ArcFileSystemWatcherService::FileSystemWatcher::~FileSystemWatcher() {
 void ArcFileSystemWatcherService::FileSystemWatcher::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Count how many times instance of FileSystemWatcher is created.
-  base::UmaHistogramBoolean("Arc.FileSystemWatcher.Created", true);
   // Initialize with the current timestamp map and avoid initial notification.
   // It is not needed since MediaProvider scans whole storage area on boot.
   last_notify_time_ = base::TimeTicks::Now();
@@ -282,8 +264,6 @@ void ArcFileSystemWatcherService::FileSystemWatcher::Start() {
     LOG(WARNING)
         << "Failed to start FileSystemWatcher for " << cros_dir_
         << " because the number of required inotify watches exceeded its limit";
-    RecordArcFileSystemWatcherExceedLimit(
-        ArcFileSystemWatcherExceedLimitState::kOnStart);
   }
 }
 
@@ -300,8 +280,6 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnFilePathChanged(
         << "The watcher won't be notified of subsequent filesystem changes in "
         << cros_dir_
         << " because the number of required inotify watches exceeded its limit";
-    RecordArcFileSystemWatcherExceedLimit(
-        ArcFileSystemWatcherExceedLimitState::kOnFilePathChanged);
     return;
   }
   if (!outstanding_task_) {
