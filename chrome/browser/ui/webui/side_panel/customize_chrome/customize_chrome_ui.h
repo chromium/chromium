@@ -16,8 +16,10 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -30,18 +32,27 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class CustomizeChromePageHandler;
 class CartHandler;
-class Profile;
+class CustomizeChromePageHandler;
+class CustomizeChromeUI;
 class CustomizeColorSchemeModeHandler;
+class CustomizeToolbarHandler;
+class Profile;
 class ThemeColorPickerHandler;
 class WallpaperSearchBackgroundManager;
 class WallpaperSearchHandler;
-class CustomizeToolbarHandler;
 
 namespace ui {
 class ColorChangeHandler;
 }
+
+class CustomizeChromeUIConfig
+    : public content::DefaultWebUIConfig<CustomizeChromeUI> {
+ public:
+  CustomizeChromeUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUICustomizeChromeSidePanelHost) {}
+};
 
 // WebUI controller for chrome://customize-chrome-side-panel.top-chrome
 class CustomizeChromeUI
