@@ -81,7 +81,6 @@ extern const HatsConfig kHatsOsSettingsSearchSurvey;
 extern const HatsConfig kHatsBorealisGamesSurvey;
 extern const HatsConfig kHatsLauncherAppsFindingSurvey;
 extern const HatsConfig kHatsLauncherAppsNeedingSurvey;
-extern const HatsConfig kHatsOfficeSurvey;
 
 }  // namespace ash
 

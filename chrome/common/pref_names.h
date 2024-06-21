@@ -903,15 +903,6 @@ inline constexpr char kHatsLauncherAppsSurveyCycleEndTs[] =
 inline constexpr char kHatsLauncherAppsSurveyIsSelected[] =
     "hats_launcher_apps_is_selected";
 
-// A boolean pref. Indicated if the device is selected for the Office
-// integration survey.
-inline constexpr char kHatsOfficeSurveyIsSelected[] = "hats_office_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicated the end of the most recent Office integration survey cycle.
-inline constexpr char kHatsOfficeSurveyCycleEndTs[] =
-    "hats_office_end_timestamp";
-
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.
 inline constexpr char kPinUnlockFeatureNotificationShown[] =

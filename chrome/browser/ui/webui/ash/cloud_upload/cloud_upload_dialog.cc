@@ -45,11 +45,9 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
-#include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -252,11 +250,6 @@ void OpenFileFromODFS(
                                     /*event_flags=*/ui::EF_NONE, url,
                                     apps::LaunchSource::kFromFileManager,
                                     /*window_info=*/nullptr);
-            if (base::FeatureList::IsEnabled(
-                    ::features::kHappinessTrackingOffice)) {
-              ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
-                  ash::cloud_upload::HatsOfficeGroup::kMS365);
-            }
             std::move(callback).Run(OfficeOneDriveOpenErrors::kSuccess);
           },
           profile, file_system, std::move(callback)));
@@ -639,10 +632,6 @@ void CloudOpenTask::OnGoogleDriveGetMetadata(
     ::file_manager::util::OpenHostedFileInNewTabOrApp(
         profile_, file_urls_.front().path(), base::DoNothing(),
         net::AppendOrReplaceQueryParameter(hosted_url, "cros_files", "true"));
-    if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice)) {
-      ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
-          ash::cloud_upload::HatsOfficeGroup::kDrive);
-    }
   }
   LogGoogleDriveOpenResultUMA(OfficeTaskResult::kOpened, open_result);
 }
@@ -655,10 +644,6 @@ void CloudOpenTask::OpenUploadedDriveUrl(const GURL& url,
   ::file_manager::util::OpenHostedFileInNewTabOrApp(
       profile_, file_urls_.front().path(), base::DoNothing(),
       net::AppendOrReplaceQueryParameter(url, "cros_files", "true"));
-  if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice)) {
-    ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
-        ash::cloud_upload::HatsOfficeGroup::kDrive);
-  }
   // TODO(b/296950967): This function logs both open result and task result (but
   // only if open fails) metrics internally, pull them up to a higher level so
   // all the metrics are logged in one place.
