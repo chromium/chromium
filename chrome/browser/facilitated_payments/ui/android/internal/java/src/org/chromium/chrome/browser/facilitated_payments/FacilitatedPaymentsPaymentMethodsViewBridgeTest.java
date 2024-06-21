@@ -119,7 +119,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(content.getSheetContentDescriptionStringId(), equalTo(R.string.ok));
-        assertThat(content.getSheetHalfHeightAccessibilityStringId(), equalTo(R.string.ok));
         assertThat(content.getSheetFullHeightAccessibilityStringId(), equalTo(R.string.ok));
         assertThat(content.getSheetClosedAccessibilityStringId(), equalTo(R.string.ok));
     }

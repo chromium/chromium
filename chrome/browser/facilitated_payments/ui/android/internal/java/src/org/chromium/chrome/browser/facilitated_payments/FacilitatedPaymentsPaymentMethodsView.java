@@ -9,19 +9,40 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import androidx.annotation.Px;
+import androidx.annotation.Nullable;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillViewBase;
+import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-
-import java.util.Set;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the facilitated payments
  * instruments. It is a View in this Model-View-Controller component and doesn't inherit but holds
  * Android Views.
  */
-class FacilitatedPaymentsPaymentMethodsView extends TouchToFillViewBase {
+class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
+    private final RelativeLayout mView;
+    private final RecyclerView mSheetItemListView;
+    private final BottomSheetController mBottomSheetController;
+    private Callback<Integer> mDismissHandler;
+
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                    super.onSheetClosed(reason);
+                    assert mDismissHandler != null;
+                    mDismissHandler.onResult(reason);
+                    mBottomSheetController.removeObserver(mBottomSheetObserver);
+                }
+            };
+
     /**
      * Constructs a FacilitatedPaymentsPaymentMethodsView which creates, modifies, and shows the
      * bottom sheet.
@@ -31,16 +52,114 @@ class FacilitatedPaymentsPaymentMethodsView extends TouchToFillViewBase {
      */
     FacilitatedPaymentsPaymentMethodsView(
             Context context, BottomSheetController bottomSheetController) {
-        super(
-                bottomSheetController,
+        mBottomSheetController = bottomSheetController;
+        mView =
                 (RelativeLayout)
-                        LayoutInflater.from(context).inflate(R.layout.touch_to_fill_sheet, null),
-                true);
+                        LayoutInflater.from(context).inflate(R.layout.touch_to_fill_sheet, null);
+        mSheetItemListView = getContentView().findViewById(R.id.sheet_item_list);
+
+        mSheetItemListView.setLayoutManager(
+                new LinearLayoutManager(
+                        mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false) {
+                    @Override
+                    public boolean isAutoMeasureEnabled() {
+                        return true;
+                    }
+
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            RecyclerView.Recycler recycler,
+                            RecyclerView.State state,
+                            AccessibilityNodeInfoCompat info) {}
+                });
+
+        // Apply RTL layout changes.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        mView.setLayoutDirection(layoutDirection);
+    }
+
+    /**
+     * Sets the {@link RecyclerView.Adapter} for the {@link RecyclerView}.
+     *
+     * @param adapter The {@link RecyclerView.Adapter} to add items to the view.
+     */
+    public void setSheetItemListAdapter(RecyclerView.Adapter adapter) {
+        mSheetItemListView.setAdapter(adapter);
+    }
+
+    /**
+     * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     *
+     * @param isVisible A boolean describing whether to show or hide the sheet.
+     * @return True if the request was successful, false otherwise
+     */
+    public boolean setVisible(boolean isVisible) {
+        if (isVisible) {
+            mBottomSheetController.addObserver(mBottomSheetObserver);
+            if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
+                return false;
+            }
+        } else {
+            mBottomSheetController.hideContent(this, true);
+        }
+        return true;
+    }
+
+    /**
+     * Sets a new listener that reacts to bottom sheet dismissal.
+     *
+     * @param dismissHandler A {@link Callback<Integer>}.
+     */
+    public void setDismissHandler(Callback<Integer> dismissHandler) {
+        mDismissHandler = dismissHandler;
     }
 
     @Override
+    public View getContentView() {
+        return mView;
+    }
+
+    @Nullable
+    @Override
+    public View getToolbarView() {
+        return null;
+    }
+
+    @Override
+    public int getPriority() {
+        return ContentPriority.HIGH;
+    }
+
+    @Override
+    public boolean swipeToDismissEnabled() {
+        return false;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public void destroy() {}
+
+    @Override
     public int getVerticalScrollOffset() {
-        return getSheetItemListView().computeVerticalScrollOffset();
+        return mSheetItemListView.computeVerticalScrollOffset();
     }
 
     @Override
@@ -50,7 +169,9 @@ class FacilitatedPaymentsPaymentMethodsView extends TouchToFillViewBase {
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.ok;
+        // Half-height is disabled so no need for an accessibility string.
+        assert false : "This method should not be called";
+        return 0;
     }
 
     @Override
@@ -61,35 +182,5 @@ class FacilitatedPaymentsPaymentMethodsView extends TouchToFillViewBase {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.ok;
-    }
-
-    @Override
-    protected View getHandlebar() {
-        return getContentView().findViewById(R.id.drag_handlebar);
-    }
-
-    @Override
-    protected int getConclusiveMarginHeightPx() {
-        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_padding);
-    }
-
-    @Override
-    protected @Px int getSideMarginPx() {
-        return getContentView().getResources().getDimensionPixelSize(R.dimen.ttf_sheet_padding);
-    }
-
-    @Override
-    protected Set<Integer> listedItemTypes() {
-        return Set.of(FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT);
-    }
-
-    @Override
-    protected int footerItemType() {
-        return FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER;
-    }
-
-    @Override
-    public boolean hasCustomLifecycle() {
-        return true;
     }
 }

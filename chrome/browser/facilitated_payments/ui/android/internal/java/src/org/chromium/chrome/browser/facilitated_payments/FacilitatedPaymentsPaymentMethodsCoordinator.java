@@ -92,7 +92,7 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 CONTINUE_BUTTON,
                 FacilitatedPaymentsPaymentMethodsViewBinder::createContinueButtonView,
                 FacilitatedPaymentsPaymentMethodsViewBinder::bindContinueButtonView);
-        view.getSheetItemListView().setAdapter(adapter);
+        view.setSheetItemListAdapter(adapter);
     }
 
     PropertyModel createModel(FacilitatedPaymentsPaymentMethodsMediator mediator) {
