@@ -403,8 +403,6 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
   EXPECT_EQ(arc::mojom::SecurityType::WPA_PSK, mojo->wifi->security);
   EXPECT_EQ(kFrequency, mojo->wifi->frequency);
   EXPECT_EQ(kSignalStrength, mojo->wifi->signal_strength);
-  EXPECT_EQ(kFqdn, mojo->wifi->fqdn);
-  EXPECT_EQ(true, mojo->wifi->hidden_ssid);
 }
 
 TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {

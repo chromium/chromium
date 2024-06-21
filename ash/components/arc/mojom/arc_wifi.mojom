@@ -13,8 +13,6 @@
 //    enabled state changes.
 //  - WiFi RPCs to start scan, notify completion of scan and get scan
 //    results from host.
-//  - WiFi RPCs to create/forget/update networks and get configured WiFi
-//    services.
 
 // Note: The reason for using int for uint fields such as port is: Mojo uint
 // values are byte cast when deserialized in Java, the practical and safe
@@ -75,20 +73,6 @@ interface ArcWifiHost {
   // client to obtain the cached last results. In practice scan results will
   // always be available by the time that ARC has started.
   GetScanResults@4() => (array<WifiScanResult> response);
-
-  // Creates a new network and returns the GUID.  If an error occurs,
-  // |guid| will be an empty string.
-  CreateNetwork@5(WifiConfiguration cfg) => (string guid);
-
-  // Deletes an existing network.
-  ForgetNetwork@6(string guid) => (NetworkResult status);
-
-  // Updates an existing Wifi network.
-  UpdateWifiNetwork@7(string guid, WifiConfiguration cfg) =>
-      (NetworkResult status);
-
-  // Sends a request to get currently configured WiFi networks.
-  GetConfiguredWifiServices@8() => (array<NetworkConfiguration> services);
 };
 
 // Next Method ID: 4

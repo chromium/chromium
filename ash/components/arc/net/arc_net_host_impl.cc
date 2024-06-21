@@ -362,9 +362,6 @@ void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
   }
 
   // Otherwise retrieve list of configured or visible WiFi networks.
-  // TODO(b/329552433): mojom::GetNetworksRequestType::CONFIGURED_ONLY and
-  // mojom::GetNetworksRequestType::VISIBLE_ONLY branch should be removed after
-  // pi-arc is removed.
   bool configured_only = type == mojom::GetNetworksRequestType::CONFIGURED_ONLY;
   ash::NetworkTypePattern network_pattern =
       ash::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
@@ -472,9 +469,8 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
     wifi_dict.Set(onc::wifi::kBSSIDRequested, details->bssid.value());
   }
   if (cfg->bssid_allowlist.has_value()) {
-    wifi_dict.Set(
-        onc::wifi::kBSSIDAllowlist,
-        net_utils::TranslateStringListToValue(cfg->bssid_allowlist.value()));
+    wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
+                  TranslateStringListToValue(cfg->bssid_allowlist.value()));
   }
   if (!eap_dict.empty()) {
     wifi_dict.Set(onc::wifi::kEAP, std::move(eap_dict));
@@ -484,17 +480,15 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
 
   // Set up static IPv4 config.
   if (cfg->dns_servers.has_value()) {
-    ipconfig_dict.Set(
-        onc::ipconfig::kNameServers,
-        net_utils::TranslateStringListToValue(cfg->dns_servers.value()));
+    ipconfig_dict.Set(onc::ipconfig::kNameServers,
+                      TranslateStringListToValue(cfg->dns_servers.value()));
     properties.Set(onc::network_config::kNameServersConfigType,
                    onc::network_config::kIPConfigTypeStatic);
   }
 
   if (cfg->domains.has_value()) {
-    ipconfig_dict.Set(
-        onc::ipconfig::kSearchDomains,
-        net_utils::TranslateStringListToValue(cfg->domains.value()));
+    ipconfig_dict.Set(onc::ipconfig::kSearchDomains,
+                      TranslateStringListToValue(cfg->domains.value()));
   }
 
   // Static IPv4 address, static IPv4 address of the gateway and
@@ -513,7 +507,7 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
   }
   if (cfg->http_proxy) {
     properties.Set(onc::network_config::kProxySettings,
-                   net_utils::TranslateProxyConfiguration(*cfg->http_proxy));
+                   TranslateProxyConfiguration(cfg->http_proxy));
   }
 
   // Set up meteredness based on meteredOverride config from mojom.
@@ -598,9 +592,8 @@ void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
   base::Value::Dict wifi_dict;
 
   if (cfg->bssid_allowlist.has_value()) {
-    wifi_dict.Set(
-        onc::wifi::kBSSIDAllowlist,
-        net_utils::TranslateStringListToValue(cfg->bssid_allowlist.value()));
+    wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
+                  TranslateStringListToValue(cfg->bssid_allowlist.value()));
   }
   properties.Set(onc::network_config::kWiFi, std::move(wifi_dict));
 
@@ -736,6 +729,14 @@ void ArcNetHostImpl::ConnectArcVpn(const std::string& service_path,
       false /* check_error_state */, ash::ConnectCallbackMode::ON_COMPLETED);
 }
 
+base::Value::List ArcNetHostImpl::TranslateStringListToValue(
+    const std::vector<std::string>& string_list) {
+  base::Value::List result;
+  for (const auto& item : string_list)
+    result.Append(item);
+  return result;
+}
+
 base::Value::List ArcNetHostImpl::TranslateLongListToStringValue(
     const std::vector<uint64_t>& long_list) {
   base::Value::List result;
@@ -765,13 +766,13 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
   ip_dict.Set(onc::ipconfig::kRoutingPrefix, 32);
   ip_dict.Set(onc::ipconfig::kGateway, cfg.ipv4_gateway);
   ip_dict.Set(onc::ipconfig::kNameServers,
-              net_utils::TranslateStringListToValue(cfg.nameservers));
+              TranslateStringListToValue(cfg.nameservers));
   ip_dict.Set(onc::ipconfig::kSearchDomains,
-              net_utils::TranslateStringListToValue(cfg.domains));
+              TranslateStringListToValue(cfg.domains));
   ip_dict.Set(onc::ipconfig::kIncludedRoutes,
-              net_utils::TranslateStringListToValue(cfg.split_include));
+              TranslateStringListToValue(cfg.split_include));
   ip_dict.Set(onc::ipconfig::kExcludedRoutes,
-              net_utils::TranslateStringListToValue(cfg.split_exclude));
+              TranslateStringListToValue(cfg.split_exclude));
 
   top_dict.Set(onc::network_config::kStaticIPConfig, std::move(ip_dict));
 
@@ -787,7 +788,7 @@ base::Value::Dict ArcNetHostImpl::TranslateVpnConfigurationToOnc(
   top_dict.Set(onc::network_config::kVPN, std::move(vpn_dict));
   if (cfg.http_proxy) {
     top_dict.Set(onc::network_config::kProxySettings,
-                 net_utils::TranslateProxyConfiguration(*cfg.http_proxy));
+                 TranslateProxyConfiguration(cfg.http_proxy));
   }
   return top_dict;
 }
@@ -934,15 +935,15 @@ void ArcNetHostImpl::TranslateEapCredentialsToOncDictWithCertID(
                      eap->subject_alternative_name_match_list.value()));
   }
   if (eap->ca_certificate_pem.has_value()) {
-    eap_dict.Set(onc::eap::kServerCAPEMs, net_utils::TranslateStringListToValue(
-                                              eap->ca_certificate_pem.value()));
+    eap_dict.Set(onc::eap::kServerCAPEMs,
+                 TranslateStringListToValue(eap->ca_certificate_pem.value()));
   }
   eap_dict.Set(onc::wifi::kSecurity,
                net_utils::TranslateKeyManagementToOnc(eap->key_management));
   if (eap->domain_suffix_match_list.has_value()) {
-    eap_dict.Set(onc::eap::kDomainSuffixMatch,
-                 net_utils::TranslateStringListToValue(
-                     eap->domain_suffix_match_list.value()));
+    eap_dict.Set(
+        onc::eap::kDomainSuffixMatch,
+        TranslateStringListToValue(eap->domain_suffix_match_list.value()));
   }
   // Field eap->use_login_password is ignored for now, as using user's password
   // by a third part app is not allowed at the moment.
@@ -980,8 +981,7 @@ void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
 
   if (cred->ca_certificate_pem.has_value()) {
     dict.Set(shill::kEapCaCertPemProperty,
-             net_utils::TranslateStringListToValue(
-                 cred->ca_certificate_pem.value()));
+             TranslateStringListToValue(cred->ca_certificate_pem.value()));
   }
   if (cert_id.has_value() && slot_id.has_value()) {
     // The ID of imported user certificate and private key is the same, use one
@@ -1000,13 +1000,13 @@ void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
   }
   if (cred->subject_alternative_name_match_list.has_value()) {
     dict.Set(shill::kEapSubjectAlternativeNameMatchProperty,
-             net_utils::TranslateStringListToValue(
+             TranslateStringListToValue(
                  cred->subject_alternative_name_match_list.value()));
   }
   if (cred->domain_suffix_match_list.has_value()) {
-    dict.Set(shill::kEapDomainSuffixMatchProperty,
-             net_utils::TranslateStringListToValue(
-                 cred->domain_suffix_match_list.value()));
+    dict.Set(
+        shill::kEapDomainSuffixMatchProperty,
+        TranslateStringListToValue(cred->domain_suffix_match_list.value()));
   }
   if (cred->tls_version_max.has_value()) {
     dict.Set(shill::kEapTLSVersionMaxProperty, cred->tls_version_max.value());
@@ -1056,7 +1056,7 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
   }
 
   dict.Set(shill::kPasspointCredentialsDomainsProperty,
-           net_utils::TranslateStringListToValue(cred->domains));
+           TranslateStringListToValue(cred->domains));
   dict.Set(shill::kPasspointCredentialsRealmProperty, cred->realm);
   dict.Set(shill::kPasspointCredentialsHomeOIsProperty,
            TranslateLongListToStringValue(cred->home_ois));
@@ -1075,6 +1075,29 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
            base::NumberToString(cred->subscription_expiration_time_ms));
 
   std::move(callback).Run(std::move(dict));
+}
+
+// Set up proxy configuration. If proxy auto discovery pac url is available,
+// we set up proxy auto discovery pac url, otherwise we set up
+// host, port and exclusion list.
+base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
+    const arc::mojom::ArcProxyInfoPtr& http_proxy) {
+  base::Value::Dict proxy_dict;
+  if (http_proxy->is_pac_url_proxy()) {
+    proxy_dict.Set(onc::proxy::kType, onc::proxy::kPAC);
+    proxy_dict.Set(onc::proxy::kPAC,
+                   http_proxy->get_pac_url_proxy()->pac_url.spec());
+  } else {
+    base::Value::Dict manual;
+    manual.Set(onc::proxy::kHost, http_proxy->get_manual_proxy()->host);
+    manual.Set(onc::proxy::kPort, http_proxy->get_manual_proxy()->port);
+    manual.Set(onc::proxy::kExcludeDomains,
+               TranslateStringListToValue(
+                   std::move(http_proxy->get_manual_proxy()->exclusion_list)));
+    proxy_dict.Set(onc::proxy::kType, onc::proxy::kManual);
+    proxy_dict.Set(onc::proxy::kManual, std::move(manual));
+  }
+  return proxy_dict;
 }
 
 void ArcNetHostImpl::AddPasspointCredentials(
