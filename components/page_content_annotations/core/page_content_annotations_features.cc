@@ -113,11 +113,11 @@ BASE_FEATURE(kPageContentAnnotations,
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
-             enabled_by_default_non_ios);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageVisibilityBatchAnnotations,
              "PageVisibilityBatchAnnotations",
-             enabled_by_default_non_ios);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTextEmbeddingBatchAnnotations,
              "TextEmbeddingBatchAnnotations",

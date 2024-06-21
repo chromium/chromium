@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 
+#import "components/history_clusters/core/config.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
@@ -98,9 +99,12 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
         std::move(bookmarks_transformer));
   }
 
-  // History clusters is not enabled on iOS, so do not add the history clusters
-  // transformer.
-
+  transformers.emplace(
+      visited_url_ranking::URLVisitAggregatesTransformType::
+          kHistoryVisibilityScoreFilter,
+      std::make_unique<visited_url_ranking::
+                           HistoryURLVisitAggregatesVisibilityScoreTransformer>(
+          history_clusters::Config().content_visibility_threshold));
   transformers.emplace(
       visited_url_ranking::URLVisitAggregatesTransformType::
           kHistoryCategoriesFilter,

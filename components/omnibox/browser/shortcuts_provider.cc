@@ -51,7 +51,7 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/config.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_IOS)
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);

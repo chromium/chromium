@@ -6,6 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
+#import "components/visited_url_ranking/public/features.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -115,6 +116,11 @@ NSString* HostnameFromGURL(GURL URL) {
     config.features_enabled.push_back(kTabResumption2);
   }
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
+  // kVisitedURLRankingHistoryVisibilityScoreFilter require the network, keep
+  // it disabled for tests.
+  config.features_disabled.push_back(
+      visited_url_ranking::features::
+          kVisitedURLRankingHistoryVisibilityScoreFilter);
   return config;
 }
 

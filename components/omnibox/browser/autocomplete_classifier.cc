@@ -21,7 +21,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/config.h"  // nogncheck
 #endif
 
 AutocompleteClassifier::AutocompleteClassifier(
