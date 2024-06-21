@@ -10540,6 +10540,7 @@ test("unit_tests") {
 
   if (enable_widevine && is_linux) {
     sources += [ "../common/media/cdm_registration_unittest.cc" ]
+    data_deps += [ "//third_party/widevine/cdm" ]
   }
 
   if (enable_lens_desktop_google_branded_features) {
