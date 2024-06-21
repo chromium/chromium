@@ -754,11 +754,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
         std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
         if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
-          if (RuntimeEnabledFeatures::LayoutFlexUnderInvalidationFixEnabled()) {
-            disable_side_effects.emplace();
-          } else {
-            return border_padding_in_child_writing_mode.BlockSum();
-          }
+          disable_side_effects.emplace();
         }
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
@@ -2157,8 +2153,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
   // This always depends on block constraints because if block constraints
   // change, this flexbox could get a different number of columns.
   return {largest_inline_size_contributions,
-          /* depends_on_block_constraints */ RuntimeEnabledFeatures::
-              LayoutFlexUnderInvalidationFixEnabled()};
+          /* depends_on_block_constraints */ true};
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
