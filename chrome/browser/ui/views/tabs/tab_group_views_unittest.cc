@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+
 #include <memory>
 
 #include "base/feature_list.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 class TabGroupViewsTest : public ChromeViewsTestBase {
@@ -76,6 +78,15 @@ TEST_F(TabGroupViewsTest, GroupViewsCreated) {
   EXPECT_EQ(tab_container_.get(), group_views_->underline()->parent());
   EXPECT_EQ(drag_context_.get(), group_views_->drag_underline()->parent());
   EXPECT_EQ(drag_context_.get(), group_views_->highlight()->parent());
+}
+
+TEST_F(TabGroupViewsTest, HeaderInitialAccessibilityProperties) {
+  TabGroupHeader* header = group_views_->header();
+  ui::AXNodeData node_data;
+
+  header->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kEditable));
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kTabList);
 }
 
 // Underline should actually underline the group.

@@ -4114,6 +4114,15 @@ TEST_F(TextfieldTest, CursorBlinkRestartsOnInsertOrReplace) {
   EXPECT_TRUE(GetTextfieldTestApi().IsCursorBlinkTimerRunning());
 }
 
+TEST_F(TextfieldTest, InitialAccessibilityProperties) {
+  InitTextfield();
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTextField);
+  EXPECT_TRUE(textfield_->GetViewAccessibility().IsLeaf());
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kEditable));
+}
+
 // Verifies setting the accessible name will call NotifyAccessibilityEvent.
 TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   InitTextfield();

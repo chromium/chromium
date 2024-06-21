@@ -1030,6 +1030,7 @@ TEST_F(OmniboxViewViewsTest, InitialAccessibilityProperties) {
   EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
             "Address and search bar");
   EXPECT_EQ(node_data.GetRestriction(), ax::mojom::Restriction::kNone);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kEditable));
   EXPECT_TRUE(omnibox_view()->GetViewAccessibility().IsLeaf());
 }
 
