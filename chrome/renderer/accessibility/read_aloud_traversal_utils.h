@@ -100,4 +100,10 @@ ui::AXNode* GetNextNodeFromPosition(
 // as a separate segment.
 bool IsOpeningPunctuation(char& c);
 
+// Returns whether we should split the current utterance at a paragraph
+// boundary.
+bool ShouldSplitAtParagraph(
+    const ui::AXNodePosition::AXPositionInstance& position,
+    const a11y::ReadAloudCurrentGranularity current_granularity);
+
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_TRAVERSAL_UTILS_H_

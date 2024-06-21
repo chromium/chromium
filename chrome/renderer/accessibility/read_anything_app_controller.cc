@@ -1060,7 +1060,10 @@ std::string ReadAnythingAppController::GetDataFontCss(
 
 std::string ReadAnythingAppController::GetHtmlTag(
     ui::AXNodeID ax_node_id) const {
-  return model_.GetHtmlTag(ax_node_id);
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+
+  return a11y::GetHtmlTag(ax_node, model_.is_pdf(), model_.IsDocs());
 }
 
 std::string ReadAnythingAppController::GetLanguage(

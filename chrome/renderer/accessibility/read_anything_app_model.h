@@ -177,7 +177,6 @@ class ReadAnythingAppModel {
   bool IsDocs() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
-  bool IsNodeIgnoredForReadAnything(const ui::AXNodeID& ax_node_id) const;
   bool NodeIsContentNode(const ui::AXNodeID& ax_node_id) const;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
@@ -241,8 +240,6 @@ class ReadAnythingAppModel {
   void ResetTextSize();
   void ToggleLinksEnabled();
   void ToggleImagesEnabled();
-
-  std::string GetHtmlTag(const ui::AXNodeID& ax_node_id) const;
 
   // Given a text index for the current granularity, return the AXNodeID for
   // that part of the text.
@@ -349,12 +346,6 @@ class ReadAnythingAppModel {
   void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator,
                               size_t prev_tree_size,
                               size_t tree_size);
-
-  bool IsTextForReadAnything(const ui::AXNodeID& ax_node_id) const;
-
-  bool ShouldSplitAtParagraph(
-      const ui::AXNodePosition::AXPositionInstance& position,
-      const a11y::ReadAloudCurrentGranularity& current_granularity) const;
 
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetCurrentText which called

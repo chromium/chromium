@@ -8,6 +8,8 @@
 
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "services/strings/grit/services_strings.h"
+#include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace a11y {
@@ -15,6 +17,97 @@ namespace a11y {
 bool IsSuperscript(ui::AXNode* ax_node) {
   return ax_node->data().GetTextPosition() ==
          ax::mojom::TextPosition::kSuperscript;
+}
+
+bool IsNodeIgnoredForReadAnything(ui::AXNode* ax_node, bool is_pdf) {
+  // If the node is not in the active tree (this could happen when RM is still
+  // loading), ignore it.
+  if (!ax_node) {
+    return true;
+  }
+  ax::mojom::Role role = ax_node->GetRole();
+
+  // PDFs processed with OCR have additional nodes that mark the start and end
+  // of a page. The start of a page is indicated with a kBanner node that has a
+  // child static text node. Ignore both. The end of a page is indicated with a
+  // kContentInfo node that has a child static text node. Ignore the static text
+  // node but keep the kContentInfo so a line break can be inserted in between
+  // pages in GetHtmlTagForPDF.
+  if (is_pdf) {
+    // The text content of the aforementioned kBanner or kContentInfo nodes is
+    // the same as the text content of its child static text node.
+    std::string text = ax_node->GetTextContentUTF8();
+    ui::AXNode* parent = ax_node->GetParent();
+
+    std::string pdf_begin_message =
+        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN);
+    std::string pdf_end_message =
+        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END);
+
+    bool is_start_or_end_static_text_node =
+        parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
+                    text == pdf_begin_message) ||
+                   (parent->GetRole() == ax::mojom::Role::kContentInfo &&
+                    text == pdf_end_message));
+    if ((role == ax::mojom::Role::kBanner && text == pdf_begin_message) ||
+        is_start_or_end_static_text_node) {
+      return true;
+    }
+  }
+
+  // Ignore interactive elements, except for text fields.
+  return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
+}
+
+bool IsTextForReadAnything(ui::AXNode* node, bool is_pdf, bool is_docs) {
+  // ListMarkers will have an HTML tag of "::marker," so they won't be
+  // considered text when checking for the length of the html tag. However, in
+  // order to read out loud ordered bullets, nodes that have the kListMarker
+  // role should be included.
+  // Note: This technically will include unordered list markers like bullets,
+  // but these won't be spoken because they will be filtered by the TTS engine.
+  bool is_list_marker = node->GetRole() == ax::mojom::Role::kListMarker;
+
+  // TODO(crbug.com/40927698): Can this be updated to IsText() instead of
+  // checking the length of the html tag?
+  return (GetHtmlTag(node, is_pdf, is_docs).length() == 0) || is_list_marker;
+}
+
+std::string GetHtmlTag(ui::AXNode* ax_node, bool is_pdf, bool is_docs) {
+  std::string html_tag =
+      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+
+  if (is_pdf) {
+    return GetHtmlTagForPDF(ax_node, html_tag);
+  }
+
+  if (ui::IsTextField(ax_node->GetRole())) {
+    return "div";
+  }
+
+  if (ui::IsHeading(ax_node->GetRole())) {
+    int32_t hierarchical_level =
+        ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
+    if (hierarchical_level) {
+      return base::StringPrintf("h%" PRId32, hierarchical_level);
+    }
+  }
+
+  if (html_tag == ui::ToString(ax::mojom::Role::kMark)) {
+    // Replace mark element with bold element for readability.
+    html_tag = "b";
+  } else if (is_docs) {
+    // Change HTML tags for SVG elements to allow Reading Mode to render text
+    // for the Annotated Canvas elements in a Google Doc.
+    if (html_tag == "svg") {
+      html_tag = "div";
+    }
+    if (html_tag == "g" && ax_node->GetRole() == ax::mojom::Role::kParagraph) {
+      html_tag = "p";
+    }
+  }
+
+  return html_tag;
 }
 
 std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag) {

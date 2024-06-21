@@ -14,6 +14,16 @@ namespace a11y {
 // Returns whether the given node represents a superscript.
 bool IsSuperscript(ui::AXNode* ax_node);
 
+// Returns whether the given node is a text node displayed by read anything.
+bool IsTextForReadAnything(ui::AXNode* ax_node, bool is_pdf, bool is_docs);
+
+// Returns whether the given node is ignored when distilling content for read
+// anything.
+bool IsNodeIgnoredForReadAnything(ui::AXNode* ax_node, bool is_pdf);
+
+// Returns the html tag for the given node.
+std::string GetHtmlTag(ui::AXNode* ax_node, bool is_pdf, bool is_docs);
+
 // Returns the html tag for the given node which is inside a pdf.
 std::string GetHtmlTagForPDF(ui::AXNode* ax_node, const std::string& html_tag);
 

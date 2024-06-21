@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -159,7 +160,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   int32_t EndOffset() { return model_->end_offset(); }
 
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) {
-    return model_->IsNodeIgnoredForReadAnything(ax_node_id);
+    return a11y::IsNodeIgnoredForReadAnything(model_->GetAXNode(ax_node_id),
+                                              model_->is_pdf());
   }
 
   size_t GetNumTrees() { return model_->GetTreesForTesting()->size(); }

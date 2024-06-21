@@ -89,3 +89,13 @@ ui::AXNode* GetNextNodeFromPosition(
 bool IsOpeningPunctuation(char& c) {
   return (c == '(' || c == '{' || c == '[' || c == '<');
 }
+
+// We should split the current utterance at a paragraph boundary if the
+// AXPosition is at the start of a paragraph and we already have nodes in
+// our current granularity segment.
+bool ShouldSplitAtParagraph(
+    const ui::AXNodePosition::AXPositionInstance& position,
+    const a11y::ReadAloudCurrentGranularity current_granularity) {
+  return position->AtStartOfParagraph() &&
+         (current_granularity.node_ids.size() > 0);
+}

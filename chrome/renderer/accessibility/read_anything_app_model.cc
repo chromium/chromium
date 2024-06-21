@@ -204,7 +204,7 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
     ancestors.pop();
-    if (!IsNodeIgnoredForReadAnything(ancestor_id)) {
+    if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(ancestor_id), is_pdf_)) {
       InsertSelectionNode(ancestor_id);
     }
   }
@@ -243,7 +243,8 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   while (first_sibling_node &&
          first_sibling_node->CompareTo(*deepest_last_descendant).value_or(1) <=
              0) {
-    if (!IsNodeIgnoredForReadAnything(first_sibling_node->id())) {
+    if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(first_sibling_node->id()),
+                                            is_pdf_)) {
       InsertSelectionNode(first_sibling_node->id());
     }
 
@@ -343,8 +344,9 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       ancestors.pop();
       // For certain PDFs, the ancestor may not be in the same tree. Ignore if
       // so.
-      if (GetAXNode(ancestor_id) &&
-          !IsNodeIgnoredForReadAnything(ancestor_id)) {
+      ui::AXNode* ancestor_node = GetAXNode(ancestor_id);
+      if (ancestor_node &&
+          !a11y::IsNodeIgnoredForReadAnything(ancestor_node, is_pdf_)) {
         InsertDisplayNode(ancestor_id);
       }
     }
@@ -358,7 +360,8 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     }
     while (next_node != deepest_last_descendant) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
-      if (!IsNodeIgnoredForReadAnything(next_node->id())) {
+      if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(next_node->id()),
+                                              is_pdf_)) {
         InsertDisplayNode(next_node->id());
       }
     }
@@ -610,48 +613,6 @@ ui::AXNode* ReadAnythingAppModel::GetAXNode(
     const ui::AXNodeID& ax_node_id) const {
   ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
   return tree->GetFromId(ax_node_id);
-}
-
-bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
-    const ui::AXNodeID& ax_node_id) const {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  // If the node is not in the active tree (this could happen when RM is still
-  // loading), ignore it.
-  if (!ax_node) {
-    return true;
-  }
-  ax::mojom::Role role = ax_node->GetRole();
-
-  // PDFs processed with OCR have additional nodes that mark the start and end
-  // of a page. The start of a page is indicated with a kBanner node that has a
-  // child static text node. Ignore both. The end of a page is indicated with a
-  // kContentInfo node that has a child static text node. Ignore the static text
-  // node but keep the kContentInfo so a line break can be inserted in between
-  // pages in GetHtmlTagForPDF.
-  if (is_pdf_) {
-    // The text content of the aforementioned kBanner or kContentInfo nodes is
-    // the same as the text content of its child static text node.
-    std::string text = ax_node->GetTextContentUTF8();
-    ui::AXNode* parent = ax_node->GetParent();
-
-    std::string pdf_begin_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN);
-    std::string pdf_end_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END);
-
-    bool is_start_or_end_static_text_node =
-        parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
-                    text == pdf_begin_message) ||
-                   (parent->GetRole() == ax::mojom::Role::kContentInfo &&
-                    text == pdf_end_message));
-    if ((role == ax::mojom::Role::kBanner && text == pdf_begin_message) ||
-        is_start_or_end_static_text_node) {
-      return true;
-    }
-  }
-
-  // Ignore interactive elements, except for text fields.
-  return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
 bool ReadAnythingAppModel::NodeIsContentNode(
@@ -1028,47 +989,6 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
     font_choices_.push_back("Atkinson Hyperlegible");
   }
   return font_choices_;
-}
-
-std::string ReadAnythingAppModel::GetHtmlTag(
-    const ui::AXNodeID& ax_node_id) const {
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-
-  std::string html_tag =
-      ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-
-  if (is_pdf()) {
-    return a11y::GetHtmlTagForPDF(ax_node, html_tag);
-  }
-
-  if (ui::IsTextField(ax_node->GetRole())) {
-    return "div";
-  }
-
-  if (ui::IsHeading(ax_node->GetRole())) {
-    int32_t hierarchical_level =
-        ax_node->GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
-    if (hierarchical_level) {
-      return base::StringPrintf("h%" PRId32, hierarchical_level);
-    }
-  }
-
-  if (html_tag == ui::ToString(ax::mojom::Role::kMark)) {
-    // Replace mark element with bold element for readability.
-    html_tag = "b";
-  } else if (tree_infos_.at(active_tree_id_)->is_docs) {
-    // Change HTML tags for SVG elements to allow Reading Mode to render text
-    // for the Annotated Canvas elements in a Google Doc.
-    if (html_tag == "svg") {
-      html_tag = "div";
-    }
-    if (html_tag == "g" && ax_node->GetRole() == ax::mojom::Role::kParagraph) {
-      html_tag = "p";
-    }
-  }
-
-  return html_tag;
 }
 
 void ReadAnythingAppModel::InitAXPositionWithNode(
@@ -1479,39 +1399,14 @@ void ReadAnythingAppModel::ResetReadAloudState() {
   processed_granularities_on_current_page_.clear();
 }
 
-bool ReadAnythingAppModel::IsTextForReadAnything(
-    const ui::AXNodeID& ax_node_id) const {
-  // ListMarkers will have an HTML tag of "::marker," so they won't be
-  // considered text when checking for the length of the html tag. However, in
-  // order to read out loud ordered bullets, nodes that have the kListMarker
-  // role should be included.
-  // Note: This technically will include unordered list markers like bullets,
-  // but these won't be spoken because they will be filtered by the TTS engine.
-  ui::AXNode* node = GetAXNode(ax_node_id);
-  bool is_list_marker = node->GetRole() == ax::mojom::Role::kListMarker;
-
-  // TODO(crbug.com/40927698): Can this be updated to IsText() instead of
-  // checking the length of the html tag?
-  return (GetHtmlTag(ax_node_id).length() == 0) || is_list_marker;
-}
-
-// We should split the current utterance at a paragraph boundary if the
-// AXPosition is at the start of a paragraph and we already have nodes in
-// our current granularity segment.
-bool ReadAnythingAppModel::ShouldSplitAtParagraph(
-    const ui::AXNodePosition::AXPositionInstance& position,
-    const a11y::ReadAloudCurrentGranularity& current_granularity) const {
-  return position->AtStartOfParagraph() &&
-         (current_granularity.node_ids.size() > 0);
-}
-
 bool ReadAnythingAppModel::IsValidAXPosition(
     const ui::AXNodePosition::AXPositionInstance& position,
     const a11y::ReadAloudCurrentGranularity& current_granularity) const {
   ui::AXNode* anchor_node = GetAnchorNode(position);
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
-  bool is_text_node = IsTextForReadAnything(anchor_node->id());
+  bool is_text_node =
+      a11y::IsTextForReadAnything(anchor_node, is_pdf_, IsDocs());
   const std::set<ui::AXNodeID>* node_ids = selection_node_ids().empty()
                                                ? &display_node_ids()
                                                : &selection_node_ids();

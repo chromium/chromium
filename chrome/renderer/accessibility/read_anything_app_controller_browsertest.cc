@@ -423,10 +423,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnRestartReadAloud() { controller_->OnRestartReadAloud(); }
 
-  bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) {
-    return controller_->model_.IsNodeIgnoredForReadAnything(ax_node_id);
-  }
-
   bool HasTree(ui::AXTreeID tree_id) {
     return controller_->model_.ContainsTree(tree_id);
   }
@@ -1350,29 +1346,6 @@ TEST_F(ReadAnythingAppControllerTest, IsLeafNode) {
   EXPECT_EQ(true, IsLeafNode(2));
   EXPECT_EQ(true, IsLeafNode(3));
   EXPECT_EQ(true, IsLeafNode(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {
-  ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update);
-  ui::AXNodeData static_text_node;
-  static_text_node.id = 2;
-  static_text_node.role = ax::mojom::Role::kStaticText;
-
-  ui::AXNodeData combobox_node;
-  combobox_node.id = 3;
-  combobox_node.role = ax::mojom::Role::kComboBoxGrouping;
-
-  ui::AXNodeData button_node;
-  button_node.id = 4;
-  button_node.role = ax::mojom::Role::kButton;
-  update.nodes = {static_text_node, combobox_node, button_node};
-
-  AccessibilityEventReceived({update});
-  OnAXTreeDistilled({});
-  EXPECT_EQ(false, IsNodeIgnoredForReadAnything(2));
-  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(3));
-  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
