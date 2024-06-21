@@ -641,6 +641,67 @@ suite('AppTest', () => {
         args[1]);
   });
 
+  test('name change updates page title', async () => {
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [],
+        },
+      ],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+
+    const specsProduct = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info = createInfo({
+      clusterId: BigInt(123),
+      title: 'Product',
+      productUrl: {url: 'https://example.com/'},
+      imageUrl: {url: 'http://example.com/image.png'},
+    });
+
+    const testId = '00000000-0000-0000-0000-000000000001';
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+        products: [specsProduct],
+      }),
+      infos: [info],
+    });
+
+    const specsSet = createSpecsSet({
+      name: 'My products',
+      urls: [{url: 'https://example.com/'}],
+      uuid: {value: testId},
+    });
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await flushTasks();
+
+    // Since we loaded an existing set, the page title should use the name of
+    // the set.
+    assertEquals('My products', document.title);
+
+    // Simulate a name change from sync.
+    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+        {name: 'My specific products', urls: [], uuid: {value: testId}}));
+    await flushTasks();
+
+    // The name should have changed with the update event.
+    assertEquals('My specific products', document.title);
+  });
+
   test('shows full table loading state', async () => {
     const minLoadingAnimationMs = 10;
     const promiseValues = createAppPromiseValues({

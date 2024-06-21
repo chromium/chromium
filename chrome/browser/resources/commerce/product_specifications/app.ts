@@ -156,6 +156,7 @@ export class ProductSpecificationsElement extends PolymerElement {
       const {set} = await this.shoppingApi_.getProductSpecificationsSetByUuid(
           {value: idParam});
       if (set) {
+        document.title = set.name;
         this.setName_ = set.name;
         this.populateTable_(set.urls.map(url => (url.url)));
         return;
@@ -340,6 +341,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     if (set.uuid.value !== this.id_?.value) {
       return;
     }
+    document.title = set.name;
     this.setName_ = set.name;
     this.populateTable_(set.urls.map(url => url.url));
   }
