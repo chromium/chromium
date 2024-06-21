@@ -282,16 +282,6 @@ class TestAutofillClientTemplate : public T {
   }
 #endif
 
-  void ConfirmSaveCreditCardLocally(
-      const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::LocalSaveCardPromptCallback callback) override {
-    confirm_save_credit_card_locally_called_ = true;
-    offer_to_save_credit_card_bubble_was_shown_ = options.show_prompt;
-    save_credit_card_options_ = options;
-    std::move(callback).Run(get_save_card_offer_user_decision());
-  }
-
   void ConfirmSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
@@ -502,10 +492,6 @@ class TestAutofillClientTemplate : public T {
     should_save_autofill_profiles_ = value;
   }
 
-  bool ConfirmSaveCardLocallyWasCalled() const {
-    return confirm_save_credit_card_locally_called_;
-  }
-
   bool ConfirmSaveCardToCloudWasCalled() const {
     return confirm_save_credit_card_to_cloud_called_;
   }
@@ -610,8 +596,6 @@ class TestAutofillClientTemplate : public T {
       security_state::SecurityLevel::NONE;
 
   bool should_save_autofill_profiles_ = true;
-
-  bool confirm_save_credit_card_locally_called_ = false;
 
   bool confirm_save_credit_card_to_cloud_called_ = false;
 

@@ -16,15 +16,19 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using ::testing::_;
+using ::testing::Field;
+using ::testing::NotNull;
 
 namespace autofill {
 
@@ -36,6 +40,11 @@ class MockAutofillSaveCardBottomSheetBridge
       : AutofillSaveCardBottomSheetBridge(
             base::android::ScopedJavaGlobalRef<jobject>(nullptr)) {}
 
+  MOCK_METHOD(void,
+              RequestShowContent,
+              (const AutofillSaveCardUiInfo&,
+               std::unique_ptr<AutofillSaveCardDelegateAndroid>),
+              (override));
   MOCK_METHOD(void, Hide, (), (override));
 };
 
@@ -60,6 +69,13 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
   explicit MockSaveCardBubbleController(content::WebContents* web_contents)
       : SaveCardBubbleControllerImpl(web_contents) {}
   ~MockSaveCardBubbleController() override = default;
+
+  MOCK_METHOD(void,
+              OfferLocalSave,
+              (const CreditCard&,
+               AutofillClient::SaveCreditCardOptions,
+               AutofillClient::LocalSaveCardPromptCallback),
+              (override));
 
   MOCK_METHOD(
       void,
@@ -86,8 +102,11 @@ class ChromePaymentsAutofillClientTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ChromePaymentsAutofillClientTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableVcnEnrollLoadingAndConfirmation);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
+         features::kAutofillEnableCvcStorageAndFilling},
+        /*disabled_features=*/{});
   }
 
   void SetUp() override {
@@ -166,6 +185,60 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_NE(
       chrome_payments_client()->GetOrCreateAutofillSaveCardBottomSheetBridge(),
       nullptr);
+
+  TabModelList::RemoveTabModel(&tab_model);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       ConfirmSaveCreditCardLocally_CardSaveOnly_RequestsBottomSheet) {
+  MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+
+  EXPECT_CALL(
+      *save_card_bridge,
+      RequestShowContent(
+          AllOf(
+              Field(&AutofillSaveCardUiInfo::is_for_upload, false),
+              Field(&AutofillSaveCardUiInfo::description_text,
+                    u"To pay faster next time, save your card to your device")),
+          NotNull()));
+
+  chrome_payments_client()->ConfirmSaveCreditCardLocally(
+      CreditCard(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
+          .with_show_prompt(true),
+      base::DoNothing());
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       ConfirmSaveCreditCardLocally_CardSaveWithCvc_RequestsBottomSheet) {
+  MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+
+  EXPECT_CALL(*save_card_bridge,
+              RequestShowContent(
+                  AllOf(Field(&AutofillSaveCardUiInfo::is_for_upload, false),
+                        Field(&AutofillSaveCardUiInfo::description_text,
+                              u"To pay faster next time, save your card and "
+                              u"encrypted security code to your device")),
+                  NotNull()));
+
+  chrome_payments_client()->ConfirmSaveCreditCardLocally(
+      CreditCard(),
+      ChromeAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_show_prompt(true),
+      base::DoNothing());
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       ConfirmSaveCreditCardLocally_WindowNotSet_DoesNotFail) {
+  EXPECT_NO_FATAL_FAILURE(
+      chrome_payments_client()->ConfirmSaveCreditCardLocally(
+          CreditCard(),
+          ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+          base::DoNothing()));
 }
 
 TEST_F(
@@ -252,8 +325,19 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_NE(
       chrome_payments_client()->GetOrCreateAutofillSaveIbanBottomSheetBridge(),
       nullptr);
+
+  TabModelList::RemoveTabModel(&tab_model);
 }
 #else   // !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromePaymentsAutofillClientTest,
+       ConfirmSaveCreditCardLocally_CallsOfferLocalSave) {
+  EXPECT_CALL(save_card_bubble_controller(), OfferLocalSave);
+
+  chrome_payments_client()->ConfirmSaveCreditCardLocally(
+      CreditCard(), ChromeAutofillClient::SaveCreditCardOptions(),
+      base::DoNothing());
+}
+
 // Test that calling CreditCardUploadCompleted calls
 // SaveCardBubbleControllerImpl::ShowConfirmationBubbleView.
 TEST_F(ChromePaymentsAutofillClientTest,

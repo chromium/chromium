@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
+#include "components/infobars/core/infobar_manager.h"
 
 class ChromeBrowserState;
 class GURL;
@@ -52,7 +53,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   explicit IOSChromePaymentsAutofillClient(
       autofill::ChromeAutofillClientIOS* client,
       ChromeBrowserState* browser_state,
-      web::WebState* web_state);
+      web::WebState* web_state,
+      infobars::InfoBarManager* info_bar_manager);
   IOSChromePaymentsAutofillClient(const IOSChromePaymentsAutofillClient&) =
       delete;
   IOSChromePaymentsAutofillClient& operator=(
@@ -64,6 +66,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // PaymentsAutofillClient:
+  void ConfirmSaveCreditCardLocally(
+      const CreditCard& card,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::LocalSaveCardPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
@@ -162,6 +168,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
+
+  raw_ptr<infobars::InfoBarManager> info_bar_manager_;
 };
 
 }  // namespace payments

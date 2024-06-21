@@ -120,12 +120,6 @@ AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
 }
 #endif
 
-void AutofillClient::ConfirmSaveCreditCardLocally(
-    const CreditCard& card,
-    AutofillClient::SaveCreditCardOptions options,
-    LocalSaveCardPromptCallback callback) {
-}
-
 void AutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,

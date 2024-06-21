@@ -210,6 +210,17 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // HasCreditCardScanFeature() returns true.
   virtual void ScanCreditCard(CreditCardScanCallback callback);
 
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-save prompt. This includes both the save local card prompt and the
+  // save CVC for a local card prompt. On desktop, shows the offer-to-save
+  // bubble if `options.show_prompt` is true; otherwise only shows the omnibox
+  // icon. On mobile, shows the offer-to-save infobar if `options.show_prompt`
+  // is true; otherwise does not offer to save at all.
+  virtual void ConfirmSaveCreditCardLocally(
+      const CreditCard& card,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::LocalSaveCardPromptCallback callback);
+
   // Shows upload result to users. Called after credit card upload is finished.
   // `card_saved` indicates if the card is successfully saved.
   // `on_confirmation_closed_callback` should run after confirmation prompt is

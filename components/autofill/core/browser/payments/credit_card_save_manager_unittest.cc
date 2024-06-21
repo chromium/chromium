@@ -355,8 +355,9 @@ class CreditCardSaveManagerTest : public testing::Test {
     test_api(form).field(1).set_value(u"4111111111111111");
     test_api(form).field(2).set_value(ASCIIToUTF16(test::NextMonth()));
     test_api(form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+
     FormSubmitted(form);
-    EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+    EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   }
 
   void ExpectUniqueFillableFormParsedUkm() {
@@ -510,8 +511,9 @@ TEST_F(CreditCardSaveManagerTest, MAYBE_CreditCardSavedWhenAutocompleteOff) {
   test_api(form).field(1).set_value(u"4111111111111111");
   test_api(form).field(2).set_value(ASCIIToUTF16(test::NextMonth()));
   test_api(form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+
   FormSubmitted(form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
 }
 
 // Tests that credit card data are not saved when CC number does not pass the
@@ -528,8 +530,9 @@ TEST_F(CreditCardSaveManagerTest, InvalidCreditCardNumberIsNotSaved) {
   test_api(form).field(1).set_value(ASCIIToUTF16(card));
   test_api(form).field(2).set_value(ASCIIToUTF16(test::NextMonth()));
   test_api(form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+
   FormSubmitted(form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
 }
 
 TEST_F(CreditCardSaveManagerTest, CreditCardDisabledDoesNotSave) {
@@ -560,7 +563,7 @@ TEST_F(CreditCardSaveManagerTest, CreditCardDisabledDoesNotSave) {
 
   // The credit card should neither be saved locally or uploaded.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that no histogram entry was logged.
@@ -597,7 +600,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(
@@ -661,9 +664,9 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_ExpirationDateMissing) {
   test_api(credit_card_form).field(2).set_value(u"");
   test_api(credit_card_form).field(3).set_value(u"");
   test_api(credit_card_form).field(4).set_value(u"123");
-  FormSubmitted(credit_card_form);
 
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  FormSubmitted(credit_card_form);
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
 }
 
 // Tests local card save will still work as usual when supporting unfocused card
@@ -698,7 +701,7 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
   test_api(credit_card_form).field(5).set_value(u"123");
 
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -711,11 +714,11 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard local_card = test::GetCreditCard();
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
-            autofill_client_.get_save_credit_card_options().card_save_type);
+            payments_client().get_save_credit_card_options().card_save_type);
 }
 
 // Tests that when triggering AttemptToOfferCvcUploadSave function, SaveCard
@@ -741,9 +744,9 @@ TEST_F(CreditCardSaveManagerTest,
   local_card.set_cvc(kCvc);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   EXPECT_CALL(payments_data_manager(), UpdateLocalCvc(local_card.guid(), kCvc));
   UserDidDecideCvcLocalSave(
       AutofillClient::SaveCardOfferUserDecision::kAccepted);
@@ -762,7 +765,7 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(local_card.guid()));
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kAccepted);
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -770,7 +773,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Verify that the CVC prompt is offered and reset the strike count for that
   // CVC.
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   EXPECT_EQ(0, cvc_storage_strike_database.GetStrikes(local_card.guid()));
 }
 
@@ -791,7 +794,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify that CVC prompt is not offered.
   EXPECT_FALSE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
 }
 
 // Tests that max strikes will be added if user declines the save CVC
@@ -801,7 +804,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kDeclined);
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -818,7 +821,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -833,7 +836,7 @@ TEST_F(CreditCardSaveManagerTest,
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
@@ -846,7 +849,7 @@ TEST_F(CreditCardSaveManagerTest,
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
@@ -862,7 +865,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kIgnored);
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -876,7 +879,7 @@ TEST_F(CreditCardSaveManagerTest,
   TestAutofillClock test_autofill_clock(AutofillClock::Now());
   test_autofill_clock.Advance(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
-  autofill_client_.set_save_card_offer_user_decision(
+  payments_client().set_save_card_offer_user_decision(
       AutofillClient::SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
@@ -1242,7 +1245,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_FeatureNotEnabled) {
 
   // The save prompt should be shown instead of doing an upload.
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that no histogram entry was logged.
@@ -1281,7 +1284,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing CVC value.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1323,7 +1326,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcInvalidLength) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the invalid CVC value.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1383,7 +1386,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
 
   // A CVC value appeared in one of the two CVC fields, upload should happen.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -1437,7 +1440,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing CVC value.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1497,7 +1500,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the invalid CVC value.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1557,7 +1560,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing CVC value.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1619,7 +1622,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing CVC value.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1656,7 +1659,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoProfileAvailable) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name/address.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1707,7 +1710,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name/address.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1747,7 +1750,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing CVC, name, and address.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1790,7 +1793,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -1823,9 +1826,10 @@ TEST_F(CreditCardSaveManagerTest,
       .set_value(ASCIIToUTF16(test::NextMonth()));
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
+
   FormSubmitted(credit_card_form);
 
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Confirm that client_behavior_signals vector does contain the
@@ -1990,7 +1994,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing names/address.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2051,7 +2055,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesConflict) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the conflicting zip codes.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2102,7 +2106,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the conflicting zip codes.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2152,7 +2156,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ZipCodesHavePrefixMatch) {
 
   // One zip is a prefix of the other, upload should happen.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -2199,7 +2203,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoZipCodeAvailable) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing zip code.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2247,7 +2251,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasMiddleInitial) {
 
   // Names match loosely, upload should happen.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -2290,7 +2294,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoMiddleInitialInCCForm) {
 
   // Names match loosely, upload should happen.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -2330,7 +2334,7 @@ TEST_F(CreditCardSaveManagerTest,
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the mismatching names.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2376,7 +2380,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CCFormHasAddressMiddleName) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the mismatching names.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2431,7 +2435,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the mismatching names.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -2489,7 +2493,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
 
   // Name matches recently used profile, should offer upload.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -2526,7 +2530,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry and DetectedValue for "Cardholder
@@ -2566,7 +2570,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry and DetectedValue for "Cardholder
@@ -2604,7 +2608,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // The credit card should neither be saved locally or uploaded.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that no histogram entry was logged.
@@ -2640,7 +2644,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // The credit card should be saved locally.
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -2673,7 +2677,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Because everything went smoothly, verify that there was no histogram entry
@@ -2724,7 +2728,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that there was no histogram entry or DetectedValue for "Cardholder
@@ -2775,7 +2779,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that there was no histogram entry or DetectedValue for "Cardholder
@@ -2821,7 +2825,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing name.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify the |credit_card_save_manager_| is requesting cardholder name.
@@ -2873,7 +2877,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing expiration date.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify the |credit_card_save_manager_| is requesting expiration date.
@@ -2932,7 +2936,7 @@ TEST_F(
 
   // Save should not be offered because implicit Sync + Expiration date fix flow
   // aborts offering save
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 #endif
 }
@@ -2972,7 +2976,7 @@ TEST_F(
   // With the offer-to-save decision deferred to Google Payments, Payments can
   // still decide to allow saving despite the missing expiration date.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify the |credit_card_save_manager_| is requesting expiration date.
@@ -3010,7 +3014,7 @@ TEST_F(
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 #endif
 }
@@ -3043,7 +3047,7 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
@@ -3091,7 +3095,7 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_metrics::SaveCardRequestExpirationDateReason::
           kMonthAndYearMissing,
       1);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
@@ -3129,7 +3133,7 @@ TEST_F(CreditCardSaveManagerTest,
       "Autofill.SaveCardRequestExpirationDateReason",
       autofill_metrics::SaveCardRequestExpirationDateReason::kMonthMissingOnly,
       1);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
@@ -3169,7 +3173,7 @@ TEST_F(CreditCardSaveManagerTest,
       "Autofill.SaveCardRequestExpirationDateReason",
       autofill_metrics::SaveCardRequestExpirationDateReason::kYearMissingOnly,
       1);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
@@ -3208,7 +3212,7 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_metrics::SaveCardRequestExpirationDateReason::
           kExpirationDatePresentButExpired,
       1);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
@@ -3248,7 +3252,7 @@ TEST_F(
       autofill_metrics::SaveCardRequestExpirationDateReason::
           kExpirationDatePresentButExpired,
       1);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       payments_network_interface().detected_values_in_upload_details() &
@@ -3286,7 +3290,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadDetailsFails) {
 
   // The save prompt should be shown instead of doing an upload.
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry (and only that) was logged.
@@ -3333,7 +3337,7 @@ TEST_F(CreditCardSaveManagerTest, DuplicateMaskedCreditCard_NoUpload) {
   // Local save prompt should not be shown as there is already masked
   // card with same |TypeAndLastFourDigits|.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -3935,7 +3939,7 @@ TEST_F(
   // were all found, the local save prompt should be shown instead of the upload
   // prompt.
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -3972,7 +3976,7 @@ TEST_F(
   // Because Payments rejects the offer to upload save but not all of CVC + name
   // + address were detected, the local save prompt should not be shown either.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -4006,7 +4010,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Payments should be asked whether upload save can be offered.
   // (Unit tests assume they reply yes and save is successful.)
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4050,7 +4054,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Payments should be asked whether upload save can be offered.
   // (Unit tests assume they reply yes and save is successful.)
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4101,7 +4105,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Payments should be asked whether upload save can be offered.
   // (Unit tests assume they reply yes and save is successful.)
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4154,7 +4158,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Payments should be asked whether upload save can be offered.
   // (Unit tests assume they reply yes and save is successful.)
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4211,7 +4215,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Payments should be asked whether upload save can be offered.
   // (Unit tests assume they reply yes and save is successful.)
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4258,7 +4262,7 @@ TEST_F(CreditCardSaveManagerTest,
   // Payments should be asked whether upload save can be offered.
   // (Unit tests assume they reply yes and save is successful.)
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4320,7 +4324,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfLocalCard) {
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that metrics noted it was an existing local card for which credit
@@ -4360,7 +4364,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_UploadOfNewCard) {
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that metrics noted it was a brand new card for which credit card
@@ -4417,7 +4421,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Neither local or upload save should be offered in this case.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that metrics noted it was an existing local card for which credit
@@ -4455,7 +4459,7 @@ TEST_F(
   // Confirm that upload happened and that no experiment flag state was sent in
   // the request.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(payments_network_interface()
                   .client_behavior_signals_in_request()
@@ -4584,13 +4588,13 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the offer-to-save bubble was still shown because the card did
   // not have too many strikes.
   EXPECT_TRUE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   // Verify that no histogram entry was logged.
   histogram_tester.ExpectTotalCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes", 0);
@@ -4633,7 +4637,7 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the offer-to-save bubble was still shown because the card did
@@ -4677,7 +4681,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // No form of credit card save should be shown.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entry was logged.
@@ -4727,7 +4731,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesDisallowsSave) {
 
   // No form of credit card save should be shown.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the correct histogram entries were logged.
@@ -4775,13 +4779,13 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the offer-to-save bubble was not shown because the card had too
   // many strikes.
   EXPECT_FALSE(
-      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+      payments_client().get_offer_to_save_credit_card_bubble_was_shown());
   // Verify that the correct histogram entry was logged.
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes",
@@ -4826,7 +4830,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MaxStrikesStillAllowsSave) {
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that the offer-to-save bubble was not shown because the card had too
@@ -4880,7 +4884,7 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // 2 strikes should be removed when card was saved locally.
@@ -4928,7 +4932,7 @@ TEST_F(CreditCardSaveManagerTest,
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Strike count shouldn't change.
@@ -4962,7 +4966,7 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_ClearStrikesOnAdd) {
   test_api(credit_card_form).field(4).set_value(u"123");
 
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that adding the card reset the strike count for that card.
@@ -5003,7 +5007,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ClearStrikesOnAdd) {
   test_api(credit_card_form).field(4).set_value(u"123");
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that adding the card reset the strike count for that card.
@@ -5039,7 +5043,7 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_NumStrikesLoggedOnAdd) {
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that adding the card logged the number of strikes it had previously.
@@ -5084,7 +5088,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NumStrikesLoggedOnAdd) {
   base::HistogramTester histogram_tester;
 
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 
   // Verify that adding the card logged the number of strikes it had previously.
@@ -5148,7 +5152,7 @@ TEST_F(CreditCardSaveManagerTest, UploadSaveNotOfferedForUnsupportedCard) {
   // Since card isn't in any of the supported ranges, local save should be
   // offered and upload save should not.
   FormSubmitted(credit_card_form);
-  EXPECT_TRUE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_TRUE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -5183,7 +5187,7 @@ TEST_F(CreditCardSaveManagerTest, LocalSaveNotOfferedForSavedUnsupportedCard) {
 
   // Since card is already saved, local save should not be offered.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
 }
 
 // Tests that if a card falls in one of the supported bin ranges, upload save
@@ -5210,7 +5214,7 @@ TEST_F(CreditCardSaveManagerTest, UploadSaveOfferedForSupportedCard) {
   // Since card is in one of the supported ranges(4111-4113), upload save should
   // be offered.
   FormSubmitted(credit_card_form);
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
@@ -5249,8 +5253,9 @@ TEST_F(CreditCardSaveManagerTest, InvalidLegalMessageInOnDidGetUploadDetails) {
   ExpectCardUploadDecision(
       histogram_tester,
       autofill_metrics::UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE);
-  EXPECT_FALSE(
-      autofill_client_.get_save_credit_card_options().has_multiple_legal_lines);
+  EXPECT_FALSE(payments_client()
+                   .get_save_credit_card_options()
+                   .has_multiple_legal_lines);
 }
 
 // Tests that has_multiple_legal_lines is set correctly in
@@ -5316,9 +5321,10 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
   test_api(credit_card_form).field(2).set_value(u"03");
   test_api(credit_card_form).field(3).set_value(u"2999");
   test_api(credit_card_form).field(4).set_value(u"123");
+
   FormSubmitted(credit_card_form);
 
-  EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
+  EXPECT_FALSE(payments_client().ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
   EXPECT_TRUE(
       autofill_client_.get_save_credit_card_options()
@@ -5527,11 +5533,14 @@ TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
   test_api(credit_card_form).field(4).set_value(u"123");
   FormSubmitted(credit_card_form);
 
-  EXPECT_EQ(autofill_client_.get_save_credit_card_options().card_save_type ==
-                AutofillClient::CardSaveType::kCardSaveWithCvc,
+  auto card_save_type =
+      IsCreditCardUpstreamEnabled()
+          ? autofill_client_.get_save_credit_card_options().card_save_type
+          : payments_client().get_save_credit_card_options().card_save_type;
+
+  EXPECT_EQ(card_save_type == AutofillClient::CardSaveType::kCardSaveWithCvc,
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled());
-  EXPECT_EQ(autofill_client_.get_save_credit_card_options().card_save_type ==
-                AutofillClient::CardSaveType::kCardSaveOnly,
+  EXPECT_EQ(card_save_type == AutofillClient::CardSaveType::kCardSaveOnly,
             !IsSaveCvcFeatureEnabled() || !IsSaveCvcPrefEnabled());
 }
 

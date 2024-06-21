@@ -38,6 +38,7 @@ class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class ContentAutofillClient;
 class CreditCardRiskBasedAuthenticator;
+class AutofillCvcSaveMessageDelegate;
 class IbanAccessManager;
 class IbanManager;
 class MerchantPromoCodeManager;
@@ -111,6 +112,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #endif  // BUILDFLAG(IS_ANDROID)
   bool HasCreditCardScanFeature() const override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
+  void ConfirmSaveCreditCardLocally(
+      const CreditCard& card,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::LocalSaveCardPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;
@@ -204,6 +209,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<AutofillSaveIbanBottomSheetBridge>
       autofill_save_iban_bottom_sheet_bridge_;
+
+  std::unique_ptr<AutofillCvcSaveMessageDelegate>
+      autofill_cvc_save_message_delegate_;
 
   std::unique_ptr<AutofillSnackbarControllerImpl>
       autofill_snackbar_controller_impl_;

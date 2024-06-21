@@ -73,6 +73,11 @@ bool PaymentsAutofillClient::HasCreditCardScanFeature() const {
 
 void PaymentsAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
+void PaymentsAutofillClient::ConfirmSaveCreditCardLocally(
+    const CreditCard& card,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::LocalSaveCardPromptCallback callback) {}
+
 void PaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,
     std::optional<OnConfirmationClosedCallback>

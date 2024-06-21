@@ -63,7 +63,7 @@ class SaveCardBubbleControllerImpl
   // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
   // TODO(crbug.com/40937065) refactor: pass Iban by value since all they then
   // immediately move it into a member.
-  void OfferLocalSave(
+  virtual void OfferLocalSave(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback);

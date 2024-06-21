@@ -711,7 +711,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
         payments_data_manager().IsPaymentCvcStorageEnabled()) {
       card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
     }
-    client_->ConfirmSaveCreditCardLocally(
+    client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
         card_save_candidate_,
         AutofillClient::SaveCreditCardOptions()
             // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
@@ -727,7 +727,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 }
 
 void CreditCardSaveManager::OfferCvcLocalSave() {
-  client_->ConfirmSaveCreditCardLocally(
+  client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
       card_save_candidate_,
       AutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value_or(false))

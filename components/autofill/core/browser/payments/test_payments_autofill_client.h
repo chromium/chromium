@@ -69,6 +69,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  void ConfirmSaveCreditCardLocally(
+      const CreditCard& card,
+      AutofillClient::SaveCreditCardOptions options,
+      AutofillClient::LocalSaveCardPromptCallback callback) override;
   TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
@@ -116,6 +120,28 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
   bool show_otp_input_dialog() { return show_otp_input_dialog_; }
   void ResetShowOtpInputDialog() { show_otp_input_dialog_ = false; }
+
+  void set_save_card_offer_user_decision(
+      AutofillClient::SaveCardOfferUserDecision decision) {
+    save_card_offer_user_decision_ = decision;
+  }
+
+  AutofillClient::SaveCardOfferUserDecision
+  get_save_card_offer_user_decision() {
+    return save_card_offer_user_decision_;
+  }
+
+  bool ConfirmSaveCardLocallyWasCalled() const {
+    return confirm_save_credit_card_locally_called_;
+  }
+
+  AutofillClient::SaveCreditCardOptions get_save_credit_card_options() {
+    return save_credit_card_options_.value();
+  }
+
+  bool get_offer_to_save_credit_card_bubble_was_shown() {
+    return offer_to_save_credit_card_bubble_was_shown_.value();
+  }
 
   bool ConfirmSaveIbanLocallyWasCalled() const {
     return confirm_save_iban_locally_called_;
@@ -165,8 +191,20 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 
   bool show_otp_input_dialog_ = false;
 
+  bool confirm_save_credit_card_locally_called_ = false;
   bool confirm_save_iban_locally_called_ = false;
   bool confirm_upload_iban_to_cloud_called_ = false;
+
+  // User decision when credit card / CVC local save or upload was offered.
+  AutofillClient::SaveCardOfferUserDecision save_card_offer_user_decision_ =
+      AutofillClient::SaveCardOfferUserDecision::kAccepted;
+
+  // Populated if credit card local save or upload was offered.
+  std::optional<AutofillClient::SaveCreditCardOptions>
+      save_credit_card_options_;
+
+  // Populated if save was offered. True if bubble was shown, false otherwise.
+  std::optional<bool> offer_to_save_credit_card_bubble_was_shown_;
 
   // Populated if IBAN save was offered. True if bubble was shown, false
   // otherwise.

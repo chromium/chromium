@@ -180,7 +180,7 @@ ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
         std::make_unique<payments::IOSChromePaymentsAutofillClient>(
-            this, browser_state_, web_state_);
+            this, browser_state_, web_state_, infobar_manager_);
   }
 
   return payments_autofill_client_.get();
@@ -262,18 +262,6 @@ ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
         std::make_unique<payments::MandatoryReauthManager>(this);
   }
   return payments_reauth_manager_.get();
-}
-
-void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
-    const CreditCard& card,
-    SaveCreditCardOptions options,
-    LocalSaveCardPromptCallback callback) {
-  DCHECK(options.show_prompt);
-  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
-          AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
-          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
-                                                     options))));
 }
 
 void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(

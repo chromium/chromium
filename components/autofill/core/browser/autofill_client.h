@@ -454,17 +454,6 @@ class AutofillClient {
   GetOrCreatePaymentsMandatoryReauthManager();
 
   // Runs |callback| once the user makes a decision with respect to the
-  // offer-to-save prompt. This includes both the save local card prompt and the
-  // save CVC for a local card prompt. On desktop, shows the offer-to-save
-  // bubble if |options.show_prompt| is true; otherwise only shows the omnibox
-  // icon. On mobile, shows the offer-to-save infobar if |options.show_prompt|
-  // is true; otherwise does not offer to save at all.
-  virtual void ConfirmSaveCreditCardLocally(
-      const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback);
-
-  // Runs |callback| once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save server card prompt and
   // the save CVC for a server card prompt. Displays the contents of
   // |legal_message_lines| to the user. Displays a cardholder name textfield in

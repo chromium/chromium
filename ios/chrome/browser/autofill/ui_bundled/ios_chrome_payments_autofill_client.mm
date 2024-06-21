@@ -8,11 +8,14 @@
 
 #import "base/check_deref.h"
 #import "base/functional/callback.h"
+#import "base/memory/ptr_util.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -27,12 +30,14 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -40,10 +45,20 @@
 
 namespace autofill::payments {
 
+namespace {
+// Creates and returns an infobar for saving credit cards.
+std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateIOS> delegate) {
+  return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
+                                      std::move(delegate));
+}
+}  // namespace
+
 IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
     autofill::ChromeAutofillClientIOS* client,
     ChromeBrowserState* browser_state,
-    web::WebState* web_state)
+    web::WebState* web_state,
+    infobars::InfoBarManager* info_bar_manager)
     : client_(CHECK_DEREF(client)),
       payments_network_interface_(
           std::make_unique<payments::PaymentsNetworkInterface>(
@@ -53,7 +68,8 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
               &client->GetPersonalDataManager()->payments_data_manager(),
               browser_state->IsOffTheRecord())),
       browser_state_(browser_state),
-      web_state_(web_state) {}
+      web_state_(web_state),
+      info_bar_manager_(info_bar_manager) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
 
@@ -61,6 +77,18 @@ void IOSChromePaymentsAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   std::move(callback).Run(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
+}
+
+void IOSChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
+    const CreditCard& card,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::LocalSaveCardPromptCallback callback) {
+  DCHECK(options.show_prompt);
+  info_bar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
+      std::make_unique<AutofillSaveCardInfoBarDelegateIOS>(
+          AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
+          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
+                                                     options))));
 }
 
 void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(

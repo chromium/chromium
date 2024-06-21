@@ -52,7 +52,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
@@ -253,6 +255,38 @@ void ChromePaymentsAutofillClient::ScanCreditCard(
     ChromePaymentsAutofillClient::CreditCardScanCallback callback) {
   CreditCardScannerController::ScanCreditCard(web_contents(),
                                               std::move(callback));
+}
+
+void ChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
+    const CreditCard& card,
+    AutofillClient::SaveCreditCardOptions options,
+    AutofillClient::LocalSaveCardPromptCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK(options.show_prompt);
+  AutofillSaveCardUiInfo ui_info =
+      AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
+  auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
+      std::move(callback), options, web_contents());
+
+  // If a CVC is detected for an existing local card in the checkout form, the
+  // CVC save prompt is shown in a message.
+  if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+    autofill_cvc_save_message_delegate_ =
+        std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
+    autofill_cvc_save_message_delegate_->ShowMessage(
+        ui_info, std::move(save_card_delegate));
+    return;
+  }
+
+  // Saving a new local card (may include CVC) via a bottom sheet.
+  if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
+    bridge->RequestShowContent(ui_info, std::move(save_card_delegate));
+  }
+#else   // !BUILDFLAG(IS_ANDROID)
+  SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
+  SaveCardBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferLocalSave(card, options, std::move(callback));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
