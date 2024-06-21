@@ -135,6 +135,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.SchedQoS.SetProcessStateError" enum="QoSErrorType"
+    expires_after="2024-10-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    The error types from schedqos feature in resourced. This is recorded each
+    time the SetProcessState DBus request fails. The request rarely fails.
+  </summary>
+</histogram>
+
+<histogram name="Scheduling.SchedQoS.SetThreadStateError" enum="QoSErrorType"
+    expires_after="2024-10-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    The error types from schedqos feature in resourced. This is recorded each
+    time the SetThreadState DBus request fails. The request rarely fails.
+  </summary>
+</histogram>
+
 <histogram
     name="Scheduling.ThreadController.ActiveIntervalDuration.Short.{NamedThread}"
     units="microseconds" expires_after="2025-01-26">
