@@ -15,9 +15,15 @@ build_webui("build") {
     "app.ts",
     "app.html.ts",
     "private_state_tokens.ts",
+    "toolbar.ts",
+    "toolbar.html.ts",
   ]
 
-  css_files = [ "app.css" ]
+  css_files = [
+    "app.css",
+    "toolbar.css",
+    "shared_vars.css",
+  ]
 
   ts_composite = true
   ts_deps = [

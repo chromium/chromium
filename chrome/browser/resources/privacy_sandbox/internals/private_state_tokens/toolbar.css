@@ -5,10 +5,17 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
+ * #import=./shared_vars.css.js
  * #css_wrapper_metadata_end */
 
- @media (prefers-color-scheme: dark) {
-  :host {
-    color: var(--google-grey-200);
-  }
+cr-toolbar {
+  min-height: 56px;
+  --cr-toolbar-header-white-space: nowrap;
+}
+
+#product-logo {
+  height: 24px;
+  margin-inline-end: 16px;
+  margin-top: 6px;
+  width: 24px;
 }

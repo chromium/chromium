@@ -24,21 +24,13 @@ export class PrivateStateTokensAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      disabled: {
-        type: Boolean,
-        reflect: true,
-      },
-      myValue: {type: String},
+      pageTitle_: {type: String},
+      narrow_: {type: Boolean},
     };
   }
 
-  disabled: boolean = false;
-  myValue: string = 'This element is made in lit!';
-
-  // Referenced from the template, so must be protected (not private).
-  protected onInputValueChanged_(e: CustomEvent<{value: string}>) {
-    this.myValue = e.detail.value;
-  }
+  protected pageTitle_: string = 'Private State Tokens';
+  protected narrow_: boolean = true;
 }
 
 declare global {

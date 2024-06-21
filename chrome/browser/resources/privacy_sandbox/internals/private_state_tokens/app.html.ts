@@ -8,9 +8,9 @@ import type {PrivateStateTokensAppElement} from './app.js';
 
 export function getHtml(this: PrivateStateTokensAppElement) {
   return html`
-<div>Input something</div>
-<cr-input .value="${this.myValue}"
-    ?disabled="${this.disabled}"
-    @value-changed="${this.onInputValueChanged_}">
-</cr-input>`;
+  <private-state-tokens-toolbar
+      id="toolbar"
+      .pageName="${this.pageTitle_}"
+      .narrow="${this.narrow_}">
+  </private-state-tokens-toolbar>`;
 }

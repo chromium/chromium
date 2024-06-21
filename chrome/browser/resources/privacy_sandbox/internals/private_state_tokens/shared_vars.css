@@ -3,12 +3,11 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style-lit
+ * #type=vars
  * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
- @media (prefers-color-scheme: dark) {
-  :host {
-    color: var(--google-grey-200);
-  }
+html {
+  --toolbar-height: 56px;
 }
