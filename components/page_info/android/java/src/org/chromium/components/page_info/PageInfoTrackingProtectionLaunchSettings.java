@@ -6,11 +6,8 @@ package org.chromium.components.page_info;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.text.TextPaint;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
-import android.text.style.ClickableSpan;
-import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -30,7 +27,6 @@ import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.TrackingProtectionFeatureType;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.util.AttrUtils;
 
 import java.util.List;
 
@@ -194,8 +190,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
             boolean protectionsOn,
             long expiration,
             List<TrackingProtectionFeature> features) {
-        // Extract the 3PC enforcement from the feature vector.
-        @CookieControlsEnforcement int enforcement = CookieControlsEnforcement.NO_ENFORCEMENT;
         boolean cookiesFeaturePresent = false;
         int regularCount = 0;
         for (TrackingProtectionFeature feature : features) {
@@ -206,11 +200,10 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                 // Set the managed title and status to visible if they're not already.
                 mManagedTitle.setVisible(true);
                 mManagedStatus.setVisible(true);
-                mManagedStatus.setVisible(feature.featureType, true);
+                mManagedStatus.setVisible(feature.featureType, true, feature.enforcement);
             }
             if (feature.featureType == TrackingProtectionFeatureType.THIRD_PARTY_COOKIES) {
                 cookiesFeaturePresent = true;
-                enforcement = feature.enforcement;
             }
         }
 
@@ -225,38 +218,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
             return;
         }
 
-        boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
-
-        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
-            // Hide all the 3PC controls.
-            mTpSwitch.setVisible(false);
-            mTpTitle.setVisible(false);
-            findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
-            ClickableSpan linkSpan =
-                    new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                            mOnCookieSettingsLinkClicked.run();
-                        }
-
-                        @Override
-                        public void updateDrawState(TextPaint textPaint) {
-                            super.updateDrawState(textPaint);
-                            textPaint.setColor(
-                                    AttrUtils.resolveColor(
-                                            getContext().getTheme(),
-                                            R.attr.globalClickableSpanColor,
-                                            R.color.default_text_color_link_baseline));
-                        }
-                    };
-            mTpSwitch.setSummary(
-                    SpanApplier.applySpans(
-                            getString(
-                                    R.string.page_info_tracking_protection_site_grant_description),
-                            new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));
-            return;
-        }
-
         mTpSwitch.setVisible(controlsVisible);
         mTpTitle.setVisible(controlsVisible);
 
@@ -264,15 +225,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
 
         mTpSwitch.setChecked(protectionsOn);
         mTpStatus.setTrackingProtectionStatus(protectionsOn);
-        mTpSwitch.setEnabled(!isEnforced);
-        mTpSwitch.setManagedPreferenceDelegate(
-                new ForwardingManagedPreferenceDelegate(
-                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return isEnforced;
-                    }
-                });
+        mManagedStatus.setTrackingProtectionStatus(protectionsOn);
 
         boolean permanentException = (expiration == 0);
 
