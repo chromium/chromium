@@ -12317,14 +12317,6 @@ if (!is_android) {
       "//third_party/leveldatabase",
     ]
 
-    if (is_chromeos_ash) {
-      deps += [
-        "//chrome/browser/ash/crosapi:browser_util",
-        "//chrome/browser/ash/system_web_apps/test_support",
-        "//chromeos/ash/components/standalone_browser",
-      ]
-    }
-
     data_deps = [
       "//testing:test_scripts_shared",
       "//testing/buildbot/filters:sync_integration_tests_filters",
@@ -12373,8 +12365,12 @@ if (!is_android) {
         "//chrome/browser/sync/test/integration/two_client_workspace_desk_sync_test.cc",
       ]
       deps += [
+        "//chrome/browser/ash/crosapi:browser_util",
+        "//chrome/browser/ash/sync",
+        "//chrome/browser/ash/system_web_apps/test_support",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/dbus/shill",
+        "//chromeos/ash/components/standalone_browser",
         "//chromeos/ash/components/standalone_browser:test_support",
         "//chromeos/ash/components/sync_wifi",
         "//chromeos/ash/components/sync_wifi:test_support",
