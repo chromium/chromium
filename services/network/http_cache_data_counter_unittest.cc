@@ -85,9 +85,11 @@ class HttpCacheDataCounterTest : public testing::Test {
     ASSERT_TRUE(cache);
     {
       net::TestCompletionCallback callback;
-      int rv = cache->GetBackend(&backend_, callback.callback());
+      disk_cache::Backend* backend = nullptr;
+      int rv = cache->GetBackend(&backend, callback.callback());
       ASSERT_EQ(net::OK, callback.GetResult(rv));
-      ASSERT_TRUE(backend_);
+      ASSERT_TRUE(backend);
+      backend_ = backend;
     }
 
     // Create some entries in the cache.
@@ -204,7 +206,7 @@ class HttpCacheDataCounterTest : public testing::Test {
   mojo::Remote<mojom::NetworkContext> network_context_remote_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION disk_cache::Backend* backend_ = nullptr;
+  raw_ptr<disk_cache::Backend> backend_ = nullptr;
 };
 
 TEST_F(HttpCacheDataCounterTest, Basic) {
