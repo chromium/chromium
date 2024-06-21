@@ -3794,6 +3794,8 @@ static_library("browser") {
       "content_settings/generated_notification_pref.h",
       "content_settings/generated_permission_prompting_behavior_pref.cc",
       "content_settings/generated_permission_prompting_behavior_pref.h",
+      "data_sharing/desktop/data_sharing_ui_delegate_desktop.cc",
+      "data_sharing/desktop/data_sharing_ui_delegate_desktop.h",
       "device_api/device_attribute_api.cc",
       "device_api/device_attribute_api.h",
       "device_api/device_service_impl.cc",
