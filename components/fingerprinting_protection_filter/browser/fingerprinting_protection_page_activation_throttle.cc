@@ -83,9 +83,15 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
   }
   subresource_filter::mojom::ActivationState activation_state;
   activation_state.activation_level = activation_level;
-  FingerprintingProtectionWebContentsHelper::FromWebContents(
-      navigation_handle()->GetWebContents())
-      ->NotifyPageActivationComputed(navigation_handle(), activation_state);
+  auto* web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          navigation_handle()->GetWebContents());
+  // Making sure the WebContentsHelper exists is outside the scope of this
+  // class.
+  if (web_contents_helper) {
+    web_contents_helper->NotifyPageActivationComputed(navigation_handle(),
+                                                      activation_state);
+  }
 
   LogMetricsOnChecksComplete(decision, activation_level);
 }
