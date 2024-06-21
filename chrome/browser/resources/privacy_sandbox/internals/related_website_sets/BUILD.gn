@@ -17,12 +17,15 @@ build_webui("build") {
     "related_website_sets.ts",
     "toolbar.html.ts",
     "toolbar.ts",
+    "sidebar.ts",
+    "sidebar.html.ts",
   ]
 
   css_files = [
     "app.css",
     "toolbar.css",
     "shared_vars.css",
+    "sidebar.css",
   ]
 
   ts_deps = [

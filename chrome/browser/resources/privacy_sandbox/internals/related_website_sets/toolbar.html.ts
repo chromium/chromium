@@ -8,8 +8,7 @@ import type {RelatedWebsiteSetsToolbarElement} from './toolbar.js';
 
 export function getHtml(this: RelatedWebsiteSetsToolbarElement) {
   return html`
-<cr-toolbar
-    id="mainToolbar"
+<cr-toolbar id="mainToolbar"
     .autofocus="${this.autoFocus_}"
     .pageName="${this.pageName}"
     .searchPrompt="${this.searchPrompt_}"
@@ -19,9 +18,9 @@ export function getHtml(this: RelatedWebsiteSetsToolbarElement) {
     @narrow-changed="${this.onNarrowChanged_}"
     .narrowThreshold="${this.narrowThreshold_}"
     ?always-show-logo="${this.alwaysShowLogo_}"
-    ?show-menu="${this.narrow}">
-  <cr-icon-button
-      id="helpIcon"
+    ?show-menu="${this.narrow}"
+    @cr-toolbar-menu-click="${this.onMenuClick_}">
+  <cr-icon-button id="helpIcon"
       iron-icon="cr:help-outline"
       .title="Help">
   </cr-icon-button>

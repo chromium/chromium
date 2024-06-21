@@ -54,6 +54,14 @@ export class RelatedWebsiteSetsToolbarElement extends CrLitElement {
 
   protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
     this.narrow = e.detail.value;
+    // Custom Event for parent component to listen for and update narrow status.
+    this.dispatchEvent(
+        new CustomEvent('narrowChanged', {detail: {data: this.narrow}}));
+    this.requestUpdate();
+  }
+
+  protected onMenuClick_() {
+    this.dispatchEvent(new CustomEvent('menuClicked'));
     this.requestUpdate();
   }
 }
