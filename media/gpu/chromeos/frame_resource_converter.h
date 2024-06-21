@@ -153,8 +153,8 @@ class FrameResourceConverter {
   // this via parent_task_runner().
   scoped_refptr<base::SequencedTaskRunner> parent_task_runner_;
 
-  // The working task runner. Set by Initialize(). Derived classes should use
-  // Output() to write a converted frame.
+  // The callback for passing output frames. Set by Initialize(). Derived
+  // classes should use Output() to write a converted frame.
   OutputCB output_cb_;
 };
 
