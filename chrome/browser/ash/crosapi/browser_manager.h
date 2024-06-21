@@ -682,6 +682,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // true if the directory existed and was removed successfully.
   void OnLacrosUserDataDirRemoved(bool cleared);
 
+  base::ObserverList<BrowserManagerObserver> observers_;
+
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
 
@@ -749,8 +751,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // The features that are currently registered to keep Lacros alive.
   std::set<Feature> keep_alive_features_;
-
-  base::ObserverList<BrowserManagerObserver> observers_;
 
   const bool launch_at_login_screen_;
 
