@@ -1,6 +1,5 @@
 histograms_xml_files = [
   "//tools/metrics/histograms/enums.xml",
-  "//tools/metrics/histograms/histograms.xml",
   "//tools/metrics/histograms/metadata/accessibility/enums.xml",
   "//tools/metrics/histograms/metadata/accessibility/histograms.xml",
   "//tools/metrics/histograms/metadata/account_manager/histograms.xml",

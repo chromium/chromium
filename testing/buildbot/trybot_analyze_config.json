@@ -71,7 +71,6 @@
       "tools/rust/update_rust.py",
       "tools/grit/.*",
       "tools/mb/.*",
-      "tools/metrics/histograms/histograms.xml",
       "tools/msan/.*",
       "tools/perf/.*",
       "tools/telemetry/.*",

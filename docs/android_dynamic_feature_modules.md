@@ -154,7 +154,7 @@ chrome_module_descs += [ foo_module_desc ]
 
 The next step is to add Foo to the list of feature modules for UMA recording.
 For this, add `foo` to the `AndroidFeatureModuleName` in
-`//tools/metrics/histograms/histograms.xml`:
+`//tools/metrics/histograms/metadata/histogram_suffixes_list.xml`:
 
 ```xml
 <histogram_suffixes name="AndroidFeatureModuleName" ...>

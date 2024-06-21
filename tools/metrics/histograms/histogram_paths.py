@@ -41,13 +41,7 @@ PATH_TO_METADATA_DIR = path_util.GetInputFile(
 _ENUMS_XML_RELATIVE = ([
     'tools/metrics/histograms/enums.xml',
 ] + _FindXmlFiles(_ENUMS_XML_FILE_NAMES))
-# In the middle state, histogram paths include both the large histograms.xml
-# file as well as the split up files.
-# TODO: Improve on the current design to avoid calling `os.walk()` at the time
-# of module import.
-_HISTOGRAMS_XMLS_RELATIVE = ([
-    'tools/metrics/histograms/histograms.xml',
-] + _FindXmlFiles(_HISTOGRAM_XML_FILE_NAMES))
+_HISTOGRAMS_XMLS_RELATIVE = _FindXmlFiles(_HISTOGRAM_XML_FILE_NAMES)
 ALL_XMLS_RELATIVE = _ENUMS_XML_RELATIVE + _HISTOGRAMS_XMLS_RELATIVE
 
 HISTOGRAMS_PREFIX_LIST = [
