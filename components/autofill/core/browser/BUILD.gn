@@ -633,6 +633,13 @@ static_library("browser") {
     ]
   }
 
+  if (is_android) {
+    sources += [
+      "payments/autofill_save_iban_ui_info.cc",
+      "payments/autofill_save_iban_ui_info.h",
+    ]
+  }
+
   if (is_ios || is_android) {
     sources += [
       "payments/autofill_save_card_delegate.cc",
@@ -1270,6 +1277,10 @@ source_set("unit_tests") {
   if (is_ios) {
     sources +=
         [ "autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources += [ "payments/autofill_save_iban_ui_info_unittest.cc" ]
   }
 
   if (is_ios || is_android) {

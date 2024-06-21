@@ -665,6 +665,22 @@
   <message name="IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
     To autofill this IBAN next time, save it in your Google account
   </message>
+  <!-- Autofill save IBAN bottom sheet prompt -->
+  <if expr="is_android">
+    <if expr="not use_titlecase">
+      <message name="IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS" desc="The label for cancel button used in Autofill save IBAN bottom sheet on Clank.">
+        No thanks
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS" desc="In Title Case: The label for cancel button used in Autofill save IBAN bottom sheet on Clank.">
+        No Thanks
+      </message>
+    </if>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_MOBILE_ACCEPT" desc="Text to show for the accept button in the Autofill save IBAN bottom sheet on Clank.">
+      Save
+    </message>
+  </if>
 
   <!-- Mandatory Reauth related strings - start -->
   <message name="IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_TITLE" desc="Title text for the mandatory reauth opt-in prompt that is displayed to the user after filling in payment method information. Mandatory reauth requires the user to unlock their device or pass a biometric auth when autofilling payment method information." formatter_data="android_java">
