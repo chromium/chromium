@@ -1741,6 +1741,7 @@ void InlineCursor::MoveToVisualFirstForSameLayoutObject() {
 void InlineCursor::MoveToVisualFirstOrLastForCulledInline(bool last) {
   InlineCursorPosition found_position;
   std::optional<size_t> found_index;
+  wtf_size_t found_fragment_index = 0;
 
   // Iterate through the remaining fragments to find the lowest/greatest index.
   for (; Current(); MoveToNextForSameLayoutObject()) {
@@ -1751,6 +1752,7 @@ void InlineCursor::MoveToVisualFirstOrLastForCulledInline(bool last) {
         (!last && index < *found_index)) {
       found_position = Current();
       found_index = index;
+      found_fragment_index = fragment_index_;
 
       // Break if there cannot be any fragment lower/greater than this one.
       if ((last && index == fragment_items_->Size() - 1) ||
@@ -1760,6 +1762,13 @@ void InlineCursor::MoveToVisualFirstOrLastForCulledInline(bool last) {
   }
 
   DCHECK(found_position);
+  if (RuntimeEnabledFeatures::InlineCursorMultiColFixEnabled() &&
+      fragment_index_ > found_fragment_index) {
+    while (fragment_index_ > found_fragment_index) {
+      DecrementFragmentIndex();
+    }
+    CHECK(TrySetRootFragmentItems());
+  }
   MoveTo(found_position);
 }
 

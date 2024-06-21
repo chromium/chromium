@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<style type="text/css">
+:last-child {
+  break-inside:auto;
+  column-count:112 !important;
+  stroke-width:inherit;
+}
+*:only-of-type {
+  display:inline;
+}
+</style><script defer="defer" type="text/javascript">
+function event_handler_1307_readystatechange() {
+  var oSelection=window.getSelection();
+  oSelection.modify('move', 'forward', 'paragraphboundary')
+  if (!oSelection.rangeCount) {
+    document.execCommand("SelectAll")
+  }
+}
+document.addEventListener("readystatechange", event_handler_1307_readystatechange);
+</script>
+<body dir="rtl">
+<table>
+<caption>
+<textarea>
+</textarea>
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+<input>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  document.querySelector('style').remove();
+}, 'crbug.com/343749045. Pass if no crashes');
+</script>
