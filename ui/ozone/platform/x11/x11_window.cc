@@ -1930,6 +1930,8 @@ void X11Window::Map(bool inactive) {
 
   UpdateMinAndMaxSize();
 
+  UpdateDecorationInsets();
+
   if (window_properties_.empty()) {
     connection_->DeleteProperty(xwindow_, x11::GetAtom("_NET_WM_STATE"));
   } else {
