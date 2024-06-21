@@ -337,6 +337,7 @@ source_set("crosapi") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash:print_job_info_proto",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/apps",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/magic_boost:magic_boost_ash",
     "//chrome/browser/ash/mahi:mahi_ash",
@@ -481,6 +482,7 @@ source_set("crosapi") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/apps",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",

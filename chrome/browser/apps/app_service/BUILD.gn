@@ -217,6 +217,7 @@ source_set("app_service") {
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/promise_apps/proto",
+      "//chrome/browser/ash/apps",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/mall",
       "//chrome/browser/ash/system_web_apps",
@@ -249,6 +250,7 @@ source_set("app_service") {
 
     # TODO(crbug.com/40251079): Remove circular dependencies.
     allow_circular_includes_from += [
+      "//chrome/browser/ash/apps",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/camera_app",
@@ -405,6 +407,7 @@ source_set("unit_tests") {
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash",
       "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/apps",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/metrics/structured:features",
