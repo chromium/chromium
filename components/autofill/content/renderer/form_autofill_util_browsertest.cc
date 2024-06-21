@@ -65,6 +65,7 @@ using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Optional;
+using ::testing::Pair;
 using ::testing::Pointwise;
 using ::testing::Property;
 using ::testing::Values;
@@ -183,9 +184,8 @@ const char* kPoorMansPlaceholderNoHorizontalContainment = R"(
 void VerifyButtonTitleCache(const WebFormElement& form_target,
                             const ButtonTitleList& expected_button_titles,
                             const ButtonTitlesCache& actual_cache) {
-  EXPECT_THAT(actual_cache,
-              ElementsAre(testing::Pair(GetFormRendererId(form_target),
-                                        expected_button_titles)));
+  EXPECT_THAT(actual_cache, ElementsAre(Pair(GetFormRendererId(form_target),
+                                             expected_button_titles)));
 }
 
 bool HaveSameFormControlId(const WebFormControlElement& element,
@@ -344,7 +344,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
     }
 
     EXPECT_EQ(test_case.expected_label,
-              FindChildTextWithIgnoreList(target, to_skip));
+              FindChildTextWithIgnoreListForTesting(target, to_skip));
   }
 }
 
@@ -409,11 +409,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     WebFormControlElement form_target =
         GetFormControlElementById(web_frame->GetDocument(), "target");
     if (test_case.expected_label.empty()) {
-      EXPECT_EQ(InferLabelForElement(form_target), std::nullopt);
+      EXPECT_EQ(InferLabelForElementForTesting(form_target), std::nullopt);
     } else {
-      EXPECT_THAT(
-          InferLabelForElement(form_target),
-          Optional(Field(&InferredLabel::label, test_case.expected_label)));
+      EXPECT_THAT(InferLabelForElementForTesting(form_target),
+                  Optional(Pair(test_case.expected_label, _)));
     }
   }
 }
@@ -460,9 +459,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     WebFormControlElement form_target =
         GetFormControlElementById(web_frame->GetDocument(), "target");
     EXPECT_THAT(
-        InferLabelForElement(form_target),
-        Optional(AllOf(Field(&InferredLabel::label, kLabelSourceExpectedLabel),
-                       Field(&InferredLabel::source, test_case.label_source))));
+        InferLabelForElementForTesting(form_target),
+        Optional(Pair(kLabelSourceExpectedLabel, test_case.label_source)));
   }
 }
 
@@ -690,7 +688,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabel) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"the label");
+  EXPECT_EQ(GetAriaLabelForTesting(doc, element), u"the label");
 }
 
 // Tests that aria-labelledby works. Simple case: only one id referenced.
@@ -704,7 +702,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledBySingle) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
+  EXPECT_EQ(GetAriaLabelForTesting(doc, element), u"Name");
 }
 
 // Tests that aria-labelledby works: Complex case: multiple ids referenced.
@@ -718,7 +716,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByMulti) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Billing Name");
+  EXPECT_EQ(GetAriaLabelForTesting(doc, element), u"Billing Name");
 }
 
 // Tests that aria-labelledby takes precedence over aria-label
@@ -733,7 +731,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByTakesPrecedence) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
+  EXPECT_EQ(GetAriaLabelForTesting(doc, element), u"Name");
 }
 
 // Tests that an invalid aria-labelledby reference gets ignored (as opposed to
@@ -748,7 +746,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByInvalid) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"");
+  EXPECT_EQ(GetAriaLabelForTesting(doc, element), u"");
 }
 
 // Tests that invalid aria-labelledby references fall back to aria-label.
@@ -763,7 +761,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByFallback) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"valid");
+  EXPECT_EQ(GetAriaLabelForTesting(doc, element), u"valid");
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
@@ -774,8 +772,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            u"aria description");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria description");
 }
 
 // Tests that aria-describedby works: Complex case: multiple ids referenced.
@@ -787,8 +784,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            u"aria description");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"aria description");
 }
 
 // Tests that invalid aria-describedby returns the empty string.
@@ -797,7 +793,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = GetFormControlElementById(doc, "input");
-  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element), u"");
+  EXPECT_EQ(GetAriaDescriptionForTesting(doc, element), u"");
 }
 
 // Tests IsOwnedByFrame().
@@ -896,7 +892,7 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::vector<SelectOption> options;
-  GetDataListSuggestions(web_control, &options);
+  GetDataListSuggestionsForTesting(web_control, &options);
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
@@ -912,7 +908,7 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::vector<SelectOption> options;
-  GetDataListSuggestions(web_control, &options);
+  GetDataListSuggestionsForTesting(web_control, &options);
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
@@ -1166,7 +1162,7 @@ TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
           << input.GetAttribute("data-false").Ascii());
       ASSERT_TRUE(input.HasAttribute("data-visible") !=
                   input.HasAttribute("data-invisible"));
-      EXPECT_EQ(IsWebElementVisible(input), expectation);
+      EXPECT_EQ(IsWebElementVisibleForTesting(input), expectation);
     }
   };
 
@@ -1207,14 +1203,18 @@ TEST_F(FormAutofillUtilsTest, GetClosestAncestorFormElement) {
   content::RunAllTasksUntilIdle();
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "unowned")),
-            WebFormElement());
-  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "owned1")),
-            GetFormElementById(doc, "outer_form"));
-  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "owned2")),
-            GetFormElementById(doc, "inner_form"));
-  EXPECT_EQ(GetClosestAncestorFormElement(GetElementById(doc, "owned3")),
-            GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(
+      GetClosestAncestorFormElementForTesting(GetElementById(doc, "unowned")),
+      WebFormElement());
+  EXPECT_EQ(
+      GetClosestAncestorFormElementForTesting(GetElementById(doc, "owned1")),
+      GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(
+      GetClosestAncestorFormElementForTesting(GetElementById(doc, "owned2")),
+      GetFormElementById(doc, "inner_form"));
+  EXPECT_EQ(
+      GetClosestAncestorFormElementForTesting(GetElementById(doc, "owned3")),
+      GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(WebFormControlElement(),
             GetFormElementById(doc, "non_existent_form", AllowNull(true)));
 }
@@ -1285,9 +1285,9 @@ TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
                                   ? WebNode()
                                   : GetElementById(doc, ancestor_hint_id);
       EXPECT_EQ(test.lhs_id < test.rhs_id,
-                IsDOMPredecessor(lhs, rhs, ancestor_hint));
+                IsDOMPredecessorForTesting(lhs, rhs, ancestor_hint));
       EXPECT_EQ(test.rhs_id < test.lhs_id,
-                IsDOMPredecessor(rhs, lhs, ancestor_hint));
+                IsDOMPredecessorForTesting(rhs, lhs, ancestor_hint));
     }
   }
 }
@@ -1640,7 +1640,7 @@ TEST_F(FormAutofillUtilsTest, TraverseDomForFourDigitCombinations_NoMatches) {
   std::vector<std::string> matches = {"dummy data"};
   LoadHTML(R"(123 444)");
   WebDocument document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1660,7 +1660,7 @@ TEST_F(FormAutofillUtilsTest,
       </form>
     </body>)");
   WebDocument document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1672,7 +1672,7 @@ TEST_F(FormAutofillUtilsTest,
       <input type="text">
     </form>)");
   document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1689,7 +1689,7 @@ TEST_F(FormAutofillUtilsTest,
       </tr>
     </table>)");
   document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1709,7 +1709,7 @@ TEST_F(FormAutofillUtilsTest,
       </form>
     </body>)");
   WebDocument document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1730,7 +1730,7 @@ TEST_F(FormAutofillUtilsTest,
       </form>
     </body>)");
   WebDocument document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1751,7 +1751,7 @@ TEST_F(FormAutofillUtilsTest,
       </form>
     </body>)");
   document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1771,7 +1771,7 @@ TEST_F(FormAutofillUtilsTest,
       </form>
     </body>)");
   document = GetMainFrame()->GetDocument();
-  autofill::form_util::TraverseDomForFourDigitCombinations(
+  TraverseDomForFourDigitCombinations(
       document, base::BindLambdaForTesting(
                     [&](const std::vector<std::string>& regex_search) {
                       matches = regex_search;
@@ -1822,7 +1822,7 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Forward) {
 
   std::vector<WebNode> found_elements;
   for (WebNode node = GetMainFrame()->GetDocument(); !node.IsNull();
-       node = autofill::form_util::NextWebNode(node, /*forward=*/true)) {
+       node = NextWebNodeForTesting(node, /*forward=*/true)) {
     found_elements.push_back(node);
   }
 
@@ -1859,7 +1859,7 @@ TEST_F(FormAutofillUtilsTest, NextWebNode_Backward) {
 
   std::vector<WebNode> found_elements;
   for (WebNode node = expected_elements[0]; !node.IsNull();
-       node = autofill::form_util::NextWebNode(node, /*forward=*/false)) {
+       node = NextWebNodeForTesting(node, /*forward=*/false)) {
     found_elements.push_back(node);
   }
 
@@ -1895,7 +1895,7 @@ TEST_F(FormAutofillUtilsTest, GetMaxLength) {
         GetElementById(web_frame->GetDocument(), "field")
             .DynamicTo<WebFormControlElement>();
     EXPECT_FALSE(field.IsNull());
-    EXPECT_EQ(test_case.expected_max_length, GetMaxLength(field));
+    EXPECT_EQ(test_case.expected_max_length, GetMaxLengthForTesting(field));
   }
 }
 

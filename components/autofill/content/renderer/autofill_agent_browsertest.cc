@@ -832,7 +832,7 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_FALSE(field.IsNull());
 
   FormFieldData form_field;
-  form_util::WebFormControlElementToFormField(
+  form_util::WebFormControlElementToFormFieldForTesting(
       blink::WebFormElement(), field, &autofill_agent().field_data_manager(),
       {form_util::ExtractOption::kValue}, &form_field);
 
