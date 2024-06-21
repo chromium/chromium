@@ -1611,9 +1611,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the time it takes to import credentials in passwords import flow. The
     time that is tracked is the time needed to process the credentials, checking
-    for conflicts, generating status and storing them. This metric doesn't
-    include the time needed to read the CSV file. Recorded when the import flow
-    finished importing all credentials within password settings.
+    for conflicts, generating status, (user resolving conflicts if any) and
+    storing them. This metric doesn't include the time needed to read the CSV
+    file. Recorded when the import flow finished importing all credentials
+    within password settings.
   </summary>
 </histogram>
 

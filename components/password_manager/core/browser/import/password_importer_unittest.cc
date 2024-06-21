@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -1038,7 +1039,7 @@ TEST_F(PasswordImporterTest, CSVImportHitMaxPasswordsLimit) {
   base::HistogramTester histogram_tester;
   std::string content = "url,login,password\n";
   std::string row = "http://a.b,c,d\n";
-  const size_t EXCEEDS_LIMIT = PasswordImporter::MAX_PASSWORDS_PER_IMPORT + 1;
+  const size_t EXCEEDS_LIMIT = constants::kMaxPasswordsPerCSVFile + 1;
   content.reserve(row.size() * EXCEEDS_LIMIT);
   for (size_t i = 0; i < EXCEEDS_LIMIT; i++) {
     content.append(row);

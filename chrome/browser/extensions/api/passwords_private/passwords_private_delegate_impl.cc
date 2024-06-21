@@ -1150,8 +1150,6 @@ void PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult(
     bool authenticated) {
   if (!authenticated) {
     password_manager::ImportResults result;
-    // TODO(crbug.com/40894187): Use specific enum for reauth_failed.
-    // TODO(crbug.com/40894187): Record metric for reauth failed.
     result.status = password_manager::ImportResults::DISMISSED;
     std::move(results_callback).Run(ConvertImportResults(result));
     return;

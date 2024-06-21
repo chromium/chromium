@@ -54,11 +54,6 @@ class SavedPasswordsPresenter;
 // performed using a utility SandBox process.
 class PasswordImporter {
  public:
-  static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
-  // TODO(crbug.com/40894187): Use constant from
-  // components/password_manager/core/common/password_manager_constants.h
-  static constexpr size_t MAX_NOTE_LENGTH = 1000;
-
   enum State {
     // The object has just been created, but the import process has not been
     // launched yet. Or the import has finished with some errors and the object
