@@ -35,7 +35,7 @@ class MockPseudoFocusHandler : public PickerPseudoFocusHandler {
   bool MovePseudoFocusDown() override { return true; }
   bool MovePseudoFocusLeft() override { return true; }
   bool MovePseudoFocusRight() override { return true; }
-  bool AdvancePseudoFocus(PseudoFocusDirection direction) override {
+  bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override {
     return true;
   }
 };

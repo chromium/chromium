@@ -305,7 +305,7 @@ bool PickerView::MovePseudoFocusUp() {
           active_item_container_->GetItemAbove(pseudo_focused_view_)) {
     SetPseudoFocusedView(item_above);
   } else {
-    AdvanceActiveItemContainer(PseudoFocusDirection::kBackward);
+    AdvanceActiveItemContainer(PickerPseudoFocusDirection::kBackward);
   }
   return true;
 }
@@ -315,7 +315,7 @@ bool PickerView::MovePseudoFocusDown() {
           active_item_container_->GetItemBelow(pseudo_focused_view_)) {
     SetPseudoFocusedView(item_below);
   } else {
-    AdvanceActiveItemContainer(PseudoFocusDirection::kForward);
+    AdvanceActiveItemContainer(PickerPseudoFocusDirection::kForward);
   }
   return true;
 }
@@ -338,13 +338,13 @@ bool PickerView::MovePseudoFocusRight() {
   return false;
 }
 
-bool PickerView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+bool PickerView::AdvancePseudoFocus(PickerPseudoFocusDirection direction) {
   if (pseudo_focused_view_ == nullptr) {
     return false;
   }
   if (views::View* next_item = active_item_container_->GetNextItem(
           pseudo_focused_view_,
-          direction == PseudoFocusDirection::kForward
+          direction == PickerPseudoFocusDirection::kForward
               ? PickerTraversableItemContainer::TraversalDirection::kForward
               : PickerTraversableItemContainer::TraversalDirection::
                     kBackward)) {
@@ -553,13 +553,14 @@ void PickerView::SetActivePage(PickerPageView* page_view) {
   SetPseudoFocusedView(active_item_container_->GetTopItem());
 }
 
-void PickerView::AdvanceActiveItemContainer(PseudoFocusDirection direction) {
+void PickerView::AdvanceActiveItemContainer(
+    PickerPseudoFocusDirection direction) {
   if (emoji_bar_view_ == nullptr || active_item_container_ == emoji_bar_view_) {
     active_item_container_ = main_container_view_->active_page();
   } else {
     active_item_container_ = emoji_bar_view_;
   }
-  SetPseudoFocusedView(direction == PseudoFocusDirection::kForward
+  SetPseudoFocusedView(direction == PickerPseudoFocusDirection::kForward
                            ? active_item_container_->GetTopItem()
                            : active_item_container_->GetBottomItem());
 }

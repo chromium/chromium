@@ -35,6 +35,7 @@ class NonClientFrameView;
 namespace ash {
 
 enum class PickerLayoutType;
+enum class PickerPseudoFocusDirection;
 class PickerEmojiBarView;
 class PickerMainContainerView;
 class PickerSearchFieldView;
@@ -94,7 +95,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
-  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override;
 
   // ViewObserver:
   void OnViewIsDeleting(View* observed_view) override;
@@ -159,7 +160,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // Moves pseudo focus between different parts of the PickerView, i.e. between
   // the emoji bar and the main container.
-  void AdvanceActiveItemContainer(PseudoFocusDirection direction);
+  void AdvanceActiveItemContainer(PickerPseudoFocusDirection direction);
 
   void SetPseudoFocusedView(views::View* view);
 

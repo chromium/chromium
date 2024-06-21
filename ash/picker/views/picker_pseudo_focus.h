@@ -13,6 +13,12 @@ class View;
 
 namespace ash {
 
+// Direction to traverse pseudo focusable elements.
+enum class PickerPseudoFocusDirection {
+  kForward,
+  kBackward,
+};
+
 void ASH_EXPORT ApplyPickerPseudoFocusToView(views::View* view);
 
 void ASH_EXPORT RemovePickerPseudoFocusFromView(views::View* view);
