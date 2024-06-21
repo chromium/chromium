@@ -1302,8 +1302,6 @@ void FillFormField(const FormFieldData::FillData& data,
                    bool is_initiating_node,
                    WebFormControlElement& field,
                    FieldDataManager& field_data_manager) {
-  // TODO: crbug.com/348416995 - This check is not guaranteed by the callers.
-  CHECK(!IsCheckableElement(field));
   WebInputElement input_element = field.DynamicTo<WebInputElement>();
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kAutofilled
@@ -1315,16 +1313,18 @@ void FillFormField(const FormFieldData::FillData& data,
     // returns the default maxlength value.
     value = std::move(value).substr(0, input_element.MaxLength());
   }
-
   if (IsTextInput(input_element)) {
     field_data_manager.UpdateFieldDataMap(GetFieldRendererId(field), value,
                                           FieldPropertiesFlags::kAutofilled);
   }
-  field.SetAutofillValue(WebString::FromUTF16(value), new_autofill_state);
-  // Changing the field's value might trigger JavaScript, which is capable of
-  // destroying the frame.
-  if (!field.GetDocument().GetFrame()) {
-    return;
+  if (IsTextInput(input_element) || IsMonthInput(input_element) ||
+      IsTextAreaElement(field) || IsSelectOrSelectListElement(field)) {
+    field.SetAutofillValue(WebString::FromUTF16(value), new_autofill_state);
+    // Changing the field's value might trigger JavaScript, which is capable of
+    // destroying the frame.
+    if (!field.GetDocument().GetFrame()) {
+      return;
+    }
   }
 
   if (is_initiating_node &&
@@ -1346,8 +1346,6 @@ void FillFormField(const FormFieldData::FillData& data,
 void PreviewFormField(const FormFieldData::FillData& data,
                       WebFormControlElement& field,
                       FieldDataManager& field_data_manager) {
-  // TODO: crbug.com/348416995 - This check is not guaranteed by the callers.
-  CHECK(!IsCheckableElement(field));
   // Preview input, textarea and select fields. For input fields, excludes
   // checkboxes and radio buttons, as there is no provision for
   // setSuggestedCheckedValue in WebInputElement.
