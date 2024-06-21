@@ -5087,7 +5087,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4768332406694066911">Certains certificats provenant de ces organisations vous identifient.</translation>
 <translation id="4769632191812288342">Vous bénéficiez de la protection standard</translation>
 <translation id="4770119228883592393">Autorisation demandée, appuyez sur ⌘+Option+Flèche vers le bas pour répondre</translation>
-<translation id="4770755495532014179">Utiliser ce mot de passe sur votre iPhone</translation>
+<translation id="4770755495532014179">Utilisez ce mot de passe sur votre iPhone</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> a été connecté(e)</translation>
@@ -9397,7 +9397,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="803771048473350947">Fichier</translation>
 <translation id="8037801708772278989">Vérification effectuée à l'instant</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copie de 1 fichier dans <ph name="CLOUD_PROVIDER" />…}one{Copie de {NUM_OF_FILES} fichier dans <ph name="CLOUD_PROVIDER" />…}other{Copie de {NUM_OF_FILES} fichiers dans <ph name="CLOUD_PROVIDER" />…}}</translation>
-<translation id="8041089156583427627">Envoyer</translation>
+<translation id="8041089156583427627">Envoyer des commentaires</translation>
 <translation id="8041267120753677077">Diffusez en streaming les applis de votre téléphone</translation>
 <translation id="8042142357103597104">Opacité du texte</translation>
 <translation id="8042331986490021244">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
@@ -9443,7 +9443,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8066444921260601116">Boîte de dialogue de connexion</translation>
 <translation id="8070572887926783747">Autorisation d'accéder à la position de <ph name="APP_NAME" /></translation>
 <translation id="8070662218171013510">Retour haptique</translation>
-<translation id="8071033114691184017">Utiliser ce mot de passe sur votre iPhone</translation>
+<translation id="8071033114691184017">Utilisez ce mot de passe sur votre iPhone</translation>
 <translation id="8071432093239591881">Imprimer en tant qu'image</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Les données d'applications correspondent aux données de tous types enregistrées par des applications en fonction des paramètres définis par le développeur. Elles incluent potentiellement des données sensibles comme des contacts, des messages et des photos.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Les données sauvegardées ne sont pas prises en compte dans le calcul du quota de stockage Drive de votre enfant.<ph name="END_PARAGRAPH2" />
@@ -10198,7 +10198,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8638719155236856752">État du réseau ChromeOS</translation>
 <translation id="8639635302972078117">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations ne seront pas utilisées pour identifier votre enfant, mais elles nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications" pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
 <translation id="8640575194957831802">Dernier ouvert</translation>
-<translation id="8641946446576357115">Utiliser vos mots de passe sur vos appareils iOS</translation>
+<translation id="8641946446576357115">Utilisez vos mots de passe sur vos appareils iOS</translation>
 <translation id="8642577642520207435">Autorisation d'accéder à l'appareil photo de <ph name="APP_NAME" /></translation>
 <translation id="8642900771896232685">2 secondes</translation>
 <translation id="8642947597466641025">Augmente la taille du texte</translation>
@@ -10762,7 +10762,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9030855135435061269">Le plug-in <ph name="PLUGIN_NAME" /> n'est plus compatible</translation>
 <translation id="9031549947500880805">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées.</translation>
 <translation id="9031811691986152304">réessayer</translation>
-<translation id="9032004780329249150">Utiliser vos mots de passe sur vos appareils iOS</translation>
+<translation id="9032004780329249150">Utilisez vos mots de passe sur vos appareils iOS</translation>
 <translation id="9032097289595078011">Désactiver l'Association express</translation>
 <translation id="9033765790910064284">Continuer</translation>
 <translation id="9033857511263905942">&amp;Coller</translation>

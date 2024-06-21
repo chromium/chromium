@@ -2067,7 +2067,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2484574361686148760">Freskatu WiFi Direct-en bezeroen informazioa</translation>
 <translation id="2484743711056182585">Kendu baimena</translation>
 <translation id="2484909293434545162">Webguneren batek cookieak erabiltzen baditu, hemen agertuko da</translation>
-<translation id="2485394160472549611">Zuretzat aukeratutakoak</translation>
+<translation id="2485394160472549611">Zuretzako aukerarik onenak</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
 <translation id="2485681265915754872">Google Play-ren Zerbitzu-baldintzak</translation>
 <translation id="248676429071089168">Pasatu hatza gorantz orria beherantz mugitzeko</translation>
@@ -9701,7 +9701,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
     <ph name="BEGIN_PARAGRAPH4" />Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago haurrarentzat, baliteke datu horiek haren Google-ko kontuan gordetzea. Lortu informazio gehiago ezarpenei eta haiek doitzeko moduari buruz families.google.com helbidean.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Bezero-ziurtagiriak ez du balio</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="82706708334564640">Azken deskargen historia</translation>
+<translation id="82706708334564640">Azkenaldiko deskargen historia</translation>
 <translation id="8270946420566049889">Nahi duzun bezala pertsonaliza dezakezu Chrome:
       &lt;ul&gt;
         &lt;li&gt;&lt;em&gt;Google-ren onena&lt;/em&gt;, nahi dutenentzat. Adibidez, Google Bilaketa Chome-ren bilatzaile lehenetsi gisa ezar dezakezu, eta Google-ren Pasahitz-kudeatzailea erabili zure pasahitz guztiak edozein gailutan eskuratzeko. &lt;/li&gt;

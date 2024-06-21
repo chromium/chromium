@@ -373,7 +373,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1261885284931493480">Vil du fjerne fanen(e) og slette gruppen?</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263733306853729545">Bruk tastene <ph name="MINUS" /> og <ph name="EQUAL" /> for å paginere en kandidatliste</translation>
-<translation id="126387934568812801">Inkluder denne skjermdumpen og titlene på åpne faner</translation>
+<translation id="126387934568812801">Inkluder dette skjermbildet og titlene på åpne faner</translation>
 <translation id="1264083566674525434">Rediger nettstedstillatelser</translation>
 <translation id="1264337193001759725">For å se nettverks-UI-logger, se: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1265279736024499987">Appene og innstillingene dine blir synkronisert på alle ChromeOS Flex-enheter hvor du er logget på med Google-kontoen din. For å finne alternativer for nettlesersynkronisering, gå til<ph name="LINK_BEGIN" />Chrome-innstillingene<ph name="LINK_END" />.</translation>
@@ -427,7 +427,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307165550267142340">PIN-koden er opprettet</translation>
 <translation id="1307431692088049276">Ikke spør meg igjen</translation>
 <translation id="1307559529304613120">Beklager. Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
-<translation id="1308876641060960899">Når du bruker Google Lens, sendes en skjermdump av siden til Google. <ph name="LEARN_MORE" /></translation>
+<translation id="1308876641060960899">Når du bruker Google Lens, sendes et skjermbilde av siden til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
 <translation id="1311294419381837540">Du caster en fane. Du kan når som helst stoppe castingen eller sette den på pause.</translation>
 <translation id="131188242279372879">Bruk økt beskyttelse for å få det høyeste sikkerhetsnivået for nedlastinger i Chrome</translation>
@@ -606,7 +606,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1451375123200651445">Nettside – enkeltfil</translation>
 <translation id="1453561711872398978">Send <ph name="BEGIN_LINK" />
     feilsøkingslogger<ph name="END_LINK" /> (anbefales)</translation>
-<translation id="1454223536435069390">Ta en skjermdump</translation>
+<translation id="1454223536435069390">Ta et skjermbilde</translation>
 <translation id="145432137617179457">Stavekontrollspråk</translation>
 <translation id="1455119378540982311">Forhåndsinnstilte vindusstørrelser</translation>
 <translation id="1456849775870359518">Fanene dine åpnes på nytt</translation>
@@ -6243,7 +6243,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5640133431808313291">Administrer sikkerhetsnøkler</translation>
 <translation id="5640159004008030285">Dette passordet er bare lagret på denne enheten. For å bruke det på andre enheter, <ph name="BEGIN_LINK" />lagre det i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="5641608986289282154">Begynn å bruke <ph name="DEVICE_OS" /></translation>
-<translation id="5641648607875312660">Redigering av skjermdump</translation>
+<translation id="5641648607875312660">Redigering av skjermbilde</translation>
 <translation id="5642508497713047">Signatar for sertifikatopphevelsesliste</translation>
 <translation id="5643191124441701136">Sikkerhetskoden finner du på forsiden av kortet</translation>
 <translation id="5643321261065707929">Nettverk med datamåling</translation>
@@ -7073,7 +7073,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6274202259872570803">Skjermopptak</translation>
 <translation id="6276210637549544171">Proxy-tjeneren <ph name="PROXY_SERVER" /> krever brukernavn og passord.</translation>
 <translation id="6277105963844135994">Tidsavbrudd for nettverket</translation>
-<translation id="6277518330158259200">Ta en skjermdump</translation>
+<translation id="6277518330158259200">Ta et skjermbilde</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Endre plassering</translation>
 <translation id="6280215091796946657">Logg på med en annen konto</translation>
@@ -8153,7 +8153,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7115361495406486998">Ingen kontakter kan nås</translation>
 <translation id="7116554090938189816">SSL-sertifikatet for skriveren er utløpt. Start skriveren på nytt, og prøv igjen.</translation>
 <translation id="7117228822971127758">Prøv på nytt senere</translation>
-<translation id="7118268675952955085">skjermdump</translation>
+<translation id="7118268675952955085">skjermbilde</translation>
 <translation id="711840821796638741">Vis administrerte bokmerker</translation>
 <translation id="711985611146095797">På denne siden kan du administrere de påloggede Google-kontoene dine. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-nettleseren og Android-trafikk blokkeres med mindre en VPN-tjeneste kobles til</translation>

@@ -597,7 +597,7 @@
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
 <translation id="144518587530125858">थीम के लिए '<ph name="IMAGE_PATH" />' को लोड नहीं कर सका.</translation>
 <translation id="1447531650545977377">सिंक को चालू करें...</translation>
-<translation id="1447895950459090752">टैब पर कर्सर घुमाने पर, झलक दिखाने वाला कार्ड</translation>
+<translation id="1447895950459090752">टैब पर कर्सर घुमाकर झलक दिखाने वाला कार्ड</translation>
 <translation id="1448264954024227422">इस खाते का इस्तेमाल Android ऐप्लिकेशन के साथ किया जा सकता है. अगर आपको किसी और के लिए कोई खाता जोड़ना है, तो अपने <ph name="DEVICE_TYPE" /> में <ph name="LINK_BEGIN" /> एक नया व्यक्ति जोड़ें<ph name="LINK_END" />.
 
 आपने ऐप्लिकेशन को जो अनुमतियां पहले से ही दी हुई हैं वे इस खाते पर लागू हो सकती हैं. <ph name="APPS_LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="APPS_LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
