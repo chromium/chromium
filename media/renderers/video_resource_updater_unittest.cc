@@ -355,17 +355,14 @@ class VideoResourceUpdaterTest : public testing::Test {
 
   scoped_refptr<VideoFrame> CreateTestYuvHardwareVideoFrame(
       VideoPixelFormat format,
-      size_t num_textures,
       unsigned target) {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
 
-    scoped_refptr<gpu::ClientSharedImage> shared_images[VideoFrame::kMaxPlanes];
-    for (size_t i = 0; i < num_textures; ++i) {
-      shared_images[i] = gpu::ClientSharedImage::CreateForTesting(target);
-    }
-    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImages(
-        format, shared_images, kMailboxSyncToken, target,
+    scoped_refptr<gpu::ClientSharedImage> shared_image =
+        gpu::ClientSharedImage::CreateForTesting(target);
+    scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
+        format, shared_image, kMailboxSyncToken, target,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size
@@ -861,54 +858,10 @@ TEST_F(VideoResourceUpdaterTest, ChangeResourceSizeSoftwareCompositor) {
   EXPECT_NE(shared_bitmap_reporter_.shared_bitmaps(), shared_bitmaps_copy);
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_ResourceFormat) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-
-  scoped_refptr<VideoFrame> video_frame = CreateTestRGBAHardwareVideoFrame();
-
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resources.type);
-  EXPECT_EQ(1u, resources.resources.size());
-  EXPECT_EQ(1u, resources.release_callbacks.size());
-
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420, 3,
-                                                GL_TEXTURE_RECTANGLE_ARB);
-
-  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(3u, resources.resources.size());
-  EXPECT_EQ(3u, resources.release_callbacks.size());
-  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[0].format);
-  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[1].format);
-  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[2].format);
-  EXPECT_EQ(resources.resources[0].synchronization_type,
-            viz::TransferableResource::SynchronizationType::kSyncToken);
-  EXPECT_EQ(resources.resources[1].synchronization_type,
-            viz::TransferableResource::SynchronizationType::kSyncToken);
-  EXPECT_EQ(resources.resources[2].synchronization_type,
-            viz::TransferableResource::SynchronizationType::kSyncToken);
-
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420, 3,
-                                                GL_TEXTURE_RECTANGLE_ARB);
-  video_frame->metadata().read_lock_fences_enabled = true;
-
-  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(
-      resources.resources[0].synchronization_type,
-      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
-  EXPECT_EQ(
-      resources.resources[1].synchronization_type,
-      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
-  EXPECT_EQ(
-      resources.resources[2].synchronization_type,
-      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
-}
-
 TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
-      PIXEL_FORMAT_I420, 1, GL_TEXTURE_RECTANGLE_ARB);
+      PIXEL_FORMAT_I420, GL_TEXTURE_RECTANGLE_ARB);
   // Setting to kSharedImageFormat, resources type should change to RGB.
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
@@ -921,7 +874,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
   EXPECT_EQ(resources.resources[0].synchronization_type,
             viz::TransferableResource::SynchronizationType::kSyncToken);
 
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420, 1,
+  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420,
                                                 GL_TEXTURE_RECTANGLE_ARB);
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
@@ -1133,45 +1086,11 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
 }
 
 TEST_F(VideoResourceUpdaterTest,
-       CreateForHardwarePlanes_DualNV12_ResourceFormat) {
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-  EXPECT_EQ(0u, GetSharedImageCount());
-  scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
-      PIXEL_FORMAT_NV12, 2, GL_TEXTURE_EXTERNAL_OES);
-
-  VideoFrameExternalResources resources =
-      updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(2u, resources.resources.size());
-  EXPECT_EQ(2u, resources.release_callbacks.size());
-  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
-            resources.resources[0].texture_target());
-  EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
-            resources.resources[1].texture_target());
-  // |updater| doesn't set |buffer_format| in this case.
-  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[0].format);
-  EXPECT_EQ(viz::SinglePlaneFormat::kRG_88, resources.resources[1].format);
-
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 2,
-                                                GL_TEXTURE_RECTANGLE_ARB);
-  resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
-  EXPECT_EQ(2u, resources.resources.size());
-  EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
-            resources.resources[0].texture_target());
-  EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
-            resources.resources[1].texture_target());
-  EXPECT_EQ(viz::SinglePlaneFormat::kR_8, resources.resources[0].format);
-  EXPECT_EQ(viz::SinglePlaneFormat::kRG_88, resources.resources[1].format);
-  EXPECT_EQ(0u, GetSharedImageCount());
-}
-
-TEST_F(VideoResourceUpdaterTest,
        CreateForHardwarePlanes_DualNV12_SharedImageFormat) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestYuvHardwareVideoFrame(
-      PIXEL_FORMAT_NV12, 1, GL_TEXTURE_RECTANGLE_ARB);
+      PIXEL_FORMAT_NV12, GL_TEXTURE_RECTANGLE_ARB);
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
   VideoFrameExternalResources resources =
@@ -1184,7 +1103,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resources.resources[0].format);
   EXPECT_EQ(0u, GetSharedImageCount());
 
-  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12, 1,
+  video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_NV12,
                                                 GL_TEXTURE_EXTERNAL_OES);
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormat);
