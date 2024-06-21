@@ -9906,7 +9906,24 @@
             ],
             "experiments": [
                 {
-                    "name": "Notification_20240320",
+                    "name": "CounterfactualControl_20240620",
+                    "params": {
+                        "IPH_ScalableIphGaming_availability": ">=0",
+                        "IPH_ScalableIphGaming_event_1": "name:ScalableIphGameWindowOpened;comparator:>0;window:365;storage:365",
+                        "IPH_ScalableIphGaming_event_trigger": "name:IphScalableIphGamingEventTrigger;comparator:==0;window:365;storage:365",
+                        "IPH_ScalableIphGaming_event_used": "name:IphScalableIphGamingEventUsed;comparator:any;window:365;storage:365",
+                        "IPH_ScalableIphGaming_session_rate": "<1",
+                        "IPH_ScalableIphGaming_tracking_only": "true",
+                        "IPH_ScalableIphGaming_x_CustomConditionTriggerEvent": "ScalableIphUnlocked",
+                        "IPH_ScalableIphGaming_x_CustomUiType": "None",
+                        "IPH_ScalableIphGaming_x_CustomVersionNumber": "1"
+                    },
+                    "enable_features": [
+                        "IPH_ScalableIphGaming"
+                    ]
+                },
+                {
+                    "name": "Notification_20240620",
                     "params": {
                         "IPH_ScalableIphGaming_availability": ">=0",
                         "IPH_ScalableIphGaming_event_1": "name:ScalableIphGameWindowOpened;comparator:>0;window:365;storage:365",
@@ -9919,7 +9936,7 @@
                         "IPH_ScalableIphGaming_x_CustomNotificationButtonText": "Get perk",
                         "IPH_ScalableIphGaming_x_CustomNotificationId": "scalable_iph_gaming",
                         "IPH_ScalableIphGaming_x_CustomNotificationImageType": "Minecraft",
-                        "IPH_ScalableIphGaming_x_CustomNotificationTitle": "Get 3 months of Minecraft Realms+ at no cost on your Chromebook",
+                        "IPH_ScalableIphGaming_x_CustomNotificationTitle": "Get 3 months of Minecraft Realms Plus at no cost on your Chromebook",
                         "IPH_ScalableIphGaming_x_CustomUiType": "Notification",
                         "IPH_ScalableIphGaming_x_CustomVersionNumber": "1"
                     },
