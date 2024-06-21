@@ -411,8 +411,8 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
   const char kSSID[] = "test_ssid";
   const char kPassphrase[] = "test_password";
   const int kFrequency = 3;
-  const ShillManagerClient::WifiConcurrencyPriority kPriority =
-      ShillManagerClient::WifiConcurrencyPriority::kPriority3;
+  const shill::WiFiInterfacePriority kPriority =
+      shill::WiFiInterfacePriority::FOREGROUND_WITHOUT_FALLBACK;
 
   // Create response.
   base::Value::Dict result_dictionary;
@@ -428,7 +428,7 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
   input_dictionary.Set(shill::kP2PDeviceSSID, kSSID);
   input_dictionary.Set(shill::kP2PDevicePassphrase, kPassphrase);
   input_dictionary.Set(shill::kP2PDeviceFrequency, kFrequency);
-  input_dictionary.Set(shill::kP2PDevicePriority, kPriority);
+  input_dictionary.Set(shill::kP2PDevicePriority, static_cast<int>(kPriority));
 
   // Set expectation.
   const bool string_valued = false;

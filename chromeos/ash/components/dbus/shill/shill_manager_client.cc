@@ -19,7 +19,6 @@
 #include "dbus/object_proxy.h"
 #include "dbus/values_util.h"
 #include "net/base/ip_endpoint.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
@@ -27,7 +26,7 @@ ShillManagerClient::CreateP2PGroupParameter::CreateP2PGroupParameter(
     const std::optional<std::string> ssid,
     const std::optional<std::string> passphrase,
     const std::optional<uint32_t> frequency,
-    const std::optional<WifiConcurrencyPriority> priority)
+    const std::optional<shill::WiFiInterfacePriority> priority)
     : ssid(ssid),
       passphrase(passphrase),
       frequency(frequency),
@@ -48,7 +47,7 @@ ShillManagerClient::ConnectP2PGroupParameter::ConnectP2PGroupParameter(
     const std::string ssid,
     const std::string passphrase,
     const std::optional<uint32_t> frequency,
-    const std::optional<WifiConcurrencyPriority> priority)
+    const std::optional<shill::WiFiInterfacePriority> priority)
     : ssid(ssid),
       passphrase(passphrase),
       frequency(frequency),
@@ -272,10 +271,11 @@ class ShillManagerClientImpl : public ShillManagerClient {
     dbus::MessageWriter writer(&method_call);
 
     base::Value::Dict properties;
-    properties.Set(shill::kP2PDevicePriority,
-                   create_group_argument.priority.has_value()
-                       ? create_group_argument.priority.value()
-                       : WifiConcurrencyPriority::kPriority2);
+    const shill::WiFiInterfacePriority priority =
+        create_group_argument.priority.has_value()
+            ? create_group_argument.priority.value()
+            : shill::WiFiInterfacePriority::FOREGROUND_WITH_FALLBACK;
+    properties.Set(shill::kP2PDevicePriority, static_cast<int>(priority));
     if (create_group_argument.ssid.has_value()) {
       properties.Set(shill::kP2PDeviceSSID, create_group_argument.ssid.value());
     }
@@ -307,10 +307,11 @@ class ShillManagerClientImpl : public ShillManagerClient {
     properties.Set(shill::kP2PDeviceSSID, connect_group_argument.ssid);
     properties.Set(shill::kP2PDevicePassphrase,
                    connect_group_argument.passphrase);
-    properties.Set(shill::kP2PDevicePriority,
-                   connect_group_argument.priority.has_value()
-                       ? connect_group_argument.priority.value()
-                       : WifiConcurrencyPriority::kPriority2);
+    const shill::WiFiInterfacePriority priority =
+        connect_group_argument.priority.has_value()
+            ? connect_group_argument.priority.value()
+            : shill::WiFiInterfacePriority::FOREGROUND_WITH_FALLBACK;
+    properties.Set(shill::kP2PDevicePriority, static_cast<int>(priority));
     if (connect_group_argument.frequency.has_value()) {
       properties.Set(
           shill::kP2PGroupInfoFrequencyProperty,
