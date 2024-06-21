@@ -159,6 +159,13 @@ export class SettingsSearchEngineEditDialogElement extends
   }
 
   private validateElement_(inputElement: CrInputElement) {
+    // No need to validate fields if the search engine is read-only, i.e.
+    // created by policy. Those have been validated when the policy was
+    // processed (b/348165485).
+    if (this.readonly_) {
+      return;
+    }
+
     // If element is empty, disable the action button, but don't show the red
     // invalid message.
     if (inputElement.value === '') {

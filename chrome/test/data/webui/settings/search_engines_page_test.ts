@@ -447,6 +447,17 @@ suite('SearchEnginePageTests', function() {
     assertEquals(
         dialog.$.actionButton.textContent!.trim(),
         loadTimeData.getString('done'));
+
+    // Ensures that field validation is not run for search engines created by
+    // policy (b/348165485).
+    browserProxy.resetResolver('validateSearchEngineInput');
+    dialog.$.keyword.dispatchEvent(
+        new CustomEvent('input', {bubbles: true, composed: true}));
+    assertEquals(0, browserProxy.getCallCount('validateSearchEngineInput'));
+
+    assertTrue(dialog.$.cancel.hidden);
+    assertFalse(dialog.$.actionButton.hidden);
+    assertFalse(dialog.$.actionButton.disabled);
   });
 
   test('EditSearchEngineDialog_UrlLocked', async function() {
