@@ -54,9 +54,7 @@ void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
   original_callback_ = screen->get_exit_callback_for_testing();
   screen->set_exit_callback_for_testing(
       screen_result_waiter_.GetRepeatingCallback());
-  fake_gaia_.SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
-                                   FakeGaiaMixin::kFakeUserGaiaId,
-                                   FakeGaiaMixin::kFakeRefreshToken);
+  fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
   OobeBaseTest::SetUpOnMainThread();
 }
 

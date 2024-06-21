@@ -68,6 +68,12 @@ void FakeGaiaMixin::SetupFakeGaiaForLogin(const std::string& user_email,
   fake_gaia_->IssueOAuthToken(refresh_token, token_info);
 }
 
+void FakeGaiaMixin::SetupFakeGaiaForLoginWithDefaults() {
+  SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
+                        FakeGaiaMixin::kFakeUserGaiaId,
+                        FakeGaiaMixin::kFakeRefreshToken);
+}
+
 void FakeGaiaMixin::SetupFakeGaiaForChildUser(const std::string& user_email,
                                               const std::string& gaia_id,
                                               const std::string& refresh_token,

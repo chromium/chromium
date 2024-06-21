@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/net",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/status_collector",
   "+chrome/browser/ash/policy/uploading",

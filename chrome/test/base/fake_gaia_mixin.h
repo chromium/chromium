@@ -84,6 +84,9 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
                              const std::string& gaia_id,
                              const std::string& refresh_token);
 
+  // Set up fake gaia for the login code with default values.
+  void SetupFakeGaiaForLoginWithDefaults();
+
   // Sets up fake gaia to serve access tokens for a child user.
   // *   Maps `user_email` to `gaia_id`. If `gaia_id` is empty, `user_email`
   //     will be mapped to kDefaultGaiaId in FakeGaia.

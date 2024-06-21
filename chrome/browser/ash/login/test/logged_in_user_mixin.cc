@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
-#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -126,13 +125,9 @@ void LoggedInUserMixin::LogInUser(
   UserContext user_context = LoginManagerMixin::CreateDefaultUserContext(user_);
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   if (user_.user_type == user_manager::UserType::kChild) {
-    // TODO(b/333450354): Determine why this is necessary and fix.
-    SetDelayNetworkCallsForTesting(true);
-
     fake_gaia_.SetupFakeGaiaForChildUser(
         user_.account_id.GetUserEmail(), user_.account_id.GetGaiaId(),
-        FakeGaiaMixin::kFakeRefreshToken,
-        login_details.contains(LoginDetails::kUseAnyScopeToken));
+        FakeGaiaMixin::kFakeRefreshToken, /*issue_any_scope_token=*/true);
   } else {
     fake_gaia_.SetupFakeGaiaForLogin(user_.account_id.GetUserEmail(),
                                      user_.account_id.GetGaiaId(),

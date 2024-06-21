@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -105,6 +104,7 @@ class PasswordChangeTest : public PasswordChangeTestBase {
     // password change UI flow.
     FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
     PasswordChangeTestBase::SetUpOnMainThread();
+    fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
   }
 
   bool TestingFileExists() const {
@@ -241,9 +241,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, RetryOnWrongPassword) {
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
-  // TODO(b/333450354): Determine why this is necessary and fix.
-  SetDelayNetworkCallsForTesting(true);
-
   CreateTestingFile();
   OpenGaiaDialog(test_account_id_);
   SetGaiaScreenCredentials(test_account_id_, test::kNewPassword);
