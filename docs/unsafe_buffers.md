@@ -46,7 +46,7 @@ To allow for incremental conversion, the use of a safety comment with
 a TODO() is permitted, along the lines of
 `// SAFETY: TODO(crbug.com/xxxxxx): resolve safety issues`.
 
-Code introducing UNSAFE_BUFFER() macro invocations without corresponding
+Code introducing UNSAFE_BUFFERS() macro invocations without corresponding
 `// SAFETY:` comment should be summarily rejected during code review.
 
 ## Container-based ecosystem
