@@ -269,9 +269,9 @@ class GpuIntegrationTest(
     default_args = [
         '--disable-metal-test-shaders',
         # TODO(crbug.com/339479329): Remove this once we either determine that
-        # BFCache is not the culprit or it is and the root cause of flakiness
-        # is fixed.
-        '--disable-features=BackForwardCache',
+        # RenderDocument is not the culprit or it is and the root cause of
+        # flakiness is fixed.
+        '--disable-features=RenderDocument',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
