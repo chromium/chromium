@@ -6,6 +6,7 @@
 
 #include <queue>
 
+#include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 
@@ -164,14 +165,13 @@ SearchInfo VectorDatabase::FindNearest(
 
   struct Compare {
     bool operator()(const ScoredUrl& a, const ScoredUrl& b) {
-      return a.score < b.score;
+      return a.score > b.score;
     }
   };
   std::priority_queue<ScoredUrl, std::vector<ScoredUrl>, Compare> q;
 
   SearchInfo search_info;
   search_info.completed = true;
-
   base::ElapsedTimer total_timer;
   base::TimeDelta scoring_elapsed;
   while (const UrlEmbeddings* item = iterator->Next()) {
@@ -183,13 +183,13 @@ SearchInfo VectorDatabase::FindNearest(
     search_info.searched_embedding_count += item->embeddings.size();
 
     base::ElapsedTimer scoring_timer;
-    while (q.size() >= count) {
-      q.pop();
-    }
     const auto [score, score_index] =
         item->BestScoreWith(query, search_minimum_word_count);
     q.emplace(item->url_id, item->visit_id, item->visit_time, score,
               score_index, std::move(item->embeddings[score_index]));
+    while (q.size() > count)
+      q.pop();
+
     scoring_elapsed += scoring_timer.Elapsed();
   }
 
@@ -204,11 +204,12 @@ SearchInfo VectorDatabase::FindNearest(
           << " ; scoring (ns): " << scoring_elapsed.InNanoseconds()
           << " ; scoring %: " << scoring_elapsed * 100 / total_elapsed;
 
-  // Empty queue into vector and return result.
+  // Empty queue into vector and return result sorted with descending scores.
   while (!q.empty()) {
     search_info.scored_urls.push_back(q.top());
     q.pop();
   }
+  base::ranges::reverse(search_info.scored_urls);
   return search_info;
 }
 

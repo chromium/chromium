@@ -244,8 +244,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
   EXPECT_EQ(result.count, 3u);
 
   EXPECT_EQ(result.scored_url_rows.size(), 2u);
-  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
-  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 3);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 3);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 1);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, CountWords) {
