@@ -1382,6 +1382,16 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     @Override
+    public boolean isOffTheRecord() {
+        return getTabModel().isOffTheRecord();
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return getTabModel().isIncognitoBranded();
+    }
+
+    @Override
     public int index() {
         return mCurrentGroupIndex;
     }

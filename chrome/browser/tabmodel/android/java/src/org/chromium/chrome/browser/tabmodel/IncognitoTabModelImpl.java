@@ -130,6 +130,16 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
+    public boolean isOffTheRecord() {
+        return mDelegateModel.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return mDelegateModel.isIncognitoBranded();
+    }
+
+    @Override
     public boolean closeTab(Tab tab) {
         mCountOfAddingOrClosingTabs++;
         boolean retVal = mDelegateModel.closeTab(tab);

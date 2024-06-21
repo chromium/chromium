@@ -59,6 +59,16 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public boolean isOffTheRecord() {
+        return mIsIncognito;
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return mIsIncognito;
+    }
+
+    @Override
     public boolean closeTab(Tab tab) {
         return false;
     }

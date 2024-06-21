@@ -531,6 +531,16 @@ class TabImpl implements Tab {
     }
 
     @Override
+    public boolean isOffTheRecord() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return mProfile.isIncognitoBranded();
+    }
+
+    @Override
     public boolean isShowingErrorPage() {
         return mIsShowingErrorPage;
     }

@@ -113,12 +113,23 @@ public class Profile implements BrowserContextHandle {
         return mOtrProfileId != null && mOtrProfileId.isPrimaryOTRId();
     }
 
-    public ProfileKey getProfileKey() {
-        return ProfileJni.get().getProfileKey(mNativeProfile);
+    /**
+     * Returns if the profile is a primary OTR Profile or an Incognito CCT. The primary OTR profile
+     * is the OffTheRecord profile for incognito tabs. For this to be true, {@link
+     * #isOffTheRecord()} must also be true.
+     */
+    public boolean isIncognitoBranded() {
+        boolean isIncognitoCCT = mOtrProfileId != null && mOtrProfileId.isIncognitoCCId();
+        return isPrimaryOTRProfile() || isIncognitoCCT;
     }
 
+    /** Returns if the profile is off the record. */
     public boolean isOffTheRecord() {
         return mOtrProfileId != null;
+    }
+
+    public ProfileKey getProfileKey() {
+        return ProfileJni.get().getProfileKey(mNativeProfile);
     }
 
     /**

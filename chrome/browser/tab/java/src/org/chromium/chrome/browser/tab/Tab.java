@@ -208,8 +208,20 @@ public interface Tab extends TabLifecycle {
 
     /**
      * @return {@code true} if the Tab is in incognito mode.
+     * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
      */
+    @Deprecated
     boolean isIncognito();
+
+    /**
+     * @return {@code true} if the Tab is in an off-the-record profile.
+     */
+    boolean isOffTheRecord();
+
+    /**
+     * @return {@code true} if the Tab is in Incognito branded profile.
+     */
+    boolean isIncognitoBranded();
 
     /**
      * @return Whether the {@link Tab} is currently showing an error page.

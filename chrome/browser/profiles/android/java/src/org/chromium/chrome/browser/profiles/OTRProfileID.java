@@ -17,6 +17,7 @@ public class OTRProfileID {
     // OTRProfileID value should be same with Profile::OTRProfileID::PrimaryID in native.
     private static final OTRProfileID sPrimaryOTRProfileID =
             new OTRProfileID("profile::primary_otr");
+    private static final String INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX = "CCT:Incognito";
 
     @CalledByNative
     public OTRProfileID(String profileID) {
@@ -35,8 +36,16 @@ public class OTRProfileID {
     }
 
     /**
-     * Deconstruct OTRProfileID to a string representation.
-     * Deconstructed version will be used to pass the id to the native side and /components/ layer.
+     * Creates a new unique Incognito CCT profile id by appending a unique serial number to the iCCT
+     * OTR profile id prefix {@link #INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX}.
+     */
+    public static OTRProfileID createUniqueIncognitoCCTId() {
+        return OTRProfileIDJni.get().createUniqueOTRProfileID(INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX);
+    }
+
+    /**
+     * Deconstruct OTRProfileID to a string representation. Deconstructed version will be used to
+     * pass the id to the native side and /components/ layer.
      *
      * @param otrProfileID An OTRProfileId instance.
      * @return A string that represents the given otrProfileID.
@@ -99,6 +108,13 @@ public class OTRProfileID {
 
     public boolean isPrimaryOTRId() {
         return this.equals(sPrimaryOTRProfileID);
+    }
+
+    /**
+     * Returns true if the OTR profile id starts with {@link #INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX}.
+     */
+    public boolean isIncognitoCCId() {
+        return this.getProfileID().startsWith(INCOGNITO_CCT_OTR_PROFILE_ID_PREFIX);
     }
 
     /**

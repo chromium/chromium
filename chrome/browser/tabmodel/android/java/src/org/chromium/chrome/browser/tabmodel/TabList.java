@@ -16,8 +16,19 @@ public interface TabList {
     // Keep this in sync with chrome/browser/ui/android/tab_model/tab_model.cc
     int INVALID_TAB_INDEX = -1;
 
-    /** Returns whether this tab model contains only incognito tabs or only normal tabs. */
+    /**
+     * Returns whether this tab model contains only incognito tabs or only normal tabs.
+     *
+     * @deprecated Use {@link #isIncognitoBranded()} or {@link #isOffTheRecord()}.
+     */
+    @Deprecated
     boolean isIncognito();
+
+    /** Returns whether this tab model contains only off-the-record tabs or only normal tabs. */
+    boolean isOffTheRecord();
+
+    /** Returns whether this tab model contains only incognito branded tabs or only normal tabs. */
+    boolean isIncognitoBranded();
 
     /** Returns the index of the current tab, or {@link #INVALID_TAB_INDEX} if there are no tabs. */
     int index();

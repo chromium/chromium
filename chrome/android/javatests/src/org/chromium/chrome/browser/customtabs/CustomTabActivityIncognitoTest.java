@@ -260,6 +260,11 @@ public class CustomTabActivityIncognitoTest {
                                             .getCurrentWebContents());
                     assertTrue(profile.isOffTheRecord());
                     assertFalse(profile.isPrimaryOTRProfile());
+                    if (mEphemeralTab) {
+                        assertFalse(profile.isIncognitoBranded());
+                    } else {
+                        assertTrue(profile.isIncognitoBranded());
+                    }
                 });
     }
 
@@ -286,6 +291,7 @@ public class CustomTabActivityIncognitoTest {
                     () -> {
                         Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
                         assertFalse(profile.isOffTheRecord());
+                        assertFalse(profile.isIncognitoBranded());
                     });
         } else {
             assertTrue(activity.getActivityTab().isIncognito());
@@ -327,6 +333,11 @@ public class CustomTabActivityIncognitoTest {
                     Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
                     assertTrue(profile.isOffTheRecord());
                     assertFalse(profile.isPrimaryOTRProfile());
+                    if (mEphemeralTab) {
+                        assertFalse(profile.isIncognitoBranded());
+                    } else {
+                        assertTrue(profile.isIncognitoBranded());
+                    }
                 });
     }
 
@@ -343,6 +354,7 @@ public class CustomTabActivityIncognitoTest {
                 () -> {
                     Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
                     assertFalse(profile.isOffTheRecord());
+                    assertFalse(profile.isIncognitoBranded());
                 });
     }
 

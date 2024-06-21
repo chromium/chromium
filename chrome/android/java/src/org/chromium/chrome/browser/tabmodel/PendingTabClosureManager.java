@@ -111,11 +111,22 @@ public class PendingTabClosureManager {
             return mTabList.isIncognito();
         }
 
+        @Override
+        public boolean isOffTheRecord() {
+            return mTabList.isOffTheRecord();
+        }
+
+        @Override
+        public boolean isIncognitoBranded() {
+            return mTabList.isIncognitoBranded();
+        }
+
         /**
          * If {@link TabList} has a valid selected tab, this will return that same tab in the
-         * context of the rewound list of tabs.  If {@link TabList} has no tabs but the rewound
-         * list is not empty, it will return 0, the first tab.  Otherwise it will return
-         * {@link TabList#INVALID_TAB_INDEX}.
+         * context of the rewound list of tabs. If {@link TabList} has no tabs but the rewound list
+         * is not empty, it will return 0, the first tab. Otherwise it will return {@link
+         * TabList#INVALID_TAB_INDEX}.
+         *
          * @return The selected index of the rewound list of tabs (includes all pending closures).
          */
         @Override

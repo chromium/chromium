@@ -259,7 +259,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             protected OTRProfileID createOffTheRecordProfileID() {
                 switch (getIntentDataProvider().getCustomTabMode()) {
                     case CustomTabProfileType.INCOGNITO:
-                        return OTRProfileID.createUnique("CCT:Incognito");
+                        return OTRProfileID.createUniqueIncognitoCCTId();
                     case CustomTabProfileType.EPHEMERAL:
                         return OTRProfileID.createUnique("CCT:Ephemeral");
                     default:
