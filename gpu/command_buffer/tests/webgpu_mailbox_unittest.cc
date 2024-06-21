@@ -200,6 +200,40 @@ class WebGPUMailboxTest
                                &entries_processed);
   }
 
+  enum class AccessType { Read, Write, ReadWrite };
+
+  SharedImageUsageSet GetSharedImageUsage(AccessType access_type) {
+    SharedImageUsageSet webgpu_usage;
+
+    // With the fallback adapter, reading/writing from the SharedImage will
+    // occur via Skia.
+    SharedImageUsageSet fallback_usage;
+
+    switch (access_type) {
+      case AccessType::Read:
+        webgpu_usage = SHARED_IMAGE_USAGE_WEBGPU_READ;
+        fallback_usage = SHARED_IMAGE_USAGE_RASTER_READ;
+        break;
+      case AccessType::Write:
+        webgpu_usage = SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+        fallback_usage = SHARED_IMAGE_USAGE_RASTER_WRITE;
+        break;
+      case AccessType::ReadWrite:
+        webgpu_usage =
+            SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+        fallback_usage =
+            SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+        break;
+    }
+
+    auto si_usage = webgpu_usage;
+    if (IsUsingFallbackAdapter()) {
+      si_usage |= fallback_usage;
+    }
+
+    return si_usage;
+  }
+
   void InitializeTextureColor(wgpu::Device device,
                               const Mailbox& mailbox,
                               wgpu::Color clearValue) {
@@ -904,16 +938,13 @@ TEST_P(WebGPUMailboxTest,
        ReadWritableUninitializedSharedImageWhenAccessedWithInternalWriteUsage) {
   // Create the shared image. Note that it is uncleared by default.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       // The clearing of the SharedImage will happen via Skia if the fallback
-       // adaptor is being used.
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-           SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -1013,18 +1044,12 @@ TEST_P(WebGPUMailboxTest,
 TEST_P(WebGPUMailboxTest,
        ReadWritableUninitializedSharedImageWithUsageSupportingLazyClearing) {
   // Create the shared image.
-  auto si_usages =
-      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  if (IsUsingFallbackAdapter()) {
-    si_usages |=
-        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
-  }
   SharedImageInterface* sii = GetSharedImageInterface();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              si_usages,
+                              GetSharedImageUsage(AccessType::ReadWrite),
                               "TestLabel"},
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -1111,18 +1136,12 @@ TEST_P(
     WebGPUMailboxTest,
     ReadWritableUninitializedSharedImageWithInternalUsageSupportingLazyClearing) {
   // Create the shared image.
-  auto si_usages =
-      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  if (IsUsingFallbackAdapter()) {
-    si_usages |=
-        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
-  }
   SharedImageInterface* sii = GetSharedImageInterface();
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              si_usages,
+                              GetSharedImageUsage(AccessType::ReadWrite),
                               "TestLabel"},
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -1197,14 +1216,13 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   // WebGPUDecoderImpl might also need to fall back to using Skia to read and
   // write, making it necessary to add those usages as well.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-           SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
