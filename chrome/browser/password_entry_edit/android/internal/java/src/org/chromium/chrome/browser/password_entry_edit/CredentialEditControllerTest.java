@@ -21,9 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.BLOCKED_CREDENTIAL_ACTION_HISTOGRAM;
-import static org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.CredentialEditError.DUPLICATE_USERNAME;
-import static org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.CredentialEditError.EMPTY_PASSWORD;
-import static org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.EDIT_ERROR_HISTOGRAM;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.FEDERATED_CREDENTIAL_ACTION_HISTOGRAM;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditMediator.SAVED_PASSWORD_ACTION_HISTOGRAM;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.ALL_KEYS;
@@ -250,10 +247,6 @@ public class CredentialEditControllerTest {
         mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.onPasswordTextChanged("");
         assertTrue(mModel.get(EMPTY_PASSWORD_ERROR));
-        assertThat(
-                RecordHistogram.getHistogramValueCountForTesting(
-                        EDIT_ERROR_HISTOGRAM, EMPTY_PASSWORD),
-                is(1));
 
         mMediator.onPasswordTextChanged(TEST_PASSWORD);
         assertFalse(mModel.get(EMPTY_PASSWORD_ERROR));
@@ -266,10 +259,6 @@ public class CredentialEditControllerTest {
 
         mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
         assertTrue(mModel.get(DUPLICATE_USERNAME_ERROR));
-        assertThat(
-                RecordHistogram.getHistogramValueCountForTesting(
-                        EDIT_ERROR_HISTOGRAM, DUPLICATE_USERNAME),
-                is(1));
 
         mMediator.onUsernameTextChanged(TEST_USERNAME);
         assertFalse(mModel.get(DUPLICATE_USERNAME_ERROR));

@@ -836,7 +836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="2024-07-15">
+    enum="PasswordCheckResolutionAction" expires_after="2024-11-15">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1088,16 +1088,6 @@ chromium-metrics-reviews@google.com.
     <variant name="CountLeaked" summary="leaked credentials in the database"/>
     <variant name="CountPhished" summary="phished credentials in the database"/>
   </token>
-</histogram>
-
-<histogram name="PasswordManager.CredentialEditError"
-    enum="CredentialEditError" expires_after="2024-07-21">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Records the errors displayed by the saved credential entry editor, when the
-    user encounters them. Android-only for now.
-  </summary>
 </histogram>
 
 <histogram name="PasswordManager.CredentialEntryActions.{CredentialEntryType}"
@@ -2704,7 +2694,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend.Retry{Operation}.CancelledAtAttempt"
-    units="Times" expires_after="2024-07-07">
+    units="Times" expires_after="2024-11-17">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
