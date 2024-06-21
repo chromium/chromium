@@ -291,6 +291,32 @@ public class BottomBarConfigCreatorTest {
     }
 
     @Test
+    public void hasSearchCustomParams_usesChromeSearchIconInButtonConfig() {
+        Drawable drawable = mock(Drawable.class);
+        when(mCustomButtonParams.getId()).thenReturn(106); // SEARCH
+        when(mCustomButtonParams.getIcon(mContext)).thenReturn(drawable);
+        var pendingIntent = mock(PendingIntent.class);
+        when(mCustomButtonParams.getPendingIntent()).thenReturn(pendingIntent);
+        // SEARCH, SHARE, SAVE
+        GoogleBottomBarIntentParams params =
+                GoogleBottomBarIntentParams.newBuilder()
+                        .addAllEncodedButton(List.of(0, 9, 2, 3))
+                        .build();
+
+        BottomBarConfig buttonConfig = mConfigCreator.create(params, List.of(mCustomButtonParams));
+
+        Bitmap expectedBitmap =
+                drawableToBitmap(
+                        UiUtils.getTintedDrawable(
+                                mContext,
+                                R.drawable.ic_search,
+                                R.color.default_icon_color_baseline));
+        Bitmap actualBitmap = drawableToBitmap(buttonConfig.getButtonList().get(0).getIcon());
+        // the button has the expected custom button params set
+        assertTrue(expectedBitmap.sameAs(actualBitmap));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void singleDeckerWithRightButtons_returnsCorrectConfig() {
         GoogleBottomBarIntentParams params =

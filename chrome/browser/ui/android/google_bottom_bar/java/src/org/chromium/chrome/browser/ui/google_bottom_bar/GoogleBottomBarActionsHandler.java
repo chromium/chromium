@@ -55,6 +55,9 @@ class GoogleBottomBarActionsHandler {
             case ButtonId.PIH_BASIC, ButtonId.PIH_EXPANDED, ButtonId.PIH_COLORED -> {
                 return v -> onPageInsightsButtonClick(buttonConfig);
             }
+            case ButtonId.SEARCH -> {
+                return v -> onSearchButtonClick(buttonConfig);
+            }
             case ButtonId.CUSTOM -> {
                 return v -> onCustomButtonClick(buttonConfig);
             }
@@ -64,6 +67,16 @@ class GoogleBottomBarActionsHandler {
             }
         }
         return null;
+    }
+
+    private void onSearchButtonClick(ButtonConfig buttonConfig) {
+        PendingIntent pendingIntent = buttonConfig.getPendingIntent();
+        if (pendingIntent != null) {
+            sendPendingIntentWithUrl(pendingIntent);
+            GoogleBottomBarLogger.logButtonClicked(GoogleBottomBarButtonEvent.SEARCH_EMBEDDER);
+        } else {
+            Log.e(TAG, "Can't perform search action as pending intent is null.");
+        }
     }
 
     private void onCustomButtonClick(ButtonConfig buttonConfig) {

@@ -186,6 +186,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Chrome Share button"/>
   <int value="6" label="Embedder Share button"/>
   <int value="7" label="Embedder Custom button"/>
+  <int value="8" label="Embedder Search button"/>
 </enum>
 
 <enum name="GoogleBottomBarCreatedEvent">

@@ -43,7 +43,7 @@ class BottomBarConfig {
     /**
      * Each button is encoded as: 1 - Page Insights Hub with basic icon 2 - Chrome Share 3 - Save 4
      * - Add notes 5 - Chrome Refresh 6 - Page Insights Hub with coloured icon 7 - Page Insights Hub
-     * with expanded icon 8 - Custom button
+     * with expanded icon 8 - Custom button 9 - Search button
      */
     @IntDef({
         ButtonId.PIH_BASIC,
@@ -54,6 +54,7 @@ class BottomBarConfig {
         ButtonId.PIH_COLORED,
         ButtonId.PIH_EXPANDED,
         ButtonId.CUSTOM,
+        ButtonId.SEARCH,
         ButtonId.MAX_BUTTON_ID,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -66,7 +67,8 @@ class BottomBarConfig {
         int PIH_COLORED = 6;
         int PIH_EXPANDED = 7;
         int CUSTOM = 8;
-        int MAX_BUTTON_ID = CUSTOM;
+        int SEARCH = 9;
+        int MAX_BUTTON_ID = SEARCH;
     }
 
     private final @GoogleBottomBarVariantLayoutType int mVariantLayoutType;
