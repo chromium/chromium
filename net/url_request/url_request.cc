@@ -480,7 +480,8 @@ void URLRequest::set_site_for_cookies(const SiteForCookies& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
 }
 
-void URLRequest::set_isolation_info(const IsolationInfo& isolation_info) {
+void URLRequest::set_isolation_info(const IsolationInfo& isolation_info,
+                                    std::optional<GURL> redirect_info_new_url) {
   isolation_info_ = isolation_info;
 
   bool is_main_frame_navigation = isolation_info.IsMainFrameRequest() ||
@@ -488,7 +489,10 @@ void URLRequest::set_isolation_info(const IsolationInfo& isolation_info) {
 
   cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
       isolation_info.network_isolation_key(), isolation_info.site_for_cookies(),
-      net::SchemefulSite(original_url()), is_main_frame_navigation);
+      net::SchemefulSite(redirect_info_new_url.has_value()
+                             ? redirect_info_new_url.value()
+                             : url_chain_.back()),
+      is_main_frame_navigation);
 }
 
 void URLRequest::set_isolation_info_from_network_anonymization_key(
@@ -1000,7 +1004,9 @@ void URLRequest::Redirect(
   referrer_policy_ = redirect_info.new_referrer_policy;
   site_for_cookies_ = redirect_info.new_site_for_cookies;
   set_isolation_info(isolation_info_.CreateForRedirect(
-      url::Origin::Create(redirect_info.new_url)));
+                         url::Origin::Create(redirect_info.new_url)),
+                     redirect_info.new_url);
+
   cookie_setting_overrides().Remove(
       CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
 

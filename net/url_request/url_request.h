@@ -285,11 +285,17 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // are sent, what NetworkAnonymizationKey is used for cached resources, and
   // how that behavior changes when following redirects. This may only be
   // changed before Start() is called. Setting this value causes the
-  // cookie_partition_key_ to be recalculated.
+  // cookie_partition_key_ to be recalculated. When the isolation information is
+  // set through a redirect, the request_site used to create the partition key
+  // should come from the new_url associated with the redirect_info object
+  // associated with the redirect to ensure the cookie partition key's ancestor
+  // chain bit is set correctly.
   //
   // TODO(crbug.com/40093296): This isn't actually used yet for SameSite
   // cookies. Update consumers and fix that.
-  void set_isolation_info(const IsolationInfo& isolation_info);
+  void set_isolation_info(
+      const IsolationInfo& isolation_info,
+      std::optional<GURL> redirect_info_new_url = std::nullopt);
 
   // This will convert the passed NetworkAnonymizationKey to an IsolationInfo.
   // This IsolationInfo mmay be assigned an inaccurate frame origin because the
