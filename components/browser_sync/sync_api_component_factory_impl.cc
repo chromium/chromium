@@ -449,10 +449,14 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   }
 
   // `plus_address_webdata_service_` is null on iOS WebView.
+  // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
+  // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
       plus_address_webdata_service_ &&
       base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled) &&
+      !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
+           .empty() &&
       base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::PLUS_ADDRESS,
@@ -463,10 +467,14 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   }
 
   // `plus_address_setting_service_` is null on iOS WebView.
+  // `kEnterprisePlusAddressServerUrl` is checked to prevent enabling the
+  // feature in dev builds via the field trial config.
   if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING) &&
       plus_address_setting_service_ &&
       base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled) &&
+      !plus_addresses::features::kEnterprisePlusAddressServerUrl.Get()
+           .empty() &&
       base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::PLUS_ADDRESS_SETTING,

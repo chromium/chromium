@@ -79,9 +79,12 @@ class SingleClientPlusAddressSyncTest
       public testing::WithParamInterface<bool> {
  public:
   SingleClientPlusAddressSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{plus_addresses::features::kPlusAddressesEnabled,
-                              syncer::kSyncPlusAddress},
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{plus_addresses::features::kPlusAddressesEnabled,
+                               {{plus_addresses::features::
+                                     kEnterprisePlusAddressServerUrl.name,
+                                 "https://not-used.com"}}},
+                              {syncer::kSyncPlusAddress, {}}},
         /*disabled_features=*/{});
   }
 
