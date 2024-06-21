@@ -489,12 +489,6 @@ class SingleTestRunner(object):
             ]
         return True, []
 
-    def _is_render_tree(self, text):
-        return text and 'layer at (0,0) size' in text
-
-    def _is_layer_tree(self, text):
-        return text and '{\n  "layers": [' in text
-
     def _compare_text(self, expected_driver_output, driver_output):
 
         if expected_driver_output.text:
@@ -517,30 +511,6 @@ class SingleTestRunner(object):
             for char in chars:
                 text = text.replace(char, '')
             return text
-
-        def remove_ng_text(results):
-            processed = re.sub(
-                r'LayoutNG(BlockFlow|ListItem|FlexibleBox|View)', r'Layout\1',
-                results)
-            return processed
-
-        def is_ng_name_mismatch(expected, actual):
-            if not re.search(
-                    "LayoutNG(BlockFlow|ListItem|TableCaption|TableCell|FlexibleBox|View)",
-                    actual):
-                return False
-            if (not self._is_render_tree(actual)
-                    and not self._is_layer_tree(actual)):
-                return False
-            # There's a mix of NG and legacy names in both expected and actual,
-            # so just remove NG from both.
-            return not self._port.do_text_results_differ(
-                remove_ng_text(expected), remove_ng_text(actual))
-
-        # LayoutNG name mismatch (e.g., LayoutBlockFlow vs. LayoutNGBlockFlow)
-        # is treated as pass
-        if is_ng_name_mismatch(expected_text, normalized_actual_text):
-            return []
 
         # General text mismatch
         if self._port.do_text_results_differ(
