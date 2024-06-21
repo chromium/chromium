@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -17,9 +18,11 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -29,24 +32,28 @@ const char kGoogleCalendarLastDismissedTimePrefName[] =
 
 // Handles an HTTP request by returning a response from a json file in
 // google_apis/test/data/.
-std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-    const std::string& json_path,
-    const net::test_server::HttpRequest& request) {
+std::unique_ptr<net::test_server::BasicHttpResponse> HandleRequest(
+    const std::string& json_path) {
   return google_apis::test_util::CreateHttpResponseFromFile(
       google_apis::test_util::GetTestFilePath(json_path));
+}
+
+std::unique_ptr<TestingProfile> MakeTestingProfile(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
+  return profile_builder.Build();
+  ;
 }
 
 }  // namespace
 
 class GoogleCalendarPageHandlerTest : public testing::Test {
  public:
-  GoogleCalendarPageHandlerTest()
-      : test_shared_loader_factory_(
-            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
-                /*network_service=*/nullptr,
-                /*is_trusted=*/true)) {
+  GoogleCalendarPageHandlerTest() {
     feature_list_.InitAndEnableFeature(ntp_features::kNtpCalendarModule);
-    profile_ = std::make_unique<TestingProfile>();
+    profile_ =
+        MakeTestingProfile(test_url_loader_factory_.GetSafeWeakWrapper());
     pref_service_ = profile_->GetPrefs();
   }
 
@@ -57,18 +64,35 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
         &profile());
   }
 
-  std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithTestServer(
-      const std::string& json_path) {
-    test_server_ = std::make_unique<net::EmbeddedTestServer>();
-    test_server_->RegisterRequestHandler(
-        base::BindRepeating(&HandleRequest, json_path));
-    test_server_handle_ = test_server_->StartAndReturnHandle();
+  std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithInterceptor(
+      std::string json_path) {
     google_apis::calendar::CalendarApiUrlGenerator url_generator;
-    url_generator.SetBaseUrlForTesting(test_server_->base_url().spec());
+    url_generator.SetBaseUrlForTesting("https://foo.com/");
+    std::vector<google_apis::calendar::EventType> event_types = {
+        google_apis::calendar::EventType::kDefault};
+    SetUpEventsResponse(
+        url_generator.GetCalendarEventListUrl(
+            "primary", base::Time::Now(), base::Time::Now() + base::Hours(12),
+            true, 1, 2500, event_types, "ntp-calendar", "startTime"),
+        json_path);
     return std::make_unique<GoogleCalendarPageHandler>(
         mojo::PendingReceiver<
             ntp::calendar::mojom::GoogleCalendarPageHandler>(),
-        profile_.get(), MakeRequestSender(), url_generator);
+        profile_.get(), MakeRequestSender(), std::move(url_generator));
+  }
+
+  void SetUpEventsResponse(GURL request_url, std::string json_path) {
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {}));
+    test_url_loader_factory_.AddResponse(
+        request_url.spec() +
+            "&fields=timeZone%2Cetag%2Ckind%2Citems(id%2Ckind%2Csummary%2C"
+            "colorId%2Cstatus%2Cstart(date)%2Cend(date)%2Cstart(dateTime)%2C"
+            "end(dateTime)%2ChtmlLink%2Cattendees(responseStatus%2Cself)%2C"
+            "attendeesOmitted%2CconferenceData(conferenceId%2C"
+            "entryPoints(entryPointType%2Curi))%2Ccreator(self)%2Clocation%2C"
+            "attachments(title%2CfileUrl%2CiconLink%2CfileId))",
+        HandleRequest(json_path)->content());
   }
 
   PrefService& pref_service() { return *pref_service_; }
@@ -83,7 +107,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   std::unique_ptr<google_apis::RequestSender> MakeRequestSender() {
     return std::make_unique<google_apis::RequestSender>(
         std::make_unique<google_apis::DummyAuthService>(),
-        test_shared_loader_factory_,
+        profile_->GetURLLoaderFactory(),
         task_environment_.GetMainThreadTaskRunner(), "test-user-agent",
         TRAFFIC_ANNOTATION_FOR_TESTS);
   }
@@ -93,11 +117,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
       base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<net::EmbeddedTestServer> test_server_;
-  net::test_server::EmbeddedTestServerHandle test_server_handle_;
-  std::unique_ptr<google_apis::RequestSender> request_sender_;
-  scoped_refptr<network::TestSharedURLLoaderFactory>
-      test_shared_loader_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<PrefService> pref_service_;
 };
@@ -196,15 +216,9 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
   }
 }
 
-// TODO: crbug.com/345602518 - Flaky on Mac and Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_GetEvents DISABLED_GetEvents
-#else
-#define MAYBE_GetEvents GetEvents
-#endif
-TEST_F(GoogleCalendarPageHandlerTest, MAYBE_GetEvents) {
+TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
   std::unique_ptr<GoogleCalendarPageHandler> handler =
-      CreateHandlerWithTestServer("calendar/events.json");
+      CreateHandlerWithInterceptor("calendar/events.json");
   std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
@@ -234,15 +248,9 @@ TEST_F(GoogleCalendarPageHandlerTest, MAYBE_GetEvents) {
             "https://meet.google.com/jbe-test");
 }
 
-// TODO: crbug.com/345602518 - Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GetEventWithAttachments DISABLED_GetEventWithAttachments
-#else
-#define MAYBE_GetEventWithAttachments GetEventWithAttachments
-#endif
-TEST_F(GoogleCalendarPageHandlerTest, MAYBE_GetEventWithAttachments) {
+TEST_F(GoogleCalendarPageHandlerTest, GetEventWithAttachments) {
   std::unique_ptr<GoogleCalendarPageHandler> handler =
-      CreateHandlerWithTestServer("calendar/event_with_attachments.json");
+      CreateHandlerWithInterceptor("calendar/event_with_attachments.json");
   std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
