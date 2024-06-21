@@ -103,6 +103,10 @@
   }
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
+  if (!contextualPanelTabHelper) {
+    return;
+  }
+
   if (contextualPanelTabHelper->IsContextualPanelCurrentlyOpened()) {
     [self.consumer makeTranslucent];
   } else {

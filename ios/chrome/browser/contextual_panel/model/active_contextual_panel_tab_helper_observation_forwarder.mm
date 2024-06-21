@@ -20,7 +20,9 @@ ActiveContextualPanelTabHelperObservationForwarder::
   if (active_web_state) {
     ContextualPanelTabHelper* tab_helper =
         ContextualPanelTabHelper::FromWebState(active_web_state);
-    tab_helper_observation_.Observe(tab_helper);
+    if (tab_helper) {
+      tab_helper_observation_.Observe(tab_helper);
+    }
   }
 }
 
@@ -41,6 +43,8 @@ void ActiveContextualPanelTabHelperObservationForwarder::WebStateListDidChange(
   if (status.new_active_web_state) {
     ContextualPanelTabHelper* tab_helper =
         ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
-    tab_helper_observation_.Observe(tab_helper);
+    if (tab_helper) {
+      tab_helper_observation_.Observe(tab_helper);
+    }
   }
 }
