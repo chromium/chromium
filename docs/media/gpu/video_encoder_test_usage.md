@@ -95,5 +95,5 @@ Non-performance tests only:
     --output_limit        limit the number of images saved to disk.
 
 ## Source code
-See the video encoder tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_encode_accelerator_tests.cc).
-See the video encoder performance tests [source code](https://cs.chromium.org/chromium/src/media/gpu/video_encode_accelerator_perf_tests.cc).
+See the video encoder tests [source code](https://cs.chromium.org/chromium/src/media/gpu/test/video_encode_accelerator_tests.cc).
+See the video encoder performance tests [source code](https://cs.chromium.org/chromium/src/media/gpu/test/video_encode_accelerator_perf_tests.cc).
