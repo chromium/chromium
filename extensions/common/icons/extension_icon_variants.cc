@@ -30,7 +30,7 @@ bool ExtensionIconVariants::Parse(const base::Value::List* list,
     if (!icon_variant.has_value()) {
       diagnostics.emplace_back(diagnostics::icon_variants::GetDiagnosticForID(
           diagnostics::icon_variants::Feature::kIconVariants,
-          diagnostics::icon_variants::Code::kEmptyIconVariant));
+          diagnostics::icon_variants::Id::kEmptyIconVariant));
       continue;
     }
     list_.emplace_back(std::move(icon_variant.value()));
@@ -40,7 +40,7 @@ bool ExtensionIconVariants::Parse(const base::Value::List* list,
   if (list_.empty()) {
     diagnostics.emplace_back(diagnostics::icon_variants::GetDiagnosticForID(
         diagnostics::icon_variants::Feature::kIconVariants,
-        diagnostics::icon_variants::Code::kIconVariantsEmpty));
+        diagnostics::icon_variants::Id::kIconVariantsEmpty));
   }
 
   return true;

@@ -26,7 +26,7 @@ namespace keys = manifest_keys;
 using IconVariantsManifestKeys = extensions::api::icon_variants::ManifestKeys;
 
 // extensions::diagnostics::
-using Code = extensions::diagnostics::icon_variants::Code;
+using Code = extensions::diagnostics::icon_variants::Id;
 using Severity = extensions::diagnostics::icon_variants::Severity;
 using Feature = extensions::diagnostics::icon_variants::Feature;
 
@@ -103,7 +103,7 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
 
   // If there are any parse warnings, add them to the install warnings.
   for (const auto& diagnostic : diagnostics) {
-    AddInstallWarningForCode(*extension, diagnostic.code);
+    AddInstallWarningForCode(*extension, diagnostic.id);
   }
 
   // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.

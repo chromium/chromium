@@ -12,21 +12,21 @@ namespace extensions::diagnostics::icon_variants {
 Diagnostic diagnostics[] = {
     {
         Feature::kIconVariants,
-        Code::kFailedToParse,
+        Id::kFailedToParse,
         Category::kManifest,
         Severity::kWarning,
         "Failed to parse.",
     },
     {
         Feature::kIconVariants,
-        Code::kIconVariantsEmpty,
+        Id::kIconVariantsEmpty,
         Category::kManifest,
         Severity::kWarning,
         "There are no usable icon_variants.",
     },
     {
         Feature::kIconVariants,
-        Code::kEmptyIconVariant,
+        Id::kEmptyIconVariant,
         Category::kManifest,
         Severity::kWarning,
         "Icon variant is empty.",
@@ -34,9 +34,9 @@ Diagnostic diagnostics[] = {
 };
 
 // TODO(crbug.com/343748805): Use e.g. flat_map when there are many diagnostics.
-Diagnostic GetDiagnosticForID(Feature feature, Code code) {
+Diagnostic GetDiagnosticForID(Feature feature, Id id) {
   for (const auto& diagnostic : diagnostics) {
-    if (diagnostic.feature == feature && diagnostic.code == code) {
+    if (diagnostic.feature == feature && diagnostic.id == id) {
       return diagnostic;
     }
   }

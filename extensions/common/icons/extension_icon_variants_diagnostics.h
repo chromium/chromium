@@ -7,18 +7,17 @@
 
 #include <optional>
 
-// A diagnostic is a unique error/warning code which can be retrieved keyed on
-// the provided code and feature. An example of a feature is kIconVariants,
+// A diagnostic is a unique error/warning id which can be retrieved keyed on
+// the provided id and feature. An example of a feature is kIconVariants,
 // which is an enum entry.
 // TODO(crbug.com/343748805): Generalize for features other than icon_variants.
 // TODO(crbug.com/343748805): Consider names other than `category` and
 // `feature`.
-// TODO(crbug.com/343748805): Should `code` be `id instead?
 namespace extensions::diagnostics::icon_variants {
 
 // Add a unique name at the bottom of the list and do no sort nor change the
 // order. Each id is unique and should remain unchanged.
-enum class Code {
+enum class Id {
   kFailedToParse,
   kIconVariantsEmpty,
   kEmptyIconVariant,
@@ -45,14 +44,14 @@ enum class Feature {
 // Retrieval of diagnostic with relevant information.
 struct Diagnostic {
   Feature feature;
-  icon_variants::Code code;
+  icon_variants::Id id;
   Category category;
   Severity severity;
   const char* message;
 };
 
 // Get diagnostic for a given id.
-Diagnostic GetDiagnosticForID(Feature feature, Code code);
+Diagnostic GetDiagnosticForID(Feature feature, Id id);
 
 }  // namespace extensions::diagnostics::icon_variants
 
