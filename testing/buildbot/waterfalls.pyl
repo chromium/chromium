@@ -6280,7 +6280,9 @@
         # TODO: crbug.com/346921029 - Support the same test suites with
         # Win10 Tests x64.
         'test_suites': {
-          'gtest_tests': 'chromium_gtests',
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
+          'scripts': 'chromium_win_scripts',
         },
       },
       'win-arm64-dbg': {

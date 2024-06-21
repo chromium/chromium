@@ -344,6 +344,8 @@
       # No arm64 apache suppport for fuchsia arm64 bots yet.
       'fuchsia-arm64-cast-receiver-rel',
       'fuchsia-fyi-arm64-dbg',
+      # TODO: crbug.com/346921029 - fix broken tests.
+      'linux-win-cross-rel',
       'Win10 Tests x64 (dbg)',
       'win11-arm64-dbg-tests',
     ],
@@ -639,6 +641,8 @@
       'fuchsia-arm64-cast-receiver-rel',
       'fuchsia-fyi-arm64-dbg',
       'linux-rel-cft',
+      # TODO: crbug.com/346921029 - fix broken tests.
+      'linux-win-cross-rel',
       'mac-rel-cft',
       'win-rel-cft',
       'win11-arm64-dbg-tests',
@@ -3085,6 +3089,8 @@
       'mac13-arm64-rel-tests',
       # TODO(crbug.com/40204342): Re-enable.
       'mac14-arm64-rel-tests',
+      # TODO: crbug.com/346921029 - fix broken tests.
+      'linux-win-cross-rel',
     ],
   },
   'gwp_asan_unittests': {
@@ -3624,6 +3630,20 @@
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
+    ],
+  },
+  'metrics_python_tests': {
+    'remove_from': [
+       # TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.
+      'linux-win-cross-rel',
+    ],
+  },
+  'mini_installer_tests': {
+    'remove_from': [
+      # TODO: crbug.com/346921029: support mini_installer_tests
+      # The label "//chrome/test/mini_installer:mini_installer_tests(//build/toolchain/win:win_clang_x64)" isn't a target.
+      # https://ci.chromium.org/ui/p/chromium/builders/try/linux-win-cross-rel/44/overview
+      'linux-win-cross-rel',
     ],
   },
   'model_validation_tests MODEL_VALIDATION_BASE': {
@@ -4466,6 +4486,18 @@
       },
     },
   },
+  'telemetry_desktop_minidump_unittests': {
+    'remove_from': [
+       # TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.
+      'linux-win-cross-rel',
+    ],
+  },
+  'telemetry_gpu_unittests': {
+    'remove_from': [
+       # TODO: crbug.com/347165944 - Fix missing dirmd.exe on Linux.
+      'linux-win-cross-rel',
+    ],
+  },
   'telemetry_monochrome_minidump_unittests': {
     'modifications': {
       # If you change this, make similar changes in android-x86-code-coverage below
@@ -4530,6 +4562,7 @@
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
       'Win11 Tests x64',
+      'linux-win-cross-rel', # shadow Win10 Tests x64
       'win10-rel-no-external-ip',
       'win11-arm64-dbg-tests',
       'win11-arm64-rel-tests',
@@ -4570,6 +4603,7 @@
 
       'Win10 Tests x64',
       'Win11 Tests x64',
+      'linux-win-cross-rel', # shadow Win10 Tests x64
       'win10-rel-no-external-ip',
       'win11-arm64-dbg-tests',
       'win11-arm64-rel-tests',
