@@ -117,7 +117,7 @@ export class SettingsAppParentalControlsSubpageElement extends
     return apps.length > 0 && !searchString;
   }
 
-  onReadinessChanged(updatedApp: App): void {
+  onAppInstalledOrUpdated(updatedApp: App): void {
     // Using Polymer mutation methods do not properly handle splice updates with
     // object that have deep properties. Create and assign a copy list instead.
     const appList = Array.from(this.appList_);
@@ -125,7 +125,10 @@ export class SettingsAppParentalControlsSubpageElement extends
       return app.id === updatedApp.id;
     });
 
+    // If app is not found, then it is a newly installed app.
     if (foundIdx === -1) {
+      appList.push(updatedApp);
+      this.appList_ = appList;
       return;
     }
 
@@ -135,6 +138,25 @@ export class SettingsAppParentalControlsSubpageElement extends
       appList[foundIdx] = updatedApp;
       this.appList_ = appList;
     }
+  }
+
+  onAppUninstalled(updatedApp: App): void {
+    // Using Polymer mutation methods do not properly handle splice updates with
+    // object that have deep properties. Create and assign a copy list instead.
+    const appList = Array.from(this.appList_);
+    const foundIdx = this.appList_.findIndex(app => {
+      return app.id === updatedApp.id;
+    });
+
+    if (foundIdx === -1) {
+      console.error(
+          'app-controls: Attempting to remove app: ', updatedApp.id,
+          ' which is not installed.');
+      return;
+    }
+
+    appList.splice(foundIdx, 1);
+    this.appList_ = appList;
   }
 }
 

@@ -99,7 +99,8 @@ class AppParentalControlsTestObserver
   AppParentalControlsTestObserver() = default;
   ~AppParentalControlsTestObserver() override = default;
 
-  void OnReadinessChanged(app_parental_controls::mojom::AppPtr app) override {
+  void OnAppInstalledOrUpdated(
+      app_parental_controls::mojom::AppPtr app) override {
     if (app_readiness_changed_.contains(app->id)) {
       ++app_readiness_changed_[app->id];
     } else {
@@ -107,6 +108,11 @@ class AppParentalControlsTestObserver
     }
     waiter_.MaybeStop(app->id);
     recently_updated_app_ = std::move(app);
+  }
+
+  void OnAppUninstalled(app_parental_controls::mojom::AppPtr app) override {
+    waiter_.MaybeStop(app->id);
+    recently_uninstalled_app_ = std::move(app);
   }
 
   mojo::PendingRemote<app_parental_controls::mojom::AppParentalControlsObserver>
@@ -129,6 +135,10 @@ class AppParentalControlsTestObserver
     return recently_updated_app_;
   }
 
+  const app_parental_controls::mojom::AppPtr& recently_uninstalled_app() const {
+    return recently_uninstalled_app_;
+  }
+
   int GetReadinessChangeCount(const std::string& app_id) const {
     return app_readiness_changed_.contains(app_id)
                ? app_readiness_changed_.at(app_id)
@@ -137,6 +147,7 @@ class AppParentalControlsTestObserver
 
  private:
   app_parental_controls::mojom::AppPtr recently_updated_app_;
+  app_parental_controls::mojom::AppPtr recently_uninstalled_app_;
   std::map<std::string, int> app_readiness_changed_;
   AppUpdateWaiter waiter_;
 
@@ -195,6 +206,10 @@ class AppParentalControlsHandlerBrowserTest : public InProcessBrowserTest {
     run_loop.RunUntilIdle();
 
     return arc::ArcPackageNameToAppId(package_name, profile());
+  }
+
+  void UninstallArcPackage(const std::string& package_name) {
+    arc_app_instance_->UninstallPackage(package_name);
   }
 
   void InstallNonArcApps() {
@@ -281,6 +296,38 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
         run_loop2.Quit();
       }));
   run_loop2.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, UninstallApp) {
+  AppParentalControlsHandler* handler = GetHandler();
+  handler->AddObserver(observer()->GenerateRemote());
+
+  std::string arc_app_package1 = "com.example.app1";
+  std::string arc_app_id1 = InstallArcApp(arc_app_package1);
+  std::string arc_app_id2 = InstallArcApp("com.example.app2");
+
+  base::RunLoop run_loop;
+  handler->GetApps(base::BindLambdaForTesting(
+      [&](std::vector<app_parental_controls::mojom::AppPtr> apps) -> void {
+        EXPECT_EQ(apps.size(), 2u);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  observer()->SetUpWaiterForAppUpdate(arc_app_id1);
+  UninstallArcPackage(arc_app_package1);
+  observer()->WaitForAppUpdate();
+
+  base::RunLoop run_loop2;
+  handler->GetApps(base::BindLambdaForTesting(
+      [&](std::vector<app_parental_controls::mojom::AppPtr> apps) -> void {
+        EXPECT_EQ(apps.size(), 1u);
+        EXPECT_EQ(apps[0]->id, arc_app_id2);
+        run_loop2.Quit();
+      }));
+  run_loop2.Run();
+
+  EXPECT_EQ(observer()->recently_uninstalled_app()->id, arc_app_id1);
 }
 
 }  // namespace ash::settings

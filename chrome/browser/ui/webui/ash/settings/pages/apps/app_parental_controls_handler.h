@@ -59,7 +59,8 @@ class AppParentalControlsHandler
       apps::AppRegistryCache* cache) override;
 
   std::vector<app_parental_controls::mojom::AppPtr> GetAppList();
-  void NotifyAppChanged(app_parental_controls::mojom::AppPtr app);
+  void NotifyAppInstalledOrUpdated(app_parental_controls::mojom::AppPtr app);
+  void NotifyAppRemoved(app_parental_controls::mojom::AppPtr app);
 
   mojo::RemoteSet<app_parental_controls::mojom::AppParentalControlsObserver>
       observer_list_;

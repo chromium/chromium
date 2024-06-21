@@ -32,7 +32,7 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
       if (app.id === id) {
         app.isBlocked = isBlocked;
         if (this.observer_) {
-          this.observer_.onReadinessChanged(app);
+          this.observer_.onAppInstalledOrUpdated(app);
         }
       }
     }
@@ -45,7 +45,7 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     for (const app of this.apps_) {
       app.isBlocked = false;
       if (this.observer_) {
-        this.observer_.onReadinessChanged(app);
+        this.observer_.onAppInstalledOrUpdated(app);
       }
     }
     return Promise.resolve();

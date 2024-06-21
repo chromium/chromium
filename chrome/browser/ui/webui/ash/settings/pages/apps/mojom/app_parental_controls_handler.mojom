@@ -37,6 +37,10 @@ interface AppParentalControlsHandler {
 // Observer interface that sends remote updates to the app parental controls UI
 // in OSSettings.
 interface AppParentalControlsObserver {
-  // Notifies clients when app readiness has changed.
-  OnReadinessChanged(App app);
+  // Notifies clients when a new app is installed or an already installed app
+  // has been updated.
+  OnAppInstalledOrUpdated(App app);
+
+  // Notifies clients when an app has been uninstalled.
+  OnAppUninstalled(App app);
 };

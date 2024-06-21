@@ -109,6 +109,59 @@ suite('AppParentalControlsSubpage', () => {
     assertFalse(app.isBlocked);
   });
 
+  test('Installing and uninstalling app updates app list', async () => {
+    const filesAppId = 'files-id';
+    const filesAppTitle = 'Files';
+    const app = createApp(filesAppId, filesAppTitle, false);
+    handler.addAppForTesting(app);
+
+    await createPage();
+
+    const observer = handler.getObserverRemote();
+    assertTrue(!!observer);
+
+    assertEquals(1, getApps().length);
+
+    const chromeAppId = 'chrome-id';
+    const chromeAppTitle = 'Chrome';
+    observer.onAppInstalledOrUpdated({
+      id: chromeAppId,
+      title: chromeAppTitle,
+      isBlocked: false,
+    });
+    await flushTasks();
+
+    let appsList = getApps();
+    assertEquals(2, appsList.length);
+    assertTrue(!!appsList[0]);
+    assertTrue(!!appsList[1]);
+
+    let title1 =
+        appsList[0].shadowRoot!.querySelector<HTMLElement>('.app-title');
+    assertTrue(!!title1);
+    assertEquals(title1.innerText, chromeAppTitle);
+
+    const title2 =
+        appsList[1].shadowRoot!.querySelector<HTMLElement>('.app-title');
+    assertTrue(!!title2);
+    assertEquals(title2.innerText, filesAppTitle);
+
+    observer.onAppUninstalled({
+      id: chromeAppId,
+      title: chromeAppTitle,
+      isBlocked: false,
+    });
+    await flushTasks();
+
+    appsList = getApps();
+    assertEquals(1, getApps().length);
+    assertTrue(!!appsList[0]);
+
+    title1 = appsList[0].shadowRoot!.querySelector<HTMLElement>('.app-title');
+    assertTrue(!!title1);
+    assertEquals(title1.innerText, filesAppTitle);
+  });
+
   test('Clicking app row updates app blocked state', async () => {
     const app = createApp('file-id', 'Files', false);
     handler.addAppForTesting(app);
@@ -159,7 +212,7 @@ suite('AppParentalControlsSubpage', () => {
     assertTrue(!!observer);
 
     // Dispatch readiness changed event with block state changed.
-    observer.onReadinessChanged({
+    observer.onAppInstalledOrUpdated({
       id: app.id,
       title: app.title,
       isBlocked: !app.isBlocked,
@@ -191,7 +244,7 @@ suite('AppParentalControlsSubpage', () => {
         assertTrue(appToggle.checked);
 
         // Dispatch readiness changed event without any changes to block state.
-        observer.onReadinessChanged(app);
+        observer.onAppInstalledOrUpdated(app);
 
         assertTrue(appToggle.checked);
         assertFalse(app.isBlocked);

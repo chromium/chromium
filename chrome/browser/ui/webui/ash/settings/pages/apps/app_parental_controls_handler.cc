@@ -91,7 +91,11 @@ void AppParentalControlsHandler::OnControlsDisabled() {
 
 void AppParentalControlsHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ReadinessChanged() && ShouldIncludeApp(update)) {
-    NotifyAppChanged(CreateAppPtr(update));
+    if (!apps_util::IsInstalled(update.Readiness())) {
+      NotifyAppRemoved(CreateAppPtr(update));
+      return;
+    }
+    NotifyAppInstalledOrUpdated(CreateAppPtr(update));
   }
 }
 
@@ -113,10 +117,17 @@ AppParentalControlsHandler::GetAppList() {
   return apps;
 }
 
-void AppParentalControlsHandler::NotifyAppChanged(
+void AppParentalControlsHandler::NotifyAppInstalledOrUpdated(
     app_parental_controls::mojom::AppPtr app) {
   for (const auto& observer : observer_list_) {
-    observer->OnReadinessChanged(app.Clone());
+    observer->OnAppInstalledOrUpdated(app.Clone());
+  }
+}
+
+void AppParentalControlsHandler::NotifyAppRemoved(
+    app_parental_controls::mojom::AppPtr app) {
+  for (const auto& observer : observer_list_) {
+    observer->OnAppUninstalled(app.Clone());
   }
 }
 
