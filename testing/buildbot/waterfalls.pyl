@@ -1393,9 +1393,9 @@
           'scripts': 'chromium_mac_scripts',
         },
       },
-      'Mac13 Tests Siso FYI': {
+      'Mac Tests Siso FYI': {
         'mixins': [
-            'mac_13_x64',
+            'mac_default_x64',
             'isolate_profile_data',
         ],
         'test_suites': {

@@ -1,5 +1,5 @@
 build/Mac Builder Siso FYI
-build/Mac13 Tests Siso FYI
+build/Mac Tests Siso FYI
 build/android-build-perf-developer
 build/android-build-perf-ninja
 build/android-build-perf-siso

@@ -358,6 +358,14 @@
           'shards': 8,
         },
       },
+      'Mac Tests Siso FYI': {
+        'swarming': {
+          'dimensions': {
+            'gpu': None,
+          },
+          'shards': 12,
+        },
+      },
       'Mac10.15 Tests': {
         'swarming': {
           'dimensions': {
@@ -387,14 +395,6 @@
         },
       },
       'Mac13 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
-        },
-      },
-      'Mac13 Tests Siso FYI': {
         'swarming': {
           'dimensions': {
             'gpu': None,
@@ -656,6 +656,14 @@
           'shards': 10,
         },
       },
+      'Mac Tests Siso FYI': {
+        'swarming': {
+          'dimensions': {
+            'gpu': None,
+          },
+          'shards': 18,
+        },
+      },
       'Mac10.15 Tests': {
         'swarming': {
           'dimensions': {
@@ -684,14 +692,6 @@
         },
       },
       'Mac13 Tests': {
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 18,
-        },
-      },
-      'Mac13 Tests Siso FYI': {
         'swarming': {
           'dimensions': {
             'gpu': None,
@@ -1013,6 +1013,12 @@
           'shards': 20,  # crbug.com/1419045
         },
       },
+      'Mac Tests Siso FYI': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 20,  # crbug.com/1361887
+        },
+      },
       'Mac10.15 Tests': {
         # crbug.com/1042757
         'swarming': {
@@ -1033,12 +1039,6 @@
         },
       },
       'Mac13 Tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1361887
-        },
-      },
-      'Mac13 Tests Siso FYI': {
         'ci_only': True,
         'swarming': {
           'shards': 20,  # crbug.com/1361887
@@ -1797,6 +1797,15 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
       },
+      'Mac Tests Siso FYI': {
+        # Only retry the individual failed tests instead of rerunning entire
+        # shards.
+        # crbug.com/1475852
+        'retry_only_failed_tests': True,
+        'swarming': {
+          'shards': 12,
+        },
+      },
       'Mac11 Tests': {
         'swarming': {
           'shards': 12,
@@ -1808,15 +1817,6 @@
         },
       },
       'Mac13 Tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'Mac13 Tests Siso FYI': {
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
         # crbug.com/1475852
@@ -3270,17 +3270,17 @@
           'shards': 7,
         },
       },
+      'Mac Tests Siso FYI': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
       'Mac12 Tests': {
         'swarming': {
           'shards': 6,
         },
       },
       'Mac13 Tests': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'Mac13 Tests Siso FYI': {
         'swarming': {
           'shards': 6,
         },
@@ -4346,6 +4346,12 @@
           'shards': 3,
           },
       },
+      'Mac Tests Siso FYI': {
+        'ci_only': True,
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'Mac11 Tests': {
         'swarming': {
           'shards': 4,
@@ -4358,12 +4364,6 @@
         },
       },
       'Mac13 Tests': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'Mac13 Tests Siso FYI': {
         'ci_only': True,
         'swarming': {
           'shards': 4,
@@ -4727,12 +4727,12 @@
           'shards': 2,
         },
       },
-      'Mac13 Tests': {
+      'Mac Tests Siso FYI': {
         'swarming': {
           'shards': 2,
         },
       },
-      'Mac13 Tests Siso FYI': {
+      'Mac13 Tests': {
         'swarming': {
           'shards': 2,
         },

@@ -36,7 +36,7 @@
           {
             "builder_id": {
               "bucket": "build",
-              "builder": "Mac13 Tests Siso FYI",
+              "builder": "Mac Tests Siso FYI",
               "project": "chromium"
             },
             "builder_spec": {
@@ -67,7 +67,7 @@
       "builder_ids": [
         {
           "bucket": "build",
-          "builder": "Mac13 Tests Siso FYI",
+          "builder": "Mac Tests Siso FYI",
           "project": "chromium"
         }
       ]

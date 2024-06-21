@@ -69,9 +69,9 @@ ci.builder(
 )
 
 ci.thin_tester(
-    name = "Mac13 Tests Siso FYI",
+    name = "Mac Tests Siso FYI",
     description_html = """\
-This builder is intended to shadow <a href="https://ci.chromium.org/ui/p/chromium/builders/ci/Mac13%20Tests">Mac13 Tests</a>.<br/>\
+This builder is intended to shadow <a href="https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests">mac14-tests</a>.<br/>\
 But, the tests are built by <a ref="https://ci.chromium.org/ui/p/chromium/builders/build/Mac%20Builder%20Siso%20FYI">Mac Builder Siso FYI</a>.\
 """,
     triggered_by = ["build/Mac Builder Siso FYI"],
