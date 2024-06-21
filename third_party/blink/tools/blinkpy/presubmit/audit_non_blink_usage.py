@@ -1113,6 +1113,9 @@ _CONFIG = [
             'base::OnceClosure',
             'base::RepeatingCallback',
             'base::RepeatingClosure',
+            'base::Time'
+            'base::TimeDelta',
+            'base::TimeTicks',
 
             'gfx::Point',
             'gfx::PointF',
