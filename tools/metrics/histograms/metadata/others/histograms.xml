@@ -622,6 +622,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.Auction.ContributeToHistogramOnEventPermissionPolicy"
+    enum="Boolean" expires_after="2025-06-12">
+  <owner>morlovich@google.com</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Whether permission policy allowed a call to contributeToHistogramOnEvent()
+    or not. Recorded at every call.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.DirectFromSellerSignals.RequestType"
     enum="DirectFromSellerSignalsRequestType" expires_after="2024-10-28">
   <owner>caraitto@chromium.org</owner>

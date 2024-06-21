@@ -581,6 +581,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeRealTimeReportingMaxReports;
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kFledgeEnforcePermissionPolicyContributeOnEvent);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
     kForceDarkInversionMethodParam;

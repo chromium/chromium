@@ -17,6 +17,7 @@
 namespace auction_worklet {
 
 class AuctionV8Helper;
+class AuctionV8Logger;
 
 // Reserved event types for aggregatable report's for-event contribution.
 CONTENT_EXPORT extern const char kReservedAlways[];
@@ -30,6 +31,7 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
  public:
   explicit PrivateAggregationBindings(
       AuctionV8Helper* v8_helper,
+      AuctionV8Logger* v8_logger,
       bool private_aggregation_permissions_policy_allowed);
   PrivateAggregationBindings(const PrivateAggregationBindings&) = delete;
   PrivateAggregationBindings& operator=(const PrivateAggregationBindings&) =
@@ -52,8 +54,10 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   static void EnableDebugMode(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+  const raw_ptr<AuctionV8Logger> v8_logger_;
 
   bool private_aggregation_permissions_policy_allowed_;
+  const bool enforce_permission_policy_for_on_event_;
 
   // Defaults to debug mode being disabled.
   blink::mojom::DebugModeDetails debug_mode_details_;

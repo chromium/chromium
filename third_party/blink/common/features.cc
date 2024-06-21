@@ -1030,6 +1030,12 @@ const base::FeatureParam<base::TimeDelta> kFledgeRealTimeReportingWindow{
 const base::FeatureParam<int> kFledgeRealTimeReportingMaxReports{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingMaxReports", 10};
 
+// Enable enforcement of permission policy for
+// privateAggregation.contributeToHistogramOnEvent.
+BASE_FEATURE(kFledgeEnforcePermissionPolicyContributeOnEvent,
+             "FledgeEnforcePermissionPolicyContributeOnEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",
              base::FEATURE_DISABLED_BY_DEFAULT);

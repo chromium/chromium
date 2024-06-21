@@ -7305,6 +7305,132 @@ TEST_F(BidderWorkletTest, SendReportToLongUrl) {
   channel->ExpectNoMoreConsoleEvents();
 }
 
+// Trying to "enforce" permission policy on contributeToHistogramOnEvent.
+// Currently this produces no report and a warning (plus a metric).
+TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionEnforced) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeEnforcePermissionPolicyContributeOnEvent);
+
+  base::HistogramTester histogram_tester;
+  permissions_policy_state_ = mojom::AuctionWorkletPermissionsPolicyState::New(
+      /*private_aggregation_allowed=*/false,
+      /*shared_storage_allowed=*/false);
+
+  const char kScriptBody[] = R"(
+      privateAggregation.contributeToHistogramOnEvent(
+          "reserved.win", {bucket: 234n, value: 56});
+  )";
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript(kScriptBody));
+
+  ScopedInspectorSupport inspector_support(v8_helper().get());
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_ids_for_testing()[0];
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(
+      worklet_impl, /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false,
+      /*expected_errors=*/{}, run_loop.QuitClosure());
+  run_loop.Run();
+
+  const char kWarning[] =
+      "The \\\"private-aggregation\\\" Permissions Policy denied "
+      "contributeToHistogramOnEvent. Ignoring for backwards compatibility but "
+      "this will eventually throw an exception.";
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      base::StrCat({"[{\"type\":\"string\", \"value\":\"", kWarning, "\"}]"}),
+      /*stack_trace_size=*/1, /*function=*/"reportWin",
+      interest_group_bidding_url_, /*line_number=*/11);
+
+  channel->ExpectNoMoreConsoleEvents();
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.ContributeToHistogramOnEventPermissionPolicy",
+      false, 1);
+}
+
+// Not enforcing permission policy on contributeToHistogramOnEvent.
+// Legacy compatibility mode.
+TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgeEnforcePermissionPolicyContributeOnEvent);
+
+  base::HistogramTester histogram_tester;
+  permissions_policy_state_ = mojom::AuctionWorkletPermissionsPolicyState::New(
+      /*private_aggregation_allowed=*/false,
+      /*shared_storage_allowed=*/false);
+
+  const char kScriptBody[] = R"(
+      privateAggregation.contributeToHistogramOnEvent(
+          "reserved.win", {bucket: 234n, value: 56});
+  )";
+
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript(kScriptBody));
+
+  ScopedInspectorSupport inspector_support(v8_helper().get());
+  BidderWorklet* worklet_impl;
+  auto worklet =
+      CreateWorklet(interest_group_bidding_url_,
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+  int id = worklet_impl->context_group_ids_for_testing()[0];
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+  base::RunLoop run_loop;
+  PrivateAggregationRequests incorrectly_expected_pa_requests;
+  incorrectly_expected_pa_requests.push_back(
+      mojom::PrivateAggregationRequest::New(
+          mojom::AggregatableReportContribution::NewForEventContribution(
+              mojom::AggregatableReportForEventContribution::New(
+                  /*bucket=*/mojom::ForEventSignalBucket::NewIdBucket(234),
+                  /*value=*/mojom::ForEventSignalValue::NewIntValue(56),
+                  /*filtering_id=*/std::nullopt,
+                  /*event_type=*/"reserved.win")),
+          blink::mojom::AggregationServiceMode::kDefault,
+          blink::mojom::DebugModeDetails::New()));
+  RunReportWinExpectingResultAsync(
+      worklet_impl, /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_ad_macro_map=*/{},
+      /*expected_pa_requests=*/std::move(incorrectly_expected_pa_requests),
+      /*expected_reporting_latency_timeout=*/false,
+      /*expected_errors=*/{}, run_loop.QuitClosure());
+  run_loop.Run();
+
+  const char kWarning[] =
+      "privateAggregation.contributeToHistogramOnEvent called without "
+      "appropriate \\\"private-aggregation\\\" Permissions Policy approval; "
+      "accepting for backwards compatibility but this will be shortly "
+      "ignored and eventually will throw an exception";
+
+  channel->WaitForAndValidateConsoleMessage(
+      "warning", /*json_args=*/
+      base::StrCat({"[{\"type\":\"string\", \"value\":\"", kWarning, "\"}]"}),
+      /*stack_trace_size=*/1, /*function=*/"reportWin",
+      interest_group_bidding_url_, /*line_number=*/11);
+
+  channel->ExpectNoMoreConsoleEvents();
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.ContributeToHistogramOnEventPermissionPolicy",
+      false, 1);
+}
+
 // Debug win/loss reporting APIs should do nothing when feature
 // kBiddingAndScoringDebugReportingAPI is not enabled. It will not fail
 // generateBid().
@@ -10382,6 +10508,35 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         /*expected_set_priority=*/std::nullopt,
         /*expected_update_priority_signals_overrides=*/{},
         /*expected_pa_requests=*/{});
+
+    // Currently this goes through with default flags, while it should throw.
+    // See the ContributeToHistogramOnEventPermission* tests for the story on
+    // getting it fixed.
+    PrivateAggregationRequests incorrectly_expected_pa_requests;
+    incorrectly_expected_pa_requests.push_back(
+        kExpectedForEventRequest1.Clone());
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            privateAggregation.contributeToHistogramOnEvent(
+                "reserved.win", {bucket: 234n, value: 56});
+          )"),
+        /*expected_bids=*/
+        mojom::BidderWorkletBid::New(
+            auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
+            /*bid_currency=*/std::nullopt,
+            /*ad_cost=*/std::nullopt,
+            blink::AdDescriptor(GURL("https://response.test/")),
+            /*ad_component_descriptors=*/std::nullopt,
+            /*modeling_signals=*/std::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/std::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
+        /*expected_set_priority=*/std::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/std::move(incorrectly_expected_pa_requests));
 
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(

@@ -16,10 +16,12 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -353,10 +355,14 @@ const char kReservedLoss[] = "reserved.loss";
 
 PrivateAggregationBindings::PrivateAggregationBindings(
     AuctionV8Helper* v8_helper,
+    AuctionV8Logger* v8_logger,
     bool private_aggregation_permissions_policy_allowed)
     : v8_helper_(v8_helper),
+      v8_logger_(v8_logger),
       private_aggregation_permissions_policy_allowed_(
-          private_aggregation_permissions_policy_allowed) {}
+          private_aggregation_permissions_policy_allowed),
+      enforce_permission_policy_for_on_event_(base::FeatureList::IsEnabled(
+          blink::features::kFledgeEnforcePermissionPolicyContributeOnEvent)) {}
 
 PrivateAggregationBindings::~PrivateAggregationBindings() = default;
 
@@ -537,6 +543,27 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
           v8::External::Cast(*args.Data())->Value());
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();
+
+  UMA_HISTOGRAM_BOOLEAN(
+      "Ads.InterestGroup.Auction.ContributeToHistogramOnEventPermissionPolicy",
+      bindings->private_aggregation_permissions_policy_allowed_);
+  if (!bindings->private_aggregation_permissions_policy_allowed_) {
+    if (bindings->enforce_permission_policy_for_on_event_) {
+      // TODO(https://crbug.com/346766790) Actually throw the exception when
+      // people are aware of the issue.
+      bindings->v8_logger_->LogConsoleWarning(
+          "The \"private-aggregation\" Permissions Policy denied "
+          "contributeToHistogramOnEvent. Ignoring for backwards "
+          "compatibility but this will eventually throw an exception.");
+      return;
+    } else {
+      bindings->v8_logger_->LogConsoleWarning(
+          "privateAggregation.contributeToHistogramOnEvent called without "
+          "appropriate \"private-aggregation\" Permissions Policy approval; "
+          "accepting for backwards compatibility but this will be shortly "
+          "ignored and eventually will throw an exception");
+    }
+  }
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
   ArgsConverter args_converter(

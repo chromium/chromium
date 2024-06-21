@@ -49,7 +49,8 @@ void ContextRecycler::AddPrivateAggregationBindings(
     bool private_aggregation_permissions_policy_allowed) {
   DCHECK(!private_aggregation_bindings_);
   private_aggregation_bindings_ = std::make_unique<PrivateAggregationBindings>(
-      v8_helper_, private_aggregation_permissions_policy_allowed);
+      v8_helper_, v8_logger_.get(),
+      private_aggregation_permissions_policy_allowed);
   AddBindings(private_aggregation_bindings_.get());
 }
 
