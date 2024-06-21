@@ -194,6 +194,8 @@ class RulesetService {
     return publisher_->GetRulesetDealer();
   }
 
+  RulesetConfig config() const { return config_; }
+
  private:
   friend class SubresourceFilteringRulesetServiceTest;
   friend class SubresourceFilterBrowserTest;
