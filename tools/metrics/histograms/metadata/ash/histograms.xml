@@ -2144,7 +2144,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.RecordingCameraPositionOnStart.{TabletOrClamshell}"
-    enum="CameraPreviewSnapPosition" expires_after="2024-08-01">
+    enum="CameraPreviewSnapPosition" expires_after="2025-06-21">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -5930,7 +5930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
-    expires_after="2024-06-30">
+    expires_after="2025-06-21">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -5967,7 +5967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.ArrowKeyPresses" units="units"
-    expires_after="2024-06-01">
+    expires_after="2025-06-21">
   <owner>sammiequon@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <summary>
@@ -6021,7 +6021,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
-    expires_after="2024-06-01">
+    expires_after="2025-06-21">
   <owner>sammiequon@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <summary>
@@ -6032,7 +6032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Overview.OverviewClosedItems" units="units"
-    expires_after="2024-06-01">
+    expires_after="2025-06-21">
   <owner>sammiequon@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
   <summary>
