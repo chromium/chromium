@@ -199,10 +199,6 @@ void ClusterManager::OnProductSpecificationsSetAdded(
                                      product_specifications_set.urls(),
                                      product_specifications_set.update_time());
   const std::set<GURL>& urls = product_group_map_[uuid]->member_products;
-  if (urls.size() == 0) {
-    CHECK(false) << "Production specification set shouldn't be empty.";
-    return;
-  }
 
   auto barrier_callback = base::BarrierCallback<const CategoryData&>(
       urls.size(), base::BindOnce(&ClusterManager::OnAllCategoryDataRetrieved,

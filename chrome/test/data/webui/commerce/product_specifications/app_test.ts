@@ -93,6 +93,7 @@ suite('AppTest', () => {
   let appElement: ProductSpecificationsElement;
   const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
   const callbackRouter = new PageCallbackRouter();
+  const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   const router = TestMock.fromClass(Router);
 
   async function createAppElement(): Promise<ProductSpecificationsElement> {
@@ -870,6 +871,85 @@ suite('AppTest', () => {
       assertNotStyle($$(appElement, '#specs')!, 'display', 'none');
       assertEquals(1, appElement.$.summaryTable.columns.length);
       assertEquals(url, appElement.$.summaryTable.columns[0]!.selectedItem.url);
+    });
+
+    test('removing last column shows empty state', async () => {
+      const dimensionValues = {
+        summary: [],
+        specificationDescriptions: [
+          {
+            label: '',
+            altText: '',
+            options: [],
+          },
+        ],
+      };
+      const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+          [[BigInt(2), dimensionValues]]);
+
+      const specsProduct = createSpecsProduct({
+        productClusterId: BigInt(123),
+        title: 'Product',
+        productDimensionValues: dimensionValuesMap,
+      });
+      const info = createInfo({
+        clusterId: BigInt(123),
+        title: 'Product',
+        productUrl: {url: 'https://example.com/'},
+        imageUrl: {url: 'http://example.com/image.png'},
+      });
+
+      const testId = '00000000-0000-0000-0000-000000000001';
+      const promiseValues = createAppPromiseValues({
+        idParam: testId,
+        specs: createSpecs({
+          productDimensionMap: new Map<bigint, string>([[BigInt(2), 'Title']]),
+          products: [specsProduct],
+        }),
+        infos: [info],
+      });
+
+      const specsSet = createSpecsSet(
+          {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
+      shoppingServiceApi.setResultFor(
+          'getProductSpecificationsSetByUuid',
+          Promise.resolve({set: specsSet}));
+
+      createAppElementWithPromiseValues(promiseValues);
+      appElement.resetMinLoadingAnimationMsForTesting();
+      await flushTasks();
+
+      // Trigger a remove event
+      const table =
+          appElement.shadowRoot!.querySelector('product-specifications-table');
+      assertTrue(!!table);
+      table.dispatchEvent(new CustomEvent('url-remove', {
+        detail: {
+          index: 0,
+        },
+      }));
+
+      // Exaggerate the loading animation time to ensure it doesn't show for
+      // this case.
+      appElement.resetMinLoadingAnimationMsForTesting(60000);
+
+      // We should see a call to update the URLs in the set.
+      const args = await shoppingServiceApi.whenCalled(
+          'setUrlsForProductSpecificationsSet');
+      assertEquals(2, args.length);
+      assertArrayEquals([], args[1]);
+
+      // Simulate an update from sync (as a result of the above change).
+      callbackRouterRemote.onProductSpecificationsSetUpdated(
+          createSpecsSet({urls: [], uuid: {value: testId}}));
+
+      await waitAfterNextRender(appElement);
+
+      assertFalse(isVisible(appElement.$.loading));
+
+      // The empty state should now be showing.
+      assertNotStyle($$(appElement, '#empty')!, 'display', 'none');
+      assertStyle($$(appElement, '#specs')!, 'display', 'none');
     });
   });
 });

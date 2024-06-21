@@ -856,10 +856,6 @@ void ShoppingServiceHandler::SetUrlsForProductSpecificationsSet(
       valid_urls.push_back(url);
     }
   }
-  if (valid_urls.size() < 1) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
 
   const auto& set =
       shopping_service_->GetProductSpecificationsService()->SetUrls(uuid,

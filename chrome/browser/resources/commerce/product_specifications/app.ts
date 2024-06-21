@@ -214,7 +214,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     // Enforce a minimum amount of time in the loading state to avoid it
     // appearing like an unintentional flash.
     const delta = Date.now() - start;
-    if (delta < this.minLoadingAnimationMs_) {
+    if (delta < this.minLoadingAnimationMs_ && urls.length > 0) {
       await new Promise(
           res => setTimeout(res, this.minLoadingAnimationMs_ - delta));
     }
