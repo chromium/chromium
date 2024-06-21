@@ -17,6 +17,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
@@ -55,18 +57,18 @@ class InputRowWithPasswordUnitTest : public AshTestBase {
     auth_input_ = widget_->SetContentsView(std::make_unique<AuthInputRowView>(
         AuthInputRowView::AuthType::kPassword));
     test_api_ = std::make_unique<AuthInputRowView::TestApi>(auth_input_);
-    // Initialize the textfield with some text
+    // Initialize the textfield with some text.
     auth_input_->RequestFocus();
     for (const char16_t c : kPassword) {
-      PressAndReleaseKey(static_cast<ui::KeyboardCode>(
-          static_cast<char16_t>(ui::VKEY_A) + (c - u'a')));
+      PressAndReleaseKey(ui::DomCodeToUsLayoutNonLocatedKeyboardCode(
+          ui::UsLayoutDomKeyToDomCode(ui::DomKey::FromCharacter(c))));
     }
     CHECK(test_api_->GetTextfield()->HasFocus());
     CHECK(test_api_->GetSubmitButton()->GetEnabled());
     CHECK(test_api_->GetDisplayTextButton()->GetEnabled());
     CHECK_EQ(test_api_->GetDisplayTextButton()->GetToggled(), false);
 
-    // Add Observer
+    // Add observer.
     mock_observer_ = std::make_unique<MockAuthInputRowViewObserver>();
     auth_input_->AddObserver(mock_observer_.get());
   }
@@ -94,21 +96,21 @@ TEST_F(InputRowWithPasswordUnitTest, OnBlurObserverTest) {
   CHECK(test_api_->GetDisplayTextButton()->HasFocus());
 }
 
-// Testing textfield OnFocus Observer.
+// Testing textfield OnFocus observer.
 TEST_F(InputRowWithPasswordUnitTest, OnFocusObserverWithClickTest) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_CALL(*mock_observer_, OnTextfieldFocus()).Times(1);
   LeftClickOn(test_api_->GetTextfield());
 }
 
-// Testing textfield OnContentsChanged Observer.
+// Testing textfield OnContentsChanged observer.
 TEST_F(InputRowWithPasswordUnitTest, OnContentsChangedTest) {
   const std::u16string modifiedString = kPassword + u"s";
   EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedString)).Times(1);
   PressAndReleaseKey(ui::VKEY_S);
 }
 
-// Testing OnTextVisibleChanged Observer with keyboard interractions.
+// Testing OnTextVisibleChanged Observer with keyboard interactions.
 TEST_F(InputRowWithPasswordUnitTest, OnTextVisibleChangedTestWithKeyPresses) {
   PressAndReleaseKey(ui::VKEY_TAB);
   CHECK(test_api_->GetDisplayTextButton()->HasFocus());
@@ -116,7 +118,7 @@ TEST_F(InputRowWithPasswordUnitTest, OnTextVisibleChangedTestWithKeyPresses) {
   PressAndReleaseKey(ui::VKEY_RETURN);
 }
 
-// Testing OnTextVisibleChanged Observer with mouse click.
+// Testing OnTextVisibleChanged observer with mouse click.
 TEST_F(InputRowWithPasswordUnitTest, OnTextVisibleChangedTestWithMouseClick) {
   EXPECT_CALL(*mock_observer_, OnTextVisibleChanged(true)).Times(1);
   LeftClickOn(test_api_->GetDisplayTextButton());
@@ -134,13 +136,13 @@ TEST_F(InputRowWithPasswordUnitTest, OnSubmitTestWithClick) {
   LeftClickOn(test_api_->GetSubmitButton());
 }
 
-// Testing ESC press in the textfield calls OnEscape Observer.
+// Testing ESC press in the textfield calls OnEscape observer.
 TEST_F(InputRowWithPasswordUnitTest, TextfieldOnEscapeTest) {
   EXPECT_CALL(*mock_observer_, OnEscape()).Times(1);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 }
 
-// Testing ESC press on the display text calls OnEscape Observer.
+// Testing ESC press on the display text calls OnEscape observer.
 TEST_F(InputRowWithPasswordUnitTest, DisplayButtonOnEscapeTest) {
   PressAndReleaseKey(ui::VKEY_TAB);
   CHECK(test_api_->GetDisplayTextButton()->HasFocus());
@@ -148,7 +150,7 @@ TEST_F(InputRowWithPasswordUnitTest, DisplayButtonOnEscapeTest) {
   PressAndReleaseKey(ui::VKEY_ESCAPE);
 }
 
-// Testing ESC press on the Submit button calls OnEscape Observer.
+// Testing ESC press on the Submit button calls OnEscape observer.
 TEST_F(InputRowWithPasswordUnitTest, SubmitButtonOnEscapeTest) {
   auth_input_->GetFocusManager()->SetFocusedView(test_api_->GetSubmitButton());
   CHECK(test_api_->GetSubmitButton()->HasFocus());
@@ -159,7 +161,6 @@ TEST_F(InputRowWithPasswordUnitTest, SubmitButtonOnEscapeTest) {
 // Testing When password is visible and select all on the password and remove
 // the text should call: 1: OnContentsChanged 2: OnTextVisibleChanged(/*
 // visible=*/false)
-
 TEST_F(InputRowWithPasswordUnitTest, RemoveTextTest) {
   LeftClickOn(test_api_->GetDisplayTextButton());
   // Select all and delete.
@@ -167,9 +168,9 @@ TEST_F(InputRowWithPasswordUnitTest, RemoveTextTest) {
   EXPECT_CALL(*mock_observer_, OnTextVisibleChanged(false)).Times(1);
   PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   PressAndReleaseKey(ui::VKEY_BACK);
-  // Submit button should be disabled with empty text
+  // Submit button should be disabled with empty text.
   CHECK_EQ(test_api_->GetSubmitButton()->GetEnabled(), false);
-  // display text button should be disabled with empty text
+  // Display text button should be disabled with empty text.
   CHECK_EQ(test_api_->GetDisplayTextButton()->GetEnabled(), false);
 }
 
@@ -194,11 +195,12 @@ class InputRowWithPinUnitTest : public AshTestBase {
     auth_input_ = widget_->SetContentsView(
         std::make_unique<AuthInputRowView>(AuthInputRowView::AuthType::kPin));
     test_api_ = std::make_unique<AuthInputRowView::TestApi>(auth_input_);
-    // Initialize the textfield with some text
+    // Initialize the textfield with some text.
     auth_input_->RequestFocus();
+
     for (const char16_t c : kPIN) {
-      PressAndReleaseKey(static_cast<ui::KeyboardCode>(
-          static_cast<char16_t>(ui::VKEY_0) + (c - u'0')));
+      PressAndReleaseKey(ui::DomCodeToUsLayoutNonLocatedKeyboardCode(
+          ui::UsLayoutDomKeyToDomCode(ui::DomKey::FromCharacter(c))));
     }
     CHECK(test_api_->GetTextfield()->HasFocus());
     CHECK_EQ(test_api_->GetTextfield()->GetText(), kPIN);
@@ -206,7 +208,7 @@ class InputRowWithPinUnitTest : public AshTestBase {
     CHECK(test_api_->GetDisplayTextButton()->GetEnabled());
     CHECK_EQ(test_api_->GetDisplayTextButton()->GetToggled(), false);
 
-    // Add Observer
+    // Add observer.
     mock_observer_ = std::make_unique<MockAuthInputRowViewObserver>();
     auth_input_->AddObserver(mock_observer_.get());
   }
@@ -226,14 +228,14 @@ class InputRowWithPinUnitTest : public AshTestBase {
   raw_ptr<AuthInputRowView> auth_input_ = nullptr;
 };
 
-// Testing PIN OnContentsChanged Observer.
+// Testing PIN OnContentsChanged observer.
 TEST_F(InputRowWithPinUnitTest, OnContentsChangedTest) {
   const std::u16string modifiedPIN = kPIN + u"5";
   EXPECT_CALL(*mock_observer_, OnContentsChanged(modifiedPIN)).Times(1);
   PressAndReleaseKey(ui::VKEY_5);
 }
 
-// Testing PIN OnContentsChanged Observer with letter.
+// Testing PIN OnContentsChanged observer with letter.
 TEST_F(InputRowWithPinUnitTest, OnContentsChangedWithLetterTest) {
   EXPECT_CALL(*mock_observer_, OnContentsChanged(kPIN)).Times(0);
   PressAndReleaseKey(ui::VKEY_E);
@@ -248,13 +250,13 @@ TEST_F(InputRowWithPinUnitTest, BackspacePressTest) {
   PressAndReleaseKey(ui::VKEY_BACK);
 }
 
-// Testing PIN OnSubmit Observer.
+// Testing PIN OnSubmit observer.
 TEST_F(InputRowWithPinUnitTest, OnSubmitTest) {
   EXPECT_CALL(*mock_observer_, OnSubmit(kPIN)).Times(1);
   PressAndReleaseKey(ui::VKEY_RETURN);
 }
 
-// Testing PIN OnEscape Observer.
+// Testing PIN OnEscape observer.
 TEST_F(InputRowWithPinUnitTest, OnEscapeTest) {
   EXPECT_CALL(*mock_observer_, OnEscape()).Times(1);
   PressAndReleaseKey(ui::VKEY_ESCAPE);
