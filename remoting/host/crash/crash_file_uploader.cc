@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/buildflag.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
@@ -53,6 +54,10 @@ constexpr char kProductNameValue[] = "Chromoting_Mac";
 
 const base::FilePath::CharType kDumpExtension[] = FILE_PATH_LITERAL("dmp");
 const base::FilePath::CharType kJsonExtension[] = FILE_PATH_LITERAL("json");
+const base::FilePath::CharType kLastUploadTimeFilePath[] =
+    FILE_PATH_LITERAL("last_upload_time.txt");
+const base::FilePath::CharType kUploadResultFilePath[] =
+    FILE_PATH_LITERAL("upload_result.txt");
 
 constexpr char kCrashReportUploadUrl[] =
     "https://clients2.google.com/cr/report";
@@ -66,6 +71,9 @@ constexpr int kPostFormReservationSize = 4096;
 // value and will ensure we don't reject the response if the format changes in
 // the future.
 constexpr size_t kMaxResponseSize = 1024;
+
+// Throttle uploads to 1 per hour.
+constexpr base::TimeDelta kUploadRateLimitWindow = base::Hours(1);
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("crash_file_uploader",
@@ -98,6 +106,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           policy_exception_justification:
             "Not implemented."
         })");
+
+base::FilePath GetLastUploadTimeFilePath() {
+  return GetMinidumpDirectoryPath().Append(kLastUploadTimeFilePath);
+}
 
 base::FilePath GetCrashDirectoryPath(const base::FilePath& crash_guid) {
   return GetMinidumpDirectoryPath().Append(crash_guid);
@@ -178,7 +190,7 @@ void DeleteDumpFileAndWriteResult(const base::FilePath& crash_file,
   }
 
   base::FilePath result_file =
-      crash_file.DirName().Append(FILE_PATH_LITERAL("upload_result.txt"));
+      crash_file.DirName().Append(kUploadResultFilePath);
   if (!base::WriteFile(result_file, result + "\r\n")) {
     LOG(WARNING) << "Failed to write upload result to: " << result_file;
   }
@@ -237,6 +249,47 @@ void GenerateMultiPartPostData(const base::Value::Dict& metadata,
   content_type = "multipart/form-data; boundary=" + mime_boundary;
 }
 
+void DeleteFileWithLogging(const base::FilePath& file_to_delete) {
+  if (!base::DeleteFile(file_to_delete)) {
+    LOG(WARNING) << "Failed to delete file: " << file_to_delete;
+  }
+}
+
+bool SkipUploadDueToRateLimiting() {
+  base::FilePath last_upload_time_file = GetLastUploadTimeFilePath();
+  if (!base::PathExists(last_upload_time_file)) {
+    return false;
+  }
+
+  std::string last_upload_time_str;
+  if (!base::ReadFileToString(last_upload_time_file, &last_upload_time_str)) {
+    LOG(WARNING) << "Failed to read file: " << last_upload_time_file;
+    DeleteFileWithLogging(last_upload_time_file);
+    return false;
+  }
+
+  time_t last_upload_time_t = 0;
+  if (!base::StringToInt64(last_upload_time_str, &last_upload_time_t)) {
+    LOG(WARNING) << "Failed to convert last_upload_time: "
+                 << last_upload_time_str;
+    DeleteFileWithLogging(last_upload_time_file);
+    return false;
+  }
+
+  auto time_since_last_upload = base::Time::NowFromSystemTime() -
+                                base::Time::FromTimeT(last_upload_time_t);
+  return time_since_last_upload < kUploadRateLimitWindow;
+}
+
+void UpdateLastUploadTimeFile() {
+  std::string now =
+      base::NumberToString(base::Time::NowFromSystemTime().ToTimeT());
+  if (!base::WriteFile(GetLastUploadTimeFilePath(), now)) {
+    LOG(WARNING) << "Failed to write current time to upload rate limiting file "
+                 << ", crash reporting will not be rate limited correctly";
+  }
+}
+
 }  // namespace
 
 class CrashFileUploader::Core {
@@ -282,6 +335,13 @@ void CrashFileUploader::Core::Upload(const base::FilePath& crash_guid) {
 
   if (!base::DirectoryExists(crash_report_directory)) {
     LOG(ERROR) << "Upload directory does not exist for report: " << crash_guid;
+    return;
+  }
+
+  if (SkipUploadDueToRateLimiting()) {
+    std::string rate_limit_error("Upload skipped due to rate limiting");
+    LOG(WARNING) << rate_limit_error;
+    DeleteDumpFileAndWriteResult(GetDumpFilePath(crash_guid), rate_limit_error);
     return;
   }
 
@@ -335,6 +395,7 @@ void CrashFileUploader::Core::OnUploadComplete(
               << "    http://go/crash/" << report_id << "\r\n"
               << "    Please note that it may take a few minutes to finish "
               << "processing the report.";
+    UpdateLastUploadTimeFile();
   } else {
     auto response_code = (*it)->ResponseInfo()->headers->response_code();
     LOG(ERROR) << "Failed to upload crash report: " << crash_dump
