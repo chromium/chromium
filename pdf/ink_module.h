@@ -5,6 +5,7 @@
 #ifndef PDF_INK_MODULE_H_
 #define PDF_INK_MODULE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -39,6 +40,16 @@ class PdfInkBrush;
 class InkModule {
  public:
   using InkStrokeInputPoints = std::vector<gfx::PointF>;
+
+  // Each page of a document can have many strokes.  The input points for each
+  // stroke are restricted to just one page.
+  using PageInkStrokeInputPoints = std::vector<InkStrokeInputPoints>;
+
+  // Mapping of a 0-based page index to the input points that make up the ink
+  // strokes for that page.
+  using DocumentInkStrokeInputPointsMap =
+      std::map<int, PageInkStrokeInputPoints>;
+
   using RenderTransformCallback =
       base::RepeatingCallback<void(const InkAffineTransform& transform)>;
 
@@ -97,8 +108,7 @@ class InkModule {
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
   // For testing only. Returns the input positions used for the stroke.
-  std::vector<InkStrokeInputPoints> GetInkStrokesInputPositionsForTesting()
-      const;
+  DocumentInkStrokeInputPointsMap GetInkStrokesInputPositionsForTesting() const;
 
   // For testing only. Provide a callback to use whenever the rendering
   // transform is determined for `Draw()`.
@@ -131,6 +141,13 @@ class InkModule {
     // pdf_ink_transform.h.
     std::vector<InkStrokeInput> ink_inputs;
   };
+
+  // Each page of a document can have many strokes.  Each stroke is restricted
+  // to just one page.
+  using PageInkStrokes = std::vector<std::unique_ptr<InkStroke>>;
+
+  // Mapping of a 0-based page index to the ink strokes for that page.
+  using DocumentInkStrokesMap = std::map<int, PageInkStrokes>;
 
   // No state, so just use a placeholder enum type.
   enum class EraserState { kIsEraser };
@@ -183,7 +200,7 @@ class InkModule {
 
   // The strokes that have been completed.  Coordinates for each stroke are
   // stored in a canonical format specified in pdf_ink_transform.h.
-  std::vector<std::unique_ptr<InkStroke>> ink_strokes_;
+  DocumentInkStrokesMap ink_strokes_;
 
   RenderTransformCallback draw_render_transform_callback_for_testing_;
 };

@@ -59,17 +59,16 @@ InkModule::InkModule(Client& client) : client_(client) {
 InkModule::~InkModule() = default;
 
 void InkModule::Draw(SkCanvas& canvas) {
-  if (!ink_strokes_.empty()) {
+  for (const auto& [page_index, page_ink_strokes] : ink_strokes_) {
     // Use an updated transform based on the page and its position in the
     // viewport.
-    // TODO(crbug.com/335517469):  Strokes should be saved on a per-page basis.
-    // Use the page size from the identified page once it is available.  For
-    // now just assume page 0.
     // TODO(crbug.com/335524380): Draw `ink_strokes_` with InkSkiaRenderer
     // using the canonical-to-screen rendering transform.
+    // TODO(crbug.com/335517469): Only attempt to draw the strokes for pages
+    // which are visible.
     InkAffineTransform transform = GetInkRenderTransform(
         client_->GetViewportOriginOffset(), client_->GetOrientation(),
-        client_->GetPageContentsRect(/*index=*/0), client_->GetZoom());
+        client_->GetPageContentsRect(page_index), client_->GetZoom());
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
@@ -131,21 +130,22 @@ const PdfInkBrush* InkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? drawing_stroke_state().ink_brush.get() : nullptr;
 }
 
-std::vector<InkModule::InkStrokeInputPoints>
+InkModule::DocumentInkStrokeInputPointsMap
 InkModule::GetInkStrokesInputPositionsForTesting() const {
-  std::vector<InkStrokeInputPoints> all_strokes_points;
+  DocumentInkStrokeInputPointsMap all_strokes_points;
 
-  all_strokes_points.reserve(ink_strokes_.size());
-  for (const auto& stroke : ink_strokes_) {
-    const InkStrokeInputBatchView& input_batch = stroke->GetInputs();
-    InkModule::InkStrokeInputPoints stroke_points;
-    stroke_points.reserve(input_batch.Size());
-    for (size_t i = 0; i < input_batch.Size(); ++i) {
-      InkStrokeInput stroke_input = input_batch.Get(i);
-      stroke_points.emplace_back(stroke_input.position_x,
-                                 stroke_input.position_y);
+  for (const auto& [page_index, strokes] : ink_strokes_) {
+    for (const auto& stroke : strokes) {
+      const InkStrokeInputBatchView& input_batch = stroke->GetInputs();
+      InkModule::InkStrokeInputPoints stroke_points;
+      stroke_points.reserve(input_batch.Size());
+      for (size_t i = 0; i < input_batch.Size(); ++i) {
+        InkStrokeInput stroke_input = input_batch.Get(i);
+        stroke_points.emplace_back(stroke_input.position_x,
+                                   stroke_input.position_y);
+      }
+      all_strokes_points[page_index].push_back(std::move(stroke_points));
     }
-    all_strokes_points.push_back(std::move(stroke_points));
   }
 
   return all_strokes_points;
@@ -291,7 +291,9 @@ bool InkModule::FinishInkStroke() {
   // `ink_inputs_` before creating `in_progress_stroke`?
   auto in_progress_stroke = CreateInProgressStrokeFromInputs();
   if (in_progress_stroke) {
-    ink_strokes_.push_back(in_progress_stroke->CopyToStroke());
+    CHECK_GE(state.ink_page_index, 0);
+    ink_strokes_[state.ink_page_index].push_back(
+        in_progress_stroke->CopyToStroke());
   }
 
   // Reset input fields.

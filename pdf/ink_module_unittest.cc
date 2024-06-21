@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 
 using testing::ElementsAre;
+using testing::Pair;
 
 namespace chrome_pdf {
 
@@ -43,6 +44,28 @@ struct AnnotationBrushMessageParams {
   int color_b;
   double size;
 };
+
+// Constants to support a layout of 2 pages, arranged vertically with a small
+// gap between them.
+constexpr gfx::RectF kVerticalLayout2Pages[] = {
+    gfx::RectF(/*x=*/5.0f,
+               /*y=*/5.0f,
+               /*width=*/50.0f,
+               /*height=*/60.0f),
+    gfx::RectF(/*x=*/5.0f,
+               /*y=*/70.0f,
+               /*width=*/50.0f,
+               /*height=*/60.0f),
+};
+
+// Some commonly used points in relation to `kVerticalLayout2Pages`.
+constexpr gfx::PointF kTwoPageVerticalLayoutPointOutsidePages(10.0f, 0.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage0(10.0f, 10.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage0(15.0f, 15.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage0(20.0f, 15.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage1(10.0f, 75.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage1(15.0f, 80.0f);
+constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage1(20.0f, 80.0f);
 
 class FakeClient : public InkModule::Client {
  public:
@@ -378,14 +401,12 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   // the InkModule::Client setup.
   constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
   constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
-  const std::vector<InkModule::InkStrokeInputPoints> all_strokes_positions =
+  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
       ink_module().GetInkStrokesInputPositionsForTesting();
-  // Only one stroke.
-  ASSERT_EQ(all_strokes_positions.size(), 1u);
-  // Check points within that stroke.
-  EXPECT_THAT(
-      all_strokes_positions[0],
-      ElementsAre(kCanonicalMouseDownPosition, kCanonicalMouseMovePosition));
+  EXPECT_THAT(document_strokes_positions,
+              ElementsAre(Pair(0, InkModule::PageInkStrokeInputPoints{
+                                      {kCanonicalMouseDownPosition,
+                                       kCanonicalMouseMovePosition}})));
 }
 
 TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
@@ -429,6 +450,85 @@ TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
   EXPECT_THAT(
       client().invalidations(),
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove));
+}
+
+TEST_F(InkModuleStrokeTest, StrokeOutsidePage) {
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
+
+  client().set_page_layouts(kVerticalLayout2Pages);
+
+  // Start out without any strokes.
+  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+
+  // A stroke that starts outside of any page does not generate a stroke, even
+  // if it crosses into a page.
+  ApplyInkStrokeWithMousePoints(
+      kTwoPageVerticalLayoutPointOutsidePages,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
+      kTwoPageVerticalLayoutPoint3InsidePage0,
+      /*expect_mouse_events_handled=*/false);
+
+  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+}
+
+TEST_F(InkModuleStrokeTest, StrokeInsidePages) {
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
+
+  client().set_page_layouts(kVerticalLayout2Pages);
+
+  // Start out without any strokes.
+  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+
+  // A stroke in the first page generates a stroke only for that page.
+  ApplyInkStrokeWithMousePoints(
+      kTwoPageVerticalLayoutPoint1InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
+      kTwoPageVerticalLayoutPoint3InsidePage0,
+      /*expect_mouse_events_handled=*/true);
+
+  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetInkStrokesInputPositionsForTesting();
+  EXPECT_THAT(document_strokes_positions,
+              ElementsAre(Pair(0, testing::SizeIs(1))));
+
+  // A stroke in the second page generates a stroke only for that page.
+  ApplyInkStrokeWithMousePoints(
+      kTwoPageVerticalLayoutPoint1InsidePage1,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
+      kTwoPageVerticalLayoutPoint3InsidePage1,
+      /*expect_mouse_events_handled=*/true);
+
+  const InkModule::DocumentInkStrokeInputPointsMap
+      updated_document_strokes_positions =
+          ink_module().GetInkStrokesInputPositionsForTesting();
+  EXPECT_THAT(
+      updated_document_strokes_positions,
+      ElementsAre(Pair(0, testing::SizeIs(1)), Pair(1, testing::SizeIs(1))));
+}
+
+TEST_F(InkModuleStrokeTest, StrokeAcrossPages) {
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
+
+  client().set_page_layouts(kVerticalLayout2Pages);
+
+  // Start out without any strokes.
+  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+
+  // A stroke that starts in first page and ends in the second page only
+  // generates one stroke in the first page.
+  ApplyInkStrokeWithMousePoints(
+      kTwoPageVerticalLayoutPoint1InsidePage0,
+      base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
+      kTwoPageVerticalLayoutPoint3InsidePage1,
+      /*expect_mouse_events_handled=*/true);
+
+  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetInkStrokesInputPositionsForTesting();
+  EXPECT_THAT(document_strokes_positions,
+              ElementsAre(Pair(0, testing::SizeIs(1))));
 }
 
 }  // namespace
