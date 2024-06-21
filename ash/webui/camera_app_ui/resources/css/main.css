@@ -1380,6 +1380,7 @@ body.hide-floating-ui-for-testing
   margin: 4px;
   opacity: 0;
   padding: 14px 16px;
+  pointer-events: none;
   position: absolute;
   position-anchor: --preview-viewport;
   width: 256px;
