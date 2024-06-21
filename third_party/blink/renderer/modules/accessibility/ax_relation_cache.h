@@ -190,7 +190,7 @@ class AXRelationCache {
   bool IsValidOwnsRelation(AXObject* owner, Node& child_node) const;
   void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                          const Vector<AXID>& removed_child_ids,
-                                         const Vector<AXID>& newly_owned_ids);
+                                         Vector<AXID>& unparented_child_ids);
 
   void MapOwnedChildrenWithCleanLayout(const AXObject* owner,
                                        const Vector<AXID>&);

@@ -517,7 +517,7 @@ bool AXRelationCache::IsValidOwnedChild(Node& child_node) {
 void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
     const AXObject* owner,
     const Vector<AXID>& removed_child_ids,
-    const Vector<AXID>& newly_owned_ids) {
+    Vector<AXID>& unparented_child_ids) {
   DCHECK(owner);
   DCHECK(!owner->IsDetached());
   for (AXID removed_child_id : removed_child_ids) {
@@ -525,33 +525,21 @@ void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
     AXObject* removed_child = ObjectFromAXID(removed_child_id);
 
     // It's possible that this child has already been owned by some other
-    // owner, in which case we don't need to do anything.
-    if (removed_child && GetAriaOwnedParent(removed_child) != owner)
+    // owner, in which case we don't need to do anything other than marking
+    // the original parent dirty.
+    if (removed_child && GetAriaOwnedParent(removed_child) != owner) {
+      ChildrenChangedWithCleanLayout(removed_child->ParentObjectIfPresent());
       continue;
+    }
 
     // Remove it from the child -> owner mapping so it's not owned by this
     // owner anymore.
     aria_owned_child_to_owner_mapping_.erase(removed_child_id);
 
     if (removed_child) {
-      // Invalidating ensures that cached "included in tree" state is recomputed
-      // on objects with changed ownership -- owned children must always be
-      // included in the tree.
-      removed_child->InvalidateCachedValues();
-      // If the child still exists, find its "real" parent, and reparent it
-      // back to its real parent in the tree by finding  its current parent,
-      // marking that dirty and detaching from that parent.
-      if (AXObject* original_parent = removed_child->ParentObjectIfPresent()) {
-        object_cache_->MarkAXObjectDirtyWithCleanLayout(original_parent);
-        original_parent->SetNeedsToUpdateChildren();
-        removed_child->DetachFromParent();
-      }
-      // Recompute the real parent and cache it.
-      // Don't do this if it's also in the newly owned ids, as it's about to
-      // get a new parent, and we want to avoid accidentally pruning it.
-      if (!newly_owned_ids.Contains(removed_child_id)) {
-        MaybeRestoreParentOfOwnedChild(removed_child_id);
-      }
+      // Return the unparented children so their parent can be restored after
+      // all aria-owns changes are complete.
+      unparented_child_ids.push_back(removed_child_id);
     }
   }
 }
@@ -782,8 +770,9 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned
   // children and add the new list of owned children.
+  Vector<AXID> unparented_child_ids;
   UnmapOwnedChildrenWithCleanLayout(owner, previously_owned_child_ids,
-                                    validated_owned_child_axids);
+                                    unparented_child_ids);
   MapOwnedChildrenWithCleanLayout(owner, validated_owned_child_axids);
 
 #if DCHECK_IS_ON()
@@ -803,6 +792,35 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   } else {
     aria_owner_to_children_mapping_.Set(owner->AXObjectID(),
                                         validated_owned_child_axids);
+  }
+
+  // Ensure that objects that have lost their parent have one, or that their
+  // subtree is pruned if there is no available parent.
+  for (AXID unparented_child_id : unparented_child_ids) {
+    if (validated_owned_child_axids.Contains(unparented_child_id)) {
+      continue;
+    }
+    // Recompute the real parent and cache it.
+    if (AXObject* ax_unparented = ObjectFromAXID(unparented_child_id)) {
+      // Invalidating ensures that cached "included in tree" state is recomputed
+      // on objects with changed ownership -- owned children must always be
+      // included in the tree.
+      ax_unparented->InvalidateCachedValues();
+
+      // Find the unparented child's new parent, and reparent it to that
+      // back to its real parent in the tree by finding  its current parent,
+      // marking that dirty and detaching from that parent.
+      AXObject* original_parent = ax_unparented->ParentObjectIfPresent();
+
+      // Recompute the real parent .
+      ax_unparented->DetachFromParent();
+      MaybeRestoreParentOfOwnedChild(unparented_child_id);
+
+      // Mark everything dirty so that the serializer sees all changes.
+      ChildrenChangedWithCleanLayout(original_parent);
+      ChildrenChangedWithCleanLayout(ax_unparented->ParentObjectIfPresent());
+      object_cache_->MarkAXObjectDirtyWithCleanLayout(ax_unparented);
+    }
   }
 
   ChildrenChangedWithCleanLayout(owner);
@@ -1070,9 +1088,11 @@ AXObject* AXRelationCache::GetOrCreate(Node* node, const AXObject* owner) {
 }
 
 void AXRelationCache::ChildrenChangedWithCleanLayout(AXObject* object) {
+  if (!object) {
+    return;
+  }
   object->ChildrenChangedWithCleanLayout();
   object_cache_->MarkAXObjectDirtyWithCleanLayout(object);
-  object->UpdateChildrenIfNecessary();
 }
 
 Node* AXRelationCache::LabelChanged(HTMLLabelElement& label) {
