@@ -223,6 +223,12 @@ void FocusModeChipCarousel::SetTasks(const std::vector<FocusModeTask>& tasks) {
     SetupChip(chip, /*first=*/(i == 0));
   }
 
+  // After adding the child views to the contents of the scroll view, we need to
+  // manually call the function to update the bounds, so that the horizontal
+  // scroll bar can have a non-zero `max_pos_` to allow the chip carousel to
+  // scroll horizontally. See b/346877741.
+  scroll_view_->contents()->SizeToPreferredSize();
+
   // Scroll back to the beginning after repopulating the carousel.
   scroll_view_->ScrollToOffset(gfx::PointF(0, 0));
 }
@@ -241,6 +247,7 @@ void FocusModeChipCarousel::UpdateGradient() {
 
   // If no gradient is needed, remove the gradient mask.
   if (scroll_view_->contents()->bounds().IsEmpty() ||
+      scroll_view_->bounds().IsEmpty() ||
       (!show_left_gradient && !show_right_gradient)) {
     RemoveGradient();
     return;
