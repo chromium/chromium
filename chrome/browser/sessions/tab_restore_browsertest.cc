@@ -2599,6 +2599,71 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreTabInSavedGroup) {
             gfx::Range(1, 3));
 }
 
+// Verify closing all tabs in a group individually, then restoring all of the
+// tabs puts them in the same group.
+IN_PROC_BROWSER_TEST_F(
+    TabRestoreSavedGroupsTest,
+    ClosingAllTabsInGroupThenRestoringTabsPutsThemInSameGroup) {
+  AddTab(browser(), GURL("https://www.1.com"));
+  AddTab(browser(), GURL("https://www.2.com"));
+  AddTab(browser(), GURL("https://www.3.com"));
+
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
+  tab_groups::SavedTabGroupKeyedService* service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser()->profile());
+  ASSERT_NE(service, nullptr);
+
+  ASSERT_TRUE(service->model()->Contains(group));
+  base::Uuid saved_group_id = service->model()->Get(group)->saved_guid();
+  EXPECT_EQ(1, service->model()->Count());
+
+  // Close all tabs in the group one by one.
+  CloseTab(3);
+  CloseTab(2);
+  CloseTab(1);
+
+  EXPECT_TRUE(service->model()->IsEmpty());
+  EXPECT_TRUE(
+      browser()->tab_strip_model()->group_model()->ListTabGroups().empty());
+
+  // Restore the tab.
+  chrome::RestoreTab(browser());
+  EXPECT_EQ(1, service->model()->Count());
+  EXPECT_EQ(
+      1u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
+
+  tab_groups::TabGroupId restored_id =
+      browser()->tab_strip_model()->group_model()->ListTabGroups().back();
+  ASSERT_TRUE(service->model()->Contains(restored_id));
+
+  chrome::RestoreTab(browser());
+  EXPECT_EQ(1, service->model()->Count());
+  EXPECT_EQ(
+      1u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
+
+  chrome::RestoreTab(browser());
+  EXPECT_EQ(1, service->model()->Count());
+  EXPECT_EQ(
+      1u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
+
+  tab_groups::SavedTabGroup saved_group = *service->model()->Get(restored_id);
+
+  // Verify the saved group reopend properly. The local group id should be
+  // different since it is respun when restoring to avoid conflicts.
+  EXPECT_NE(saved_group_id, saved_group.saved_guid());
+  EXPECT_EQ(3u, saved_group.saved_tabs().size());
+
+  // Check the number of tabs in the tabstrip are the same.
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(saved_group.local_group_id().value())
+                ->ListTabs(),
+            gfx::Range(1, 4));
+}
+
 // Verify restoring a tab part of a recently restored saved group, adds the tab
 // to the saved group.
 IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,

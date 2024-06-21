@@ -361,7 +361,7 @@ bool BrowserTabStripController::BeforeCloseTab(int model_index,
     base::OnceCallback<void()> callback = base::BindOnce(
         [](TabStrip* tab_strip, TabStripModel* model, int index,
            CloseTabSource source) {
-          model->RemoveFromGroup({index});
+          // Closing the last tab in a group also closes the group for us.
           tab_strip->CloseTab(tab_strip->tab_at(index), source);
         },
         base::Unretained(tabstrip_), base::Unretained(model_), model_index,
