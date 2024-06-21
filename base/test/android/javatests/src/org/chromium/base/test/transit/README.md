@@ -5,6 +5,10 @@ states and transitions between them.
 
 [TOC]
 
+## How to Use Public Transit?
+
+See the [Getting Started with Public Transit](getting_started.md) guide.
+
 ## Why Use Public Transit?
 
 **Scalability**
