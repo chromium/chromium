@@ -230,12 +230,26 @@ StartBorealisVm::StartBorealisVm() : BorealisTask("StartBorealisVm") {}
 StartBorealisVm::~StartBorealisVm() = default;
 
 void StartBorealisVm::RunInternal(BorealisContext* context) {
+  ash::ConciergeClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&StartBorealisVm::OnConciergeAvailable,
+                     weak_factory_.GetWeakPtr(), context));
+}
+
+void StartBorealisVm::OnConciergeAvailable(BorealisContext* context,
+                                           bool service_is_available) {
+  if (!service_is_available) {
+    Complete(BorealisStartupResult::kConciergeUnavailable,
+             "Concierge service is not available");
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, base::MayBlock(),
       base::BindOnce(&MaybeOpenFile, context->launch_options().extra_disk),
       base::BindOnce(&StartBorealisVm::StartBorealisWithExternalDisk,
                      weak_factory_.GetWeakPtr(), context));
 }
+
 void StartBorealisVm::StartBorealisWithExternalDisk(
     BorealisContext* context,
     std::optional<base::File> external_disk) {
