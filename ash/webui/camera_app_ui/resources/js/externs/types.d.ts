@@ -48,6 +48,28 @@ interface CallSite {
   getColumnNumber(): number|undefined;
 }
 
+// Compute Pressure API, see
+// https://developer.chrome.com/docs/web-platform/compute-pressure
+interface PressureObseverOptions {
+  sampleInterval?: number;
+}
+
+interface PressureRecord {
+  readonly source: string;
+  readonly state: 'critical'|'fair'|'nominal'|'serious';
+  readonly time: number;
+}
+
+interface PressureObserverCallback {
+  (records: PressureRecord[]): void;
+}
+
+declare class PressureObserver {
+  constructor(
+      callback: PressureObserverCallback, options: PressureObseverOptions);
+  observe(source: string): void;
+}
+
 // v8 specific stack trace customizing, see https://v8.dev/docs/stack-trace-api.
 interface ErrorConstructor {
   prepareStackTrace(error: Error, structuredStackTrace: CallSite[]): void;

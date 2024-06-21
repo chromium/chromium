@@ -276,6 +276,13 @@ export enum PerfEvent {
   VIDEO_CAPTURE_POST_PROCESSING_SAVING = 'video-capture-post-processing-saving',
 }
 
+export enum Pressure {
+  NOMINAL,
+  FAIR,
+  SERIOUS,
+  CRITICAL,
+}
+
 export interface ImageBlob {
   blob: Blob;
   resolution: Resolution;
@@ -289,14 +296,14 @@ export interface PerfInformation {
   hasError?: boolean;
   resolution?: Resolution;
   facing?: Facing;
-  // Only for DOCUMENT_PDF_SAVING
-  pageCount?: number;
+  pageCount?: number;  // Only for DOCUMENT_PDF_SAVING
+  pressure?: Pressure;
 }
 
 export interface PerfEntry {
   event: PerfEvent;
   duration: number;
-  perfInfo?: PerfInformation;
+  perfInfo: PerfInformation;
 }
 
 export interface VideoTrackSettings {
