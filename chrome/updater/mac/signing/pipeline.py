@@ -107,7 +107,7 @@ def _package_and_sign_pkg(paths, config):
     """
     pkg_path = os.path.join(paths.output,
                             '{}.pkg'.format(config.packaging_basename))
-    commands.run_command([
+    args = [
         'pkgbuild',
         '--root',
         os.path.join(paths.work, config.app_dir),
@@ -117,11 +117,15 @@ def _package_and_sign_pkg(paths, config):
                      '%s.app' % config.app_product),
         '--scripts',
         os.path.join(paths.input, config.packaging_dir, 'signing', 'pkg'),
-        '--sign',
-        config.installer_identity,
         '--timestamp',
         pkg_path,
-    ])
+    ]
+    if config.installer_identity:
+        args.extends([
+            '--sign',
+            config.installer_identity,
+        ])
+    commands.run_command(args)
     return pkg_path
 
 
@@ -206,8 +210,9 @@ def sign_all(orig_paths,
         pkg_path = _package_and_sign_pkg(package_paths, config)
 
         # Notarize the packages, then staple.
-        uuid_to_path = {}
-        uuid_to_path[notarize.submit(pkg_path, config)] = pkg_path
-        uuid_to_path[notarize.submit(dmg_path, config)] = dmg_path
-        for uuid in notarize.wait_for_results(uuid_to_path.keys(), config):
-            notarize.staple(uuid_to_path[uuid])
+        if config.notarize.should_notarize():
+            uuid_to_path = {}
+            uuid_to_path[notarize.submit(pkg_path, config)] = pkg_path
+            uuid_to_path[notarize.submit(dmg_path, config)] = dmg_path
+            for uuid in notarize.wait_for_results(uuid_to_path.keys(), config):
+                notarize.staple(uuid_to_path[uuid])
