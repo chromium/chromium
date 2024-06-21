@@ -22,8 +22,8 @@ using PartRootUnion = V8UnionChildNodePartOrDocumentPartRoot;
 
 // These should be the data (text content) of the start and end comment nodes
 // that represent the endpoints of a ChildNodePart range.
-#define kChildNodePartStartCommentData "S"
-#define kChildNodePartEndCommentData "E"
+#define kChildNodePartStartCommentData "#"
+#define kChildNodePartEndCommentData "/"
 
 // Implementation of the PartRoot class, which is part of the DOM Parts API.
 // PartRoot is the base of the class hierarchy.
