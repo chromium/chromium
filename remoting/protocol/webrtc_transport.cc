@@ -13,16 +13,19 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "components/webrtc/net_address_utils.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "remoting/protocol/sdp_message.h"
 #include "remoting/protocol/transport.h"
@@ -78,6 +81,10 @@ constexpr base::TimeDelta kDefaultDataChannelStatePollingInterval =
 // The maximum amount of time we will wait for the data channels to close before
 // closing the PeerConnection.
 constexpr base::TimeDelta kWaitForDataChannelsClosedTimeout = base::Seconds(5);
+
+// The time to wait after receiving a disconnected state change before assuming
+// that the connection is failed.
+constexpr base::TimeDelta kCloseAfterDisconnectTimeout = base::Seconds(10);
 
 base::TimeDelta data_channel_state_polling_interval =
     kDefaultDataChannelStatePollingInterval;
@@ -872,6 +879,16 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
   AddPendingCandidatesIfPossible();
 }
 
+void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
+  LOG(WARNING) << "ICE has not reconnected in " << kCloseAfterDisconnectTimeout
+               << ". Client may be offline.";
+  // Close() fails DCHECKs if the data channels are not in the kClosing or
+  // kClosed state.
+  control_data_channel_->Close();
+  event_data_channel_->Close();
+  Close(ErrorCode::PEER_IS_OFFLINE);
+}
+
 void WebrtcTransport::OnSignalingChange(
     webrtc::PeerConnectionInterface::SignalingState new_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -925,6 +942,7 @@ void WebrtcTransport::OnIceConnectionChange(
       new_state == webrtc::PeerConnectionInterface::kIceConnectionConnected) {
     connected_ = true;
     connection_relayed_.reset();
+    close_after_disconnect_timer_.Stop();
     event_handler_->OnWebrtcTransportConnected();
   } else if (connected_ &&
              new_state ==
@@ -932,6 +950,9 @@ void WebrtcTransport::OnIceConnectionChange(
              transport_context_->role() == TransportRole::SERVER) {
     connected_ = false;
     want_ice_restart_ = true;
+    close_after_disconnect_timer_.Start(
+        FROM_HERE, kCloseAfterDisconnectTimeout, this,
+        &WebrtcTransport::OnCloseAfterDisconnectTimeout);
     RequestNegotiation();
   }
 }
