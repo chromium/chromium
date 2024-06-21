@@ -121,7 +121,7 @@ std::vector<Suggestion> SetUnlockLoadingState(
 
 std::vector<autofill::Suggestion> PrepareLoadingStateSuggestions(
     std::vector<autofill::Suggestion> current_suggestions,
-    autofill::Suggestion selected_suggestion) {
+    const autofill::Suggestion& selected_suggestion) {
   auto modifier_fun = [&selected_suggestion](auto& suggestion) {
     if (suggestion == selected_suggestion) {
       suggestion.is_loading = IsLoading(true);
