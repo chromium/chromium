@@ -26,4 +26,6 @@ ActionType MatchButtonTypeToActionType(const ButtonType button_type) {
   }
 }
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsMahiMenuKey, false)
+
 }  // namespace chromeos::mahi

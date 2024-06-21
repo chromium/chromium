@@ -253,8 +253,10 @@ views::UniqueWidgetPtr MahiMenuView::CreateWidget(
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.name = GetWidgetName();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  params.init_properties_container.SetProperty(kIsMahiMenuKey, true);
+#endif
 
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));

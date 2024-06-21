@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,5 +72,43 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   // Check the existence of the Mahi panel.
   EXPECT_TRUE(FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
+  EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+
+  // Have both the mahi menu and mahi panel open.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  const views::View* const summary_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSummaryButton);
+  ASSERT_TRUE(summary_button);
+  event_generator().MoveMouseTo(
+      summary_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  auto* mahi_panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(mahi_menu_widget);
+  ASSERT_TRUE(mahi_panel_widget);
+
+  // Expect the mahi menu widget to be in the top-most window compared to the
+  // mahi panel widget.
+  EXPECT_EQ(window_util::GetTopMostWindow(
+                {mahi_menu_widget->GetNativeWindow()->parent(),
+                 mahi_panel_widget->GetNativeWindow()->parent()}),
+            mahi_menu_widget->GetNativeWindow()->parent());
+}
+#endif
 
 }  // namespace ash

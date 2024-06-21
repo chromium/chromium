@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "ui/base/class_property.h"
 
 namespace chromeos::mahi {
 
@@ -31,6 +32,11 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) ButtonType {
 
 COMPONENT_EXPORT(MAHI_PUBLIC_CPP)
 ActionType MatchButtonTypeToActionType(const ButtonType button_type);
+
+// Used by ash window manager to place the mahi menu bubble in the correct
+// container.
+extern const COMPONENT_EXPORT(MAHI_PUBLIC_CPP) ui::ClassProperty<bool>* const
+    kIsMahiMenuKey;
 
 }  // namespace chromeos::mahi
 
