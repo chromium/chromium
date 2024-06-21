@@ -9,7 +9,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/device_bound_sessions/device_bound_session_params.h"
+#include "net/device_bound_sessions/device_bound_session_create_params.h"
 #include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
@@ -31,7 +31,7 @@ namespace net {
 class NET_EXPORT RegistrationFetcher {
  public:
   using RegistrationCompleteCallback =
-      base::OnceCallback<void(std::optional<DeviceBoundSessionParams>)>;
+      base::OnceCallback<void(std::optional<DeviceBoundSessionCreateParams>)>;
 
   // TODO(kristianm): Add more parameters when the returned JSON is parsed.
   struct NET_EXPORT RegistrationTokenResult {

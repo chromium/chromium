@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "net/base/net_export.h"
-#include "net/device_bound_sessions/device_bound_session_params.h"
 #include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
 
 namespace net {

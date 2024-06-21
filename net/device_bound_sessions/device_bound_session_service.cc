@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "net/base/features.h"
+#include "net/device_bound_sessions/device_bound_session_create_params.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 
@@ -36,7 +37,8 @@ class DeviceBoundSessionServiceImpl : public DeviceBoundSessionService {
 
   // TODO(kristianm): Parse the registration params and create a session
   // in the service.
-  void OnRegistrationComplete(std::optional<DeviceBoundSessionParams> params) {}
+  void OnRegistrationComplete(
+      std::optional<DeviceBoundSessionCreateParams> params) {}
 
  private:
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;

@@ -8,6 +8,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
+#include "net/device_bound_sessions/session_json_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
 
@@ -150,6 +151,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     if (!redirect_info.new_url.SchemeIsCryptographic()) {
       request->Cancel();
       OnResponseCompleted();
+      // *this is deleted here
     }
   }
 
@@ -166,6 +168,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   void OnResponseStarted(URLRequest* request, int net_error) override {
     if (net_error != OK) {
       OnResponseCompleted();
+      // *this is deleted here
       return;
     }
 
@@ -173,6 +176,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     int response_code = headers ? headers->response_code() : 0;
     if (response_code < 200 || response_code >= 300) {
       OnResponseCompleted();
+      // *this is deleted here
       return;
     }
 
@@ -182,6 +186,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       OnReadCompleted(request, bytes_read);
     } else if (bytes_read != ERR_IO_PENDING) {
       OnResponseCompleted();
+      // *this is deleted here
     }
   }
 
@@ -196,6 +201,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
     if (bytes_read != ERR_IO_PENDING) {
       OnResponseCompleted();
+      // *this is deleted here
     }
   }
 
@@ -244,20 +250,18 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   void OnResponseCompleted() {
-    // TODO(kristianm): Parse response in data_received_
-    // For now just mark it as correct if *any* content was received.
     if (!data_received_.empty()) {
-      DeviceBoundSessionParams params;
-      RunCallbackAndDeleteSelf(params);
+      RunCallbackAndDeleteSelf(ParseSessionInstructionJson(data_received_));
     } else {
       RunCallbackAndDeleteSelf(std::nullopt);
     }
+    // *this is deleted here
   }
 
   // Running callback when fetching is complete or on error.
   // Deletes `this` afterwards.
   void RunCallbackAndDeleteSelf(
-      std::optional<DeviceBoundSessionParams> params) {
+      std::optional<DeviceBoundSessionCreateParams> params) {
     std::move(callback_).Run(std::move(params));
     delete this;
   }

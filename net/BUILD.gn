@@ -1114,7 +1114,8 @@ component("net") {
     sources += [
       "device_bound_sessions/cookie_craving.cc",
       "device_bound_sessions/cookie_craving.h",
-      "device_bound_sessions/device_bound_session_params.h",
+      "device_bound_sessions/device_bound_session_create_params.cc",
+      "device_bound_sessions/device_bound_session_create_params.h",
       "device_bound_sessions/device_bound_session_registration_fetcher_param.cc",
       "device_bound_sessions/device_bound_session_registration_fetcher_param.h",
       "device_bound_sessions/device_bound_session_service.cc",
@@ -1125,6 +1126,8 @@ component("net") {
       "device_bound_sessions/session_binding_utils.h",
       "device_bound_sessions/session_inclusion_rules.cc",
       "device_bound_sessions/session_inclusion_rules.h",
+      "device_bound_sessions/session_json_utils.cc",
+      "device_bound_sessions/session_json_utils.h",
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
     ]

@@ -32,12 +32,44 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {
 namespace {
+
+using ::testing::ElementsAre;
+
+constexpr char kBasicValidJson[] =
+    R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : [
+      {
+        "type": "include",
+        "domain": "trusted.example.com",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+constexpr char kRedirectPath[] = "/redirect";
+constexpr char kChallenge[] = "test_challenge";
+const GURL kRegistrationUrl = GURL("https://www.example.test/startsession");
+
+std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
+  return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+}
 
 class RegistrationTest : public TestWithTaskEnvironment {
  protected:
@@ -48,6 +80,16 @@ class RegistrationTest : public TestWithTaskEnvironment {
 
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
+  }
+
+  DeviceBoundSessionRegistrationFetcherParam GetBasicParam(
+      std::optional<GURL> url = std::nullopt) {
+    if (!url) {
+      url = server_.GetURL("/");
+    }
+
+    return DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
+        *url, CreateAlgArray(), std::string(kChallenge));
   }
 
   test_server::EmbeddedTestServer server_;
@@ -80,14 +122,18 @@ class TestRegistrationCallback {
     run_loop.Run();
   }
 
-  std::optional<DeviceBoundSessionParams> outcome() const { return outcome_; }
+  std::optional<DeviceBoundSessionCreateParams> outcome() {
+    EXPECT_TRUE(called_);
+    return std::move(outcome_);
+  }
 
  private:
-  void OnRegistrationComplete(std::optional<DeviceBoundSessionParams> params) {
+  void OnRegistrationComplete(
+      std::optional<DeviceBoundSessionCreateParams> params) {
     EXPECT_FALSE(called_);
 
     called_ = true;
-    outcome_ = params;
+    outcome_ = std::move(params);
 
     if (waiting_) {
       waiting_ = false;
@@ -96,27 +142,29 @@ class TestRegistrationCallback {
   }
 
   bool called_ = false;
-  std::optional<DeviceBoundSessionParams> outcome_ = std::nullopt;
+  std::optional<DeviceBoundSessionCreateParams> outcome_ = std::nullopt;
 
   bool waiting_ = false;
   base::OnceClosure closure_;
 };
 
-constexpr std::string_view kChallenge = "test_challenge";
-const GURL kRegistrationUrl = GURL("https://www.example.test/startsession");
-
-std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
-  return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
-}
-
 std::unique_ptr<test_server::HttpResponse> ReturnResponse(
     HttpStatusCode code,
+    std::string_view response_text,
     const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(code);
-  response->set_content("some content");
+  response->set_content_type("application/json");
+  response->set_content(response_text);
+  return response;
+}
+
+std::unique_ptr<test_server::HttpResponse> ReturnTextResponse(
+    const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(HTTP_OK);
   response->set_content_type("text/plain");
+  response->set_content("some content");
   return response;
 }
 
@@ -128,18 +176,424 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
 
 TEST_F(RegistrationTest, BasicSuccess) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
-  server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          server_.GetURL("/"), CreateAlgArray(), std::string(kChallenge));
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_TRUE(out_params->scope.include_site);
+  EXPECT_THAT(
+      out_params->scope.specifications,
+      ElementsAre(DeviceBoundSessionCreateParams::Scope::Specification(
+          DeviceBoundSessionCreateParams::Scope::Specification::Type::kInclude,
+          "trusted.example.com", "/only_trusted_path")));
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, NoScopeJson) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_FALSE(out_params->scope.include_site);
+  EXPECT_TRUE(out_params->scope.specifications.empty());
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, NoSessionIdJson) {
+  constexpr char kTestingJson[] =
+      R"({
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_FALSE(out_params);
+}
+
+TEST_F(RegistrationTest, SpecificationNotDictJson) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : [
+      "type", "domain", "path"
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_TRUE(out_params->scope.include_site);
+  EXPECT_TRUE(out_params->scope.specifications.empty());
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, OneMissingPath) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : [
+      {
+        "type": "include",
+        "domain": "trusted.example.com"
+      },
+      {
+        "type": "exclude",
+        "domain": "new.example.com",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "other_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_TRUE(out_params->scope.include_site);
+
+  EXPECT_THAT(
+      out_params->scope.specifications,
+      ElementsAre(DeviceBoundSessionCreateParams::Scope::Specification(
+          DeviceBoundSessionCreateParams::Scope::Specification::Type::kExclude,
+          "new.example.com", "/only_trusted_path")));
+
+  EXPECT_THAT(out_params->credentials,
+              ElementsAre(DeviceBoundSessionCreateParams::Credential(
+                  "other_cookie",
+                  "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, OneSpecTypeInvalid) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : [
+      {
+        "type": "invalid",
+        "domain": "trusted.example.com",
+        "path": "/only_trusted_path"
+      },
+      {
+        "type": "exclude",
+        "domain": "new.example.com",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_TRUE(out_params->scope.include_site);
+
+  EXPECT_THAT(
+      out_params->scope.specifications,
+      ElementsAre(DeviceBoundSessionCreateParams::Scope::Specification(
+          DeviceBoundSessionCreateParams::Scope::Specification::Type::kExclude,
+          "new.example.com", "/only_trusted_path")));
+
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, InvalidTypeSpecList) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : "missing"
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_TRUE(out_params->scope.include_site);
+  EXPECT_TRUE(out_params->scope.specifications.empty());
+}
+
+TEST_F(RegistrationTest, TypeIsNotCookie) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "credentials": [{
+    "type": "sync auth",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  EXPECT_EQ(callback.outcome(), std::nullopt);
+}
+
+TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "credentials": [
+    {
+      "type": "cookie",
+      "name": "auth_cookie",
+      "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+    },
+    {
+      "type": "sync auth",
+      "name": "auth_cookie",
+      "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+    }
+  ]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "credentials": [
+    {
+      "type": "sync auth",
+      "name": "auth_cookie",
+      "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+    },
+    {
+      "type": "cookie",
+      "name": "auth_cookie",
+      "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+    }
+  ]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, CredEntryWithoutDict) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=example.com; Path=/; Secure; SameSite=None"
+  },
+  "test"]
+})";
+
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      GetBasicParam(), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  std::optional<DeviceBoundSessionCreateParams> out_params = callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_THAT(
+      out_params->credentials,
+      ElementsAre(DeviceBoundSessionCreateParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
+}
+
+TEST_F(RegistrationTest, ReturnTextFile) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(base::BindRepeating(&ReturnTextResponse));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
   callback.WaitForCall();
-  EXPECT_NE(callback.outcome(), std::nullopt);
+  EXPECT_EQ(callback.outcome(), std::nullopt);
+}
+
+TEST_F(RegistrationTest, ReturnInvalidJson) {
+  std::string invalid_json = "*{}";
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, invalid_json));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  EXPECT_EQ(callback.outcome(), std::nullopt);
+}
+
+TEST_F(RegistrationTest, ReturnEmptyJson) {
+  std::string empty_json = "{}";
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, empty_json));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+  EXPECT_EQ(callback.outcome(), std::nullopt);
 }
 
 TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
@@ -149,9 +603,7 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
   ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          url, CreateAlgArray(), std::string(kChallenge));
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam(url);
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
@@ -166,9 +618,7 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          server_.GetURL("/"), CreateAlgArray(), std::string(kChallenge));
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
@@ -179,14 +629,12 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
 
 TEST_F(RegistrationTest, ServerError500) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_INTERNAL_SERVER_ERROR));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponse, HTTP_INTERNAL_SERVER_ERROR, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          server_.GetURL("/"), CreateAlgArray(), std::string(kChallenge));
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
@@ -194,8 +642,6 @@ TEST_F(RegistrationTest, ServerError500) {
 
   EXPECT_EQ(callback.outcome(), std::nullopt);
 }
-
-const char kRedirectPath[] = "/redirect";
 
 std::unique_ptr<test_server::HttpResponse> ReturnRedirect(
     const std::string& location,
@@ -220,7 +666,7 @@ std::unique_ptr<test_server::HttpResponse> CheckRedirect(
   }
 
   *redirect_followed_out = true;
-  return ReturnResponse(HTTP_OK, request);
+  return ReturnResponse(HTTP_OK, kBasicValidJson, request);
 }
 
 TEST_F(RegistrationTest, FollowHttpsRedirect) {
@@ -233,9 +679,7 @@ TEST_F(RegistrationTest, FollowHttpsRedirect) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          server_.GetURL("/"), CreateAlgArray(), std::string(kChallenge));
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
@@ -259,9 +703,7 @@ TEST_F(RegistrationTest, DontFollowHttpRedirect) {
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          server_.GetURL("/"), CreateAlgArray(), std::string(kChallenge));
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
@@ -273,14 +715,13 @@ TEST_F(RegistrationTest, DontFollowHttpRedirect) {
 
 TEST_F(RegistrationTest, FailOnSslErrorExpired) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
-  server_.RegisterRequestHandler(base::BindRepeating(&ReturnResponse, HTTP_OK));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
   ASSERT_TRUE(server_.Start());
 
   TestRegistrationCallback callback;
-  DeviceBoundSessionRegistrationFetcherParam params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-          server_.GetURL("/"), CreateAlgArray(), std::string(kChallenge));
+  DeviceBoundSessionRegistrationFetcherParam params = GetBasicParam();
   RegistrationFetcher::StartCreateTokenAndFetch(
       std::move(params), unexportable_key_service(), context_.get(),
       IsolationInfo::CreateTransient(), callback.callback());
