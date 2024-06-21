@@ -112,27 +112,15 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
     std::string json) {
   std::optional<base::Value> dte_dictionary = base::JSONReader::Read(json);
 
-  if (!dte_dictionary) {
+  if (!dte_dictionary)
     return nullptr;
-  }
 
   const std::string* endpoint_type =
       dte_dictionary->GetDict().FindString(kEndpointTypeKey);
-  if (!endpoint_type) {
-    return nullptr;
-  }
+  const std::string* url_string = dte_dictionary->GetDict().FindString(kUrlKey);
 
-  if (*endpoint_type == kUrlString) {
-    const std::string* url_string =
-        dte_dictionary->GetDict().FindString(kUrlKey);
-    if (!url_string) {
-      return nullptr;
-    }
-
+  if (url_string) {
     GURL url = GURL(*url_string);
-    if (!url.is_valid()) {
-      return nullptr;
-    }
 
     return std::make_unique<DataTransferEndpoint>(
         url, DataTransferEndpointOptions{.off_the_record =
@@ -141,12 +129,12 @@ std::unique_ptr<DataTransferEndpoint> ConvertJsonToDataTransferEndpoint(
                                                  .value_or(false)});
   }
 
-  auto type_enum = EndpointStringToType(*endpoint_type);
-  if (!type_enum) {
-    return nullptr;
+  if (endpoint_type && *endpoint_type != kUrlString) {
+    if (auto type_enum = EndpointStringToType(*endpoint_type))
+      return std::make_unique<DataTransferEndpoint>(type_enum.value());
   }
 
-  return std::make_unique<DataTransferEndpoint>(type_enum.value());
+  return nullptr;
 }
 
 }  // namespace ui
