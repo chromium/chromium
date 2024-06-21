@@ -106,7 +106,8 @@ export class DialogActionController {
     this.updateExtensionForSelectedFileType_(true);
     const filename = this.dialogFooter_.filenameInput.value;
     if (!filename) {
-      throw new Error('Missing filename!');
+      console.warn('Missing filename');
+      return;
     }
 
     try {
@@ -134,7 +135,8 @@ export class DialogActionController {
    */
   private processOkAction_() {
     if (this.dialogFooter_.okButton.disabled) {
-      throw new Error('Disabled!');
+      console.warn('okButton Disabled');
+      return;
     }
     if (this.dialogType_ === DialogType.SELECT_SAVEAS_FILE) {
       this.processOkActionForSaveDialog_();
@@ -160,7 +162,8 @@ export class DialogActionController {
     // The logic to control whether or not the ok button is enabled should
     // prevent us from ever getting here, but we sanity check to be sure.
     if (!selectedIndexes.length) {
-      throw new Error('Nothing selected!');
+      console.warn('Nothing selected in the file list');
+      return;
     }
 
     const dm = this.directoryModel_.getFileList();
@@ -187,18 +190,21 @@ export class DialogActionController {
 
     // Everything else must have exactly one.
     if (files.length > 1) {
-      throw new Error('Too many files selected!');
+      console.warn('Too many files selected');
+      return;
     }
 
     const selectedEntry = dm.item(selectedIndexes[0] ?? -1)!;
 
     if (isFolderDialogType(this.dialogType_)) {
       if (!selectedEntry.isDirectory) {
-        throw new Error('Selected entry is not a folder!');
+        console.warn('Selected entry is not a folder');
+        return;
       }
     } else if (this.dialogType_ === DialogType.SELECT_OPEN_FILE) {
       if (!selectedEntry.isFile) {
-        throw new Error('Selected entry is not a file!');
+        console.warn('Selected entry is not a file');
+        return;
       }
     }
 
