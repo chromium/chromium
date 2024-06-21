@@ -14,8 +14,10 @@ message FuzzCase {
 // Actions to take
 message Action {
   // The path to the control with which we want to interact.
-  // This doesn't give stable test cases - see comments in .cc file.
-  repeated uint32 path_to_control = 1;
+  // e.g. [Chrome] -> [3rd panel] -> [2nd panel] -> [Maximize]
+  // Wherever controls have names, we use them, for maximal
+  // stability across Chromium versions.
+  repeated PathElement path_to_control = 1;
 
   // Wait until idle after the action.
   bool wait_afterwards = 2;
@@ -41,5 +43,29 @@ message Action {
 
   message SetSelection {
     repeated uint32 selected_child = 1;
+  }
+}
+
+message PathElement {
+  oneof element_type {
+    // The element has a name.
+    Named named = 1;
+
+    // The element does not have a name.
+    Anonymous anonymous = 2;
+  }
+
+  message Named {
+    // A named control
+    string name = 1;
+  }
+
+  message Anonymous {
+    // The control's "role", e.g. "panel". Everything has one.
+    string role = 1;
+
+    // This is the nth anonymous "role", e.g. the third anonymous panel.
+    // This should be slightly more stable than a plain ordinal.
+    uint32 ordinal = 2;
   }
 }

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <random>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
@@ -13,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/atspi_in_process_fuzzer.pb.h"
 #include "chrome/test/fuzzing/in_process_proto_fuzzer.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -35,18 +37,14 @@ using ScopedAtspiAccessible = ScopedGObject<AtspiAccessible>;
 // (The latter doesn't show so much information but with a few code tweaks
 // you can use base::Value::DebugString to get much more out.)
 //
-// The main problem with this fuzzer is that it identifies a path to a control
-// based solely on ordinals, so as the Chromium UI evolves, test cases won't
-// be stable. It would be better to identify the path to the controls via
-// their names; however:
-// a) many controls do not have names (though there are other textual
-//    identifiers, e.g. class and role, which we could use)
-// b) it's believed that libprotobuf-mutator currently is not smart enough
-//    to recognize string compares, so wouldn't adequately explore the space
-//    of controls without a huge seed corpus or dictionary including every
-//    control name.
-// If the latter is fixed, we should change the proto here to specify the
-// child control based on strings instead of ordinal integers.
+// This fuzzer takes pains to use the _names_ of controls wherever possible,
+// rather than ordinals. This should yield more stable test cases which may
+// allow fuzzing infrastructure to test on different Chromium versions to
+// determine regression or fix ranges (subject to the caveats listed below
+// about this fuzzer's inability to reset UI state right now.)
+//
+// See the discussion about the custom mutator to see the main cost of
+// identifying controls by name.
 class AtspiInProcessFuzzer
     : public InProcessProtoFuzzer<test::fuzzing::atspi_fuzzing::FuzzCase> {
  public:
@@ -55,21 +53,57 @@ class AtspiInProcessFuzzer
 
   int Fuzz(const test::fuzzing::atspi_fuzzing::FuzzCase& fuzz_case) override;
 
+  static size_t CustomMutator(uint8_t* data,
+                              size_t size,
+                              size_t max_size,
+                              unsigned int seed);
+
  private:
   void LoadAPage();
   static ScopedAtspiAccessible GetRootNode();
   static std::vector<ScopedAtspiAccessible> GetChildren(
       ScopedAtspiAccessible& node);
-  static std::string GetNodeName(ScopedAtspiAccessible& node);
+  static std::string GetNodeName(const ScopedAtspiAccessible& node);
+  static std::string GetNodeRole(const ScopedAtspiAccessible& node);
   static bool InvokeAction(ScopedAtspiAccessible& node, size_t action_id);
   static bool ReplaceText(ScopedAtspiAccessible& node,
                           const std::string& newtext);
   static bool SetSelection(ScopedAtspiAccessible& node,
                            const std::vector<uint32_t>& new_selection);
+  // Checks an ATSPI return value and indicates whether to return early
   static bool CheckOk(gboolean ok, GError** error);
+  // Checks an ATSPI return value from a function that returns a string;
+  // returns either the string or a blank string
+  static std::string CheckString(char* result, GError** error);
+  static std::optional<size_t> FindMatchingControl(
+      const std::vector<ScopedAtspiAccessible>& controls,
+      const test::fuzzing::atspi_fuzzing::PathElement& selector);
+  static bool AttemptMutateMessage(AtspiInProcessFuzzer::FuzzCase& input,
+                                   std::minstd_rand& random);
+
+  // Control names we've encountered anywhere in the tree; used in custom
+  // mutator.
+  static std::set<std::string> known_names;
+  // Control roles we've encountered anywhere in the tree; used in custom
+  // mutator.
+  static std::set<std::string> known_roles;
 };
 
-REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(AtspiInProcessFuzzer)
+// The following is the equivalent of
+// REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(AtspiInProcessFuzzer) but doesn't
+// include the standard libprotobuf mutator mutation function, because
+// we define our own at the bottom of this file. So we have to explode
+// the macro to exclude the standard mutator.
+REGISTER_IN_PROCESS_FUZZER(AtspiInProcessFuzzer)
+static void TestOneProtoInput(AtspiInProcessFuzzer::FuzzCase);
+using FuzzerProtoType =
+    protobuf_mutator::libfuzzer::macro_internal::GetFirstParam<
+        decltype(&TestOneProtoInput)>::type;
+DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(false, FuzzerProtoType)
+DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
+
+std::set<std::string> AtspiInProcessFuzzer::known_names;
+std::set<std::string> AtspiInProcessFuzzer::known_roles;
 
 AtspiInProcessFuzzer::AtspiInProcessFuzzer() {
   // For some reason when running as Chromium rather than an official build,
@@ -93,7 +127,7 @@ void AtspiInProcessFuzzer::LoadAPage() {
   // In the future we might want to experiment with more complex pages
   // here.
   std::string html_string =
-      "<html><head><title>Test page</title></head><body><form>Username: <input "
+      "<html><head><title>Test</title></head><body><form>Username: <input "
       "name=\"username\" type=\"text\">Password: "
       "<input name=\"password\" type=\"password\"><input name=\"Submit\" "
       "type=\"submit\"></form></body></html>";
@@ -133,26 +167,34 @@ int AtspiInProcessFuzzer::Fuzz(
     //   function which emits a protobuf of all the actions combined;
     // * ClusterFuzz and centipede are smart enough to apply minimization to
     //   that combined case.
+    // This is https://issues.chromium.org/issues/344606392.
     // We're nowhere near that, and we'd only want to consider doing anything
     // along those lines if this fuzzer finds lots of bugs.
     // Enumerate available controls after each action we take - obviously,
     // clicking on one button may make more buttons available
     ScopedAtspiAccessible current_control = GetRootNode();
     std::vector<ScopedAtspiAccessible> children = GetChildren(current_control);
-    for (const uint32_t& ordinal_number : action.path_to_control()) {
-      if (children.empty()) {
-        return 0;
+    for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
+         action.path_to_control()) {
+      // Record all known children for our custom mutator
+      for (auto& child : children) {
+        std::string name = GetNodeName(child);
+        if (!name.empty() && !kBlockedControls.contains(name)) {
+          known_names.insert(name);
+        }
+        known_roles.insert(GetNodeRole(child));
       }
-      // The % here means that these fuzz cases are unstable across versions
-      // if the total number of controls at any position in the tree changes,
-      // as well as if the specific ordinal of a given control changes. That's
-      // a shame, but easiest for now. See comment above about how we might
-      // improve things.
-      size_t child_ordinal = ordinal_number % children.size();
-      current_control = children[child_ordinal];
+      std::optional<size_t> selected_control =
+          FindMatchingControl(children, path_element);
+      if (!selected_control.has_value()) {
+        return -1;
+      }
+      current_control = children[*selected_control];
       children = GetChildren(current_control);
     }
 
+    // We have now chosen a control with which we'll interact during
+    // this action
     std::string control_name = GetNodeName(current_control);
     if (kBlockedControls.contains(control_name)) {
       return -1;  // don't explore this case further
@@ -258,17 +300,30 @@ bool AtspiInProcessFuzzer::CheckOk(gboolean ok, GError** error) {
   return ok;
 }
 
-std::string AtspiInProcessFuzzer::GetNodeName(ScopedAtspiAccessible& node) {
+std::string AtspiInProcessFuzzer::CheckString(char* result, GError** error) {
   std::string retval;
-  GError* error = nullptr;
-
-  char* name = atspi_accessible_get_name(node, &error);
-  if (!error) {
-    retval = name;
+  if (!*error) {
+    retval = result;
   }
-  g_clear_error(&error);
-  free(name);
+  g_clear_error(error);
+  free(result);
   return retval;
+}
+
+std::string AtspiInProcessFuzzer::GetNodeName(
+    const ScopedAtspiAccessible& node) {
+  GError* error = nullptr;
+  return CheckString(atspi_accessible_get_name(
+                         const_cast<ScopedAtspiAccessible&>(node), &error),
+                     &error);
+}
+
+std::string AtspiInProcessFuzzer::GetNodeRole(
+    const ScopedAtspiAccessible& node) {
+  GError* error = nullptr;
+  return CheckString(atspi_accessible_get_role_name(
+                         const_cast<ScopedAtspiAccessible&>(node), &error),
+                     &error);
 }
 
 bool AtspiInProcessFuzzer::InvokeAction(ScopedAtspiAccessible& node,
@@ -326,4 +381,220 @@ bool AtspiInProcessFuzzer::SetSelection(
     }
   }
   return true;
+}
+
+std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
+    const std::vector<ScopedAtspiAccessible>& controls,
+    const test::fuzzing::atspi_fuzzing::PathElement& selector) {
+  // Select the child which matches the selector.
+  // Avoid using hash maps or anything fancy, because we want fuzzing engines
+  // to be able to instrument the string comparisons here.
+  switch (selector.element_type_case()) {
+    case test::fuzzing::atspi_fuzzing::PathElement::kNamed: {
+      for (size_t i = 0; i < controls.size(); i++) {
+        auto& control = controls[i];
+        std::string name = GetNodeName(control);
+        // Use of .data() below is a workaround for
+        // https://issues.chromium.org/issues/343801371
+        if (name == selector.named().name().data()) {
+          return i;
+        }
+      }
+      break;
+    }
+    case test::fuzzing::atspi_fuzzing::PathElement::kAnonymous: {
+      size_t to_skip = selector.anonymous().ordinal();
+      for (size_t i = 0; i < controls.size(); i++) {
+        auto& control = controls[i];
+        std::string name = GetNodeName(control);
+        // Controls with a name MUST be selected by that name,
+        // so the fuzzer creates test cases which are maximally stable
+        // across Chromium versions. So disregard named controls here.
+        if (name == "") {
+          // If the control is anonymous, we allow it to be selected
+          // by role name and by an ordinal.
+          // Such test cases will be less stable, but a lot of controls are
+          // nested within anonymous panels and frames - quite often, there's
+          // exactly one child control, so test cases should be fairly stable.
+          std::string role = GetNodeRole(control);
+          // Use of .data() below is a workaround for
+          // https://issues.chromium.org/issues/343801371
+          if (role == selector.anonymous().role().data()) {
+            if (to_skip-- == 0) {
+              return i;
+            }
+          }
+        }
+      }
+      break;
+    }
+    case test::fuzzing::atspi_fuzzing::PathElement::ELEMENT_TYPE_NOT_SET:
+      break;
+  }
+  return std::nullopt;
+}
+
+namespace {
+
+std::string GetNth(const std::set<std::string>& set, size_t n) {
+  for (auto& item : set) {
+    if (n == 0) {
+      return item;
+    }
+    n--;
+  }
+  NOTREACHED();
+}
+
+// This stuff is inherited from libprotobuf-mutator and simplified a little.
+// It's not exposed as APIs from libprotobuf-mutator so we can't use
+// it without violating checkdeps rules, etc.
+
+bool ParseTextMessage(base::span<uint8_t> data,
+                      AtspiInProcessFuzzer::FuzzCase* output) {
+  std::string data_string = {reinterpret_cast<const char*>(data.data()),
+                             data.size()};
+  output->Clear();
+  google::protobuf::TextFormat::Parser parser;
+  parser.SetRecursionLimit(100);
+  parser.AllowPartialMessage(true);
+  parser.AllowUnknownField(true);
+  if (!parser.ParseFromString(data_string, output)) {
+    output->Clear();
+    return false;
+  }
+  return true;
+}
+
+size_t SaveMessageAsText(const AtspiInProcessFuzzer::FuzzCase& message,
+                         uint8_t* data,
+                         size_t max_size) {
+  std::string tmp;
+  if (!google::protobuf::TextFormat::PrintToString(message, &tmp)) {
+    return 0;
+  }
+  if (tmp.size() <= max_size) {
+    memcpy(data, tmp.data(), tmp.size());
+    return tmp.size();
+  }
+  return 0;
+}
+
+}  // namespace
+
+// Returns false if we don't successfully mutate this
+bool AtspiInProcessFuzzer::AttemptMutateMessage(
+    AtspiInProcessFuzzer::FuzzCase& input,
+    std::minstd_rand& random) {
+  if (input.action_size() == 0) {
+    return false;
+  }
+
+  // About 50% of the time, choose the last action to mutate
+  size_t chosen_action =
+      std::uniform_int_distribution<size_t>(0, input.action_size() * 2)(random);
+  test::fuzzing::atspi_fuzzing::Action* action = input.mutable_action(
+      std::min(chosen_action, static_cast<size_t>(input.action_size()) - 1));
+  if (action->path_to_control_size() == 0) {
+    return false;
+  }
+  // About 50% of the time, choose the last path element to mutate
+  size_t chosen_path_element = std::uniform_int_distribution<size_t>(
+      0, action->path_to_control_size() * 2)(random);
+  test::fuzzing::atspi_fuzzing::PathElement* path_element =
+      action->mutable_path_to_control(
+          std::min(chosen_path_element,
+                   static_cast<size_t>(action->path_to_control_size()) - 1));
+  if (path_element->has_named()) {
+    if (known_names.empty()) {
+      return false;
+    }
+    size_t replacement_name = std::uniform_int_distribution<size_t>(
+        0, known_names.size() - 1)(random);
+    std::string name = GetNth(known_names, replacement_name);
+    *path_element->mutable_named()->mutable_name() = name;
+  } else {
+    if (known_roles.empty()) {
+      return false;
+    }
+    size_t replacement_role = std::uniform_int_distribution<size_t>(
+        0, known_roles.size() - 1)(random);
+    std::string role = GetNth(known_roles, replacement_role);
+    *path_element->mutable_anonymous()->mutable_role() = role;
+  }
+  return true;
+}
+
+size_t AtspiInProcessFuzzer::CustomMutator(uint8_t* data,
+                                           size_t size,
+                                           size_t max_size,
+                                           unsigned int seed) {
+  std::minstd_rand random(seed);
+  AtspiInProcessFuzzer::FuzzCase input;
+
+  // 0 = use just libprotobuf-mutator
+  // 1 = use libprotobuf-mutator then our mutator
+  //     (sometimes this might be useful for instance to get from "panel 2"
+  //     to "frame 3", or something. "panel 3" might not be a valid control.)
+  // 2 = use just our mutator
+  int mutation_strategy = std::uniform_int_distribution(0, 2)(random);
+
+  if (mutation_strategy != 0) {
+    if (mutation_strategy == 1) {
+      size = protobuf_mutator::libfuzzer::CustomProtoMutator(
+          false, data, size, max_size, seed, &input);
+    }
+
+    // Try to mutate it ourselves. If it doesn't work, we drop out
+    // to standard lpm mutation
+    // lpm ignores errors; so shall we.
+    base::span<uint8_t> message_data(data, size);
+    ParseTextMessage(message_data, &input);
+    bool mutated_ok = AttemptMutateMessage(input, random);
+    if (mutated_ok) {
+      return SaveMessageAsText(input, data, size);
+    } else if (mutation_strategy == 1) {
+      // We already used lpm mutation
+      return size;
+    }  // otherwise fall through and use lpm below
+  }
+  return protobuf_mutator::libfuzzer::CustomProtoMutator(
+      false, data, size, max_size, seed, &input);
+}
+
+// A custom mutator which sometimes uses the standard libprotobuf-mutator,
+// but may alternatively mutate the input to use a known-valid name or role.
+// We do it this way instead of using lpm's post-mutation validation
+// because post-mutation validation is not permitted to affect valid
+// test cases.
+//
+// STRATEGY:
+//
+// We want this fuzzer to produce stable test cases, so the protobufs need to
+// refer to test cases by name, instead of by ordinal, wherever possible.
+// Of course, the vast majority of strings are not valid control names which
+// happen to exist at the right point in the tree, and therefore it would take
+// nearly infinite time to stumble across the right control names.
+//
+// This is somewhat shortcutted by the string comparison instrumentation
+// feeding back known strings into libfuzzer's table of recent comparisons.
+// This does allow the fuzzer to make progress, but it's still extremely slow,
+// despite the FindMatchingControl function being structured to allow this.
+// (https://issues.chromium.org/issues/346918512 probably doesn't help).
+//
+// We therefore sometimes use this custom mutator to specify control names
+// which are known to actually exist. This is pushing our luck a little -
+// the list of known control names will vary depending on what test cases
+// have already been run, and therefore this mutator isn't guaranteed to
+// mutate a test case the same way each time for a given seed. That's
+// probably bad, but not as bad as the lack of determinism caused by UI
+// state within the actual fuzzer, so it seems a small price to pay. And
+// it is effective - it enables the fuzzer to reach into controls in a
+// fairly rapid fashion, while still using control names within the test
+// cases wherever possible.
+extern "C" size_t LLVMFuzzerCustomMutator(uint8_t* data,
+                                          size_t size,
+                                          size_t max_size,
+                                          unsigned int seed) {
+  return AtspiInProcessFuzzer::CustomMutator(data, size, max_size, seed);
 }
