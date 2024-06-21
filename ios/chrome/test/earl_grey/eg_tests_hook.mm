@@ -12,12 +12,15 @@
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/test_drive_service.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -168,7 +171,15 @@ GetOverriddenRecipientsFetcher() {
 }
 
 void SetUpTestsIfPresent() {
-  // No-op for Earl Grey.
+  // For EG tests, passkeys must use the test passkey model.
+  ChromeBrowserState* browser_state =
+      chrome_test_util::GetOriginalBrowserState();
+  IOSPasskeyModelFactory::GetInstance()->SetTestingFactory(
+      browser_state,
+      base::BindRepeating(
+          [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<webauthn::TestPasskeyModel>();
+          }));
 }
 
 void RunTestsIfPresent() {

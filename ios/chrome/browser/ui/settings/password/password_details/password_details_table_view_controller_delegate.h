@@ -10,11 +10,12 @@
 
 @protocol PasswordDetailsTableViewControllerDelegate
 
-// Called when user finished editing a password.
+// Called when user finished editing a credential.
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(CredentialDetails*)password
+             didEditCredentialDetails:(CredentialDetails*)credential
                       withOldUsername:(NSString*)oldUsername
+                   oldUserDisplayName:(NSString*)oldUserDisplayName
                           oldPassword:(NSString*)oldPassword
                               oldNote:(NSString*)oldNote;
 

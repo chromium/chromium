@@ -20,11 +20,14 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/password_test_util.h"
@@ -54,6 +57,13 @@ GetPasswordAccountStore() {
   return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState(),
       ServiceAccessType::IMPLICIT_ACCESS);
+}
+
+// Helper to get the passkey store.
+webauthn::PasskeyModel* GetPasskeyStore() {
+  ChromeBrowserState* browser_state =
+      chrome_test_util::GetOriginalBrowserState();
+  return IOSPasskeyModelFactory::GetForBrowserState(browser_state);
 }
 
 // This class is used to obtain results from the PasswordStore and hence both
@@ -358,6 +368,21 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   federated.federation_origin =
       url::Origin::Create(GURL(base::SysNSStringToUTF16(federatedOrigin)));
   return SaveToPasswordProfileStore(federated);
+}
+
++ (void)saveExamplePasskeyToStore:(NSString*)credentialId
+                             rpId:(NSString*)rpId
+                           userId:(NSString*)userId
+                         username:(NSString*)username
+                  userDisplayName:(NSString*)userDisplayName {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(base::RandBytesAsString(16));
+  passkey.set_credential_id(base::SysNSStringToUTF8(credentialId));
+  passkey.set_rp_id(base::SysNSStringToUTF8(rpId));
+  passkey.set_user_id(base::SysNSStringToUTF8(userId));
+  passkey.set_user_name(base::SysNSStringToUTF8(username));
+  passkey.set_user_display_name(base::SysNSStringToUTF8(userDisplayName));
+  GetPasskeyStore()->AddNewPasskeyForTesting(passkey);
 }
 
 + (NSInteger)passwordProfileStoreResultsCount {

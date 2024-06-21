@@ -87,6 +87,13 @@
                                         username:(NSString*)username
                                           origin:(NSString*)origin;
 
+// Creates a passkey in the passkey store.
++ (void)saveExamplePasskeyToStore:(NSString*)credentialId
+                             rpId:(NSString*)rpId
+                           userId:(NSString*)userId
+                         username:(NSString*)username
+                  userDisplayName:(NSString*)userDisplayName;
+
 // Returns the number of password forms stored in the profile store.
 + (NSInteger)passwordProfileStoreResultsCount;
 

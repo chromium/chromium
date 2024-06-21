@@ -263,7 +263,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   [self setOrExtendAuthValidityTimer];
   // If there are no passwords, proceed with editing without
   // reauthentication.
-  if (![self hasAtLeastOnePassword]) {
+  if (![self hasAtLeastOnePasswordOrPasskey]) {
     [super editButtonPressed];
 
     // Reload view to show the delete button.
@@ -1105,6 +1105,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
+    if (self.credentials[i].credentialType == CredentialTypePasskey) {
+      continue;
+    }
+
     BOOL passwordEmpty = [self.passwordDetailsInfoItems[i]
                                  .passwordTextItem.textFieldValue length] == 0;
     self.passwordDetailsInfoItems[i].passwordTextItem.hasValidText =
@@ -1151,9 +1155,10 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       self.shouldEnableEditDoneButton;
 }
 
-- (BOOL)hasAtLeastOnePassword {
+- (BOOL)hasAtLeastOnePasswordOrPasskey {
   for (CredentialDetails* credentialDetails in self.credentials) {
-    if (credentialDetails.password.length > 0) {
+    if (credentialDetails.credentialType == CredentialTypePasskey ||
+        credentialDetails.password.length > 0) {
       return YES;
     }
   }
@@ -1164,7 +1169,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
-    if (![self.credentials[i].password
+    if (self.credentials[i].credentialType != CredentialTypePasskey &&
+        ![self.credentials[i].password
             isEqualToString:self.passwordDetailsInfoItems[i]
                                 .passwordTextItem.textFieldValue]) {
       return YES;
@@ -1185,7 +1191,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Creates the model items corresponding to a `PasswordDetails` and adds them to
 // the `model`.
-- (void)addPasswordDetailsToModel:(CredentialDetails*)passwordDetails {
+- (void)addPasswordDetailsToModel:(CredentialDetails*)credentialDetails {
   TableViewModel* model = self.tableViewModel;
   PasswordDetailsInfoItem* passwordItem =
       [[PasswordDetailsInfoItem alloc] init];
@@ -1206,25 +1212,25 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // Add sites to section.
   passwordItem.websiteItem =
-      [self websiteItemForPasswordDetails:passwordDetails];
+      [self websiteItemForPasswordDetails:credentialDetails];
   [model addItem:passwordItem.websiteItem
       toSectionWithIdentifier:sectionForWebsite];
 
   // Add username and password to section according to credential type.
-  switch (passwordDetails.credentialType) {
+  switch (credentialDetails.credentialType) {
     case CredentialTypeRegularPassword: {
       passwordItem.usernameTextItem =
-          [self usernameItemForPasswordDetails:passwordDetails];
+          [self usernameItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.usernameTextItem
           toSectionWithIdentifier:sectionForPassword];
 
       passwordItem.passwordTextItem =
-          [self passwordItemForPasswordDetails:passwordDetails];
+          [self passwordItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.passwordTextItem
           toSectionWithIdentifier:sectionForPassword];
 
       passwordItem.passwordNoteItem =
-          [self noteItemForPasswordDetails:passwordDetails];
+          [self noteItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.passwordNoteItem
           toSectionWithIdentifier:sectionForPassword];
 
@@ -1242,21 +1248,21 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
               : @"";
       [model setFooter:footer forSectionWithIdentifier:sectionForPassword];
 
-      if (passwordDetails.isCompromised || passwordDetails.isMuted) {
+      if (credentialDetails.isCompromised || credentialDetails.isMuted) {
         [model addItem:[self changePasswordRecommendationItem]
             toSectionWithIdentifier:sectionForCompromisedInfo];
 
-        if (passwordDetails.changePasswordURL.has_value()) {
+        if (credentialDetails.changePasswordURL.has_value()) {
           [model addItem:[self changePasswordItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
 
-        if (ShouldAllowToDismissWarning(passwordDetails.context,
-                                        passwordDetails.compromised)) {
+        if (ShouldAllowToDismissWarning(credentialDetails.context,
+                                        credentialDetails.compromised)) {
           [model addItem:[self dismissWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
-        } else if (ShouldAllowToRestoreWarning(passwordDetails.context,
-                                               passwordDetails.muted)) {
+        } else if (ShouldAllowToRestoreWarning(credentialDetails.context,
+                                               credentialDetails.muted)) {
           [model addItem:[self restoreWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
@@ -1265,12 +1271,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     }
     case CredentialTypeFederation: {
       passwordItem.usernameTextItem =
-          [self usernameItemForPasswordDetails:passwordDetails];
+          [self usernameItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.usernameTextItem
           toSectionWithIdentifier:sectionForPassword];
 
       // Federated password forms don't have password value.
-      [model addItem:[self federationItemForPasswordDetails:passwordDetails]
+      [model addItem:[self federationItemForPasswordDetails:credentialDetails]
           toSectionWithIdentifier:sectionForPassword];
       break;
     }
@@ -1281,24 +1287,24 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
     case CredentialTypePasskey: {
       passwordItem.userDisplayNameTextItem =
-          [self userDisplayNameItemForPasswordDetails:passwordDetails];
+          [self userDisplayNameItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.userDisplayNameTextItem
           toSectionWithIdentifier:sectionForPassword];
 
       passwordItem.usernameTextItem =
-          [self usernameItemForPasswordDetails:passwordDetails];
+          [self usernameItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.usernameTextItem
           toSectionWithIdentifier:sectionForPassword];
 
       passwordItem.creationDateTextItem =
-          [self creationDateItemForPasswordDetails:passwordDetails];
+          [self creationDateItemForPasswordDetails:credentialDetails];
       [model addItem:passwordItem.creationDateTextItem
           toSectionWithIdentifier:sectionForPassword];
       break;
     }
   }
 
-  if (passwordDetails.shouldOfferToMoveToAccount) {
+  if (credentialDetails.shouldOfferToMoveToAccount) {
     [model addItem:[self moveToAccountRecommendationItem]
         toSectionWithIdentifier:sectionForMoveCredential];
     [model addItem:[self moveToAccountButtonItem]
@@ -1306,7 +1312,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
 
   if (self.tableView.editing) {
-    [model addItem:[self deleteButtonItemForPasswordDetails:passwordDetails]
+    [model addItem:[self deleteButtonItemForPasswordDetails:credentialDetails]
         toSectionWithIdentifier:sectionForPassword];
   }
   [self.passwordDetailsInfoItems addObject:passwordItem];
@@ -1657,29 +1663,39 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 - (void)passwordEditingConfirmed {
   DCHECK(self.credentials.count == self.passwordDetailsInfoItems.count);
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
-    CredentialDetails* password = self.credentials[i];
-    NSString* oldUsername = password.username;
-    NSString* oldPassword = password.password;
-    NSString* oldNote = password.note;
+    CredentialDetails* credential = self.credentials[i];
+    NSString* oldUsername = credential.username;
+    NSString* oldUserDisplayName = credential.userDisplayName;
+    NSString* oldPassword = credential.password;
+    NSString* oldNote = credential.note;
 
     PasswordDetailsInfoItem* passwordDetailsInfoItem =
         self.passwordDetailsInfoItems[i];
-    password.username = passwordDetailsInfoItem.usernameTextItem.textFieldValue;
-    password.password = passwordDetailsInfoItem.passwordTextItem.textFieldValue;
-      password.note = passwordDetailsInfoItem.passwordNoteItem.text;
-      [self logChangeBetweenOldNote:oldNote currentNote:password.note];
+
+    credential.username =
+        passwordDetailsInfoItem.usernameTextItem.textFieldValue;
+    credential.userDisplayName =
+        passwordDetailsInfoItem.userDisplayNameTextItem.textFieldValue;
+    credential.password =
+        passwordDetailsInfoItem.passwordTextItem.textFieldValue;
+    credential.note = passwordDetailsInfoItem.passwordNoteItem.text;
+
+    [self logChangeBetweenOldNote:oldNote currentNote:credential.note];
     [self.delegate passwordDetailsViewController:self
-                          didEditPasswordDetails:password
+                        didEditCredentialDetails:credential
                                  withOldUsername:oldUsername
+                              oldUserDisplayName:oldUserDisplayName
                                      oldPassword:oldPassword
                                          oldNote:oldNote];
 
-    if (oldUsername != password.username || oldPassword != password.password) {
-      DetailsContext detailsContext = password.context;
+    if (credential.credentialType != CredentialTypePasskey &&
+        (oldUsername != credential.username ||
+         oldPassword != credential.password)) {
+      DetailsContext detailsContext = credential.context;
       // When details was opened from the Password Manager, only log password
       // check actions if the password is compromised.
       if (password_manager::ShouldRecordPasswordCheckUserAction(
-              detailsContext, password.compromised)) {
+              detailsContext, credential.compromised)) {
         password_manager::LogEditPassword(
             GetWarningTypeForDetailsContext(detailsContext));
       }

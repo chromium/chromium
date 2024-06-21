@@ -552,8 +552,9 @@ TEST_F(PasswordDetailsMediatorTest, EditCredential) {
 
   // Edit the credential. Change password from "password1" to "new password".
   [mediator() passwordDetailsViewController:nullptr
-                     didEditPasswordDetails:new_password_details
+                   didEditCredentialDetails:new_password_details
                             withOldUsername:old_password_details.username
+                         oldUserDisplayName:old_password_details.userDisplayName
                                 oldPassword:old_password_details.password
                                     oldNote:old_password_details.note];
   RunUntilIdle();

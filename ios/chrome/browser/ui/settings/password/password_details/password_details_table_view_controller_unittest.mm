@@ -119,7 +119,7 @@ NSString* DisplayName() {
 @interface FakePasswordDetailsDelegate
     : NSObject <PasswordDetailsTableViewControllerDelegate>
 
-@property(nonatomic, strong) CredentialDetails* password;
+@property(nonatomic, strong) CredentialDetails* credential;
 
 @property(nonatomic, assign) BOOL dismissWarningCalled;
 
@@ -131,11 +131,12 @@ NSString* DisplayName() {
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(CredentialDetails*)password
+             didEditCredentialDetails:(CredentialDetails*)credential
                       withOldUsername:(NSString*)oldUsername
+                   oldUserDisplayName:(NSString*)oldUserDisplayName
                           oldPassword:(NSString*)oldPassword
                               oldNote:(NSString*)oldNote {
-  self.password = password;
+  self.credential = credential;
 }
 
 - (void)didFinishEditingPasswordDetails {
@@ -486,7 +487,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestAddingPasswordWithNote) {
   [passwordDetails editButtonPressed];
 
   EXPECT_FALSE(passwordDetails.tableView.editing);
-  EXPECT_NSEQ(@"note", delegate().password.note);
+  EXPECT_NSEQ(@"note", delegate().credential.note);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordNoteActionInSettings2",
       password_manager::metrics_util::PasswordNoteAction::
@@ -509,7 +510,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditingPasswordWithNote) {
   [passwordDetails editButtonPressed];
 
   EXPECT_FALSE(passwordDetails.tableView.editing);
-  EXPECT_NSEQ(@"new_note", delegate().password.note);
+  EXPECT_NSEQ(@"new_note", delegate().credential.note);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordNoteActionInSettings2",
       password_manager::metrics_util::PasswordNoteAction::
@@ -533,7 +534,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestRemovingPasswordWithNote) {
   [passwordDetails editButtonPressed];
 
   EXPECT_FALSE(passwordDetails.tableView.editing);
-  EXPECT_NSEQ(@"", delegate().password.note);
+  EXPECT_NSEQ(@"", delegate().credential.note);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordNoteActionInSettings2",
       password_manager::metrics_util::PasswordNoteAction::
@@ -752,7 +753,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditPasswordConfirmed) {
           controller());
   [password_details editButtonPressed];
   EXPECT_FALSE(handler().editingCalled);
-  EXPECT_FALSE(delegate().password);
+  EXPECT_FALSE(delegate().credential);
   EXPECT_TRUE(password_details.tableView.editing);
 
   SetEditCellText(@"new_password", 0, 2);
@@ -761,9 +762,9 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditPasswordConfirmed) {
   EXPECT_TRUE(handler().editingCalled);
 
   [password_details passwordEditingConfirmed];
-  EXPECT_TRUE(delegate().password);
+  EXPECT_TRUE(delegate().credential);
 
-  EXPECT_NSEQ(@"new_password", delegate().password.password);
+  EXPECT_NSEQ(@"new_password", delegate().credential.password);
   EXPECT_FALSE(password_details.tableView.editing);
 }
 
@@ -775,13 +776,13 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditPasswordCancel) {
       base::apple::ObjCCastStrict<PasswordDetailsTableViewController>(
           controller());
   [password_details editButtonPressed];
-  EXPECT_FALSE(delegate().password);
+  EXPECT_FALSE(delegate().credential);
   EXPECT_TRUE(password_details.tableView.editing);
 
   SetEditCellText(@"new_password", 0, 2);
 
   [password_details editButtonPressed];
-  EXPECT_FALSE(delegate().password);
+  EXPECT_FALSE(delegate().credential);
   EXPECT_TRUE(password_details.tableView.editing);
 }
 

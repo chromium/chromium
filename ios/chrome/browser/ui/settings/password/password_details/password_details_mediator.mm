@@ -126,6 +126,37 @@ bool ShouldDisplayCredentialAsMuted(
   return false;
 }
 
+// Returns true if the credential matches the other arguments.
+bool AreMatchingCredentials(const CredentialUIEntry& credential,
+                            CredentialDetails* credential_details,
+                            NSString* old_username,
+                            NSString* old_user_display_name) {
+  return
+      [credential_details.signonRealm
+          isEqualToString:base::SysUTF8ToNSString(
+                              credential.GetFirstSignonRealm())] &&
+      [old_username
+          isEqualToString:base::SysUTF16ToNSString(credential.username)] &&
+      [old_user_display_name isEqualToString:base::SysUTF16ToNSString(
+                                                 credential.user_display_name)];
+}
+
+// Returns true if the credential matches the other arguments.
+bool AreMatchingCredentials(const CredentialUIEntry& credential,
+                            CredentialDetails* credential_details,
+                            NSString* old_username,
+                            NSString* old_password,
+                            NSString* old_note) {
+  return [credential_details.signonRealm
+             isEqualToString:base::SysUTF8ToNSString(
+                                 credential.GetFirstSignonRealm())] &&
+         [old_username
+             isEqualToString:base::SysUTF16ToNSString(credential.username)] &&
+         [old_password
+             isEqualToString:base::SysUTF16ToNSString(credential.password)] &&
+         [old_note isEqualToString:base::SysUTF16ToNSString(credential.note)];
+}
+
 }  // namespace
 
 @interface PasswordDetailsMediator () <
@@ -321,59 +352,68 @@ bool ShouldDisplayCredentialAsMuted(
 
 - (void)passwordDetailsViewController:
             (PasswordDetailsTableViewController*)viewController
-               didEditPasswordDetails:(CredentialDetails*)credentialDetails
+             didEditCredentialDetails:(CredentialDetails*)credentialDetails
                       withOldUsername:(NSString*)oldUsername
+                   oldUserDisplayName:(NSString*)oldUserDisplayName
                           oldPassword:(NSString*)oldPassword
                               oldNote:(NSString*)oldNote {
-  if ([credentialDetails.password length] != 0) {
-    CredentialUIEntry original_credential;
-
-    auto it = base::ranges::find_if(
-        _credentials, [credentialDetails, oldUsername, oldPassword,
-                       oldNote](const CredentialUIEntry& credential) {
-          return
-              [credentialDetails.signonRealm
-                  isEqualToString:[NSString stringWithUTF8String:
-                                                credential.GetFirstSignonRealm()
-                                                    .c_str()]] &&
-              [oldUsername isEqualToString:base::SysUTF16ToNSString(
-                                               credential.username)] &&
-              [oldPassword isEqualToString:base::SysUTF16ToNSString(
-                                               credential.password)] &&
-              [oldNote
-                  isEqualToString:base::SysUTF16ToNSString(credential.note)];
+  CredentialUIEntry originalCredential;
+  CredentialUIEntry updatedCredential;
+  std::vector<CredentialUIEntry>::iterator it;
+  if (credentialDetails.credentialType == CredentialTypePasskey) {
+    it = base::ranges::find_if(
+        _credentials, [credentialDetails, oldUsername, oldUserDisplayName](
+                          const CredentialUIEntry& credential) {
+          return AreMatchingCredentials(credential, credentialDetails,
+                                        oldUsername, oldUserDisplayName);
         });
 
     // There should be no reason not to find the credential in the vector of
     // credentials.
     DCHECK(it != _credentials.end());
 
-    original_credential = *it;
-    CredentialUIEntry updated_credential = original_credential;
-    updated_credential.username =
-        SysNSStringToUTF16(credentialDetails.username);
-    updated_credential.password =
-        SysNSStringToUTF16(credentialDetails.password);
-    updated_credential.note = SysNSStringToUTF16(credentialDetails.note);
-    if (self.savedPasswordsPresenter->EditSavedCredentials(
-            original_credential, updated_credential) ==
-        password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
-      // Update the usernames by domain dictionary.
-      NSString* signonRealm = [NSString
-          stringWithCString:updated_credential.GetFirstSignonRealm().c_str()
-                   encoding:[NSString defaultCStringEncoding]];
-      [self updateOldUsernameInDict:oldUsername
-                      toNewUsername:credentialDetails.username
-                    withSignonRealm:signonRealm];
+    originalCredential = *it;
+    updatedCredential = originalCredential;
+    updatedCredential.username = SysNSStringToUTF16(credentialDetails.username);
+    updatedCredential.user_display_name =
+        SysNSStringToUTF16(credentialDetails.userDisplayName);
+  } else if ([credentialDetails.password length] != 0) {
+    it = base::ranges::find_if(
+        _credentials, [credentialDetails, oldUsername, oldPassword,
+                       oldNote](const CredentialUIEntry& credential) {
+          return AreMatchingCredentials(credential, credentialDetails,
+                                        oldUsername, oldPassword, oldNote);
+        });
 
-      // Update the credential in the credentials vector.
-      *it = std::move(updated_credential);
+    // There should be no reason not to find the credential in the vector of
+    // credentials.
+    CHECK(it != _credentials.end());
 
-      // Update form managers so the list of password suggestions shown to the
-      // user is the correct one.
-      [_delegate updateFormManagers];
-      return;
-    }
+    originalCredential = *it;
+    updatedCredential = originalCredential;
+    updatedCredential.username = SysNSStringToUTF16(credentialDetails.username);
+    updatedCredential.password = SysNSStringToUTF16(credentialDetails.password);
+    updatedCredential.note = SysNSStringToUTF16(credentialDetails.note);
+  } else {
+    return;
+  }
+
+  if (self.savedPasswordsPresenter->EditSavedCredentials(originalCredential,
+                                                         updatedCredential) ==
+      password_manager::SavedPasswordsPresenter::EditResult::kSuccess) {
+    // Update the usernames by domain dictionary.
+    NSString* signonRealm =
+        base::SysUTF8ToNSString(updatedCredential.GetFirstSignonRealm());
+    [self updateOldUsernameInDict:oldUsername
+                    toNewUsername:credentialDetails.username
+                  withSignonRealm:signonRealm];
+
+    // Update the credential in the credentials vector.
+    *it = std::move(updatedCredential);
+
+    // Update form managers so the list of password suggestions shown to the
+    // user is the correct one.
+    [_delegate updateFormManagers];
   }
 }
 
@@ -464,15 +504,11 @@ bool ShouldDisplayCredentialAsMuted(
     // Store all usernames by domain.
     for (const auto& credential : self.credentials) {
       [signonRealms
-          addObject:[NSString
-                        stringWithCString:credential.GetFirstSignonRealm()
-                                              .c_str()
-                                 encoding:[NSString defaultCStringEncoding]]];
+          addObject:base::SysUTF8ToNSString(credential.GetFirstSignonRealm())];
     }
     for (const auto& cred : savedCredentials) {
       NSString* signonRealm =
-          [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
-                             encoding:[NSString defaultCStringEncoding]];
+          base::SysUTF8ToNSString(cred.GetFirstSignonRealm());
       if ([signonRealms containsObject:signonRealm]) {
         NSMutableSet* set =
             [_usernamesWithSameDomainDict objectForKey:signonRealm];

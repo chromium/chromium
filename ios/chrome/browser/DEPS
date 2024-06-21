@@ -130,6 +130,7 @@ include_rules = [
   "+components/version_info",
   "+components/version_ui",
   "+components/web_resource",
+  "+components/webauthn",
   "+components/webdata_services",
   "+components/webp_transcode",
   "+crypto",

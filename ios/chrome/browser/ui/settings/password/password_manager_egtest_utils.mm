@@ -231,6 +231,20 @@ void SaveMutedCompromisedPasswordFormToProfileStore(NSString* origin,
              kPasswordStoreErrorMessage);
 }
 
+#pragma mark - Saving passkeys
+
+void SaveExamplePasskeyToStore(NSString* credentialId,
+                               NSString* rpId,
+                               NSString* userId,
+                               NSString* username,
+                               NSString* userDisplayName) {
+  [PasswordSettingsAppInterface saveExamplePasskeyToStore:credentialId
+                                                     rpId:rpId
+                                                   userId:userId
+                                                 username:username
+                                          userDisplayName:userDisplayName];
+}
+
 #pragma mark - Helpers
 
 void OpenPasswordManager() {

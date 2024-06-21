@@ -18,6 +18,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -54,10 +55,9 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -79,6 +79,7 @@ using password_manager_test_utils::EditPasswordConfirmationButton;
 using password_manager_test_utils::GetInteractionForPasswordIssueEntry;
 using password_manager_test_utils::kDefaultPassword;
 using password_manager_test_utils::kDefaultSite;
+using password_manager_test_utils::kDefaultUserDisplayName;
 using password_manager_test_utils::kDefaultUsername;
 using password_manager_test_utils::kPasswordStoreErrorMessage;
 using password_manager_test_utils::kScrollAmount;
@@ -89,6 +90,7 @@ using password_manager_test_utils::PasswordDetailsTableViewMatcher;
 using password_manager_test_utils::PasswordSettingsTableView;
 using password_manager_test_utils::PasswordTextfieldForUsernameAndSites;
 using password_manager_test_utils::ReauthenticationController;
+using password_manager_test_utils::SaveExamplePasskeyToStore;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
 using password_manager_test_utils::TapNavigationBarEditButton;
 using password_manager_test_utils::UsernameTextfieldForUsernameAndSites;
@@ -196,8 +198,12 @@ id<GREYMatcher> AddPasswordWebsite() {
 }
 
 // Matcher for the username in Password Details view.
-id<GREYMatcher> PasswordDetailUsername() {
+id<GREYMatcher> CredentialDetailUsername() {
   return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
+}
+
+id<GREYMatcher> PasskeyDetailUserDisplayName() {
+  return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSKEY_DISPLAY_NAME);
 }
 
 // Matcher for the text view of the note in Password Details view.
@@ -728,6 +734,11 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.additional_args.push_back(base::StringPrintf(
         "--enable-features=%s",
         password_manager::features::kIOSPasswordAuthOnEntryV2.name));
+  }
+
+  if ([self isRunningTest:@selector(testEditPasskeyUsername)] ||
+      [self isRunningTest:@selector(testEditPasskeyUserDisplayName)]) {
+    config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
   }
 
   return config;
@@ -1295,7 +1306,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:
                  [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"federated username")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
       assertWithMatcher:grey_textFieldValue(@"famous.provider.net")];
@@ -1335,7 +1346,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:
                  [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(kDefaultUsername)];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_textFieldValue(kMaskedPassword)];
@@ -1344,13 +1355,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
       assertWithMatcher:grey_nil()];
-  [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
+  [GetInteractionForPasswordDetailItem(CredentialDetailUsername())
       assertWithMatcher:
           grey_layout(
               @[ Below() ],
               [self matcherForPasswordDetailCellWithWebsites:kDefaultSite])];
   [GetInteractionForPasswordDetailItem(PasswordDetailPassword())
-      assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
+      assertWithMatcher:grey_layout(@[ Below() ], CredentialDetailUsername())];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -1423,7 +1434,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:
                  [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_nil()];
@@ -1457,20 +1468,20 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:
                  [self matcherForPasswordDetailCellWithWebsites:kDefaultSite]]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"federated username")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
       assertWithMatcher:grey_textFieldValue(@"famous.provider.net")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       assertWithMatcher:grey_nil()];
 
-  [GetInteractionForPasswordDetailItem(PasswordDetailUsername())
+  [GetInteractionForPasswordDetailItem(CredentialDetailUsername())
       assertWithMatcher:
           grey_layout(
               @[ Below() ],
               [self matcherForPasswordDetailCellWithWebsites:kDefaultSite])];
   [[EarlGrey selectElementWithMatcher:PasswordDetailFederation()]
-      assertWithMatcher:grey_layout(@[ Below() ], PasswordDetailUsername())];
+      assertWithMatcher:grey_layout(@[ Below() ], CredentialDetailUsername())];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -2036,28 +2047,28 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   TapNavigationBarEditButton();
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(kDefaultUsername)];
 
   // Empty username should work as well.
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"")];
 
   TapNavigationBarEditButton();
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"new username")];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2110,6 +2121,98 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+- (void)testEditPasskeyUsername {
+  SaveExamplePasskeyToStore();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  TapNavigationBarEditButton();
+
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(kDefaultUsername)];
+
+  // Empty username should work as well.
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
+      performAction:grey_replaceText(@"")];
+
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"")];
+
+  TapNavigationBarEditButton();
+
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
+      performAction:grey_replaceText(@"new username")];
+
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
+      assertWithMatcher:grey_textFieldValue(@"new username")];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      assertWithMatcher:grey_notNil()];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+- (void)testEditPasskeyUserDisplayName {
+  SaveExamplePasskeyToStore();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  TapNavigationBarEditButton();
+
+  [[EarlGrey selectElementWithMatcher:PasskeyDetailUserDisplayName()]
+      assertWithMatcher:grey_textFieldValue(kDefaultUserDisplayName)];
+
+  // Empty username should work as well.
+  [[EarlGrey selectElementWithMatcher:PasskeyDetailUserDisplayName()]
+      performAction:grey_replaceText(@"")];
+
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PasskeyDetailUserDisplayName()]
+      assertWithMatcher:grey_textFieldValue(@"")];
+
+  TapNavigationBarEditButton();
+
+  [[EarlGrey selectElementWithMatcher:PasskeyDetailUserDisplayName()]
+      performAction:grey_replaceText(@"new user display name")];
+
+  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PasskeyDetailUserDisplayName()]
+      assertWithMatcher:grey_textFieldValue(@"new user display name")];
+
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+      performAction:grey_tap()];
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
@@ -2238,7 +2341,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
       performAction:grey_replaceText(kDefaultSite)];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -2314,7 +2417,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Fill form.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
       performAction:grey_replaceText(kDefaultSite)];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"new password")];
@@ -2379,7 +2482,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_replaceText([NSString
                         stringWithFormat:@"https://%@", kAddedDomain])];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"zconcrete username")];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -2420,7 +2523,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"password")];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(kDefaultUsername)];
 
   // Verify Save Button is not enabled.
@@ -2444,13 +2547,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:DuplicateCredentialViewPasswordButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"new username")];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2476,7 +2579,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   NSString* long_note = [@"" stringByPaddingToLength:1001
                                           withString:@"a"
                                      startingAtIndex:0];
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"username")];
 
   // Make sure that switching from invalid to valid note doesn't enable the save
@@ -2550,7 +2653,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
       performAction:grey_replaceText(@"https://www.example.com")];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -2570,7 +2673,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:DuplicateCredentialViewPasswordButton()]
       assertWithMatcher:grey_enabled()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
   // Wait until duplicated message disappearing animation is done.
@@ -2618,7 +2721,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
       performAction:grey_replaceText(@"password")];
 
-  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+  [[EarlGrey selectElementWithMatcher:CredentialDetailUsername()]
       performAction:grey_replaceText(kDefaultUsername)];
 
   [[EarlGrey selectElementWithMatcher:
