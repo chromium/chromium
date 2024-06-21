@@ -2344,8 +2344,9 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     shell()->LoadURL(non_coop_page);
     if (ShouldCreateNewHostForAllFrames()) {
       non_coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+    } else {
+      EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
     }
-    EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
 
     // A speculative RenderFrameHost will only be created if we always use a new
     // RenderFrameHost for all cross-document navigations.
