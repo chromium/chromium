@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<link rel="match" href="scroll-page-larger-than-screen-viewport-print-ref.html">
+<link rel="help" href="http://crbug.com/346597044">
+<style>
+  @page {
+    /* The size of the browser window is expected to be 800x600, so a height of
+       2000px should be way larger than that. */
+    size: 500px 2000px;
+  }
+</style>
+<div style="font-size:3em;">PASS</div>
+<div style="height:10000px;"></div>
+<script>
+  window.scroll(0, 10000);
+</script>
