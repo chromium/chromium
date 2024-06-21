@@ -479,6 +479,7 @@ test("gpu_unittests") {
     "command_buffer/service/raster_decoder_unittest_base.h",
     "command_buffer/service/raster_decoder_unittest_context_lost.cc",
     "command_buffer/service/renderbuffer_manager_unittest.cc",
+    "command_buffer/service/retaining_one_shot_timer_holder_unittest.cc",
     "command_buffer/service/scheduler_dfs_unittest.cc",
     "command_buffer/service/scheduler_unittest.cc",
     "command_buffer/service/service_discardable_manager_unittest.cc",

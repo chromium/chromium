@@ -48,6 +48,8 @@ target(link_target_type, "service_sources") {
     "gpu_switches.h",
     "memory_tracking.cc",
     "memory_tracking.h",
+    "retaining_one_shot_timer_holder.cc",
+    "retaining_one_shot_timer_holder.h",
     "scheduler.cc",
     "scheduler.h",
     "scheduler_dfs.cc",
