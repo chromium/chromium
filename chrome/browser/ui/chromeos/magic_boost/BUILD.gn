@@ -23,6 +23,7 @@ source_set("magic_boost") {
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/components/magic_boost/public/cpp:cpp",
     "//chromeos/crosapi/mojom",
+    "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//ui/color",
     "//ui/display",

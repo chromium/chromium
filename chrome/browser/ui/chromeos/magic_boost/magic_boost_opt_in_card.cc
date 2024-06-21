@@ -6,12 +6,12 @@
 
 #include <string>
 
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -31,10 +31,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace chromeos {
 
@@ -64,18 +60,6 @@ constexpr int kBetweenButtonsSpacing = 8;
 constexpr int kBetweenImageAndTextSpacing = 16;
 constexpr int kBetweenContentsAndButtonsSpacing = 16;
 constexpr int kBetweenLabelsSpacing = 4;
-
-// Placeholder strings
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const std::u16string kPlaceholderTitleText = u"Title text";
-const std::u16string kPlaceholderBodyText =
-    u"Body text that is multi-line which means it can span from one line to up "
-    u"to three lines for this case";
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-// Content strings
-const std::u16string kSecondaryButtonText = u"No thanks";
-const std::u16string kPrimaryButtonText = u"Try it";
 
 // Font lists
 const gfx::FontList kBodyTextFontList =
@@ -166,13 +150,10 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
                                        /*adjust_height_for_width=*/true))
           .AddChildren(
               views::Builder<views::Label>()
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                   .SetText(l10n_util::GetStringUTF16(
-                      include_orca ? IDS_MAGIC_BOOST_OPT_IN_CARD_TITLE
-                                   : IDS_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE))
-#else
-                  .SetText(kPlaceholderTitleText)
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                      include_orca
+                          ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE
+                          : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetEnabledColorId(ui::kColorSysOnSurface)
                   .SetAutoColorReadabilityEnabled(false)
@@ -181,13 +162,10 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
                   .SetMultiLine(true)
                   .SetMaxLines(kTitleLabelMaxLines),
               views::Builder<views::Label>()
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
                   .SetText(l10n_util::GetStringUTF16(
-                      include_orca ? IDS_MAGIC_BOOST_OPT_IN_CARD_BODY
-                                   : IDS_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY))
-#else
-                  .SetText(kPlaceholderBodyText)
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                      include_orca
+                          ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY
+                          : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY))
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetEnabledColorId(ui::kColorSysOnSurface)
                   .SetAutoColorReadabilityEnabled(false)
@@ -198,6 +176,10 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
           .Build());
 
   // Create buttons container that holds two buttons.
+  std::u16string decline_button_text =
+      l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_DECLINE_BUTTON);
+  std::u16string accept_button_text =
+      l10n_util::GetStringUTF16(IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_ACCEPT_BUTTON);
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
@@ -209,16 +191,16 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
           .AddChildren(views::Builder<views::MdTextButton>()
                            .CopyAddressTo(&secondary_button_)
                            .SetID(magic_boost::ViewId::OptInCardSecondaryButton)
-                           .SetText(kSecondaryButtonText)
-                           .SetAccessibleName(kSecondaryButtonText)
+                           .SetText(decline_button_text)
+                           .SetAccessibleName(decline_button_text)
                            .SetStyle(ui::ButtonStyle::kText)
                            .SetCallback(base::BindRepeating(
                                &MagicBoostOptInCard::OnSecondaryButtonPressed,
                                weak_ptr_factory_.GetWeakPtr())),
                        views::Builder<views::MdTextButton>()
                            .SetID(magic_boost::ViewId::OptInCardPrimaryButton)
-                           .SetText(kPrimaryButtonText)
-                           .SetAccessibleName(kPrimaryButtonText)
+                           .SetText(accept_button_text)
+                           .SetAccessibleName(accept_button_text)
                            .SetStyle(ui::ButtonStyle::kProminent)
                            .SetCallback(base::BindRepeating(
                                &MagicBoostOptInCard::OnPrimaryButtonPressed,

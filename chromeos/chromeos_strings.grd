@@ -408,6 +408,27 @@
       <message name="IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME" desc="Accessible name of the badge to indicate that it is an experimental feature." translateable="false">
         Send button
       </message>
+
+      <!-- Magic Boost -->
+      <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE" desc="Text shown as the title of the Magic Boost opt-in card view.">
+        Use Google AI to get help reading and writing
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY" desc="Text shown as the Magic Boost opt-in card view's body.">
+        Write with more confidence, summarize content, get definitions, and more
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE" desc="Text shown as the title of the Magic Boost opt-in card view when `include_orca` is false">
+        Use Google AI to be more productive
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY" desc="Text shown as the body of the Magic Boost opt-in card view when `include_orca` is false">
+        Summarize content, get definitions, and more
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_DECLINE_BUTTON" desc="Text shown for the secondary button of the Magic Boost opt-in card">
+        No thanks
+      </message>
+      <message name="IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_ACCEPT_BUTTON" desc="Text shown for the secondary button of the Magic Boost opt-in card">
+        Try it
+      </message>
+
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split
