@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodSubtype;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -413,7 +414,7 @@ public class UiUtils {
     /**
      * @see android.view.Window#setStatusBarColor(int color).
      */
-    public static void setStatusBarColor(Window window, int statusBarColor) {
+    public static void setStatusBarColor(Window window, @ColorInt int statusBarColor) {
         if (0
                 == (window.getAttributes().flags
                         & WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)) {
