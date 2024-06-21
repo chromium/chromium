@@ -596,10 +596,22 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       "Compose.Server.Session.EventCounts",
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms().ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+  histograms().ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 0);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kCreateClicked, 1);
@@ -714,6 +726,25 @@ TEST_F(ChromeComposeClientTest, TestComposeServerAndOnDeviceResponses) {
   histograms().ExpectUniqueSample("Compose.OnDevice.Request.Reason",
                                   compose::ComposeRequestReason::kRetryRequest,
                                   1);
+  // Check that only the location agnostic metrics are recorded.
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 0);
+  histograms().ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 0);
+  histograms().ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 0);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeOnDeviceSessionHistograms) {
@@ -748,6 +779,24 @@ TEST_F(ChromeComposeClientTest, TestComposeOnDeviceSessionHistograms) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   histograms().ExpectUniqueSample(
       "Compose.OnDevice.Session.DialogShownCount.Accepted", 1, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 0);
+  histograms().ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
+  histograms().ExpectBucketCount(
+      "Compose.Server.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 0);
+  histograms().ExpectBucketCount(
+      "Compose.OnDevice.Session.EventCounts",
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
@@ -759,6 +808,12 @@ TEST_F(ChromeComposeClientTest, TestComposeEmptySession) {
 
   histograms().ExpectUniqueSample("Compose.Session.EvalLocation",
                                   compose::SessionEvalLocation::kNone, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeShowContextMenu) {
@@ -837,6 +892,13 @@ TEST_F(ChromeComposeClientTest, TestComposeShowContextMenuAndDialog) {
               ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
           testing::Pair(
               ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
+
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kComposeDialogOpened, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
@@ -1536,6 +1598,26 @@ TEST_F(ChromeComposeClientTest, TestComposeGenericServerError) {
       quality_result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
           ->session_id()
           .low());
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kCreateClicked, 1},
+          {compose::ComposeSessionEventTypes::kFailedRequest, 1},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeSetTriggeredFromModifierOnError) {
@@ -1848,7 +1930,7 @@ TEST_F(ChromeComposeClientTest, TestOpenDialogWithSelectedText) {
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kStartedWithSelection, 1);
@@ -1879,7 +1961,7 @@ TEST_F(ChromeComposeClientTest,
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kStartedWithSelection, 1);
@@ -2169,7 +2251,7 @@ TEST_F(ChromeComposeClientTest, TestComposeTwiceThenUpdateWebUIStateThenUndo) {
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kUndoClicked, 1);
@@ -2465,8 +2547,34 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
   histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
 
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 0},
+          {compose::ComposeSessionEventTypes::kCreateClicked, 1},
+          {compose::ComposeSessionEventTypes::kSuccessfulRequest, 1},
+          {compose::ComposeSessionEventTypes::kUpdateClicked, 1},
+          {compose::ComposeSessionEventTypes::kUndoClicked, 1},
+          {compose::ComposeSessionEventTypes::kAnyModifierUsed, 0},
+          {compose::ComposeSessionEventTypes::kFailedRequest, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
+
   // No FRE related close reasons should have been recorded.
   histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
+
+  // No MSBB related close reasons should have been recorded.
+  histograms().ExpectTotalCount(compose::kComposeMSBBSessionCloseReason, 0);
 }
 
 TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
@@ -2497,6 +2605,26 @@ TEST_F(ChromeComposeClientTest, CloseButtonMSBBHistogramTest) {
   histograms().ExpectTotalCount(
       compose::kComposeSessionDuration + std::string(".Inserted"), 0);
   histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 0},
+          {compose::ComposeSessionEventTypes::kFREShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, 0);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -2533,25 +2661,27 @@ TEST_F(ChromeComposeClientTest,
   // No FRE related close reasons should have been recorded.
   histograms().ExpectTotalCount(compose::kComposeFirstRunSessionCloseReason, 0);
 
-  // Check Compose Session Event Counts
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
-  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
-                                 compose::ComposeSessionEventTypes::kFREShown,
-                                 0);
-  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
-                                 compose::ComposeSessionEventTypes::kMSBBShown,
-                                 1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kMSBBEnabled, 1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kInsertClicked, 0);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kCloseClicked, 1);
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 0},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 0},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 1},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 1},
+          {compose::ComposeSessionEventTypes::kInsertClicked, 0},
+          {compose::ComposeSessionEventTypes::kCloseClicked, 1},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, 0);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 }
 
 TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
@@ -2579,6 +2709,26 @@ TEST_F(ChromeComposeClientTest, FirstRunCloseDialogHistogramTest) {
       compose::kComposeSessionDuration + std::string(".Ignored"), 0);
   histograms().ExpectTotalCount("Compose.Server.Session.Duration.Ignored", 0);
   histograms().ExpectUniqueSample(compose::kComposeSessionOverOneDay, 0, 1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 0},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 0},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, 0);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 
   // Show the FRE dialog and end the session by re-opening with selection.
   ShowDialogAndBindMojo();
@@ -2703,6 +2853,26 @@ TEST_F(ChromeComposeClientTest, FirstRunCompletedHistogramTest) {
       compose::kComposeSessionDialogShownCount + std::string(".Ignored"),
       1,  // The dialog was only shown once after having proceeded past FRE.
       1);
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 1},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, 0);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -2720,22 +2890,27 @@ TEST_F(ChromeComposeClientTest,
       compose::ComposeFreOrMsbbSessionCloseReason::kAckedOrAcceptedWithInsert,
       1);
 
-  // Check Compose Session Event Counts.
-  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
-                                 compose::ComposeSessionEventTypes::kFREShown,
-                                 1);
-  histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
-                                 compose::ComposeSessionEventTypes::kMSBBShown,
-                                 0);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kStartedWithSelection, 0);
-  histograms().ExpectBucketCount(
-      compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kInsertClicked, 1);
+  // Check the expected session event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kFREAccepted, 1},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kMSBBEnabled, 0},
+          {compose::ComposeSessionEventTypes::kStartedWithSelection, 0},
+          {compose::ComposeSessionEventTypes::kInsertClicked, 1},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, 0);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 }
 
 TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
@@ -2747,6 +2922,30 @@ TEST_F(ChromeComposeClientTest, CompleteFirstRunTest) {
   client().CompleteFirstRun();
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kPrefHasCompletedComposeFRE));
+
+  // Make sure the async calls complete before naviagating away.
+  FlushMojo();
+  // Navigate page away to upload session close metrics.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check the expected event count metrics.
+  std::vector<std::pair<compose::ComposeSessionEventTypes, int>> event_counts =
+      {
+          {compose::ComposeSessionEventTypes::kComposeDialogOpened, 1},
+          {compose::ComposeSessionEventTypes::kMainDialogShown, 1},
+          {compose::ComposeSessionEventTypes::kFREShown, 1},
+          {compose::ComposeSessionEventTypes::kMSBBShown, 0},
+          {compose::ComposeSessionEventTypes::kCreateClicked, 0},
+      };
+
+  for (auto [event_type, count] : event_counts) {
+    histograms().ExpectBucketCount(compose::kComposeSessionEventCounts,
+                                   event_type, count);
+    histograms().ExpectBucketCount("Compose.Server.Session.EventCounts",
+                                   event_type, 0);
+    histograms().ExpectBucketCount("Compose.OnDevice.Session.EventCounts",
+                                   event_type, 0);
+  }
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -3763,7 +3962,7 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kRetryClicked, 1);
@@ -3871,7 +4070,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kFormalClicked, 1);
@@ -3988,7 +4187,7 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   // Check Compose Session Event Counts.
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
-      compose::ComposeSessionEventTypes::kDialogShown, 1);
+      compose::ComposeSessionEventTypes::kMainDialogShown, 1);
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kFormalClicked, 0);

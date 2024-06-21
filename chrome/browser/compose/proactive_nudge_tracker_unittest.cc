@@ -688,7 +688,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, SuggestionGenerated) {
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
       TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
-  events.compose_count = 1;
+  events.compose_requests_count = 1;
   nudge_tracker().ComposeSessionCompleted(
       form_field_data.global_id(),
       ComposeSessionCloseReason::kCloseButtonPressed, events);
@@ -711,7 +711,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, AcceptedSuggestion) {
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
       TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
-  events.compose_count = 1;
+  events.compose_requests_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
       form_field_data.global_id(), ComposeSessionCloseReason::kInsertedResponse,
@@ -738,7 +738,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest,
                                           ComposeSessionCloseReason::kAbandoned,
                                           events);
 
-  events.compose_count = 1;
+  events.compose_requests_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
       form_field_data.global_id(), ComposeSessionCloseReason::kInsertedResponse,
@@ -759,7 +759,7 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, TwoSessions) {
   TestFuture<segmentation_platform::TrainingLabels>& training_labels2 =
       TriggerNudgeForField(1, CreateTestFormFieldData(kFieldRendererId2));
   compose::ComposeSessionEvents events;
-  events.compose_count = 1;
+  events.compose_requests_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
       form_field_data.global_id(), ComposeSessionCloseReason::kInsertedResponse,
