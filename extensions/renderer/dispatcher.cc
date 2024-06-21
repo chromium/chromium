@@ -122,18 +122,6 @@ namespace {
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
-void LogOnException(const std::string& from, const v8::TryCatch& try_catch) {
-  // Try to grab the v8 error message. In some cases, this may be empty.
-  // This is called synchronously from a script evaluation failing, so the
-  // current isolate is correct.
-  std::string v8_error_message =
-      try_catch.Message().IsEmpty()
-          ? "<unknown error>"
-          : gin::V8ToString(v8::Isolate::GetCurrent(),
-                            try_catch.Message()->Get());
-  LOG(ERROR) << "Unexpected error in \"" << from << "\": " << v8_error_message;
-}
-
 // Calls a method |method_name| in a module |module_name| belonging to the
 // module system from |context|. Intended as a callback target from
 // ScriptContextSet::ForEach.
@@ -479,8 +467,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // - Hold onto the v8::Context and create the ScriptContext and install
     //   our bindings when this extension is loaded.
     // - Deal with there being an extension ID (script_url.host()) but no
-    //   extension associated with it, then document that getBackgroundClient
-    //   may fail if the extension hasn't loaded yet.
+    //   extension associated with it.
     //
     // The former is safer, but is unfriendly to caching (e.g. session restore).
     // It seems to contradict the service worker idiom.
@@ -556,56 +543,6 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   }
   WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
-
-  v8::Isolate* isolate = context->isolate();
-
-  // Fetch the source code for service_worker_bindings.js.
-  std::string_view script_resource =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_SERVICE_WORKER_BINDINGS_JS);
-  v8::Local<v8::String> script =
-      v8::String::NewExternalOneByte(
-          isolate, new StaticV8ExternalOneByteStringResource(script_resource))
-          .ToLocalChecked();
-
-  // Run service_worker.js to get the main function.
-  v8::Local<v8::Function> main_function;
-  {
-    // This *should* always succeed and always be a function (because the
-    // script is included as part of Chrome). However, it may not be in the
-    // case of e.g. binary corruption, or if certain JS hooks ran before the
-    // script (though that should be rare, since this is running right after
-    // the context is created).
-    // https://crbug.com/1260773 and https://crbug.com/41487802.
-    v8::Local<v8::Value> result = context->RunScript(
-        v8_helpers::ToV8StringUnsafe(isolate, "service_worker"), script,
-        base::BindOnce(&LogOnException, "service worker internal script"));
-    if (!result->IsFunction()) {
-      LOG(ERROR) << "Unexpected result from service worker internal script.";
-      return;
-    }
-    main_function = result.As<v8::Function>();
-  }
-
-  // Expose CHECK/DCHECK/NOTREACHED to the main function with a
-  // LoggingNativeHandler. Admire the neat base::Bind trick to both Invalidate
-  // and delete the native handler.
-  LoggingNativeHandler* logging = new LoggingNativeHandler(context);
-  logging->Initialize();
-  context->AddInvalidationObserver(
-      base::BindOnce(&NativeHandler::Invalidate, base::Owned(logging)));
-
-  // Execute the main function with its dependencies passed in as arguments.
-  v8::Local<v8::Value> args[] = {
-      // The extension's background URL.
-      v8_helpers::ToV8StringUnsafe(
-          isolate, BackgroundInfo::GetBackgroundURL(extension).spec()),
-      // The wake-event-page native function.
-      WakeEventPage::GetForContext(context),
-      // The logging module.
-      logging->NewInstance(),
-  };
-  context->SafeCallFunction(main_function, std::size(args), args);
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(

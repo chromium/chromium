@@ -4500,18 +4500,6 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorker.GetBackgroundClientCallManifestVersion"
-    enum="ManifestVersion" expires_after="2024-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
-  <summary>
-    Emitted whenever an extension service worker context calls
-    runtime.getBackgroundClient(). Emits the manifest version of the extension
-    that called the API.
-  </summary>
-</histogram>
-
-<histogram
     name="Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker3"
     enum="Boolean" expires_after="2024-09-15">
 <!-- expires-never: Monitors core extension system health. -->
