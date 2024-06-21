@@ -2116,6 +2116,14 @@ _CONFIG = [
             _DISALLOW_CONTINUATION_DATA_[0],
         ]
     },
+     {
+        'paths': [
+            'third_party/blink/public/common/permissions_policy/permissions_policy.h',
+        ],
+        'allowed': [
+            'url::Origin',
+        ]
+    },
 ]
 
 
