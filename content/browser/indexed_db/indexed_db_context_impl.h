@@ -369,6 +369,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   bool force_single_thread_ = false;
 
+  // If recording begins on a bucket ID that doesn't currently have a context,
+  // add it to a pending set and actually begin once the context is created.
+  std::set<storage::BucketId> pending_bucket_recording_;
   std::vector<storage::mojom::IdbBucketMetadataPtr> metadata_record_buffer_;
   // When `Shutdown()` was called, or null if it's not been called. Used for
   // UMA.

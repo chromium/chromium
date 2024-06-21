@@ -152,12 +152,16 @@ class BucketElement extends HTMLElement {
           .startMetadataRecording(this.idbBucketId)
           .then(this.onLoadComplete.bind(this))
           .catch(errorMsg => console.error(errorMsg));
+      if (!this.getNode('.snapshots').hidden) {
+        this.getNode('.snapshots').hidden = true;
+        this.setRecordingSnapshot(null);
+      }
     });
     this.getNode(`.control.stop-record`).addEventListener('click', () => {
       // Show loading
       this.progressNode.style.display = 'inline';
-      this.getNode(`.control.start-record`)!.hidden = true;
-      this.getNode(`.control.stop-record`)!.hidden = false;
+      this.getNode(`.control.start-record`)!.hidden = false;
+      this.getNode(`.control.stop-record`)!.hidden = true;
 
       new IdbInternalsRemote()
           .stopMetadataRecording(this.idbBucketId)
@@ -165,15 +169,15 @@ class BucketElement extends HTMLElement {
           .catch(errorMsg => console.error(errorMsg));
     });
 
-    this.getNode('.series-scrubber input.slider')
+    this.getNode('.snapshots input.slider')
         .addEventListener('input', (event: Event) => {
           const input = event.target as HTMLInputElement;
           this.setRecordingSnapshot(parseInt(input.value));
         });
-    this.getNode('.series-scrubber .prev').addEventListener('click', () => {
+    this.getNode('.snapshots .prev').addEventListener('click', () => {
       this.setRecordingSnapshot((this.seriesCurrentSnapshotIndex || 0) - 1);
     });
-    this.getNode('.series-scrubber .next').addEventListener('click', () => {
+    this.getNode('.snapshots .next').addEventListener('click', () => {
       this.setRecordingSnapshot((this.seriesCurrentSnapshotIndex || 0) + 1);
     });
 
@@ -181,23 +185,24 @@ class BucketElement extends HTMLElement {
     this.connectionCountNode = this.getNode('.connection-count');
   }
 
-  private setRecordingSnapshot(idx: number) {
-    if (!this.seriesData || (idx < 0 || idx > this.seriesData.length - 1)) {
+  private setRecordingSnapshot(idx: number | null) {
+    this.getNode('.database-view').textContent = '';
+    if (!this.seriesData || idx === null ||
+      (idx < 0 || idx > this.seriesData.length - 1)) {
       return;
     }
     const slider =
-        this.getNode<HTMLInputElement>('.series-scrubber input.slider');
+      this.getNode<HTMLInputElement>('.snapshots input.slider');
     this.seriesCurrentSnapshotIndex = idx;
     const snapshot = this.seriesData[this.seriesCurrentSnapshotIndex];
     slider.value = idx.toString();
     slider.max = (this.seriesData.length - 1).toString();
-    this.getNode('.series-scrubber .current-snapshot')!.textContent =
+    this.getNode('.snapshots .current-snapshot')!.textContent =
         slider.value;
-    this.getNode('.series-scrubber .total-snapshots')!.textContent = slider.max;
-    this.getNode('.series-scrubber .snapshot-delta')!.textContent =
+    this.getNode('.snapshots .total-snapshots')!.textContent = slider.max;
+    this.getNode('.snapshots .snapshot-delta')!.textContent =
         `+${snapshot?.deltaRecordingStartMs}ms`;
 
-    this.getNode('.database-view').textContent = '';
     for (const db of snapshot?.databases || []) {
       const dbView = document.createElement('indexeddb-database');
       const dbElement = this.getNode('.database-view').appendChild(dbView) as
@@ -219,9 +224,17 @@ class BucketElement extends HTMLElement {
 
   private onMetadataRecordingReady(metadata: IdbBucketMetadata[]) {
     this.seriesData = metadata;
-    this.setRecordingSnapshot(0);
-    this.getNode('.series-scrubber').hidden = false;
     this.onLoadComplete();
+    this.getNode('.snapshots').hidden = false;
+    this.getNode('.snapshots .controls').hidden = metadata.length === 0;
+    if (metadata.length === 0) {
+      this.setRecordingSnapshot(null);
+      this.getNode('.snapshots .message').innerText =
+          'No snapshots were captured.';
+      return;
+    }
+    this.getNode('.snapshots .message').innerText = '';
+    this.setRecordingSnapshot(0);
   }
 }
 

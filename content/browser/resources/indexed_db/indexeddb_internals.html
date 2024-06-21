@@ -69,14 +69,19 @@
                 <a class="control" href="https://crbug.com/829141" target="_blank">?</a>
                 <span class="download-status" style="display: none">Loading...</span>
               </div>
-              <div class="series-scrubber" hidden>
-                <button class="prev">←</button>
-                <input type="range" min="0" max="100" value="50" class="slider">
-                <button class="next">→</button>
-                <span>Snapshot:
-                  <span class="current-snapshot"></span> /
-                  <span class="total-snapshots"></span>
-                  (<span class="snapshot-delta"></span>)</span>
+
+              <div class="snapshots" hidden>
+                <div class="message"></div>
+                <div class="controls">
+                  <button class="prev">←</button>
+                  <input type="range" min="0" max="100" value="50" class="slider">
+                  <button class="next">→</button>
+                  <span>Snapshot:
+                    <span class="current-snapshot"></span> /
+                    <span class="total-snapshots"></span>
+                    (<span class="snapshot-delta"></span>)
+                    </span>
+                </div>
               </div>
               <div class="database-view">
                 <indexeddb-database class="metadata-list-item" jsselect="$this.databases" jsvalues=".data:$this;">

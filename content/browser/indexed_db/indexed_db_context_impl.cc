@@ -384,6 +384,7 @@ void IndexedDBContextImpl::StartMetadataRecording(
     iter->second.AsyncCall(&IndexedDBBucketContext::StartMetadataRecording)
         .Then(std::move(callback));
   } else {
+    pending_bucket_recording_.insert(bucket_id);
     std::move(callback).Run();
   }
 }
@@ -391,6 +392,7 @@ void IndexedDBContextImpl::StartMetadataRecording(
 void IndexedDBContextImpl::StopMetadataRecording(
     storage::BucketId bucket_id,
     StopMetadataRecordingCallback callback) {
+  pending_bucket_recording_.erase(bucket_id);
   auto iter = bucket_contexts_.find(bucket_id);
   if (iter != bucket_contexts_.end()) {
     iter->second.AsyncCall(&IndexedDBBucketContext::StopMetadataRecording)
@@ -1117,6 +1119,11 @@ void IndexedDBContextImpl::EnsureBucketContext(
         .AsyncCall(&IndexedDBBucketContext::BindMockFailureSingletonForTesting)
         .WithArgs(std::move(pending_failure_injector_));
   }
+  // Start metadata recording on the context if it was pending.
+  if (pending_bucket_recording_.erase(bucket_locator.id)) {
+    iter->second.AsyncCall(&IndexedDBBucketContext::StartMetadataRecording);
+  }
+
   bucket_set_.insert(bucket_locator);
 }
 
