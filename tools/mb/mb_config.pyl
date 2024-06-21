@@ -19,6 +19,7 @@
   'gn_args_locations_files': [
       '../../infra/config/generated/builders/gn_args_locations.json',
       '../../infra/config/generated/builders-dev/gn_args_locations.json',
+      '../../internal/infra/config/generated/builders/gn_args_locations.json',
   ],
 
   # This is a map of builder group names -> builder names -> config names
