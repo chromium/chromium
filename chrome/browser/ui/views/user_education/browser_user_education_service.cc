@@ -1072,6 +1072,17 @@ void MaybeRegisterChromeFeaturePromos(
                       FeaturePromoSpecification::AcceleratorInfo())
                       .SetBubbleArrow(HelpBubbleArrow::kBottomRight)));
   }
+
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHHistorySearchFeature,
+          kHistorySearchInputElementId, IDS_HISTORY_EMBEDDINGS_IPH_LABEL,
+          IDS_HISTORY_EMBEDDINGS_IPH_LABEL_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo(IDC_FIND))
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetInAnyContext(true)
+          .SetMetadata(127, "johntlee@chromium.org",
+                       "Triggered after user lands on chrome://history.")));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }
 
