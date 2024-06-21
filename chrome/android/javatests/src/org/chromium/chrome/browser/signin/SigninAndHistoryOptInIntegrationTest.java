@@ -303,7 +303,9 @@ public class SigninAndHistoryOptInIntegrationTest {
         // Press on the back button.
         Espresso.pressBack();
 
-        verifySigninCancelled();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     @Test
@@ -388,7 +390,9 @@ public class SigninAndHistoryOptInIntegrationTest {
         // Press on the back button.
         Espresso.pressBack();
 
-        verifySigninCancelled();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     @Test
@@ -407,7 +411,9 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         Espresso.pressBack();
 
-        verifySigninCancelled();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     @Test
@@ -418,7 +424,9 @@ public class SigninAndHistoryOptInIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.NONE);
 
-        verifySigninCancelled();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     @Test
@@ -436,7 +444,9 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         Espresso.pressBack();
 
-        verifySigninCancelled();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
@@ -452,6 +462,25 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         verifyNoAccountBottomSheetAndSignin();
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+    }
+
+    @Test
+    @MediumTest
+    public void testWithNoAccount_bottomSheetSignin_requiredHistorySync_cancelAddAccount() {
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
+
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.REQUIRED);
+
+        onViewWaiting(
+                allOf(
+                        withId(R.id.account_picker_continue_as_button),
+                        withParent(withId(R.id.account_picker_state_no_account)),
+                        isCompletelyDisplayed()));
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     // Enabling SEED_ACCOUNTS_REVAMP to avoid failure due to the deprecated seed account flow. See
@@ -474,16 +503,16 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithNoAccount_instantSignin_requiredHistorySync_cancelAddAccount() {
-        CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
-        mSigninTestRule.setResultForNextAddAccountFlow(
-                Activity.RESULT_CANCELED, accountInfo.getEmail());
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_CANCELED, null);
 
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        verifySigninCancelled();
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 
     private void launchActivity(
@@ -556,12 +585,5 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-    }
-
-    // Verifies that the activity finishes, no account is signed in, and history sync is disabled.
-    private void verifySigninCancelled() {
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
-        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
-        assertFalse(SyncTestUtil.isHistorySyncEnabled());
     }
 }

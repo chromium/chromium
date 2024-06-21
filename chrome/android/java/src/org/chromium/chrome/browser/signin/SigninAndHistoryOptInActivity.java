@@ -327,7 +327,9 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
                     if (data == null
                             || resultCode != Activity.RESULT_OK
                             || data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) == null) {
-                        onFlowComplete();
+                        if (mCoordinator != null) {
+                            mCoordinator.onAddAccountCanceled();
+                        }
                         return;
                     }
 

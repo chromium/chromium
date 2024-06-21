@@ -202,6 +202,21 @@ public class SigninAndHistoryOptInCoordinator
     }
 
     /**
+     * Called when an Google Play Services "add account" flow started at the activity level has
+     * finished without being completed.
+     */
+    public void onAddAccountCanceled() {
+        final boolean isBottomSheetShown = mAccountPickerCoordinator != null;
+        if (!isBottomSheetShown) {
+            // This should only happen if no bottom sheet was shown before the "add account" flow,
+            // meaning there was no account on the device and NoAccountSigninMode.ADD_ACCOUNT is
+            // used.
+            assert mNoAccountSigninMode == NoAccountSigninMode.ADD_ACCOUNT;
+            onFlowComplete();
+        }
+    }
+
+    /**
      * Called when an account is added via Google Play Services "add account" flow started at the
      * activity level.
      */
