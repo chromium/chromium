@@ -201,5 +201,13 @@ source_set("side_panel") {
     "//ui/gfx:color_utils",
     "//ui/gfx/geometry:geometry_skia",
     "//ui/webui",
+
+    # TODO(crbug.com/346711540,crbug.com/346699817,crbug.com/345645751):
+    # Use //chrome/browser/ui instead after fixing cyclic dependency.
+    "//chrome/browser/ui:webui_name_variants",
+    "//components/enterprise/buildflags",
+    "//components/paint_preview/buildflags",
+    "//components/segmentation_platform/public/proto",
+    "//components/webapps/common:mojo_bindings",
   ]
 }
