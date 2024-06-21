@@ -55,20 +55,7 @@ void HeadlessDevTooledBrowserTest::DevToolsTargetReady() {
   devtools_client_.AttachToWebContents(
       HeadlessWebContentsImpl::From(web_contents_)->web_contents());
 
-#if BUILDFLAG(IS_MAC)
-  base::Value::Dict params;
-  params.Set("width", 0);
-  params.Set("height", 0);
-  params.Set("deviceScaleFactor", 1);
-  params.Set("mobile", false);
-  devtools_client_.SendCommand(
-      "Emulation.setDeviceMetricsOverride", std::move(params),
-      base::BindOnce([](HeadlessDevTooledBrowserTest* self,
-                        base::Value::Dict params) { self->RunDevTooledTest(); },
-                     base::Unretained(this)));
-#else
   RunDevTooledTest();
-#endif
 }
 
 void HeadlessDevTooledBrowserTest::RenderProcessExited(
