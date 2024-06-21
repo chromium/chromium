@@ -171,7 +171,13 @@ fyi_reclient_staging_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
@@ -193,7 +199,13 @@ fyi_reclient_test_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
@@ -267,7 +279,14 @@ fyi_reclient_staging_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec", "minimal_symbols", "x64"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "mac",
+            "x64",
+        ],
     ),
     builderless = True,
     cores = None,
@@ -296,7 +315,14 @@ fyi_reclient_test_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec", "minimal_symbols"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "mac",
+            "arm64",
+        ],
     ),
     builderless = True,
     cores = None,
@@ -329,7 +355,14 @@ fyi_reclient_staging_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec", "minimal_symbols"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "win",
+            "x64",
+        ],
     ),
     builderless = True,
     cores = 32,
@@ -354,7 +387,14 @@ fyi_reclient_test_builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec", "minimal_symbols"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "win",
+            "x64",
+        ],
     ),
     builderless = True,
     cores = 32,
@@ -416,6 +456,7 @@ fyi_reclient_test_builder(
             "ozone_headless",
             "use_fake_dbus_clients",
             "also_build_lacros_chrome_for_architecture_amd64",
+            "x64",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -519,6 +560,7 @@ fyi_reclient_staging_builder(
             "release_builder",
             "remoteexec",
             "minimal_symbols",
+            "mac",
         ],
     ),
     builderless = True,
@@ -554,6 +596,7 @@ fyi_reclient_test_builder(
             "release_builder",
             "remoteexec",
             "minimal_symbols",
+            "mac",
         ],
     ),
     builderless = True,
@@ -572,10 +615,22 @@ ci.builder(
     executable = "recipe:reclient_reclient_comparison",
     gn_args = {
         "build1": gn_args.config(
-            configs = ["gpu_tests", "release_builder", "remoteexec"],
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "remoteexec",
+                "linux",
+                "x64",
+            ],
         ),
         "build2": gn_args.config(
-            configs = ["gpu_tests", "release_builder", "reclient_with_remoteexec_links"],
+            configs = [
+                "gpu_tests",
+                "release_builder",
+                "reclient_with_remoteexec_links",
+                "linux",
+                "x64",
+            ],
         ),
     },
     os = os.LINUX_DEFAULT,
@@ -605,10 +660,10 @@ ci.builder(
     executable = "recipe:swarming/deterministic_build",
     gn_args = {
         "local": gn_args.config(
-            configs = ["release_builder", "x86", "minimal_symbols"],
+            configs = ["release_builder", "x86", "minimal_symbols", "win"],
         ),
         "reclient": gn_args.config(
-            configs = ["release_builder", "remoteexec", "x86", "minimal_symbols"],
+            configs = ["release_builder", "remoteexec", "x86", "minimal_symbols", "win"],
         ),
     },
     builderless = True,
@@ -645,7 +700,14 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "release_builder", "remoteexec", "minimal_symbols"],
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "win",
+            "x64",
+        ],
     ),
     builderless = True,
     cores = 32,
@@ -687,7 +749,13 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["gpu_tests", "debug_builder", "remoteexec"],
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "remoteexec",
+            "linux",
+            "x64",
+        ],
     ),
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -718,10 +786,10 @@ ci.builder(
     executable = "recipe:reclient_reclient_comparison",
     gn_args = {
         "build1": gn_args.config(
-            configs = ["gpu_tests", "release_builder", "remoteexec"],
+            configs = ["gpu_tests", "release_builder", "remoteexec", "linux", "x64"],
         ),
         "build2": gn_args.config(
-            configs = ["gpu_tests", "release_builder", "remoteexec"],
+            configs = ["gpu_tests", "release_builder", "remoteexec", "linux", "x64"],
         ),
     },
     os = os.LINUX_DEFAULT,
@@ -749,10 +817,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     executable = "recipe:reclient_reclient_comparison",
     gn_args = {
         "build1": gn_args.config(
-            configs = ["gpu_tests", "release_builder", "remoteexec"],
+            configs = ["gpu_tests", "release_builder", "remoteexec", "linux", "x64"],
         ),
         "build2": gn_args.config(
-            configs = ["gpu_tests", "release_builder", "remoteexec"],
+            configs = ["gpu_tests", "release_builder", "remoteexec", "linux", "x64"],
         ),
     },
     cores = 16,
