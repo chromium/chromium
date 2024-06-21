@@ -74,7 +74,7 @@ public class AutofillRequestTest {
 
     private static TestViewStructure fillStructureForRequest(AutofillRequest request) {
         TestViewStructure structure = new TestViewStructure();
-        request.getForm().fillViewStructure(structure);
+        request.getForm().fillViewStructure(structure, (short) -1);
         return structure;
     }
 
@@ -320,5 +320,15 @@ public class AutofillRequestTest {
         valuesToFill.append(structure.getChild(0).getId() + 1, AutofillValue.forText("new text"));
 
         assertFalse(request.autofill(valuesToFill));
+    }
+
+    @Test
+    public void testFocusedField() {
+        AutofillRequest request = createSampleRequest();
+        TestViewStructure structure = new TestViewStructure();
+        request.getForm().fillViewStructure(structure, /* focusedIndex= */ (short) 1);
+
+        assertFalse(structure.getChild(0).getFocused());
+        assertTrue(structure.getChild(1).getFocused());
     }
 }

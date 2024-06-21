@@ -160,14 +160,17 @@ public class AutofillProvider {
         // We should have one of them available here, we start with AutofillRequest as it should be
         // available only if we started a session.
         FormData form;
+        short focusFieldIndex = -1;
         if (mRequest != null) {
             form = mRequest.getForm();
+            focusFieldIndex =
+                    mRequest.getFocusField() != null ? mRequest.getFocusField().fieldIndex : -1;
             mAutofillUMA.onVirtualStructureProvided();
         } else {
             form = mPrefillRequest.getForm();
             mStructureProvidedForPrefillRequest = true;
         }
-        form.fillViewStructure(structure);
+        form.fillViewStructure(structure, focusFieldIndex);
         if (AutofillManagerWrapper.isLoggable()) {
             AutofillManagerWrapper.log(
                     "onProvideAutoFillVirtualStructure fields:" + structure.getChildCount());
