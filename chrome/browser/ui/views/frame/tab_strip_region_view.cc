@@ -443,10 +443,6 @@ void TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(
 #endif
 }
 
-void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTabList;
-}
-
 void TabStripRegionView::UpdateButtonBorders() {
   const int extra_vertical_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
                                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -

@@ -80,7 +80,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // views::AccessiblePaneView:
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetDefaultFocusableChild() override;
 
   // Reports to UMA if a HTCAPTION hit test was in the grab handle or other
