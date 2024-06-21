@@ -279,9 +279,10 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="Pointer Lock"/>
   <int value="107" label="Revoked Abusive Notification Permissions"/>
   <int value="108" label="Tracking Protection"/>
+  <int value="109" label="Display Media System Audio"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/content_settings/core/common/content_settings_types.mojom:ContentSettingsType) -->
+<!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_types.mojom:ContentSettingsType) -->
 
 <enum name="SafetyHubSurfaces">
   <int value="0" label="Three-dot menu"/>

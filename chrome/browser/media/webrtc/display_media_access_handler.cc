@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bad_message.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/desktop_capture_devices_util.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
@@ -30,6 +31,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -84,6 +86,7 @@ bool DisplayMediaAccessHandler::SupportsStreamType(
     const blink::mojom::MediaStreamType stream_type,
     const extensions::Extension* extension) {
   return stream_type == blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+         stream_type == blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE ||
          stream_type ==
              blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB ||
          stream_type ==
@@ -206,27 +209,41 @@ void DisplayMediaAccessHandler::HandleRequest(
     }
   }
 
-  std::unique_ptr<DesktopMediaPicker> picker =
-      picker_factory_->CreatePicker(&request);
-  if (!picker) {
-    std::move(callback).Run(
-        blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
-    return;
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(
+          web_contents->GetBrowserContext());
+  CHECK(content_settings);
+  const GURL& origin_url = web_contents->GetLastCommittedURL();
+  ContentSetting content_setting_value = content_settings->GetContentSetting(
+      origin_url, origin_url, ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO);
+  if (content_setting_value == ContentSetting::CONTENT_SETTING_BLOCK) {
+    // Except for the case when DISPLAY_MEDIA_SYSTEM_AUDIO is allowed, all
+    // request should contain video stream.
+    if (request.video_type == blink::mojom::MediaStreamType::NO_SERVICE) {
+      std::move(callback).Run(
+          blink::mojom::StreamDevicesSet(),
+          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+          /*ui=*/nullptr);
+      return;
+    }
+    ShowMediaSelectionDialog(web_contents, request, std::move(callback));
+  } else if (content_setting_value == ContentSetting::CONTENT_SETTING_ALLOW) {
+    if (request.video_type != blink::mojom::MediaStreamType::NO_SERVICE) {
+      ShowMediaSelectionDialog(web_contents, request, std::move(callback));
+      return;
+    }
+    // To bypass the media selection dialog, the system audio must be included.
+    if (request.exclude_system_audio) {
+      std::move(callback).Run(
+          blink::mojom::StreamDevicesSet(),
+          blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+          /*ui=*/nullptr);
+      return;
+    }
+    BypassMediaSelectionDialog(web_contents, request, std::move(callback));
+  } else {
+    NOTREACHED_NORETURN();
   }
-
-  // Ensure we are observing the deletion of |web_contents|.
-  web_contents_collection_.StartObserving(web_contents);
-
-  RequestsQueue& queue = pending_requests_[web_contents];
-
-  queue.push_back(std::make_unique<PendingAccessRequest>(
-      std::move(picker), request, std::move(callback),
-      GetApplicationTitle(web_contents), display_notification_,
-      /*is_allowlisted_extension=*/false));
-  // If this is the only request then pop picker UI.
-  if (queue.size() == 1)
-    ProcessQueuedAccessRequest(queue, web_contents);
 }
 
 void DisplayMediaAccessHandler::UpdateMediaRequestState(
@@ -252,6 +269,59 @@ void DisplayMediaAccessHandler::UpdateMediaRequestState(
   // This method only gets called with the above checked states when all
   // requests are to be canceled. Therefore, we don't need to process the
   // next queued request.
+}
+
+void DisplayMediaAccessHandler::ShowMediaSelectionDialog(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  std::unique_ptr<DesktopMediaPicker> picker =
+      picker_factory_->CreatePicker(&request);
+  if (!picker) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
+    return;
+  }
+
+  // Ensure we are observing the deletion of |web_contents|.
+  web_contents_collection_.StartObserving(web_contents);
+
+  RequestsQueue& queue = pending_requests_[web_contents];
+
+  queue.push_back(std::make_unique<PendingAccessRequest>(
+      std::move(picker), request, std::move(callback),
+      GetApplicationTitle(web_contents), display_notification_,
+      /*is_allowlisted_extension=*/false));
+  // If this is the only request then pop picker UI.
+  if (queue.size() == 1) {
+    ProcessQueuedAccessRequest(queue, web_contents);
+  }
+}
+
+void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  CHECK_EQ(web_contents->GetLastCommittedURL().scheme(),
+           content::kChromeUIScheme);
+
+  content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
+                                   content::DesktopMediaID::kNullId,
+                                   /*audio_share=*/true);
+  blink::mojom::StreamDevicesSet stream_devices_set;
+  stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
+  blink::mojom::StreamDevices& stream_devices =
+      *stream_devices_set.stream_devices[0];
+  std::unique_ptr<content::MediaStreamUI> ui = GetDevicesForDesktopCapture(
+      request, web_contents, media_id, media_id.audio_share,
+      request.disable_local_echo, request.suppress_local_audio_playback,
+      /*display_notification=*/false, GetApplicationTitle(web_contents),
+      request.captured_surface_control_active, stream_devices);
+  std::move(callback).Run(stream_devices_set,
+                          blink::mojom::MediaStreamRequestResult::OK,
+                          std::move(ui));
 }
 
 void DisplayMediaAccessHandler::ProcessChangeSourceRequest(

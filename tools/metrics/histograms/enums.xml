@@ -3004,6 +3004,8 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="DETECT_IMPORTANT_CONTENT"/>
 </enum>
 
+<!-- LINT.IfChange(ContentType) -->
+
 <enum name="ContentType">
   <int value="-1" label="Invalid setting"/>
   <int value="1" label="Images setting"/>
@@ -3127,7 +3129,10 @@ Called by update_net_error_codes.py.-->
   <int value="122" label="Abusive notification site permissions"/>
   <int value="123" label="Tracking Protection"/>
   <int value="124" label="Top-level 3PCD Origin Trial"/>
+  <int value="125" label="Display Media System Audio"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->
 
 <enum name="ContextMenuOptionAndroid">
   <summary>The item selected from a context menu on Android.</summary>

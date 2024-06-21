@@ -142,13 +142,13 @@ void PromiseResolverCallbacks<MediaStream>::OnSuccessImpl<MediaStream>(
   if (on_success_follow_up_) {
     // Only getDisplayMedia() calls set |on_success_follow_up_|.
     // Successful invocations of getDisplayMedia() always have exactly
-    // one video track.
+    // one video track, except for the case when the permission
+    // `DISPLAY_MEDIA_SYSTEM_AUDIO` is set, which will lead to 0 video track.
     //
     // Extension API calls that are followed by a getUserMedia() call with
     // chromeMediaSourceId are treated liked getDisplayMedia() calls.
     MediaStreamTrackVector video_tracks = stream->getVideoTracks();
-    DCHECK_EQ(video_tracks.size(), 1u);
-    if (capture_controller) {
+    if (capture_controller && video_tracks.size() > 0) {
       capture_controller->SetVideoTrack(video_tracks[0], stream->id().Utf8());
     }
   }

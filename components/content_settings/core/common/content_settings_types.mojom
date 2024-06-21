@@ -429,5 +429,13 @@ enum ContentSettingsType {
   // BLOCK: Protections enabled. This is the default state.
   // ALLOW: Protections disabled.
   TRACKING_PROTECTION,
+
+  // With this permission, when the application calls `getDisplayMedia()`, a
+  // system audio track can be returned without showing the display media
+  // selection picker. The application can explicitly specify
+  // `systemAudio: 'exclude'` or `video: true` to still show the display media
+  // selection picker if needed. Please note that the setting only works for
+  // WebUI.
+  DISPLAY_MEDIA_SYSTEM_AUDIO,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SafetyHubPermissionType)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SafetyHubPermissionType)

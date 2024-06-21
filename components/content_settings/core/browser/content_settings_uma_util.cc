@@ -16,6 +16,7 @@ namespace {
 // specified in the ContentType enum in enums.xml. Since these values are
 // used for histograms, please do not reuse the same value for a different
 // content setting. Always append to the end and increment.
+// LINT.IfChange(kHistogramValue)
 constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
                                                         int>({
     // Cookies was previously logged to bucket 0, which is not a valid bucket
@@ -139,10 +140,12 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, 122},
     {ContentSettingsType::TRACKING_PROTECTION, 123},
     {ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, 124},
+    {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, 125},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
 });
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ContentType)
 
 constexpr int kkHistogramValueMax =
     base::ranges::max_element(kHistogramValue,

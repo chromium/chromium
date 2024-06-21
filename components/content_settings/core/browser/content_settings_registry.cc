@@ -779,6 +779,19 @@ void ContentSettingsRegistry::Init() {
           WebsiteSettingsRegistry::PLATFORM_ANDROID,
       ContentSettingsInfo::INHERIT_IN_INCOGNITO,
       ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+
+  // This setting is only available to WebUI pages and should be set through
+  // WebUIAllowlist.
+  Register(ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO,
+           "display-media-system-audio", CONTENT_SETTING_BLOCK,
+           WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
+           WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP,
+           ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,
+           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 }
 
 void ContentSettingsRegistry::Register(
