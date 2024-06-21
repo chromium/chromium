@@ -106,7 +106,7 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
     if (!track->thumbnail_url.is_valid()) {
       auto mojo_track = focus_mode::mojom::TrackDefinition::New(
           track->title, track->artist, /*thumbnail_url=*/GURL{},
-          track->source_url);
+          track->source_url, track->enable_playback_reporting);
       std::move(callback).Run(std::move(mojo_track));
       return;
     }
@@ -123,7 +123,8 @@ class FocusModeTrackProvider : public focus_mode::mojom::TrackProvider {
                              const FocusModeSoundsDelegate::Track& track,
                              const gfx::ImageSkia& image) {
     auto mojo_track = focus_mode::mojom::TrackDefinition::New(
-        track.title, track.artist, MakeImageDataURL(image), track.source_url);
+        track.title, track.artist, MakeImageDataURL(image), track.source_url,
+        track.enable_playback_reporting);
     std::move(callback).Run(std::move(mojo_track));
   }
 

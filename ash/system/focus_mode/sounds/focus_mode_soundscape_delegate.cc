@@ -52,7 +52,9 @@ FocusModeSoundsDelegate::Track FromTrack(const SoundscapeTrack& track,
       /*artist=*/"",
       /*source=*/"Focus Sounds",
       /*thumbnail_url*/ resolver.ResolveUrl(playlist_thumbnail),
-      /*source_url=*/resolver.ResolveUrl(track.path));
+      /*source_url=*/resolver.ResolveUrl(track.path),
+      // Soundscapes does not require playback reporting.
+      /*enable_playback_reporting=*/false);
 }
 
 }  // namespace

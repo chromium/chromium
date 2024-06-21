@@ -37,7 +37,8 @@ class ASH_EXPORT FocusModeSoundsDelegate {
           const std::string& artist,
           const std::string& source,
           const GURL& thumbnail_url,
-          const GURL& source_url);
+          const GURL& source_url,
+          const bool enable_playback_reporting);
     Track(const Track&);
     Track& operator=(const Track&);
     ~Track();
@@ -51,6 +52,7 @@ class ASH_EXPORT FocusModeSoundsDelegate {
     std::string source;
     GURL thumbnail_url;
     GURL source_url;
+    bool enable_playback_reporting;
   };
 
   virtual ~FocusModeSoundsDelegate() = default;

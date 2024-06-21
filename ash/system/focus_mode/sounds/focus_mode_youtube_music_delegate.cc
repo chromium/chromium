@@ -278,7 +278,9 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
         /*source=*/
         base::StringPrintf(kYouTubeMusicSourceFormat, playlist_id.c_str()),
         /*thumbnail_url=*/playback_context->track_image.url,
-        /*source_url=*/playback_context->stream_url);
+        /*source_url=*/playback_context->stream_url,
+        // YouTube Music requires playback reporting.
+        /*enable_playback_reporting=*/true);
   }
 
   std::move(next_track_state_.done_callback).Run(result);

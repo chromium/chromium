@@ -19,6 +19,9 @@ struct TrackDefinition {
 
   // Points to the actual audio data.
   url.mojom.Url media_url;
+
+  // Indicates if playback reporting should be enabled.
+  bool enable_playback_reporting;
 };
 
 // Implemented in Typescript and Used by Ash to control media playing.

@@ -27,12 +27,14 @@ FocusModeSoundsDelegate::Track::Track(const std::string& title,
                                       const std::string& artist,
                                       const std::string& source,
                                       const GURL& thumbnail_url,
-                                      const GURL& source_url)
+                                      const GURL& source_url,
+                                      const bool enable_playback_reporting)
     : title(title),
       artist(artist),
       source(source),
       thumbnail_url(thumbnail_url),
-      source_url(source_url) {}
+      source_url(source_url),
+      enable_playback_reporting(enable_playback_reporting) {}
 FocusModeSoundsDelegate::Track::Track(const Track&) = default;
 FocusModeSoundsDelegate::Track& FocusModeSoundsDelegate::Track::operator=(
     const Track&) = default;
