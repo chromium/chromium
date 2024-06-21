@@ -67,13 +67,9 @@ class VIZ_SERVICE_EXPORT SurfaceObserver {
 
   // Called whenever the surface reference from the surface that has |parent_id|
   // to the surface that has |child_id| is added.
+  // A matching `OnRemovedSurfaceReference` can be added if there are use cases.
   virtual void OnAddedSurfaceReference(const SurfaceId& parent_id,
                                        const SurfaceId& child_id) {}
-
-  // Called whenever the surface reference from the surface that has |parent_id|
-  // to the surface that has |child_id| is removed.
-  virtual void OnRemovedSurfaceReference(const SurfaceId& parent_id,
-                                         const SurfaceId& child_id) {}
 };
 
 }  // namespace viz

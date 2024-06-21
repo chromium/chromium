@@ -361,9 +361,6 @@ void SurfaceManager::RemoveSurfaceReferenceImpl(
   if (child_iter == iter_parent->second.end())
     return;
 
-  for (auto& observer : observer_list_)
-    observer.OnRemovedSurfaceReference(parent_id, child_id);
-
   iter_parent->second.erase(child_iter);
   if (iter_parent->second.empty())
     references_.erase(iter_parent);
