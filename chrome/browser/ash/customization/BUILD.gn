@@ -45,6 +45,7 @@ source_set("browser_tests") {
   deps = [
     ":customization",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/base",
   ]
 }
 

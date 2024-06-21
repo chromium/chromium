@@ -186,11 +186,14 @@ source_set("browser_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash:test_support",
-    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
-    "//chrome/browser/ash/accessibility/service:browser_tests",
     "//chrome/browser/ash/accessibility/service:test_support",
+    "//chrome/browser/ash/base",
     "//chrome/test:test_support",
     "//components/live_caption:constants",
     "//ui/events:test_support",
+
+    # Tests from subdirectories:
+    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
+    "//chrome/browser/ash/accessibility/service:browser_tests",
   ]
 }

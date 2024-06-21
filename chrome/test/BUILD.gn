@@ -2182,6 +2182,7 @@ if (!is_android) {
         "//chrome/browser/ash/accessibility",
         "//chrome/browser/ash/accessibility:test_support",
         "//chrome/browser/ash/accessibility/service",
+        "//chrome/browser/ash/base",
         "//chrome/browser/ash/customization",
         "//remoting/host/chromeos:features",
       ]
