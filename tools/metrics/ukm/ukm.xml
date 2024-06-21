@@ -21039,6 +21039,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Events">
+    <obsolete>
+      Deprecated as of 06/2024.
+    </obsolete>
     <summary>
       Bitfield representing the events that occurred during the Payment Request.
       This metric will only get recorded if a non-autofill payment app gets
@@ -21066,6 +21069,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="Events">
+    <obsolete>
+      Deprecated as of 06/2024.
+    </obsolete>
     <summary>
       Bitfield representing the events that occurred during the Payment Request.
       Values defined in the Event enum of

@@ -66,8 +66,7 @@ class PaymentRequestStateTest : public testing::Test,
       : num_on_selected_information_changed_called_(0),
         test_payment_request_delegate_(/*task_executor=*/nullptr,
                                        &test_personal_data_manager_),
-        journey_logger_(test_payment_request_delegate_.IsOffTheRecord(),
-                        ukm::UkmRecorder::GetNewSourceID()),
+        journey_logger_(ukm::UkmRecorder::GetNewSourceID()),
         address_(autofill::test::GetFullProfile()) {
     web_contents_ = web_contents_factory_.CreateWebContents(&context_);
 

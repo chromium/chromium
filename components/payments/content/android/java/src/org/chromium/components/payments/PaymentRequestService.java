@@ -261,12 +261,11 @@ public class PaymentRequestService
         /**
          * Creates a journey logger.
          *
-         * @param isIncognito Whether the user profile is incognito.
          * @param webContents The web contents where PaymentRequest API is invoked. Should not be
          *     null.
          */
-        default JourneyLogger createJourneyLogger(boolean isIncognito, WebContents webContents) {
-            return new JourneyLogger(isIncognito, webContents);
+        default JourneyLogger createJourneyLogger(WebContents webContents) {
+            return new JourneyLogger(webContents);
         }
 
         /**
@@ -476,7 +475,7 @@ public class PaymentRequestService
         mMerchantName = mWebContents.getTitle();
         mCertificateChain = mDelegate.getCertificateChain(mWebContents);
         mIsOffTheRecord = mDelegate.isOffTheRecord();
-        mJourneyLogger = mDelegate.createJourneyLogger(mIsOffTheRecord, mWebContents);
+        mJourneyLogger = mDelegate.createJourneyLogger(mWebContents);
 
         if (mClient == null) {
             abortForInvalidDataFromRenderer(ErrorStrings.INVALID_STATE);
@@ -1170,13 +1169,6 @@ public class PaymentRequestService
         if (!mBrowserPaymentRequest.onPaymentAppCreated(paymentApp)) return;
         mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
 
-        if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
-                || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
-            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.GOOGLE);
-        } else {
-            mJourneyLogger.setAvailableMethod(PaymentMethodCategory.OTHER);
-        }
-
         mPendingApps.add(paymentApp);
     }
 
@@ -1200,8 +1192,6 @@ public class PaymentRequestService
                 response
                         ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
                         : CanMakePaymentQueryResult.CANNOT_MAKE_PAYMENT);
-
-        mJourneyLogger.setCanMakePaymentValue(response || mIsOffTheRecord);
 
         if (sObserverForTest != null) {
             sObserverForTest.onPaymentRequestServiceCanMakePaymentQueryResponded();
@@ -1242,8 +1232,6 @@ public class PaymentRequestService
                             : HasEnrolledInstrumentQueryResult.WARNING_HAS_NO_ENROLLED_INSTRUMENT;
         }
         mClient.onHasEnrolledInstrument(result);
-
-        mJourneyLogger.setHasEnrolledInstrumentValue(response || mIsOffTheRecord);
 
         if (sObserverForTest != null) {
             sObserverForTest.onPaymentRequestServiceHasEnrolledInstrumentQueryResponded();
@@ -1964,7 +1952,6 @@ public class PaymentRequestService
         assert stringifiedDetails != null;
         if (mPaymentResponseHelper == null || mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.onInstrumentDetailsReady();
-        mJourneyLogger.setReceivedInstrumentDetails();
         mPaymentResponseHelper.generatePaymentResponse(
                 methodName, stringifiedDetails, payerData, /* resultCallback= */ this);
     }

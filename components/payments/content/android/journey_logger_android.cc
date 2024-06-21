@@ -20,9 +20,8 @@ using base::android::JavaRef;
 
 }  // namespace
 
-JourneyLoggerAndroid::JourneyLoggerAndroid(bool is_incognito,
-                                           ukm::SourceId source_id)
-    : journey_logger_(is_incognito, source_id) {}
+JourneyLoggerAndroid::JourneyLoggerAndroid(ukm::SourceId source_id)
+    : journey_logger_(source_id) {}
 
 JourneyLoggerAndroid::~JourneyLoggerAndroid() {}
 
@@ -42,20 +41,6 @@ void JourneyLoggerAndroid::SetNumberOfSuggestionsShown(
   journey_logger_.SetNumberOfSuggestionsShown(
       static_cast<JourneyLogger::Section>(jsection), jnumber,
       jhas_complete_suggestion);
-}
-
-void JourneyLoggerAndroid::SetCanMakePaymentValue(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jboolean jvalue) {
-  journey_logger_.SetCanMakePaymentValue(jvalue);
-}
-
-void JourneyLoggerAndroid::SetHasEnrolledInstrumentValue(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jboolean jvalue) {
-  journey_logger_.SetHasEnrolledInstrumentValue(jvalue);
 }
 
 void JourneyLoggerAndroid::SetOptOutOffered(
@@ -82,12 +67,6 @@ void JourneyLoggerAndroid::SetShown(
   journey_logger_.SetShown();
 }
 
-void JourneyLoggerAndroid::SetReceivedInstrumentDetails(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  journey_logger_.SetReceivedInstrumentDetails();
-}
-
 void JourneyLoggerAndroid::SetPayClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
@@ -103,19 +82,6 @@ void JourneyLoggerAndroid::SetSelectedMethod(
             static_cast<unsigned int>(
                 JourneyLogger::PaymentMethodCategory::kMaxValue));
   journey_logger_.SetSelectedMethod(
-      static_cast<JourneyLogger::PaymentMethodCategory>(
-          jPaymentMethodCategory));
-}
-
-void JourneyLoggerAndroid::SetAvailableMethod(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint jPaymentMethodCategory) {
-  DCHECK_GE(jPaymentMethodCategory, 0);
-  DCHECK_LE(static_cast<unsigned int>(jPaymentMethodCategory),
-            static_cast<unsigned int>(
-                JourneyLogger::PaymentMethodCategory::kMaxValue));
-  journey_logger_.SetAvailableMethod(
       static_cast<JourneyLogger::PaymentMethodCategory>(
           jPaymentMethodCategory));
 }
@@ -190,13 +156,11 @@ void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(
 static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
-    jboolean jis_incognito,
     const JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
   return reinterpret_cast<jlong>(new JourneyLoggerAndroid(
-      jis_incognito,
       web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 

@@ -28,7 +28,7 @@ int toInt(Event2 event) {
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_SuggestionsForEverything_Completed) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -70,7 +70,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_SuggestionsForEverything_UserAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -110,7 +110,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_SuggestionsForEverything_OtherAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -151,7 +151,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_SuggestionsForEverything_Incognito) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/true, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -193,7 +193,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_NoSuggestionsForEverything_Completed) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -235,7 +235,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_NoSuggestionsForEverything_UserAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -275,7 +275,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_NoSuggestionsForEverything_OtherAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -316,7 +316,7 @@ TEST(JourneyLoggerTest,
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_NoSuggestionsForEverything_Incognito) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/true, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -357,7 +357,7 @@ TEST(
     JourneyLoggerTest,
     RecordJourneyStatsHistograms_NoCompleteSuggestionsForEverything_OtherAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -399,7 +399,7 @@ TEST(
     JourneyLoggerTest,
     RecordJourneyStatsHistograms_NoCompleteSuggestionsForEverything_SomeComplete_OtherAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -443,7 +443,7 @@ TEST(
     JourneyLoggerTest,
     RecordJourneyStatsHistograms_CompleteSuggestionsForEverything_OtherAborted) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger(ukm::kInvalidSourceId);
 
   // The merchant only requests payment information.
   logger.SetRequestedInformation(
@@ -485,8 +485,8 @@ TEST(
 // Requests.
 TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
   base::HistogramTester histogram_tester;
-  JourneyLogger logger1(/*is_incognito=*/false, ukm::kInvalidSourceId);
-  JourneyLogger logger2(/*is_incognito=*/false, ukm::kInvalidSourceId);
+  JourneyLogger logger1(ukm::kInvalidSourceId);
+  JourneyLogger logger2(ukm::kInvalidSourceId);
 
   // Make the two loggers have different data.
   logger1.SetShown();
@@ -505,8 +505,6 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
       /*requested_phone=*/false, /*requested_name=*/false);
   std::vector<PaymentMethodCategory> methods2{PaymentMethodCategory::kOther};
   logger2.SetRequestedPaymentMethods(methods2);
-
-  logger1.SetCanMakePaymentValue(true);
 
   logger1.SetNumberOfSuggestionsShown(JourneyLogger::SECTION_PAYMENT_METHOD, 1,
                                       /*has_complete_suggestion=*/false);
@@ -559,7 +557,7 @@ TEST(JourneyLoggerTest,
   base::HistogramTester histogram_tester;
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, GURL(test_url));
-  JourneyLogger logger(/*is_incognito=*/true, source_id);
+  JourneyLogger logger(source_id);
   logger.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/true,
       /*requested_phone=*/false, /*requested_name=*/false);
@@ -585,7 +583,7 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kCompletionStatusName,
         JourneyLogger::COMPLETION_STATUS_USER_ABORTED);
@@ -606,7 +604,7 @@ TEST(JourneyLoggerTest,
   base::HistogramTester histogram_tester;
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, GURL(test_url));
-  JourneyLogger logger(/*is_incognito=*/true, source_id);
+  JourneyLogger logger(source_id);
   logger.SetRequestedInformation(
       /*requested_shipping=*/true, /*requested_email=*/true,
       /*requested_phone=*/false, /*requested_name=*/false);
@@ -633,7 +631,7 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
@@ -652,7 +650,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
   base::HistogramTester histogram_tester;
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, GURL(test_url));
-  JourneyLogger logger(/*is_incognito=*/true, source_id);
+  JourneyLogger logger(source_id);
   std::vector<PaymentMethodCategory> methods{
       PaymentMethodCategory::kPlayBilling};
   logger.SetRequestedPaymentMethods(methods);
@@ -671,7 +669,7 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
@@ -700,7 +698,7 @@ TEST(JourneyLoggerTest,
   base::HistogramTester histogram_tester;
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   ukm_recorder.UpdateSourceURL(source_id, GURL(test_url));
-  JourneyLogger logger(/*is_incognito=*/true, source_id);
+  JourneyLogger logger(source_id);
   std::vector<PaymentMethodCategory> methods{
       PaymentMethodCategory::kGooglePayAuthentication};
   logger.SetRequestedPaymentMethods(methods);
@@ -720,7 +718,7 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,

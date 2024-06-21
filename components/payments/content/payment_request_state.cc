@@ -165,16 +165,6 @@ bool PaymentRequestState::IsOffTheRecord() const {
 }
 
 void PaymentRequestState::OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) {
-  if (journey_logger_) {
-    if (base::Contains(app->GetAppMethodNames(), methods::kGooglePay) ||
-        base::Contains(app->GetAppMethodNames(), methods::kAndroidPay)) {
-      journey_logger_->SetAvailableMethod(
-          JourneyLogger::PaymentMethodCategory::kGoogle);
-    } else {
-      journey_logger_->SetAvailableMethod(
-          JourneyLogger::PaymentMethodCategory::kOther);
-    }
-  }
   available_apps_.emplace_back(std::move(app));
 }
 

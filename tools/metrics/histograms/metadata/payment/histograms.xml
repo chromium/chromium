@@ -64,16 +64,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.Events" units="bitfield value"
-    expires_after="2023-08-27">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    A bitfield representing the different events that happened during the
-    Payment Request.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.Events2" units="bitfield value"
     expires_after="2025-05-19">
   <owner>rouslan@chromium.org</owner>
