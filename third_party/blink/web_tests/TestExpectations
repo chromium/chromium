@@ -6905,7 +6905,6 @@ crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 crbug.com/1504244 [ Mac ] virtual/automatic-lazy-frame-loading-ads/http/tests/subresource_filter/frame-lazyload.html [ Failure Pass Timeout ]
 
 # Fix importer 2024-01-12
-crbug.com/626703 external/wpt/webauthn/public-key-credential-to-json.https.window.html [ Failure ]
 crbug.com/626703 external/wpt/clipboard-apis/async-promise-write-blobs-read-blobs.https.html [ Failure Pass ]
 crbug.com/1519053 external/wpt/webnn/conformance_tests/pad.https.any.html?cpu [ Crash Pass ]
 

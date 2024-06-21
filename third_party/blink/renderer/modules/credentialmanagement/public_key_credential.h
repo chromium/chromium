@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
 
@@ -28,7 +30,6 @@ class PublicKeyCredentialCreationOptionsJSON;
 class PublicKeyCredentialRequestOptions;
 class PublicKeyCredentialRequestOptionsJSON;
 class ScriptState;
-class V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON;
 
 class MODULES_EXPORT PublicKeyCredential : public Credential {
   DEFINE_WRAPPERTYPEINFO();
@@ -68,8 +69,7 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       const PublicKeyCredentialRequestOptionsJSON*,
       ExceptionState&);
 
-  const V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON* toJSON(
-      ScriptState*) const;
+  v8::Local<v8::Value> toJSON(ScriptState*) const;
 
   // Credential:
   void Trace(Visitor*) const override;

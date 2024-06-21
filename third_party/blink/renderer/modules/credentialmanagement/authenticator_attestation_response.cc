@@ -43,8 +43,13 @@ absl::variant<AuthenticatorAssertionResponseJSON*,
 AuthenticatorAttestationResponse::toJSON() const {
   auto* json = AuthenticatorAttestationResponseJSON::Create();
   json->setClientDataJSON(WebAuthnBase64UrlEncode(clientDataJSON()));
-  json->setAttestationObject(WebAuthnBase64UrlEncode(attestationObject()));
+  json->setAuthenticatorData(WebAuthnBase64UrlEncode(getAuthenticatorData()));
   json->setTransports(getTransports());
+  if (public_key_der_) {
+    json->setPublicKey(WebAuthnBase64UrlEncode(getPublicKey()));
+  }
+  json->setPublicKeyAlgorithm(getPublicKeyAlgorithm());
+  json->setAttestationObject(WebAuthnBase64UrlEncode(attestationObject()));
   return json;
 }
 

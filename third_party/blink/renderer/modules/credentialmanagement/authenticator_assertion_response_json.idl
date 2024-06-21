@@ -5,8 +5,8 @@
 // https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
 
 dictionary AuthenticatorAssertionResponseJSON {
-    Base64URLString clientDataJSON;
-    Base64URLString authenticatorData;
-    Base64URLString signature;
-    Base64URLString? userHandle;
+    required Base64URLString clientDataJSON;
+    required Base64URLString authenticatorData;
+    required Base64URLString signature;
+    Base64URLString userHandle;
 };

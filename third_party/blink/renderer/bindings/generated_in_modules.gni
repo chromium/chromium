@@ -3069,8 +3069,6 @@ generated_union_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkinfo_string.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkoptions_string.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkoptions_string.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_authenticationresponsejson_registrationresponsejson.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_authenticationresponsejson_registrationresponsejson.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_blob_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_svgimageelement_videoframe.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.cc",
