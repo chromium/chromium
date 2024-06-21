@@ -50,7 +50,13 @@ bool GetIsGoogleDocs(const GURL& url) {
 
 }  // namespace
 
-ReadAnythingAppModel::ReadAnythingAppModel() = default;
+ReadAnythingAppModel::ReadAnythingAppModel() {
+  // We default to true since base_language_code_ is en by default and that
+  // supports all these fonts.
+  for (const auto* font : kReadAnythingFonts) {
+    supported_fonts_[font] = true;
+  }
+}
 
 ReadAnythingAppModel::~ReadAnythingAppModel() = default;
 
@@ -959,34 +965,30 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
   images_enabled_ = !images_enabled_;
 }
 
-// TODO: b/40275871 - make this more efficient as we are now calling this
-// more often.
-std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
-  std::vector<std::string> font_choices_;
+void ReadAnythingAppModel::SetBaseLanguageCode(const std::string code) {
+  base_language_code_ = code;
+  supported_fonts_["Poppins"] =
+      base::Contains(kLanguagesSupportedByPoppins, code);
+  supported_fonts_["Comic Neue"] =
+      base::Contains(kLanguagesSupportedByComicNeue, code);
+  supported_fonts_["Lexend Deca"] =
+      base::Contains(kLanguagesSupportedByLexendDeca, code);
+  supported_fonts_["EB Garamond"] =
+      base::Contains(kLanguagesSupportedByEbGaramond, code);
+  supported_fonts_["STIX Two Text"] =
+      base::Contains(kLanguagesSupportedByStixTwoText, code);
+  supported_fonts_["Andika"] =
+      base::Contains(kLanguagesSupportedByAndika, code);
+  supported_fonts_["Atkinson Hyperlegible"] =
+      base::Contains(kLanguagesSupportedByAtkinsonHyperlegible, code);
+}
 
-  if (base::Contains(kLanguagesSupportedByPoppins, base_language_code())) {
-    font_choices_.push_back("Poppins");
-  }
-  font_choices_.push_back("Sans-serif");
-  font_choices_.push_back("Serif");
-  if (base::Contains(kLanguagesSupportedByComicNeue, base_language_code())) {
-    font_choices_.push_back("Comic Neue");
-  }
-  if (base::Contains(kLanguagesSupportedByLexendDeca, base_language_code())) {
-    font_choices_.push_back("Lexend Deca");
-  }
-  if (base::Contains(kLanguagesSupportedByEbGaramond, base_language_code())) {
-    font_choices_.push_back("EB Garamond");
-  }
-  if (base::Contains(kLanguagesSupportedByStixTwoText, base_language_code())) {
-    font_choices_.push_back("STIX Two Text");
-  }
-  if (base::Contains(kLanguagesSupportedByAndika, base_language_code())) {
-    font_choices_.push_back("Andika");
-  }
-  if (base::Contains(kLanguagesSupportedByAtkinsonHyperlegible,
-                     base_language_code())) {
-    font_choices_.push_back("Atkinson Hyperlegible");
+std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
+  std::vector<std::string> font_choices_;
+  for (const auto* font : kReadAnythingFonts) {
+    if (supported_fonts_[font]) {
+      font_choices_.emplace_back(font);
+    }
   }
   return font_choices_;
 }

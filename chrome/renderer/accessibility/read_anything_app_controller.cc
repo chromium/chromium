@@ -1272,7 +1272,7 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
   return model_.IsDocs();
 }
 
-std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
+std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
   return model_.GetSupportedFonts();
 }
 
@@ -1602,7 +1602,7 @@ void ReadAnythingAppController::SetLanguageForTesting(
 
 void ReadAnythingAppController::SetLanguageCode(const std::string& code) {
   std::string base_lang = std::string(language::ExtractBaseLanguage(code));
-  model_.set_base_language_code(base_lang);
+  model_.SetBaseLanguageCode(base_lang);
 
   ExecuteJavaScript("chrome.readingMode.languageChanged();");
 }

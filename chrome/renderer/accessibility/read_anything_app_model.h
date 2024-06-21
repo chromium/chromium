@@ -108,11 +108,9 @@ class ReadAnythingAppModel {
 
   const std::string& base_language_code() const { return base_language_code_; }
 
-  void set_base_language_code(const std::string code) {
-    base_language_code_ = code;
-  }
+  void SetBaseLanguageCode(const std::string code);
 
-  std::vector<std::string> GetSupportedFonts() const;
+  std::vector<std::string> GetSupportedFonts();
 
   // Theme
   const std::string& font_name() const { return font_name_; }
@@ -477,6 +475,9 @@ class ReadAnythingAppModel {
       {"Accessibility.ReadAnything.ReadAloudPlaySessionCount", 0},
       {"Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount", 0},
   };
+
+  // Maps fonts to whether the current base_language_code_ supports that font.
+  std::map<std::string, bool> supported_fonts_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

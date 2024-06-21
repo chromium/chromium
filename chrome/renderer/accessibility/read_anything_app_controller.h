@@ -220,7 +220,7 @@ class ReadAnythingAppController
   void TurnedHighlightOff();
   double GetLineSpacingValue(int line_spacing) const;
   double GetLetterSpacingValue(int letter_spacing) const;
-  std::vector<std::string> GetSupportedFonts() const;
+  std::vector<std::string> GetSupportedFonts();
   void RequestImageDataUrl(ui::AXNodeID node_id) const;
   std::string GetImageDataUrl(ui::AXNodeID node_id) const;
   void OnSpeechPlayingStateChanged(bool paused);

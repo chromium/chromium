@@ -562,11 +562,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private initFonts_() {
-    const fonts = chrome.readingMode.supportedFonts;
-    this.fontOptions_ = [];
-    fonts.forEach(element => {
-      this.fontOptions_.push(element);
-    });
+    this.fontOptions_ = Object.assign([], chrome.readingMode.supportedFonts);
   }
 
   private isFontItemSelected_(item: number): boolean {

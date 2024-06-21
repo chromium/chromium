@@ -60,6 +60,16 @@ inline constexpr double kReadAnythingFontScaleIncrement = 0.25;
 inline constexpr bool kReadAnythingDefaultLinksEnabled = true;
 inline constexpr bool kReadAnythingDefaultImagesEnabled = false;
 
+// List of fonts supported by Read Anything in the order they should be
+// displayed.
+// TODO(crbug.com/348497904): Consolidate with duplicated lists in common.ts and
+// read_anything_untrusted_page_handler.h.
+const char* kReadAnythingFonts[] = {
+    "Poppins",       "Sans-serif",  "Serif",
+    "Comic Neue",    "Lexend Deca", "EB Garamond",
+    "STIX Two Text", "Andika",      "Atkinson Hyperlegible",
+};
+
 const char* kLanguagesSupportedByPoppins[] = {
     "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
     "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",

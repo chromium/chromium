@@ -234,9 +234,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void ResetTextSize() { model_->ResetTextSize(); }
 
   std::string LanguageCode() { return model_->base_language_code(); }
-  void SetLanguageCode(std::string code) {
-    model_->set_base_language_code(code);
-  }
+  void SetLanguageCode(std::string code) { model_->SetBaseLanguageCode(code); }
 
   std::vector<std::string> GetSupportedFonts() {
     return model_->GetSupportedFonts();
