@@ -113,6 +113,7 @@ class BoundSessionCookieControllerImpl
 
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
+  std::optional<std::string> cached_sec_session_challenge_response_;
 
   std::vector<chrome::mojom::BoundSessionRequestThrottledHandler::
                   HandleRequestBlockedOnCookieCallback>

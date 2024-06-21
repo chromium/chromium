@@ -43,8 +43,11 @@ class BoundSessionRefreshCookieFetcherImpl
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
   // BoundSessionRefreshCookieFetcher:
-  void Start(RefreshCookieCompleteCallback callback) override;
+  void Start(
+      RefreshCookieCompleteCallback callback,
+      std::optional<std::string> sec_session_challenge_response) override;
   bool IsChallengeReceived() const override;
+  std::optional<std::string> TakeSecSessionChallengeResponseIfAny() override;
 
  private:
   friend class BoundSessionRefreshCookieFetcherImplTest;
@@ -128,6 +131,7 @@ class BoundSessionRefreshCookieFetcherImpl
   Result result_;
   bool cookie_refresh_completed_ = false;
   size_t assertion_requests_count_ = 0;
+  std::optional<std::string> sec_session_challenge_response_;
   bound_session_credentials::RotationDebugInfo debug_info_;
 
   // Non-null after a fetch has started.

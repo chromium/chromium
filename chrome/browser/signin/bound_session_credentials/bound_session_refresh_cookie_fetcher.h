@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REFRESH_COOKIE_FETCHER_H_
 
+#include <optional>
 #include <ostream>
 
 #include "base/functional/callback_forward.h"
@@ -29,6 +30,7 @@ class BoundSessionRefreshCookieFetcher {
   };
 
   static bool IsPersistentError(Result result);
+  static bool IsTransientError(Result result);
 
   // Reports the result of the fetch request.
   using RefreshCookieCompleteCallback = base::OnceCallback<void(Result)>;
@@ -44,10 +46,13 @@ class BoundSessionRefreshCookieFetcher {
   // Starts the network request to the Gaia rotation endpoint. `callback` is
   // called with the fetch results upon completion. Should be called no more
   // than once per instance.
-  virtual void Start(RefreshCookieCompleteCallback callback) = 0;
+  virtual void Start(
+      RefreshCookieCompleteCallback callback,
+      std::optional<std::string> sec_session_challenge_response) = 0;
 
   // Returns whether the fetcher had received a challenge.
   virtual bool IsChallengeReceived() const = 0;
+  virtual std::optional<std::string> TakeSecSessionChallengeResponseIfAny() = 0;
 };
 
 std::ostream& operator<<(

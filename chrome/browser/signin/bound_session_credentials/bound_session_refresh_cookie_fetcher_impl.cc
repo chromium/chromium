@@ -90,18 +90,26 @@ BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
 
 void BoundSessionRefreshCookieFetcherImpl::Start(
-    RefreshCookieCompleteCallback callback) {
+    RefreshCookieCompleteCallback callback,
+    std::optional<std::string> sec_session_challenge_response) {
   TRACE_EVENT("browser", "BoundSessionRefreshCookieFetcherImpl::Start",
               perfetto::Flow::FromPointer(this), "url",
               expected_cookie_domain_);
   CHECK(!callback_);
   CHECK(callback);
   callback_ = std::move(callback);
-  StartRefreshRequest(/*sec_session_challenge_response=*/std::nullopt);
+  StartRefreshRequest(std::move(sec_session_challenge_response));
 }
 
 bool BoundSessionRefreshCookieFetcherImpl::IsChallengeReceived() const {
   return assertion_requests_count_ > 0;
+}
+
+std::optional<std::string>
+BoundSessionRefreshCookieFetcherImpl::TakeSecSessionChallengeResponseIfAny() {
+  std::optional<std::string> response;
+  std::swap(response, sec_session_challenge_response_);
+  return response;
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
@@ -161,6 +169,7 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
     request->headers.SetHeader(kRotationChallengeResponseHeader,
                                *sec_session_challenge_response);
   }
+  sec_session_challenge_response_ = std::move(sec_session_challenge_response);
   request->headers.SetHeader(kRotationDebugHeader,
                              UpdateDebugInfoAndSerializeToHeader(debug_info_));
 
@@ -201,6 +210,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
   std::optional<std::string> challenge_header_value =
       GetChallengeIfBindingKeyAssertionRequired(headers);
   if (challenge_header_value) {
+    sec_session_challenge_response_.reset();
     HandleBindingKeyAssertionRequired(*challenge_header_value);
     return;
   }

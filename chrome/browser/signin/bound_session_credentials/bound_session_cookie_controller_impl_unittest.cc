@@ -50,6 +50,7 @@ namespace {
 constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
 constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 constexpr char kSessionId[] = "test_session_id";
+constexpr char kSecSessionChallengeResponse[] = "test_challenge_response";
 
 const base::TimeDelta kCookieExpirationThreshold = base::Seconds(15);
 const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
@@ -168,9 +169,8 @@ class BoundSessionCookieControllerImplTest
       BoundSessionRefreshCookieFetcher::Result result,
       std::optional<base::Time> cookie_expiration) {
     ASSERT_TRUE(cookie_fetcher());
-    FakeBoundSessionRefreshCookieFetcher* fetcher =
-        static_cast<FakeBoundSessionRefreshCookieFetcher*>(cookie_fetcher());
-    fetcher->SimulateCompleteRefreshRequest(result, cookie_expiration);
+    fake_cookie_fetcher()->SimulateCompleteRefreshRequest(result,
+                                                          cookie_expiration);
   }
 
   void SimulateCookieChange(const std::string& cookie_name,
@@ -207,6 +207,10 @@ class BoundSessionCookieControllerImplTest
 
   BoundSessionRefreshCookieFetcher* cookie_fetcher() {
     return bound_session_cookie_controller_->refresh_cookie_fetcher_.get();
+  }
+
+  FakeBoundSessionRefreshCookieFetcher* fake_cookie_fetcher() {
+    return static_cast<FakeBoundSessionRefreshCookieFetcher*>(cookie_fetcher());
   }
 
   const RotationDebugInfo& debug_info() {
@@ -1068,4 +1072,55 @@ TEST_F(BoundSessionCookieControllerImplTest, UpdateDebugInfo) {
   trigger_rotation();
   EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
   EXPECT_THAT(debug_info(), base::test::EqualsProto(RotationDebugInfo()));
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       ChallengeReusedCookieRotationTransientError) {
+  ASSERT_FALSE(AreAllCookiesFresh());
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  ASSERT_TRUE(cookie_fetcher());
+  FakeBoundSessionRefreshCookieFetcher* fetcher = fake_cookie_fetcher();
+  ASSERT_TRUE(fetcher);
+  EXPECT_FALSE(fetcher->sec_session_challenge_response());
+  // Simulate a challenge response.
+  fetcher->set_sec_session_challenge_response(kSecSessionChallengeResponse);
+  SimulateCompleteRefreshRequest(
+      BoundSessionRefreshCookieFetcher::Result::kServerTransientError,
+      std::nullopt);
+
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  fetcher = fake_cookie_fetcher();
+  ASSERT_TRUE(fetcher);
+  EXPECT_EQ(fetcher->sec_session_challenge_response(),
+            kSecSessionChallengeResponse);
+
+  SimulateCompleteRefreshRequest(
+      BoundSessionRefreshCookieFetcher::Result::kSuccess,
+      GetTimeInTenMinutes());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       ChallengeNotReusedCookieRotationSuccess) {
+  ASSERT_FALSE(AreAllCookiesFresh());
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  ASSERT_TRUE(cookie_fetcher());
+  FakeBoundSessionRefreshCookieFetcher* fetcher = fake_cookie_fetcher();
+  ASSERT_TRUE(fetcher);
+  EXPECT_FALSE(fetcher->sec_session_challenge_response());
+  fetcher->set_sec_session_challenge_response("sec_session_challenge_response");
+  SimulateCompleteRefreshRequest(
+      BoundSessionRefreshCookieFetcher::Result::kSuccess,
+      GetTimeInTenMinutes());
+
+  task_environment()->FastForwardBy(base::Minutes(12));
+  ASSERT_FALSE(AreAllCookiesFresh());
+  bound_session_cookie_controller()->HandleRequestBlockedOnCookie(
+      base::DoNothing());
+  fetcher = fake_cookie_fetcher();
+  ASSERT_TRUE(fetcher);
+  EXPECT_FALSE(fetcher->sec_session_challenge_response());
+  CompletePendingRefreshRequestIfAny();
 }

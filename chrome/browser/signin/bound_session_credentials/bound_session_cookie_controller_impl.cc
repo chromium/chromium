@@ -269,16 +269,32 @@ void BoundSessionCookieControllerImpl::StartCookieRefresh() {
     OnCookieRefreshFetched(*artificial_cookie_rotation_result_);
   } else {
     refresh_cookie_fetcher_ = CreateRefreshCookieFetcher();
+    std::optional<std::string> sec_session_challenge_response;
+    std::swap(cached_sec_session_challenge_response_,
+              sec_session_challenge_response);
     // `base::Unretained(this)` is safe because `this` owns
     // `refresh_cookie_fetcher_`.
-    refresh_cookie_fetcher_->Start(base::BindOnce(
-        &BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
-        base::Unretained(this)));
+    refresh_cookie_fetcher_->Start(
+        base::BindOnce(
+            &BoundSessionCookieControllerImpl::OnCookieRefreshFetched,
+            base::Unretained(this)),
+        std::move(sec_session_challenge_response));
   }
 }
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
+  CHECK(!cached_sec_session_challenge_response_.has_value());
+  if (BoundSessionRefreshCookieFetcher::IsTransientError(result)) {
+    // In case of server transient error or network error, try to reuse the
+    // challenge response if there is one on the next cookie rotation request.
+    // Note: The challenge might be expired by the time the cached response is
+    // used, it is expected in that case that the server would request a new
+    // challenge response.
+    cached_sec_session_challenge_response_ =
+        refresh_cookie_fetcher_->TakeSecSessionChallengeResponseIfAny();
+  }
+
   UpdateDebugInfo(debug_info_, result,
                   refresh_cookie_fetcher_->IsChallengeReceived());
   refresh_cookie_fetcher_.reset();
