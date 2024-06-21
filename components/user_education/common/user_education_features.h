@@ -12,9 +12,13 @@ namespace user_education::features {
 
 BASE_DECLARE_FEATURE(kUserEducationExperienceVersion2);
 BASE_DECLARE_FEATURE(kNewBadgeTestFeature);
+BASE_DECLARE_FEATURE(kWhatsNewVersion2);
 
 // Returns whether User Education Version 2 policies are enabled.
 extern bool IsUserEducationV2();
+
+// Returns whether What's New Version 2 is enabled.
+extern bool IsWhatsNewV2();
 
 // Returns the minimum amount of time a session must last. If this is less than
 // `GetIdleTimeBetweenSessions()` then it will have no effect.

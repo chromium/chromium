@@ -25,6 +25,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_education/common/user_education_features.h"
 #include "url/gurl.h"
 
 WhatsNewHandler::WhatsNewHandler(

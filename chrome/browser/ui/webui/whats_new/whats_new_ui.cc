@@ -23,6 +23,7 @@
 #include "chrome/grit/whats_new_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -50,6 +51,12 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
 }
 
 }  // namespace
+
+// static
+void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kWhatsNewEditionUsed);
+  registry->RegisterListPref(prefs::kWhatsNewFirstEnabledOrder);
+}
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),

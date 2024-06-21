@@ -3987,6 +3987,15 @@ inline constexpr char kLensDesktopNTPSearchEnabled[] =
     "policy.lens_desktop_ntp_search_enabled";
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// A dict mapping the edition name with the major version it was shown.
+inline constexpr char kWhatsNewEditionUsed[] = "browser.whats_new.edition_used";
+// A list containing the features of each module in order of when they
+// were first enabled.
+inline constexpr char kWhatsNewFirstEnabledOrder[] =
+    "browser.whats_new.enabled_order";
+#endif
+
 // An integer indicating the number of times the Lens Overlay was started.
 inline constexpr char kLensOverlayStartCount[] =
     "lens.lens_overlay_start_count";
