@@ -197,4 +197,14 @@ public abstract class ConditionalState {
     void setStateActiveWithoutTransition() {
         mLifecyclePhase = Phase.ACTIVE;
     }
+
+    protected void assertSuppliersCanBeUsed() {
+        int phase = getPhase();
+        if (phase != Phase.ACTIVE && phase != Phase.TRANSITIONING_FROM) {
+            fail(
+                    String.format(
+                            "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
+                            this, phaseToString(phase)));
+        }
+    }
 }

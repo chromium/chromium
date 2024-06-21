@@ -34,19 +34,19 @@ public class TabCountLabelTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private void tabCountLabelCheck(String stepName, int tabCountExpected) {
+    private void tabCountLabelCheck(String stepName, String labelExpected) {
         ImageButton tabSwitcherBtn =
-                (ImageButton)
-                        mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button);
+                mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button);
         TabSwitcherDrawable drawable = (TabSwitcherDrawable) tabSwitcherBtn.getDrawable();
-        int tabCountFromDrawable = drawable.getTabCount();
-        Assert.assertTrue(
+        String labelFromDrawable = drawable.getTextRenderedForTesting();
+        Assert.assertEquals(
                 stepName
                         + ", "
-                        + tabCountExpected
+                        + labelExpected
                         + " tab[s] expected, label shows "
-                        + tabCountFromDrawable,
-                tabCountExpected == tabCountFromDrawable);
+                        + labelFromDrawable,
+                labelExpected,
+                labelFromDrawable);
     }
 
     /** Verify displayed Tab Count matches the actual number of tabs. */
@@ -55,18 +55,17 @@ public class TabCountLabelTest {
     @Feature({"Browser", "Main"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testTabCountLabel() {
-        final int tabCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        tabCountLabelCheck("Initial state", tabCount);
+        tabCountLabelCheck("Initial state", "1");
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         // Make sure the TAB_CREATED notification went through
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        tabCountLabelCheck("After new tab", tabCount + 1);
+        tabCountLabelCheck("After new tab", "2");
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         // Make sure the TAB_CLOSED notification went through
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        tabCountLabelCheck("After close tab", tabCount);
+        tabCountLabelCheck("After close tab", "1");
     }
 
     @Before
