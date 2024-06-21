@@ -3858,7 +3858,7 @@ bool QuicChromiumClientSession::MigrateToSocket(
     std::unique_ptr<QuicChromiumPacketWriter> writer) {
   // Sessions carried via a proxy should never migrate, and that is ensured
   // elsewhere (for each possible migration trigger).
-  DCHECK(session_key_.proxy_chain().is_direct());
+  DUMP_WILL_BE_CHECK(session_key_.proxy_chain().is_direct());
 
   // TODO(zhongyi): figure out whether we want to limit the number of
   // connection migrations for v2, which includes migration on platform signals,
