@@ -267,10 +267,10 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
   // behavior and should only be used if a WPT needs it.
   template <typename BlinkType>
   void ResolveOverridingToCurrentContext(BlinkType value) {
+    OverrideScriptStateToCurrentContext();
     if (!PrepareToResolveOrReject<kResolving>()) {
       return;
     }
-    OverrideScriptStateToCurrentContext();
     ResolveOrReject<IDLResolvedType, BlinkType>(value);
   }
 
