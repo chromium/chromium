@@ -31,6 +31,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1543,6 +1544,32 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
   // Make sure the elapsted time is less than `max_time` to make sure the test
   // is meaningful.
   ASSERT_LT(base::Time::Now() - time_of_error, max_time);
+}
+
+// Regression test for https://crbug.com/348587566
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithExplicitBrowserSigninBrowserTest,
+                       SigninPausedDelayEndedNoBrowser) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  // Reset the delay, to make sure the browser can be closed before it expires.
+  AvatarToolbarButton::SetTextDurationForTesting(base::Minutes(50));
+  Signin(u"test@gmail.com", u"TestName");
+  SimulateSigninError(/*web_sign_out=*/true);
+  ASSERT_TRUE(GetAvatarToolbarButton(browser())->GetText().empty());
+  Profile* profile = browser()->profile();
+
+  // Close the browser before the delay ends, but keep the profile and Chrome
+  // alive by opening an incognito browser.
+  CreateIncognitoBrowser(profile);
+  CloseBrowserSynchronously(browser());
+
+  // Simlate expiration of the delay.
+  AvatarToolbarButton::SetTextDurationForTesting(base::Milliseconds(1));
+  WaitForTime(base::Milliseconds(2));
+
+  // Open a new browser, this should not crash.
+  Browser* new_browser = CreateBrowser(profile);
+  EXPECT_EQ(GetAvatarToolbarButton(new_browser)->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
 }
 
 #endif  // !BUILDFLAG(IS_WIN)

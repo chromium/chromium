@@ -565,10 +565,15 @@ class SigninPendingStateProvider : public StateProvider,
     if (signed_in_pending_delay_start) {
       base::TimeDelta elapsed_delay_time =
           base::Time::Now() - signed_in_pending_delay_start->time_;
-      CHECK_GT(kTestingDuration.value_or(kShowSigninPendingTextDelay),
-               elapsed_delay_time);
-      StartTimerDelay(kTestingDuration.value_or(kShowSigninPendingTextDelay) -
-                      elapsed_delay_time);
+      const base::TimeDelta delay =
+          kTestingDuration.value_or(kShowSigninPendingTextDelay);
+      if (elapsed_delay_time < delay) {
+        StartTimerDelay(delay - elapsed_delay_time);
+      } else {
+        // This can happen if all browsers were closed when the delay expired,
+        // and the cleanup task could not be run. Remove the user data now.
+        profile_->RemoveUserData(kSigninPendingTimestampStartKey);
+      }
     }
   }
 
