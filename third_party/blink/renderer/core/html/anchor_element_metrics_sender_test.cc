@@ -7,12 +7,14 @@
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "cc/trees/browser_controls_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -1412,4 +1414,114 @@ TEST_F(AnchorElementMetricsSenderTest,
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
 }
 
+TEST_F(AnchorElementMetricsSenderTest,
+       PositionUpdate_BrowserTopControlsHeight) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNavigationPredictorNewViewportFeatures);
+
+  ASSERT_EQ(0, kViewportHeight % 8);
+  int unit = kViewportHeight / 8;
+
+  // Set up the viewport as follows:
+  //
+  // controls |  XXXX
+  // viewport |  div_1
+  //    ..    |  div_1
+  //    ..    |  div_1
+  //    ..    |  anchor_1
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  div_2
+  // -------------------
+  int div_1_height = 3 * unit;
+  int anchor_height = unit;
+  int div_2_height = 8 * unit;
+  int top_controls_height = unit;
+
+  WebView().ResizeWithBrowserControls(
+      gfx::Size(kViewportWidth, kViewportHeight), top_controls_height, 0,
+      /*browser_controls_shrink_layout=*/false);
+  BrowserControls& browser_controls = WebView().GetBrowserControls();
+  browser_controls.SetShownRatio(1.f, 1.f);
+  cc::BrowserControlsParams params;
+  params.top_controls_height = top_controls_height;
+  params.browser_controls_shrink_blink_size = true;
+  browser_controls.SetParams(params);
+
+  // Navigate the main frame.
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"HTML(
+    <body style="margin: 0px">
+      <div style="height: %dpx"></div>
+      <a href="https://bar.com"
+         style="height: %dpx; display: block;">Bar</a>
+      <div style="height: %dpx;"></div>
+    </body>
+  )HTML",
+                                        div_1_height, anchor_height,
+                                        div_2_height));
+  EXPECT_EQ(1u, GetDocument().links()->length());
+
+  Compositor().BeginFrame();
+  ProcessEvents(/*expected_anchors=*/1);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_TRUE(browser_controls.ShrinkViewport());
+  EXPECT_EQ(unit, browser_controls.ContentOffset());
+
+  // Pointer down and scroll down by 3 units. The browser controls should be
+  // hidden.
+  //
+  // viewport |  div_1
+  //    ..    |  anchor_1
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  div_2        . pointerdown
+  //    ..    |  div_2
+  //    ..    |  div_2
+  // -------------------
+  gfx::PointF coordinates(10.0f, 5.f * unit);
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      WebMouseEvent(WebInputEvent::Type::kMouseDown, coordinates, coordinates,
+                    WebPointerProperties::Button::kLeft, 0,
+                    WebInputEvent::kLeftButtonDown,
+                    WebInputEvent::GetStaticTimeStampForTests()));
+  VerticalScroll(-3.f * unit);
+  ProcessPositionUpdates();
+
+  const auto& positions = mock_host->positions_;
+  EXPECT_EQ(0, browser_controls.ContentOffset());
+  EXPECT_EQ(-4.5f * unit / kViewportHeight,
+            positions.begin()->second->distance_from_pointer_down_ratio);
+
+  // Pointer down and scroll up by 2 units. The browser controls should be
+  // back.
+  //
+  // controls | XXXX
+  // viewport |  div_1
+  //    ..    |  div_1
+  //    ..    |  anchor_1
+  //    ..    |  div_2
+  //    ..    |  div_2        . pointerdown
+  //    ..    |  div_2
+  //    ..    |  div_2
+  // -------------------
+  coordinates = gfx::PointF(10.0f, 6.f * unit);
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
+      WebMouseEvent(WebInputEvent::Type::kMouseDown, coordinates, coordinates,
+                    WebPointerProperties::Button::kLeft, 0,
+                    WebInputEvent::kLeftButtonDown,
+                    WebInputEvent::GetStaticTimeStampForTests()));
+  VerticalScroll(2.f * unit);
+  ProcessPositionUpdates();
+
+  EXPECT_EQ(unit, browser_controls.ContentOffset());
+  EXPECT_EQ(-2.5f * unit / kViewportHeight,
+            positions.begin()->second->distance_from_pointer_down_ratio);
+}
 }  // namespace blink

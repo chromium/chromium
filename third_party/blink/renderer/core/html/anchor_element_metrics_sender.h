@@ -225,8 +225,8 @@ class CORE_EXPORT AnchorElementMetricsSender final
   bool intersection_observer_limit_exceeded_ = false;
 
   // The y-coordinate of the last pointerdown (in the visual viewport coordinate
-  // space) reported in |RecordPointerDown|. Used to compute
-  // |position_update_messages_|.
+  // space and offset by the height of the browser top-controls), reported in
+  // |RecordPointerDown|. Used to compute |position_update_messages_|.
   std::optional<float> last_pointer_down_ = std::nullopt;
   // Indicates that we should populate |position_update_messages_| in
   // |DidFinishLifecycleUpdate|.

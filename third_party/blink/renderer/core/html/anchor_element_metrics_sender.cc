@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
@@ -70,6 +71,14 @@ base::TimeDelta GetIntersectionObserverDelay() {
 bool ShouldReportViewportPositions() {
   return base::FeatureList::IsEnabled(
       features::kNavigationPredictorNewViewportFeatures);
+}
+
+float GetBrowserControlsHeight(Document& document) {
+  BrowserControls& controls = document.GetPage()->GetBrowserControls();
+  if (controls.ShrinkViewport()) {
+    return controls.ContentOffset();
+  }
+  return 0.f;
 }
 
 }  // namespace
@@ -453,6 +462,8 @@ void AnchorElementMetricsSender::RecordPointerDown(
   gfx::PointF pointer_down_location = pointer_event.AbsoluteLocation();
   pointer_down_location =
       document->GetFrame()->View()->FrameToViewport(pointer_down_location);
+  pointer_down_location.Offset(0,
+                               GetBrowserControlsHeight(*GetSupplementable()));
   last_pointer_down_ = pointer_down_location.y();
 }
 
@@ -534,6 +545,8 @@ void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
   }
 
   const float screen_height = widget->DIPsToBlinkSpace(screen_height_dips);
+  const float browser_controls_height =
+      GetBrowserControlsHeight(*GetSupplementable());
   float pointer_y = last_pointer_down_.value();
 
   for (const HTMLAnchorElement* anchor : anchors_in_viewport_) {
@@ -550,13 +563,8 @@ void AnchorElementMetricsSender::ComputeAnchorElementsPositionUpdates() {
       continue;
     }
     rect = local_root.View()->FrameToViewport(rect);
+    rect.Offset(0, browser_controls_height);
 
-    // Note: Using viewport space coordinates (instead of screen) isn't always
-    // accurate, particularly if the viewport size changes between pointerdown
-    // and the scroll. This happens somewhat frequently on Android when the
-    // top-controls are hidden/shown in response to a scroll. Ideally we'd use
-    // screen coordinates here, but we don't have a way to compute it accurately
-    // right now; see crbug.com/347638530.
     float distance_from_pointer_down =
         gfx::RectF(rect).CenterPoint().y() - pointer_y;
     // Note: Distances in viewport space should be the same as distances in
