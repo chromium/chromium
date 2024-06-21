@@ -128,7 +128,6 @@ static_library("engine") {
     "polling_constants.h",
     "shutdown_reason.cc",
     "shutdown_reason.h",
-    "sync_auth_provider.h",
     "sync_credentials.h",
     "sync_cycle_event.cc",
     "sync_cycle_event.h",
