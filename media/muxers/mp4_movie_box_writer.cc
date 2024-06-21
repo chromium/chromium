@@ -642,12 +642,9 @@ Mp4MovieSampleDescriptionBoxWriter::Mp4MovieSampleDescriptionBoxWriter(
     return;
   }
 
-  // TODO(crbug.com://331682616): Add validation of DCHECK for sample entry
-  // existence.
-  if (box_.audio_sample_entry.has_value()) {
-    AddChildBox(std::make_unique<Mp4MovieAudioSampleEntryBoxWriter>(
-        context, box_.audio_sample_entry.value()));
-  }
+  CHECK(box_.audio_sample_entry.has_value());
+  AddChildBox(std::make_unique<Mp4MovieAudioSampleEntryBoxWriter>(
+      context, box_.audio_sample_entry.value()));
 }
 
 Mp4MovieSampleDescriptionBoxWriter::~Mp4MovieSampleDescriptionBoxWriter() =
