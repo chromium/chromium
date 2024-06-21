@@ -332,7 +332,7 @@ MakeContentsResult WebUIContentsPreloadManager::MakeContents(
        webui_url.IsAboutBlank())) {
     preload_result = WebUIPreloadResult::kHit;
     // Redirect if requested a different URL.
-    if (preloaded_web_contents_->GetURL().host() != webui_url.host()) {
+    if (!url::IsSameOriginWith(preloaded_web_contents_->GetURL(), webui_url)) {
       preload_result = WebUIPreloadResult::kHitRedirected;
       LoadURLForContents(preloaded_web_contents_.get(), webui_url);
     }
@@ -342,6 +342,13 @@ MakeContentsResult WebUIContentsPreloadManager::MakeContents(
   } else {
     web_contents_ret = CreateNewContents(browser_context, webui_url);
     is_ready_to_show = false;
+  }
+
+  // Navigate to path if the request URL has a different path.
+  if (!is_navigation_disabled_for_test_ &&
+      webui_url.path() != web_contents_ret->GetURL().path()) {
+    CHECK(url::IsSameOriginWith(webui_url, web_contents_ret->GetURL()));
+    LoadURLForContents(web_contents_ret.get(), webui_url);
   }
 
   base::UmaHistogramEnumeration("WebUI.TopChrome.Preload.Result",
