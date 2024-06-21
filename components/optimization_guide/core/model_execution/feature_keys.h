@@ -24,6 +24,8 @@ enum class ModelBasedCapabilityKey {
   kTextSafety =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY,
   kPromptApi = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API,
+  kHistorySearch =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH,
 };
 
 inline constexpr std::array<ModelBasedCapabilityKey, 6>
@@ -44,13 +46,15 @@ enum class UserVisibleFeatureKey {
       static_cast<int>(ModelBasedCapabilityKey::kTabOrganization),
   kWallpaperSearch =
       static_cast<int>(ModelBasedCapabilityKey::kWallpaperSearch),
+  kHistorySearch = static_cast<int>(ModelBasedCapabilityKey::kHistorySearch),
 };
 
-inline constexpr std::array<UserVisibleFeatureKey, 3>
+inline constexpr std::array<UserVisibleFeatureKey, 4>
     kAllUserVisibleFeatureKeys = {
         UserVisibleFeatureKey::kCompose,
         UserVisibleFeatureKey::kTabOrganization,
         UserVisibleFeatureKey::kWallpaperSearch,
+        UserVisibleFeatureKey::kHistorySearch,
 };
 
 inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
@@ -62,6 +66,8 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kTabOrganization;
     case UserVisibleFeatureKey::kWallpaperSearch:
       return ModelBasedCapabilityKey::kWallpaperSearch;
+    case UserVisibleFeatureKey::kHistorySearch:
+      return ModelBasedCapabilityKey::kHistorySearch;
   }
 }
 
@@ -82,6 +88,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY;
     case ModelBasedCapabilityKey::kPromptApi:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API;
+    case ModelBasedCapabilityKey::kHistorySearch:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_HISTORY_SEARCH;
   }
 }
 

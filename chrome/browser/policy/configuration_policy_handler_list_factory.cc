@@ -2162,15 +2162,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kTabOrganizerSettings,
     optimization_guide::model_execution::prefs::kTabOrganizationEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
-#endif
-#if !BUILDFLAG(IS_ANDROID)
   { key::kHelpMeWriteSettings,
     optimization_guide::model_execution::prefs::kComposeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
-#endif
-#if !BUILDFLAG(IS_ANDROID)
   { key::kCreateThemesSettings,
     optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER},
+  { key::kHistorySearchSettings,
+    optimization_guide::model_execution::prefs::kHistorySearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

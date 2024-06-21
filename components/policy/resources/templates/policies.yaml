@@ -1273,6 +1273,7 @@ policies:
   1272: LocalUserFilesMigrationDestination
   1273: KioskBrowserPermissionsAllowedForOrigins
   1274: LensOnGalleryEnabled
+  1275: HistorySearchSettings
 
 atomic_groups:
   1: Homepage

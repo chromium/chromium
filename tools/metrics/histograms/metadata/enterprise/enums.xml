@@ -2138,6 +2138,7 @@ chromium-metrics-reviews@google.com.
   <int value="1272" label="LocalUserFilesMigrationDestination"/>
   <int value="1273" label="KioskBrowserPermissionsAllowedForOrigins"/>
   <int value="1274" label="LensOnGalleryEnabled"/>
+  <int value="1275" label="HistorySearchSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

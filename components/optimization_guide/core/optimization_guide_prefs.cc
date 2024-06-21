@@ -76,6 +76,8 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
       return "optimization_guide.tab_organization_setting_state";
     case UserVisibleFeatureKey::kWallpaperSearch:
       return "optimization_guide.wallpaper_search_setting_state";
+    case UserVisibleFeatureKey::kHistorySearch:
+      return "optimization_guide.history_search_setting_state";
   }
 }
 

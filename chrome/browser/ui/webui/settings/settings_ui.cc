@@ -599,17 +599,19 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               features::kAutomaticFullscreenContentSetting));
 
   // AI
-  optimization_guide::UserVisibleFeatureKey optimization_guide_features[3] = {
+  optimization_guide::UserVisibleFeatureKey optimization_guide_features[4] = {
       optimization_guide::UserVisibleFeatureKey::kCompose,
       optimization_guide::UserVisibleFeatureKey::kTabOrganization,
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch,
+      optimization_guide::UserVisibleFeatureKey::kHistorySearch,
   };
 
   auto* optimization_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  bool optimization_guide_feature_visible[4] = {false, false, false, false};
+  bool optimization_guide_feature_visible[5] = {false, false, false, false,
+                                                false};
 
-  for (size_t i = 0; i < 3; i++) {
+  for (size_t i = 0; i < 4; i++) {
     const bool visible = optimization_guide_service &&
                          optimization_guide_service->IsSettingVisible(
                              optimization_guide_features[i]);
@@ -628,6 +630,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           optimization_guide_feature_visible[2]);
   html_source->AddBoolean("showWallpaperSearchControl",
                           optimization_guide_feature_visible[3]);
+  html_source->AddBoolean("showHistorySearchControl",
+                          optimization_guide_feature_visible[4]);
 
   TryShowHatsSurveyWithTimeout();
 }

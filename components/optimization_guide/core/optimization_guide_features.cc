@@ -295,6 +295,7 @@ bool IsModelQualityLoggingEnabledForFeature(UserVisibleFeatureKey key) {
     case UserVisibleFeatureKey::kCompose:
     case UserVisibleFeatureKey::kTabOrganization:
     case UserVisibleFeatureKey::kWallpaperSearch:
+    case UserVisibleFeatureKey::kHistorySearch:
       // Enable logging when you have approvals. For new features please
       // consult with components/optimization_guide/core/model_quality/OWNERS to
       // discuss if you need logging or not for your feature.

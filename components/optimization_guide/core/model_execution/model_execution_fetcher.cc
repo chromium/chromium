@@ -138,6 +138,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kTest:
       // Used for testing purposes. No real features use this.
       return MISSING_TRAFFIC_ANNOTATION;
+    case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kPromptApi:
       // On-device only feature.
       NOTREACHED_IN_MIGRATION();

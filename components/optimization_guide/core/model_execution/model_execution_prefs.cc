@@ -23,6 +23,10 @@ const char kWallpaperSearchEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.wallpaper_search_enterprise_policy_"
     "allowed";
 
+const char kHistorySearchEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.history_search_"
+    "enterprise_policy_allowed";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kTabOrganizationEnterprisePolicyAllowed,
@@ -36,6 +40,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       kWallpaperSearchEnterprisePolicyAllowed,
       static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
       PrefRegistry::LOSSY_PREF);
+  registry->RegisterIntegerPref(
+      kHistorySearchEnterprisePolicyAllowed,
+      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
+      PrefRegistry::LOSSY_PREF);
 }
 
 const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature) {
@@ -46,6 +54,8 @@ const char* GetEnterprisePolicyPrefName(UserVisibleFeatureKey feature) {
       return kTabOrganizationEnterprisePolicyAllowed;
     case UserVisibleFeatureKey::kWallpaperSearch:
       return kWallpaperSearchEnterprisePolicyAllowed;
+    case UserVisibleFeatureKey::kHistorySearch:
+      return kHistorySearchEnterprisePolicyAllowed;
   }
 }
 
@@ -90,6 +100,9 @@ const char kLastTimePromptApiWasUsed[] =
 const char kLastTimeTestFeatureWasUsed[] =
     "optimization_guide.model_execution.last_time_test_used";
 
+const char kLastTimeHistorySearchWasUsed[] =
+    "optimization_guide.model_execution.last_time_history_search_used";
+
 // A timestamp for the last time the on-device model was eligible for download.
 const char kLastTimeEligibleForOnDeviceModelDownload[] =
     "optimization_guide.on_device.last_time_eligible_for_download";
@@ -117,6 +130,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                              base::Time::Min());
   registry->RegisterTimePref(localstate::kLastTimeTestFeatureWasUsed,
                              base::Time::Min());
+  registry->RegisterTimePref(localstate::kLastTimeHistorySearchWasUsed,
+                             base::Time::Min());
   registry->RegisterTimePref(
       localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
   registry->RegisterDictionaryPref(localstate::kOnDeviceModelValidationResult);
@@ -136,6 +151,8 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
       return prefs::localstate::kLastTimePromptApiWasUsed;
     case ModelBasedCapabilityKey::kTest:
       return prefs::localstate::kLastTimeTestFeatureWasUsed;
+    case ModelBasedCapabilityKey::kHistorySearch:
+      return prefs::localstate::kLastTimeHistorySearchWasUsed;
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kTextSafety:

@@ -139,6 +139,9 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
         log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
             ->set_user_feedback(feedback);
         break;
+      case UserVisibleFeatureKey::kHistorySearch:
+        // TODO(crbug.com/345308285): Add user feedback for history searches.
+        break;
     }
 
     return log_entry;
