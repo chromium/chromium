@@ -604,6 +604,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // Add client hints headers to a request bound for |origin|.
   void AddClientHintsHeaders(const url::Origin& origin,
                              net::HttpRequestHeaders* request_headers);
+  // Add X-Client-Data request header to a request.
+  void AddXClientDataHeader(network::ResourceRequest& request);
 
   // Returns the `SinglePrefetch` to be prefetched next. This is the last
   // element in `redirect_chain_`, because, during prefetching from the network,

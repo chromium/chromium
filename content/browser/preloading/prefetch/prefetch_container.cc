@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
@@ -757,7 +758,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   // some which are added by throttles). These aren't yet supported for
   // prefetch, including browsing topics and client hints.
   net::HttpRequestHeaders updated_headers;
-  std::vector<std::string> headers_to_remove;
+  std::vector<std::string> headers_to_remove = {variations::kClientDataHeader};
   updated_headers.SetHeader("Sec-Purpose",
                             GetSecPurposeHeaderValue(redirect_info.new_url));
 
@@ -804,12 +805,30 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   resource_request_->referrer = GURL(redirect_info.new_referrer);
   resource_request_->referrer_policy = redirect_info.new_referrer_policy;
 
+  AddXClientDataHeader(*resource_request_.get());
+
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
       redirect_info.new_url, referring_origin_));
 }
 
 void PrefetchContainer::MarkCrossSiteContaminated() {
   is_cross_site_contaminated_ = true;
+}
+
+void PrefetchContainer::AddXClientDataHeader(
+    network::ResourceRequest& request) {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchXClientDataHeader)) {
+    return;
+  }
+
+  if (browser_context_) {
+    // Add X-Client-Data header with experiment IDs from field trials.
+    variations::AppendVariationsHeader(request.url,
+                                       browser_context_->IsOffTheRecord()
+                                           ? variations::InIncognito::kYes
+                                           : variations::InIncognito::kNo,
+                                       variations::SignedIn::kNo, &request);
+  }
 }
 
 void PrefetchContainer::RegisterCookieListener(
@@ -1419,8 +1438,7 @@ void PrefetchContainer::MakeResourceRequest(
   request->headers.RemoveHeader("User-Agent");
 
   // There are sometimes other headers that are set during navigation.  These
-  // aren't yet supported for prefetch, including browsing topics and client
-  // hints.
+  // aren't yet supported for prefetch, including browsing topics.
 
   request->trusted_params = trusted_params;
   request->site_for_cookies = trusted_params.isolation_info.site_for_cookies();
@@ -1463,6 +1481,7 @@ void PrefetchContainer::MakeResourceRequest(
   }();
 
   AddClientHintsHeaders(origin, &request->headers);
+  AddXClientDataHeader(*request.get());
 
   const auto& devtools_observer = GetDevToolsObserver();
   if (devtools_observer && !IsDecoy()) {

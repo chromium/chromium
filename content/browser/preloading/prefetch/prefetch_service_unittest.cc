@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
@@ -1093,6 +1094,9 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 
   std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 };
 
 TEST_F(PrefetchServiceTest, SuccessCase) {
