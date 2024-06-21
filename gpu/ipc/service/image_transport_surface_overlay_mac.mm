@@ -4,6 +4,9 @@
 
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
 
+#include <dawn/native/MetalBackend.h>
+#include <dawn/webgpu_cpp.h>
+
 #include <memory>
 #include <sstream>
 
@@ -50,8 +53,9 @@ BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
-ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL()
-    : weak_ptr_factory_(this) {
+ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
+    DawnContextProvider* dawn_context_provider)
+    : dawn_context_provider_(dawn_context_provider), weak_ptr_factory_(this) {
   static bool av_disabled_at_command_line =
       !base::FeatureList::IsEnabled(kAVFoundationOverlays);
 
@@ -102,17 +106,28 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // https://crbug.com/1372898
   if (gl::GLDisplayEGL* display =
           gl::GLDisplayEGL::GetDisplayForCurrentContext()) {
-    EGLAttrib angle_device_attrib = 0;
-    if (eglQueryDisplayAttribEXT(display->GetDisplay(), EGL_DEVICE_EXT,
-                                 &angle_device_attrib)) {
-      EGLDeviceEXT angle_device =
-          reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
-      EGLAttrib metal_device_attrib = 0;
-      if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
-                                  &metal_device_attrib)) {
-        id<MTLDevice> metal_device = (__bridge id)(void*)metal_device_attrib;
-        ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
-            ->SetMetalDevice(metal_device);
+    // With SkiaGraphite, we pass the Graphite-Dawn MTLDevice for creating
+    // CAMetalLayer used to display HDR IOSurfaces. With SkiaGanesh, we pass the
+    // ANGLE MTLDevice instead.
+    if (dawn_context_provider_ &&
+        dawn_context_provider_->backend_type() == wgpu::BackendType::Metal) {
+      id<MTLDevice> metal_device = dawn::native::metal::GetMTLDevice(
+          dawn_context_provider_->GetDevice().Get());
+      ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
+          ->SetMetalDevice(metal_device);
+    } else {
+      EGLAttrib angle_device_attrib = 0;
+      if (eglQueryDisplayAttribEXT(display->GetDisplay(), EGL_DEVICE_EXT,
+                                   &angle_device_attrib)) {
+        EGLDeviceEXT angle_device =
+            reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
+        EGLAttrib metal_device_attrib = 0;
+        if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
+                                    &metal_device_attrib)) {
+          id<MTLDevice> metal_device = (__bridge id)(void*)metal_device_attrib;
+          ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
+              ->SetMetalDevice(metal_device);
+        }
       }
     }
   }
