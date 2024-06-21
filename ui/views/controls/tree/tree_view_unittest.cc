@@ -396,6 +396,19 @@ TEST_F(TreeViewTest, TreeViewPaintCoverage) {
       PaintInfo::CreateRootPaintInfo(canvas_painter.context(), size));
 }
 
+TEST_F(TreeViewTest, InitialAccessibilityProperties) {
+  tree()->SetModel(&model_);
+  ui::AXNodeData data;
+  tree()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTree);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kVertical));
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kActivate);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName), "");
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
 // Verifies setting model correctly updates internal state.
 TEST_F(TreeViewTest, SetModel) {
   tree()->SetModel(&model_);

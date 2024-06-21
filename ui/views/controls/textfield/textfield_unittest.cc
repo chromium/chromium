@@ -4632,6 +4632,52 @@ TEST_F(TextfieldTest, AccessibleRole) {
             ax::mojom::Role::kSearchBox);
 }
 
+TEST_F(TextfieldTest, AccessibleReadOnly) {
+  InitTextfield();
+
+  textfield_->SetReadOnly(true);
+
+  ui::AXNodeData data;
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  textfield_->SetReadOnly(false);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_NE(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  // We should not override the disabled restriction with a readonly one.
+  textfield_->SetEnabled(false);
+  textfield_->SetReadOnly(true);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kDisabled);
+
+  // If we re-enable the textfield, the readonly restriction should be applied.
+  textfield_->SetEnabled(true);
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+
+  // If we start out with a disabled textfield and then set it to readonly and
+  // then enable it again, the readonly restriction should be applied.
+  textfield_->SetEnabled(false);
+  textfield_->SetReadOnly(false);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kDisabled);
+
+  textfield_->SetReadOnly(true);
+  textfield_->SetEnabled(true);
+
+  data = ui::AXNodeData();
+  textfield_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+}
+
 // Verify that cursor visibility is controlled by SetCursorEnabled.
 TEST_F(TextfieldTest, CursorVisibility) {
   InitTextfield();

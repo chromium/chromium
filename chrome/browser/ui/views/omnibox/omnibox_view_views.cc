@@ -199,6 +199,7 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
   // ignored by accessibility since a plain text field should always be a leaf
   // node in the accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
+  GetViewAccessibility().SetReadOnly(popup_window_mode_);
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
@@ -1292,9 +1293,7 @@ void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       ax::mojom::IntAttribute::kTextSelEnd,
       entry_end + friendly_suggestion_text_prefix_length_);
 
-  if (popup_window_mode_) {
-    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-  } else {
+  if (!popup_window_mode_) {
     node_data->AddState(ax::mojom::State::kEditable);
   }
 }

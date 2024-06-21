@@ -75,7 +75,8 @@ class TestingOmniboxView;
 
 class TestingOmniboxView : public OmniboxViewViews {
  public:
-  explicit TestingOmniboxView(std::unique_ptr<OmniboxClient> client);
+  explicit TestingOmniboxView(std::unique_ptr<OmniboxClient> client,
+                              bool popup_window_mode);
   TestingOmniboxView(const TestingOmniboxView&) = delete;
   TestingOmniboxView& operator=(const TestingOmniboxView&) = delete;
 
@@ -151,8 +152,12 @@ class TestingOmniboxView : public OmniboxViewViews {
   bool base_text_emphasis_;
 };
 
-TestingOmniboxView::TestingOmniboxView(std::unique_ptr<OmniboxClient> client)
-    : OmniboxViewViews(std::move(client), false, nullptr, gfx::FontList()) {}
+TestingOmniboxView::TestingOmniboxView(std::unique_ptr<OmniboxClient> client,
+                                       bool popup_window_mode)
+    : OmniboxViewViews(std::move(client),
+                       popup_window_mode,
+                       nullptr,
+                       gfx::FontList()) {}
 
 void TestingOmniboxView::ResetEmphasisTestState() {
   base_text_emphasis_ = false;
@@ -307,7 +312,8 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   OmniboxViewViewsTest(
       const std::vector<base::test::FeatureRefAndParams>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features,
-      bool is_rtl_ui_test = false);
+      bool is_rtl_ui_test = false,
+      bool is_popup_window_mode = false);
 
   OmniboxViewViewsTest()
       : OmniboxViewViewsTest(std::vector<base::test::FeatureRefAndParams>(),
@@ -367,6 +373,8 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
                           ui::EventTimeForNow(), flags, 0);
   }
 
+  bool is_popup_window_mode_ = false;
+
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
@@ -387,10 +395,12 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
 OmniboxViewViewsTest::OmniboxViewViewsTest(
     const std::vector<base::test::FeatureRefAndParams>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features,
-    bool is_rtl_ui_test)
+    bool is_rtl_ui_test,
+    bool is_popup_window_mode)
     : OmniboxViewViewsTestBase(enabled_features,
                                disabled_features,
                                is_rtl_ui_test),
+      is_popup_window_mode_(is_popup_window_mode),
       command_updater_(nullptr),
       location_bar_(&command_updater_, &location_bar_model_) {}
 
@@ -435,7 +445,8 @@ void OmniboxViewViewsTest::SetUp() {
       base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
   auto omnibox_view = std::make_unique<TestingOmniboxView>(
       std::make_unique<ChromeOmniboxClient>(&location_bar_, browser(),
-                                            profile()));
+                                            profile()),
+      is_popup_window_mode_);
   omnibox_view->Init();
 
   omnibox_view_ = widget_->SetContentsView(std::move(omnibox_view));
@@ -458,6 +469,15 @@ void OmniboxViewViewsTest::TearDown() {
 
   ChromeViewsTestBase::TearDown();
 }
+
+class OmniboxViewViewsTestIsPopupWindowMode : public OmniboxViewViewsTest {
+ public:
+  OmniboxViewViewsTestIsPopupWindowMode()
+      : OmniboxViewViewsTest(/* enabled_features */ {},
+                             /* disabled_features */ {},
+                             /* is_rtl_ui_test */ false,
+                             /* is_popup_window_mode */ true) {}
+};
 
 // Actual tests ---------------------------------------------------------------
 
@@ -1002,6 +1022,26 @@ TEST_F(OmniboxViewViewsTest,
             expected_offsets_2);
 }
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
+TEST_F(OmniboxViewViewsTest, InitialAccessibilityProperties) {
+  ui::AXNodeData node_data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kTextField);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Address and search bar");
+  EXPECT_EQ(node_data.GetRestriction(), ax::mojom::Restriction::kNone);
+  EXPECT_TRUE(omnibox_view()->GetViewAccessibility().IsLeaf());
+}
+
+TEST_F(OmniboxViewViewsTestIsPopupWindowMode, InitialAccessibilityProperties) {
+  ui::AXNodeData node_data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kTextField);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Address and search bar");
+  EXPECT_EQ(node_data.GetRestriction(), ax::mojom::Restriction::kReadOnly);
+  EXPECT_TRUE(omnibox_view()->GetViewAccessibility().IsLeaf());
+}
 
 class OmniboxViewViewsClipboardTest
     : public OmniboxViewViewsTest,

@@ -294,6 +294,9 @@ void Textfield::SetReadOnly(bool read_only) {
 
   // Update read-only without changing the focusable state (or active, etc.).
   read_only_ = read_only;
+  if (GetEnabled()) {
+    GetViewAccessibility().SetReadOnly(read_only_);
+  }
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
   if (GetWidget()) {
@@ -1036,9 +1039,6 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->AddState(ax::mojom::State::kEditable);
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
-    // Only readonly if enabled. Don't overwrite the disabled restriction.
-    if (GetReadOnly())
-      node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   }
   node_data->AddIntAttribute(
       ax::mojom::IntAttribute::kTextDirection,
@@ -3002,6 +3002,14 @@ void Textfield::OnEnabledChanged() {
   if (GetInputMethod())
     GetInputMethod()->OnTextInputTypeChanged(this);
   UpdateDefaultBorder();
+
+  // Only expose readonly if enabled. Don't overwrite the disabled restriction.
+  // However, if we re-enable a textfield that was already set to readonly,
+  // we need to update the readonly state, since the disabled restriction would
+  // have overwritten it.
+  if (GetEnabled() && GetReadOnly()) {
+    GetViewAccessibility().SetReadOnly(true);
+  }
 }
 
 void Textfield::DropDraggedText(
