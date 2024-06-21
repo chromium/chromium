@@ -39,4 +39,8 @@ BluetoothAdapterIOS::GetLowEnergyWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void BluetoothAdapterIOS::TriggerSystemPermissionPrompt() {
+  // TODO(crbug.com/346409873): Find the system API to trigger prompt for iOS.
+}
+
 }  // namespace device

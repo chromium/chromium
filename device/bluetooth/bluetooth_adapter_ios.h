@@ -35,6 +35,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterIOS
 
   // BluetoothLowEnergyAdapterApple override:
   base::WeakPtr<BluetoothLowEnergyAdapterApple> GetLowEnergyWeakPtr() override;
+  void TriggerSystemPermissionPrompt() override;
 
  private:
   BluetoothAdapterIOS();

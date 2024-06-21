@@ -128,8 +128,6 @@ BluetoothLowEnergyAdapterApple::GetOsPermissionStatus() const {
 
 void BluetoothLowEnergyAdapterApple::RequestSystemPermission(
     BluetoothAdapter::RequestSystemPermissionCallback callback) {
-// TODO(crbug.com/346409873): Remove BUILDFLAG here.
-#if BUILDFLAG(IS_MAC)
   auto status = GetOsPermissionStatus();
   if (status == PermissionStatus::kUndetermined) {
     request_system_permission_callbacks_.push_back(std::move(callback));
@@ -139,18 +137,11 @@ void BluetoothLowEnergyAdapterApple::RequestSystemPermission(
           initWithDelegate:low_energy_central_manager_delegate_
                      queue:dispatch_get_main_queue()];
     }
-    // Call the system API to trigger the Bluetooth system permission prompt if
-    // the permission is undetermined. This system API might block on user
-    // interaction with the prompt if the BLuetooth system permission is
-    // undetermined.
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce([] { [IOBluetoothDevice pairedDevices]; }));
+    TriggerSystemPermissionPrompt();
   } else {
     ui_task_runner_->PostTask(FROM_HERE,
                               base::BindOnce(std::move(callback), status));
   }
-#endif
 }
 
 bool BluetoothLowEnergyAdapterApple::IsPowered() const {

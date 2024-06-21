@@ -116,6 +116,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyAdapterApple
   virtual GetDevicePairedStatusCallback GetDevicePairedStatus() const;
   virtual base::WeakPtr<BluetoothLowEnergyAdapterApple>
   GetLowEnergyWeakPtr() = 0;
+  virtual void TriggerSystemPermissionPrompt() = 0;
 
   // BluetoothAdapter override:
   bool SetPoweredImpl(bool powered) override;

@@ -74,6 +74,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   // BluetoothLowEnergyAdapterApple override:
   base::WeakPtr<BluetoothLowEnergyAdapterApple> GetLowEnergyWeakPtr() override;
+  void TriggerSystemPermissionPrompt() override;
 
  private:
   // Struct bundling information about the state of the HostController.

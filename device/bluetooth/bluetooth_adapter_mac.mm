@@ -306,6 +306,16 @@ BluetoothAdapterMac::GetLowEnergyWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void BluetoothAdapterMac::TriggerSystemPermissionPrompt() {
+  // Call the system API `IOBluetoothDevice::pairedDevices` to trigger the
+  // Bluetooth system permission prompt if the permission is undetermined. This
+  // system API might block on user interaction with the prompt if the Bluetooth
+  // system permission is undetermined.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce([] { [IOBluetoothDevice pairedDevices]; }));
+}
+
 void BluetoothAdapterMac::LazyInitialize() {
   if (lazy_initialized_)
     return;
