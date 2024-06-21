@@ -712,6 +712,10 @@ BASE_FEATURE(kHappinessTrackingLauncherAppsFinding,
 BASE_FEATURE(kHappinessTrackingLauncherAppsNeeding,
              "HappinessTrackingLauncherAppsNeeding",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for the Office integration.
+BASE_FEATURE(kHappinessTrackingOffice,
+             "HappinessTrackingOffice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.
