@@ -37,7 +37,8 @@ class BASE_EXPORT CheckedLockImpl {
 
   static void AssertNoLockHeldOnCurrentThread();
 
-  void Acquire() EXCLUSIVE_LOCK_FUNCTION(lock_);
+  void Acquire(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION(lock_);
   void Release() UNLOCK_FUNCTION(lock_);
 
   void AssertAcquired() const;

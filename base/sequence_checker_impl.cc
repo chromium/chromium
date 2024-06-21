@@ -97,7 +97,7 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
   // Valid if holding a bound lock.
   if (!is_valid) {
 #if DCHECK_IS_ON()
-    for (uintptr_t lock : subtle::GetLocksHeldByCurrentThread()) {
+    for (uintptr_t lock : subtle::GetTrackedLocksHeldByCurrentThread()) {
       if (Contains(locks_, lock)) {
         is_valid = true;
         break;
@@ -150,7 +150,7 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
   // `locks_` must contain locks held at binding time and for all calls to
   // `CalledOnValidSequence` that returned true afterwards.
   std::erase_if(locks_, [](uintptr_t lock_ptr) {
-    return !Contains(subtle::GetLocksHeldByCurrentThread(), lock_ptr);
+    return !Contains(subtle::GetTrackedLocksHeldByCurrentThread(), lock_ptr);
   });
 #endif  // DCHECK_IS_ON()
 
@@ -191,7 +191,7 @@ void SequenceCheckerImpl::EnsureAssigned() const {
   // detail of `SequenceCheckerImpl` and doesn't provide mutual exclusion
   // guarantees to the caller).
   DCHECK(locks_.empty());
-  ranges::remove_copy(subtle::GetLocksHeldByCurrentThread(),
+  ranges::remove_copy(subtle::GetTrackedLocksHeldByCurrentThread(),
                       std::back_inserter(locks_),
                       reinterpret_cast<uintptr_t>(&lock_));
 #endif  // DCHECK_IS_ON()

@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/lock_impl.h"
+#include "base/synchronization/lock_subtle.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -30,14 +31,20 @@ class LOCKABLE BASE_EXPORT Lock {
 #if !DCHECK_IS_ON()
   ~Lock() = default;
 
-  void Acquire() EXCLUSIVE_LOCK_FUNCTION() { lock_.Lock(); }
+  void Acquire(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION() {
+    lock_.Lock();
+  }
   void Release() UNLOCK_FUNCTION() { lock_.Unlock(); }
 
   // If the lock is not held, take it and return true. If the lock is already
   // held by another thread, immediately return false. This must not be called
   // by a thread already holding the lock (what happens is undefined and an
   // assertion may fail).
-  bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true) { return lock_.Try(); }
+  bool Try(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+    return lock_.Try();
+  }
 
   // Null implementation if not debug.
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {}
@@ -45,25 +52,13 @@ class LOCKABLE BASE_EXPORT Lock {
 #else
   ~Lock();
 
-  // NOTE: We do not permit recursive locks and will commonly fire a DCHECK() if
-  // a thread attempts to acquire the lock a second time (while already holding
-  // it).
-  void Acquire() EXCLUSIVE_LOCK_FUNCTION() {
-    lock_.Lock();
-    CheckUnheldAndMark();
-  }
-  void Release() UNLOCK_FUNCTION() {
-    CheckHeldAndUnmark();
-    lock_.Unlock();
-  }
-
-  bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true) {
-    bool rv = lock_.Try();
-    if (rv) {
-      CheckUnheldAndMark();
-    }
-    return rv;
-  }
+  // Note: Acquiring a lock that is already held by the calling thread is not
+  // supported and results in a CHECK() failure.
+  void Acquire(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_LOCK_FUNCTION();
+  void Release() UNLOCK_FUNCTION();
+  bool Try(subtle::LockTracking tracking = subtle::LockTracking::kDisabled)
+      EXCLUSIVE_TRYLOCK_FUNCTION(true);
 
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK();
   void AssertNotHeld() const;
@@ -93,17 +88,22 @@ class LOCKABLE BASE_EXPORT Lock {
 
  private:
 #if DCHECK_IS_ON()
-  // Members and routines taking care of locks assertions.
-  // Note that this checks for recursive locks and allows them
-  // if the variable is set.  This is allowed by the underlying implementation
-  // on windows but not on Posix, so we're doing unneeded checks on Posix.
-  // It's worth it to share the code.
+  // Check that `owning_thread_ref_` refers to the current thread and unset it.
   void CheckHeldAndUnmark();
+  // Check that `owning_thread_ref_` is null and set it to the current thread.
   void CheckUnheldAndMark();
 
-  // All private data is implicitly protected by lock_.
-  // Be VERY careful to only access members under that lock.
+  // Adds/removes this lock to/from the thread-local list returned by
+  // `subtle::GetLocksHeldByCurrentThread()`, unless tracking is disabled.
+  void AddToLocksHeldOnCurrentThread();
+  void RemoveFromLocksHeldOnCurrentThread();
+
+  // Reference to the thread holding the lock. Protected by `lock_`.
   base::PlatformThreadRef owning_thread_ref_;
+
+  // Whether the lock is currently in the list of locks held by a thread. When
+  // true, the lock is removed from the list upon `Release()`.
+  bool in_tracked_locks_held_by_current_thread_ = false;
 #endif  // DCHECK_IS_ON()
 
   // Platform specific underlying lock implementation.

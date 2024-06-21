@@ -20,7 +20,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/synchronization/lock_subtle.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -325,13 +324,6 @@ size_t WaitableEvent::WaitManyImpl(WaitableEvent** raw_waitables,
 size_t WaitableEvent::EnqueueMany(std::pair<WaitableEvent*, size_t>* waitables,
                                   size_t count,
                                   Waiter* waiter) NO_THREAD_SAFETY_ANALYSIS {
-  // This scope may bring the number of locks held on the thread above the
-  // fixed-sized thread local storage used by `GetLocksHeldByCurrentThread()`
-  // (this was observed with the "WaitSetTest.NoStarvation" test but not in
-  // production). Disable tracking, at the cost of not being able to use these
-  // locks to guarantee mutual exclusion in `SequenceChecker`.
-  subtle::DoNotTrackLocks do_not_track_locks;
-
   size_t winner = count;
   size_t winner_index = count;
   for (size_t i = 0; i < count; ++i) {

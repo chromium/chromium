@@ -13,8 +13,9 @@
 // SequenceChecker verifies mutual exclusion between calls to its
 // `CalledOnValidSequence()` method. Mutual exclusion is guaranteed if all calls
 // are made from the same thread, from the same sequence (see
-// `SequencedTaskRunner`) or under the same lock. SequenceChecker supports
-// thread safety annotations (see base/thread_annotations.h).
+// `SequencedTaskRunner`) or under the same lock acquired with
+// `base::subtle::LockTracking::kEnabled`. SequenceChecker supports thread
+// safety annotations (see base/thread_annotations.h).
 //
 // Use the macros below instead of the SequenceChecker directly so that the
 // unused member doesn't result in an extra byte (four when padded) per instance

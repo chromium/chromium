@@ -35,18 +35,43 @@ namespace {
 // dynamic-size array (e.g. owned by a `ThreadLocalOwnedPointer`) would require
 // handling reentrancy issues with allocator shims that use `base::Lock`.
 constexpr int kHeldLocksCapacity = 10;
-thread_local std::array<uintptr_t, kHeldLocksCapacity> g_locks_held_by_thread;
+thread_local std::array<uintptr_t, kHeldLocksCapacity>
+    g_tracked_locks_held_by_thread;
 
-// Number of non-nullptr elements in `g_locks_held_by_thread`.
-thread_local size_t g_num_locks_held_by_thread = 0;
-
-// Whether a lock is added to `g_locks_held_by_thread` when acquired.
-thread_local bool g_track_locks = true;
+// Number of non-nullptr elements in `g_tracked_locks_held_by_thread`.
+thread_local size_t g_num_tracked_locks_held_by_thread = 0;
 
 }  // namespace
 
 Lock::~Lock() {
   DCHECK(owning_thread_ref_.is_null());
+}
+
+void Lock::Acquire(subtle::LockTracking tracking) {
+  lock_.Lock();
+  if (tracking == subtle::LockTracking::kEnabled) {
+    AddToLocksHeldOnCurrentThread();
+  }
+  CheckUnheldAndMark();
+}
+
+void Lock::Release() {
+  CheckHeldAndUnmark();
+  if (in_tracked_locks_held_by_current_thread_) {
+    RemoveFromLocksHeldOnCurrentThread();
+  }
+  lock_.Unlock();
+}
+
+bool Lock::Try(subtle::LockTracking tracking) {
+  const bool rv = lock_.Try();
+  if (rv) {
+    if (tracking == subtle::LockTracking::kEnabled) {
+      AddToLocksHeldOnCurrentThread();
+    }
+    CheckUnheldAndMark();
+  }
+  return rv;
 }
 
 void Lock::AssertAcquired() const {
@@ -60,56 +85,57 @@ void Lock::AssertNotHeld() const {
 void Lock::CheckHeldAndUnmark() {
   DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
   owning_thread_ref_ = PlatformThreadRef();
-
-  // Remove from the list of held locks.
-  for (size_t i = 0; i < g_num_locks_held_by_thread; ++i) {
-    // Traverse from the end since locks are typically acquired and released in
-    // opposite order.
-    const size_t index = g_num_locks_held_by_thread - i - 1;
-    if (g_locks_held_by_thread[index] == reinterpret_cast<uintptr_t>(this)) {
-      g_locks_held_by_thread[index] =
-          g_locks_held_by_thread[g_num_locks_held_by_thread - 1];
-      g_locks_held_by_thread[g_num_locks_held_by_thread - 1] =
-          reinterpret_cast<uintptr_t>(nullptr);
-      --g_num_locks_held_by_thread;
-      break;
-    }
-  }
 }
 
 void Lock::CheckUnheldAndMark() {
   DCHECK(owning_thread_ref_.is_null());
   owning_thread_ref_ = PlatformThread::CurrentRef();
+}
 
-  if (g_track_locks) {
-    // Check if capacity is exceeded.
-    if (g_num_locks_held_by_thread >= kHeldLocksCapacity) {
-      // Disable tracking of locks since logging may acquire a lock.
-      subtle::DoNotTrackLocks do_not_track_locks;
-      CHECK(false)
-          << "This thread holds more than " << kHeldLocksCapacity
-          << " locks simultaneously. Reach out to //base OWNERS to determine "
-             "whether it's preferable to increase `kHeldLocksCapacity` or to "
-             "use `DoNotTrackLocks` in this scope.";
-    }
+void Lock::AddToLocksHeldOnCurrentThread() {
+  CHECK(!in_tracked_locks_held_by_current_thread_);
 
-    // Add to the list of held locks.
-    g_locks_held_by_thread[g_num_locks_held_by_thread] =
-        reinterpret_cast<uintptr_t>(this);
-    ++g_num_locks_held_by_thread;
+  // Check if capacity is exceeded.
+  if (g_num_tracked_locks_held_by_thread >= kHeldLocksCapacity) {
+    CHECK(false)
+        << "This thread holds more than " << kHeldLocksCapacity
+        << " tracked locks simultaneously. Reach out to //base OWNERS to "
+           "determine whether `kHeldLocksCapacity` should be increased.";
   }
+
+  // Add to the list of held locks.
+  g_tracked_locks_held_by_thread[g_num_tracked_locks_held_by_thread] =
+      reinterpret_cast<uintptr_t>(this);
+  ++g_num_tracked_locks_held_by_thread;
+  in_tracked_locks_held_by_current_thread_ = true;
+}
+
+void Lock::RemoveFromLocksHeldOnCurrentThread() {
+  CHECK(in_tracked_locks_held_by_current_thread_);
+  for (size_t i = 0; i < g_num_tracked_locks_held_by_thread; ++i) {
+    // Traverse from the end since locks are typically acquired and released in
+    // opposite order.
+    const size_t index = g_num_tracked_locks_held_by_thread - i - 1;
+    if (g_tracked_locks_held_by_thread[index] ==
+        reinterpret_cast<uintptr_t>(this)) {
+      g_tracked_locks_held_by_thread[index] =
+          g_tracked_locks_held_by_thread[g_num_tracked_locks_held_by_thread -
+                                         1];
+      g_tracked_locks_held_by_thread[g_num_tracked_locks_held_by_thread - 1] =
+          reinterpret_cast<uintptr_t>(nullptr);
+      --g_num_tracked_locks_held_by_thread;
+      break;
+    }
+  }
+  in_tracked_locks_held_by_current_thread_ = false;
 }
 
 namespace subtle {
 
-span<const uintptr_t> GetLocksHeldByCurrentThread() {
-  return span<const uintptr_t>(g_locks_held_by_thread.begin(),
-                               g_num_locks_held_by_thread);
+span<const uintptr_t> GetTrackedLocksHeldByCurrentThread() {
+  return span<const uintptr_t>(g_tracked_locks_held_by_thread.begin(),
+                               g_num_tracked_locks_held_by_thread);
 }
-
-DoNotTrackLocks::DoNotTrackLocks() : auto_reset_(&g_track_locks, false) {}
-
-DoNotTrackLocks::~DoNotTrackLocks() = default;
 
 }  // namespace subtle
 
