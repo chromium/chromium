@@ -57,8 +57,6 @@ source_set("unit_tests") {
     "ml_model_loader_test_util.cc",
     "ml_model_loader_test_util.h",
     "ml_trace_unittest.cc",
-    "webnn/ml_graph_builder_test.cc",
-    "webnn/ml_graph_builder_test.h",
     "webnn/ml_graph_builder_test_utils.cc",
     "webnn/ml_graph_builder_test_utils.h",
     "webnn/ml_graph_test.cc",

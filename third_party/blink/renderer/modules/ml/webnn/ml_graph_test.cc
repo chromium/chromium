@@ -40,22 +40,25 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -154,6 +157,13 @@ void SetArrayBufferViewValues(NotShared<DOMArrayBufferView> array_buffer_view,
          values.size() * sizeof(T));
 }
 
+// Helper function to create an ArrayBufferView given an operand.
+NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
+    const MLOperand* operand) {
+  return CreateDOMArrayBufferView(operand->NumberOfElements(),
+                                  operand->dataType().AsEnum());
+}
+
 // Overrode helper function to create an ArrayBufferView given an operand and
 // set its data from a vector.
 template <typename T>
@@ -174,20 +184,6 @@ Vector<T> GetArrayBufferViewValues(
   memcpy(values.data(), array_buffer_view->BaseAddress(),
          array_buffer_view->byteLength());
   return values;
-}
-
-template <typename T>
-MLOperand* BuildConstant(MLGraphBuilder* builder,
-                         const Vector<uint32_t>& dimensions,
-                         V8MLOperandDataType::Enum data_type,
-                         const Vector<T>& values,
-                         ExceptionState& exception_state) {
-  size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
-                                       size_t(1), std::multiplies<uint32_t>());
-  auto buffer = CreateDOMArrayBufferView(buffer_size, data_type);
-  DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
-  memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
-  return BuildConstant(builder, dimensions, data_type, exception_state, buffer);
 }
 
 ScriptPromise<MLContext> CreateContext(V8TestingScope& scope,
@@ -233,6 +229,116 @@ std::pair<String, String> ComputeGraph(V8TestingScope& scope,
   } else {
     return GetErrorNameAndMessage(&scope, tester.Value());
   }
+}
+
+template <typename T>
+MLOperand* BuildConstant(MLGraphBuilder* builder,
+                         const Vector<uint32_t>& dimensions,
+                         V8MLOperandDataType::Enum data_type,
+                         const Vector<T>& values,
+                         ExceptionState& exception_state) {
+  size_t buffer_size = std::accumulate(dimensions.begin(), dimensions.end(),
+                                       size_t(1), std::multiplies<uint32_t>());
+  auto buffer = CreateDOMArrayBufferView(buffer_size, data_type);
+  DCHECK_EQ(buffer->byteLength(), values.size() * sizeof(T));
+  memcpy(buffer->BaseAddress(), values.data(), buffer->byteLength());
+  return BuildConstant(builder, dimensions, data_type, exception_state, buffer);
+}
+
+MLOperand* BuildConv2d(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLOperand* filter,
+    const MLConv2dOptions* options = MLConv2dOptions::Create()) {
+  auto* output =
+      builder->conv2d(input, filter, options, scope.GetExceptionState());
+  EXPECT_THAT(output, testing::NotNull());
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  auto* conv2d = output->Operator();
+  EXPECT_THAT(conv2d, testing::NotNull());
+  EXPECT_EQ(conv2d->Kind(), webnn::mojom::blink::Operation::Tag::kConv2d);
+  EXPECT_TRUE(conv2d->IsConnected());
+  EXPECT_THAT(conv2d->Options(), testing::NotNull());
+  return output;
+}
+
+MLOperand* BuildGemm(V8TestingScope& scope,
+                     MLGraphBuilder* builder,
+                     const MLOperand* a,
+                     const MLOperand* b,
+                     const MLGemmOptions* options = MLGemmOptions::Create()) {
+  auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
+  EXPECT_THAT(output, testing::NotNull());
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
+  EXPECT_EQ(output->DataType(), a->DataType());
+  auto* gemm = output->Operator();
+  EXPECT_THAT(gemm, testing::NotNull());
+  EXPECT_EQ(gemm->Kind(), webnn::mojom::blink::Operation::Tag::kGemm);
+  EXPECT_TRUE(gemm->IsConnected());
+  EXPECT_THAT(gemm->Options(), testing::NotNull());
+  return output;
+}
+
+MLOperand* BuildElementWiseBinaryOperator(
+    MLGraphBuilder* builder,
+    V8TestingScope& scope,
+    const MLOperand* a,
+    const MLOperand* b,
+    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
+  switch (kind) {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
+      return builder->add(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
+      return builder->sub(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
+      return builder->mul(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
+      return builder->div(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
+      return builder->min(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
+      return builder->max(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
+      return builder->pow(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
+      return builder->equal(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
+      return builder->greater(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
+      return builder->greaterOrEqual(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
+      return builder->lesser(a, b, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+      return builder->lesserOrEqual(a, b, scope.GetExceptionState());
+  }
+}
+
+MLOperand* BuildElementWiseBinary(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    webnn::mojom::blink::ElementWiseBinary::Kind kind,
+    const MLOperand* a,
+    const MLOperand* b) {
+  MLOperand* output =
+      BuildElementWiseBinaryOperator(builder, scope, a, b, kind);
+  EXPECT_THAT(output, testing::NotNull());
+  EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
+
+  if (IsLogicalBinaryOperator(kind)) {
+    EXPECT_EQ(output->dataType().AsEnum(), V8MLOperandDataType::Enum::kUint8);
+  } else {
+    EXPECT_EQ(output->DataType(), a->DataType());
+  }
+
+  auto* op = output->Operator();
+  EXPECT_THAT(op, testing::NotNull());
+  EXPECT_EQ(op->Kind(),
+            webnn::mojom::blink::Operation::Tag::kElementWiseBinary);
+  EXPECT_EQ(op->SubKind<webnn::mojom::blink::ElementWiseBinary::Kind>(), kind);
+  EXPECT_TRUE(op->IsConnected());
+  return output;
 }
 
 }  // namespace
@@ -790,13 +896,6 @@ struct ArrayBufferViewHelper {
     return CreateDOMArrayBufferView(number_of_elements, data_type);
   }
 };
-
-// Helper function to create an ArrayBufferView given an operand.
-NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
-    const MLOperand* operand) {
-  return CreateDOMArrayBufferView(operand->NumberOfElements(),
-                                  operand->dataType().AsEnum());
-}
 
 TEST_F(MLGraphTest, CreateNamedArrayBufferViewsTest) {
   constexpr auto kOperandDataTypes =
