@@ -6214,6 +6214,10 @@ def CheckForLongPathnames(input_api, output_api):
         local_path = f.LocalPath()
         # Windows has a path limit of 260 characters. Limit path length to 200 so
         # that we have some extra for the prefix on dev machines and the bots.
+        if (local_path.startswith('third_party/blink/web_tests/platform/') and
+            not local_path.startswith('third_party/blink/web_tests/platform/win')):
+            # Do not check length of the path for files not used by Windows
+            continue
         if len(local_path) > 200:
             problems.append(local_path)
 
