@@ -297,7 +297,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
 
@@ -504,7 +504,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmdBadMailboxMakesErrorTexture) {
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
 
@@ -543,7 +543,7 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
 
@@ -611,13 +611,13 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -694,7 +694,7 @@ TEST_P(WebGPUMailboxTest, PassWriteUsagesWhenAssociatingReadOnlyMailbox) {
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -755,7 +755,7 @@ TEST_P(WebGPUMailboxTest,
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -815,7 +815,7 @@ TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -877,13 +877,13 @@ TEST_P(WebGPUMailboxTest,
 
   // Create the shared image.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -1296,20 +1296,20 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image_a = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
-  scoped_refptr<gpu::ClientSharedImage> shared_image_b = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image_a =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image_b =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
 
   // Associate both mailboxes
   gpu::webgpu::ReservedTexture reservation_a =
@@ -1341,21 +1341,21 @@ TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
 TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image_a = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image_a =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
 
-  scoped_refptr<gpu::ClientSharedImage> shared_image_b = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image_b =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
 
   // Two WebGPU devices to associate the shared images to.
   wgpu::Device device_a = GetNewDevice();
@@ -1437,18 +1437,18 @@ TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
   // since the textures are not used in this test except for frontend
   // reflection.
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image1 = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image1 =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   scoped_refptr<gpu::ClientSharedImage> shared_image2 =
       sii->CreateSharedImage({GetParam().format,
                               {1, 1},
                               gfx::ColorSpace::CreateSRGB(),
-                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              GetSharedImageUsage(AccessType::Read),
                               "TestLabel"},
                              kNullSurfaceHandle);
   webgpu()->AssociateMailbox(
@@ -1468,13 +1468,13 @@ TEST_P(WebGPUMailboxTest, ReflectionOfDescriptor) {
 TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
 
   scoped_refptr<gl::GLContext> gl_context1;
   scoped_refptr<gl::GLContext> gl_context2;
