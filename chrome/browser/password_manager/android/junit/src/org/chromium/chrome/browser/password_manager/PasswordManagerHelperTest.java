@@ -77,7 +77,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -177,52 +176,6 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
         assertFalse(
                 PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(mSyncServiceMock));
-    }
-
-    @Test
-    public void testHasChosenToSyncPasswords_SignedOut() {
-        when(mSyncServiceMock.getAccountInfo()).thenReturn(null);
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Collections.EMPTY_SET);
-        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-    }
-
-    @Test
-    public void testHasChosenToSyncPasswords_SignedInNotSyncingWithPasswordsDisabled() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("foo@g.com", "gaiaId"));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Collections.EMPTY_SET);
-        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-    }
-
-    @Test
-    public void testHasChosenToSyncPasswords_SignedInNotSyncingWithPasswordsEnabled() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("foo@g.com", "gaiaId"));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mSyncServiceMock.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
-        assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-    }
-
-    @Test
-    public void testHasChosenToSyncPasswords_SignedInAndSyncingWithPasswordsDisabled() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("foo@g.com", "gaiaId"));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.getSelectedTypes()).thenReturn(Collections.EMPTY_SET);
-        assertFalse(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
-    }
-
-    @Test
-    public void testHasChosenToSyncPasswords_SignedInAndSyncingWithPasswordsEnabled() {
-        when(mSyncServiceMock.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("foo@g.com", "gaiaId"));
-        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
-        when(mSyncServiceMock.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
-        assertTrue(PasswordManagerHelper.hasChosenToSyncPasswords(mSyncServiceMock));
     }
 
     @Test

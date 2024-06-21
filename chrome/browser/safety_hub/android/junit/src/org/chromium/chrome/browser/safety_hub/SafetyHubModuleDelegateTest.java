@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHel
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,6 +67,7 @@ public class SafetyHubModuleDelegateTest {
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNatives;
+    @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     private ModalDialogManager mModalDialogManager;
@@ -80,6 +83,7 @@ public class SafetyHubModuleDelegateTest {
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNatives);
+        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -107,6 +111,8 @@ public class SafetyHubModuleDelegateTest {
                                 : new HashSet<>());
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+        when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
+                .thenReturn(isSyncing);
     }
 
     private void setUPMStatus(boolean isUPMEnabled) {
