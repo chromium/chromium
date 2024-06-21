@@ -256,8 +256,9 @@ std::optional<int> HeadlessContentMainDelegate::BasicStartupComplete() {
   }
 
   // Make sure all processes know that we're in headless mode.
-  if (!command_line->HasSwitch(::switches::kHeadless))
-    command_line->AppendSwitch(::switches::kHeadless);
+  if (!command_line->HasSwitch(::switches::kHeadless)) {
+    command_line->AppendSwitchASCII(::switches::kHeadless, "old");
+  }
 
   // Use software rendering by default, but don't mess with gl and angle
   // switches if user is overriding them.

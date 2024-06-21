@@ -182,7 +182,9 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
   // NOTE: We may be called on the UI or IO thread. If called on the IO thread,
   // |browser_| may have already been destroyed.
 
-  command_line->AppendSwitch(::switches::kHeadless);
+  if (!command_line->HasSwitch(::switches::kHeadless)) {
+    command_line->AppendSwitchASCII(::switches::kHeadless, "old");
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int fd;
