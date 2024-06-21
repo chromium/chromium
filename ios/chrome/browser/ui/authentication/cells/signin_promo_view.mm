@@ -103,10 +103,6 @@ constexpr CGFloat kProfileImageHeightWidth = 32.0;
 constexpr CGFloat kProfileImageCompactHeightWidth = 48.0;
 constexpr CGFloat kNonProfileLogoImageCompactHeightWidth = 34.0;
 constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
-// Size of the font for the headline.
-constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
-// Constant for the size of the compact style text.
-constexpr CGFloat kCompactStyleTextSize = 15.0;
 }
 
 @interface SigninPromoView ()
@@ -391,8 +387,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
   // Customize UIButton based on SigninPromoViewStyle.
   switch (self.promoViewStyle) {
     case SigninPromoViewStyleCompactVertical:
-      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-          fontWithSize:kSignInPromoHeadlineFontSize];
+      font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
       attributes = @{NSFontAttributeName : font};
       attributedTitle = [[NSAttributedString alloc] initWithString:title
                                                         attributes:attributes];
@@ -651,8 +646,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
 
       // Configures fonts for the compact horizontal layout.
       self.textLabel.font =
-          [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-              fontWithSize:kCompactStyleTextSize];
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
 
       // In the Compact Horizontal style, the primary button is plain.
@@ -690,8 +684,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.imageView.hidden = NO;
 
       self.textLabel.font =
-          [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-              fontWithSize:kCompactStyleTextSize];
+          [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
       self.textLabel.textColor = [UIColor colorNamed:kGrey800Color];
       self.primaryButton.backgroundColor =
           [UIColor colorNamed:kBackgroundColor];
