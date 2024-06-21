@@ -447,7 +447,7 @@
 <translation id="1327495825214193325">ADB डिबग प्रक्रिया सक्षम पार्न यो <ph name="DEVICE_TYPE" /> पुनः सुरु गर्नु पर्ने हुन्छ। यसलाई असक्षम पार्न यस डिभाइसका सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="1327527584824210101">आफ्नो पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="1327794256477341646">तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
-<translation id="1328364753167940710"><ph name="NUM_HR" /> घण्टापछि</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> घण्टामा</translation>
 <translation id="1329466763986822896">यो हटस्पटको गोपनीयतामा सुधार ल्याउनुहोस्</translation>
 <translation id="1331977651797684645">यो म थिएँ।</translation>
 <translation id="1333489022424033687">तपाईंले आफ्नो यन्त्रमा अन्य साइटहरूले भण्डारण गरेको डेटा नहटाएसम्म <ph name="ORIGIN" /> का केही सुविधाहरूले काम नगर्न सक्छन्</translation>
@@ -2571,7 +2571,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> खाली गरिएको छ</translation>
 <translation id="2844169650293029770">USB-C यन्त्र (अगाडिको बायाँ पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिन्टसम्बन्धी कार्यहरू हेर्नुहोस् र मिलाउनुहोस्</translation>
-<translation id="2845276301195220700">Google पात्रोका लागि थप कारबाहीहरू</translation>
+<translation id="2845276301195220700">Google पात्रोसम्बन्धी थप कारबाहीहरू</translation>
 <translation id="2845382757467349449">बुकमार्कहरू पट्टी सँधै देखाउनुहोस्</translation>
 <translation id="2845751331501453107">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई देखाइने कुनै विज्ञापन पर्सनलाइज गरिन्छ कि गरिँदैन भन्ने कुरा यो सेटिङ, <ph name="BEGIN_LINK1" />साइटले सिफारिस गरेका विज्ञापनहरू<ph name="LINK_END1" />, तपाईंले तय गर्नुभएको <ph name="BEGIN_LINK2" />कुकीसम्बन्धी सेटिङ<ph name="LINK_END2" /> र तपाईंले हेरिरहनुभएको साइटले विज्ञापन पर्सनलाइज गर्छ कि गर्दैन भन्ने कुरामा भर पर्छ</translation>
 <translation id="284581348330507117">अद्वितीय पासवर्डहरू सिर्जना गर्नुहोस्</translation>
@@ -9230,7 +9230,7 @@
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;डाउनलोडहरू</translation>
 <translation id="7861846108263890455">Google खाताको भाषा</translation>
-<translation id="7864114920800968141"><ph name="NUM_MIN" /> मिनेटपछि</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> मिनेटमा</translation>
 <translation id="7864539943188674973">ब्लुटुथ अक्षम बनाउनुहोस्</translation>
 <translation id="7864825798076155402">तपाईंको Google खातामा सेभ गर्ने हो?</translation>
 <translation id="7865127013871431856">अनुवादसम्बन्धी विकल्पहरू</translation>

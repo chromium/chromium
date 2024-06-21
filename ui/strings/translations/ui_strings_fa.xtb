@@ -45,7 +45,7 @@
 <translation id="2192232475740621500">استفاده از تراکم پایین</translation>
 <translation id="2267918077332197517">مسدود کردن همه اعلان‌های این سایت</translation>
 <translation id="2283117145434822734">F6</translation>
-<translation id="2289052229480071835">روی اهداف لمسی در صفحه‌تان ضربه بزنید.</translation>
+<translation id="2289052229480071835">روی اهداف لمسی در صفحه‌تان تک‌ضرب بزنید.</translation>
 <translation id="2295140143284145483">نظرسنجی</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ترابایت/ثانیه</translation>
 <translation id="2353636109065292463">بررسی اتصال اینترنت</translation>
@@ -116,7 +116,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{۱ ثانیه}one{# ثانیه}other{# ثانیه}}</translation>
 <translation id="4971687151119236543">آهنگ قبلی رسانه</translation>
-<translation id="5046499563572181734">در اینجا ضربه بزنید</translation>
+<translation id="5046499563572181734">در اینجا تک‌ضرب بزنید</translation>
 <translation id="5076340679995252485">&amp;جاگذاری</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> پتابایت</translation>
 <translation id="5278860589123563674">ارسال نشد</translation>
