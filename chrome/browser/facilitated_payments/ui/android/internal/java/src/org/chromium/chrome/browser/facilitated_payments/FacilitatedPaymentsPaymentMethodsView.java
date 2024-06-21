@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.facilitated_payments;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -27,7 +28,8 @@ import org.chromium.ui.base.LocalizationUtils;
  * Android Views.
  */
 class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
-    private final RelativeLayout mView;
+    private final LinearLayout mView;
+    private final FrameLayout mScreenHolder;
     private final RecyclerView mSheetItemListView;
     private final BottomSheetController mBottomSheetController;
     private Callback<Integer> mDismissHandler;
@@ -54,9 +56,18 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
             Context context, BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
         mView =
-                (RelativeLayout)
-                        LayoutInflater.from(context).inflate(R.layout.touch_to_fill_sheet, null);
-        mSheetItemListView = getContentView().findViewById(R.id.sheet_item_list);
+                (LinearLayout)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.facilitated_payments_sequence_view, null);
+        mScreenHolder = (FrameLayout) mView.findViewById(R.id.screen_holder);
+        mSheetItemListView =
+                (RecyclerView)
+                        LayoutInflater.from(context)
+                                .inflate(
+                                        R.layout.facilitated_payments_fop_selector,
+                                        mScreenHolder,
+                                        false);
+        mScreenHolder.addView(mSheetItemListView);
 
         mSheetItemListView.setLayoutManager(
                 new LinearLayoutManager(
