@@ -1607,6 +1607,16 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleUrlContainer.setMinimumHeight(mTouchTargetSize);
             mUrlBar.setPadding(0, 0, 0, padding);
             mTitleBar.setPadding(0, padding, 0, 0);
+
+            // When the security icon is nested, it will be in the same container as the Url Bar.
+            // So, they should have the same bottom padding to keep it aligned.
+            if (shouldNestSecurityIcon()) {
+                mSecurityButton.setPaddingRelative(
+                        mSecurityButton.getPaddingStart(),
+                        mSecurityButton.getPaddingTop(),
+                        mSecurityButton.getPaddingEnd(),
+                        padding);
+            }
         }
 
         private void updateUrlBar() {

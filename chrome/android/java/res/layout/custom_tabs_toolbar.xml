@@ -75,7 +75,8 @@ found in the LICENSE file.
                 android:ellipsize="end"
                 android:inputType="none"
                 android:maxLines="1"
-                android:paddingEnd="@dimen/toolbar_edge_padding"
+                android:paddingRight="@dimen/toolbar_edge_padding"
+                tools:ignore="RtlHardcoded"
                 style="@style/TextAppearance.TextLarge.Primary"
                 android:visibility="gone" />
 
@@ -83,7 +84,8 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:orientation="horizontal"
-                android:layout_gravity="bottom">
+                android:layout_gravity="bottom"
+                android:layoutDirection="ltr">
                 <org.chromium.ui.widget.ChromeImageButton
                     android:id="@+id/security_icon"
                     android:layout_width="@dimen/location_bar_icon_width"
