@@ -437,6 +437,9 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
     base::OnceCallback<void(bool)> completion,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
+                            !encryptor);
+
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(

@@ -89,7 +89,9 @@ void PasswordStore::Init(
           main_task_runner_,
           base::BindRepeating(
               &PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence, this)),
-      base::BindOnce(&PasswordStore::OnInitCompleted, this));
+      metrics_util::TimeCallback(
+          base::BindOnce(&PasswordStore::OnInitCompleted, this),
+          "PasswordManager.PasswordStore.InitTime"));
 }
 
 void PasswordStore::AddLogin(const PasswordForm& form,
