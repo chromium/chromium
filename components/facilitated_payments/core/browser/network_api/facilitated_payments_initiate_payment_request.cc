@@ -118,8 +118,11 @@ void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(
           response.FindDict("trigger_purchase_manager")) {
     if (const std::string* action_token =
             trigger_purchase_manager->FindString("o2_action_token")) {
-      response_details_->action_token_.assign(action_token->begin(),
-                                              action_token->end());
+      std::optional<std::vector<uint8_t>> decoded_bytes =
+          base::Base64Decode(*action_token);
+      if (decoded_bytes.has_value()) {
+        response_details_->action_token_ = std::move(*decoded_bytes);
+      }
     }
   }
 }

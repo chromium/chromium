@@ -48,6 +48,8 @@ class FacilitatedPaymentsInitiatePaymentRequest
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
                            ParseResponse_WithActionToken);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
+                           ParseResponse_WithCorruptActionToken);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsInitiatePaymentRequestTest,
                            ParseResponse_WithErrorMessage);
 
   std::unique_ptr<FacilitatedPaymentsInitiatePaymentRequestDetails>

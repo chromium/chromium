@@ -98,8 +98,10 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>(),
       /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  // The action token "token" is base64 encoded as "dG9rZW4=" in the response
+  // content.
   std::optional<base::Value> response = base::JSONReader::Read(
-      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"token\"}}");
+      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9rZW4=\"}}");
   request->ParseResponse(response->GetDict());
 
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
@@ -107,6 +109,23 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
 
   // Verify that the response is considered complete.
   EXPECT_TRUE(request->IsResponseComplete());
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       ParseResponse_WithCorruptActionToken) {
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>(),
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  // Set a corrupt base64 action token to simulate Base64Decode to return an
+  // empty vector.
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9r00ZW4=\"}}");
+  request->ParseResponse(response->GetDict());
+
+  EXPECT_TRUE(request->response_details_->action_token_.empty());
+  // Verify that the response is considered incomplete.
+  EXPECT_FALSE(request->IsResponseComplete());
 }
 
 TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,

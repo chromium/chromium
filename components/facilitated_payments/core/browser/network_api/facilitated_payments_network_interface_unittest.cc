@@ -87,7 +87,7 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
   IssueOAuthToken();
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
-      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"token\"}}");
+      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9rZW4=\"}}");
 
   // Verify the request contains necessary info like the payment details, and
   // the instrument id.
