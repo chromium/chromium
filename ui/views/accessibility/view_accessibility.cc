@@ -712,6 +712,11 @@ void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
   }
 }
 
+void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
+                           status);
+}
+
 void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
   if (is_enabled) {
     data_.AddState(state);

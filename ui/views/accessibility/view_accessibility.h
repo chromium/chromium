@@ -304,6 +304,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetShowContextMenu(bool show_context_menu);
 
+  void SetContainerLiveStatus(const std::string& status);
+
   void SetState(ax::mojom::State state, bool is_enabled);
   void SetHierarchicalLevel(int hierarchical_level);
 
