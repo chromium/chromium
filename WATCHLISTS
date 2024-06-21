@@ -3114,8 +3114,7 @@
                       'fuchsia-reviews@chromium.org',
                       'rjkroege@chromium.org',
                       'spang+watch@chromium.org'],
-    'page_info' : ['permissions-reviews@chromium.org',
-                   'olesiamarukhno+watch@google.com'],
+    'page_info' : ['permissions-reviews@chromium.org'],
     'page_insights' : ['gbb-cct-eng+cls@google.com'],
     'page_load_metrics' : ['bmcquade+watch@chromium.org',
                            'csharrison+watch@chromium.org',
@@ -3178,8 +3177,7 @@
     'privacy_sandbox': [
       'alimariam+watch-privacy-sandbox@google.com',
       'dullweber+watch-privacy-sandbox@chromium.org',
-      'tommasin+watch-privacy-sandbox@chromium.org',
-      'olesiamarukhno+watch-privacy-sandbox@google.com'
+      'tommasin+watch-privacy-sandbox@chromium.org'
     ],
     'private_aggregation': ['alexmt+watch@chromium.org'],
     'profile_keyed_service': ['rsult@google.com'],
