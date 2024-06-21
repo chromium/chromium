@@ -32,6 +32,8 @@ class LensOverlayTabHelper : public web::WebStateUserData<LensOverlayTabHelper>,
 
   // web::WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override;
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
 
  private:
   explicit LensOverlayTabHelper(web::WebState* web_state);

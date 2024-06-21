@@ -23,6 +23,22 @@ LensOverlayTabHelper::~LensOverlayTabHelper() {
 
 #pragma mark - WebStateObserver
 
+void LensOverlayTabHelper::WasShown(web::WebState* web_state) {
+  DCHECK_EQ(web_state, web_state_);
+
+  if (is_showing_lens_overlay_) {
+    [commands_handler_ showLensUI:YES];
+  }
+}
+
+void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
+  DCHECK_EQ(web_state, web_state_);
+
+  if (is_showing_lens_overlay_) {
+    [commands_handler_ hideLensUI:YES];
+  }
+}
+
 void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state, web_state_);
   [commands_handler_ destroyLensUI:NO];

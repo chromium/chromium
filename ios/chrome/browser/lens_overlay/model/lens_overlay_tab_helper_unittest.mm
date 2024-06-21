@@ -65,4 +65,43 @@ TEST_F(LensOverlayTabHelperTest, ShouldDestroyUIOnWebStateDestrictuion) {
   EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
 }
 
+// Tests that a change in the web state is propagated to the commands handler.
+TEST_F(LensOverlayTabHelperTest, ShouldShowTheUIWhenWebStateChanges) {
+  // Given a shown lens overlay state.
+  helper_->SetLensOverlayShown(true);
+  // Then the Lens UI should be shown.
+  OCMExpect([mock_commands_handler_ showLensUI:YES]);
+  // When the tab helper is notify of a change in the web state.
+  helper_->WasShown(web_state_.get());
+
+  EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
+}
+
+// Tests that a change in the web state is propagated to the commands handler.
+TEST_F(LensOverlayTabHelperTest, ShouldHideTheUIWhenWebStateChanges) {
+  // Given a shown lens overlay state.
+  helper_->SetLensOverlayShown(true);
+  // Then the Lens UI should be hidden.
+  OCMExpect([mock_commands_handler_ hideLensUI:YES]);
+  // When the tab helper is notify of a change in the web state.
+  helper_->WasHidden(web_state_.get());
+
+  EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
+}
+
+// Tests that a change in the web state is not propagated to the commands
+// handler when the lens overlay is not shown.
+TEST_F(LensOverlayTabHelperTest, ShouldNotChangeUIStateWhenOverlayIsNotShown) {
+  // Given a lens overlay not show.
+  helper_->SetLensOverlayShown(false);
+  // Then the Lens UI methods should not be called.
+  OCMReject([mock_commands_handler_ showLensUI:YES]);
+  OCMReject([mock_commands_handler_ hideLensUI:YES]);
+  // When the tab helper is notify of a change in the web state.
+  helper_->WasShown(web_state_.get());
+  helper_->WasHidden(web_state_.get());
+
+  EXPECT_OCMOCK_VERIFY(mock_commands_handler_);
+}
+
 }  // namespace
