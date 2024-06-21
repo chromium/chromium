@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -161,6 +162,11 @@
                       handler:self.handler
               navigationAgent:self.navigationAgent];
     [applicationActivities addObject:requestActivity];
+  } else if (UrlIsDownloadedFile(data.shareURL) ||
+             UrlIsExternalFileReference(data.shareURL)) {
+    FindInPageActivity* findInPageActivity =
+        [[FindInPageActivity alloc] initWithData:data handler:self.handler];
+    [applicationActivities addObject:findInPageActivity];
   }
 
   if (self.prefService->GetBoolean(prefs::kPrintingEnabled)) {
