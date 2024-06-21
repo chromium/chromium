@@ -154,11 +154,9 @@
                   allCountries:allCountries
                   settingsView:NO];
 
-  // TODO(crbug.com/40281788): The transition is weird with animation.
-  // Investigate.
   [_navigationController
       pushViewController:autofillCountrySelectionTableViewController
-                animated:NO];
+                animated:YES];
 }
 
 - (void)didSaveProfile {
