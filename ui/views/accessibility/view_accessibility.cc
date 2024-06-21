@@ -526,6 +526,10 @@ ax::mojom::Role ViewAccessibility::GetCachedRole() const {
   return data_.role;
 }
 
+void ViewAccessibility::SetIsEditable(bool editable) {
+  SetState(ax::mojom::State::kEditable, editable);
+}
+
 void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
   data_.relative_bounds.bounds = bounds;
   NotifyEvent(ax::mojom::Event::kLocationChanged, false);
@@ -715,14 +719,6 @@ void ViewAccessibility::SetShowContextMenu(bool show_context_menu) {
 void ViewAccessibility::SetContainerLiveStatus(const std::string& status) {
   data_.AddStringAttribute(ax::mojom::StringAttribute::kContainerLiveStatus,
                            status);
-}
-
-void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
-  if (is_enabled) {
-    data_.AddState(state);
-  } else {
-    data_.RemoveState(state);
-  }
 }
 
 void ViewAccessibility::UpdateFocusableState() {
@@ -965,6 +961,14 @@ void ViewAccessibility::SetDataForClosedWidget(ui::AXNodeData* data) const {
 void ViewAccessibility::SetHierarchicalLevel(int hierarchical_level) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
                         hierarchical_level);
+}
+
+void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
+  if (is_enabled) {
+    data_.AddState(state);
+  } else {
+    data_.RemoveState(state);
+  }
 }
 
 }  // namespace views

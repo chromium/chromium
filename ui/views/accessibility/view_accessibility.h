@@ -231,6 +231,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // will work.
   void SetName(View& naming_view);
 
+  void SetIsEditable(bool editable);
+
   void SetBounds(const gfx::RectF& bounds);
 
   void SetIsSelected(bool selected);
@@ -306,7 +308,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetContainerLiveStatus(const std::string& status);
 
-  void SetState(ax::mojom::State state, bool is_enabled);
   void SetHierarchicalLevel(int hierarchical_level);
 
   // Updates the focusable state of the `data_` object.
@@ -455,6 +456,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetWidgetClosedRecursive(Widget* widget, bool value);
 
   void SetDataForClosedWidget(ui::AXNodeData* data) const;
+
+  void SetState(ax::mojom::State state, bool is_enabled);
 
   // Weak. Owns this.
   const raw_ptr<View> view_;
