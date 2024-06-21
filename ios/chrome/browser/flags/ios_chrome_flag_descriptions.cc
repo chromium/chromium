@@ -665,11 +665,6 @@ const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";
 
-const char kIPHiOSPullToRefreshFeatureName[] = "IPH for Pull Down To Refresh";
-const char kIPHiOSPullToRefreshFeatureDescription[] =
-    "Enables displaying the gesture IPH instructing users to pull down to "
-    "refresh on the tab content view to new users.";
-
 const char kIPHiOSSwipeBackForwardFeatureName[] = "IPH for Swipe Back/Forward";
 const char kIPHiOSSwipeBackForwardFeatureDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe back or "

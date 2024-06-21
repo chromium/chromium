@@ -575,10 +575,6 @@ extern const char kIOSTipsNotificationsDescription[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
-// Title and description for the flag to enable the pull-to-refreh IPH.
-extern const char kIPHiOSPullToRefreshFeatureName[];
-extern const char kIPHiOSPullToRefreshFeatureDescription[];
-
 // Title and description for the flag to enable the tab swipe back/forward IPH.
 extern const char kIPHiOSSwipeBackForwardFeatureName[];
 extern const char kIPHiOSSwipeBackForwardFeatureDescription[];

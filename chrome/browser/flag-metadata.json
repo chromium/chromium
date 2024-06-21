@@ -5248,11 +5248,6 @@
     "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 121
   },
-    {
-    "name": "ios-iph-pull-to-refresh",
-    "owners": ["ginnyhuang@chromium.org", "bling-flags@google.com"],
-    "expiry_milestone": 130
-  },
   {
     "name": "ios-iph-swipe-back-forward",
     "owners": ["ginnyhuang@chromium.org", "bling-flags@google.com"],
