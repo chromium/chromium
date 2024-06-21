@@ -79,6 +79,13 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNonBlockingCommit);
 // this should improve performance and reduce technical complexity.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kNoPreserveLastMutation);
 
+// When enabled, the scheduler will allow deferring impl invalidation frames
+// for N frames (default 1) to reduce contention with main frames, allowing
+// main a chance to commit.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferImplInvalidation);
+CC_BASE_EXPORT extern const base::FeatureParam<int>
+    kDeferImplInvalidationFrames;
+
 // When enabled, SupportsBackgroundThreadPriority is set to kNo for
 // GpuImageDecodeTaskImpl and SoftwareImageDecodeTaskImpl.
 // Introduced to fix https://crbug.com/1116624

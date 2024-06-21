@@ -582,19 +582,23 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
             ->BeginMainFrameStartToReadyToCommitNotCriticalEstimate();
   }
 
-  bool main_thread_response_expected_before_deadline;
+  bool main_thread_response_expected_soon;
+  // Allow the main thread to delay N impl frame before we decide to give up
+  // and create a pending tree instead.
+  time_since_main_frame_sent -=
+      args.interval * settings_.delay_impl_invalidation_frames;
   if (time_since_main_frame_sent > bmf_to_activate_threshold) {
     // If the response to a main frame is pending past the desired duration
     // then proactively assume that the main thread is slow instead of late
     // correction through the frame history.
-    main_thread_response_expected_before_deadline = false;
+    main_thread_response_expected_soon = false;
   } else {
-    main_thread_response_expected_before_deadline =
+    main_thread_response_expected_soon =
         bmf_sent_to_ready_to_commit_estimate - time_since_main_frame_sent <
         bmf_to_activate_threshold;
   }
   state_machine_.set_should_defer_invalidation_for_fast_main_frame(
-      main_thread_response_expected_before_deadline);
+      main_thread_response_expected_soon);
 
   BeginImplFrame(adjusted_args, now);
 }

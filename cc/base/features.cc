@@ -78,6 +78,13 @@ BASE_FEATURE(kNoPreserveLastMutation,
              "NoPreserveLastMutation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeferImplInvalidation,
+             "DeferImplInvalidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kDeferImplInvalidationFrames{
+    &kDeferImplInvalidation, "frames", 1};
+
 BASE_FEATURE(kNormalPriorityImageDecoding,
              "NormalPriorityImageDecoding",
              base::FEATURE_ENABLED_BY_DEFAULT);

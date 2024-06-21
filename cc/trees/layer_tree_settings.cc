@@ -41,6 +41,11 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
   scheduler_settings.use_layer_context_for_display =
       UseLayerContextForDisplay();
 
+  if (base::FeatureList::IsEnabled(::features::kDeferImplInvalidation)) {
+    scheduler_settings.delay_impl_invalidation_frames =
+        ::features::kDeferImplInvalidationFrames.Get();
+  }
+
   if (!single_thread_proxy_scheduler) {
     const std::string mode_name = ::features::kScrollEventDispatchMode.Get();
     scheduler_settings.scroll_deadline_mode_enabled =
