@@ -123,6 +123,7 @@
 
 כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">‏פתיחת דף ההגדרות של אמצעי תשלום ב-Chromium.</translation>
+<translation id="458786853569524949">‏עכשיו אפשר להשתמש ב-Chromium כשמקישים על קישורים באימיילים, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="459080529287102949">‏חיפוש רכיבים חזותיים ב-Chromium</translation>
 <translation id="4633738821577273991">‏אפשר לקבל את הגרסה המשופרת של הגלישה הבטוחה גם לפרופיל Chromium הזה</translation>
 <translation id="4638625642619341392">‏כאן אפשר להוריד את Chromium.</translation>
@@ -290,6 +291,7 @@
 הנתונים שלך הוצפנו באמצעות ביטוי הסיסמה ב-<ph name="TIME" />. כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
 <translation id="9050790730841755540">‏שימוש ב-Chromium בכל פעם שמקישים על קישורים באפליקציות אחרות.</translation>
+<translation id="9057082013386654559">‏שימוש ב-Chromium באייפד כברירת מחדל</translation>
 <translation id="9059693977935746710">אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות בחשבון <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>
 <translation id="9110075932708282655">‏שימוש ב-Chromium כברירת מחדל</translation>

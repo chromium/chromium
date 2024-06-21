@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Nesprávny kód PUK</translation>
 <translation id="4057991113334098539">Prebieha aktivácia...</translation>
 <translation id="4092890906744441904">Írska klávesnica</translation>
+<translation id="4101601646343868113">Prihláste sa do mobilnej siete a potvrďte si, že vaša mobilná dátová tarifa je aktívna</translation>
 <translation id="4124731372776320263">Synchronizuje sa jeden súbor na Disku</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Položky, ktoré nepotrebujete, presuňte do koša</translation>
@@ -603,6 +604,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5625294776298156701">Tamilská klávesnica s rozložením Tamil99</translation>
 <translation id="5633226425545095130">Ak presuniete túto položku, budete ju zdieľať so všetkými používateľmi, ktorí vidia zdieľaný priečinok <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Počúvať</translation>
+<translation id="5650895901941743674">Skontrolujte svoju konfiguráciu prístupového bodu</translation>
 <translation id="5669691691057771421">Zadanie nového kódu PIN</translation>
 <translation id="5678784840044122290">Aplikácia Linux bude k dispozícii v termináli a jej ikona sa môže tiež zobraziť v Spúšťači.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nedá sa odpojiť od archívu či virtuálneho disku<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8600173386174225982">Zoznam súborov sa zmenil na zobrazenie miniatúr.</translation>
 <translation id="8601932370724196034">Súbor obrázka Crostini</translation>
 <translation id="8609695766746872526">Islandská klávesnica</translation>
+<translation id="8630384863424041081">Zadajte PIN svojej SIM karty alebo predvolený kód PIN poskytnutý operátorom. Kontaktujte svojho operátora a požiadajte ho o podporu</translation>
 <translation id="863903787380594467">Nesprávny kód PIN. Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Svoje offline súbory musíte odstrániť</translation>

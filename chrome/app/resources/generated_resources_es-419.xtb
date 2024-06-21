@@ -536,7 +536,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquea el teléfono y confirma que eres tú</translation>
 <translation id="1399261165075500043">No se pueden cargar las Condiciones del Servicio de Google Play</translation>
-<translation id="1400625312571031118">Más seguridad que una contraseña</translation>
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una pestaña nueva</translation>
 <translation id="1402426911829176748">Estableciendo conexión con el dispositivo</translation>
 <translation id="1403222014593521787">No se pudo establecer conexión con el proxy.</translation>
@@ -2729,7 +2728,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2965227184985674128">¿Quieres activar el acceso al micrófono?</translation>
 <translation id="2966705348606485669">Más opciones para la carpeta de favoritos <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Administrar las preferencias de Android</translation>
-<translation id="2967791329697639454">Acceso encriptado y más rápido</translation>
 <translation id="2967926928600500959">Se forzará la apertura de las URLs que coincidan con estas reglas en un navegador específico.</translation>
 <translation id="2969411787010981955">Los datos se exportaron a la ubicación seleccionada</translation>
 <translation id="2970766364519518369">Los contactos seleccionados pueden compartir contenido contigo cuando están cerca. Se te pedirá que apruebes dichas solicitudes. No es necesario que apruebes el uso compartido entre los dispositivos que accedieron a <ph name="USER_EMAIL" />.</translation>
@@ -3456,7 +3454,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3521606918211282604">Cambiar el tamaño del disco</translation>
 <translation id="3522088408596898827">Hay muy poco espacio disponible en el disco. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3522979239100719575">Se están buscando perfiles disponibles. Este proceso puede demorar unos minutos.</translation>
-<translation id="3524311336636707495">Disponible en todos tus dispositivos</translation>
 <translation id="3524518036046613664">Mostrar los dispositivos de la red local, como impresoras</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisar la sincronización del dispositivo cuando finaliza la configuración</translation>
@@ -4261,7 +4258,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="4093955363990068916">Archivo local:</translation>
 <translation id="4094647278880271855">Usas una variable de entorno no compatible: <ph name="BAD_VAR" />. Se verán afectadas la estabilidad y la seguridad.</translation>
-<translation id="4095246243698959793">Para sincronizar y usar llaves de acceso de Google</translation>
 <translation id="4095264805865317199">Abrir la IU de Activación del teléfono celular</translation>
 <translation id="4095425503313512126">La navegación y la búsqueda son más rápidas</translation>
 <translation id="4095483462103784441">Crear un nuevo grupo de pestañas</translation>

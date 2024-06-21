@@ -14,6 +14,7 @@
 <translation id="1320619893013575407">您已关闭 Chrome 登录功能。</translation>
 <translation id="1333745675627230582">玩 Chrome 恐龙游戏</translation>
 <translation id="1352919863522755794">Google 密码管理工具无法检查您的密码。请尝试检查您的互联网连接。</translation>
+<translation id="139623527619433858">默认使用 iPad 版 Chrome</translation>
 <translation id="1407843355326180937">登录此网站和 Chrome 即可获取您在所有设备上保存的书签及其他信息。</translation>
 <translation id="1436059927646026729">在 Chrome 中打开“我最近打开的标签页”</translation>
 <translation id="1449241544691504574">将书签添加到 Chrome</translation>
@@ -134,6 +135,7 @@
 <translation id="4903674399067644695">此卡片会为您提供一些建议，帮助您充分利用 Chrome。</translation>
 <translation id="4919069428879420545">删除 Chrome 中的浏览数据。</translation>
 <translation id="49200511069271369">贵组织 (<ph name="DOMAIN" />) 负责管理您登录的账号和 Chrome 的使用方式。您的管理员可以设置或限制某些功能。</translation>
+<translation id="4925322001044117929">默认在 iPad 上使用 Chrome</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 可为您提供保护，帮助您免受数据泄露、不安全网站等问题的影响。</translation>
 <translation id="5108659628347594808">帮助改善 Chrome</translation>
@@ -219,6 +221,7 @@
 <translation id="7272930098487145294">若要保存图片，请点按“设置”并允许 Chrome 添加照片</translation>
 <translation id="7275945473750112644">您的账号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chrome 数据将会被清除</translation>
 <translation id="7284245284340063465">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
+<translation id="7299681342915173313">现在，每当点按电子邮件、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="7304491752269485262">Chrome 自动填充展开视图</translation>
 <translation id="7344094882820374540">利用 Chrome 的超强安全防护来保护自己免受危险网站的侵害</translation>
 <translation id="7349129508108954623">允许 Chrome 使用 Google 地图针对检测到的地址为您提供路线和当地信息。</translation>

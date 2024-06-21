@@ -601,7 +601,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1468702975912409463">Habilitar que los usuarios con acceso remoto abran URLs del host en su navegador de cliente local</translation>
 <translation id="1474273443907024088">Inhabilitar el inicio falso de TLS</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">El proveedor de UI Automation se habilitará o se inhabilitará mediante el framework de variantes.</translation>
 <translation id="1479427764273213107">Si se asigna un valor a esta política, se definirá la lista de dispositivos USB que los usuarios pueden desvincular de su controlador de kernel para utilizarse en la API chrome.usb directamente en una aplicación web. Las entradas son pares de identificador de producto e identificador de proveedor del USB que permiten identificar hardware específico.
 
       Si no se le asigna ningún valor, la lista de dispositivos USB que se pueden desvincular estará vacía.</translation>
@@ -5915,7 +5914,6 @@ Esta política afecta a los flujos de autenticación de inicio de sesión y de b
       Nota: Si hay varios valores, se deben separar con comas.</translation>
 <translation id="5693469654327063861">Permitir la migración de datos</translation>
 <translation id="56936613186060503">El administrador de descargas no tendrá la opción de guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="5693942129376744977">Inhabilitar el proveedor de UI Automation.</translation>
 <translation id="5695209488612697377">Habilita el uso de un proveedor de búsqueda predeterminado en el menú contextual.
 
           Si se inhabilita esta política, no se mostrará la opción de búsqueda del menú contextual que depende de tu proveedor de búsqueda predeterminado.
@@ -6001,17 +5999,6 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
       Si se asigna el valor "false" a esta política o no se le asigna ninguno, no se enviará esta información del dispositivo.
       Si se le asigna el valor "true", se enviará información sobre VPD del dispositivo.
       Los datos vitales del producto (VPD, Vital Product Data) son un conjunto de datos de configuración e informativos (como los números de serie) asociados al dispositivo.</translation>
-<translation id="5760227556806302854">Habilita el proveedor del framework de accesibilidad UI Automation en <ph name="PRODUCT_NAME" /> para que lo utilicen las herramientas de accesibilidad.
-
-Esta política está disponible en <ph name="PRODUCT_NAME" /> durante un periodo de transición de un año para que los administradores de empresas puedan controlar la implementación del proveedor del framework de accesibilidad UI Automation del navegador. Para que la accesibilidad y otras herramientas que usan el framework de accesibilidad UI Automation interoperen con el navegador y funcionen correctamente con el proveedor de UI Automation del navegador, es posible que se necesiten actualizaciones. Los administradores pueden usar esta política para inhabilitar temporalmente el proveedor de UI Automation del navegador (y, por lo tanto, volver al comportamiento anterior) mientras trabajan con los proveedores para proporcionar actualizaciones a las herramientas afectadas.
-
-Si se le asigna el valor false, <ph name="PRODUCT_NAME" /> solo habilita su proveedor de Microsoft Active Accessibility. La accesibilidad y otras herramientas que utilicen el framework de accesibilidad UI Automation más reciente para interoperar con el navegador se comunicarán con él mediante un corrector de compatibilidad en <ph name="MS_WIN_NAME" />.
-
-Si se le asigna el valor true, <ph name="PRODUCT_NAME" /> habilita tanto su proveedor de UI Automation como su proveedor de Microsoft Active Accessibility. La accesibilidad y otras herramientas que utilizan el framework de accesibilidad UI Automation más reciente para interoperar con el navegador se comunicarán directamente con él.
-
-Si no se define, el framework de variaciones de <ph name="PRODUCT_NAME" /> se usa para habilitar o inhabilitar el proveedor.
-
-Este ajuste de la política dejará de estar disponible en <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="5762969307102447459">Inhabilitar la función Autocompletar para direcciones</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No utilices <ph name="WINDOW_OPENER_PROPERTY" /> en enlaces destinados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -7739,7 +7726,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
-<translation id="7043157348967593138">Habilitar el proveedor del framework de accesibilidad UI Automation del navegador en Windows</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
 <translation id="7045221780834308118">Si se habilita esta política, las aplicaciones web de terceros podrán usar la API Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si esta política no se define o se inhabilita, <ph name="DESK_API_NAME" /> no estará disponible. La política solo se aplicará a los dispositivos registrados.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
@@ -8703,7 +8689,6 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
 
        Si se inhabilita o no se define, el modo desarrollador estará disponible para el dispositivo.</translation>
 <translation id="7824000841504721945">Inhabilitar grupos atómicos de políticas</translation>
-<translation id="7824833865123899471">Habilitar el proveedor de UI Automation.</translation>
 <translation id="782661371433719637">No permitir que ningún sitio web solicite acceso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="7827127381981620448">Aplicación de una plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas durante el cierre de la página</translation>

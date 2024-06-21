@@ -540,7 +540,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquear o telemóvel e confirmar a sua identidade</translation>
 <translation id="1399261165075500043">Não é possível carregar os Termos de Utilização do Google Play</translation>
-<translation id="1400625312571031118">Mais seguro do que uma palavra-passe</translation>
 <translation id="1401216725754314428">Saiba mais sobre sites relacionados num novo separador</translation>
 <translation id="1402426911829176748">A ligar ao seu dispositivo</translation>
 <translation id="1403222014593521787">Não é possível estabelecer ligação ao proxy</translation>
@@ -1464,6 +1463,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2048254245884707305">A verificar a existência de software malicioso…</translation>
 <translation id="2048554637254265991">Erro ao iniciar o gestor de contentores. Tente novamente.</translation>
 <translation id="2048653237708779538">Ação não disponível</translation>
+<translation id="2049021651258469175">Também vai poder usar e guardar as suas palavras-passe e muito mais a partir da sua Conta Google.</translation>
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">O Gestor de Palavras-passe da Google criou uma palavra-passe forte para este Website</translation>
@@ -2744,7 +2744,6 @@ Quer pará-lo?</translation>
 <translation id="2965227184985674128">Ativar acesso ao microfone?</translation>
 <translation id="2966705348606485669">Mais opções para a pasta de marcadores <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gerir as preferências do Android</translation>
-<translation id="2967791329697639454">Início de sessão encriptado mais rápido</translation>
 <translation id="2967926928600500959">Os URLs que correspondam a estas regras serão forçados a abrir num navegador específico.</translation>
 <translation id="2969411787010981955">Os dados foram exportados para a localização selecionada</translation>
 <translation id="2970766364519518369">Os contactos selecionados podem partilhar consigo quando estiverem próximos. É-lhe pedido que aprove estes pedidos. Não precisa de aprovar a partilha entre dispositivos com sessão iniciada na conta <ph name="USER_EMAIL" />.</translation>
@@ -2943,6 +2942,7 @@ Quer pará-lo?</translation>
 <translation id="3109724472072898302">Fechado</translation>
 <translation id="3112292765614504292">Tamanho da app: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Não permitir que os sites editem ficheiros ou pastas no dispositivo</translation>
+<translation id="3113970906450647715">Botão desafixado</translation>
 <translation id="3115147772012638511">A aguardar pela cache...</translation>
 <translation id="3115580024857770654">Reduzir tudo</translation>
 <translation id="3115728370128632723">Melhorar a Web para si significa:
@@ -3473,7 +3473,6 @@ Quer pará-lo?</translation>
 <translation id="3521606918211282604">Alterar tamanho do disco</translation>
 <translation id="3522088408596898827">O espaço em disco é criticamente baixo. Liberte espaço no disco e tente novamente.</translation>
 <translation id="3522979239100719575">A procurar perfis disponíveis. Esta ação pode demorar alguns minutos.</translation>
-<translation id="3524311336636707495">Disponível nos seus dispositivos</translation>
 <translation id="3524518036046613664">Procurar dispositivos na sua rede local, como impressoras</translation>
 <translation id="3524965460886318643">Exportar atividades</translation>
 <translation id="3525426269008462093">Rever a sincronização do dispositivo após a configuração</translation>
@@ -4279,7 +4278,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4093865285251893588">Imagem do perfil</translation>
 <translation id="4093955363990068916">Ficheiro local:</translation>
 <translation id="4094647278880271855">Está a utilizar uma variável de ambiente não suportada: <ph name="BAD_VAR" />. A estabilidade e a segurança serão afetadas.</translation>
-<translation id="4095246243698959793">Para sincronizar e usar chaves de acesso da Google</translation>
 <translation id="4095264805865317199">Abrir IU de ativação de rede móvel</translation>
 <translation id="4095425503313512126">A navegação e a pesquisa são mais rápidas</translation>
 <translation id="4095483462103784441">Criar novo grupo de separadores</translation>
@@ -5315,6 +5313,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestor de &amp;Tarefas</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Mostrar sempre o atalho do Google Lens</translation>
 <translation id="4885692421645694729">Esta extensão não tem acesso adicional a sites</translation>
 <translation id="4887424188275796356">Abrir com o System Viewer</translation>
 <translation id="488785315393301722">Mostrar Detalhes</translation>
@@ -5483,6 +5482,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5021750053540820849">Ainda por atualizar</translation>
 <translation id="5022206631034207923">Ecrã de bloqueio e controlos</translation>
 <translation id="5024511550058813796">Terá o seu histórico em todos os dispositivos sincronizados para que possa continuar o que estava a fazer</translation>
+<translation id="5024992827689317672">Dados eliminados</translation>
 <translation id="5026492829171796515">Inicie sessão para adicionar uma Conta Google</translation>
 <translation id="5026806129670917316">Ativar Wi-Fi</translation>
 <translation id="5026874946691314267">Não voltar a mostrar</translation>
@@ -6124,6 +6124,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="549602578321198708">Palavra</translation>
 <translation id="5496587651328244253">Organizar</translation>
 <translation id="5496730470963166430">Sem autorização para enviar pop-ups ou utilizar redirecionamentos</translation>
+<translation id="5497250476399536588">Pode encontrá-la em Moradas e mais</translation>
 <translation id="5497251278400702716">Este ficheiro</translation>
 <translation id="5497739595514726398">O Chrome não conseguiu validar este pacote de instalação</translation>
 <translation id="5498967291577176373">Escreva mais rapidamente com sugestões inline para o seu nome, endereço ou número de telefone.</translation>
@@ -6895,6 +6896,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6082877069782862752">Mapeamento de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Parte de um grupo sem nome</translation>
 <translation id="6086004606538989567">A conta que validou não está autorizada a aceder a este dispositivo.</translation>
+<translation id="6086418630711763366">Pode navegar pelas páginas com um cursor de texto. Prima Ctrl + <ph name="KEY" /> para desativar esta opção.</translation>
 <translation id="6086846494333236931">Instalada pelo gestor</translation>
 <translation id="6087746524533454243">Está à procura da página Acerca do navegador? Visite</translation>
 <translation id="6087960857463881712">Cara de fantástico</translation>
@@ -6959,6 +6961,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6130692320435119637">Adicionar Wi-Fi</translation>
 <translation id="6130807998512240230">Phone Hub, Partilhar na proximidade</translation>
 <translation id="6130887916931372608">Tecla do teclado</translation>
+<translation id="6132251717264923430">Botão fixado</translation>
 <translation id="6132714462430777655">Ignorar a inscrição escolar?</translation>
 <translation id="6134428719487602109">Remova todas as contas de utilizador e reponha o seu Chromebook para que fique como novo.</translation>
 <translation id="6135823405800500595">Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
@@ -8091,6 +8094,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6988572888918530647">Faça a gestão da sua Conta Google</translation>
 <translation id="6989274756151920076">Continuar aqui</translation>
 <translation id="6991665348624301627">Selecione um destino</translation>
+<translation id="6991926986715044139">Mostrar sempre o atalho do Google Lens</translation>
 <translation id="6992554835374084304">Ative a verificação ortográfica avançada</translation>
 <translation id="6993000214273684335">Separador removido de grupo sem nome – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">A atualizar o navegador Chrome</translation>
@@ -8302,6 +8306,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7154020516215182599">Partilhe o seu feedback ou descreva o problema. Se possível, inclua passos para reproduzir o problema.</translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Beneficie de uma melhor qualidade de vídeo e conserve a autonomia da bateria. O vídeo é reproduzido apenas no seu ecrã Compatível com o Cast.</translation>
+<translation id="7159695867335480590">Reproduzir/pausar</translation>
 <translation id="7159953856712257647">Instalada por predefinição</translation>
 <translation id="7160182524506337403">Agora, pode ver as notificações do seu telemóvel</translation>
 <translation id="7160911207516219534">Painéis laterais</translation>
@@ -8645,6 +8650,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> de <ph name="APPS_LIST_SIZE" /> apps bloqueadas</translation>
 <translation id="741906494724992817">Esta aplicação não necessita de permissões especiais.</translation>
 <translation id="7419142833919893307">Nenhum nome de utilizador adicionado</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN incorreto. 1 tentativa restante.}other{PIN incorreto. # tentativas restantes.}}</translation>
 <translation id="7419565702166471774">Usar sempre ligações seguras</translation>
 <translation id="7419819959108735624">Selecione o que quer pesquisar com o Google Lens</translation>
 <translation id="742130257665691897">Marcadores removidos</translation>
@@ -9808,6 +9814,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8252569384384439529">A carregar…</translation>
 <translation id="8253198102038551905">Clique em "+" para aceder às propriedades de rede</translation>
 <translation id="8255212965098517578">Fotos, notificações e apps recentes</translation>
+<translation id="8255927332875030912">Pesquisa + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Pantufa</translation>
 <translation id="8257950718085972371">Continuar a bloquear o acesso à câmara</translation>
 <translation id="8258027225380843424">Importação com êxito!</translation>
@@ -9818,6 +9825,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8261625296061301062">Software de leitor instalado</translation>
 <translation id="8262971894813353037">Ativa o novo design para computador da WebUI. Também tem de ativar a experiência Chrome Refresh 2023.</translation>
+<translation id="8263228331881858381">Chave de acesso guardada</translation>
 <translation id="8263336784344783289">Dar um nome a este grupo</translation>
 <translation id="8264024885325823677">Esta definição é gerida pelo seu administrador.</translation>
 <translation id="826511437356419340">Entrou no modo de vista geral de janelas. Deslize rapidamente para navegar ou prima Tab se estiver a utilizar um teclado.</translation>

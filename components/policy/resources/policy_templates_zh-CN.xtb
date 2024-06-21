@@ -278,6 +278,7 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="120937472976628837">报告风扇信息</translation>
 <translation id="1212233008927724662">停用延迟的登录 WebUI 加载。</translation>
 <translation id="1214639335214075459">启用 GPU 硬件视频解码</translation>
+<translation id="1214942205301731697">不允许在扩展程序页面上使用开发者模式</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
 <translation id="1219027971768347970">对音频沙盒使用默认配置</translation>
 <translation id="1221359380862872747">在演示登录时加载指定网址</translation>
@@ -595,7 +596,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1468702975912409463">允许远程访问用户在本地客户端浏览器中打开主机端网址</translation>
 <translation id="1474273443907024088">停用 TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">通过变体版本框架启用或停用界面自动化提供程序。</translation>
 <translation id="1479427764273213107">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
 
       如果您不设置此政策，可分离式 USB 设备的列表便会是空的。</translation>
@@ -1799,6 +1799,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior 是 <ph name="PRODUCT_NAME" /> 的一项功能，可让 <ph name="ABOUT_BLANK_PAGE" /> 和 <ph name="ABOUT_SRCDOC_PAGE" /> 框架通过其启动器的基准网址快照一致地沿用其基准网址值。有关详情，请参阅 https://chromestatus.com/feature/5161101671530496。
 
 如果此政策已停用，系统将阻止用户或 <ph name="PRODUCT_NAME" /> 变体启用 NewBaseUrlInheritanceBehavior，以防出现兼容性问题。如果此政策已启用或未设置，系统将允许启用 NewBaseUrlInheritanceBehavior。</translation>
+<translation id="2361182501645567439">控制开发者模式在扩展程序页面上的使用情况</translation>
 <translation id="2362469626417133796">重新启动时间范围</translation>
 <translation id="2362539163677485510">云政策的注册令牌</translation>
 <translation id="2363928351203698966">如果此政策设为有效值，<ph name="PRODUCT_NAME" /> 将不会使用低于指定版本的 SSL/TLS 版本。无法识别的值都会被忽略。
@@ -3181,6 +3182,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       此功能是否可用还取决于相应的用户规范。</translation>
 <translation id="3495602011142234826">如果值设为 true，该扩展程序便能够使用被指定为供企业使用的所有密钥签署任意数据。如果值设为 false，该扩展程序将无法使用任何此类密钥，用户也无法授予此类权限。例外情况是：如果某个扩展程序生成了一个此类密钥，该密钥只能供这个扩展程序使用 1 次。</translation>
 <translation id="3496296378755072552">密码管理器</translation>
+<translation id="3496519114741602716">控制用户是否可以在 chrome://extensions 上开启开发者模式。
+
+如果此政策未设置，用户可以在扩展程序页面上开启开发者模式，除非 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策已设置为 <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2)。
+如果此政策设为 <ph name="ALLOW" /> (0)，用户可以在扩展程序页面上开启开发者模式。
+如果此政策设为 <ph name="DISALLOW" /> (1)，用户将无法在扩展程序页面上开启开发者模式。
+
+如果设置了此政策，<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 将无法再控制扩展程序开发者模式。</translation>
 <translation id="3496761649331792755">启用书签栏</translation>
 <translation id="3498109920669229084">通过设置此政策，您可以指定哪些扩展程序不受屏蔽名单影响。
 
@@ -5361,6 +5369,15 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5307432759655324440">无痕模式的可用性</translation>
 <translation id="5308551343115571396"><ph name="LACROS_NAME" /> 停用后，系统会尝试保留尽可能多的用户数据，但会移除所有浏览器数据。</translation>
 <translation id="530949964068726932">在系统任务栏菜单中隐藏无障碍选项</translation>
+<translation id="5310544046492594469">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问它们；自 114 版起，若是受管理的用户，也无法在浏览器内置的扩展程序中访问它们。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
+
+      此设置还会关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。
+
+      自 <ph name="PRODUCT_NAME" /> 99 版起，此设置还可控制“查看网页源代码”功能的入口点。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法通过键盘快捷键或上下文菜单查看源代码。若要完全阻止查看源代码，您还必须将“view-source:*”添加到 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策中。
+
+      自 <ph name="PRODUCT_NAME" /> 119 版起，此设置还可控制是否可以对独立式 Web 应用 (IWA) 启用和使用开发者模式。
+
+      自 <ph name="PRODUCT_NAME" /> 128 版起，如果设置了 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策，此设置将不会控制扩展程序页面上的开发者模式。</translation>
 <translation id="5311275381462687162">默认旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
 <translation id="5312253627576569499">在屏幕变暗后或在屏幕关闭不久后察觉到用户活动时，系统会对屏幕变暗延迟时间采取的调整幅度（百分比）</translation>
 <translation id="5316856058059940708">停用大号光标</translation>
@@ -5864,7 +5881,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       注意：各个值之间用英文逗号隔开。</translation>
 <translation id="5693469654327063861">允许数据迁移</translation>
 <translation id="56936613186060503">用户无法通过内容下载管理器将文件保存到 <ph name="GOOGLE_DRIVE_NAME" />。</translation>
-<translation id="5693942129376744977">停用界面自动化提供程序。</translation>
 <translation id="5695209488612697377">允许在上下文菜单中使用默认搜索服务提供商。
 
           如果您停用了此政策，依赖您的默认搜索服务提供商的搜索上下文菜单项将不可用。
@@ -5940,17 +5956,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告设备的 VPD 信息。
       重要产品数据 (VPD) 是指一系列与设备相关的配置数据和信息类数据，例如部件号和序列号。</translation>
-<translation id="5760227556806302854">在 <ph name="PRODUCT_NAME" /> 中启用界面自动化无障碍框架提供程序，以供无障碍工具使用。
-
-<ph name="PRODUCT_NAME" /> 在一年的过渡期内支持此政策，以便企业管理员控制浏览器的界面自动化无障碍框架提供程序的部署情况。使用界面自动化无障碍框架与浏览器互操作的无障碍工具和其他工具可能需要更新，才能与浏览器的界面自动化提供程序正常搭配运行。管理员可以使用此政策暂时停用浏览器的界面自动化提供程序（从而恢复为旧版行为），同时与供应商合作，为受影响的工具提供更新。
-
-如果此政策设为 false，<ph name="PRODUCT_NAME" /> 仅会启用其 Microsoft Active Accessibility 提供程序。使用较新版本的界面自动化无障碍框架与浏览器互操作的无障碍工具和其他工具将通过 <ph name="MS_WIN_NAME" /> 中的兼容性 shim 与其通信。
-
-如果此政策设为 true，<ph name="PRODUCT_NAME" /> 不仅会启用其 Microsoft Active Accessibility 提供程序，还会启用其界面自动化提供程序。使用较新版本的界面自动化无障碍功能框与浏览器互操作的无障碍工具和其他工具将直接与其通信。
-
-如果未设置此政策，系统会使用 <ph name="PRODUCT_NAME" /> 中的变体版本框架来启用或停用此提供程序。
-
-我们将在 <ph name="PRODUCT_NAME" /> 136 中停止对此政策设置的支持。</translation>
 <translation id="5762969307102447459">禁止使用“自动填充”功能填写地址</translation>
 <translation id="5765780083710877561">说明：</translation>
 <translation id="5766438888216077649">不为那些定位到“<ph name="BLANK_PAGE_NAME" />”页面的链接设置 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
@@ -6099,6 +6104,15 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果未设置此政策，<ph name="PRODUCT_NAME" /> 可以决定使用哪种方法。</translation>
 <translation id="5888645257599699215">报告设备音频状态</translation>
+<translation id="5888861702011257917">专注模式是一项功能，可通过计时器控制勿扰模式，旨在减少用户分心。专注模式的其中一项功能允许用户聆听一小部分音乐，使他们保持专注。此政策用于控制对该功能的访问权限。
+
+如果此政策未设置，系统会禁止受管理的用户播放所有音乐。
+
+如果此政策已启用，系统将允许在专注模式下播放所有音乐。
+
+如果此政策设为 EnabledFocusSoundsOnly，系统将只能播放专注模式音乐。
+
+如果已停用此政策，系统将禁止在专注模式下播放音乐。</translation>
 <translation id="5890063326284543943">控制对 Serial API 的使用</translation>
 <translation id="5893223274510346852">停用 <ph name="PRIVACY_SANDBOX_NAME" /> IP 地址保护功能。</translation>
 <translation id="5893303508158298667">如果 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 已启用且 <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> 已启用或未设置，当无法（例如，因受到防火墙限制）直接连接到这台计算机时，远程客户端可通过中继服务器建立连接。
@@ -6568,6 +6582,17 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
 <translation id="6276087670023098167">停用关于机器标识信息的报告</translation>
+<translation id="627645565733796818">X.509 证书可能会对证书中的扩展程序中的限制条件（例如名称限制条件）进行编码。RFC 5280 规定，对信任锚证书强制执行此类限制条件是一项可选操作。从 <ph name="PRODUCT_NAME" /> 112 版开始，系统将对从平台证书存储区加载的证书强制执行此类限制条件。
+
+此政策是一项临时的选择停用机制：当企业私有根证书中经过编码的限制条件出现问题时，可以使用此政策。在这种情况下，此政策可用于在更正证书问题期间暂时停止强制执行限制条件。
+
+如果此政策未设置或已启用，<ph name="PRODUCT_NAME" /> 将会强制执行从平台受信任证书存储区加载的信任锚中经过编码的限制条件。
+
+如果此政策已停用，<ph name="PRODUCT_NAME" /> 将不会强制执行从平台受信任证书存储区加载的信任锚中经过编码的限制条件。
+
+在 <ph name="PRODUCT_NAME" /> 112 版中，如果 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 政策已停用，此政策将不会产生任何影响。
+
+此政策已在 <ph name="PRODUCT_NAME" /> 126 版中移除。从该版本开始，系统始终会强制执行信任锚中的限制条件。</translation>
 <translation id="627672037430076089">禁止与这台计算机建立远程支持连接</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
 <translation id="6278428485366576908">主题</translation>
@@ -6983,6 +7008,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6554236101741861403">针对已关联的用户，在已注册的设备上收集网站遥测数据时应遵循的时间间隔。所允许的最短时间间隔为 5 分钟。
 
 如果此政策未设置，系统会应用默认时间间隔（15 分钟）。</translation>
+<translation id="6555378905432946848">如果您设置了此政策，对于附带指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希的证书链所对应的一系列旧版证书授权机构 (CA)，系统将不会强制执行证书透明度信息披露要求。因没有恰当公开披露相关信息而不受信任的证书，企业主机也可以继续使用。但是，被识别为旧版 CA 的 CA 证书中必须包含 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希，才能关闭强制执行。旧版 CA 受 <ph name="PRODUCT_NAME" /> 所支持的一种或多种操作系统公开信任，但不受 Android 开源项目或 <ph name="PRODUCT_OS_NAME" /> 信任。
+
+      您只需将以下各项连结起来即可指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希：哈希算法名称、“/”字符，以及对指定证书 DER 编码 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 所应用哈希算法的 Base64 编码。Base64 编码的格式与 SPKI 指纹的格式一致。唯一得到认可的哈希算法是 sha256，其他算法都会被忽略。
+
+      如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些未按照证书透明度要求进行披露的证书视为不可信证书。
+
+      此政策已在 <ph name="PRODUCT_NAME" /> 128 版中移除。</translation>
 <translation id="6556586932263358975">允许锁定屏幕</translation>
 <translation id="6558013557780651644">运行闲置操作前的延迟时间</translation>
 <translation id="6558812160831988140">应用使用情况报告</translation>
@@ -7661,7 +7693,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果未设置此政策，工具栏将默认放置在屏幕底部，但用户可以更改工具栏的位置。</translation>
 <translation id="7039815268521168329">在初始设置期间显示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">值示例：</translation>
-<translation id="7043157348967593138">在 Windows 上启用浏览器的界面自动化无障碍框架提供程序</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
 <translation id="7045221780834308118">如果已启用此政策，第三方 Web 应用将能使用 Desk API 来控制 <ph name="PRODUCT_OS_NAME" /> 桌面。如果未设置或已停用此政策，<ph name="DESK_API_NAME" /> 将不可用。此政策仅适用于已注册的设备。</translation>
 <translation id="7046113122884041950">不允许使用 Smart Lock</translation>
@@ -8613,7 +8644,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
        如果此政策已停用或未设置，相应设备将可以使用开发者模式。</translation>
 <translation id="7824000841504721945">停用政策原子组</translation>
-<translation id="7824833865123899471">启用界面自动化提供程序。</translation>
 <translation id="782661371433719637">不允许任何网站通过 File System API 请求对文件和目录的读取权限</translation>
 <translation id="7827127381981620448">平台应用</translation>
 <translation id="7829436838673974723">允许页面在关闭期间发送同步 XHR 请求</translation>
@@ -10337,6 +10367,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
 如果已停用 <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" />（这也会停用产品内调查问卷），此政策不会产生任何效力。</translation>
 <translation id="9173633148008709976">启用图形加速功能</translation>
+<translation id="9177661626040846628">允许在扩展程序页面上使用开发者模式</translation>
 <translation id="9180108183162961002">允许通过浏览器访客模式登录</translation>
 <translation id="9185963199234034321">为登录屏幕启用高对比度模式，并允许用户暂时停用它</translation>
 <translation id="9187743794267626640">禁止装载外部存储设备</translation>

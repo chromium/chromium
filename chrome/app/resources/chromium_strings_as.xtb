@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">অন হৈ থাকিলে, Chromiumএ পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰে যিয়ে ব্ৰাউজিং আৰু সন্ধান দ্ৰুত কৰে।</translation>
 <translation id="2343156876103232566">ইয়াৰ পৰা আপোনাৰ Android ফ’নলৈ নম্বৰ পঠিয়াবলৈ দুয়োটা ডিভাইচত Chromiumত ছাইন ইন কৰক।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে আপুনি Chromiumত ছাইন ইন কৰাটো বিচাৰে</translation>
+<translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> হিচাপে এই এক্সটেনশ্বনটো ব্যৱহাৰ কৰিবলৈ Chromiumত ছাইন ইন কৰক।</translation>
 <translation id="2384373936468275798">আপোনাৰ একাউণ্টৰ ছাইন ইনৰ সবিশেষ তথ্যৰ ম্যাদ উকলি যোৱাৰ বাবে ChromiumOSএ আপোনাৰ ডেটা ছিংক কৰিব নোৱাৰিলে।</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছিল}=1{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে ১ টা HID ডিভাইচ এক্সেছ কৰি আছে}one{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}other{এক বা একাধিক Chromiumৰ এক্সটেনশ্বনে # টা HID ডিভাইচ এক্সেছ কৰি আছে}}</translation>
 <translation id="2401032172288869980">Chromiumক এই ছাইটটোৰ বাবে মাইক্ৰ’ফ’ন আৰু কেমেৰাৰ অনুমতিৰ আৱশ্যক</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">&amp;Chromium আপডে'ট কৰিবলৈ পুনৰ লঞ্চ কৰক</translation>
 <translation id="4942295735032723435">Chromiumৰ ভৱিষ্যতৰ আপডে’টসমূহ পাবলৈ আপোনাক macOS 11 অথবা তাৰ পাছৰ সংস্কৰণৰ আৱশ্যক হ’ব। এই কম্পিউটাৰটোৱে macOS 10.15 ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="4943838377383847465">Chromium নেপথ্য ম’ডত আছে।</translation>
+<translation id="494490797786467921">Chromiumৰ ছাইন-ইন ডায়লগটো বন্ধ কৰিবলৈ ক্লিক কৰক</translation>
 <translation id="4987820182225656817">অতিথিসকলে কোনো সুবিধা বাদ নিদিয়াকৈ Chromium ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="4994636714258228724">নিজকে Chromiumত যোগ কৰক</translation>
 <translation id="5114678101347489141">Chromiumএ নতুন সুবিধাসমূহ অন্বেষণ কৰি আছে, যিবোৰে ছাইটসমূহক আপোনাৰ তথা কমকৈ ব্যৱহাৰ কৰি একেই ব্ৰাউজিঙৰ অভিজ্ঞতা প্ৰদান কৰিবলৈ দিয়ে</translation>
+<translation id="5187123684706427865">Chromium একাউণ্টৰ বাবে পুনৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="5224391634244552924">ছেভ কৰা কোনো পাছৱৰ্ড নাই। আপুনি নিজৰ পাছৱর্ডসমূহ ছেভ কৰিলে Chromiumএ সেইবোৰ পৰীক্ষা কৰিব পাৰে।</translation>
 <translation id="5231355151045086930">Chromiumৰ পৰা ছাইন আউট কৰক</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" />এ এই Chromium প্ৰ’ফাইলটোত ইতিমধ্যে ছাইন ইন কৰিছে। এইটোৱে <ph name="USER_EMAIL_ADDRESS" />ৰ বাবে এটা নতুন Chromium প্ৰ’ফাইল সৃষ্টি কৰিব</translation>

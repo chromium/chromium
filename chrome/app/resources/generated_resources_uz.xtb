@@ -536,7 +536,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1398853756734560583">Yoyish</translation>
 <translation id="139911022479327130">Telefonni qulfdan chiqaring va shaxsingizni tasdiqlang</translation>
 <translation id="1399261165075500043">Google Play xizmat shartlari yuklanmadi</translation>
-<translation id="1400625312571031118">Paroldan koʻra xavfsiz</translation>
 <translation id="1401216725754314428">Aloqador saytlar haqida yangi varaqda batafsil axborot oling</translation>
 <translation id="1402426911829176748">Qurilmangizga ulanmoqda</translation>
 <translation id="1403222014593521787">Proksi-serverga ulanib boʻlmadi</translation>
@@ -2734,7 +2733,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2965227184985674128">Mikrofondan foydalanishga ruxsat berilsinmi?</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> bukmark jildi uchun boshqa parametrlar</translation>
 <translation id="2966937470348689686">Android sozlamalarini boshqarish</translation>
-<translation id="2967791329697639454">Tez va xavfsiz kirish</translation>
 <translation id="2967926928600500959">Bu qoidalarga mos keluvchi URL manzillar maxsus brauzerda majburan ochiladi.</translation>
 <translation id="2969411787010981955">Maʼlumotlar tanlangan manzilga eksport qilindi</translation>
 <translation id="2970766364519518369">Tanlangan kontaktlar sizga yaqinligida qurilmangizga fayl yubora oladi. Sizdan bu soʻrovlarni qabul qilish soʻraladi. <ph name="USER_EMAIL" /> hisobiga kirgan qurilmalar orasida ulashishni tasdiqlashingiz shart emas.</translation>
@@ -3459,7 +3457,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3521606918211282604">Disk hajmini oʻzgartirish</translation>
 <translation id="3522088408596898827">Diskda boʻsh joy deyarli qolmadi. Joy ochib, qaytadan urining.</translation>
 <translation id="3522979239100719575">Mavjud profillar qidirilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
-<translation id="3524311336636707495">Barcha qurilmalaringizda ishlaydi</translation>
 <translation id="3524518036046613664">Mahalliy tarmoqdagi printerlar kabi qurilmalarni topish</translation>
 <translation id="3524965460886318643">Eksport qilishlar jurnali</translation>
 <translation id="3525426269008462093">Qurilma sinxronizatsiyasi sozlashdan keyin tekshirilsin</translation>
@@ -4264,7 +4261,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="4093955363990068916">Lokal fayl:</translation>
 <translation id="4094647278880271855">Siz moslanmagan muhit qiymatidan foydalanyapsiz: <ph name="BAD_VAR" />. Barqarorlik va xavfsizlikka zarar tegishi mumkin.</translation>
-<translation id="4095246243698959793">Sinxronlash va Google kalitlaridan foydalanish uchun</translation>
 <translation id="4095264805865317199">Mobil tarmoqni faollashtirish interfeysini ochish</translation>
 <translation id="4095425503313512126">Koʻrish va qidirish yanada tezroq</translation>
 <translation id="4095483462103784441">Yangi varaqlar guruhini yaratish</translation>
@@ -5924,6 +5920,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5372529912055771682">Taqdim etilgan ro‘yxatdan o‘tish rejimi joriy operatsion tizim versiyasida qo‘llab-quvvatlanmaydi. OT versiyasini yangilab, qayta urinib ko‘ring.</translation>
 <translation id="5372579129492968947">Kengaytmani yechib olish</translation>
 <translation id="5372632722660566343">Hisobsiz davom etish</translation>
+<translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" saqlanib qolsinmi?</translation>
 <translation id="5375318608039113175">Nearby Share uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.</translation>
 <translation id="5375577102295339548">Saytlar real foydalanuvchi ekaningizni tasdiqlashda yordam berishi mumkin</translation>
 <translation id="5376094717770783089">Ruxsat talab qilganlar</translation>
@@ -9017,6 +9014,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7708143783728142771">Cookie fayllari internetdagi afzalliklarni bi xil darajada moslash imkonini beradi. Saytga tashrif buyursangiz, saytdagi til yoki xarid savatchasidagi mahsulotlar kabi afzalliklaringizni eslab qolish uchun sayt qurilmadagi brauzer xotirasida cookie faylni saqlashi mumkin. Keyin esa, saytga shu brauzer orqali qayta tashrifingizda sayt saqlangan cookie faylni oʻqishi va siz ishni oxirgi nuqtadan davom ettirishingiz mumkin. Bunday cookie fayllar odatda birlamchi cookie fayllar deb nomlanadi va ochiladigan saytlar tomonidan belgilanadi.</translation>
 <translation id="770831926727930011">Qurilmadagi axborot eski parolingiz bilan himoyalangan. Ularni tiklash uchun eski parolingizni kiriting.</translation>
 <translation id="7709152031285164251">Xatolik: <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Barcha kalitlarni zaxiraviy PIN kod bilan himoyalang</translation>
 <translation id="7710568461918838723">&amp;Translatsiya...</translation>
 <translation id="7711900714716399411">Telefonni kompyuterga USB kabel orqali ulang. Telefon allaqachon ulangan boʻlsa, kabelni chiqaring va qaytadan ulang.</translation>
 <translation id="7711968363685835633">Konversiya va takliflar moslashtirilishini foydalanuvchi lugʻatlari kabi faolsizlashtirish</translation>
@@ -9746,6 +9744,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8233028084277069927">Hozir ochish</translation>
 <translation id="8234795456569844941">Profil xatolik xabaridan oldin nima bo‘lganligi haqida ma’lumot bering:</translation>
 <translation id="8235418492073272647">Sahifa <ph name="DEVICE_NAME" /> qurilmasidan ulashilgan</translation>
+<translation id="8236802542508794819">Resurslar bir nechta varaq tomonidan sarf qilinadi va debaglashga xalaqit qilishi mumkin.</translation>
 <translation id="8236911020904880539">chiqish</translation>
 <translation id="8236917170563564587">Oʻrniga bu varaqni ulashish</translation>
 <translation id="8237647586961940482">Toʻq pushti va qizil</translation>
@@ -9950,6 +9949,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8376532149031784008"><ph name="DOMAIN" /> qayta yuklanmoqda...</translation>
 <translation id="8376610503048439696">Administrator oʻrnatgan kengaytmalar bu saytni oʻqishi va oʻzgartirishi mumkin</translation>
 <translation id="8376752431516546391">Google qidiruv yon paneli</translation>
+<translation id="8376812682111060348">Unumdorlik muammosi signali</translation>
 <translation id="8377625247046155446">Bu kod faqat shu qurilmada saqlanadi Barcha inkognito oynalari yopilganidan keyin kod shu qurilmada qoladi.</translation>
 <translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="8379988659465232385">Nomini kiritish shart</translation>

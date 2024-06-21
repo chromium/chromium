@@ -903,6 +903,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4381031910344220229">Dette gir mikrofontilgang til <ph name="APP_NAME" /> og alle apper og nettsteder som har mikrofontillatelsen</translation>
 <translation id="4382340674111381977">Gå tilbake til forrige side</translation>
 <translation id="4389184120735010762">Du trykket på hurtigtasten for den dokkede lupen. Vil du slå den på?</translation>
+<translation id="4394466652057229831">Høyreklikk for å oppsummere</translation>
 <translation id="439598569299422042">Satt på pause, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Kan ikke lagre skjermopptaket</translation>
 <translation id="4405151984121254935">Typen ekstern enhet som er tilkoblet, støttes ikke</translation>
@@ -1939,6 +1940,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8113423164597455979">På, alle apper</translation>
 <translation id="8113515504791187892">Tekstopplesingsknapp</translation>
 <translation id="8120151603115102514">Telefonen har ingen låseskjerm. For å låse opp Chromebooken, skriv inn passordet.</translation>
+<translation id="8120249852906205273">Start på nytt</translation>
 <translation id="8127095419621171197">Åpne Kalkulator-appen</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Gå til begynnelsen av dokumentet</translation>
@@ -2033,6 +2035,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="85123341071060231">Bluetooth er avslått på Chromebooken din. For å låse den opp, skriv inn passordet.</translation>
 <translation id="8513108775083588393">Autorotasjon</translation>
 <translation id="851458219935658693">Vis vinduer fra det gjeldende skrivebordet – alternativknappen er valgt</translation>
+<translation id="851660987304951246">Bruk Hjelp meg å lese for å lage sammendrag av innhold eller stille spørsmål raskt</translation>
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoninngangen styres av <ph name="APP_NAME" />}other{Mikrofoninngangen styres av # apper}}</translation>
 <translation id="8535393432370007982">Angre sortering etter farge</translation>
@@ -2077,6 +2080,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8704155109538237473">Fokuser på bilde-i-bilde-vinduet</translation>
 <translation id="870917907284186124">Slå diktering på/av (skriv med stemmen)</translation>
 <translation id="8711169534266271368">Alternativer for spilloversikten</translation>
+<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8714138378966541668">Låst av leverandøren</translation>
 <translation id="8717459106217102612">Velg forrige ord eller bokstav</translation>
 <translation id="8721053961083920564">Slå lyden av/på. <ph name="STATE_TEXT" /></translation>

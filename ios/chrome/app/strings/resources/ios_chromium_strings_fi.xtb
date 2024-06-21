@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromiumin uusia versioita.</translation>
 <translation id="1423007117030725713">Aloita haku uudella Chromium-välilehdellä.</translation>
 <translation id="1431818719585918472">Anna Chromiumin lukita incognito-välilehtesi.</translation>
+<translation id="146407871188825689">Käytä Chromiumia oletuksena iPadilla</translation>
 <translation id="1472013873724362412">Tilisi ei toimi Chromiumilla. Ota yhteyttä verkkotunnuksesi järjestelmänvalvojaan tai kirjaudu sisään tavallisella Google-tilillä.</translation>
 <translation id="1503199973012840174">Chromium on vanhentunut. Päivitä se, jotta pysyt turvassa.</translation>
 <translation id="1507010443238049608">Auta parantamaan Chromiumin ominaisuuksia ja suorituskykyä</translation>
@@ -122,6 +123,7 @@ Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa C
 
 Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Avaa maksutapojen asetussivun Chromiumissa.</translation>
+<translation id="458786853569524949">Voit nyt käyttää Chromiumia aina, kun napautat linkkejä sähköpostiviesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="459080529287102949">Visuaalinen haku Chromiumissa</translation>
 <translation id="4633738821577273991">Lisää Parannettu selaussuoja myös tälle Chromium-profiilille</translation>
 <translation id="4638625642619341392">Lataa Chromium täältä.</translation>
@@ -289,6 +291,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 Datasi salattiin tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käyttää ja tallentaa Chromium-dataa Google-tililläsi.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
 <translation id="9050790730841755540">Käytä Chromiumia aina, kun napautat linkkejä muissa sovelluksissa.</translation>
+<translation id="9057082013386654559">Käytä oletuksena iPadin Chromiumia</translation>
 <translation id="9059693977935746710">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="9110075932708282655">Käytä oletuksena Chromiumia</translation>

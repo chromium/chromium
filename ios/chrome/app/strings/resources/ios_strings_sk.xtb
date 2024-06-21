@@ -814,6 +814,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5150492518600715772">Odoslať do vášho zariadenia</translation>
 <translation id="5157638238828697074">Niečo sa pokazilo. Aplikáciu sa nepodarilo otvoriť.</translation>
 <translation id="5168414296986405587">Vytvorené pre iPadOS</translation>
+<translation id="5169725654005786900">Prebieha akcia…</translation>
 <translation id="5173088371991956744">Synchronizácia potrebuje overiť vašu totožnosť</translation>
 <translation id="5173493422621051500">Použiť klávesnicu</translation>
 <translation id="5176312250994681348">Ponechať posledné heslo</translation>
@@ -848,6 +849,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5327753393331509826">Dostávať upozornenia na obsah</translation>
 <translation id="5329451663851195956">Obnovíte potiahnutím nadol.</translation>
 <translation id="5333148247954006827">Prepnúť na iný profil</translation>
+<translation id="5338512273860059533">Prebieha prihlasovanie.</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
 <translation id="5343472494710226394">Správy, šport a obsah založený na vašich záujmoch.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Chcete sledovať túto zásielku?}few{Chcete sledovať {COUNT} zásielky?}many{Track {COUNT} Packages?}other{Chcete sledovať {COUNT} zásielok?}}</translation>

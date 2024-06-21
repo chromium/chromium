@@ -903,6 +903,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4381031910344220229">Þetta veitir <ph name="APP_NAME" /> og öllum forritum og vefsvæðum með hljóðnemaheimild aðgang að hljóðnema</translation>
 <translation id="4382340674111381977">Fara aftur á fyrri síðu</translation>
 <translation id="4389184120735010762">Þú ýttir á flýtilykilinn fyrir stækkunargler í föstum glugga. Viltu kveikja á því?</translation>
+<translation id="4394466652057229831">Hægrismelltu til að taka saman</translation>
 <translation id="439598569299422042">Í bið, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ekki tókst að vista skjáupptöku</translation>
 <translation id="4405151984121254935">Gerð tengda jaðartækisins er ekki studd</translation>
@@ -1939,6 +1940,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8113423164597455979">Öll forrit</translation>
 <translation id="8113515504791187892">Hnappur fyrir textaupplestur</translation>
 <translation id="8120151603115102514">Síminn þinn er ekki með lásskjá. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
+<translation id="8120249852906205273">Byrja aftur</translation>
 <translation id="8127095419621171197">Opna forritið Reiknivél</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Fara fremst í skjal</translation>
@@ -2033,6 +2035,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="85123341071060231">Slökkt er á Bluetooth í Chromebook. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
 <translation id="8513108775083588393">Snýst sjálft</translation>
 <translation id="851458219935658693">Sýna glugga á núverandi skrifborði, hringhnappur valinn</translation>
+<translation id="851660987304951246">Notaðu „Hjálpa mér að lesa“ til að gera snögga samantekt á efni eða spyrja spurninga</translation>
 <translation id="8517041960877371778">Ekki er víst að <ph name="DEVICE_TYPE" /> hlaðist á meðan kveikt er á tölvunni.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> stjórnar inntaki hljóðnema}one{# forrit stjórnar inntaki hljóðnema}other{# forrit stjórna inntaki hljóðnema}}</translation>
 <translation id="8535393432370007982">Afturkalla röðun eftir lit</translation>
@@ -2077,6 +2080,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8704155109538237473">Setja glugga með mynd í mynd í fókus</translation>
 <translation id="870917907284186124">Slökkva/kveikja á raddinnslætti (innsláttur með röddinni)</translation>
 <translation id="8711169534266271368">Valkostir leikjastjórnborðs</translation>
+<translation id="8712637175834984815">Ég skil</translation>
 <translation id="8714138378966541668">Læst af þjónustuaðila</translation>
 <translation id="8717459106217102612">Velja fyrra orð eða staf</translation>
 <translation id="8721053961083920564">Kveikja/slökkva á hljóði. <ph name="STATE_TEXT" /></translation>

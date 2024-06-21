@@ -903,6 +903,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4381031910344220229">Hatua hii huruhusu ufikiaji wa maikrofoni kwa <ph name="APP_NAME" /> pamoja na programu na tovuti zote zenye ruhusa ya maikrofoni</translation>
 <translation id="4382340674111381977">Rudi kwenye ukurasa uliotangulia</translation>
 <translation id="4389184120735010762">Umebofya mikato ya kibodi ya kikuzaji kilichoambatishwa. Ungependa kukiwasha?</translation>
+<translation id="4394466652057229831">Bofya kulia ili uandae muhtasari</translation>
 <translation id="439598569299422042">Umesitishwa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Imeshindwa kuhifadhi kionyesha skrini</translation>
 <translation id="4405151984121254935">Aina ya kifaa ulichounganisha haiwezi kutumika</translation>
@@ -1940,6 +1941,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8113423164597455979">Imewashwa: zote</translation>
 <translation id="8113515504791187892">Kitufe cha Chagua ili Izungumze</translation>
 <translation id="8120151603115102514">Simu yako haina kipengele cha kufunga skrini. Ili ufungue Chromebook yako, weka nenosiri.</translation>
+<translation id="8120249852906205273">Zima kisha uwashe</translation>
 <translation id="8127095419621171197">Fungua programu ya Kikokotoo</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Nenda kwenye mwanzo wa hati</translation>
@@ -2034,6 +2036,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="85123341071060231">Bluetooth imezimwa kwenye Chromebook yako. Ili ufungue Chromebook yako, weka nenosiri.</translation>
 <translation id="8513108775083588393">Zungusha kiotomatiki</translation>
 <translation id="851458219935658693">Onyesha madirisha yaliyo kwenye eneokazi la sasa, umechagua kitufe cha mviringo</translation>
+<translation id="851660987304951246">Tumia kipengele cha Nisaidie kusoma ili uandae muhtasari wa maudhui kwa haraka au uulize maswali</translation>
 <translation id="8517041960877371778">Huenda kifaa chako cha <ph name="DEVICE_TYPE" /> kisichaji kikiwa kimewashwa.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Uingizaji sauti kupitia maikrofoni unadhibitiwa na <ph name="APP_NAME" />}other{Uingizaji sauti kupitia maikrofoni unadhibitiwa na programu #}}</translation>
 <translation id="8535393432370007982">Tendua utaratibu wa kupanga kulingana na rangi</translation>
@@ -2078,6 +2081,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8704155109538237473">Angazia dirisha la kupachika picha ndani ya picha nyingine</translation>
 <translation id="870917907284186124">Zima au washa kipengele cha kuandika kwa kutamka (andika ukitumia sauti yako)</translation>
 <translation id="8711169534266271368">Chaguo za Dashibodi ya michezo</translation>
+<translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8714138378966541668">Umefungwa na mtoa huduma</translation>
 <translation id="8717459106217102612">Chagua neno au herufi ya awali</translation>
 <translation id="8721053961083920564">Swichi ya Sauti. <ph name="STATE_TEXT" /></translation>

@@ -537,7 +537,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1398853756734560583">Agrandir</translation>
 <translation id="139911022479327130">Déverrouillez votre téléphone et confirmez votre identité</translation>
 <translation id="1399261165075500043">Impossible de charger les conditions d'utilisation de Google Play</translation>
-<translation id="1400625312571031118">Plus sûre qu'un mot de passe</translation>
 <translation id="1401216725754314428">En savoir plus sur les sites associés dans un nouvel onglet</translation>
 <translation id="1402426911829176748">Connexion à votre appareil…</translation>
 <translation id="1403222014593521787">Impossible de se connecter au proxy</translation>
@@ -2733,7 +2732,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2965227184985674128">Activer l'accès au micro ?</translation>
 <translation id="2966705348606485669">Plus d'options pour le dossier de favoris <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gérer les préférences Android</translation>
-<translation id="2967791329697639454">Connexion plus rapide et chiffrée</translation>
 <translation id="2967926928600500959">Les URL qui suivent ces règles seront ouvertes de force dans un navigateur spécifique.</translation>
 <translation id="2969411787010981955">Les données ont été exportées vers l'emplacement sélectionné</translation>
 <translation id="2970766364519518369">Les contacts sélectionnés qui sont à proximité peuvent partager avec vous. Vous devrez approuver ces demandes. Vous n'aurez pas besoin d'approuver le partage entre les appareils connectés à <ph name="USER_EMAIL" />.</translation>
@@ -3458,7 +3456,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
 <translation id="3522088408596898827">Le disque est presque saturé. Veuillez libérer de l'espace et réessayer.</translation>
 <translation id="3522979239100719575">Recherche des profils disponibles… Cela peut prendre quelques minutes.</translation>
-<translation id="3524311336636707495">Disponible sur tous vos appareils</translation>
 <translation id="3524518036046613664">Découvrir les appareils de votre réseau local, comme les imprimantes</translation>
 <translation id="3524965460886318643">Exporter les activités</translation>
 <translation id="3525426269008462093">Vérifier la synchronisation de l'appareil après configuration</translation>
@@ -4263,7 +4260,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="4093955363990068916">Fichier local :</translation>
 <translation id="4094647278880271855">Vous utilisez une variable d'environnement non compatible : <ph name="BAD_VAR" />. La stabilité et la sécurité en seront affectées.</translation>
-<translation id="4095246243698959793">Pour synchroniser et utiliser des clés d'accès Google</translation>
 <translation id="4095264805865317199">Ouvrir l'UI d'activation mobile</translation>
 <translation id="4095425503313512126">La navigation et la recherche sont plus rapides</translation>
 <translation id="4095483462103784441">Créer un groupe d'onglets</translation>
@@ -5922,6 +5918,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5372529912055771682">Le mode d'enregistrement fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez bien la dernière version, puis réessayer.</translation>
 <translation id="5372579129492968947">Retirer l'extension</translation>
 <translation id="5372632722660566343">Continuer sans compte</translation>
+<translation id="5372990315769030589">Conserver <ph name="EXTENSION_NAME" /> ?</translation>
 <translation id="5375318608039113175">Pour utiliser le Partage à proximité avec ces contacts, ajoutez à ceux-ci l'adresse e-mail associée à leur compte Google.</translation>
 <translation id="5375577102295339548">Les sites peuvent aider à confirmer que vous n'êtes pas un robot</translation>
 <translation id="5376094717770783089">Demande d'accès</translation>
@@ -9019,6 +9016,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7708143783728142771">Avec les cookies, vous bénéficiez du même niveau de personnalisation des préférences sur le Web. Lorsque vous consultez un site, celui-ci peut enregistrer un cookie dans l'espace de stockage du navigateur de votre appareil afin de mémoriser vos préférences liées à ce site, comme votre langue ou les articles à enregistrer dans votre panier. Si, par la suite, vous accédez de nouveau à ce site avec le même navigateur, le site pourra lire le cookie enregistré et vous pourrez reprendre où vous vous étiez arrêté. Pour désigner ce type de cookie, on parle souvent de "cookie propriétaire", car il est placé par le site que vous consultez.</translation>
 <translation id="770831926727930011">Vos données locales sont protégées par votre ancien mot de passe. Pour les récupérer, saisissez-le.</translation>
 <translation id="7709152031285164251">Échec – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Protégez toutes vos clés d'accès avec un code de récupération</translation>
 <translation id="7710568461918838723">&amp;Caster…</translation>
 <translation id="7711900714716399411">Raccordez votre téléphone à votre ordinateur avec un câble USB. S'il l'est déjà, débranchez-le, puis rebranchez-le.</translation>
 <translation id="7711968363685835633">Désactiver les conversions et suggestions personnalisées ainsi que le dictionnaire personnel</translation>
@@ -9750,6 +9748,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8233028084277069927">Ouvrir maintenant</translation>
 <translation id="8234795456569844941">Pour aider nos ingénieurs à corriger ce problème, veuillez nous indiquer ce qui s'est passé juste avant de recevoir le message d'erreur concernant le profil :</translation>
 <translation id="8235418492073272647">Page partagée depuis <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Cet onglet partage des ressources avec d'autres onglets, ce qui pourrait perturber le débogage.</translation>
 <translation id="8236911020904880539">quitter</translation>
 <translation id="8236917170563564587">Partager cet onglet à la place</translation>
 <translation id="8237647586961940482">Rose foncé et rouge</translation>
@@ -9954,6 +9953,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8376532149031784008">Actualisation de <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">Les extensions installées par votre administrateur peuvent toujours lire et modifier ce site</translation>
 <translation id="8376752431516546391">Panneau latéral de la recherche Google</translation>
+<translation id="8376812682111060348">Alerte concernant un problème de performances</translation>
 <translation id="8377625247046155446">Elle ne sera enregistrée que sur cet appareil. Elle y restera une fois que vous aurez fermé toutes les fenêtres de navigation privée.</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8379988659465232385">Vous devez indiquer un nom</translation>

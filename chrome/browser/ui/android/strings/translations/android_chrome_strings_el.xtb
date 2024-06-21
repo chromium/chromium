@@ -520,6 +520,7 @@
 <translation id="3587596251841506391">Συμβάλ. στη βελτίωση της ασφάλ.</translation>
 <translation id="3597179440835065298">Δείτε καλύτερες προτάσεις</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
+<translation id="3614126103057878858">Insight τιμών</translation>
 <translation id="3616113530831147358">Ήχος</translation>
 <translation id="3622349720008044802">Διαχείριση παραθύρων</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ιστότοπος}other{+ # ιστότοποι}}</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7161230316646448869">Συγχρονίστε τους σελιδοδείκτες, το ιστορικό σας και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="7168323970702333693">Συνδεθήκατε ως <ph name="USER_NAME" />. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="7173114856073700355">Άνοιγμα ρυθμίσεων</translation>
+<translation id="7173338713290252554">Ιστορικό τιμών στον ιστό</translation>
 <translation id="7177466738963138057">Μπορείτε να αλλάξετε αργότερα αυτή την επιλογή στην περιοχή "Ρυθμίσεις"</translation>
 <translation id="7177873915659574692">Δεν είναι δυνατή η δημιουργία κωδικού QR. Το URL περιέχει περισσότερους από <ph name="CHARACTER_LIMIT" /> χαρακτήρες.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>

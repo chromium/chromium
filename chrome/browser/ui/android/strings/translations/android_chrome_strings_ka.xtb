@@ -520,6 +520,7 @@
 <translation id="3587596251841506391">გააუმჯობესეთ ვების უსაფრთხოება</translation>
 <translation id="3597179440835065298">მიიღეთ უკეთესი შემოთავაზებები</translation>
 <translation id="3602290021589620013">გადახედვა</translation>
+<translation id="3614126103057878858">ფასების ანალიზი</translation>
 <translation id="3616113530831147358">აუდიო</translation>
 <translation id="3622349720008044802">მართეთ ფანჯრები</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 საიტი}other{+ # საიტი}}</translation>
@@ -1268,6 +1269,7 @@
 <translation id="7161230316646448869">შეასრულეთ თქვენი სანიშნეების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობას შორის</translation>
 <translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
+<translation id="7173338713290252554">ფასის ისტორია ვებში</translation>
 <translation id="7177466738963138057">ამის მოგვიანებით შეცვლა შეგიძლიათ პარამეტრებიდან</translation>
 <translation id="7177873915659574692">QR კოდის შექმნა ვერ მოხერხდა. URL შედგება <ph name="CHARACTER_LIMIT" />-ზე მეტი სიმბოლოსგან.</translation>
 <translation id="7180611975245234373">განახლება</translation>

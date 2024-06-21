@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">اس سے مائیکروفون کی اجازت کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس کو مائیکروفون تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="4382340674111381977">پچھلے صفحہ پر جائيں</translation>
 <translation id="4389184120735010762">آپ نے ڈاک کردہ مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
+<translation id="4394466652057229831">خلاصہ کرنے کے لیے دایاں کلک کریں</translation>
 <translation id="439598569299422042">موقوف ہو گیا، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">اسکرین کاسٹ کو محفوظ نہیں کیا جا سکتا</translation>
 <translation id="4405151984121254935">منسلک پیریفرل کی قسم تعاون یافتہ نہیں ہے</translation>
@@ -1938,6 +1939,7 @@
 <translation id="8113423164597455979">آن، سبھی ایپس</translation>
 <translation id="8113515504791187892">سننے کیلئے منتخب کریں بٹن</translation>
 <translation id="8120151603115102514">‏آپ کے فون میں لاک اسکرین نہیں ہے۔ اپنے Chromebook کو غیر مقفل کرنے کے لیے، پاس ورڈ درج کریں۔</translation>
+<translation id="8120249852906205273">ری اسٹارٹ کریں</translation>
 <translation id="8127095419621171197">کیلکولیٹر ایپ کھولیں</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8130528849632411619">دستاویز کے شروع میں جائیں</translation>
@@ -2032,6 +2034,7 @@
 <translation id="85123341071060231">‏آپ کے Chromebook کا بلوٹوتھ آف ہے۔ اپنے Chromebook کو غیر مقفل کرنے کے لیے، پاس ورڈ درج کریں۔</translation>
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
 <translation id="851458219935658693">موجودہ ڈیسک سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
+<translation id="851660987304951246">مواد کا فوری خلاصہ کرنے یا سوالات پوچھنے کے لیے پڑھنے میں میری مدد کریں کا استعمال کریں</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> کے ذریعے کنٹرول کردہ مائک ان پٹ}other{# ایپس کے ذریعے کنٹرول کردہ مائک ان پٹ}}</translation>
 <translation id="8535393432370007982">رنگ کے لحاظ سے ترتیب کو کالعدم کریں</translation>
@@ -2076,6 +2079,7 @@
 <translation id="8704155109538237473">تصویر میں تصویر ونڈو پر فوکس کریں</translation>
 <translation id="870917907284186124">ڈکٹیشن کو آن/آف کریں (اپنی آواز سے ٹائپ کریں)</translation>
 <translation id="8711169534266271368">گیم ڈیش بورڈ کے اختیارات</translation>
+<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8714138378966541668">فراہم کنندہ نے لاک کیا</translation>
 <translation id="8717459106217102612">پچھلا لفظ یا حرف منتخب کریں</translation>
 <translation id="8721053961083920564">والیوم ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>

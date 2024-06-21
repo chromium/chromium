@@ -508,6 +508,7 @@
 <translation id="192095259937375524">分享呢個分頁按鈕，啟動之後就可以利用分享連結、建立 QR 碼、投放之類嘅功能，分享呢個分頁</translation>
 <translation id="1924727005275031552">新地址</translation>
 <translation id="1927439846988093361">頭髮護理</translation>
+<translation id="1935353813610900265">對採用 AI 技術的記錄搜尋功能提供意見</translation>
 <translation id="1935995810530254458">仍要複製</translation>
 <translation id="1939059826036755332">自動顯示畫中畫</translation>
 <translation id="1939175642807587452">可要求傳送通知</translation>
@@ -827,6 +828,7 @@
 <translation id="2526280916094749336">您可在不同的 Google 產品中使用已儲存的地址。此地址將會儲存在您的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2527451058878391043">CVC 喺信用卡嘅正面，即係信用卡號碼右上方嘅 4 位數字。</translation>
 <translation id="2529899080962247600">此欄位只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會被忽略。</translation>
+<translation id="2530042584066815841">滑鼠鎖定與使用</translation>
 <translation id="2533649878691950253">由於您通常不允許網站取得您的精確位置，因此系統已禁止此操作</translation>
 <translation id="253493526287553278">查看宣傳代碼詳情</translation>
 <translation id="2535585790302968248">開啟新的無痕式分頁以私下瀏覽內容</translation>
@@ -852,6 +854,7 @@
 <translation id="255497580849974774">請在更新期間將裝置連接電源。</translation>
 <translation id="2556876185419854533">復原編輯(&amp;U)</translation>
 <translation id="2559566667529177711">多層</translation>
+<translation id="2565789370591907825">鍵盤鎖定與使用</translation>
 <translation id="2570734079541893434">管理設定</translation>
 <translation id="2573170131138724450">電視</translation>
 <translation id="257674075312929031">群組</translation>
@@ -899,6 +902,7 @@
 <translation id="2687555958734450033">最適合</translation>
 <translation id="2688186765492306706">500 x 760 毫米</translation>
 <translation id="2688969097326701645">是，請繼續</translation>
+<translation id="2690699652723742414">過去 30 天</translation>
 <translation id="2691924980723297736">安全警告</translation>
 <translation id="2699273987028089219">有可用的子選單，請使用<ph name="SHORTCUT" />前往其他選項。</translation>
 <translation id="2701514975700770343">正面朝下</translation>
@@ -1028,6 +1032,7 @@
 <translation id="297173220375858963">桌面排版</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
+<translation id="2977847223286097084">鎖定和使用鍵盤</translation>
 <translation id="2978824962390592855">歌劇</translation>
 <translation id="2979424420072875974">作家資源</translation>
 <translation id="2980742331521553164">此付款卡的 CVC 經已加密並儲存至你的 Google 帳戶，以便快速結帳</translation>
@@ -1100,6 +1105,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="3120807611504813890">信封 (輕量)</translation>
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
+<translation id="3122696783148405307">顯示過去 30 日嘅結果</translation>
 <translation id="3126023634486644099">標籤 (永久)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 已設定為預設搜尋引擎</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜尋<ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1468,6 +1474,7 @@
 <translation id="3781428340399460090">豔粉紅色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">藍牙裝置</translation>
+<translation id="378611282717571199">「<ph name="SEARCH_QUERY" />」的最相符項目</translation>
 <translation id="3789155188480882154">粗幼：16</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋)</translation>
@@ -1487,6 +1494,7 @@
 <translation id="3815434930383843058">8 x 12 吋</translation>
 <translation id="3816482573645936981">值 (已被取代)</translation>
 <translation id="382115839591654906"><ph name="CARD_NAME" />的 CVC</translation>
+<translation id="3822492359574576064">滑鼠鎖定與使用</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">您的瀏覽器由 <ph name="BROWSER_DOMAIN" /> 管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="382518646247711829">如果您使用 Proxy 伺服器…</translation>
@@ -1811,6 +1819,7 @@
 <translation id="4438821706955556403">一般價格</translation>
 <translation id="4441832193888514600">由於此政策只能設定為雲端使用者政策，因此系統已忽略。</translation>
 <translation id="4445133368066241428">熱門主題</translation>
+<translation id="4445964943162061557">這是實驗版功能，提供的建議不一定符合需求。</translation>
 <translation id="4449116177348980384">管理網站設定按鈕，啟動之後就可以喺 Chrome 設定度管理所有網站嘅權限同儲存嘅資料</translation>
 <translation id="4451135742916150903">可要求連接 HID 裝置</translation>
 <translation id="4451684391620232683">向使用者顯示的文字：</translation>
@@ -1889,6 +1898,7 @@
 <translation id="4631881646528206880">虛擬卡註冊</translation>
 <translation id="4635278307999235413">傳送緊資料去管理控制台</translation>
 <translation id="4636930964841734540">資料</translation>
+<translation id="4640225694041297329">顯示過去 7 日嘅結果</translation>
 <translation id="464342062220857295">搜尋功能</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4646534391647090355">立即前往下載中心</translation>
@@ -1968,6 +1978,7 @@
 <translation id="4780366598804516005">出紙槽 1</translation>
 <translation id="4785376858512657294">管理 Google 帳戶</translation>
 <translation id="4785689107224900852">切換至此分頁</translation>
+<translation id="4785998536350006000">正在搜尋「<ph name="SEARCH_QUERY" />」</translation>
 <translation id="4786804728079074733">排球</translation>
 <translation id="4787182171088676626">信封 (高品質)</translation>
 <translation id="4789704664580239421">減價通知會顯示在已開啟的分頁上</translation>
@@ -2005,6 +2016,7 @@
 <translation id="4864801646102013152">居家俢繕</translation>
 <translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
 <translation id="4873616204573862158">眼鏡</translation>
+<translation id="4873807733347502026">鎖定和使用滑鼠</translation>
 <translation id="4876188919622883022">簡化檢視</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4876327226315760474">這代表網站功能應可正常運作，但瀏覽保護程度會降低。</translation>
@@ -2092,6 +2104,7 @@
 <translation id="5018802455907704660">16 x 20 吋</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
 <translation id="5019293549442035120">您可在不同的 Google 產品中使用已儲存的地址。此地址將會儲存在您的 Google 帳戶 (<ph name="USER_EMAIL" />) 中。</translation>
+<translation id="5019952743397118625">已設定 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策。「<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />」不會控制開發人員模式在擴充程式頁面上的適用情況。</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
 <translation id="5023310440958281426">請查看您的管理員政策</translation>
 <translation id="5030338702439866405">發行者：</translation>
@@ -2429,6 +2442,7 @@
 <translation id="5667827081946850877">有聲書</translation>
 <translation id="5675650730144413517">此網頁無法正常運作</translation>
 <translation id="5675809467256309336">舞曲和電子音樂</translation>
+<translation id="5675959228867414813">按日期顯示</translation>
 <translation id="5677928146339483299">已封鎖</translation>
 <translation id="5678007133659493065">燙金</translation>
 <translation id="5680642791693447368">恐怖、犯罪和懸疑電影</translation>
@@ -2646,6 +2660,7 @@
 <translation id="6108702513636120202">你在 Chromium 中的搜尋引擎</translation>
 <translation id="6108849843016142864">爬蟲類和兩棲類</translation>
 <translation id="610911394827799129">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄</translation>
+<translation id="611018310643025551">你的搜尋、最相符項目及相應頁面內容會傳送給 Google，並可能送交人手審查以改善有關功能。</translation>
 <translation id="6116338172782435947">查看複製到剪貼簿的文字和圖片</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
 <translation id="6118782133429281336">來源清單空白。</translation>
@@ -2902,6 +2917,7 @@
 <translation id="6587923378399804057">您複製的連結</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
 <translation id="6596325263575161958">加密選項</translation>
+<translation id="6596573334527383067">顯示尋日嘅結果</translation>
 <translation id="6597665340361269064">90 度</translation>
 <translation id="6598976221101665070">劇情電影</translation>
 <translation id="6599642189720630047">已追蹤的產品</translation>
@@ -3372,6 +3388,7 @@
 <translation id="7489392576326061356">洗髮水和護髮素</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="749865518782565832">水管工程</translation>
+<translation id="7500917112031739411">按群組顯示</translation>
 <translation id="7501663406926337752">您的機構已標示您將要瀏覽的網站</translation>
 <translation id="7507075214339298899">#9 信封</translation>
 <translation id="7508255263130623398">傳回的政策裝置識別碼為空白或與目前裝置識別碼不符</translation>
@@ -3572,6 +3589,7 @@
 <translation id="7825558994363763489">微波爐</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi (<ph name="WIFI_NAME" />) 可能要求您前往其登入頁面。</translation>
 <translation id="7831993212387676366">什麼是購物清單？</translation>
+<translation id="7832078172950550575">利用日常用語，以「附近的薄餅店」或「適合一家大小的市區公園」等詞組搜尋你的瀏覽記錄。你的搜尋、最相符項目及相應頁面內容會傳送給 Google，並可能送交人手審查以改善有關功能。<ph name="BEGIN_LINK" />管理記錄搜尋設定<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">已開始擷取螢幕截圖</translation>
 <translation id="784137052867620416">購物分析資料</translation>
 <translation id="784404208867107517">分類記錄</translation>
@@ -3867,6 +3885,7 @@
 <translation id="8398335999901363925">㩒一下先可以填嘅付款方法，宜家顯示喺成個畫面。</translation>
 <translation id="8398446215576328011">還原已套用的政策</translation>
 <translation id="8398790343843005537">搜尋您的手機</translation>
+<translation id="8399276468426899527">鍵盤鎖定與使用</translation>
 <translation id="8400929824946688748">職業及教育</translation>
 <translation id="8403506619177967839">同人小說</translation>
 <translation id="8405579342203358118">在 Chrome 設定中管理同步哪些資料</translation>
@@ -4208,6 +4227,7 @@
 <translation id="9089260154716455634">停機時間政策：</translation>
 <translation id="9090218457905363312">雷鬼和加勒比音樂</translation>
 <translation id="9090243919347147717">附件</translation>
+<translation id="9090548458280093580">利用 AI 技術搜尋記錄</translation>
 <translation id="9090993752571911635">互聯網服務供應商 (ISP)</translation>
 <translation id="9093723786115107672">睡衣</translation>
 <translation id="9094544726794842788">㩒一下唔鍾意，系統會顯示意見表格。你可以喺表格度詳細講下點解唔鍾意呢啲結果</translation>

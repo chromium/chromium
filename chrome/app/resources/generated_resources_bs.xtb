@@ -542,7 +542,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1398853756734560583">Povećaj maksimalno</translation>
 <translation id="139911022479327130">Otključajte telefon i potvrdite identitet</translation>
 <translation id="1399261165075500043">Nije moguće učitati Uslove korištenja usluge Google Play</translation>
-<translation id="1400625312571031118">Sigurnije od lozinke</translation>
 <translation id="1401216725754314428">Saznajte više o srodnim web lokacijama na novoj kartici</translation>
 <translation id="1402426911829176748">Povezivanje s vašim uređajem</translation>
 <translation id="1403222014593521787">Nije se moguće povezati s proksi serverom</translation>
@@ -1473,6 +1472,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2048254245884707305">Traženje zlonamjernog softvera…</translation>
 <translation id="2048554637254265991">Došlo je do greške prilikom pokretanja upravitelja spremnika. Pokušajte ponovo.</translation>
 <translation id="2048653237708779538">Radnja nije dostupna</translation>
+<translation id="2049021651258469175">Moći ćete i koristiti te spremati svoje zaporke i druge podatke sa svojeg Google računa.</translation>
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2051266530792296582">Google upravitelj lozinki je kreirao jaku lozinku za ovu web lokaciju</translation>
@@ -2755,7 +2755,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2965227184985674128">Uključiti pristup mikrofonu?</translation>
 <translation id="2966705348606485669">Više opcija za folder oznaka <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Upravljajte postavkama Androida</translation>
-<translation id="2967791329697639454">Brža, šifrirana prijava</translation>
 <translation id="2967926928600500959">URL-ovi koji se podudaraju s ovim pravilima će se prisilno otvarati u određenom pregledniku.</translation>
 <translation id="2969411787010981955">Podaci su izvezeni na odabranu lokaciju</translation>
 <translation id="2970766364519518369">Odabrani kontakti mogu dijeliti s vama kada su u blizini. Od vas će se tražiti da odobrite ove zahtjeve. Nećete morati odobravati dijeljenje između uređaja koji su prijavljeni na račun <ph name="USER_EMAIL" />.</translation>
@@ -3485,7 +3484,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3521606918211282604">Promijeni veličinu diska</translation>
 <translation id="3522088408596898827">Količina prostora na disku je kritično mala. Oslobodite prostor na disku i pokušajte ponovo.</translation>
 <translation id="3522979239100719575">Traženje dostupnih profila. Ovo može potrajati nekoliko minuta.</translation>
-<translation id="3524311336636707495">Dostupno na vašim uređajima</translation>
 <translation id="3524518036046613664">Otkrivanje uređaja na vašoj lokalnoj mreži, poput štampača</translation>
 <translation id="3524965460886318643">Izvezi aktivnosti</translation>
 <translation id="3525426269008462093">Pregledaj sinhronizaciju uređaja nakon postavljanja</translation>
@@ -4291,7 +4289,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4093865285251893588">Slika profila</translation>
 <translation id="4093955363990068916">Lokalni fajl:</translation>
 <translation id="4094647278880271855">Koristite varijablu okruženja koja nije podržana: <ph name="BAD_VAR" />. To će negativno uticati na stabilnost i sigurnost.</translation>
-<translation id="4095246243698959793">Da sinhronizirate i koristite pristupne ključeve s Googlea</translation>
 <translation id="4095264805865317199">Otvori korisnički interfejs za aktiviranje mobilne mreže</translation>
 <translation id="4095425503313512126">Pregledanje i pretraživanje je brže</translation>
 <translation id="4095483462103784441">Kreirajte novu grupu kartica</translation>
@@ -5496,6 +5493,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5021750053540820849">Još uvijek nije ažurirano</translation>
 <translation id="5022206631034207923">Zaključani ekran, kontrole</translation>
 <translation id="5024511550058813796">Na svim vašim sinhroniziranim uređajima ćete imati historiju, pa možete nastaviti s onim što ste radili</translation>
+<translation id="5024992827689317672">Podaci su izbrisani</translation>
 <translation id="5026492829171796515">Prijavite se da dodate Google račun</translation>
 <translation id="5026806129670917316">Uključite WiFi</translation>
 <translation id="5026874946691314267">Ne prikazuj ponovo</translation>
@@ -8666,6 +8664,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7417435070053325657">Blokirano: <ph name="BLOCKED_APPS_SIZE" /> od <ph name="APPS_LIST_SIZE" /> aplikacije/a</translation>
 <translation id="741906494724992817">Ovoj aplikaciji nisu potrebna posebna odobrenja.</translation>
 <translation id="7419142833919893307">Nije dodano nijedno korisničko ime</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN je pogrešan. Imate još jedan pokušaj.}one{PIN je pogrešan. Imate još # pokušaj.}few{PIN je pogrešan. Imate još # pokušaja.}other{PIN je pogrešan. Imate još # pokušaja.}}</translation>
 <translation id="7419565702166471774">Uvijek koristite sigurne veze</translation>
 <translation id="7419819959108735624">Odaberite bilo šta da pretražite putem Google Objektiva</translation>
 <translation id="742130257665691897">Oznake su uklonjene</translation>
@@ -9840,6 +9839,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8261625296061301062">Softver skenera je instaliran</translation>
 <translation id="8262971894813353037">Omogućava novi dizajn za korisnički interfejs za web na računarima. Mora biti omogućeno i osvježavanje Chromea 2023.</translation>
+<translation id="8263228331881858381">Pristupni je ključ spremljen</translation>
 <translation id="8263336784344783289">Dajte naziv ovoj grupi</translation>
 <translation id="8264024885325823677">Ovom postavkom upravlja vaš administrator.</translation>
 <translation id="826511437356419340">Ušli ste u način rada pregleda prozora. Prevucite da navigirate ili pritisnite tipku tab ako koristite tastaturu.</translation>

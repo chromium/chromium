@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">Када је ово укључено, Chromium предучитава странице, што убрзава прегледање и претрагу.</translation>
 <translation id="2343156876103232566">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chromium на оба уређаја.</translation>
 <translation id="2359808026110333948">Настави</translation>
+<translation id="2361918034042471035">Додатак <ph name="EXTENSION_NAME" /> жели да се пријавите у Chromium</translation>
+<translation id="2374216753258219393">Да бисте користили овај додатак као <ph name="USER_EMAIL_ADDRESS" />, пријавите се у Chromium.</translation>
 <translation id="2384373936468275798">Chromium ОС не може да синхронизује податке зато што су подаци за пријављивање на налог застарели.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Један или више додатака за Chromium су приступали 1 HID уређају}=1{Један или више додатака за Chromium приступају 1 HID уређају}one{Један или више додатака за Chromium приступају # HID уређају}few{Један или више додатака за Chromium приступају HID уређајима (#)}other{Један или више додатака за Chromium приступају HID уређајима (#)}}</translation>
 <translation id="2401032172288869980">Chromium-у су потребне дозволе за камеру и микрофон за овај сајт</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">Поново покрени да би се &amp;Chromium ажурирао</translation>
 <translation id="4942295735032723435">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 11 или новија верзија. Овај рачунар користи macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium је у позадинском режиму.</translation>
+<translation id="494490797786467921">Кликните да бисте затворили дијалог за пријављивање у Chromium</translation>
 <translation id="4987820182225656817">Гости могу да користе Chromium а да не остављају никакве трагове.</translation>
 <translation id="4994636714258228724">Додајте себе у Chromium</translation>
 <translation id="5114678101347489141">Chromium истражује нове функције које омогућавају сајтовима да пружају исти доживљај прегледања, а да користе мање података</translation>
+<translation id="5187123684706427865">Chromium налог захтева поновну потврду идентитета</translation>
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5231355151045086930">Одјавите се из Chromium-а</translation>
 <translation id="5252179775517634216">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chromium профил. Овим ће се направити нов Chromium профил за <ph name="USER_EMAIL_ADDRESS" /></translation>

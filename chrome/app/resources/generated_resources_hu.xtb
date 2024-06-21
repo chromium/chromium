@@ -540,7 +540,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1398853756734560583">Teljes méret</translation>
 <translation id="139911022479327130">Oldja fel telefonja zárolását, és erősítse meg személyazonosságát</translation>
 <translation id="1399261165075500043">Nem sikerült betölteni a Google Play Általános Szerződési Feltételeit</translation>
-<translation id="1400625312571031118">Biztonságosabb, mint a jelszó</translation>
 <translation id="1401216725754314428">További információ a kapcsolódó webhelyekről új lapon</translation>
 <translation id="1402426911829176748">Csatlakozás az eszközhöz…</translation>
 <translation id="1403222014593521787">A proxyhoz való kapcsolódás sikertelen</translation>
@@ -2755,7 +2754,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2965227184985674128">Aktiválja a mikrofon-hozzáférést?</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> könyvjelzőmappa további beállításai</translation>
 <translation id="2966937470348689686">Android-beállítások kezelése</translation>
-<translation id="2967791329697639454">Gyorsabb, titkosított bejelentkezés</translation>
 <translation id="2967926928600500959">Az ezeknek a szabályoknak megfelelő URL-eket a megadott böngészőben kényszeríti megnyitásra a rendszer.</translation>
 <translation id="2969411787010981955">Az adatok exportálása a kiválasztott helyre sikeresen megtörtént</translation>
 <translation id="2970766364519518369">A névjegyek közötti kiválasztott személyek tartalmat oszthatnak meg Önnel, ha a közelében vannak. A rendszer megkéri majd a kérelmek jóváhagyására. Nem kell majd jóváhagynia a(z) <ph name="USER_EMAIL" /> fiókba bejelentkezett eszközök közötti megosztásokat.</translation>
@@ -3484,7 +3482,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3521606918211282604">Lemezméret módosítása</translation>
 <translation id="3522088408596898827">A lemez nagyon kevés szabad tárhellyel rendelkezik. Szabadítson fel lemezterületet, és próbálja újra.</translation>
 <translation id="3522979239100719575">Folyamatban van a rendelkezésre álló profilok keresése. Ez eltarthat néhány percig.</translation>
-<translation id="3524311336636707495">Mindegyik eszközén rendelkezésre áll</translation>
 <translation id="3524518036046613664">Eszközök (például nyomtatók) felfedezése helyi hálózatán.</translation>
 <translation id="3524965460886318643">Tevékenységek exportálása</translation>
 <translation id="3525426269008462093">Eszközszinkronizálás ellenőrzése a beállítás után</translation>
@@ -4289,7 +4286,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="4093955363990068916">Helyi fájl:</translation>
 <translation id="4094647278880271855">Nem támogatott környezeti változót használ: <ph name="BAD_VAR" />. Ennek a stabilitás és a biztonság látja kárát.</translation>
-<translation id="4095246243698959793">A Google-tól származó azonosítókulcsok szinkronizálása és használata</translation>
 <translation id="4095264805865317199">Mobilhálózati aktiválás kezelőfelületének megnyitása</translation>
 <translation id="4095425503313512126">A böngészés és a keresés gyorsabb</translation>
 <translation id="4095483462103784441">Új lapcsoport létrehozása</translation>

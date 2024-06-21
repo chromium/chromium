@@ -540,7 +540,6 @@
 <translation id="1398853756734560583">最大化</translation>
 <translation id="139911022479327130">スマートフォンのロックを解除して本人確認を行う</translation>
 <translation id="1399261165075500043">Google Play 利用規約を読み込めません</translation>
-<translation id="1400625312571031118">パスワードより安全</translation>
 <translation id="1401216725754314428">新しいタブで関連サイトの詳細を確認します</translation>
 <translation id="1402426911829176748">デバイスに接続しています</translation>
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
@@ -2737,7 +2736,6 @@
 <translation id="2965227184985674128">マイクへのアクセスをオンにしますか？</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> ブックマーク フォルダのその他のオプション</translation>
 <translation id="2966937470348689686">Android 設定を管理</translation>
-<translation id="2967791329697639454">暗号化され、すばやくログイン</translation>
 <translation id="2967926928600500959">これらのルールに一致する URL は、特定のブラウザで強制的に開かれます。</translation>
 <translation id="2969411787010981955">データを選択した場所にエクスポートしました</translation>
 <translation id="2970766364519518369">近くにいる選択した連絡先と共有できます。共有リクエストを承認するよう求められます。<ph name="USER_EMAIL" /> にログインしているデバイス間では共有リクエストを承認する必要はありません。</translation>
@@ -3465,7 +3463,6 @@
 <translation id="3521606918211282604">ディスクのサイズを変更</translation>
 <translation id="3522088408596898827">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてもう一度お試しください。</translation>
 <translation id="3522979239100719575">使用可能なプロファイルを検出しています。この処理には数分かかることがあります。</translation>
-<translation id="3524311336636707495">どのデバイスでも使用可能</translation>
 <translation id="3524518036046613664">プリンタなどのローカル ネットワーク上のデバイスを検出</translation>
 <translation id="3524965460886318643">アクティビティをエクスポート</translation>
 <translation id="3525426269008462093">設定後にデバイスの同期を確認する</translation>
@@ -4270,7 +4267,6 @@
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="4093955363990068916">ローカル ファイル:</translation>
 <translation id="4094647278880271855">サポートされていない環境変数が使用されています: <ph name="BAD_VAR" />。これにより、安全性とセキュリティが損なわれます。</translation>
-<translation id="4095246243698959793">同期して Google のパスキーを使用する</translation>
 <translation id="4095264805865317199">モバイル有効化 UI を開く</translation>
 <translation id="4095425503313512126">ブラウジングと検索が高速になります</translation>
 <translation id="4095483462103784441">新しいタブグループを作成</translation>

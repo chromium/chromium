@@ -536,7 +536,6 @@
 <translation id="1398853756734560583">放到最大</translation>
 <translation id="139911022479327130">將手機解鎖並確認這是你本人</translation>
 <translation id="1399261165075500043">無法載入《Google Play 服務條款》</translation>
-<translation id="1400625312571031118">比密碼更安全</translation>
 <translation id="1401216725754314428">在新分頁中進一步瞭解新相關網站</translation>
 <translation id="1402426911829176748">正在連線至裝置</translation>
 <translation id="1403222014593521787">無法連線至 Proxy</translation>
@@ -2732,7 +2731,6 @@
 <translation id="2965227184985674128">要允許存取麥克風嗎？</translation>
 <translation id="2966705348606485669">「<ph name="FOLDER_TITLE" />」書籤資料夾的其他選項</translation>
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
-<translation id="2967791329697639454">登入更快速，加密更安全</translation>
 <translation id="2967926928600500959">符合這些規則的網址會在特定瀏覽器中強制開啟。</translation>
 <translation id="2969411787010981955">資料已匯出至所選位置</translation>
 <translation id="2970766364519518369">附近的指定聯絡人可與你分享內容，系統會詢問你是否同意接收。不過，如果分享及接收內容的裝置都登入 <ph name="USER_EMAIL" />，系統就不會詢問。</translation>
@@ -3456,7 +3454,6 @@
 <translation id="3521606918211282604">變更磁碟大小</translation>
 <translation id="3522088408596898827">磁碟空間嚴重不足，請釋出磁碟空間，然後再試一次。</translation>
 <translation id="3522979239100719575">正在尋找可用的設定檔，請稍候片刻。</translation>
-<translation id="3524311336636707495">適用於所有裝置</translation>
 <translation id="3524518036046613664">探索區域網路中的裝置，例如印表機</translation>
 <translation id="3524965460886318643">匯出活動</translation>
 <translation id="3525426269008462093">在設定完成後查看裝置同步情形</translation>
@@ -4260,7 +4257,6 @@
 <translation id="4093865285251893588">個人資料圖片</translation>
 <translation id="4093955363990068916">本機檔案：</translation>
 <translation id="4094647278880271855">你使用了系統不支援的環境變數 (<ph name="BAD_VAR" />)，這會影響穩定性與安全性。</translation>
-<translation id="4095246243698959793">才能同步及使用 Google 中的密碼金鑰</translation>
 <translation id="4095264805865317199">開啟行動網路啟用 UI</translation>
 <translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快了</translation>
 <translation id="4095483462103784441">建立新分頁群組</translation>

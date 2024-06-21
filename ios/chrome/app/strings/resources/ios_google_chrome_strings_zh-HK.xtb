@@ -14,6 +14,7 @@
 <translation id="1320619893013575407">你已關閉 Chrome 登入功能。</translation>
 <translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1352919863522755794">「Google 密碼管理工具」無法檢查您的密碼。請檢查互聯網連線。</translation>
+<translation id="139623527619433858">預設使用 iPad 版 Chrome</translation>
 <translation id="1407843355326180937">登入此網站和 Chrome，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="1436059927646026729">在 Chrome 中開啟「我的最新分頁」</translation>
 <translation id="1449241544691504574">將書籤新增至 Chrome</translation>
@@ -134,7 +135,7 @@
 <translation id="4903674399067644695">此資訊卡會建議您如何充分運用 Chrome 的功能。</translation>
 <translation id="4919069428879420545">刪除 Chrome 中的瀏覽資料。</translation>
 <translation id="49200511069271369">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。管理員可設定或限制特定功能。</translation>
-<translation id="4925322001044117929">在 iPad 上預設使用 Chrome</translation>
+<translation id="4925322001044117929">預設在 iPad 使用 Chrome</translation>
 <translation id="498985224078955265">如要將此分頁傳送至其他裝置，請在要傳送的兩部裝置上登入 Chrome。</translation>
 <translation id="5030102366287574140">Chrome 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
 <translation id="5108659628347594808">讓 Chrome 更臻完美</translation>
@@ -222,6 +223,7 @@
 <translation id="7272930098487145294">如要儲存圖片，請輕按 [設定] 並允許 Chrome 新增您的相片</translation>
 <translation id="7275945473750112644">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chrome 資料將會從此裝置上清除</translation>
 <translation id="7284245284340063465">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="7299681342915173313">你現在只要輕按電郵、文件或其他應用程式中的連結，即可使用 Chrome。</translation>
 <translation id="7304491752269485262">打開咗 Chrome 自動填入檢視畫面</translation>
 <translation id="7344094882820374540">取得 Chrome 最強大的安全防護功能，防範危險網站</translation>
 <translation id="7349129508108954623">允許 Chrome 使用「Google 地圖」，為偵測到的地址提供路線和本地資訊。</translation>

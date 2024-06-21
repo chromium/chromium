@@ -538,7 +538,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1398853756734560583">Artırın</translation>
 <translation id="139911022479327130">Telefonunuzu kiliddən çıxarın və kimliyinizi təsdiq edin</translation>
 <translation id="1399261165075500043">Google Play Xidmət Şərtlərini yükləmək olmur</translation>
-<translation id="1400625312571031118">Paroldan təhlükəsiz</translation>
 <translation id="1401216725754314428">Əlaqədar saytlar haqqında ətraflı məlumat yeni tabda</translation>
 <translation id="1402426911829176748">Cihazınıza qoşulur</translation>
 <translation id="1403222014593521787">Proksiyə qoşulmaq olmur</translation>
@@ -2742,7 +2741,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2965227184985674128">Mikrofona giriş aktiv edilsin?</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> əlfəcin qovluğu üzrə digər seçimlər</translation>
 <translation id="2966937470348689686">Android tərcihlərini idarə edin</translation>
-<translation id="2967791329697639454">Daha sürətli, şifrəli giriş</translation>
 <translation id="2967926928600500959">Bu qaydalara uyğun gələn URL-lər xüsusi brauzerdə məcburi açılacaq.</translation>
 <translation id="2969411787010981955">Data seçilmiş yerə ixrac edilib</translation>
 <translation id="2970766364519518369">Seçilmiş kontaktlar yaxında olduqda sizinlə paylaşım edə bilər. Bu sorğuları təsdiq etməlisiniz. <ph name="USER_EMAIL" /> hesabına daxil olmuş cihazlar arasında paylaşımı təsdiqləməli deyilsiniz.</translation>
@@ -3471,7 +3469,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3521606918211282604">Disk ölçüsünü dəyişin</translation>
 <translation id="3522088408596898827">Diskdə boş yer çox azdır. Diskdə yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="3522979239100719575">Əlçatan profillər axtarılır. Bir neçə dəqiqə çəkə bilər.</translation>
-<translation id="3524311336636707495">Fərqli cihazlarınızda əlçatandır</translation>
 <translation id="3524518036046613664">Lokal şəbəkənizdəki printer kimi cihazları aşkarlayın</translation>
 <translation id="3524965460886318643">Eksport Fəaliyyətləri</translation>
 <translation id="3525426269008462093">Ayarlamadan sonra cihazın sinxronizasiyasını nəzərdən keçirin</translation>
@@ -4275,7 +4272,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4093865285251893588">Profil şəkli</translation>
 <translation id="4093955363990068916">Yerli fayl:</translation>
 <translation id="4094647278880271855">Dəstəklənməyən mühitin dəyişənindən istifadə edirsiniz: <ph name="BAD_VAR" />. Bu, stabillik və təhlükəsizliyə təsir edə bilər.</translation>
-<translation id="4095246243698959793">Google-dan giriş açarlarını sinxronlaşdırmaq və istifadə etmək üçün</translation>
 <translation id="4095264805865317199">Mobil Aktivasiya UI-ni Açın</translation>
 <translation id="4095425503313512126">Baxış və axtarış daha sürətlidir</translation>
 <translation id="4095483462103784441">Yeni tab qrupu yaradın</translation>

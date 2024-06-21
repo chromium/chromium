@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium ist veraltet. Wenn im <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kein Update verfügbar ist, unterstützt dein Gerät neuere Versionen von Chromium möglicherweise nicht mehr.</translation>
 <translation id="1423007117030725713">Eine Suche auf einem neuen Chromium-Tab starten.</translation>
 <translation id="1431818719585918472">Erlaube Chromium, deine Inkognitotabs zu sperren.</translation>
+<translation id="146407871188825689">Chromium standardmäßig auf dem iPad verwenden</translation>
 <translation id="1472013873724362412">Dieses Konto funktioniert in Chromium nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
 <translation id="1503199973012840174">Deine Chromium-Version ist veraltet. Aktualisiere sie, um deine Daten besser zu schützen.</translation>
 <translation id="1507010443238049608">Ich möchte dabei helfen, die Funktionen und die Leistung von Chromium zu verbessern</translation>
@@ -121,6 +122,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 
 Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Dadurch wird die Seite mit den Einstellungen für Zahlungsmethoden in Chromium geöffnet.</translation>
+<translation id="458786853569524949">Du kannst jetzt Chromium jederzeit nutzen, wenn du in E‑Mails, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="459080529287102949">Bilder in Chromium suchen</translation>
 <translation id="4633738821577273991">Hol dir für dieses Chromium-Profil auch erweitertes Safe Browsing</translation>
 <translation id="4638625642619341392">Hier kannst du Chromium herunterladen.</translation>
@@ -288,6 +290,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromium-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>
 <translation id="9050790730841755540">Du kannst Chromium jederzeit nutzen, wenn du in anderen Apps auf Links tippst.</translation>
+<translation id="9057082013386654559">Standardmäßig Chromium für iPad verwenden</translation>
 <translation id="9059693977935746710">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9110075932708282655">Standardmäßig Chromium verwenden</translation>

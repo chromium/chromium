@@ -458,6 +458,7 @@
 <translation id="8441146129660941386">পেছনে যান</translation>
 <translation id="8444433999583714703">তাছাড়া, যাতে <ph name="APP_NAME" /> আপনার লোকেশন অ্যাক্সেস করতে পারে, তার জন্য <ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> গিয়েও লোকেশন চালু করে দিন।</translation>
 <translation id="8447861592752582886">ডিভাইসের অনুমতি প্রত্যাহার করুন</translation>
+<translation id="8473055640493819707">'<ph name="APP_NAME" />'-এর ভার্সন আপডেট করতে হবে। অ্যাপটি আবার ইনস্টল করুন।</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="848952951823693243">সবসময় মোবাইল সাইটের অনুরোধ করুন</translation>
 <translation id="8499083585497694743">মাইক্রোফোন আনমিউট করুন</translation>

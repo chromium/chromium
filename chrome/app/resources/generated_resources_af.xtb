@@ -536,7 +536,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1398853756734560583">Maak groot</translation>
 <translation id="139911022479327130">Ontsluit jou foon en bevestig dat dit jy is</translation>
 <translation id="1399261165075500043">Kan nie Google Play se diensbepalings laai nie</translation>
-<translation id="1400625312571031118">Veiliger as 'n wagwoord</translation>
 <translation id="1401216725754314428">Kom in ’n nuwe oortjie meer te wete oor verwante werwe</translation>
 <translation id="1402426911829176748">Koppel tans aan jou toestel</translation>
 <translation id="1403222014593521787">Kan nie aan die instaanbediener koppel nie.</translation>
@@ -2745,7 +2744,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2965227184985674128">Skakel mikrofoontoegang aan?</translation>
 <translation id="2966705348606485669">Meer opsies vir <ph name="FOLDER_TITLE" />-boekmerkvouer</translation>
 <translation id="2966937470348689686">Bestuur Android-voorkeure</translation>
-<translation id="2967791329697639454">Vinniger, geënkripteerde aanmelding</translation>
 <translation id="2967926928600500959">URL'e wat met hierdie reëls ooreenstem, sal verplig word om in ’n spesifieke blaaier oop te maak.</translation>
 <translation id="2969411787010981955">Data is na die geselekteerde ligging uitgevoer</translation>
 <translation id="2970766364519518369">Uitgesoekte kontakte kan met jou deel wanneer hulle in die omtrek is. Jy sal gevra word om hierdie versoeke goed te keur. Jy sal nie deling tussen toestelle wat by <ph name="USER_EMAIL" /> aangemeld is, hoef goed te keur nie.</translation>
@@ -3472,7 +3470,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3521606918211282604">Verander skyfgrootte</translation>
 <translation id="3522088408596898827">Skyfspasie is gevaarlik min. Maak skyfspasie beskikbaar en probeer weer.</translation>
 <translation id="3522979239100719575">Soek tans beskikbare profiele. Dit kan ’n paar minute neem.</translation>
-<translation id="3524311336636707495">Beskikbaar regoor jou toestelle</translation>
 <translation id="3524518036046613664">Ontdek toestelle op jou plaaslike netwerk, soos drukkers</translation>
 <translation id="3524965460886318643">Voer aktiwiteite uit</translation>
 <translation id="3525426269008462093">Gaan toestelsinkronisering ná opstelling na</translation>
@@ -4277,7 +4274,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4093865285251893588">Profielprent</translation>
 <translation id="4093955363990068916">Plaaslike lêer:</translation>
 <translation id="4094647278880271855">Jy gebruik tans 'n omgewingveranderlike wat nie gesteun word nie: <ph name="BAD_VAR" />. Stabiliteit en veiligheid sal daaronder ly.</translation>
-<translation id="4095246243698959793">Om te sinkroniseer en toegangsleutels van Google af te gebruik</translation>
 <translation id="4095264805865317199">Maak Sellulêre Aktivering UI oop</translation>
 <translation id="4095425503313512126">Blaai en soek is vinniger</translation>
 <translation id="4095483462103784441">Skep nuwe oortjiegroep</translation>
@@ -5937,6 +5933,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5372529912055771682">Die inskrywingmodus wat voorsien is, word nie deur hierdie weergawe van die bedryfstelsel gesteun nie. Maak asseblief seker dat jy die nuutste weergawe gebruik en probeer weer.</translation>
 <translation id="5372579129492968947">Ontspeld uitbreiding</translation>
 <translation id="5372632722660566343">Gaan voort sonder 'n rekening</translation>
+<translation id="5372990315769030589">Hou “<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5375318608039113175">Om Nabydeling met hierdie kontakte te gebruik, moet jy die e-posadres wat aan hul Google-rekening gekoppel is, by jou kontakte voeg.</translation>
 <translation id="5375577102295339548">Werwe kan help om te verifieer dat jy nie ’n bot is nie</translation>
 <translation id="5376094717770783089">Versoek toegang</translation>
@@ -9031,6 +9028,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7708143783728142771">Webkoekies maak voorsiening vir dieselfde vlak van voorkeurpasmaking op die web. Wanneer jy ’n werf besoek, kan die werf ’n webkoekie in jou toestel se blaaierberging stoor om jou werfvoorkeure te onthou, soos die taal wat jy praat of items wat jy in ’n inkopiemandjie wil stoor. Wanneer jy later weer die werf met dieselfde blaaier besoek, kan daardie werf die webkoekie lees wat dit gestel het en jy kan begin waar jy opgehou het. Hierdie tipe webkoekies word dikwels eerstepartykoekies genoem, omdat hulle gestel word deur die werf wat jy besoek.</translation>
 <translation id="770831926727930011">Jou plaaslike data word deur jou ou wagwoord beskerm. Voer jou ou wagwoord in om plaaslike data terug te stel.</translation>
 <translation id="7709152031285164251">Het misluk – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Beskerm al jou toegangsleutels met ’n terugstel-PIN</translation>
 <translation id="7710568461918838723">&amp;amp;Saai uit …</translation>
 <translation id="7711900714716399411">Gebruik 'n USB-kabel om jou foon aan jou rekenaar te koppel. As jou foon reeds gekoppel is, moet jy dit uitprop en weer inprop.</translation>
 <translation id="7711968363685835633">Deaktiveer gepersonaliseerde omskakelings en voorstelle, asook gebruikerwoordeboek</translation>
@@ -9761,6 +9759,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8233028084277069927">Maak nou oop</translation>
 <translation id="8234795456569844941">Help asseblief ons ingenieurs om hierdie probleem op te los. Sê vir ons wat gebeur het net voordat jy die profielfoutboodskap gekry het:</translation>
 <translation id="8235418492073272647">Bladsy vanaf <ph name="DEVICE_NAME" /> gedeel</translation>
+<translation id="8236802542508794819">Hierdie oortjie deel hulpbronne met ander oortjies, wat met ontfouting kan inmeng.</translation>
 <translation id="8236911020904880539">gaan uit</translation>
 <translation id="8236917170563564587">Deel eerder hierdie oortjie</translation>
 <translation id="8237647586961940482">Donkerpienk en rooi</translation>
@@ -9965,6 +9964,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8376532149031784008">Herlaai tans <ph name="DOMAIN" /> …</translation>
 <translation id="8376610503048439696">Uitbreidings wat deur jou administrateur geïnstalleer is, kan steeds hierdie werf lees en verander</translation>
 <translation id="8376752431516546391">Google Search-kantpaneel</translation>
+<translation id="8376812682111060348">Prestasiekwessiewaarskuwing</translation>
 <translation id="8377625247046155446">Hierdie toegangsleutel sal net op hierdie toestel gestoor word. Dit sal op hierdie toestel bly nadat jy alle Incognito-vensters toegemaak het.</translation>
 <translation id="8378714024927312812">Bestuur deur jou organisasie</translation>
 <translation id="8379988659465232385">Naam kan nie leeg wees nie</translation>

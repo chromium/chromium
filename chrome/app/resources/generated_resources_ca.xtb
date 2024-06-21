@@ -536,7 +536,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1398853756734560583">Maximitza</translation>
 <translation id="139911022479327130">Desbloqueja el telèfon i confirma la teva identitat</translation>
 <translation id="1399261165075500043">No es poden carregar les condicions del servei de Google Play</translation>
-<translation id="1400625312571031118">Més segura que una contrasenya</translation>
 <translation id="1401216725754314428">Més informació sobre els llocs web relacionats en una pestanya nova</translation>
 <translation id="1402426911829176748">S'està connectant amb el dispositiu</translation>
 <translation id="1403222014593521787">No s'ha pogut connectar amb el servidor intermediari</translation>
@@ -2732,7 +2731,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2965227184985674128">Vols activar l'accés al micròfon?</translation>
 <translation id="2966705348606485669">Més opcions per a la carpeta d'adreces d'interès <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gestiona les preferències d'Android</translation>
-<translation id="2967791329697639454">Inici de sessió encriptat i més ràpid</translation>
 <translation id="2967926928600500959">Es forçarà l'obertura en un navegador específic dels URL que compleixin aquestes regles.</translation>
 <translation id="2969411787010981955">Les dades s'han exportat a la ubicació seleccionada</translation>
 <translation id="2970766364519518369">Determinats contactes poden compartir contingut amb tu quan siguin a prop. Se't demanarà que aprovis aquestes sol·licituds. No hauràs d'aprovar les sol·licituds de compartició entre dispositius amb la sessió iniciada a <ph name="USER_EMAIL" />.</translation>
@@ -3457,7 +3455,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3521606918211282604">Canvia la mida del disc</translation>
 <translation id="3522088408596898827">Queda molt poc espai de disc. Allibera'n i torna-ho a provar.</translation>
 <translation id="3522979239100719575">S'estan cercant perfils disponibles. Aquest procés pot tardar uns minuts.</translation>
-<translation id="3524311336636707495">Disponible en tots els teus dispositius</translation>
 <translation id="3524518036046613664">Descobrir dispositius de la xarxa local, com ara impressores</translation>
 <translation id="3524965460886318643">Exporta les activitats</translation>
 <translation id="3525426269008462093">Revisa la sincronització del dispositiu després de la configuració</translation>
@@ -4261,7 +4258,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="4093955363990068916">Fitxer local:</translation>
 <translation id="4094647278880271855">Utilitzes una variable d'entorn que no és compatible: <ph name="BAD_VAR" />. L'estabilitat i la seguretat quedaran afectades.</translation>
-<translation id="4095246243698959793">Per sincronitzar i utilitzar claus d'accés de Google</translation>
 <translation id="4095264805865317199">Obre la IU d'activació de la xarxa mòbil</translation>
 <translation id="4095425503313512126">Navegar i fer cerques és més ràpid</translation>
 <translation id="4095483462103784441">Crea un grup de pestanyes nou</translation>

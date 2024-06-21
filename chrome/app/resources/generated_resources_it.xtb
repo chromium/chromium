@@ -536,7 +536,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1398853756734560583">Ingrandisci</translation>
 <translation id="139911022479327130">Sblocca il telefono e conferma la tua identità</translation>
 <translation id="1399261165075500043">Impossibile caricare i Termini di servizio di Google Play</translation>
-<translation id="1400625312571031118">Più sicura di una password</translation>
 <translation id="1401216725754314428">Scopri di più sui siti correlati in una nuova scheda</translation>
 <translation id="1402426911829176748">Collegamento al dispositivo in corso…</translation>
 <translation id="1403222014593521787">Impossibile connettersi al proxy</translation>
@@ -2732,7 +2731,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2965227184985674128">Vuoi attivare l'accesso al microfono?</translation>
 <translation id="2966705348606485669">Altre opzioni per la cartella di preferiti <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gestisci le preferenze Android</translation>
-<translation id="2967791329697639454">Accesso criptato e più rapido</translation>
 <translation id="2967926928600500959">Gli URL corrispondenti a queste regole dovranno essere aperti in un browser specifico.</translation>
 <translation id="2969411787010981955">I dati sono stati esportati nella posizione selezionata</translation>
 <translation id="2970766364519518369">I contatti selezionati possono condividere contenuti con te quando si trovano nelle vicinanze. Ti verrà chiesto di approvare queste richieste. Non dovrai approvare la condivisione tra i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" />.</translation>
@@ -3458,7 +3456,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3521606918211282604">Cambia dimensioni disco</translation>
 <translation id="3522088408596898827">Lo spazio sul disco sta per esaurirsi. Libera spazio sul disco e riprova.</translation>
 <translation id="3522979239100719575">È in corso la ricerca dei profili disponibili. Questa operazione può richiedere alcuni minuti.</translation>
-<translation id="3524311336636707495">Disponibile su tutti i tuoi dispositivi</translation>
 <translation id="3524518036046613664">Rilevamento di dispositivi sulla rete locale, come le stampanti</translation>
 <translation id="3524965460886318643">Esporta attività</translation>
 <translation id="3525426269008462093">Rivedi la sincronizzazione del dispositivo dopo la configurazione</translation>
@@ -4263,7 +4260,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="4093955363990068916">File locale:</translation>
 <translation id="4094647278880271855">Stai utilizzando una variabile di ambiente non supportata: <ph name="BAD_VAR" />. Sicurezza e stabilità ne risentiranno.</translation>
-<translation id="4095246243698959793">Per sincronizzare e usare le passkey di Google</translation>
 <translation id="4095264805865317199">Apri UI di attivazione rete mobile</translation>
 <translation id="4095425503313512126">La navigazione e la ricerca sono più veloci</translation>
 <translation id="4095483462103784441">Crea un nuovo gruppo di schede</translation>

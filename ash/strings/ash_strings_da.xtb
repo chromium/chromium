@@ -903,6 +903,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4381031910344220229">Dette giver <ph name="APP_NAME" /> og alle andre apps samt websites med mikrofontilladelse adgang til mikrofonen</translation>
 <translation id="4382340674111381977">Gå tilbage til den forrige side</translation>
 <translation id="4389184120735010762">Du trykkede på tastaturgenvejen for det fastgjorte lupvindue. Vil du aktivere indstillingen?</translation>
+<translation id="4394466652057229831">Højreklik for at opsummere</translation>
 <translation id="439598569299422042">Sat på pause, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Dit screencast kan ikke gemmes</translation>
 <translation id="4405151984121254935">Den tilsluttede tilbehørstype understøttes ikke</translation>
@@ -1939,6 +1940,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8113423164597455979">Til, alle apps</translation>
 <translation id="8113515504791187892">Tekstoplæsningsknap</translation>
 <translation id="8120151603115102514">Du har ikke aktiveret en låseskærm på din telefon. Angiv din adgangskode for at låse din Chromebook op.</translation>
+<translation id="8120249852906205273">Genstart</translation>
 <translation id="8127095419621171197">Åbn appen Lommeregner</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Gå til begyndelsen af dokumentet</translation>
@@ -2033,6 +2035,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="85123341071060231">Bluetooth er deaktiveret på din Chromebook. Angiv din adgangskode for at låse din Chromebook op.</translation>
 <translation id="8513108775083588393">Autoroter</translation>
 <translation id="851458219935658693">Vis vinduer fra det aktuelle skrivebord. Alternativknappen er valgt.</translation>
+<translation id="851660987304951246">Brug Hjælp mig med at læse for hurtigt at opsummere indhold eller stille spørgsmål</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> kan muligvis ikke oplades, mens den er tændt.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoninput styres af <ph name="APP_NAME" />}one{Mikrofoninput styres af # app}other{Mikrofoninput styres af # apps}}</translation>
 <translation id="8535393432370007982">Fortryd sortering efter farve</translation>
@@ -2077,6 +2080,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8704155109538237473">Fokuser på vinduet med integreret billede</translation>
 <translation id="870917907284186124">Aktivér/deaktiver diktering (skriv med din stemme)</translation>
 <translation id="8711169534266271368">Valgmuligheder for Spilpanel</translation>
+<translation id="8712637175834984815">Forstået</translation>
 <translation id="8714138378966541668">Låst af telefonselskabet</translation>
 <translation id="8717459106217102612">Markér det forrige ord eller bogstav</translation>
 <translation id="8721053961083920564">Slå lyden til/fra. <ph name="STATE_TEXT" /></translation>

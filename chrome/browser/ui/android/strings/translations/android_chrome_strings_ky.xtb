@@ -520,6 +520,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3587596251841506391">Интернеттеги коопсуздукту жакшыртууга жардам бериңиз</translation>
 <translation id="3597179440835065298">Жакшыраак сунуштарды алыңыз</translation>
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
+<translation id="3614126103057878858">Баалардын статистикасы</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Терезелерди башкаруу</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -1268,6 +1269,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7161230316646448869">Бардык түзмөктөрдөгү кыстармаларды, таржымалды жана башкаларды шайкештириңиз</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> катары кирдиңиз. Параметрлерди ачат.</translation>
 <translation id="7173114856073700355">Параметрлерди ачуу</translation>
+<translation id="7173338713290252554">Интернеттеги баа таржымалы</translation>
 <translation id="7177466738963138057">Муну кийинчерээк Параметрлерден өзгөртсөңүз болот</translation>
 <translation id="7177873915659574692">QR код түзүлгөн жок. URL дареги <ph name="CHARACTER_LIMIT" /> символдон ашып кетти.</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>

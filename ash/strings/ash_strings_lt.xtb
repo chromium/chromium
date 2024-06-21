@@ -903,6 +903,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4381031910344220229">Tai leis pasiekti mikrofoną programai „<ph name="APP_NAME" />“ ir visoms programoms bei svetainėms, turinčioms mikrofono leidimą</translation>
 <translation id="4382340674111381977">Grįžti į ankstesnį puslapį</translation>
 <translation id="4389184120735010762">Paspaudėte prie doko prijungto didintuvo spartųjį klavišą. Ar norite jį įjungti?</translation>
+<translation id="4394466652057229831">Apibendrinimas spustelėjus dešiniuoju klavišu</translation>
 <translation id="439598569299422042">Pristabdyta, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nepavyko išsaugoti ekrano vaizdo įrašo</translation>
 <translation id="4405151984121254935">Prijungto išorinio įrenginio tipas nepalaikomas</translation>
@@ -1939,6 +1940,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8113423164597455979">Visų programų pranešimai įjungti</translation>
 <translation id="8113515504791187892">Funkcijos „Teksto ištarimas“ mygtukas</translation>
 <translation id="8120151603115102514">Jūsų telefone nėra užrakinimo ekrano. Jei norite atrakinti „Chromebook“, įveskite slaptažodį.</translation>
+<translation id="8120249852906205273">Paleisti iš naujo</translation>
 <translation id="8127095419621171197">Atidaryti Skaičiuotuvo programą</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Eiti į dokumento pradžią</translation>
@@ -2033,6 +2035,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="85123341071060231">Jūsų „Chromebook“ išjungtas „Bluetooth“ ryšys. Jei norite atrakinti „Chromebook“, įveskite slaptažodį.</translation>
 <translation id="8513108775083588393">Auto. pasukti</translation>
 <translation id="851458219935658693">Rodyti dabartinio darbalaukio langus, pasirinkta akutė</translation>
+<translation id="851660987304951246">Naudokite funkciją „Padėkite man skaityti“, kad galėtumėte sparčiai apibendrinti turinį ar užduoti klausimų</translation>
 <translation id="8517041960877371778">„<ph name="DEVICE_TYPE" />“ gali nebūti kraunamas, kai yra įjungtas.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofono įvestį valdo „<ph name="APP_NAME" />“}one{Mikrofono įvestį valdo # programa}few{Mikrofono įvestį valdo # programos}many{Mikrofono įvestį valdo # programos}other{Mikrofono įvestį valdo # programų}}</translation>
 <translation id="8535393432370007982">Anuliuoti rūšiavimo tvarką pagal spalvą</translation>
@@ -2077,6 +2080,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8704155109538237473">Paryškinti vaizdo vaizde langą</translation>
 <translation id="870917907284186124">Įjungti ir (arba) išjungti diktavimą (teksto vedimą balsu)</translation>
 <translation id="8711169534266271368">Žaidimų informacijos suvestinės parinktys</translation>
+<translation id="8712637175834984815">Supratau</translation>
 <translation id="8714138378966541668">Užrakino teikėjas</translation>
 <translation id="8717459106217102612">Pasirinkti ankstesnį žodį ar raidę</translation>
 <translation id="8721053961083920564">Perjungti garsumą. <ph name="STATE_TEXT" /></translation>

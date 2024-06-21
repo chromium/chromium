@@ -622,7 +622,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1468702975912409463">Permitir que los usuarios con acceso remoto abran las URLs del host en el navegador de su cliente local</translation>
 <translation id="1474273443907024088">Inhabilitar TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">El proveedor de Automatización de la interfaz de usuario se habilitará o inhabilitará a través del framework de variantes.</translation>
 <translation id="1479427764273213107">Si estableces la política, se definirá la lista de dispositivos USB que el usuario puede desconectar del controlador de kernel para usarlos a través de la API chrome.usb directamente en una aplicación web. Las entradas son pares formados por el identificador del producto y del proveedor USB que permiten reconocer un hardware específico.
 
       Si no estableces la política, la lista de dispositivos USB que se pueden desconectar estará vacía.</translation>
@@ -6082,7 +6081,6 @@ Esta política afecta los flujos de autenticación de acceso y de pantalla de bl
       Nota: Los valores se separan con comas.</translation>
 <translation id="5693469654327063861">Permitir la migración de datos</translation>
 <translation id="56936613186060503">El administrador de descargas no tendrá la opción de guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="5693942129376744977">Inhabilitar el proveedor de Automatización de la interfaz de usuario.</translation>
 <translation id="5695209488612697377">Permite el uso de un proveedor de búsqueda predeterminado a través del menú contextual.
 
           Si inhabilitas esta política, no estará disponible el elemento del menú contextual de búsqueda destinado al proveedor de búsqueda predeterminado.
@@ -6168,37 +6166,6 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
       Si estableces el valor "False" para la política o no la estableces, no se enviará la información.
       Si estableces el valor "True", se enviará información sobre los VPD del dispositivo.
       Los datos vitales del producto (VPD) son un conjunto de datos informativos y de configuración (como números de serie y piezas) asociados al dispositivo.</translation>
-<translation id="5760227556806302854">Habilita el proveedor del framework de accesibilidad Automatización de la interfaz de usuario en
-<ph name="PRODUCT_NAME" /> para que lo usen las herramientas de
-accesibilidad.
-
-Esta política es compatible con
-<ph name="PRODUCT_NAME" /> durante un período
-de transición de un año para permitir que los administradores empresariales controlen la implementación
-del proveedor del framework de accesibilidad Automatización de la interfaz de usuario del navegador. Es posible
-que Accessibility y otras herramientas que usan el framework de accesibilidad Automatización de la interfaz de usuario para
-interoperar con el navegador requieran actualizaciones para funcionar correctamente con
-el proveedor de Automatización de la interfaz de usuario del navegador. Los administradores pueden usar esta política para
-inhabilitar de forma temporal el proveedor de Automatización de la interfaz de usuario del navegador (lo que revierte al
-comportamiento anterior) mientras trabajan con los proveedores para proporcionar actualizaciones a las herramientas
-afectadas.
-
-Cuando se configura como falsa, <ph name="PRODUCT_NAME" /> solo
-habilita su proveedor de Microsoft Active Accessibility. Accessibility y otras
-herramientas que usan el nuevo framework de accesibilidad Automatización de la interfaz de usuario para interoperar
-con el navegador se comunicarán con él con una corrección de compatibilidad en
-<ph name="MS_WIN_NAME" />.
-
-Si se configura como verdadero, <ph name="PRODUCT_NAME" />
-habilita su proveedor de Automatización de la interfaz de usuario además del proveedor
-de Microsoft Active Accessibility. Accessibility y otras herramientas que usan el nuevo
-framework de accesibilidad Automatización de la interfaz de usuario para interoperar con el navegador se
-comunicarán directamente con él.
-
-Si no se establece, se usará el framework de variantes en <ph name="PRODUCT_NAME" /> para habilitar o inhabilitar
-el proveedor.
-
-La compatibilidad con este parámetro de configuración de política finalizará en la versión 136 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5762969307102447459">Inhabilitar Autocompletar para las direcciones</translation>
 <translation id="5765780083710877561">Descripción:</translation>
 <translation id="5766438888216077649">No configurar <ph name="WINDOW_OPENER_PROPERTY" /> para los vínculos destinados a <ph name="BLANK_PAGE_NAME" /></translation>
@@ -8004,7 +7971,6 @@ Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE
       Si no la estableces, se ubicará la biblioteca de forma predeterminada en la parte inferior de la pantalla y el usuario podrá cambiar su posición.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
-<translation id="7043157348967593138">Habilitar el proveedor del framework de accesibilidad Automatización de la interfaz de usuario del navegador en Windows</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>
 <translation id="7045221780834308118">Si habilitas la política, las apps web de terceros podrán usar la API de Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si no la estableces o la inhabilitas, la <ph name="DESK_API_NAME" /> no estará disponible. La política solo tendrá efecto en los dispositivos inscritos.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
@@ -8984,7 +8950,6 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
 
        Si la inhabilitas o no la estableces, seguirá disponible el Modo de desarrollador para el dispositivo.</translation>
 <translation id="7824000841504721945">Inhabilitar grupos atómicos de políticas</translation>
-<translation id="7824833865123899471">Habilitar el proveedor de Automatización de la interfaz de usuario.</translation>
 <translation id="782661371433719637">No permite que ningún sitio solicite acceso de lectura a archivos y directorios a través de la API de File System</translation>
 <translation id="7827127381981620448">App de plataforma</translation>
 <translation id="7829436838673974723">Permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>

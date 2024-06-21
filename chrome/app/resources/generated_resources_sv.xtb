@@ -540,7 +540,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1398853756734560583">Maximera</translation>
 <translation id="139911022479327130">Lås upp telefonen och bekräfta att det är du</translation>
 <translation id="1399261165075500043">Det gick inte att läsa in Google Plays användarvillkor</translation>
-<translation id="1400625312571031118">Säkrare än ett lösenord</translation>
 <translation id="1401216725754314428">Läs mer om relaterade webbplatser på en ny flik</translation>
 <translation id="1402426911829176748">Ansluter till enheten</translation>
 <translation id="1403222014593521787">Det gick inte att ansluta till proxyservern</translation>
@@ -2756,7 +2755,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2965227184985674128">Vill du aktivera mikrofonåtkomst?</translation>
 <translation id="2966705348606485669">Fler alternativ för <ph name="FOLDER_TITLE" /> bokmärkesmapp</translation>
 <translation id="2966937470348689686">Hantera Android-inställningar</translation>
-<translation id="2967791329697639454">Snabbare och krypterad inloggning</translation>
 <translation id="2967926928600500959">Webbadresser som matchar dessa regler tvingas att öppnas i en viss webbläsare.</translation>
 <translation id="2969411787010981955">Data har exporterats till den valda platsen</translation>
 <translation id="2970766364519518369">Utvalda kontakter kan dela filer med dig när de är i närheten. Du blir ombedd att godkänna dessa förfrågningar. Du behöver inte godkänna delning mellan enheter som är inloggade på <ph name="USER_EMAIL" />.</translation>
@@ -3485,7 +3483,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3521606918211282604">Ändra diskstorlek</translation>
 <translation id="3522088408596898827">Mycket ont om diskutrymme. Frigör diskutrymme och försök igen.</translation>
 <translation id="3522979239100719575">Söker efter tillgängliga profiler. Det kan ta några minuter.</translation>
-<translation id="3524311336636707495">Tillgängligt på alla dina enheter</translation>
 <translation id="3524518036046613664">Upptäck enheter i det lokala nätverket, t.ex. skrivare</translation>
 <translation id="3524965460886318643">Exportera aktivitet</translation>
 <translation id="3525426269008462093">Granska enhetssynkronisering efter konfigureringen</translation>
@@ -4291,7 +4288,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="4093955363990068916">Lokal fil:</translation>
 <translation id="4094647278880271855">Du använder en miljövariabel som inte stöds: <ph name="BAD_VAR" />. Detta påverkar stabilitet och säkerhet negativt.</translation>
-<translation id="4095246243698959793">Synkronisera och använda nycklar från Google</translation>
 <translation id="4095264805865317199">Öppna användargränssnittet för aktivering av mobilnätverk</translation>
 <translation id="4095425503313512126">Det går snabbare att surfa och söka</translation>
 <translation id="4095483462103784441">Skapa en ny flikgrupp</translation>

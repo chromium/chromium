@@ -610,7 +610,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1468702975912409463">Consente agli utenti che accedono da remoto di aprire gli URL lato host nel browser client locale</translation>
 <translation id="1474273443907024088">Disattiva TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">Il provider di automazione dell'interfaccia utente verrà attivato o disattivato tramite il framework delle varianti.</translation>
 <translation id="1479427764273213107">L'impostazione del criterio consente di definire l'elenco di dispositivi USB che gli utenti possono scollegare dal proprio driver del kernel per essere utilizzati tramite l'API chrome.usb direttamente all'interno di un'app web. Le voci sono coppie costituite dall'ID fornitore USB e dall'ID prodotto per identificare un hardware specifico.
 
       Se non viene configurato, l'elenco di dispositivi USB scollegabili è vuoto.</translation>
@@ -5950,7 +5949,6 @@ Il criterio riguarda i flussi di autenticazione di accesso e della schermata di 
       Nota: separa i valori utilizzando le virgole.</translation>
 <translation id="5693469654327063861">Consenti migrazione dei dati</translation>
 <translation id="56936613186060503">In Gestione dei download non sarà disponibile un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="5693942129376744977">Disattiva il provider di automazione dell'interfaccia utente.</translation>
 <translation id="5695209488612697377">Consente di attivare l'utilizzo di un provider di ricerca predefinito nel menu contestuale.
 
           Se il criterio viene disattivato, la voce del menu contestuale di ricerca che si basa sul tuo provider di ricerca predefinito non è disponibile.
@@ -6026,17 +6024,6 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
       Se il criterio è impostato su False o non è configurato, le informazioni non vengono segnalate.
       Se è impostato su True, le informazioni sui VPD del dispositivo vengono segnalate.
       I Vital Product Data (VPD) sono una raccolta di dati informativi e di configurazione (come numeri di serie o di componenti) associati al dispositivo.</translation>
-<translation id="5760227556806302854">Consente di attivare il provider del framework di accessibilità di automazione dell'interfaccia utente in <ph name="PRODUCT_NAME" /> per l'utilizzo da parte degli strumenti di accessibilità.
-
-Questo criterio è supportato in <ph name="PRODUCT_NAME" /> per un periodo di transizione di un anno in modo da consentire agli amministratori aziendali di controllare il deployment del provider del framework di accessibilità di automazione dell'interfaccia utente del browser. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di automazione dell'interfaccia utente per interoperare con il browser potrebbero richiedere aggiornamenti per funzionare correttamente con il provider di automazione dell'interfaccia utente del browser. Gli amministratori possono utilizzare questo criterio per disattivare temporaneamente il provider di automazione dell'interfaccia utente del browser (ripristinando il comportamento precedente) mentre collaborano con i fornitori per fornire aggiornamenti agli strumenti interessati.
-
-Se il criterio viene impostato su false, <ph name="PRODUCT_NAME" /> attiva solo il relativo provider Microsoft Active Accessibility. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il più recente framework di accessibilità di automazione dell'interfaccia utente per interoperare con il browser comunicheranno con quest'ultimo tramite uno shim di compatibilità in <ph name="MS_WIN_NAME" />.
-
-Se il criterio viene impostato su true, <ph name="PRODUCT_NAME" /> attiva il proprio provider di automazione dell'interfaccia utente oltre al provider Microsoft Active Accessibility. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di automazione dell'interfaccia utente più recente per interoperare con il browser comunicano direttamente con quest'ultimo.
-
-Se il criterio non viene configurato, il framework delle varianti in <ph name="PRODUCT_NAME" /> viene utilizzato per attivare o disattivare il provider.
-
-Il supporto di questa impostazione dei criteri terminerà con <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="5762969307102447459">Disattiva la compilazione automatica per gli indirizzi</translation>
 <translation id="5765780083710877561">Descrizione:</translation>
 <translation id="5766438888216077649">Non impostare <ph name="WINDOW_OPENER_PROPERTY" /> per i link indirizzati alla pagina <ph name="BLANK_PAGE_NAME" /></translation>
@@ -7794,7 +7781,6 @@ Se questo criterio viene impostato su <ph name="PROVISION_MANAGED_CLIENT_CERTIFI
       Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7039815268521168329">Mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
-<translation id="7043157348967593138">Attiva il provider del framework di accessibilità di automazione dell'interfaccia utente del browser su Windows</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7045221780834308118">Se il criterio viene impostato su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di <ph name="PRODUCT_OS_NAME" />. Se il criterio non viene configurato o se viene disattivato, <ph name="DESK_API_NAME" /> non sarà disponibile. Il criterio verrà applicato soltanto sui dispositivi registrati.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>
@@ -8761,7 +8747,6 @@ Per maggiori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di Int
 
        Se il criterio viene impostato su Disattivato o se non viene configurato, la modalità sviluppatore continua a essere disponibile per il dispositivo.</translation>
 <translation id="7824000841504721945">Disattiva gruppi atomici di criteri</translation>
-<translation id="7824833865123899471">Attiva il provider di automazione dell'interfaccia utente.</translation>
 <translation id="782661371433719637">Non consentire a nessun sito di richiedere l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="7827127381981620448">App della piattaforma</translation>
 <translation id="7829436838673974723">Consenti alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>

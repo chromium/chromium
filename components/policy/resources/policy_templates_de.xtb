@@ -279,6 +279,7 @@ Wenn diese Richtlinie aktiviert ist, ist die Remote Attestation der Identität g
 <translation id="120937472976628837">Informationen zum Lüfter melden</translation>
 <translation id="1212233008927724662">Laden von Lazy Login WebUI deaktivieren.</translation>
 <translation id="1214639335214075459">Videodecodierung durch GPU-Hardware aktivieren</translation>
+<translation id="1214942205301731697">Verwendung des Entwicklermodus auf der Seite „Erweiterungen“ nicht zulassen</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
 <translation id="1219027971768347970">Standardkonfiguration für die Audio-Sandbox verwenden</translation>
 <translation id="1221359380862872747">Bei Demo-Anmeldung angegebene URLs laden</translation>
@@ -599,7 +600,6 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 <translation id="1468702975912409463">Nutzern mit Remote-Zugriff ermöglichen, URLs auf Hostseite in ihrem lokalen Clientbrowser zu öffnen</translation>
 <translation id="1474273443907024088">TLS-Funktion "False Start" deaktivieren</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">Der Anbieter der Benutzeroberflächenautomatisierung wird über das Varianten-Framework aktiviert oder deaktiviert.</translation>
 <translation id="1479427764273213107">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste der USB-Geräte definieren, die vom jeweiligen Kerneltreiber getrennt werden können, um über die chrome.usb API direkt in einer Webanwendung eingesetzt zu werden. Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt-ID, über die die Hardware identifiziert werden kann.
 
       Ist diese Richtlinie nicht konfiguriert, ist die Liste der trennbaren USB-Geräte leer.</translation>
@@ -1804,6 +1804,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 <translation id="235987002603620567">„NewBaseUrlInheritanceBehavior“ ist eine <ph name="PRODUCT_NAME" />-Funktion, die dazu führt, dass <ph name="ABOUT_BLANK_PAGE" />- und <ph name="ABOUT_SRCDOC_PAGE" />-Frames ihre grundlegenden URL-Werte fortlaufend aus Snapshots der Basis-URL des Initiators übernehmen. Weitere Informationen findest du unter https://chromestatus.com/feature/5161101671530496.
 
 Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Varianten „NewBaseUrlInheritanceBehavior“ nicht aktivieren, falls Kompatibilitätsprobleme vorliegen. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann „NewBaseUrlInheritanceBehavior“ aktiviert werden.</translation>
+<translation id="2361182501645567439">Verfügbarkeit des Entwicklermodus auf der Seite „Erweiterungen“ steuern</translation>
 <translation id="2362469626417133796">Zeitfenster für Neustart</translation>
 <translation id="2362539163677485510">Das Registrierungstoken der Cloud-Richtlinie</translation>
 <translation id="2363928351203698966">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
@@ -3191,6 +3192,13 @@ Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI f
       Die Verfügbarkeit dieser Funktion hängt außerdem von den entsprechenden Nutzerrichtlinien ab.</translation>
 <translation id="3495602011142234826">Wird die Richtlinie auf „true“ gesetzt, kann die Erweiterung alle Schlüssel nutzen, die für die geschäftliche Nutzung bestimmt sind, um beliebige Daten zu signieren. Ist sie auf „false“ gesetzt, können solche Schlüssel nicht verwendet werden, und Nutzer können auch keine entsprechende Berechtigung gewähren. Die einzige Ausnahme ist, dass eine Erweiterung genau einmal auf einen solchen Schlüssel zugreifen kann, sofern die Erweiterung selbst diesen Schlüssel erzeugt hat.</translation>
 <translation id="3496296378755072552">Passwortmanager</translation>
+<translation id="3496519114741602716">Hiermit wird festgelegt, ob Nutzer den Entwicklermodus unter chrome://extensions aktivieren können.
+
+Wenn die Richtlinie nicht konfiguriert ist, können Nutzer den Entwicklermodus auf der Seite „Erweiterungen“ aktivieren, es sei denn, die <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />-Richtlinie ist auf <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2) festgelegt.
+Wenn die Richtlinie auf „<ph name="ALLOW" />“ (0) gesetzt ist, können Nutzer den Entwicklermodus auf der Seite „Erweiterungen“ aktivieren.
+Wenn die Richtlinie auf „<ph name="DISALLOW" />“ (1) gesetzt ist, können Nutzer den Entwicklermodus auf der Seite „Erweiterungen“ nicht aktivieren.
+
+Wenn diese Richtlinie konfiguriert ist, kann <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> den Entwicklermodus nicht mehr über die Seite „Erweiterungen“ steuern.</translation>
 <translation id="3496761649331792755">Lesezeichenleiste aktivieren</translation>
 <translation id="3498109920669229084">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen nicht von der Sperrliste betroffen sind.
 
@@ -5376,6 +5384,15 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5308551343115571396">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, so viele Nutzerdaten wie möglich zu speichern und gleichzeitig alle Browserdaten zu entfernen.</translation>
 <translation id="530949964068726932">Bedienungshilfen im Taskleistenmenü ausblenden</translation>
+<translation id="5310544046492594469">Wenn die Richtlinie auf 0 gesetzt ist (Standardeinstellung), kannst du auf die Entwicklertools und die JavaScript-Konsole zugreifen. Für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, oder ab Version 114 für Erweiterungen, die in den Browser eines verwalteten Nutzers integriert sind, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf 1 gesetzt, kannst du die Entwicklertools und die JavaScript-Konsole in allen Kontexten aufrufen, also auch bei Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf 2 gesetzt ist, kann nicht auf die Entwicklertools zugegriffen werden und Websiteelemente können nicht geprüft werden.
+
+      Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.
+
+      Ab Version 99 von <ph name="PRODUCT_NAME" /> werden durch diese Einstellung auch Einstiegspunkte für die Funktion „Seiten-Quelltext anzeigen“ bestimmt. Wenn diese Richtlinie auf DeveloperToolsDisallowed (Wert 2) festgelegt ist, können Nutzer sich den Quelltext nicht über Tastenkombinationen oder das Kontextmenü anzeigen lassen. Soll die Anzeige des Quelltexts komplett blockiert werden, musst du der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> auch „view-source:*“ hinzufügen.
+
+      Ab Version 119 von <ph name="PRODUCT_NAME" /> wird durch diese Einstellung außerdem bestimmt, ob der Entwicklermodus für isolierte Web-Apps aktiviert und verwendet werden kann.
+
+      Ab Version 128 von <ph name="PRODUCT_NAME" /> wird durch diese Einstellung der Entwicklermodus auf der Seite „Erweiterungen“ nicht mehr gesteuert, wenn die Richtlinie „<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />“ konfiguriert ist.</translation>
 <translation id="5311275381462687162">Einstellung für das alte Standardverhalten des "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Cookies</translation>
 <translation id="5312253627576569499">Prozentsatz, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird.</translation>
 <translation id="5316856058059940708">Großen Cursor deaktivieren</translation>
@@ -5882,7 +5899,6 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
       Hinweis: Trenne mehrere Werte durch Kommas.</translation>
 <translation id="5693469654327063861">Datenmigration zulassen</translation>
 <translation id="56936613186060503">Der Download-Manager hat keine Option zum Speichern von Dateien in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="5693942129376744977">Anbieter der Benutzeroberflächenautomatisierung deaktivieren.</translation>
 <translation id="5695209488612697377">Aktiviert die Verwendung eines Standardsuchanbieters im Kontextmenü.
 
           Wenn diese Richtlinie deaktiviert ist, ist die Suche mit deinem Standardsuchanbieter im Kontextmenü nicht verfügbar.
@@ -5958,17 +5974,6 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden VPD-Informationen zum Gerät ausgegeben.
       Vital Product Data (VPD) sind Informationen zum Gerät selbst (z. B. Teile- und Seriennummern) und zur Konfiguration des Geräts.</translation>
-<translation id="5760227556806302854">Aktiviert den Anbieter des Bedienungshilfen-Frameworks zur Benutzeroberflächenautomatisierung in <ph name="PRODUCT_NAME" /> für die Verwendung durch Bedienungshilfen.
-
-Diese Richtlinie wird in <ph name="PRODUCT_NAME" /> für einen einjährigen Übergangszeitraum unterstützt, damit Unternehmensadministratoren die Bereitstellung des Browser-eigenen Anbieters des Bedienungshilfen-Frameworks zur Benutzeroberflächenautomatisierung steuern können. Bedienungshilfen und andere Tools, die das Bedienungshilfen-Framework zur Benutzeroberflächenautomatisierung für die Interoperabilität mit dem Browser verwenden, müssen möglicherweise aktualisiert werden, damit sie ordnungsgemäß mit dem Browser-eigenen Anbieter der Benutzeroberflächenautomatisierung funktionieren. Administratoren können den Browser-eigenen Anbieter der Benutzeroberflächenautomatisierung mit dieser Richtlinie vorübergehend deaktivieren und damit zum alten Verhalten zurückkehren, während sie zusammen mit Anbietern daran arbeiten, Updates für betroffene Tools bereitzustellen.
-
-Wenn die Richtlinie auf „false“ gesetzt ist, aktiviert <ph name="PRODUCT_NAME" /> nur seinen Microsoft Active Accessibility-Anbieter. Bedienungshilfen und andere Tools, die das neuere Bedienungshilfen-Framework zur Benutzeroberflächenautomatisierung für die Interoperabilität mit dem Browser verwenden, kommunizieren mit diesem über einen Kompatibilitäts-Shim in <ph name="MS_WIN_NAME" />.
-
-Wenn die Richtlinie auf „true“ gesetzt ist, aktiviert <ph name="PRODUCT_NAME" /> seinen Anbieter der Benutzeroberflächenautomatisierung zusätzlich zu seinem Microsoft Active Accessibility-Anbieter. Bedienungshilfen und andere Tools, die das neuere Bedienungshilfen-Framework zur Benutzeroberflächenautomatisierung für die Interoperabilität mit dem Browser verwenden, kommunizieren direkt mit ihm.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Varianten-Framework in <ph name="PRODUCT_NAME" /> verwendet, um den Anbieter zu aktivieren oder zu deaktivieren.
-
-Die Unterstützung dieser Richtlinieneinstellung wird in <ph name="PRODUCT_NAME" /> 136 eingestellt.</translation>
 <translation id="5762969307102447459">Autofill für Adressdaten deaktivieren</translation>
 <translation id="5765780083710877561">Beschreibung:</translation>
 <translation id="5766438888216077649">Für Links, die <ph name="BLANK_PAGE_NAME" /> zum Ziel haben, sollte <ph name="WINDOW_OPENER_PROPERTY" /> nicht aktiviert werden</translation>
@@ -6117,6 +6122,15 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Ist die Richtlinie nicht konfiguriert, kann <ph name="PRODUCT_NAME" /> entscheiden, welche Option verwendet werden soll.</translation>
 <translation id="5888645257599699215">Audiostatus des Geräts melden</translation>
+<translation id="5888861702011257917">Mit dem Konzentrationsmodus kann die Einstellung „Bitte nicht stören“ auf Grundlage eines Timers konfiguriert werden, um Ablenkungen für Nutzer zu reduzieren. Eine Funktion des Konzentrationsmodus ermöglicht es Nutzern, eine Musikauswahl zu hören, mit der sie sich besser konzentrieren können. Diese Richtlinie legt den Zugriff auf diese Funktion fest.
+
+Wenn die Richtlinie nicht konfiguriert ist, sind für verwaltete Nutzer alle Klänge deaktiviert.
+
+Wenn die Richtlinie aktiviert ist, bleiben im Konzentrationsmodus alle Klänge an.
+
+Wenn die Richtlinie auf EnabledFocusSoundsOnly gesetzt ist, wird die Musikfunktion nur mit „Sounds für mehr Konzentration“ aktiviert.
+
+Wenn die Richtlinie deaktiviert ist, werden im Konzentrationsmodus keine Klänge abgespielt.</translation>
 <translation id="5890063326284543943">Verwendung der Serial API steuern</translation>
 <translation id="5893223274510346852">Die <ph name="PRIVACY_SANDBOX_NAME" />-Funktion „IP-Schutz“ deaktivieren.</translation>
 <translation id="5893303508158298667">Wenn „<ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />“ aktiviert ist, kann es Remote-Clients durch Aktivieren oder Nichtkonfigurieren von „<ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" />“ ermöglicht werden, über Relayserver eine Verbindung zu diesem Computer herzustellen, falls keine direkte Verbindung verfügbar ist, z. B. aufgrund von Firewallbeschränkungen.
@@ -6588,6 +6602,17 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
 <translation id="6276087670023098167">Erfassen gerätebezogener Daten deaktivieren</translation>
+<translation id="627645565733796818">Mit X.509‑Zertifikaten können Einschränkungen wie Namensbeschränkungen in Erweiterungen in das Zertifikat codiert werden. RFC 5280 gibt an, dass die Durchsetzung solcher Einschränkungen für Trust-Anchor-Zertifikate optional ist. Ab <ph name="PRODUCT_NAME" /> 112 werden solche Einschränkungen in Zertifikaten, die aus dem Shop für Plattformzertifikate geladen werden, erzwungen.
+
+Diese Richtlinie ist ein vorübergehender Deaktivierungsmechanismus für den Fall, dass Unternehmen Probleme mit den in ihre privaten Root-Zertifikate codierten Einschränkungen haben. Diese Richtlinie kann dann verwendet werden, um die Erzwingung der Einschränkungen vorübergehend zu deaktivieren und die Probleme mit dem Zertifikat zu beheben.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, erzwingt <ph name="PRODUCT_NAME" /> Einschränkungen, die in aus dem Trust Store der Plattform geladenen Trust-Anchors codiert sind.
+
+Wenn diese Richtlinie deaktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> keine Einschränkungen, die in aus dem Trust Store der Plattform geladenen Trust-Anchors codiert sind.
+
+In Version 112 von <ph name="PRODUCT_NAME" /> hat diese Richtlinie keine Auswirkungen, wenn die Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> deaktiviert ist.
+
+Diese Richtlinie wurde in Version 126 von <ph name="PRODUCT_NAME" /> entfernt. Ab dieser Version werden Einschränkungen in Trust-Anchors immer erzwungen.</translation>
 <translation id="627672037430076089">Verbindungen zu diesem Computer per Remote-Unterstützung verhindern</translation>
 <translation id="6277314550042130537">Genehmigung der KDC-Richtlinie bei der HTTP-Authentifizierung berücksichtigen</translation>
 <translation id="6278428485366576908">Design</translation>
@@ -7002,6 +7027,13 @@ Hinweis: Wenn der Client über einen längeren Zeitraum offline war, werden Pass
 <translation id="6554236101741861403">Häufigkeit, mit der Website-Telemetriedaten auf registrierten Geräten für verknüpfte Nutzer erhoben werden. Die geringste zulässige Häufigkeit beträgt 5 Minuten.
 
 Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
+<translation id="6555378905432946848">Wenn diese Richtlinie konfiguriert ist, wird das Erzwingen von Certificate Transparency-Offenlegungsanforderungen für eine Liste von alten Zertifizierungsstellen für Zertifikatketten mit einem bestimmten <ph name="SUBJECT_PUBLIC_KEY_INFO" />-Hash deaktiviert. Unternehmenshosts können dann weiterhin Zertifikate verwenden, die andernfalls nicht vertrauenswürdig wären, weil sie nicht ordnungsgemäß öffentlich offengelegt wurden. Um die Erzwingung zu deaktivieren, muss der <ph name="SUBJECT_PUBLIC_KEY_INFO" />-Hash im Zertifikat einer Zertifizierungsstelle erscheinen, die als alte Zertifizierungsstelle erkannt wird. Dabei handelt es sich um eine Zertifizierungsstelle, die von einem oder mehreren Betriebssystemen, die von <ph name="PRODUCT_NAME" /> unterstützt werden, öffentlich als vertrauenswürdig eingestuft wurde, aber nicht vom Open-Source-Projekt von Android oder von <ph name="PRODUCT_OS_NAME" />.
+
+      Ein <ph name="SUBJECT_PUBLIC_KEY_INFO" />-Hash wird angegeben, indem Folgendes verkettet wird: der Hash-Algorithmusname, das Zeichen „/“ sowie die Base64‑Codierung des Hash-Algorithmus, der auf das DER‑codierte <ph name="SUBJECT_PUBLIC_KEY_INFO" /> des angegebenen Zertifikats angewendet wird. Die Base64‑Codierung hat dasselbe Format wie ein SPKI‑Fingerabdruck. Der einzige erkannte Hash-Algorithmus ist „sha256“. Alle anderen werden ignoriert.
+
+      Wenn die Richtlinie nicht konfiguriert ist, werden alle Zertifikate, für die eine Certificate Transparency-Offenlegung erforderlich ist und die nicht offengelegt werden, von <ph name="PRODUCT_NAME" /> als nicht vertrauenswürdig behandelt.
+
+      Diese Richtlinie wurde in Version 128 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="6556586932263358975">Sperren des Bildschirms zulassen</translation>
 <translation id="6558013557780651644">Verzögerung vor Ausführung von Aktionen bei Inaktivität</translation>
 <translation id="6558812160831988140">Berichte zur App-Nutzung</translation>
@@ -7678,7 +7710,6 @@ Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
       Ist die Richtlinie nicht konfiguriert, erscheint die Ablage standardmäßig unten auf dem Bildschirm und der Nutzer hat die Möglichkeit, diese Position zu ändern.</translation>
 <translation id="7039815268521168329">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung anzeigen</translation>
 <translation id="7040229947030068419">Beispielwert</translation>
-<translation id="7043157348967593138">Anbieter des Browser-eigenen Bedienungshilfen-Frameworks zur Benutzeroberflächenautomatisierung unter Windows aktivieren</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7045221780834308118">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die <ph name="DESK_API_NAME" /> nicht verfügbar. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>
@@ -8637,7 +8668,6 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
 
        Ist die Richtlinie deaktiviert oder nicht konfiguriert, bleibt der Entwicklermodus auf dem Gerät verfügbar.</translation>
 <translation id="7824000841504721945">Gruppen aus Einzelrichtlinien deaktivieren</translation>
-<translation id="7824833865123899471">Anbieter der Benutzeroberflächenautomatisierung aktivieren.</translation>
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
 <translation id="7827127381981620448">Plattform-App</translation>
 <translation id="7829436838673974723">Zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>
@@ -10394,6 +10424,7 @@ Ist diese Richtlinie deaktiviert, werden Nutzern keine produktinternen Umfragen 
 
 Diese Richtlinie ist nicht wirksam, wenn „<ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" />“ deaktiviert ist. Dadurch werden auch produktinterne Umfragen deaktiviert.</translation>
 <translation id="9173633148008709976">Grafikbeschleunigung aktivieren</translation>
+<translation id="9177661626040846628">Verwendung des Entwicklermodus auf der Seite „Erweiterungen“ zulassen</translation>
 <translation id="9180108183162961002">Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="9185963199234034321">Hohen Kontrast auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, die Funktion vorübergehend zu deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>

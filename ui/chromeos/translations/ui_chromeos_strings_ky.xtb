@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK туура эмес</translation>
 <translation id="4057991113334098539">Жандырылууда...</translation>
 <translation id="4092890906744441904">Ирландча</translation>
+<translation id="4101601646343868113">Мобилдик тармакка кирип, тарифтик план активдүү экенин ырастаңыз</translation>
 <translation id="4124731372776320263">1 Drive файлы шайкештирилүүдө</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="4131235941541910880">Керексиз нерселерди таштандыга салыңыз</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Тамилче (Tamil99 баскычтобу)</translation>
 <translation id="5633226425545095130">Эгер бул нерсени жылдырсаңыз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
 <translation id="5649768706273821470">Угуу</translation>
+<translation id="5650895901941743674">APN конфигурациясын текшериңиз</translation>
 <translation id="5669691691057771421">Жаңы PIN киргизиңиз</translation>
 <translation id="5678784840044122290">Linux колдонмосу Терминалыңызда жеткиликтүү болуп, Жүргүзгүчтө анын сүрөтчөсү көрүнүшү мүмкүн.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архивден же виртуалдуу дисктен ажыратуу мүмкүн эмес<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Файлдардын тизмеси эскиз көрүнүшүнө которулду.</translation>
 <translation id="8601932370724196034">Crostini сүрөт файлы</translation>
 <translation id="8609695766746872526">Исландча</translation>
+<translation id="8630384863424041081">SIM картанын PIN кодун же байланыш оператору берген демейки PIN кодду териңиз. Колдоо көрүү үчүн байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="863903787380594467">PIN код туура эмес. Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Оюкча</translation>
 <translation id="8656407365183407932">Офлайн файлдарды өчүрүүгө туура келди</translation>

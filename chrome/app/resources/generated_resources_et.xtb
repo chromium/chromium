@@ -540,7 +540,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1398853756734560583">Maksimeeri</translation>
 <translation id="139911022479327130">Avage telefon ja kinnitage oma isik</translation>
 <translation id="1399261165075500043">Google Play teenusetingimusi ei saa laadida</translation>
-<translation id="1400625312571031118">Turvalisem kui parool</translation>
 <translation id="1401216725754314428">Seotud saitide lisateave uuel vahelehel</translation>
 <translation id="1402426911829176748">Teie seadmega ühendamine</translation>
 <translation id="1403222014593521787">Puhverserveriga ei õnnestunud ühendust luua</translation>
@@ -2747,7 +2746,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2965227184985674128">Kas lülitada sisse juurdepääs mikrofonile?</translation>
 <translation id="2966705348606485669">Rohkem valikuid järjehoidjakausta <ph name="FOLDER_TITLE" /> jaoks</translation>
 <translation id="2966937470348689686">Androidi eelistuste haldamine</translation>
-<translation id="2967791329697639454">Kiirem krüpteeritud sisselogimine</translation>
 <translation id="2967926928600500959">Nendele reeglitele vastavad URL-id sundavatakse kindlas brauseris.</translation>
 <translation id="2969411787010981955">Andmed on valitud kohta eksporditud</translation>
 <translation id="2970766364519518369">Valitud kontaktid, kes on teie läheduses, saavad teiega jagada. Teil palutakse need taotlused kinnitada. Te ei pea heaks kiitma jagamist seadmete vahel, mis on kontole <ph name="USER_EMAIL" /> sisse logitud.</translation>
@@ -3476,7 +3474,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3521606918211282604">Ketta suuruse muutmine</translation>
 <translation id="3522088408596898827">Kettaruumi on kriitiliselt vähe. Vabastage kettaruumi ja proovige uuesti.</translation>
 <translation id="3522979239100719575">Otsitakse saadaolevaid profiile. See võib võtta mõne minuti.</translation>
-<translation id="3524311336636707495">Saadaval mitmes eri seadmes</translation>
 <translation id="3524518036046613664">Teie kohalikus võrgus seadmete (nt printerite) avastamine</translation>
 <translation id="3524965460886318643">Ekspordi tegevused</translation>
 <translation id="3525426269008462093">Vaata pärast seadistamist üle seadme sünkroonimisseaded</translation>
@@ -4282,7 +4279,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4093865285251893588">Profiilipilt</translation>
 <translation id="4093955363990068916">Kohalik fail:</translation>
 <translation id="4094647278880271855">Kasutate keskkonna toetamata muutujat: <ph name="BAD_VAR" />. See vähendab stabiilsust ja turvalisust.</translation>
-<translation id="4095246243698959793">Google'i pääsuvõtmete sünkroonimiseks ja kasutamiseks</translation>
 <translation id="4095264805865317199">Ava mobiilsidevõrgu aktiveerimise kasutajaliides</translation>
 <translation id="4095425503313512126">Sirvimine ja otsimine on kiirem</translation>
 <translation id="4095483462103784441">Uue vahelehegrupi loomine</translation>

@@ -536,7 +536,6 @@
 <translation id="1398853756734560583">Увеличаване</translation>
 <translation id="139911022479327130">Отключете телефона си и потвърдете, че това сте вие</translation>
 <translation id="1399261165075500043">Общите условия на Google Play не могат да се заредят</translation>
-<translation id="1400625312571031118">По-сигурно от парола</translation>
 <translation id="1401216725754314428">Научете повече за сродните сайтове в нов раздел</translation>
 <translation id="1402426911829176748">Установява се връзка с устройството ви</translation>
 <translation id="1403222014593521787">Не може да се установи връзка с прокси сървъра</translation>
@@ -2741,7 +2740,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2965227184985674128">Да се включи ли достъпът до микрофона?</translation>
 <translation id="2966705348606485669">Още опции за папката с отметки „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="2966937470348689686">Управление на предпочитанията за Android</translation>
-<translation id="2967791329697639454">По-бърз и шифрован вход</translation>
 <translation id="2967926928600500959">URL адресите, съответстващи на тези правила, задължително ще се отварят в конкретен браузър.</translation>
 <translation id="2969411787010981955">Данните са експортирани в избраното местоположение</translation>
 <translation id="2970766364519518369">Избраните контакти могат да споделят с вас, когато са в близост. Ще трябва да одобрявате съответните заявки. Няма да се налага да одобрявате заявките за споделяне между устройствата, на които сте влезли в профила <ph name="USER_EMAIL" />.</translation>
@@ -3468,7 +3466,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3521606918211282604">Промяна на размера на диска</translation>
 <translation id="3522088408596898827">Свободното място на диска е критично малко. Освободете място и опитайте отново.</translation>
 <translation id="3522979239100719575">Търсят се налични профили за мобилна мрежа. Това може да отнеме няколко минути.</translation>
-<translation id="3524311336636707495">Налице на всичките ви устройства</translation>
 <translation id="3524518036046613664">Откриване на устройства в локалната ви мрежа, като например принтери</translation>
 <translation id="3524965460886318643">Експортиране на активностите</translation>
 <translation id="3525426269008462093">Преглед на опциите за синхронизиране на устройството след настройване</translation>
@@ -4274,7 +4271,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4093865285251893588">Изображение на потребителския профил</translation>
 <translation id="4093955363990068916">Локален файл:</translation>
 <translation id="4094647278880271855">Използвате неподдържана променлива на средата: <ph name="BAD_VAR" />. Стабилността и сигурността ще пострадат.</translation>
-<translation id="4095246243698959793">С цел синхронизиране и използване на ключове за достъп от Google</translation>
 <translation id="4095264805865317199">Отваряне на ПИ за активиране на мобилна мрежа</translation>
 <translation id="4095425503313512126">Можете да сърфирате и търсите по-бързо.</translation>
 <translation id="4095483462103784441">Създаване на нова група раздели</translation>

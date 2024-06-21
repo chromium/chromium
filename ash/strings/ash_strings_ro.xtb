@@ -903,6 +903,7 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4381031910344220229">Aceasta permite accesul la microfon pentru <ph name="APP_NAME" /> și pentru toate aplicațiile și site-urile care au permisiune de microfon</translation>
 <translation id="4382340674111381977">Revino la pagina anterioară</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
+<translation id="4394466652057229831">Dă clic dreapta pentru a rezuma</translation>
 <translation id="439598569299422042">Întreruptă, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nu se poate salva înregistrarea de pe ecran</translation>
 <translation id="4405151984121254935">Tipul de dispozitiv periferic conectat nu este acceptat</translation>
@@ -1939,6 +1940,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8113423164597455979">Activat, toate</translation>
 <translation id="8113515504791187892">Butonul Selectează și ascultă</translation>
 <translation id="8120151603115102514">Telefonul nu are ecran de blocare. Pentru a debloca Chromebookul, introdu parola.</translation>
+<translation id="8120249852906205273">Repornește</translation>
 <translation id="8127095419621171197">Deschide aplicația Calculator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Navighează la începutul documentului</translation>
@@ -2033,6 +2035,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="85123341071060231">Bluetooth-ul Chromebook-ului este dezactivat. Pentru a-ți debloca Chromebookul, introdu parola.</translation>
 <translation id="8513108775083588393">Rotire autom.</translation>
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
+<translation id="851660987304951246">Folosește funcția Ajută-mă să citesc pentru a rezuma rapid conținutul sau a pune întrebări</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Intrare pentru microfon controlată de <ph name="APP_NAME" />}few{Intrare pentru microfon controlată de # aplicații}other{Intrare pentru microfon controlată de # de aplicații}}</translation>
 <translation id="8535393432370007982">Anulează sortarea după culoare</translation>
@@ -2077,6 +2080,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8704155109538237473">Focalizează fereastra picture-in-picture</translation>
 <translation id="870917907284186124">Activează / dezactivează dictarea (introdu text folosind vocea)</translation>
 <translation id="8711169534266271368">Opțiuni pentru tabloul de bord al jocului</translation>
+<translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8714138378966541668">Blocată de furnizor</translation>
 <translation id="8717459106217102612">Selectează cuvântul anterior sau litera anterioară</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>

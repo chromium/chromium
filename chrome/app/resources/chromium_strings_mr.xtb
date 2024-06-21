@@ -80,6 +80,8 @@
 <translation id="2329088755516916767">सुरू असताना, Chromium हे पेज प्रीलोड करते, ज्यामुळे ब्राउझ करणे आणि शोधणे आणखी जलद होते.</translation>
 <translation id="2343156876103232566">येथून तुमच्या Android फोनवर नंबर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" या एक्स्टेंशनसाठी तुम्हाला Chromium मध्ये साइन इन करावे लागेल</translation>
+<translation id="2374216753258219393"><ph name="USER_EMAIL_ADDRESS" /> म्हणून हे एक्स्टेंशन वापरण्यासाठी, Chromium मध्ये साइन इन करा.</translation>
 <translation id="2384373936468275798">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromiumOS ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{१ HID डिव्हाइस हे एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# HID डिव्हाइस ही एक किंवा त्याहून अधिक Chromium एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="2401032172288869980">Chromium ला या साइटसाठी कॅमेरा आणि मायक्रोफोनची परवानगी आवश्यक आहे</translation>
@@ -243,9 +245,11 @@
 <translation id="4893347770495441059">&amp;Chromium अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="4942295735032723435">भविष्यातील Chromium अपडेट मिळवण्यासाठी, तुमच्याकडे macOS 11 किंवा त्यावरील आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर macOS 10.15 वापरत आहे.</translation>
 <translation id="4943838377383847465">Chromium पार्श्वभूमी मोड मध्ये आहे.</translation>
+<translation id="494490797786467921">Chromium साइन-इन डायलॉग बंद करण्यासाठी क्लिक करा</translation>
 <translation id="4987820182225656817">अतिथी कोणतीही गोष्ट मागे न सोडता Chromium वापरू शकतात.</translation>
 <translation id="4994636714258228724">आपल्या स्वतःस Chromium वर जोडा</translation>
 <translation id="5114678101347489141">Chromium नवीन वैशिष्‍ट्ये एक्सप्लोर करत आहे, ज्यामुळे साइटना तुमची कमी माहिती वापरून पहिल्यासारखा ब्राउझिंग अनुभव देता येईल</translation>
+<translation id="5187123684706427865">Chromium खात्यासाठी री-ऑथेंटिकेशन आवश्यक आहे</translation>
 <translation id="5224391634244552924">सेव्ह केलेले पासवर्ड नाहीत. तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chromium ते तपासू शकते.</translation>
 <translation id="5231355151045086930">Chromium मधून साइन आउट करा</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chromium प्रोफाइलमध्ये साइन इन केलेले आहे. हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chromium प्रोफाइल तयार करेल</translation>

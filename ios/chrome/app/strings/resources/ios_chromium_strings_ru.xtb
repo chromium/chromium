@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Версия Chromium устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chromium.</translation>
 <translation id="1423007117030725713">Искать в новой вкладке Chromium</translation>
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
+<translation id="146407871188825689">Используйте Chromium по умолчанию на iPad</translation>
 <translation id="1472013873724362412">Ваш аккаунт не поддерживается в Chromium. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
 <translation id="1503199973012840174">Версия Chromium устарела. Обновите браузер, чтобы ваши данные оставались под надежной защитой.</translation>
 <translation id="1507010443238049608">Помочь улучшить производительность и функции Chromium</translation>
@@ -122,6 +123,7 @@
 
 Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Откроется страница настройки способов оплаты в Chromium.</translation>
+<translation id="458786853569524949">При переходе по ссылкам в электронных письмах, документах и приложениях будет открываться Chromium.</translation>
 <translation id="459080529287102949">Искать изображения в Chromium</translation>
 <translation id="4633738821577273991">Для этого профиля Chromium также доступен улучшенный Безопасный просмотр.</translation>
 <translation id="4638625642619341392">Скачайте Chromium здесь.</translation>
@@ -289,6 +291,7 @@
 <ph name="TIME" /> ваши данные были зашифрованы кодовой фразой. Введите ее, чтобы пользоваться данными Chromium и сохранять их в аккаунте Google.</translation>
 <translation id="9022552996538154597">Войти в Chromium</translation>
 <translation id="9050790730841755540">Открывайте ссылки из приложений с помощью Chromium.</translation>
+<translation id="9057082013386654559">Назначьте Chromium браузером по умолчанию для iPad</translation>
 <translation id="9059693977935746710">Вам не нужно запоминать этот пароль. Он будет сохранен в Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="9110075932708282655">Используйте Chromium по умолчанию</translation>

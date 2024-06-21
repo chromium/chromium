@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">Бұл — микрофон рұқсаты бар барлық қолданба мен веб-сайт және <ph name="APP_NAME" /> қолданбасы үшін микрофонды пайдалануға мүмкіндік береді</translation>
 <translation id="4382340674111381977">Алдыңғы бетке өту</translation>
 <translation id="4389184120735010762">Бекітілген ұлғайтқышқа арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
+<translation id="4394466652057229831">Қорытындылау үшін тінтуірдің оң жақ түймесін басу</translation>
 <translation id="439598569299422042">Кідіртілді, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Cкринкастты сақтау мүмкін емес.</translation>
 <translation id="4405151984121254935">Жалғанған перифериялық құрылғы түріне қолдау көрсетілмейді.</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">Қосулы</translation>
 <translation id="8113515504791187892">Select-to-speak түймесі</translation>
 <translation id="8120151603115102514">Телефоныңызда құлып экраны жоқ. Chromebook құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
+<translation id="8120249852906205273">Өшіріп қосу</translation>
 <translation id="8127095419621171197">Calculator қолданбасын ашу</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Құжаттың басына өту</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">Chromebook құрылғысында Bluetooth өшірулі. Оның құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
 <translation id="8513108775083588393">Автоматты бұру</translation>
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
+<translation id="851660987304951246">Контентті жылдам қорытындылау немесе сұрақтар қою үшін "Оқуға көмек керек" өнімін пайдаланыңыз</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофон кірісін <ph name="APP_NAME" /> басқарады}other{Микрофон кірісін # қолданба басқарады}}</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
@@ -2077,6 +2080,7 @@
 <translation id="8704155109538237473">"Суреттегі сурет" режимі терезесін ерекшелеу</translation>
 <translation id="870917907284186124">Мәтінді дауыспен енгізу функциясын қосу/өшіру</translation>
 <translation id="8711169534266271368">Ойын тақтасының опциялары</translation>
+<translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8714138378966541668">Провайдер құлыптады</translation>
 <translation id="8717459106217102612">Алдыңғы сөзді немесе әріпті таңдау</translation>
 <translation id="8721053961083920564">Дыбыс деңгейін ауыстыру. <ph name="STATE_TEXT" /></translation>

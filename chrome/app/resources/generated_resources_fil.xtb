@@ -541,7 +541,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1398853756734560583">I-maximize</translation>
 <translation id="139911022479327130">I-unlock ang iyong telepono at kumpirmahing ikaw ito</translation>
 <translation id="1399261165075500043">Hindi ma-load ang Mga Tuntunin ng Serbisyo ng Google Play</translation>
-<translation id="1400625312571031118">Mas ligtas kaysa sa password</translation>
 <translation id="1401216725754314428">Matuto pa tungkol sa mga kaugnay na site sa isang bagong tab</translation>
 <translation id="1402426911829176748">Kumokonekta sa iyong device</translation>
 <translation id="1403222014593521787">Hindi makakonekta sa proxy</translation>
@@ -2757,7 +2756,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2965227184985674128">I-on ang access sa mikropono?</translation>
 <translation id="2966705348606485669">Higit pang opsyon para sa folder ng bookmark na <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Pamahalaan ang mga kagustuhan sa Android</translation>
-<translation id="2967791329697639454">Mas mabilis at naka-encrypt na pag-sign in</translation>
 <translation id="2967926928600500959">Mapipilitang magbukas sa partikular na browser ang mga URL na tumutugma sa mga panuntunang ito.</translation>
 <translation id="2969411787010981955">Na-export na ang data sa napiling lokasyon</translation>
 <translation id="2970766364519518369">Makakapag-share sa iyo ang mga piniling contact kapag malapit sila. Ipapaapruba sa iyo ang mga kahilingang ito. Hindi mo kakailanganing aprubahan ang pag-share sa pagitan ng mga device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
@@ -3486,7 +3484,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3521606918211282604">Baguhin ang laki ng disk</translation>
 <translation id="3522088408596898827">Kaunting-kaunti na lang ang espasyo sa disk. Magbakante ng espasyo sa disk at subukan ulit.</translation>
 <translation id="3522979239100719575">Naghahanap ng mga available na profile. Puwede itong tumagal nang ilang minuto.</translation>
-<translation id="3524311336636707495">Available sa lahat ng iyong device</translation>
 <translation id="3524518036046613664">Tumuklas ng mga device sa iyong lokal na network, gaya ng mga printer</translation>
 <translation id="3524965460886318643">I-export ang Mga Aktibidad</translation>
 <translation id="3525426269008462093">Suriin ang pag-sync ng device pagkatapos ng pag-set up</translation>
@@ -4292,7 +4289,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4093865285251893588">Larawan sa profile</translation>
 <translation id="4093955363990068916">Lokal na file:</translation>
 <translation id="4094647278880271855">Gumagamit ka ng hindi sinusuportahang variable ng environment: <ph name="BAD_VAR" />. Magkakaproblema sa stability at seguridad.</translation>
-<translation id="4095246243698959793">Para i-sync at gamitin ang mga passkey mula sa Google</translation>
 <translation id="4095264805865317199">Buksan ang UI sa Pag-activate ng Cellular Network</translation>
 <translation id="4095425503313512126">Mas mabilis ang pag-browse at paghahanap</translation>
 <translation id="4095483462103784441">Gumawa ng bagong grupo ng tab</translation>
@@ -5958,6 +5954,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5372529912055771682">Hindi sinusuportahan ng bersyong ito ng operating system ang ibinigay na mode ng pagpapatala.  Pakitiyak na pinapatakbo mo ang pinakabagong bersyon at subukan ulit.</translation>
 <translation id="5372579129492968947">I-unpin ang extension</translation>
 <translation id="5372632722660566343">Magpatuloy nang walang account</translation>
+<translation id="5372990315769030589">Panatilihin ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Para magamit ang Nearby Share sa mga contact na ito, idagdag sa iyong mga contact ang email address na naka-link sa kanilang Google Account.</translation>
 <translation id="5375577102295339548">Makakatulong ang mga site na i-verify na hindi ka bot</translation>
 <translation id="5376094717770783089">Humihiling ng access</translation>
@@ -9058,6 +9055,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7708143783728142771">Nagbibigay-daan ang cookies para sa parehong level na ito ng pag-customize ng preference sa web. Kapag bumisita ka sa isang site, puwedeng mag-save ang site ng cookie sa storage ng browser ng iyong device para matandaan ang mga preference mo sa site, gaya ng wikang ginagamit mo o mga item na gusto mong i-save sa shopping cart. Kung bibisitahin mo ulit ang site gamit ang parehong browser sa ibang pagkakataon, mababasa ng site na iyon ang itinakdang cookie nito at makakapagsimula ka kung saan ka huminto. Madalas na tinutukoy ang mga uri ng cookies na ito bilang cookies ng first-party, dahil itinakda ng site na binibisita mo ang mga ito.</translation>
 <translation id="770831926727930011">Pinoprotektahan ng iyong lumang password ang lokal na data mo. Ilagay ang iyong lumang password para i-recover ang lokal na data.</translation>
 <translation id="7709152031285164251">Nabigo - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Protektahan ang lahat ng iyong passkey sa pamamagitan ng PIN sa pag-recover</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Gumamit ng USB cable para ikonekta ang iyong telepono sa computer mo. Kung nakakonekta na ang iyong telepono, bunutin ito sa saksakan at isaksak ulit.</translation>
 <translation id="7711968363685835633">I-disable ang mga naka-personalize na conversion at suhestyon pati na rin ang diksyunaryo ng user</translation>
@@ -9790,6 +9788,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8233028084277069927">Buksan na Ngayon</translation>
 <translation id="8234795456569844941">Pakitulungan ang aming mga engineer na ayusin ang problemang ito. Sabihin sa amin kung ano ang nangyari bago mo nakuha ang mensahe ng error sa profile:</translation>
 <translation id="8235418492073272647">Ibinahagi ang page mula sa <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Nagshe-share ang tab na ito ng mga resource sa iba pang tab, na puwedeng makasagabal sa pag-debug.</translation>
 <translation id="8236911020904880539">lumabas</translation>
 <translation id="8236917170563564587">Sa halip, ibahagi ang tab na ito</translation>
 <translation id="8237647586961940482">Dark pink at pula</translation>
@@ -9994,6 +9993,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8376532149031784008">Nire-reload ang <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Magagawa pa rin ng mga extension na na-install ng iyong administrator na basahin at baguhin ang site na ito</translation>
 <translation id="8376752431516546391">Panel sa gilid ng Google Search</translation>
+<translation id="8376812682111060348">Alerto sa isyu sa perfomance</translation>
 <translation id="8377625247046155446">Mase-save lang ang passkey na ito sa device na ito. Mananatili ito sa device na ito pagkatapos mong isara ang lahat ng Incognito window.</translation>
 <translation id="8378714024927312812">Pinapamahalaan ng iyong organisasyon</translation>
 <translation id="8379988659465232385">Hindi puwedeng walang laman ang pangalan</translation>

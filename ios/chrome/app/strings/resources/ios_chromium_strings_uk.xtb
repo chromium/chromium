@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Версія Chromium застаріла. Якщо оновлень в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> немає, можливо, ваш пристрій більше не підтримує нові версії Chromium.</translation>
 <translation id="1423007117030725713">Пошук у новій вкладці Chromium.</translation>
 <translation id="1431818719585918472">Дозвольте Chromium блокувати анонімні вкладки.</translation>
+<translation id="146407871188825689">Використовуйте Chromium як вебпереглядач за умовчанням на iPad</translation>
 <translation id="1472013873724362412">Ваш обліковий запис не працює в Chromium. Зв’яжіться з адміністратором свого домену або ввійдіть у звичайний обліковий запис Google.</translation>
 <translation id="1503199973012840174">Версія Chromium застаріла. Оновіть її, щоб захистити свої дані.</translation>
 <translation id="1507010443238049608">Допомогти покращити ефективність і функції Chromium</translation>
@@ -122,6 +123,7 @@
 
 Щоб змінити це налаштування, <ph name="BEGIN_LINK" />видаліть дані Chromium у своєму обліковому записі<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Відкриває сторінку налаштувань способів оплати в Chromium.</translation>
+<translation id="458786853569524949">Тепер ви можете відкривати в Chromium посилання з листів, документів і інших додатків.</translation>
 <translation id="459080529287102949">Візуальний пошук у Chromium</translation>
 <translation id="4633738821577273991">Увімкніть Безпечний перегляд із розширеним захистом і для цього профілю Chromium</translation>
 <translation id="4638625642619341392">Завантажте Chromium тут.</translation>
@@ -289,6 +291,7 @@
 Ваші дані було зашифровано за допомогою парольної фрази <ph name="TIME" />. Введіть її, щоб використовувати й зберігати дані Chromium в обліковому записі Google.</translation>
 <translation id="9022552996538154597">Вхід у Chromium</translation>
 <translation id="9050790730841755540">Відкривайте посилання в інших додатках за допомогою Chromium.</translation>
+<translation id="9057082013386654559">Використовуйте Chromium як вебпереглядач за умовчанням на iPad</translation>
 <translation id="9059693977935746710">Пароль не потрібно запам’ятовувати. Його буде збережено в Менеджері паролів облікового запису <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Версія Chromium застаріла</translation>
 <translation id="9110075932708282655">Використовувати Chromium за умовчанням</translation>

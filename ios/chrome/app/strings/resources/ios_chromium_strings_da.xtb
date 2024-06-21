@@ -123,6 +123,7 @@ Dine data krypteres med din adgangssætning. Angiv adgangssætningen for at brug
 
 Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Åbner siden med indstillinger for betalingsmetoder i Chromium.</translation>
+<translation id="458786853569524949">Du kan nu bruge Chromium, hver gang du trykker på links i mails, dokumenter og andre apps.</translation>
 <translation id="459080529287102949">Søg efter visuelle elementer i Chromium</translation>
 <translation id="4633738821577273991">Få også Udvidet beskyttet browsing til denne Chromium-profil</translation>
 <translation id="4638625642619341392">Download Chromium her.</translation>
@@ -290,6 +291,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgangssætningen for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="9050790730841755540">Brug Chromium, hver gang du trykker på links i andre apps.</translation>
+<translation id="9057082013386654559">Brug Chromium til iPad som standard</translation>
 <translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangs­kode­admin­istrator for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9110075932708282655">Brug Chromium som standard</translation>

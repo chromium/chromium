@@ -540,7 +540,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1398853756734560583">Maximaliseren</translation>
 <translation id="139911022479327130">Ontgrendel je telefoon en bevestig dat jij het bent</translation>
 <translation id="1399261165075500043">Kan de Servicevoorwaarden voor Google Play niet laden</translation>
-<translation id="1400625312571031118">Beter beveiligd dan een wachtwoord</translation>
 <translation id="1401216725754314428">Meer informatie over gerelateerde sites in een nieuw tabblad</translation>
 <translation id="1402426911829176748">Verbinding maken met je apparaat</translation>
 <translation id="1403222014593521787">Kan geen verbinding maken met de proxy</translation>
@@ -1464,6 +1463,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2048254245884707305">Checken op malware...</translation>
 <translation id="2048554637254265991">Fout bij starten van containerbeheer. Probeer het opnieuw.</translation>
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
+<translation id="2049021651258469175">Je kunt ook onder meer je wachtwoorden uit je Google-account gebruiken en opslaan.</translation>
 <translation id="204914487372604757">Snelle link maken</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2051266530792296582">Google Wachtwoordmanager heeft een sterk wachtwoord gemaakt voor deze website</translation>
@@ -2743,7 +2743,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2965227184985674128">Microfoontoegang aanzetten?</translation>
 <translation id="2966705348606485669">Meer opties voor bookmarkmap <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Android-voorkeuren beheren</translation>
-<translation id="2967791329697639454">Sneller inloggen met versleuteling</translation>
 <translation id="2967926928600500959">URL's die overeenkomen met deze regels, worden verplicht in een bepaalde browser geopend.</translation>
 <translation id="2969411787010981955">Gegevens zijn geëxporteerd naar de geselecteerde locatie</translation>
 <translation id="2970766364519518369">Geselecteerde contacten kunnen content met je delen als ze in de buurt zijn. Je wordt gevraagd om deze verzoeken te bevestigen. Je hoeft deelverzoeken tussen apparaten die zijn ingelogd op <ph name="USER_EMAIL" /> niet goed te keuren.</translation>
@@ -3470,7 +3469,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3521606918211282604">Schijfgrootte wijzigen</translation>
 <translation id="3522088408596898827">Er is zeer weinig schijfruimte beschikbaar. Maak schijfruimte vrij en probeer het opnieuw.</translation>
 <translation id="3522979239100719575">Zoeken naar beschikbare profielen. Dit kan een paar minuten duren.</translation>
-<translation id="3524311336636707495">Beschikbaar op je apparaten</translation>
 <translation id="3524518036046613664">Apparaten vinden in je lokale netwerk, zoals printers</translation>
 <translation id="3524965460886318643">Activiteiten exporteren</translation>
 <translation id="3525426269008462093">Apparaatsynchronisatie checken na het instellen</translation>
@@ -4276,7 +4274,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4093865285251893588">Profielafbeelding</translation>
 <translation id="4093955363990068916">Lokaal bestand:</translation>
 <translation id="4094647278880271855">Je gebruikt een niet-ondersteunde omgevingsvariabele: <ph name="BAD_VAR" />. Dit heeft negatieve gevolgen voor de stabiliteit en beveiliging.</translation>
-<translation id="4095246243698959793">Je toegangssleutels van Google synchroniseren en gebruiken</translation>
 <translation id="4095264805865317199">UI voor mobiele activering openen</translation>
 <translation id="4095425503313512126">Browsen en zoeken gaan sneller</translation>
 <translation id="4095483462103784441">Nieuwe tabbladgroep maken</translation>
@@ -5478,6 +5475,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5021750053540820849">Nog niet geüpdatet</translation>
 <translation id="5022206631034207923">Vergrendelscherm, bedieningselementen</translation>
 <translation id="5024511550058813796">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>
+<translation id="5024992827689317672">Gegevens verwijderd</translation>
 <translation id="5026492829171796515">Log in om een Google-account toe te voegen</translation>
 <translation id="5026806129670917316">Wifi aanzetten</translation>
 <translation id="5026874946691314267">Dit bericht niet meer bekijken</translation>
@@ -8633,6 +8631,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> van <ph name="APPS_LIST_SIZE" /> apps geblokkeerd</translation>
 <translation id="741906494724992817">Voor deze app zijn geen speciale rechten vereist.</translation>
 <translation id="7419142833919893307">Geen gebruikersnaam toegevoegd</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{Onjuiste pincode. Nog 1 poging.}other{Onjuiste pincode. Nog # pogingen.}}</translation>
 <translation id="7419565702166471774">Altijd beveiligde verbindingen gebruiken</translation>
 <translation id="7419819959108735624">Selecteer iets om te zoeken met Google Lens</translation>
 <translation id="742130257665691897">Bookmarks verwijderd</translation>
@@ -9803,6 +9802,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8261625296061301062">Scannersoftware geïnstalleerd</translation>
 <translation id="8262971894813353037">Hiermee zet je het nieuwe desktopontwerp voor WebUI aan. Je moet ook Chrome Refresh 2023 aanzetten.</translation>
+<translation id="8263228331881858381">Toegangssleutel opgeslagen</translation>
 <translation id="8263336784344783289">Deze groep een naam geven</translation>
 <translation id="8264024885325823677">Deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="826511437356419340">Modus voor vensteroverzicht staat aan. Swipe om te navigeren of druk op Tab op een toetsenbord.</translation>

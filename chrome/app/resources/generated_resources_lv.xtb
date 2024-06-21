@@ -538,7 +538,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1398853756734560583">Maksimizēt</translation>
 <translation id="139911022479327130">Atbloķējiet tālruni un apstipriniet, ka tas esat jūs.</translation>
 <translation id="1399261165075500043">Nevar ielādēt Google Play pakalpojumu sniegšanas noteikumus</translation>
-<translation id="1400625312571031118">Drošāka par paroli</translation>
 <translation id="1401216725754314428">Skatīt plašāku informāciju par saistītajām vietnēm jaunā cilnē</translation>
 <translation id="1402426911829176748">Notiek savienojuma izveide ar jūsu ierīci</translation>
 <translation id="1403222014593521787">Nevar izveidot savienojumu ar starpniekserveri</translation>
@@ -2734,7 +2733,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2965227184985674128">Vai ieslēgt piekļuvi mikrofonam?</translation>
 <translation id="2966705348606485669">Vairāk opciju grāmatzīmju mapei “<ph name="FOLDER_TITLE" />”</translation>
 <translation id="2966937470348689686">Pārvaldīt Android preferences</translation>
-<translation id="2967791329697639454">Ātrāka, šifrēta pierakstīšanās</translation>
 <translation id="2967926928600500959">Šīm kārtulām atbilstošie URL tiks piespiedu kārtā atvērti noteiktā pārlūkā.</translation>
 <translation id="2969411787010981955">Dati ir eksportēti atlasītajā atrašanās vietā</translation>
 <translation id="2970766364519518369">Atlasītās kontaktpersonas var kopīgot saturu ar jums, kad atrodas tuvumā. Jums tiks lūgts apstiprināt šos pieprasījumus. Jums nebūs jāapstiprina kopīgošana starp ierīcēm, kurās ir veikta pierakstīšanās kontā <ph name="USER_EMAIL" />.</translation>
@@ -3459,7 +3457,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3521606918211282604">Mainīt diska lielumu</translation>
 <translation id="3522088408596898827">Diskā gandrīz nav vietas. Atbrīvojiet vietu diskā un mēģiniet vēlreiz.</translation>
 <translation id="3522979239100719575">Notiek pieejamu profilu meklēšana… Tā var ilgt dažas minūtes.</translation>
-<translation id="3524311336636707495">Pieejama visās jūsu ierīcēs</translation>
 <translation id="3524518036046613664">Atrast ierīces jūsu vietējā tīklā, piemēram, printerus</translation>
 <translation id="3524965460886318643">Eksportēt darbības</translation>
 <translation id="3525426269008462093">Pārskatīt ierīces sinhronizāciju pēc iestatīšanas</translation>
@@ -4264,7 +4261,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4093865285251893588">Profila attēls</translation>
 <translation id="4093955363990068916">Lokālais fails:</translation>
 <translation id="4094647278880271855">Jūs izmantojat neatbalstītu vides mainīgo: <ph name="BAD_VAR" />. Pasliktināsies stabilitāte un drošība.</translation>
-<translation id="4095246243698959793">Lai sinhronizētu un izmantotu piekļuves atslēgas no Google</translation>
 <translation id="4095264805865317199">Atvērt mobilā tīkla aktivizācijas lietotāja saskarni</translation>
 <translation id="4095425503313512126">Pārlūkošana un meklēšana ir ātrāka.</translation>
 <translation id="4095483462103784441">Izveidot jaunu ciļņu grupu</translation>
@@ -5923,6 +5919,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5372529912055771682">Nodrošinātais reģistrācijas režīms netiek atbalstīts šajā operētājsistēmas versijā. Noteikti lietojiet jaunāko versiju un mēģiniet vēlreiz.</translation>
 <translation id="5372579129492968947">Atspraust paplašinājumu</translation>
 <translation id="5372632722660566343">Turpināt bez konta</translation>
+<translation id="5372990315769030589">Vai paturēt paplašinājumu “<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="5375318608039113175">Lai izmantotu funkciju “Kopīgošana tuvumā” ar šīm kontaktpersonām, pievienojiet kontaktpersonu sarakstam šo personu e-pasta adreses, kas saistītas ar viņu Google kontiem.</translation>
 <translation id="5375577102295339548">Vietnes var palīdzēt apstiprināt, ka neesat robots</translation>
 <translation id="5376094717770783089">Pieprasa piekļuvi</translation>
@@ -9018,6 +9015,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7708143783728142771">Sīkfaili nodrošina tāda paša līmeņa preferenču pielāgošanu tīmeklī. Kad apmeklējat kādu vietni, vietne var saglabāt sīkfailu jūsu ierīces pārlūka krātuvē, lai atcerētos jūsu vietnes preferences, piemēram, valodu, kurā runājat, vai produktus, kurus vēlaties saglabāt iepirkumu grozā. Vēlāk, kad vēlreiz apmeklēsiet vietni tajā pašā pārlūkā, šī vietne varēs nolasīt tās iestatīto sīkfailu un jūs varēsiet atsākt darbu no vietas, kur to pārtraucāt. Šāda veida sīkfaili bieži tiek dēvēti par pirmās puses sīkfailiem, jo tos iestata apmeklētā vietne.</translation>
 <translation id="770831926727930011">Jūsu lokālos datus aizsargā iepriekšējā parole. Ievadiet iepriekšējo paroli, lai atkoptu lokālos datus.</translation>
 <translation id="7709152031285164251">Lejupielāde neizdevās. <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Aizsargājiet visas savas piekļuves atslēgas, izmantojot atkopšanas PIN.</translation>
 <translation id="7710568461918838723">&amp;Apraide...</translation>
 <translation id="7711900714716399411">Izmantojiet USB vadu, lai pievienotu tālruni datoram. Ja tālrunis jau ir pievienots, atvienojiet to un vēlreiz pievienojiet.</translation>
 <translation id="7711968363685835633">Atspējot personalizētu pārvēršanu un ieteikumus, kā arī lietotāja vārdnīcu</translation>
@@ -9748,6 +9746,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8233028084277069927">Atvērt tūlīt</translation>
 <translation id="8234795456569844941">Palīdziet mūsu inženieriem novērst šo problēmu. Norādiet, kas notika tieši pirms tam, kad tika parādīts profila kļūdas ziņojums.</translation>
 <translation id="8235418492073272647">Kopīgota lapa no ierīces “<ph name="DEVICE_NAME" />”</translation>
+<translation id="8236802542508794819">Šī cilne koplieto resursus ar citām cilnēm, kas var traucēt atkļūdošanu.</translation>
 <translation id="8236911020904880539">izietu</translation>
 <translation id="8236917170563564587">Labāk kopīgot šo cilni</translation>
 <translation id="8237647586961940482">Tumši rozā un sarkana</translation>
@@ -9952,6 +9951,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8376532149031784008">Notiek domēna <ph name="DOMAIN" /> ielāde…</translation>
 <translation id="8376610503048439696">Jūsu administratora instalētie paplašinājumi joprojām var lasīt un mainīt šo vietni.</translation>
 <translation id="8376752431516546391">Google meklēšanas sānu panelis</translation>
+<translation id="8376812682111060348">Brīdinājums par veiktspējas problēmu</translation>
 <translation id="8377625247046155446">Šī piekļuves atslēga tiks saglabāta tikai šajā ierīcē. Tā paliks šajā ierīcē pēc visu inkognito režīma logu aizvēršanas.</translation>
 <translation id="8378714024927312812">Pārvalda jūsu organizācija</translation>
 <translation id="8379988659465232385">Nosaukuma lauks nedrīkst būt tukšs.</translation>

@@ -540,7 +540,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1398853756734560583">Mwyhau</translation>
 <translation id="139911022479327130">Datglowch eich ffôn a chadarnhewch mai chi sydd yno</translation>
 <translation id="1399261165075500043">Methu â llwytho Telerau Gwasanaeth Google Play</translation>
-<translation id="1400625312571031118">Yn fwy diogel na chyfrinair</translation>
 <translation id="1401216725754314428">Dysgu rhagor am wefannau cysylltiedig mewn tab newydd</translation>
 <translation id="1402426911829176748">Wrthi'n cysylltu â'ch dyfais</translation>
 <translation id="1403222014593521787">Methu cysylltu â'r dirprwy weinydd</translation>
@@ -2748,7 +2747,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="2965227184985674128">Troi mynediad meicroffon ymlaen?</translation>
 <translation id="2966705348606485669">Rhagor o opsiynau ar gyfer ffolder nodau tudalen <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Rheoli dewisiadau Android</translation>
-<translation id="2967791329697639454">Mewngofnodi cyflymach, wedi'i amgryptio</translation>
 <translation id="2967926928600500959">Bydd cyfeiriadau URL sy'n cyfateb i'r rheolau hyn yn cael eu gorfodi i agor mewn porwr penodol.</translation>
 <translation id="2969411787010981955">Mae data wedi'u hallforio i'r lleoliad a ddewiswyd</translation>
 <translation id="2970766364519518369">Gall cysylltiadau a ddewisir rannu â chi pan fyddant gerllaw. Bydd gofyn i chi gymeradwyo'r ceisiadau hyn. Ni fydd angen i chi gymeradwyo rhannu rhwng dyfeisiau sydd wedi'u mewngofnodi i <ph name="USER_EMAIL" />.</translation>
@@ -3475,7 +3473,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3521606918211282604">Newid maint y disg</translation>
 <translation id="3522088408596898827">Mae lle ar y disg yn isel iawn. Crëwch ragor o le ar y disg a rhowch gynnig arall arni.</translation>
 <translation id="3522979239100719575">Wrthi'n chwilio am broffiliau sydd ar gael. Gallai hyn gymryd ychydig funudau.</translation>
-<translation id="3524311336636707495">Ar gael ar draws eich dyfeisiau</translation>
 <translation id="3524518036046613664">Darganfod dyfeisiau ar eich rhwydwaith lleol, megis argraffwyr</translation>
 <translation id="3524965460886318643">Allforio Gweithgareddau</translation>
 <translation id="3525426269008462093">Adolygu cysoni dyfais ar ôl gosod</translation>
@@ -4280,7 +4277,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4093865285251893588">Llun proffil</translation>
 <translation id="4093955363990068916">Ffeil leol:</translation>
 <translation id="4094647278880271855">Rydych yn defnyddio newidyn amgylchedd na chefnogir: <ph name="BAD_VAR" />. Bydd sefydlogrwydd a diogelwch yn waeth.</translation>
-<translation id="4095246243698959793">I gysoni a defnyddio codau pas o Google</translation>
 <translation id="4095264805865317199">Agor UI Gweithredu Symudol</translation>
 <translation id="4095425503313512126">Mae pori a chwilio yn gyflymach</translation>
 <translation id="4095483462103784441">Creu grŵp tabiau newydd</translation>

@@ -903,6 +903,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4381031910344220229">Dies erlaubt den Mikrofonzugriff für <ph name="APP_NAME" /> sowie alle Apps und Websites mit der Mikrofonberechtigung</translation>
 <translation id="4382340674111381977">Zurück zur vorherigen Seite</translation>
 <translation id="4389184120735010762">Du hast die Tastenkombination für den Modus "Angedockte Lupe" gedrückt. Möchtest du ihn aktivieren?</translation>
+<translation id="4394466652057229831">Zum Zusammenfassen rechtsklicken</translation>
 <translation id="439598569299422042">Pausiert, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Screencast konnte nicht gespeichert werden</translation>
 <translation id="4405151984121254935">Das angeschlossene Peripheriegerät wird nicht unterstützt</translation>
@@ -1939,6 +1940,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8113423164597455979">An: alle Apps</translation>
 <translation id="8113515504791187892">Vorlesen-Schaltfläche</translation>
 <translation id="8120151603115102514">Dein Smartphone hat keinen Sperrbildschirm. Gib zum Entsperren das Passwort ein.</translation>
+<translation id="8120249852906205273">Neu starten</translation>
 <translation id="8127095419621171197">Rechner App öffnen</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Zum Anfang des Dokuments springen</translation>
@@ -2033,6 +2035,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="85123341071060231">Auf deinem Chromebook ist Bluetooth deaktiviert. Gib zum Entsperren das Passwort ein.</translation>
 <translation id="8513108775083588393">Autom. drehen</translation>
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
+<translation id="851660987304951246">Mit „Hilfe beim Lesen“ kannst du Inhalte schnell zusammenfassen lassen oder Fragen stellen</translation>
 <translation id="8517041960877371778">Dein <ph name="DEVICE_TYPE" /> wird möglicherweise nicht aufgeladen, wenn es eingeschaltet ist.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoneingabe wird von <ph name="APP_NAME" /> gesteuert}other{Mikrofoneingabe wird von # Apps gesteuert}}</translation>
 <translation id="8535393432370007982">Sortierung nach Farbe rückgängig machen</translation>
@@ -2077,6 +2080,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8704155109538237473">Fokus auf das Bild-im-Bild-Fenster verschieben</translation>
 <translation id="870917907284186124">Spracheingabe aktivieren/deaktivieren</translation>
 <translation id="8711169534266271368">Optionen für das Dashboard für Spiele</translation>
+<translation id="8712637175834984815">Ok</translation>
 <translation id="8714138378966541668">Vom Anbieter gesperrt</translation>
 <translation id="8717459106217102612">Vorheriges Wort oder vorherigen Buchstaben markieren</translation>
 <translation id="8721053961083920564">Ton ein- oder ausschalten. <ph name="STATE_TEXT" /></translation>

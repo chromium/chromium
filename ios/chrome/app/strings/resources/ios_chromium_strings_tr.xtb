@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium sürümü eski. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />'da güncelleme yoksa cihazınız artık Chromium'un yeni sürümlerini desteklemiyor olabilir.</translation>
 <translation id="1423007117030725713">Yeni bir Chromium sekmesinde arama başlatır.</translation>
 <translation id="1431818719585918472">Chromium'un Gizli sekmelerinizi kapatmasına izin verin.</translation>
+<translation id="146407871188825689">iPad'de varsayılan olarak Chromium'u kullanın</translation>
 <translation id="1472013873724362412">Hesabınız Chromium'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
 <translation id="1503199973012840174">Chromium'unuz güncel değil. Güvenliğiniz için güncelleyin.</translation>
 <translation id="1507010443238049608">Chromium'un Özelliklerini ve Performansını İyileştirmeye Yardımcı Olun</translation>
@@ -122,6 +123,7 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 
 Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini silin<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Chromium'daki ödeme yöntemi ayarları sayfasını açar.</translation>
+<translation id="458786853569524949">Artık e-postalardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz.</translation>
 <translation id="459080529287102949">Görselleri Chromium'da Ara</translation>
 <translation id="4633738821577273991">Bu Chromium profilinde Gelişmiş Güvenli Tarama'yı da edinin</translation>
 <translation id="4638625642619341392">Chromium'u buradan indirin.</translation>
@@ -289,6 +291,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="9022552996538154597">Chromium'da oturum aç</translation>
 <translation id="9050790730841755540">Diğer uygulamalardaki bağlantılara her dokunduğunuzda Chromium'u kullanın.</translation>
+<translation id="9057082013386654559">iPad'de varsayılan olarak Chromium'u kullanın</translation>
 <translation id="9059693977935746710">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="9089354809943900324">Chromium sürümü eski</translation>
 <translation id="9110075932708282655">Varsayılan olarak Chromium kullanın</translation>

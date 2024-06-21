@@ -536,7 +536,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1398853756734560583">Phóng to</translation>
 <translation id="139911022479327130">Mở khóa điện thoại và xác nhận danh tính của bạn</translation>
 <translation id="1399261165075500043">Không tải được Điều khoản dịch vụ của Google Play</translation>
-<translation id="1400625312571031118">An toàn hơn mật khẩu</translation>
 <translation id="1401216725754314428">Tìm hiểu thêm về các trang web liên quan trong thẻ mới</translation>
 <translation id="1402426911829176748">Đang kết nối với thiết bị của bạn</translation>
 <translation id="1403222014593521787">Không thể kết nối với proxy này</translation>
@@ -2745,7 +2744,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2965227184985674128">Cho phép truy cập micrô?</translation>
 <translation id="2966705348606485669">Tuỳ chọn khác cho thư mục dấu trang <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Quản lý tùy chọn Android</translation>
-<translation id="2967791329697639454">Đăng nhập nhanh hơn và được mã hoá</translation>
 <translation id="2967926928600500959">Các URL phù hợp với các quy tắc này sẽ buộc phải mở ra trong một trình duyệt nhất định.</translation>
 <translation id="2969411787010981955">Dữ liệu đã được xuất vào vị trí đã chọn</translation>
 <translation id="2970766364519518369">Những người liên hệ mà bạn đã chọn có thể chia sẻ nội dung với bạn khi họ ở gần. Bạn sẽ được yêu cầu phê duyệt các yêu cầu này. Bạn không cần phê duyệt hoạt động chia sẻ giữa các thiết bị đã đăng nhập vào <ph name="USER_EMAIL" />.</translation>
@@ -3472,7 +3470,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3521606918211282604">Thay đổi dung lượng ổ đĩa</translation>
 <translation id="3522088408596898827">Dung lượng ổ đĩa quá thấp. Hãy giải phóng dung lượng rồi thử lại.</translation>
 <translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
-<translation id="3524311336636707495">Dùng được trên các thiết bị của bạn</translation>
 <translation id="3524518036046613664">Khám phá các thiết bị trên mạng cục bộ của bạn, chẳng hạn như máy in</translation>
 <translation id="3524965460886318643">Xuất hoạt động</translation>
 <translation id="3525426269008462093">Kiểm tra tình trạng đồng bộ hoá thiết bị sau khi thiết lập</translation>
@@ -4277,7 +4274,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4093865285251893588">Ảnh hồ sơ</translation>
 <translation id="4093955363990068916">Tệp cục bộ:</translation>
 <translation id="4094647278880271855">Bạn đang dùng một biến môi trường chưa được hỗ trợ: <ph name="BAD_VAR" />. Do đó, tính ổn định và độ bảo mật sẽ bị ảnh hưởng.</translation>
-<translation id="4095246243698959793">Để đồng bộ hoá và sử dụng khoá truy cập từ Google</translation>
 <translation id="4095264805865317199">Mở giao diện kích hoạt mạng di động</translation>
 <translation id="4095425503313512126">Duyệt web và tìm kiếm nhanh hơn</translation>
 <translation id="4095483462103784441">Tạo nhóm thẻ mới</translation>
@@ -5937,6 +5933,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5372529912055771682">Chế độ đăng ký đã cung cấp không được phiên bản hệ điều hành này hỗ trợ. Hãy đảm bảo bạn đang chạy phiên bản mới nhất và thử lại.</translation>
 <translation id="5372579129492968947">Bỏ ghim tiện ích</translation>
 <translation id="5372632722660566343">Tiếp tục mà không cần tài khoản</translation>
+<translation id="5372990315769030589">Giữ "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Để chia sẻ với những người liên hệ này bằng tính năng Chia sẻ lân cận, hãy thêm địa chỉ email liên kết với Tài khoản Google của họ vào danh bạ của bạn.</translation>
 <translation id="5375577102295339548">Các trang web có thể giúp xác minh rằng bạn không phải là bot</translation>
 <translation id="5376094717770783089">Yêu cầu quyền truy cập</translation>
@@ -9033,6 +9030,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7708143783728142771">Tương tự như vậy, cookie cũng cho phép tuỳ chỉnh theo lựa chọn ưu tiên trên web. Khi bạn truy cập vào một trang web, trang web đó có thể lưu cookie vào bộ nhớ của trình duyệt trên thiết bị để ghi nhớ các lựa chọn ưu tiên đối với trang web, chẳng hạn như ngôn ngữ bạn sử dụng hoặc những mặt hàng bạn muốn lưu vào giỏ hàng. Sau này, nếu bạn truy cập lại vào trang web đó bằng cùng một trình duyệt, thì trang web có thể đọc cookie đã đặt để giúp bạn bắt đầu lại từ nơi bạn đã dừng lại ở lần truy cập trước. Những loại cookie này là do trang web mà bạn truy cập đặt nên thường được gọi là cookie của bên thứ nhất.</translation>
 <translation id="770831926727930011">Dữ liệu cục bộ được bảo vệ bằng mật khẩu cũ của bạn. Nhập mật khẩu cũ để khôi phục dữ liệu cục bộ.</translation>
 <translation id="7709152031285164251">Không thành công - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Bảo vệ tất cả khoá truy cập bằng một mã PIN khôi phục</translation>
 <translation id="7710568461918838723">&amp;Truyền...</translation>
 <translation id="7711900714716399411">Kết nối điện thoại với máy tính bằng cáp USB. Nếu đã kết nối điện thoại từ trước, hãy rút cáp ra rồi cắm lại.</translation>
 <translation id="7711968363685835633">Tắt tính năng chuyển đổi và đề xuất được cá nhân hoá cũng như từ điển người dùng</translation>
@@ -9764,6 +9762,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8233028084277069927">Mở ngay</translation>
 <translation id="8234795456569844941">Hãy giúp các kỹ sư của chúng tôi khắc phục sự cố này. Hãy cho chúng tôi biết điều gì đã xảy ra ngay trước khi bạn nhận được thông báo lỗi hồ sơ:</translation>
 <translation id="8235418492073272647">Trang được chia sẻ qua <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Quá trình gỡ lỗi có thể gặp khó khăn do thẻ này dùng chung tài nguyên với các thẻ khác.</translation>
 <translation id="8236911020904880539">thoát</translation>
 <translation id="8236917170563564587">Chia sẻ thẻ này</translation>
 <translation id="8237647586961940482">Đỏ và hồng đậm</translation>
@@ -9968,6 +9967,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8376532149031784008">Đang tải lại <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Các tiện ích do quản trị viên cài đặt vẫn có thể đọc và thay đổi trang web này</translation>
 <translation id="8376752431516546391">Bảng điều khiển bên của Google Tìm kiếm</translation>
+<translation id="8376812682111060348">Cảnh báo vấn đề về hiệu suất</translation>
 <translation id="8377625247046155446">Khoá truy cập này sẽ chỉ được lưu trên thiết bị này. Khoá truy cập sẽ vẫn được lưu trên thiết bị này sau khi bạn đóng tất cả cửa sổ ẩn danh.</translation>
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8379988659465232385">Không được để trống tên</translation>

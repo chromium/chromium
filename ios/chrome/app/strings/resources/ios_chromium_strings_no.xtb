@@ -123,6 +123,7 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Åpner innstillingssiden for betalingsmåter i Chromium.</translation>
+<translation id="458786853569524949">Nå kan du bruke Chromium hver gang du trykker på linker i e-poster, dokumenter og andre apper.</translation>
 <translation id="459080529287102949">Søk i visuelle elementer i Chromium</translation>
 <translation id="4633738821577273991">Få Safe Browsing med økt beskyttelse for denne Chromium-profilen også</translation>
 <translation id="4638625642619341392">Last ned Chromium her.</translation>
@@ -290,6 +291,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den inn for å bruke og lagre Chromium-data i Google-kontoen din.</translation>
 <translation id="9022552996538154597">Logg på Chromium</translation>
 <translation id="9050790730841755540">Bruk Chromium hver gang du trykker på linker i andre apper.</translation>
+<translation id="9057082013386654559">Bruk Chromium for iPad som standard</translation>
 <translation id="9059693977935746710">Du trenger ikke å huske dette passordet. Det blir lagret i Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9110075932708282655">Bruk Chromium som standard</translation>

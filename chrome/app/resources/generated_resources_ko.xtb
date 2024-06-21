@@ -536,7 +536,6 @@
 <translation id="1398853756734560583">최대화</translation>
 <translation id="139911022479327130">휴대전화의 잠금을 해제하고 본인 여부를 확인합니다.</translation>
 <translation id="1399261165075500043">Google Play 서비스 약관을 로드할 수 없습니다</translation>
-<translation id="1400625312571031118">비밀번호보다 안전</translation>
 <translation id="1401216725754314428">새 탭에서 관련 사이트 자세히 알아보기</translation>
 <translation id="1402426911829176748">기기에 연결 중</translation>
 <translation id="1403222014593521787">프록시에 연결할 수 없습니다.</translation>
@@ -2747,7 +2746,6 @@
 <translation id="2965227184985674128">마이크 액세스를 사용 설정하시겠습니까?</translation>
 <translation id="2966705348606485669"><ph name="FOLDER_TITLE" /> 북마크 폴더의 옵션 더보기</translation>
 <translation id="2966937470348689686">Android 환경설정 관리</translation>
-<translation id="2967791329697639454">더 빠르고 암호화된 로그인</translation>
 <translation id="2967926928600500959">이 규칙과 일치하는 URL은 강제로 특정 브라우저에서 열립니다.</translation>
 <translation id="2969411787010981955">선택한 위치로 데이터를 내보냈습니다.</translation>
 <translation id="2970766364519518369">연락처에서 선택한 사용자가 근처에 있는 경우 나와 파일을 공유할 수 있습니다. 공유 요청을 승인할지 묻는 메시지가 표시됩니다. <ph name="USER_EMAIL" />에 로그인된 기기 간에 공유할 경우 승인할 필요가 없습니다.</translation>
@@ -3474,7 +3472,6 @@
 <translation id="3521606918211282604">디스크 크기 변경</translation>
 <translation id="3522088408596898827">디스크 저장 공간이 매우 부족합니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
-<translation id="3524311336636707495">모든 기기에서 사용 가능</translation>
 <translation id="3524518036046613664">프린터와 같은 로컬 네트워크의 기기 검색</translation>
 <translation id="3524965460886318643">활동 내보내기</translation>
 <translation id="3525426269008462093">설정 후 기기 동기화 검토</translation>
@@ -4277,7 +4274,6 @@
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="4093955363990068916">로컬 파일:</translation>
 <translation id="4094647278880271855">지원되지 않는 환경 변수(<ph name="BAD_VAR" />)를 사용 중이므로 안정성 및 보안에 문제가 발생할 수 있습니다.</translation>
-<translation id="4095246243698959793">Google에서 패스키 동기화 및 사용하기</translation>
 <translation id="4095264805865317199">모바일 활성화 UI 열기</translation>
 <translation id="4095425503313512126">탐색과 검색이 더 빨라집니다.</translation>
 <translation id="4095483462103784441">새 탭 그룹 만들기</translation>

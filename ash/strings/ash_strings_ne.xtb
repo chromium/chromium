@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">यसले <ph name="APP_NAME" /> र माइक्रोफोन प्रयोग गर्ने अनुमति चाहिने सबै एप तथा वेबसाइटहरूलाई माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="4382340674111381977">अघिल्लो पृष्ठमा फर्कनुहोस्</translation>
 <translation id="4389184120735010762">तपाईंले डक गरिएको म्याग्निफायरको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
+<translation id="4394466652057229831">सारांश बनाउन राइट क्लिक गर्नुहोस्</translation>
 <translation id="439598569299422042">पज गरिएको छ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">स्क्रिनकास्ट सेभ गर्न सकिएन</translation>
 <translation id="4405151984121254935">कनेक्ट गरिएको यो सहायक डिभाइस प्रयोग गर्न मिल्दैन</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">सबै डिभाइसमा अन</translation>
 <translation id="8113515504791187892">सेलेक्ट टु स्पिक नामक बटन</translation>
 <translation id="8120151603115102514">तपाईंको फोनमा लक स्क्रिन छैन। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
+<translation id="8120249852906205273">रिस्टार्ट गर्नुहोस्</translation>
 <translation id="8127095419621171197">क्याल्कुलेटर एप खोल्नुहोस्</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से.</translation>
 <translation id="8130528849632411619">कागजातको सुरुवातमा जानुहोस्</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">तपाईंको Chromebook को ब्लुटुथ अफ छ। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="8513108775083588393">स्वतः परिक्रमा</translation>
 <translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाउनुहोस्, रेडियो बटन चयन गरियो</translation>
+<translation id="851660987304951246">तुरुन्तै सामग्रीको सारांश बनाउन वा प्रश्नहरू सोध्न "मलाई पढ्न मद्दत गर" प्रयोग गर्नुहोस्</translation>
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ले माइक इनपुट नियन्त्रण गर्दै छ}other{# वटा एपले माइक इनपुट नियन्त्रण गर्दै छन्}}</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
@@ -2077,6 +2080,7 @@
 <translation id="8704155109538237473">Picture-in-Picture विन्डोमा फोकस गर्नुहोस्</translation>
 <translation id="870917907284186124">स्पिच-टु-टेक्स्ट (बोलेरै टाइप गर्ने सुविधा) अन/अफ गर्नुहोस्</translation>
 <translation id="8711169534266271368">गेम ड्यासबोर्डसम्बन्धी विकल्पहरू</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8714138378966541668">प्रदायकले लक गरेको छ</translation>
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>

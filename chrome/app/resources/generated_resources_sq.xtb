@@ -536,7 +536,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1398853756734560583">Zmadho</translation>
 <translation id="139911022479327130">Shkyçe telefonin dhe konfirmo që je ti</translation>
 <translation id="1399261165075500043">"Kushtet e shërbimit" të Google Play nuk mund të ngarkohen</translation>
-<translation id="1400625312571031118">Më i sigurt se një fjalëkalim</translation>
 <translation id="1401216725754314428">Mëso më shumë rreth sajteve të lidhura në një skedë të re</translation>
 <translation id="1402426911829176748">Po lidhet me pajisjen tënde</translation>
 <translation id="1403222014593521787">Nuk mund të lidhet me përfaqësuesin</translation>
@@ -2730,7 +2729,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2965227184985674128">Të aktivizohet qasja te mikrofoni?</translation>
 <translation id="2966705348606485669">Opsione të tjera për dosjen e faqeshënuesve "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="2966937470348689686">Menaxho preferencat e Android</translation>
-<translation id="2967791329697639454">Identifikimi më i shpejtë dhe i enkriptuar</translation>
 <translation id="2967926928600500959">URL-të që përputhen me këto rregulla do të hapen me forcë në një shfletues specifik.</translation>
 <translation id="2969411787010981955">Të dhënat janë eksportuar në vendndodhjen e zgjedhur</translation>
 <translation id="2970766364519518369">Kontaktet e zgjedhura mund të ndajnë me ty kur janë në afërsi. Do të të kërkohet t'i miratosh këto kërkesa. Nuk do të të duhet të miratosh ndarjen mes pajisjeve ku është kryer identifikimi me <ph name="USER_EMAIL" />.</translation>
@@ -3455,7 +3453,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3521606918211282604">Ndrysho madhësinë e diskut</translation>
 <translation id="3522088408596898827">Hapësira e diskut është jashtëzakonisht e ulët. Liro hapësirë në disk dhe provo përsëri.</translation>
 <translation id="3522979239100719575">Po kërkon për profilet e disponueshme. Kjo mund të zgjasë disa minuta.</translation>
-<translation id="3524311336636707495">Ofrohet në pajisjet e tua</translation>
 <translation id="3524518036046613664">Zbulo pajisje në rrjetin tënd lokal, si p.sh. printerë</translation>
 <translation id="3524965460886318643">Eksporto aktivitetet</translation>
 <translation id="3525426269008462093">Rishiko sinkronizimin e pajisjes pas konfigurimit</translation>
@@ -4260,7 +4257,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4093865285251893588">Imazhi i profilit</translation>
 <translation id="4093955363990068916">Skedari lokal:</translation>
 <translation id="4094647278880271855">Po përdor një ndryshore mjedisi që nuk mbështetet: <ph name="BAD_VAR" />. Kjo do të ketë ndikim te qëndrueshmëria dhe siguria.</translation>
-<translation id="4095246243698959793">Për të sinkronizuar dhe përdorur çelësat e kalimit nga Google</translation>
 <translation id="4095264805865317199">Hap ndërfaqen e përdorimit të aktivizimit celular</translation>
 <translation id="4095425503313512126">Shfletimi dhe kërkimi është më i shpejtë</translation>
 <translation id="4095483462103784441">Krijo një grup të ri skedash</translation>
@@ -5919,6 +5915,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5372529912055771682">Modaliteti i dhënë i regjistrimit nuk mbështetet nga ky version i sistemit operativ. Sigurohu që po përdor versionin më të fundit dhe provo sërish.</translation>
 <translation id="5372579129492968947">Zhgozhdo shtesën</translation>
 <translation id="5372632722660566343">Vazhdo pa një llogari</translation>
+<translation id="5372990315769030589">Të mbahet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Për të përdorur "Ndarjen në afërsi" me këto kontakte, shto te kontaktet e tua adresën e email-it të lidhur me "Llogarinë e tyre të Google".</translation>
 <translation id="5375577102295339548">Sajtet mund të ndihmojnë për të verifikuar që nuk je një robot</translation>
 <translation id="5376094717770783089">Kërkon qasje</translation>
@@ -9012,6 +9009,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7708143783728142771">Kukit lejojnë këtë nivel të njëjtë të personalizimit të preferencave në ueb. Kur viziton një sajt, sajti mund të ruajë një kuki në hapësirën ruajtëse të shfletuesit në pajisjen tënde për të kujtuar preferencat e sajtit, si p.sh. gjuhën që ti flet ose artikujt që dëshiron të ruhen në karrocën e blerjeve. Më vonë, nëse e viziton përsëri sajtin duke përdorur të njëjtin shfletues, ai sajt mund të lexojë kukin që cakton ti dhe mund të fillojë aty ku e ke lënë. Këto lloje kukish shpesh përmenden si kuki të palës së parë, pasi caktohen nga sajti që viziton ti.</translation>
 <translation id="770831926727930011">Të dhënat e tua lokale janë të mbrojtura nga fjalëkalimi yt i vjetër. Fut fjalëkalimin e vjetër për të rikuperuar të dhënat lokale.</translation>
 <translation id="7709152031285164251">Dështoi - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Mbroji të gjithë çelësat e kalimit me një kod PIN rikuperimi</translation>
 <translation id="7710568461918838723">dhe Transmeto...</translation>
 <translation id="7711900714716399411">Përdor një kabllo USB për të lidhur telefonin me kompjuterin. Nëse telefoni është i lidhur tashmë, shkëpute dhe lidhe përsëri.</translation>
 <translation id="7711968363685835633">Çaktivizo konvertimet dhe sugjerimet e personalizuara, si dhe fjalorin e përdoruesit</translation>
@@ -9741,6 +9739,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8233028084277069927">Hap tani</translation>
 <translation id="8234795456569844941">Ndihmoji inxhinierët tanë ta rregullojnë këtë problem. Na trego se çfarë ndodhi përpara se të merrje mesazhin e gabimit të profilit:</translation>
 <translation id="8235418492073272647">Faqe e ndarë nga <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Kjo skedë ndaj burime me skedat e tjera, gjë që mund të ndërhyjë te korrigjimi.</translation>
 <translation id="8236911020904880539">dil</translation>
 <translation id="8236917170563564587">Ndaj këtë skedë më mirë</translation>
 <translation id="8237647586961940482">Rozë e errët dhe e kuqe</translation>
@@ -9945,6 +9944,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8376532149031784008"><ph name="DOMAIN" /> po ringarkohet...</translation>
 <translation id="8376610503048439696">Shtesat e instaluara nga administratori yt mund ta lexojnë dhe ta ndryshojnë përsëri këtë sajt</translation>
 <translation id="8376752431516546391">Paneli anësor i "Kërko në Google"</translation>
+<translation id="8376812682111060348">Sinjalizim problemi të performancës</translation>
 <translation id="8377625247046155446">Ky çelës kalimi do të ruhet vetëm në këtë pajisje. Ai do të qëndrojë në këtë pajisje pasi t'i mbyllësh të gjitha dritaret e fshehta.</translation>
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8379988659465232385">Emri nuk mund të jetë bosh</translation>

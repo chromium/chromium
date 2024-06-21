@@ -538,7 +538,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1398853756734560583">Maximalizovat</translation>
 <translation id="139911022479327130">Odemkněte telefon a potvrďte, že jste to skutečně vy</translation>
 <translation id="1399261165075500043">Smluvní podmínky Google Play nelze načíst</translation>
-<translation id="1400625312571031118">Bezpečnější než heslo</translation>
 <translation id="1401216725754314428">Další informace o souvisejících webech na nové kartě</translation>
 <translation id="1402426911829176748">Probíhá připojování k vašemu zařízení</translation>
 <translation id="1403222014593521787">K proxy se nelze připojit</translation>
@@ -2734,7 +2733,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2965227184985674128">Zapnout přístup k mikrofonu?</translation>
 <translation id="2966705348606485669">Další možnosti pro složku záložek <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Spravovat nastavení aplikací Android</translation>
-<translation id="2967791329697639454">Rychlejší, šifrované přihlašování</translation>
 <translation id="2967926928600500959">Adresy URL odpovídající těmto pravidlům bude nutné otevřít v konkrétním prohlížeči.</translation>
 <translation id="2969411787010981955">Data byla exportována do vybraného umístění</translation>
 <translation id="2970766364519518369">Vybrané kontakty s vámi mohou sdílet obsah, když jsou v okolí. Budou se vám zobrazovat žádosti o povolení sdílení. Sdílení ze zařízení přihlášených k účtu <ph name="USER_EMAIL" /> nebudete muset povolovat.</translation>
@@ -3459,7 +3457,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3521606918211282604">Změnit velikost disku</translation>
 <translation id="3522088408596898827">Na disku je kriticky málo místa. Uvolněte místo a zkuste to znovu.</translation>
 <translation id="3522979239100719575">Probíhá vyhledávání dostupných profilů. Může to trvat několik minut.</translation>
-<translation id="3524311336636707495">Dostupné na všech vašich zařízeních</translation>
 <translation id="3524518036046613664">Rozpoznávat zařízení v místní síti, například tiskárny</translation>
 <translation id="3524965460886318643">Exportovat aktivity</translation>
 <translation id="3525426269008462093">Po nastavení zkontrolovat synchronizaci zařízení</translation>
@@ -4263,7 +4260,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4093865285251893588">Profilová fotka</translation>
 <translation id="4093955363990068916">Místní soubor:</translation>
 <translation id="4094647278880271855">Používáte nepodporované proměnné prostředí: <ph name="BAD_VAR" />. Bude to mít negativní vliv na stabilitu a zabezpečení.</translation>
-<translation id="4095246243698959793">Pokud chcete synchronizovat a používat přístupové klíče od Googlu</translation>
 <translation id="4095264805865317199">Otevřít uživatelské rozhraní k aktivaci mobilní sítě</translation>
 <translation id="4095425503313512126">Procházení a vyhledávání je rychlejší.</translation>
 <translation id="4095483462103784441">Vytvořit novou skupinu karet</translation>
@@ -5922,6 +5918,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5372529912055771682">Uvedený režim registrace není touto verzí operačního systému podporován. Zkontrolujte prosím, zda máte spuštěnou nejnovější verzi, a zkuste to znovu.</translation>
 <translation id="5372579129492968947">Odepnout rozšíření</translation>
 <translation id="5372632722660566343">Pokračovat bez účtu</translation>
+<translation id="5372990315769030589">Ponechat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5375318608039113175">Chcete-li u těchto kontaktů používat sdílení nablízko, přidejte si do kontaktů e-mailové adresy přidružené k jejich účtům Google.</translation>
 <translation id="5375577102295339548">Weby mohou pomáhat ověřit, že nejste robot</translation>
 <translation id="5376094717770783089">Žádá o přístup</translation>
@@ -9016,6 +9013,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7708143783728142771">Soubory cookie umožňují stejnou úroveň přizpůsobení preferencí na webu. Navštívený web může do úložiště prohlížeče na vašem zařízení uložit soubor cookie, pomocí něhož si zapamatuje vaše preference, například jazyk nebo položky přidané do nákupního košíku. Když stejný web později ve stejném prohlížeči navštívíte znovu, může nastavený soubor cookie přečíst, abyste mohli pokračovat, kde jste skončili. Tyto typy souborů cookie se často označují jako soubory cookie první strany, protože je nastavuje navštívený web.</translation>
 <translation id="770831926727930011">Místní data jsou chráněna starým heslem. K obnovení místních dat zadejte své staré heslo.</translation>
 <translation id="7709152031285164251">Chyba – <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Ochraňte všechny své přístupové klíče pomocí kódu PIN pro obnovení</translation>
 <translation id="7710568461918838723">&amp;Odeslat...</translation>
 <translation id="7711900714716399411">Připojte telefon k počítači pomocí kabelu USB. Pokud je telefon už připojen, odpojte ho a připojte znovu.</translation>
 <translation id="7711968363685835633">Zakázat personalizované konverze a návrhy a uživatelský slovník</translation>
@@ -9747,6 +9745,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8233028084277069927">Otevřít</translation>
 <translation id="8234795456569844941">Pomozte našim technikům opravit tento problém. Sdělte nám, co se stalo těsně před zobrazením zprávy o chybě profilu:</translation>
 <translation id="8235418492073272647">Stránka sdílená ze zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Tato karta sdílí prostředky s jinými kartami, což by mohlo narušovat ladění.</translation>
 <translation id="8236911020904880539">skončit</translation>
 <translation id="8236917170563564587">Sdílet namísto toho tuto kartu</translation>
 <translation id="8237647586961940482">Tmavě růžová a červená</translation>
@@ -9951,6 +9950,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8376532149031784008">Opětovné načítání stránky <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">Rozšíření nainstalovaná administrátorem mohou tento web číst a měnit i nadále</translation>
 <translation id="8376752431516546391">Boční panel Vyhledávání Google</translation>
+<translation id="8376812682111060348">Upozornění na problém s výkonem</translation>
 <translation id="8377625247046155446">Tento přístupový klíč bude uložen pouze na tomto zařízení. Zůstane v tomto zařízení i po zavření všech anonymních oken.</translation>
 <translation id="8378714024927312812">Spravováno vaší organizací</translation>
 <translation id="8379988659465232385">Název nesmí být prázdný</translation>

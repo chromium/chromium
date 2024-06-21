@@ -536,7 +536,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1398853756734560583">Maximizar</translation>
 <translation id="139911022479327130">Desbloquea tu teléfono y confirma que eres tú</translation>
 <translation id="1399261165075500043">No se pueden cargar los Términos del Servicio de Google Play</translation>
-<translation id="1400625312571031118">Más segura que una contraseña</translation>
 <translation id="1401216725754314428">Más información sobre los sitios relacionados en una nueva pestaña</translation>
 <translation id="1402426911829176748">Conectando con tu dispositivo</translation>
 <translation id="1403222014593521787">No se ha podido establecer conexión con el proxy</translation>
@@ -2733,7 +2732,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2965227184985674128">¿Activar acceso al micrófono?</translation>
 <translation id="2966705348606485669">Más opciones de la carpeta de marcadores <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Gestionar preferencias de Android</translation>
-<translation id="2967791329697639454">Inicio de sesión cifrado y más rápido</translation>
 <translation id="2967926928600500959">Las URLs que se correspondan con estas reglas serán forzadas a abrirse en un navegador concreto.</translation>
 <translation id="2969411787010981955">Los datos se han exportado a la ubicación seleccionada</translation>
 <translation id="2970766364519518369">Los contactos seleccionados pueden compartir contenido contigo cuando estén cerca de ti. Se te pedirá que apruebes esas solicitudes. No tendrás que aprobar las solicitudes para compartir contenido entre los dispositivos con sesión iniciada en <ph name="USER_EMAIL" />.</translation>
@@ -3459,7 +3457,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3521606918211282604">Cambiar tamaño de disco</translation>
 <translation id="3522088408596898827">Queda muy poco espacio en el disco. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3522979239100719575">Buscando perfiles disponibles. Este proceso puede durar unos minutos.</translation>
-<translation id="3524311336636707495">Disponible en todos tus dispositivos</translation>
 <translation id="3524518036046613664">Descubrir dispositivos en tu red local (por ejemplo, impresoras)</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisa la sincronización del dispositivo después de la configuración</translation>
@@ -4263,7 +4260,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="4093955363990068916">Archivo local:</translation>
 <translation id="4094647278880271855">Estás usando una variable de entorno no admitida: <ph name="BAD_VAR" />. La estabilidad y la seguridad se verán afectadas.</translation>
-<translation id="4095246243698959793">Para sincronizar y usar llaves de acceso de Google</translation>
 <translation id="4095264805865317199">Abrir la interfaz de usuario de la activación de datos móviles</translation>
 <translation id="4095425503313512126">La navegación y la búsqueda son más rápidas</translation>
 <translation id="4095483462103784441">Crear nuevo grupo de pestañas</translation>
@@ -5922,6 +5918,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5372529912055771682">El modo de registro proporcionado no es compatible con esta versión del sistema operativo. Comprueba que estés utilizando la última versión y vuelve a intentarlo.</translation>
 <translation id="5372579129492968947">No fijar extensión</translation>
 <translation id="5372632722660566343">Continuar sin cuenta</translation>
+<translation id="5372990315769030589">¿Conservar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Para usar Compartir con Nearby con estos contactos, añade a tus contactos las direcciones de correo electrónico vinculadas a sus cuentas de Google.</translation>
 <translation id="5375577102295339548">Los sitios pueden ayudar a verificar que no eres un bot</translation>
 <translation id="5376094717770783089">Solicita acceso</translation>
@@ -9016,6 +9013,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7708143783728142771">Las cookies permiten ofrecer el mismo nivel de personalización de preferencias en los sitios web. Cuando visitas un sitio, este puede guardar una cookie en el almacenamiento del navegador de tu dispositivo para recordar tus preferencias del sitio, como tu idioma preferido o los artículos que quieras que se guarden en un carrito de la compra. Después, si vuelves a visitar el sitio desde el mismo navegador, ese sitio podrá leer la cookie que ha establecido y podrás retomar tu visita donde la dejaste. Este tipo de cookies se suelen denominar "cookies propias" porque las establece el sitio que visitas.</translation>
 <translation id="770831926727930011">Tus datos locales están protegidos por tu contraseña anterior. Introduce tu antigua contraseña para recuperarlos.</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Protege todas tus llaves de acceso con un PIN de recuperación</translation>
 <translation id="7710568461918838723">&amp;Enviar...</translation>
 <translation id="7711900714716399411">Usa un cable USB para conectar el teléfono al ordenador. Si el teléfono ya está conectado, desconéctalo y vuelve a conectarlo.</translation>
 <translation id="7711968363685835633">Inhabilitar conversiones y sugerencias personalizadas, así como el diccionario del usuario</translation>
@@ -9747,6 +9745,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8233028084277069927">Abrir ahora</translation>
 <translation id="8234795456569844941">Ayuda a nuestros ingenieros a solucionar este problema. Indícanos lo que ha ocurrido justo antes de que apareciera el mensaje de error del perfil:</translation>
 <translation id="8235418492073272647">Página compartida desde <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Esta pestaña comparte recursos con otras pestañas, lo que podría interferir en la depuración.</translation>
 <translation id="8236911020904880539">salir</translation>
 <translation id="8236917170563564587">Compartir esta pestaña</translation>
 <translation id="8237647586961940482">Rosa oscuro y rojo</translation>
@@ -9951,6 +9950,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8376532149031784008">Volviendo a cargar <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Las extensiones instaladas por tu administrador aún pueden leer y modificar este sitio</translation>
 <translation id="8376752431516546391">Panel lateral de la Búsqueda de Google</translation>
+<translation id="8376812682111060348">Alerta de problema de rendimiento</translation>
 <translation id="8377625247046155446">Esta llave de acceso solo se guardará en este dispositivo. Seguirá en este dispositivo después de cerrar todas las ventanas de Incógnito.</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8379988659465232385">El nombre no puede estar vacío</translation>

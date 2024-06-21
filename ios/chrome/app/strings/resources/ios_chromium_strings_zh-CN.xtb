@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Chromium 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chromium。</translation>
 <translation id="1423007117030725713">在新的 Chromium 标签页中发起搜索。</translation>
 <translation id="1431818719585918472">让 Chromium 锁定您的无痕式标签页。</translation>
+<translation id="146407871188825689">默认在 iPad 上使用 Chromium</translation>
 <translation id="1472013873724362412">无法在 Chromium 上登录您的账号。请与您的网域管理员联系，或使用普通的 Google 账号登录。</translation>
 <translation id="1503199973012840174">您的 Chromium 版本过旧。请更新以确保安全。</translation>
 <translation id="1507010443238049608">帮助我们改进 Chromium 的功能和性能</translation>
@@ -122,6 +123,7 @@
 
 如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="4576283463017113841">在 Chromium 中打开“付款方式设置”页面。</translation>
+<translation id="458786853569524949">现在，每当点按电子邮件、文档和其他应用中的链接时，您都可以使用 Chromium 打开链接。</translation>
 <translation id="459080529287102949">在 Chromium 中搜索可视化内容</translation>
 <translation id="4633738821577273991">同时也为这份 Chromium 个人资料启用“增强型安全浏览”功能</translation>
 <translation id="4638625642619341392">在此下载 Chromium。</translation>
@@ -289,6 +291,7 @@
 您的数据已于 <ph name="TIME" />使用您的口令加密。请输入该口令，以便将 Chromium 数据保存在您的 Google 账号中并使用这些数据。</translation>
 <translation id="9022552996538154597">登录 Chromium</translation>
 <translation id="9050790730841755540">每次点按其他应用中的链接时，都使用 Chromium 打开。</translation>
+<translation id="9057082013386654559">默认使用 iPad 版 Chromium</translation>
 <translation id="9059693977935746710">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的密码管理器中</translation>
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="9110075932708282655">默认使用 Chromium</translation>

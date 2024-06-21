@@ -540,7 +540,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1398853756734560583">Maksimumkan</translation>
 <translation id="139911022479327130">Buka kunci elefon anda dan sahkan identiti anda</translation>
 <translation id="1399261165075500043">Tidak dapat memuatkan Syarat Perkhidmatan Google Play</translation>
-<translation id="1400625312571031118">Lebih selamat daripada kata kunci</translation>
 <translation id="1401216725754314428">Ketahui lebih lanjut tentang laman berkaitan dalam tab baharu</translation>
 <translation id="1402426911829176748">Menyambung kepada peranti anda</translation>
 <translation id="1403222014593521787">Tidak dapat menyambung kepada proksi</translation>
@@ -1474,6 +1473,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2048254245884707305">Menyemak perisian hasad...</translation>
 <translation id="2048554637254265991">Ralat semasa memulakan pengurus bekas. Sila cuba lagi.</translation>
 <translation id="2048653237708779538">Tindakan tidak tersedia</translation>
+<translation id="2049021651258469175">Anda juga akan dapat menggunakan dan menyimpan kata laluan anda dan pelbagai lagi daripada Google Account anda.</translation>
 <translation id="204914487372604757">Cipta pintasan</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2051266530792296582">Google Password Manager menghasilkan kata laluan kukuh untuk laman web ini</translation>
@@ -2756,7 +2756,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2965227184985674128">Hidupkan akses mikrofon?</translation>
 <translation id="2966705348606485669">Lagi pilihan untuk folder penanda halaman <ph name="FOLDER_TITLE" /></translation>
 <translation id="2966937470348689686">Urus pilihan Android</translation>
-<translation id="2967791329697639454">Log masuk disulitkan dan lebih pantas</translation>
 <translation id="2967926928600500959">URL yang sepadan dengan peraturan ini akan dipaksa untuk dibuka dalam penyemak imbas tertentu.</translation>
 <translation id="2969411787010981955">Data telah dieksport ke lokasi yang dipilih</translation>
 <translation id="2970766364519518369">Kenalan pilihan boleh berkongsi dengan anda apabila mereka berada berdekatan. Anda akan diminta untuk meluluskan permintaan ini. Anda tidak perlu meluluskan permintaan perkongsian antara peranti yang dilog masuk ke <ph name="USER_EMAIL" />.</translation>
@@ -3486,7 +3485,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3521606918211282604">Tukar saiz cakera</translation>
 <translation id="3522088408596898827">Ruang cakera terlalu sedikit. Kosongkan ruang cakera dan cuba lagi.</translation>
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
-<translation id="3524311336636707495">Tersedia merentas peranti anda</translation>
 <translation id="3524518036046613664">Temukan peranti pada rangkaian setempat anda, seperti pencetak</translation>
 <translation id="3524965460886318643">Eksport Aktiviti</translation>
 <translation id="3525426269008462093">Semak penyegerakan peranti selepas persediaan</translation>
@@ -4292,7 +4290,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4093865285251893588">Imej profil</translation>
 <translation id="4093955363990068916">Fail setempat:</translation>
 <translation id="4094647278880271855">Anda sedang menggunakan pemboleh ubah persekitaran yang tidak disokong: <ph name="BAD_VAR" />. Kestabilan dan keselamatan akan terjejas.</translation>
-<translation id="4095246243698959793">Untuk menyegerakkan dan menggunakan kunci laluan daripada Google</translation>
 <translation id="4095264805865317199">Buka UI Pengaktifan Selular</translation>
 <translation id="4095425503313512126">Menyemak imbas dan mencari adalah lebih pantas</translation>
 <translation id="4095483462103784441">Buat kumpulan tab baharu</translation>
@@ -5497,6 +5494,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5021750053540820849">Belum dikemas kini</translation>
 <translation id="5022206631034207923">Skrin kunci, kawalan</translation>
 <translation id="5024511550058813796">Sejarah anda boleh didapati pada semua peranti tersegerak anda supaya anda boleh meneruskan perkara yang sedang anda lakukan</translation>
+<translation id="5024992827689317672">Data dipadamkan</translation>
 <translation id="5026492829171796515">Log masuk untuk menambah Google Account</translation>
 <translation id="5026806129670917316">Hidupkan Wi-Fi</translation>
 <translation id="5026874946691314267">Jangan tunjukkannya lagi</translation>
@@ -8663,6 +8661,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> daripada <ph name="APPS_LIST_SIZE" /> apl disekat</translation>
 <translation id="741906494724992817">Apl ini tidak memerlukan kebenaran khas.</translation>
 <translation id="7419142833919893307">Tiada nama pengguna yang ditambahkan</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN salah. 1 percubaan lagi.}other{PIN salah. # percubaan lagi.}}</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
 <translation id="7419819959108735624">Pilih apa-apa sahaja untuk mencari dengan Google Lens</translation>
 <translation id="742130257665691897">Penanda halaman dialih keluar</translation>
@@ -9837,6 +9836,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8261625296061301062">Perisian pengimba dipasang</translation>
 <translation id="8262971894813353037">Mendayakan reka bentuk desktop baharu untuk WebUI. Penyegaran Semula Chrome 2023 juga perlu didayakan.</translation>
+<translation id="8263228331881858381">Kunci laluan disimpan</translation>
 <translation id="8263336784344783289">Namakan Kumpulan Ini</translation>
 <translation id="8264024885325823677">Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="826511437356419340">Telah memasuki mod ikhtisar tetingkap. Leret untuk menavigasi atau tekan tab jika menggunakan papan kekunci.</translation>

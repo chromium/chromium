@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK-კოდი არასწორია</translation>
 <translation id="4057991113334098539">მიმდინარეობს გააქტიურება...</translation>
 <translation id="4092890906744441904">ირლანდიური</translation>
+<translation id="4101601646343868113">შედით თქვენს მობილურ ქსელში და დარწმუნდით, რომ მობილური ინტერნეტის პაკეტი აქტიურია</translation>
 <translation id="4124731372776320263">მიმდინარეობს Drive-ის 1 ფაილის სინქრონიზაცია</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
 <translation id="4131235941541910880">გადაიტანეთ არასაჭირო ერთეულები წაშლილებში</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">ტამილური Tamil99 კლავიატურით</translation>
 <translation id="5633226425545095130">ამ ერთეულის გადატანის შემთხვევაში ის გაზიარდება ყველასთან, ვისაც შეუძლია საზიარო საქაღალდის „<ph name="DESTINATION_NAME" />“ ნახვა.</translation>
 <translation id="5649768706273821470">მოსმენა</translation>
+<translation id="5650895901941743674">შეამოწმეთ APN-ის კონფიგურაცია</translation>
 <translation id="5669691691057771421">შეიყვანეთ ახალი PIN-კოდი</translation>
 <translation id="5678784840044122290">Linux აპლიკაცია ხელმისაწვდომი იქნება თქვენს ტერმინალში, ხოლო გამშვებში შეიძლება ხატულაც გამოჩნდეს.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />არქივთან ან ვირტუალურ დისკთან კავშირის გაწყვეტა ვერ ხერხდება<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ფაილების სია ნაჩვენებია ესკიზების ხედში.</translation>
 <translation id="8601932370724196034">Crostini იმიჯის ფაილი</translation>
 <translation id="8609695766746872526">ისლანდიური</translation>
+<translation id="8630384863424041081">შეიყვანეთ SIM ბარათის PIN-კოდი ან ნაგულისხმევი PIN-კოდი, რომელიც ოპერატორმა გადმოგცათ. მხარდაჭერისთვის მიმარტეთ ოპერატორს.</translation>
 <translation id="863903787380594467">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — პორტი</translation>
 <translation id="8656407365183407932">თქვენი ხაზგარეშე ფაილები იძულებით ამოიშალა</translation>

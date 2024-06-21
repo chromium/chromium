@@ -903,6 +903,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4381031910344220229">Tindakan ini akan mengizinkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua aplikasi serta situs yang memiliki izin mikrofon</translation>
 <translation id="4382340674111381977">Kembali ke halaman sebelumnya</translation>
 <translation id="4389184120735010762">Anda menekan pintasan keyboard untuk kaca pembesar tersemat. Ingin mengaktifkannya?</translation>
+<translation id="4394466652057229831">Klik kanan untuk meringkas</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Tidak dapat menyimpan screencast</translation>
 <translation id="4405151984121254935">Jenis periferal yang terhubung tidak didukung</translation>
@@ -1939,6 +1940,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8113423164597455979">Aktif, semua</translation>
 <translation id="8113515504791187892">Tombol Klik untuk Diucapkan</translation>
 <translation id="8120151603115102514">Ponsel Anda tidak memiliki layar kunci. Untuk membuka kunci Chromebook, masukkan sandi.</translation>
+<translation id="8120249852906205273">Mulai ulang</translation>
 <translation id="8127095419621171197">Buka aplikasi Kalkulator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Membuka bagian awal dokumen</translation>
@@ -2033,6 +2035,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="85123341071060231">Bluetooth Chromebook Anda nonaktif. Untuk membuka kunci Chromebook, masukkan sandi.</translation>
 <translation id="8513108775083588393">Putar otomatis</translation>
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
+<translation id="851660987304951246">Gunakan Bantu baca untuk mengajukan pertanyaan atau meringkas konten dengan cepat</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Input mikrofon dikontrol oleh <ph name="APP_NAME" />}other{Input mikrofon dikontrol oleh # aplikasi}}</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
@@ -2077,6 +2080,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8704155109538237473">Fokus pada jendela picture-in-picture</translation>
 <translation id="870917907284186124">Aktifkan/nonaktifkan dikte (ketik dengan suara Anda)</translation>
 <translation id="8711169534266271368">Opsi dasbor game</translation>
+<translation id="8712637175834984815">Mengerti</translation>
 <translation id="8714138378966541668">Dikunci oleh penyedia</translation>
 <translation id="8717459106217102612">Memilih kata atau huruf sebelumnya</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>

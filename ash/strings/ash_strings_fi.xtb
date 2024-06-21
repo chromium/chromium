@@ -903,6 +903,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4381031910344220229"><ph name="APP_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on mikrofonilupa, saavat käyttää mikrofonia</translation>
 <translation id="4382340674111381977">Palaa edelliselle sivulle</translation>
 <translation id="4389184120735010762">Painoit kiinnitetyn suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
+<translation id="4394466652057229831">Yhteenvedon luominen kakkospainikkeella klikkaamalla</translation>
 <translation id="439598569299422042">Keskeytetty, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ruutukaappausvideota ei voi tallentaa</translation>
 <translation id="4405151984121254935">Yhdistettyä lisälaitetyyppiä ei tueta</translation>
@@ -1939,6 +1940,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8113423164597455979">Päällä, kaikki</translation>
 <translation id="8113515504791187892">Teksti puhuttuna ‑painike</translation>
 <translation id="8120151603115102514">Puhelimessasi ei ole lukitusnäyttöä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
+<translation id="8120249852906205273">Aloita uudelleen</translation>
 <translation id="8127095419621171197">Avaa Laskin-sovellus</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Siirry dokumentin alkuun</translation>
@@ -2033,6 +2035,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="85123341071060231">Chromebookisi Bluetooth on poissa päältä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
+<translation id="851660987304951246">Käytä "Apua lukemiseen" ‐toimintoa, niin voit luoda nopeasti yhteenvetoja sisällöstä tai esittää kysymyksiä</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ohjaa mikrofonituloa}other{# sovellusta ohjaa mikrofonituloa}}</translation>
 <translation id="8535393432370007982">Kumoa värin mukaan lajittelu</translation>
@@ -2077,6 +2080,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8704155109538237473">Tarkenna pikkuruutu-ikkunaan</translation>
 <translation id="870917907284186124">Laita sanelu päälle tai pois päältä (kirjoita puhumalla)</translation>
 <translation id="8711169534266271368">Pelipaneelin vaihtoehdot</translation>
+<translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8714138378966541668">Palveluntarjoajan lukitsema</translation>
 <translation id="8717459106217102612">Valitse edellinen sana tai kirjain</translation>
 <translation id="8721053961083920564">Muuta äänenvoimakkuutta. <ph name="STATE_TEXT" /></translation>

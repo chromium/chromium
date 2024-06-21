@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">हे मायक्रोफोन परवानगी असलेल्या <ph name="APP_NAME" /> आणि सर्व अ‍ॅप्स व वेबसाइटना मायक्रोफोन अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="4382340674111381977">मागील पेजवर परत जा</translation>
 <translation id="4389184120735010762">तुम्ही डॉक मॅग्निफायरसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
+<translation id="4394466652057229831">सारांश देण्यासाठी राइट-क्लिक करा</translation>
 <translation id="439598569299422042">थांबवले, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">स्क्रीनकास्ट सेव्ह करता आले नाही</translation>
 <translation id="4405151984121254935">कनेक्ट केलेल्या पेरिफेरल प्रकाराला सपोर्ट नाही</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">सुरू, सर्व ॲप</translation>
 <translation id="8113515504791187892">बोलण्यासाठी निवडा बटण</translation>
 <translation id="8120151603115102514">तुमच्या फोनला लॉक स्क्रीन नाही. तुमचे Chromebook अनलॉक करण्यासाठी, पासवर्ड एंटर करा.</translation>
+<translation id="8120249852906205273">रीस्टार्ट करा</translation>
 <translation id="8127095419621171197">Calculator अ‍ॅप उघडा</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8130528849632411619">दस्तऐवजाच्या सुरूवातीला जा</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">तुमच्या Chromebook चे ब्लूटूथ बंद आहे. तुमचे Chromebook अनलॉक करण्यासाठी, पासवर्ड एंटर करा.</translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="851458219935658693">सध्याच्या डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
+<translation id="851660987304951246">आशयाचा झटपट सारांश देण्यासाठी किंवा प्रश्न विचारण्यासाठी मला वाचण्यात मदत करा वापरा</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{माइकचे इनपुट <ph name="APP_NAME" /> द्वारे नियंत्रित केले जाते}other{माइकचे इनपुट # ॲप्सद्वारे नियंत्रित केले जाते}}</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
@@ -2077,6 +2080,7 @@
 <translation id="8704155109538237473">चित्रात-चित्र च्या विंडोवर फोकस करा</translation>
 <translation id="870917907284186124">डिक्टेशन सुरू/बंद करा (तुमचा आवाज वापरून टाइप करा)</translation>
 <translation id="8711169534266271368">गेम डॅशबोर्डचे पर्याय</translation>
+<translation id="8712637175834984815">समजले</translation>
 <translation id="8714138378966541668">पुरवठादाराने लॉक केले आहे</translation>
 <translation id="8717459106217102612">आधीचा शब्द किंवा अक्षर निवडा</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>

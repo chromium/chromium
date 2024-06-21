@@ -14,6 +14,7 @@
 <translation id="1320619893013575407">Laitoit Chrome-kirjautumisen pois päältä.</translation>
 <translation id="1333745675627230582">Pelaa Chromen Dino-peliä</translation>
 <translation id="1352919863522755794">Google Salasanat ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
+<translation id="139623527619433858">Käytä oletuksena iPadin Chromea</translation>
 <translation id="1407843355326180937">Kirjaudu tälle sivustolle ja Chromeen, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="1436059927646026729">Avaa edellinen välilehti Chromessa</translation>
 <translation id="1449241544691504574">Lisää kirjanmerkkejä Chromeen</translation>
@@ -134,6 +135,7 @@ Huomioitavaa:
 <translation id="4903674399067644695">Tässä kortissa on ehdotuksia Chromen hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="4919069428879420545">Poista selausdata Chromessa.</translation>
 <translation id="49200511069271369">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromen käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>
+<translation id="4925322001044117929">Käytä Chromea oletuksena iPadilla</translation>
 <translation id="498985224078955265">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu Chromeen molemmilla laitteilla.</translation>
 <translation id="5030102366287574140">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta.</translation>
 <translation id="5108659628347594808">Entistä parempi Chrome</translation>
@@ -221,6 +223,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7272930098487145294">Anna Chromen lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chrome-datasi poistetaan tältä laitteelta</translation>
 <translation id="7284245284340063465">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" />.</translation>
+<translation id="7299681342915173313">Voit nyt käyttää Chromea aina, kun napautat linkkejä sähköpostiviesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="7304491752269485262">Chromen automaattisen täytön laajennettu näkymä</translation>
 <translation id="7344094882820374540">Chromen vahvin suojaus vaarallisilta sivustoilta</translation>
 <translation id="7349129508108954623">Salli Chromen käyttää Google Mapsia reittiohjeiden ja paikallisten tietojen tarjoamiseen havaituissa osoitteissa.</translation>

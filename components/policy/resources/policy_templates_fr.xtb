@@ -598,7 +598,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1468702975912409463">Permettre aux utilisateurs connectés à distance d'ouvrir des URL côté hôte dans leur navigateur client local</translation>
 <translation id="1474273443907024088">Désactiver TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
-<translation id="1478529725439951221">Le fournisseur UI Automation sera activé ou désactivé via le framework des variantes.</translation>
 <translation id="1479427764273213107">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour les employer via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un identifiant produit associé à un appareil spécifique.
 
       Si cette règle n'est pas configurée, la liste des appareils USB amovibles est vide.</translation>
@@ -5897,7 +5896,6 @@ Cette règle concerne à la fois les flux d'authentification à la connexion et 
       Remarque : S'il y a plusieurs valeurs, séparez-les par une virgule.</translation>
 <translation id="5693469654327063861">Autoriser la migration de données</translation>
 <translation id="56936613186060503">Le gestionnaire de téléchargement ne proposera pas l'option d'enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" />.</translation>
-<translation id="5693942129376744977">Désactiver le fournisseur UI Automation.</translation>
 <translation id="5695209488612697377">Permet d'utiliser un moteur de recherche par défaut dans le menu contextuel.
 
           Si vous désactivez cette règle, l'élément de menu contextuel de recherche qui dépend de votre moteur de recherche par défaut ne sera pas disponible.
@@ -5982,17 +5980,6 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant les données VPD de l'appareil sont transmises.
       Les données vitales du produit (VPD) sont un ensemble de données de configuration et d'informations (numéros de pièce et de série, par exemple) associées à l'appareil.</translation>
-<translation id="5760227556806302854">Active le fournisseur de framework d'accessibilité UI Automation dans <ph name="PRODUCT_NAME" /> pour en permettre l'utilisation par les outils d'accessibilité.
-
-Cette règle est disponible dans <ph name="PRODUCT_NAME" /> pendant une période de transition d'un an afin de permettre aux administrateurs d'entreprise de contrôler le déploiement du fournisseur de framework d'accessibilité UI Automation du navigateur. Les outils d'accessibilité et autres qui utilisent le framework d'accessibilité UI Automation pour interagir avec le navigateur peuvent nécessiter des mises à jour pour fonctionner correctement avec le fournisseur UI Automation du navigateur. Les administrateurs peuvent utiliser cette règle pour désactiver temporairement le fournisseur UI Automation du navigateur (et rétablir ainsi l'ancien comportement) pendant qu'ils travaillent avec les fournisseurs pour proposer des mises à jour aux outils concernés.
-
-Si cette règle est définie sur "false", <ph name="PRODUCT_NAME" /> n'active que son fournisseur Microsoft Active Accessibility. Les outils d'accessibilité et autres qui utilisent le nouveau framework d'accessibilité UI Automation pour interagir avec le navigateur communiqueront avec lui par l'intermédiaire d'un shim de compatibilité dans <ph name="MS_WIN_NAME" />.
-
-Si cette règle est définie sur "true", <ph name="PRODUCT_NAME" /> active son fournisseur UI Automation en plus de son fournisseur Microsoft Active Accessibility. Les outils d'accessibilité et autres qui utilisent le nouveau framework UI Automation pour interagir avec le navigateur communiquent directement avec lui.
-
-Si cette règle n'est pas définie, le framework des variantes dans <ph name="PRODUCT_NAME" /> permet d'activer ou de désactiver le fournisseur.
-
-Cette règle ne sera plus disponible à partir de <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="5762969307102447459">Désactiver la saisie automatique pour les adresses</translation>
 <translation id="5765780083710877561">Description :</translation>
 <translation id="5766438888216077649">Ne définissez pas <ph name="WINDOW_OPENER_PROPERTY" /> pour les liens ciblant <ph name="BLANK_PAGE_NAME" /></translation>
@@ -7703,7 +7690,6 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
 <translation id="7039815268521168329">Afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
-<translation id="7043157348967593138">Activer le fournisseur de framework d'accessibilité UI Automation du navigateur sous Windows</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7045221780834308118">Si cette règle est activée, les applis Web tierces peuvent utiliser l'API Desk pour contrôler les bureaux <ph name="PRODUCT_OS_NAME" />. Si elle n'est pas configurée ou si elle est désactivée, <ph name="DESK_API_NAME" /> ne sera pas disponible. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
 <translation id="7046113122884041950">Ne pas autoriser Smart Lock</translation>
@@ -8660,7 +8646,6 @@ Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'Internet�
 
        Si cette règle est désactivée ou qu'elle n'est pas configurée, l'appareil peut continuer d'utiliser ce mode, si nécessaire.</translation>
 <translation id="7824000841504721945">Désactiver les groupes atomiques de règles</translation>
-<translation id="7824833865123899471">Activer le fournisseur UI Automation.</translation>
 <translation id="782661371433719637">Interdire à tous les sites de demander l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="7827127381981620448">Application de plate-forme</translation>
 <translation id="7829436838673974723">Autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>

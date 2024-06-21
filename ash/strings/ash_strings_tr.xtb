@@ -903,6 +903,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4381031910344220229">Mikrofonun sesinin açılması; <ph name="APP_NAME" /> adlı uygulamanın yanı sıra mikrofon izni olan tüm uygulamaların ve web sitelerinin mikrofona erişmesine izin verir</translation>
 <translation id="4382340674111381977">Önceki sayfaya geri dön</translation>
 <translation id="4389184120735010762">Yerleştirilmiş büyüteç klavye kısayoluna bastınız. Bu özelliği açmak istiyor musunuz?</translation>
+<translation id="4394466652057229831">Özetlemek için sağ tıklayın</translation>
 <translation id="439598569299422042">Duraklatıldı, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ekran video kaydı kaydedilemiyor</translation>
 <translation id="4405151984121254935">Bağlı çevre birimi türü desteklenmiyor</translation>
@@ -1939,6 +1940,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8113423164597455979">Açık, tümü</translation>
 <translation id="8113515504791187892">Seç ve Dinle düğmesi</translation>
 <translation id="8120151603115102514">Telefonunuzda kilit ekranı yok. Chromebook'un kilidini açmak için şifreyi girin.</translation>
+<translation id="8120249852906205273">Yeniden başlat</translation>
 <translation id="8127095419621171197">Hesap Makinesi uygulamasını açın</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Dokümanın başına gider</translation>
@@ -2033,6 +2035,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="85123341071060231">Chromebook’unuzun Bluetooth'u kapalı. Chromebook'unuzun kilidini açmak için şifreyi girin.</translation>
 <translation id="8513108775083588393">Oto. döndür</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>
+<translation id="851660987304951246">İçerikleri hızlıca özetlemek veya soru sormak için "Okumama yardım et"i kullanın</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofon girişi <ph name="APP_NAME" /> tarafından kontrol ediliyor}other{Mikrofon girişi # uygulama tarafından kontrol ediliyor}}</translation>
 <translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
@@ -2077,6 +2080,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8704155109538237473">Pencere içinde pencereye odaklanır</translation>
 <translation id="870917907284186124">Dikteyi açın/kapatın (konuşarak yazın)</translation>
 <translation id="8711169534266271368">Oyun Paneli seçenekleri</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="8714138378966541668">Sağlayıcı tarafından kilitlendi</translation>
 <translation id="8717459106217102612">Önceki kelimeyi veya harfi seçer</translation>
 <translation id="8721053961083920564">Sesi Aç/Kapat. <ph name="STATE_TEXT" /></translation>
