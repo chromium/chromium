@@ -108,6 +108,7 @@ ToastManagerImpl::ToastManagerImpl()
 
 ToastManagerImpl::~ToastManagerImpl() {
   Shell::Get()->RemoveShellObserver(this);
+  CloseAllToastsWithoutAnimation();
 }
 
 void ToastManagerImpl::Show(ToastData data) {
