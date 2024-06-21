@@ -627,32 +627,27 @@ void IsolatedWebAppURLLoaderFactory::HandleSignedBundle(
   auto loader = std::make_unique<IsolatedWebAppURLLoader>(
       isolated_web_app_reader_registry, path, dev_mode, web_bundle_id,
       std::move(loader_client), resource_request, frame_tree_node_id_);
-  mojo::MakeSelfOwnedReceiver(std::move(std::move(loader)),
-                              mojo::PendingReceiver<network::mojom::URLLoader>(
-                                  std::move(loader_receiver)));
+  mojo::MakeSelfOwnedReceiver(std::move(loader), std::move(loader_receiver));
 }
 
-void IsolatedWebAppURLLoaderFactory::HandleProxy(
-    const IsolatedWebAppUrlInfo& url_info,
-    const IwaSourceProxy& proxy,
-    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    const network::ResourceRequest& resource_request,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(!proxy.proxy_url().opaque());
+namespace {
 
+GURL ConstructProxyUrl(const IwaSourceProxy& proxy,
+                       const GURL& resource_request_url) {
   GURL::Replacements replacements;
-  std::string path = resource_request.url.path();
-  replacements.SetPathStr(path);
-  std::string query = resource_request.url.query();
-  if (resource_request.url.has_query()) {
-    replacements.SetQueryStr(query);
+  replacements.SetPathStr(resource_request_url.path_piece());
+  if (resource_request_url.has_query()) {
+    replacements.SetQueryStr(resource_request_url.query_piece());
   }
-  GURL proxy_url = proxy.proxy_url().GetURL().ReplaceComponents(replacements);
+  return proxy.proxy_url().GetURL().ReplaceComponents(replacements);
+}
 
+network::ResourceRequest ConstructProxyRequest(
+    const IwaSourceProxy& proxy,
+    const network::ResourceRequest& resource_request) {
   // Create a new ResourceRequest with the proxy URL.
   network::ResourceRequest proxy_request;
-  proxy_request.url = proxy_url;
+  proxy_request.url = ConstructProxyUrl(proxy, resource_request.url);
   proxy_request.method = net::HttpRequestHeaders::kGetMethod;
   // Don't send cookies or HTTP authentication to the proxy server.
   proxy_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -664,9 +659,22 @@ void IsolatedWebAppURLLoaderFactory::HandleProxy(
                                   accept_header_value);
   proxy_request.headers.SetHeader(net::HttpRequestHeaders::kCacheControl,
                                   "no-cache");
+  return proxy_request;
+}
 
-  content::StoragePartition* storage_partition = profile_->GetStoragePartition(
-      url_info.storage_partition_config(profile_), /*can_create=*/false);
+}  // namespace
+
+void IsolatedWebAppURLLoaderFactory::HandleProxy(
+    const IsolatedWebAppUrlInfo& url_info,
+    const IwaSourceProxy& proxy,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+    const network::ResourceRequest& resource_request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  DCHECK(!proxy.proxy_url().opaque());
+  content::StoragePartition* storage_partition =
+      profile_->GetStoragePartition(url_info.storage_partition_config(profile_),
+                                    /*can_create=*/false);
   if (storage_partition == nullptr) {
     LogErrorAndFail("Storage not found for Isolated Web App: " +
                         resource_request.url.spec(),
@@ -677,7 +685,8 @@ void IsolatedWebAppURLLoaderFactory::HandleProxy(
   storage_partition->GetURLLoaderFactoryForBrowserProcess()
       ->CreateLoaderAndStart(std::move(loader_receiver),
                              /*request_id=*/0,
-                             network::mojom::kURLLoadOptionNone, proxy_request,
+                             network::mojom::kURLLoadOptionNone,
+                             ConstructProxyRequest(proxy, resource_request),
                              std::move(loader_client), traffic_annotation);
 }
 
