@@ -617,8 +617,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
           {
               {"implementation_type", "use_prefetch"},
           }}},
-        {prerender_utils::kHidePrefetchParameter,
-         kSearchPrefetchOnlyAllowDefaultMatchPreloading});
+        {kSearchPrefetchOnlyAllowDefaultMatchPreloading});
   }
 
   void SetUpOnMainThread() override {

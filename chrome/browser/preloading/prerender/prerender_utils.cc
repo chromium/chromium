@@ -10,10 +10,6 @@
 
 namespace prerender_utils {
 
-BASE_FEATURE(kHidePrefetchParameter,
-             "HidePrefetchParameter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If you add a new type of prerender trigger, please refer to the internal
 // document go/update-prerender-new-trigger-metrics to make sure that metrics
 // include the newly added trigger type.
@@ -32,10 +28,6 @@ bool IsDirectUrlInputPrerenderEnabled() {
 bool IsSearchSuggestionPrerenderEnabled() {
   return base::FeatureList::IsEnabled(
       features::kSupportSearchSuggestionForPrerender2);
-}
-
-bool ShouldUpdateCacheEntryManually() {
-  return base::FeatureList::IsEnabled(kHidePrefetchParameter);
 }
 
 bool SearchPreloadShareableCacheIsEnabled() {
