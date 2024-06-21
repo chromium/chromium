@@ -82,6 +82,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "public/cpp/quick_answers_state_unittest.cc",
     "quick_answers_client_unittest.cc",
     "quick_answers_model_unittest.cc",
     "search_result_loader_unittest.cc",

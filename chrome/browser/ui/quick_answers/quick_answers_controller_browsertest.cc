@@ -15,7 +15,7 @@ using QuickAnswersControllerTest = quick_answers::QuickAnswersBrowserTestBase;
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, FeatureIneligible) {
-  QuickAnswersState::Get()->set_eligibility_for_testing(false);
+  QuickAnswersState::Get()->SetEligibilityForTesting(false);
 
   ShowMenuParams params;
   params.selected_text = "test";
@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, FeatureIneligible) {
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
-  QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   ShowMenuParams params;
   params.selected_text = "test";
@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
-  QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   ShowMenu(ShowMenuParams());
 
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, QuickAnswersPending) {
-  QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
   ShowMenuParams params;
   params.selected_text = "test";

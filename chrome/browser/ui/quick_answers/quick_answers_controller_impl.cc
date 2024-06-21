@@ -96,8 +96,9 @@ bool IsProcessedRequest(const QuickAnswersRequest& request) {
 }
 
 bool ShouldShowQuickAnswers() {
-  if (!QuickAnswersState::Get()->is_eligible())
+  if (!QuickAnswersState::IsEligible()) {
     return false;
+  }
 
   bool settings_enabled = QuickAnswersState::Get()->settings_enabled();
 

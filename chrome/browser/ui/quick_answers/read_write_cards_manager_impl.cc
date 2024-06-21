@@ -91,7 +91,7 @@ ReadWriteCardsManagerImpl::GetControllers(
     const content::ContextMenuParams& params,
     std::optional<editor_menu::EditorMode> editor_mode) {
   // Display Quick Answers card if it is eligible and there's selected text.
-  const bool should_show_qa = QuickAnswersState::Get()->is_eligible() &&
+  const bool should_show_qa = QuickAnswersState::IsEligible() &&
                               !params.selection_text.empty() &&
                               quick_answers_controller_;
   const bool should_show_mahi =

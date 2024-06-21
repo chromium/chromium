@@ -27,7 +27,7 @@ QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() = default;
 QuickAnswersBrowserTestBase::~QuickAnswersBrowserTestBase() = default;
 
 void QuickAnswersBrowserTestBase::SetUpOnMainThread() {
-  QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->SetEligibilityForTesting(true);
 }
 
 // `ShowMenu` generates a web page with `params.selected_text` at a position of
