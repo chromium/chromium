@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -30,6 +31,8 @@ class ProcessMemoryDump;
 
 namespace storage {
 class AsyncDomStorageDatabase;
+
+BASE_DECLARE_FEATURE(kDomStorageSmartFlushing);
 
 // This is a wrapper around a AsyncDomStorageDatabase. Multiple interface
 // endpoints can be bound to the same object. The wrapper adds a couple of
@@ -200,6 +203,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   void GetAll(
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;
+  void Checkpoint() override;
 
   // Committer:
   std::optional<AsyncDomStorageDatabase::Commit> CollectCommit() override;

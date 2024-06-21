@@ -6124,6 +6124,7 @@ data/dom_storage/crash_recovery.html
 data/dom_storage/sanity_check.html
 data/dom_storage/sanity_check.js
 data/dom_storage/store_data.html
+data/dom_storage/store_data_task.html
 data/dom_storage/store_session_storage_data.html
 data/dom_storage/verify_data.html
 data/dom_storage/verify_session_storage_data.html

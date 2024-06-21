@@ -234,6 +234,22 @@ TEST_P(CachedStorageAreaTestWithParam, SetItem) {
   }
 }
 
+// Verify that regardless of how many times `SetItem` is called in one task,
+// only one checkpoint is generated.
+TEST_P(CachedStorageAreaTestWithParam, SetItemCheckpoints) {
+  EXPECT_TRUE(cached_area_->SetItem(kKey, kValue, source_area_));
+  EXPECT_EQ(mock_storage_area_.observed_checkpoints(), 0U);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(mock_storage_area_.observed_checkpoints(), 1U);
+
+  EXPECT_TRUE(cached_area_->SetItem(kKey, kValue2, source_area_));
+  EXPECT_TRUE(cached_area_->SetItem(kKey, kValue, source_area_));
+  EXPECT_TRUE(cached_area_->SetItem("key2", kValue, source_area_));
+  EXPECT_EQ(mock_storage_area_.observed_checkpoints(), 1U);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(mock_storage_area_.observed_checkpoints(), 2U);
+}
+
 TEST_P(CachedStorageAreaTestWithParam, Clear_AlreadyEmpty) {
   // Clear, we expect just the one call to clear in the db since
   // there's no need to load the data prior to deleting it.

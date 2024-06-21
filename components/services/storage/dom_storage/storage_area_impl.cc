@@ -18,6 +18,10 @@
 
 namespace storage {
 
+BASE_FEATURE(kDomStorageSmartFlushing,
+             "DomStorageSmartFlushing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 StorageAreaImpl::Delegate::~Delegate() = default;
 
 void StorageAreaImpl::Delegate::PrepareToCommit(
@@ -549,6 +553,18 @@ void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
   // other hand if only keys are desired, the keys and values map can still be
   // used. Consider not unloading when the map is still useful.
   UnloadMapIfPossible();
+}
+
+void StorageAreaImpl::Checkpoint() {
+  if (!base::FeatureList::IsEnabled(kDomStorageSmartFlushing)) {
+    return;
+  }
+
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
+  if (commit_rate_limiter_.ComputeDelayNeeded(elapsed_time).is_zero() &&
+      data_rate_limiter_.ComputeDelayNeeded(elapsed_time).is_zero()) {
+    ScheduleImmediateCommit();
+  }
 }
 
 void StorageAreaImpl::OnConnectionError() {

@@ -132,4 +132,9 @@ interface StorageArea {
   [Sync]
   GetAll(pending_remote<StorageAreaObserver>? new_observer)
       => (array<KeyValue> data);
+
+  // This is called when a task that wrote to the storage area has finished,
+  // suggesting to the backing store that now might be a good time to commit
+  // pending modifications to disk.
+  Checkpoint();
 };

@@ -73,6 +73,7 @@ class MockStorageArea : public mojom::blink::StorageArea {
   void GetAll(
       mojo::PendingRemote<mojom::blink::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;
+  void Checkpoint() override;
 
   // Methods and members for use by test fixtures.
   bool HasBindings() { return !receivers_.empty(); }
@@ -101,6 +102,7 @@ class MockStorageArea : public mojom::blink::StorageArea {
     return observed_delete_alls_;
   }
   size_t observer_count() const { return observer_count_; }
+  size_t observed_checkpoints() const { return observed_checkpoints_; }
 
  private:
   int observed_get_alls_ = 0;
@@ -108,6 +110,7 @@ class MockStorageArea : public mojom::blink::StorageArea {
   Vector<ObservedDelete> observed_deletes_;
   Vector<String> observed_delete_alls_;
   size_t observer_count_ = 0;
+  size_t observed_checkpoints_ = 0;
 
   Vector<KeyValue> key_values_;
 

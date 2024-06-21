@@ -81,6 +81,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
   void Flush() override;
+  void NeedsFlushForTesting(NeedsFlushForTestingCallback callback) override;
   void PurgeMemory() override;
   void ApplyPolicyUpdates(
       std::vector<mojom::StoragePolicyUpdatePtr> policy_updates) override;
