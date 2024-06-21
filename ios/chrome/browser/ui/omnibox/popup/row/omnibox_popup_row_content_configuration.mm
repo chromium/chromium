@@ -132,11 +132,9 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   }
 
   if (_trailingIcon) {
-    // Starting from iOS 16 `imageWithHorizontallyFlippedOrientation` is
-    // flipping the icon automatically when the UI is RTL/LTR.
-    if (@available(iOS 16, *)) {
-      _trailingIcon = [_trailingIcon imageWithHorizontallyFlippedOrientation];
-    }
+    // `imageWithHorizontallyFlippedOrientation` is flipping the icon
+    // automatically when the UI is RTL/LTR.
+    _trailingIcon = [_trailingIcon imageWithHorizontallyFlippedOrientation];
     _trailingIcon = [_trailingIcon
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   }

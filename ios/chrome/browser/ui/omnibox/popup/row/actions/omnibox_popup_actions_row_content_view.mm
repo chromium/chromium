@@ -320,8 +320,7 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
   [self setupWithConfiguration:_configuration];
 }
 
-- (BOOL)supportsConfiguration:(id<UIContentConfiguration>)configuration
-    API_AVAILABLE(ios(16.0)) {
+- (BOOL)supportsConfiguration:(id<UIContentConfiguration>)configuration {
   return [configuration
       isMemberOfClass:OmniboxPopupActionsRowContentConfiguration.class];
 }

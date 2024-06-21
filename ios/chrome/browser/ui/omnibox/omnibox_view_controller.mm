@@ -435,8 +435,7 @@ using base::UserMetricsAction;
 
 - (UIMenu*)textField:(UITextField*)textField
     editMenuForCharactersInRange:(NSRange)range
-                suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions
-    API_AVAILABLE(ios(16)) {
+                suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
   NSMutableArray* actions = [suggestedActions mutableCopy];
   if ([self canPerformAction:@selector(searchCopiedImage:) withSender:nil]) {
     UIAction* searchCopiedImage = [UIAction

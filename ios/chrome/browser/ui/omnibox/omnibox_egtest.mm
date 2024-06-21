@@ -1149,11 +1149,6 @@ void FocusFakebox() {
 #define MAYBE_testEmptyOmnibox DISABLED_testEmptyOmnibox
 #endif
 - (void)MAYBE_testEmptyOmnibox {
-  // TODO(crbug.com/40766498): this test fails on iOS 15 devices.
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
-  }
-
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1335,11 +1330,6 @@ void FocusFakebox() {
 #define MAYBE_testNoDefaultMatch DISABLED_testNoDefaultMatch
 #endif
 - (void)MAYBE_testNoDefaultMatch {
-  // TODO(crbug.com/40199144) This test fails on iOS 15 devices.
-  if (!base::ios::IsRunningOnIOS16OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
-  }
-
   NSString* copiedText = @"test no default match1";
 
   // Put some text in pasteboard.

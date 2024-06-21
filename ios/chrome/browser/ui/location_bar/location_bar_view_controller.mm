@@ -693,16 +693,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     [menuElements addObject:divider];
   }
 
-  // Reverse the array manually when preferredMenuElementOrder is not available.
-  if (IsBottomOmniboxAvailable()) {
-    if (!base::ios::IsRunningOnIOS16OrLater()) {
-      if (GetApplicationContext()->GetLocalState()->GetBoolean(
-              prefs::kBottomOmnibox)) {
-        menuElements =
-            [[[menuElements reverseObjectEnumerator] allObjects] mutableCopy];
-      }
-    }
-  }
   return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
@@ -731,10 +721,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                    }];
 
   if (IsBottomOmniboxAvailable()) {
-    if (@available(iOS 16, *)) {
-      configuration.preferredMenuElementOrder =
-          UIContextMenuConfigurationElementOrderPriority;
-    }
+    configuration.preferredMenuElementOrder =
+        UIContextMenuConfigurationElementOrderPriority;
   }
   return configuration;
 }
