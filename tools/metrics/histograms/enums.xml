@@ -23034,6 +23034,8 @@ from previous Chrome versions.
   <int value="1095706700" label="NavigationPredictor:enabled"/>
   <int value="1096462052" label="TabGroupsSaveV2:enabled"/>
   <int value="1096477444" label="AssistantVoiceMatch:enabled"/>
+  <int value="1096970451"
+      label="DawnSIRepsUseClientProvidedInternalUsages:disabled"/>
   <int value="1097339521"
       label="UserDisplayModeSyncStandaloneMitigation:disabled"/>
   <int value="1097935876" label="CrostiniShowMicSetting:enabled"/>
@@ -24806,6 +24808,8 @@ from previous Chrome versions.
   <int value="1836774441" label="SameAppWindowCycle:enabled"/>
   <int value="1836916996" label="OmniboxShortcutExpanding:disabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
+  <int value="1837462117"
+      label="DawnSIRepsUseClientProvidedInternalUsages:enabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>
   <int value="1838110766" label="PrivateNetworkAccessSendPreflights:disabled"/>
   <int value="1838369942" label="EnableGetDebugdLogsInParallel:disabled"/>

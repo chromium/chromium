@@ -8438,6 +8438,12 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"dawn-si-reps-use-client-provided-internal-usages",
+     flag_descriptions::kDawnSIRepsUseClientProvidedInternalUsagesName,
+     flag_descriptions::kDawnSIRepsUseClientProvidedInternalUsagesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kDawnSIRepsUseClientProvidedInternalUsages)},
+
     {"back-forward-cache", flag_descriptions::kBackForwardCacheName,
      flag_descriptions::kBackForwardCacheDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kBackForwardCache,

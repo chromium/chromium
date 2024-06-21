@@ -937,6 +937,12 @@ const char kDarkenWebsitesCheckboxInThemesSettingDescription[] =
     "dark is selected. The checkbox can toggle the auto-darkening web contents "
     "feature";
 
+const char kDawnSIRepsUseClientProvidedInternalUsagesName[] =
+    "Dawn SI reps use client-provided internal usages";
+const char kDawnSIRepsUseClientProvidedInternalUsagesDescription[] =
+    "Enables Dawn SharedImage representations using internal usages passed by "
+    "clients rather than hardcoding them internally.";
+
 const char kDebugPackedAppName[] = "Debugging for packed apps";
 const char kDebugPackedAppDescription[] =
     "Enables debugging context menu options such as Inspect Element for packed "

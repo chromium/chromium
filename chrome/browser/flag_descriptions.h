@@ -563,6 +563,9 @@ extern const char kCooperativeSchedulingDescription[];
 extern const char kDarkenWebsitesCheckboxInThemesSettingName[];
 extern const char kDarkenWebsitesCheckboxInThemesSettingDescription[];
 
+extern const char kDawnSIRepsUseClientProvidedInternalUsagesName[];
+extern const char kDawnSIRepsUseClientProvidedInternalUsagesDescription[];
+
 extern const char kDebugPackedAppName[];
 extern const char kDebugPackedAppDescription[];
 
