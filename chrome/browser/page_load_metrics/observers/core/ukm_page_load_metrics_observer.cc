@@ -639,6 +639,8 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
           largest_contentful_paint.Time(), GetDelegate())) {
     builder.SetPaintTiming_LargestContentfulPaint(
         largest_contentful_paint.Time().value().InMilliseconds());
+    PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.LargestContentfulPaint",
+                        largest_contentful_paint.Time().value());
 
     builder.SetPaintTiming_LargestContentfulPaintType(
         LargestContentfulPaintTypeToUKMFlags(largest_contentful_paint.Type()));
@@ -686,6 +688,10 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
         .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
             inp->interaction_latency.InMilliseconds());
 
+    UmaHistogramCustomTimes("PageLoad.SoftNavigation.InteractionToNextPaint",
+                            inp->interaction_latency, base::Milliseconds(1),
+                            base::Seconds(60), 50);
+
     // For soft navigations, the interaction offset is the offset _after_ the
     // soft navigation occurred. So we want to start the offset at the number
     // of interactions which had occurred before this soft navigation.
@@ -721,6 +727,13 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
       builder
           .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
               page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+      // Report UMA using same binning as all WebVitals.CumulativeLayoutShift
+      // histograms; the binning ensures changes close to zero can accurately
+      // be measured.
+      base::UmaHistogramCustomCounts(
+          "PageLoad.SoftNavigation.CumulativeLayoutShift",
+          page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+          50);
     }
   }
 
@@ -741,6 +754,9 @@ void UkmPageLoadMetricsObserver::
     builder
         .SetInteractiveTimingBeforeSoftNavigation_UserInteractionLatency_HighPercentile2_MaxEventDuration(
             inp->interaction_latency.InMilliseconds());
+    UmaHistogramCustomTimes(
+        "PageLoad.BeforeSoftNavigation.InteractionToNextPaint",
+        inp->interaction_latency, base::Milliseconds(1), base::Seconds(60), 50);
     builder.SetInteractiveTimingBeforeSoftNavigation_INPOffset(
         inp->interaction_offset);
     base::TimeDelta interaction_time =
@@ -771,6 +787,13 @@ void UkmPageLoadMetricsObserver::
     builder
         .SetLayoutInstabilityBeforeSoftNavigation_MaxCumulativeShiftScore_MainFrame_SessionWindow_Gap1000ms_Max5000ms(
             page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
+    // Report UMA using same binning as all WebVitals.CumulativeLayoutShift
+    // histograms; the binning ensures changes close to zero can accurately
+    // be measured.
+    base::UmaHistogramCustomCounts(
+        "PageLoad.BeforeSoftNavigation.CumulativeLayoutShift",
+        page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+        50);
   }
   builder.Record(ukm::UkmRecorder::Get());
 }
