@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -164,18 +165,19 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
     DCHECK_LE(write_position_, upload_string_.length());
 
     while (true) {
-      size_t write_size = std::min(static_cast<size_t>(32 * 1024),
-                                   upload_string_.length() - write_position_);
-      if (write_size == 0) {
+      base::span<const uint8_t> bytes = base::as_byte_span(upload_string_);
+      bytes = bytes.subspan(write_position_);
+      bytes = bytes.first(std::min(bytes.size(), size_t{32 * 1024}));
+      if (bytes.empty()) {
         // Upload is done. Close the upload body pipe and wait for another call
         // to Read().
         ResetBodyPipe();
         return;
       }
 
-      int result =
-          upload_body_pipe_->WriteData(upload_string_.data() + write_position_,
-                                       &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+      size_t actually_written_bytes;
+      MojoResult result = upload_body_pipe_->WriteData(
+          bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         handle_watcher_->ArmOrNotify();
         return;
@@ -188,7 +190,7 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
         return;
       }
 
-      write_position_ += write_size;
+      write_position_ += actually_written_bytes;
       DCHECK_LE(write_position_, upload_string_.length());
     }
   }
@@ -545,10 +547,9 @@ class BodyReader {
         return;
       }
 
-      const void* body_data;
-      size_t read_size;
-      MojoResult result = body_data_pipe_->BeginReadData(
-          &body_data, &read_size, MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> body;
+      MojoResult result =
+          body_data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, body);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         handle_watcher_->ArmOrNotify();
         return;
@@ -569,16 +570,18 @@ class BodyReader {
       }
 
       // Check size against the limit.
-      uint32_t copy_size = base::checked_cast<uint32_t>(read_size);
-      if (base::strict_cast<int64_t>(copy_size) >
-          max_body_size_ - total_bytes_read_) {
-        copy_size = max_body_size_ - total_bytes_read_;
+      size_t copy_size = body.size();
+      size_t limit =
+          base::saturated_cast<size_t>(max_body_size_ - total_bytes_read_);
+      if (copy_size > limit) {
+        copy_size = limit;
       }
 
       total_bytes_read_ += copy_size;
 
-      if (copy_size < read_size)
+      if (copy_size < body.size()) {
         pending_error_ = net::ERR_INSUFFICIENT_RESOURCES;
+      }
 
       // Need a weak pointer to |this| to detect deletion.
       base::WeakPtr<BodyReader> weak_this =
@@ -591,21 +594,20 @@ class BodyReader {
 
       // TODO(mmenke): Remove this once https://crbug.com/875253 is understood
       // and fixed.
+      std::string_view chars = base::as_string_view(body);
       int total_bytes_read = total_bytes_read_;
       int max_body_size = max_body_size_;
-      base::debug::Alias(&body_data);
+      base::debug::Alias(&body);
       base::debug::Alias(&max_body_size);
       base::debug::Alias(&total_bytes_read);
-      base::debug::Alias(&read_size);
       base::debug::Alias(&copy_size);
       // This is just to make sure the first byte of body_data is accessible.
-      char first_read_byte = static_cast<const char*>(body_data)[0];
+      char first_read_byte = chars[0];
       base::debug::Alias(&first_read_byte);
 
       // This call may delete the BodyReader.
-      net::Error error =
-          delegate_->OnDataRead(copy_size, static_cast<const char*>(body_data));
-      body_data_pipe->EndReadData(read_size);
+      net::Error error = delegate_->OnDataRead(copy_size, chars.data());
+      body_data_pipe->EndReadData(chars.size());
       if (!weak_this) {
         // This object was deleted, so nothing else to do.
         return;

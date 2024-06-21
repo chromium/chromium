@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -112,10 +113,11 @@ mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
 std::string Read(mojo::ScopedDataPipeConsumerHandle readable) {
   std::string output;
   while (true) {
-    char buffer[1024];
-    size_t size = sizeof(buffer);
-    MojoResult result =
-        readable->ReadData(buffer, &size, MOJO_READ_DATA_FLAG_NONE);
+    std::string buffer(1024, '\0');
+    size_t actually_read_bytes = 0;
+    MojoResult result = readable->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                           base::as_writable_byte_span(buffer),
+                                           actually_read_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -127,7 +129,7 @@ std::string Read(mojo::ScopedDataPipeConsumerHandle readable) {
       return output;
     }
     DCHECK_EQ(result, MOJO_RESULT_OK);
-    output.append(buffer, size);
+    output.append(std::string_view(buffer).substr(0, actually_read_bytes));
   }
 }
 
@@ -561,9 +563,11 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
   ASSERT_EQ(MOJO_RESULT_OK,
             mojo::CreateDataPipe(&options, writable_for_outgoing,
                                  readable_for_outgoing));
-  size_t size = 5;
-  ASSERT_EQ(MOJO_RESULT_OK, writable_for_outgoing->WriteData(
-                                "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
+  size_t actually_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            writable_for_outgoing->WriteData(
+                base::byte_span_from_cstring("hello"),
+                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
 
   base::RunLoop run_loop_for_stream_creation;
   uint32_t stream_id;
@@ -689,9 +693,11 @@ TEST_F(WebTransportTest, DISABLED_EchoOnBidirectionalStream) {
   ASSERT_EQ(MOJO_RESULT_OK,
             mojo::CreateDataPipe(&options, writable_for_incoming,
                                  readable_for_incoming));
-  size_t size = 5;
-  ASSERT_EQ(MOJO_RESULT_OK, writable_for_outgoing->WriteData(
-                                "hello", &size, MOJO_WRITE_DATA_FLAG_NONE));
+  size_t actually_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            writable_for_outgoing->WriteData(
+                base::byte_span_from_cstring("hello"),
+                MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
 
   base::RunLoop run_loop_for_stream_creation;
   uint32_t stream_id;

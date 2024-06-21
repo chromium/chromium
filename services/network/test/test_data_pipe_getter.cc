@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "services/network/test/test_data_pipe_getter.h"
-#include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 
 #include <algorithm>
 #include <utility>
+
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "mojo/public/c/system/types.h"
 
 namespace network {
 
@@ -66,9 +69,12 @@ void TestDataPipeGetter::WriteData() {
   DCHECK_LE(write_position_, string_to_write_.length());
 
   while (true) {
-    size_t write_size = std::min(static_cast<size_t>(32 * 1024),
-                                 string_to_write_.length() - write_position_);
-    if (write_size == 0) {
+    base::span<const uint8_t> bytes_to_write =
+        base::as_byte_span(string_to_write_);
+    bytes_to_write = bytes_to_write.subspan(write_position_);
+    bytes_to_write = bytes_to_write.first(
+        std::min(size_t{32 * 1024}, bytes_to_write.size()));
+    if (bytes_to_write.empty()) {
       // Writing all the data for one call to Read() is done. Close the pipe and
       // wait for another call to Read().
       handle_watcher_.reset();
@@ -76,8 +82,9 @@ void TestDataPipeGetter::WriteData() {
       return;
     }
 
-    int result = pipe_->WriteData(string_to_write_.data() + write_position_,
-                                  &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_written_bytes = 0;
+    MojoResult result = pipe_->WriteData(
+        bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
       return;
@@ -91,7 +98,7 @@ void TestDataPipeGetter::WriteData() {
       return;
     }
 
-    write_position_ += write_size;
+    write_position_ += actually_written_bytes;
     DCHECK_LE(write_position_, string_to_write_.length());
   }
 }

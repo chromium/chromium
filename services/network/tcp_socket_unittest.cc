@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -254,10 +255,11 @@ class TestServer {
       std::move(read_callback_).Run();
       return;
     }
-    char buffer[16];
-    size_t read_size = sizeof(buffer);
-    result = server_socket_receive_handle_->ReadData(buffer, &read_size,
-                                                     MOJO_READ_DATA_FLAG_NONE);
+    std::string buffer(16, '\0');
+    size_t actually_read_bytes = 0;
+    result = server_socket_receive_handle_->ReadData(
+        MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+        actually_read_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT)
       return;
     if (result != MOJO_RESULT_OK) {
@@ -267,7 +269,8 @@ class TestServer {
       return;
     }
 
-    received_contents_.append(buffer, read_size);
+    received_contents_.append(
+        std::string_view(buffer).substr(0, actually_read_bytes));
 
     if (received_contents_.size() == expected_contents_.size()) {
       EXPECT_EQ(expected_contents_, received_contents_);
@@ -322,14 +325,17 @@ class TCPSocketTest : public testing::Test {
     std::string received_contents;
     while (received_contents.size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
-      std::vector<char> buffer(num_bytes);
-      MojoResult result = handle->get().ReadData(buffer.data(), &num_bytes,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+      std::string buffer(num_bytes, '\0');
+      size_t actually_read_bytes = 0;
+      MojoResult result = handle->get().ReadData(
+          MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+          actually_read_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return received_contents;
-      received_contents.append(buffer.data(), num_bytes);
+      received_contents.append(
+          std::string_view(buffer).substr(0, actually_read_bytes));
     }
     return received_contents;
   }
@@ -588,7 +594,7 @@ TEST_F(TCPSocketTest, SocketClosed) {
   mojo::ScopedDataPipeProducerHandle client_socket_send_handle;
   mojo::Remote<mojom::TCPConnectedSocket> client_socket;
 
-  const char kTestMsg[] = "hello";
+  constexpr std::string_view kTestMsg = "hello";
   auto server = std::make_unique<TestServer>();
   server->Start(1 /*backlog*/);
   net::TestCompletionCallback accept_callback;
@@ -603,8 +609,8 @@ TEST_F(TCPSocketTest, SocketClosed) {
   ASSERT_EQ(net::OK, accept_callback.WaitForResult());
 
   // Send some data from server to client.
-  server->SendData(kTestMsg);
-  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, strlen(kTestMsg)));
+  server->SendData(std::string(kTestMsg));
+  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kTestMsg.size()));
   // Resetting the |server| destroys the TCPConnectedSocket ptr owned by the
   // server.
   server = nullptr;
@@ -614,19 +620,20 @@ TEST_F(TCPSocketTest, SocketClosed) {
 
   // Read from |client_socket_receive_handle| again should return that the pipe
   // is broken.
-  char buffer[16];
-  size_t read_size = sizeof(buffer);
+  std::vector<uint8_t> buffer(16, 0x00);
+  size_t actually_read_bytes = 0;
   MojoResult mojo_result = client_socket_receive_handle->ReadData(
-      buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+      MOJO_READ_DATA_FLAG_NONE, buffer, actually_read_bytes);
   ASSERT_EQ(MOJO_RESULT_FAILED_PRECONDITION, mojo_result);
   EXPECT_TRUE(client_socket_receive_handle->QuerySignalsState().peer_closed());
 
   // Send pipe should be closed.
   while (true) {
     base::RunLoop().RunUntilIdle();
-    size_t size = strlen(kTestMsg);
+    size_t actually_written_bytes = 0;
     MojoResult r = client_socket_send_handle->WriteData(
-        kTestMsg, &size, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+        base::as_byte_span(kTestMsg), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+        actually_written_bytes);
     if (r == MOJO_RESULT_SHOULD_WAIT)
       continue;
     if (r == MOJO_RESULT_FAILED_PRECONDITION)
@@ -866,10 +873,10 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverReadError) {
   EXPECT_EQ(net::OK, callback->WaitForResult());
 
   base::RunLoop().RunUntilIdle();
-  size_t read_size = 16;
-  std::vector<char> buffer(read_size);
-  MojoResult result = receive_handle->ReadData(buffer.data(), &read_size,
-                                               MOJO_READ_DATA_FLAG_NONE);
+  std::vector<uint8_t> buffer(16, 0x00);
+  size_t actually_read_bytes = 0;
+  MojoResult result = receive_handle->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer,
+                                               actually_read_bytes);
   ASSERT_NE(MOJO_RESULT_OK, result);
   EXPECT_EQ(net::ERR_TIMED_OUT, observer()->WaitForReadError());
 }
@@ -913,14 +920,15 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverWriteError) {
           }));
   EXPECT_EQ(net::OK, callback->WaitForResult());
 
-  const char kTestMsg[] = "abcdefghij";
+  constexpr std::string_view kTestMsg = "abcdefghij";
 
   // Repeatedly write data to the |send_handle| until write fails.
   while (true) {
     base::RunLoop().RunUntilIdle();
-    size_t num_bytes = strlen(kTestMsg);
-    MojoResult result = send_handle->WriteData(&kTestMsg, &num_bytes,
-                                               MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_written_bytes = 0;
+    MojoResult result = send_handle->WriteData(base::as_byte_span(kTestMsg),
+                                               MOJO_WRITE_DATA_FLAG_NONE,
+                                               actually_written_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT)
       continue;
     if (result != MOJO_RESULT_OK)
@@ -931,22 +939,21 @@ TEST_P(TCPSocketWithMockSocketTest, ServerAcceptWithObserverWriteError) {
 
 TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
   mojo::Remote<mojom::TCPConnectedSocket> client_socket;
-  const char kTestMsg[] = "abcdefghij";
-  const size_t kMsgSize = strlen(kTestMsg);
+  constexpr std::string_view kTestMsg = "abcdefghij";
   const int kNumIterations = 3;
   std::vector<net::MockRead> reads;
   std::vector<net::MockWrite> writes;
   int sequence_number = 0;
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      reads.emplace_back(mode, &c, 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      writes.emplace_back(mode, &c, 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -965,13 +972,14 @@ TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
   // can follow writes.
   for (int j = 0; j < kNumIterations; ++j) {
     // Reading kMsgSize should coalesce the 1-byte mock reads.
-    EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kMsgSize));
+    EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kTestMsg.size()));
     // Write multiple times.
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      size_t num_bytes = 1;
+    for (size_t i = 0; i < kTestMsg.size(); ++i) {
+      size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
                 client_socket_send_handle->WriteData(
-                    &kTestMsg[i], &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
+                    base::as_byte_span(kTestMsg).subspan(i, 1u),
+                    MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
       // Flush the 1 byte write.
       base::RunLoop().RunUntilIdle();
     }
@@ -982,22 +990,21 @@ TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
 
 TEST_P(TCPSocketWithMockSocketTest, PartialStreamSocketWrite) {
   mojo::Remote<mojom::TCPConnectedSocket> client_socket;
-  const char kTestMsg[] = "abcdefghij";
-  const size_t kMsgSize = strlen(kTestMsg);
-  const int kNumIterations = 3;
+  constexpr std::string_view kTestMsg = "abcdefghij";
+  constexpr int kNumIterations = 3;
   std::vector<net::MockRead> reads;
   std::vector<net::MockWrite> writes;
   int sequence_number = 0;
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      reads.emplace_back(mode, &c, 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      writes.emplace_back(mode, &c, 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -1016,22 +1023,22 @@ TEST_P(TCPSocketWithMockSocketTest, PartialStreamSocketWrite) {
   // can follow writes.
   for (int j = 0; j < kNumIterations; ++j) {
     // Reading kMsgSize should coalesce the 1-byte mock reads.
-    EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kMsgSize));
+    EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kTestMsg.size()));
     // Write twice, each with kMsgSize/2 bytes which is bigger than the 1-byte
     // MockWrite(). This is to exercise that StreamSocket::Write() can do
     // partial write.
-    size_t first_write_size = kMsgSize / 2;
-    EXPECT_EQ(MOJO_RESULT_OK,
-              client_socket_send_handle->WriteData(
-                  &kTestMsg[0], &first_write_size, MOJO_WRITE_DATA_FLAG_NONE));
-    // Flush the kMsgSize/2 byte write.
+    auto [first_write, second_write] =
+        base::as_byte_span(kTestMsg).split_at(kTestMsg.size() / 2);
+    size_t actually_written_bytes = 0;
+    EXPECT_EQ(MOJO_RESULT_OK, client_socket_send_handle->WriteData(
+                                  first_write, MOJO_WRITE_DATA_FLAG_NONE,
+                                  actually_written_bytes));
+    // Flush the first write.
     base::RunLoop().RunUntilIdle();
-    size_t second_write_size = kMsgSize - first_write_size;
-    EXPECT_EQ(MOJO_RESULT_OK,
-              client_socket_send_handle->WriteData(&kTestMsg[first_write_size],
-                                                   &second_write_size,
-                                                   MOJO_WRITE_DATA_FLAG_NONE));
-    // Flush the kMsgSize/2 byte write.
+    EXPECT_EQ(MOJO_RESULT_OK, client_socket_send_handle->WriteData(
+                                  second_write, MOJO_WRITE_DATA_FLAG_NONE,
+                                  actually_written_bytes));
+    // Flush the second write.
     base::RunLoop().RunUntilIdle();
   }
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -1042,9 +1049,9 @@ TEST_P(TCPSocketWithMockSocketTest, ReadError) {
   mojo::Remote<mojom::TCPConnectedSocket> client_socket;
   net::IoMode mode = GetParam();
   net::MockRead reads[] = {net::MockRead(mode, net::ERR_FAILED)};
-  const char kTestMsg[] = "hello!";
+  constexpr std::string_view kTestMsg = "hello!";
   net::MockWrite writes[] = {
-      net::MockWrite(mode, kTestMsg, strlen(kTestMsg), 0)};
+      net::MockWrite(mode, kTestMsg.data(), kTestMsg.size(), 0)};
   net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 1234);
   net::StaticSocketDataProvider data_provider(reads, writes);
   data_provider.set_connect_data(
@@ -1060,10 +1067,11 @@ TEST_P(TCPSocketWithMockSocketTest, ReadError) {
   EXPECT_EQ("", Read(&client_socket_receive_handle, 1));
   EXPECT_EQ(net::ERR_FAILED, observer()->WaitForReadError());
   // Writes can proceed even though there is a read error.
-  size_t num_bytes = strlen(kTestMsg);
+  size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            client_socket_send_handle->WriteData(&kTestMsg, &num_bytes,
-                                                 MOJO_WRITE_DATA_FLAG_NONE));
+            client_socket_send_handle->WriteData(base::as_byte_span(kTestMsg),
+                                                 MOJO_WRITE_DATA_FLAG_NONE,
+                                                 actually_written_bytes));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -1073,11 +1081,11 @@ TEST_P(TCPSocketWithMockSocketTest, ReadError) {
 TEST_P(TCPSocketWithMockSocketTest, WriteError) {
   mojo::Remote<mojom::TCPConnectedSocket> client_socket;
   net::IoMode mode = GetParam();
-  const char kTestMsg[] = "hello!";
+  constexpr std::string_view kTestMsg = "hello!";
   // The first MockRead needs to complete asynchronously because otherwise it
   // can't be paused to happen after the MockWrite.
   net::MockRead reads[] = {
-      net::MockRead(net::ASYNC, kTestMsg, strlen(kTestMsg), 1),
+      net::MockRead(net::ASYNC, kTestMsg.data(), kTestMsg.size(), 1),
       net::MockRead(mode, net::OK, 2)};
   net::MockWrite writes[] = {net::MockWrite(mode, net::ERR_FAILED, 0)};
   net::SequencedSocketData data_provider(reads, writes);
@@ -1092,13 +1100,14 @@ TEST_P(TCPSocketWithMockSocketTest, WriteError) {
       client_socket.BindNewPipeAndPassReceiver(),
       observer()->GetObserverRemote(), std::nullopt /*local_addr*/, server_addr,
       &client_socket_receive_handle, &client_socket_send_handle);
-  size_t num_bytes = strlen(kTestMsg);
+  size_t actually_written_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            client_socket_send_handle->WriteData(&kTestMsg, &num_bytes,
-                                                 MOJO_WRITE_DATA_FLAG_NONE));
+            client_socket_send_handle->WriteData(base::as_byte_span(kTestMsg),
+                                                 MOJO_WRITE_DATA_FLAG_NONE,
+                                                 actually_written_bytes));
   EXPECT_EQ(net::ERR_FAILED, observer()->WaitForWriteError());
   // Reads can proceed even though there is a read error.
-  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, strlen(kTestMsg)));
+  EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kTestMsg.size()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());

@@ -161,15 +161,16 @@ void NetworkServiceMemoryCacheURLLoader::WriteMore() {
     DCHECK_GE(content_->size(), write_position_);
     DCHECK_GE(std::numeric_limits<uint32_t>::max(),
               content_->size() - write_position_);
-    size_t write_size = content_->size() - write_position_;
-    if (write_size == 0) {
+    base::span<const uint8_t> bytes = base::span(*content_);
+    bytes = bytes.subspan(write_position_);
+    if (bytes.empty()) {
       write_completed = true;
       break;
     }
 
+    size_t actually_written_bytes = 0;
     MojoResult result = producer_handle_->WriteData(
-        content_->as_vector().data() + write_position_, &write_size,
-        MOJO_WRITE_DATA_FLAG_NONE);
+        bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       producer_handle_watcher_->ArmOrNotify();
       break;
@@ -180,8 +181,8 @@ void NetworkServiceMemoryCacheURLLoader::WriteMore() {
       return;
     }
 
-    write_position_ += write_size;
-    total_write_size += write_size;
+    write_position_ += actually_written_bytes;
+    total_write_size += actually_written_bytes;
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT2(

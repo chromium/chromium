@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -16,6 +17,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -173,10 +175,9 @@ class TCPBoundSocketTest : public testing::Test {
                        size_t expected_bytes = 0) {
     std::string read_data;
     while (expected_bytes == 0 || read_data.size() < expected_bytes) {
-      const void* buffer;
-      size_t num_bytes = expected_bytes - read_data.size();
-      MojoResult result = receive_handle.BeginReadData(
-          &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> buffer;
+      MojoResult result =
+          receive_handle.BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         task_environment_.RunUntilIdle();
         continue;
@@ -186,8 +187,8 @@ class TCPBoundSocketTest : public testing::Test {
           ADD_FAILURE() << "Read failed";
         return read_data;
       }
-      read_data.append(static_cast<const char*>(buffer), num_bytes);
-      receive_handle.EndReadData(num_bytes);
+      read_data.append(base::as_string_view(buffer));
+      receive_handle.EndReadData(buffer.size());
     }
 
     return read_data;
@@ -353,18 +354,18 @@ TEST_F(TCPBoundSocketTest, ReadWrite) {
 
   // Write data to the client socket until there's an error.
   while (true) {
-    void* buffer = nullptr;
-    size_t buffer_num_bytes = 0;
+    base::span<uint8_t> buffer;
     MojoResult result = client_socket_send_handle->BeginWriteData(
-        &buffer, &buffer_num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+        mojo::DataPipeProducerHandle::kNoSizeHint, MOJO_WRITE_DATA_FLAG_NONE,
+        buffer);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       task_environment()->RunUntilIdle();
       continue;
     }
     if (result != MOJO_RESULT_OK)
       break;
-    memset(buffer, 0, buffer_num_bytes);
-    client_socket_send_handle->EndWriteData(buffer_num_bytes);
+    base::ranges::fill(buffer, 0);
+    client_socket_send_handle->EndWriteData(buffer.size());
   }
   // Wait for write error on the client socket. Don't check exact error, out of
   // paranoia.

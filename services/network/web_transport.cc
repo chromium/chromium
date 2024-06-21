@@ -5,12 +5,14 @@
 #include "services/network/web_transport.h"
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "net/third_party/quiche/src/quiche/common/platform/api/quiche_mem_slice.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
@@ -235,10 +237,9 @@ class WebTransport::Stream final {
   void Send() {
     MaySendFin();
     while (readable_ && outgoing_ && outgoing_->CanWrite()) {
-      const void* data = nullptr;
-      size_t available = 0;
-      MojoResult result = readable_->BeginReadData(
-          &data, &available, MOJO_BEGIN_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> data;
+      MojoResult result =
+          readable_->BeginReadData(MOJO_BEGIN_READ_DATA_FLAG_NONE, data);
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         readable_watcher_.Arm();
         return;
@@ -250,14 +251,13 @@ class WebTransport::Stream final {
       }
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
-      bool send_result = outgoing_->Write(
-          std::string_view(reinterpret_cast<const char*>(data), available));
+      bool send_result = outgoing_->Write(base::as_string_view(data));
       if (!send_result) {
         // TODO(yhirano): Handle this failure.
         readable_->EndReadData(0);
         return;
       }
-      readable_->EndReadData(available);
+      readable_->EndReadData(data.size());
     }
   }
 
@@ -285,10 +285,10 @@ class WebTransport::Stream final {
     while (incoming_) {
       quic::WebTransportStream::ReadResult read_result;
       if (incoming_->ReadableBytes() > 0) {
-        void* buffer = nullptr;
-        size_t available = 0;
-        MojoResult result = writable_->BeginWriteData(
-            &buffer, &available, MOJO_BEGIN_WRITE_DATA_FLAG_NONE);
+        base::span<uint8_t> buffer;
+        MojoResult result =
+            writable_->BeginWriteData(mojo::DataPipeProducerHandle::kNoSizeHint,
+                                      MOJO_BEGIN_WRITE_DATA_FLAG_NONE, buffer);
         if (result == MOJO_RESULT_SHOULD_WAIT) {
           writable_watcher_.Arm();
           return;
@@ -303,8 +303,8 @@ class WebTransport::Stream final {
         }
         DCHECK_EQ(result, MOJO_RESULT_OK);
 
-        read_result = incoming_->Read(
-            absl::Span<char>(reinterpret_cast<char*>(buffer), available));
+        base::span<char> chars = base::as_writable_chars(buffer);
+        read_result = incoming_->Read(absl::MakeSpan(chars));
         writable_->EndWriteData(read_result.bytes_read);
       } else {
         // Even if ReadableBytes() == 0, we may need to read the FIN at the end

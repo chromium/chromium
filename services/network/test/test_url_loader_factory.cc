@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
@@ -341,10 +342,12 @@ void TestURLLoaderFactory::SimulateResponse(
     mojo::ScopedDataPipeProducerHandle producer_handle;
     CHECK_EQ(mojo::CreateDataPipe(content.size(), producer_handle, body),
              MOJO_RESULT_OK);
-    size_t bytes_written = content.size();
+    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(content.data(), &bytes_written,
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+             producer_handle->WriteData(base::as_byte_span(content),
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                        actually_written_bytes));
+    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
   }
 
   if ((response_flags & kSendHeadersOnNetworkError) ||

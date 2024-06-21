@@ -5,6 +5,7 @@
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -117,8 +118,9 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
   size_t num_bytes = base::checked_cast<size_t>(buf_len);
   if (size_ && num_bytes > *size_ - bytes_read_)
     num_bytes = *size_ - bytes_read_;
-  MojoResult rv =
-      data_pipe_->ReadData(buf->data(), &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+  MojoResult rv = data_pipe_->ReadData(
+      MOJO_READ_DATA_FLAG_NONE,
+      base::as_writable_bytes(buf->span()).first(num_bytes), num_bytes);
   if (rv == MOJO_RESULT_OK) {
     bytes_read_ += num_bytes;
     // Not needed for correctness, but this allows the consumer to send the

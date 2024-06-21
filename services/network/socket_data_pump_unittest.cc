@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -122,14 +123,15 @@ class SocketDataPumpTest : public testing::Test,
     std::string received_contents;
     while (received_contents.size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
-      std::vector<char> buffer(num_bytes);
-      MojoResult result = handle->get().ReadData(buffer.data(), &num_bytes,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+      std::string buffer(num_bytes, '\0');
+      MojoResult result = handle->get().ReadData(
+          MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+          num_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return received_contents;
-      received_contents.append(buffer.data(), num_bytes);
+      received_contents.append(std::string_view(buffer).substr(0, num_bytes));
     }
     return received_contents;
   }
@@ -152,22 +154,21 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(net::SYNCHRONOUS, net::ASYNC));
 
 TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
-  const char kTestMsg[] = "abcdefghij";
-  const size_t kMsgSize = strlen(kTestMsg);
-  const int kNumIterations = 3;
+  constexpr std::string_view kTestMsg = "abcdefghij";
+  constexpr int kNumIterations = 3;
   std::vector<net::MockRead> reads;
   std::vector<net::MockWrite> writes;
   int sequence_number = 0;
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      reads.emplace_back(mode, &c, 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      writes.emplace_back(mode, &c, 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -175,14 +176,15 @@ TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
   // Loop kNumIterations times to test that writes can follow reads, and reads
   // can follow writes.
   for (int j = 0; j < kNumIterations; ++j) {
-    // Reading kMsgSize should coalesce the 1-byte mock reads.
-    EXPECT_EQ(kTestMsg, Read(&receive_handle_, kMsgSize));
+    // Reading `kTestMsg.size()` should coalesce the 1-byte mock reads.
+    EXPECT_EQ(kTestMsg, Read(&receive_handle_, kTestMsg.size()));
     // Write multiple times.
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      size_t num_bytes = 1;
+    for (const char& c : kTestMsg) {
+      size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
-                send_handle_->WriteData(&kTestMsg[i], &num_bytes,
-                                        MOJO_WRITE_DATA_FLAG_NONE));
+                send_handle_->WriteData(base::as_bytes(base::span_from_ref(c)),
+                                        MOJO_WRITE_DATA_FLAG_NONE,
+                                        actually_written_bytes));
       // Flush the 1 byte write.
       base::RunLoop().RunUntilIdle();
     }
@@ -192,22 +194,21 @@ TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
 }
 
 TEST_P(SocketDataPumpTest, PartialStreamSocketWrite) {
-  const char kTestMsg[] = "abcdefghij";
-  const size_t kMsgSize = strlen(kTestMsg);
-  const int kNumIterations = 3;
+  constexpr std::string_view kTestMsg = "abcdefghij";
+  constexpr int kNumIterations = 3;
   std::vector<net::MockRead> reads;
   std::vector<net::MockWrite> writes;
   int sequence_number = 0;
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      reads.emplace_back(mode, &c, 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
-    for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
+    for (const char& c : kTestMsg) {
+      writes.emplace_back(mode, &c, 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -215,24 +216,24 @@ TEST_P(SocketDataPumpTest, PartialStreamSocketWrite) {
   // Loop kNumIterations times to test that writes can follow reads, and reads
   // can follow writes.
   for (int j = 0; j < kNumIterations; ++j) {
-    // Reading kMsgSize should coalesce the 1-byte mock reads.
-    EXPECT_EQ(kTestMsg, Read(&receive_handle_, kMsgSize));
+    // Reading `kTestMsg.size()` should coalesce the 1-byte mock reads.
+    EXPECT_EQ(kTestMsg, Read(&receive_handle_, kTestMsg.size()));
     // Write twice, each with kMsgSize/2 bytes which is bigger than the 1-byte
     // MockWrite(). This is to exercise that StreamSocket::Write() can do
     // partial write.
-    size_t first_write_size = kMsgSize / 2;
+    auto [first_write, second_write] =
+        base::as_byte_span(kTestMsg).split_at(kTestMsg.size() / 2);
+    size_t actually_written_bytes = 0;
     EXPECT_EQ(MOJO_RESULT_OK,
-              send_handle_->WriteData(&kTestMsg[0], &first_write_size,
-                                      MOJO_WRITE_DATA_FLAG_NONE));
-    EXPECT_EQ(kMsgSize / 2, first_write_size);
+              send_handle_->WriteData(first_write, MOJO_WRITE_DATA_FLAG_NONE,
+                                      actually_written_bytes));
+    EXPECT_EQ(kTestMsg.size() / 2, actually_written_bytes);
     // Flush the kMsgSize/2 byte write.
     base::RunLoop().RunUntilIdle();
-    size_t second_write_size = kMsgSize - first_write_size;
-    EXPECT_EQ(
-        MOJO_RESULT_OK,
-        send_handle_->WriteData(&kTestMsg[first_write_size], &second_write_size,
-                                MOJO_WRITE_DATA_FLAG_NONE));
-    EXPECT_EQ(kMsgSize - first_write_size, second_write_size);
+    EXPECT_EQ(MOJO_RESULT_OK,
+              send_handle_->WriteData(second_write, MOJO_WRITE_DATA_FLAG_NONE,
+                                      actually_written_bytes));
+    EXPECT_EQ(kTestMsg.size() - first_write.size(), actually_written_bytes);
     // Flush the kMsgSize/2 byte write.
     base::RunLoop().RunUntilIdle();
   }
@@ -243,18 +244,20 @@ TEST_P(SocketDataPumpTest, PartialStreamSocketWrite) {
 TEST_P(SocketDataPumpTest, ReadEof) {
   net::IoMode mode = GetParam();
   net::MockRead reads[] = {net::MockRead(mode, net::OK)};
-  const char kTestMsg[] = "hello!";
+  constexpr std::string_view kTestMsg = "hello!";
   net::MockWrite writes[] = {
-      net::MockWrite(mode, kTestMsg, strlen(kTestMsg), 0)};
+      net::MockWrite(mode, kTestMsg.data(), kTestMsg.size(), 0)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
   EXPECT_EQ("", Read(&receive_handle_, 1));
   EXPECT_EQ(net::OK, delegate()->WaitForReadError());
   // Writes can proceed even though there is a read error.
-  size_t num_bytes = strlen(kTestMsg);
-  EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
-                                                    MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(strlen(kTestMsg), num_bytes);
+  size_t actually_written_bytes = 0;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            send_handle_->WriteData(base::as_byte_span(kTestMsg),
+                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                    actually_written_bytes));
+  EXPECT_EQ(kTestMsg.size(), actually_written_bytes);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -264,18 +267,20 @@ TEST_P(SocketDataPumpTest, ReadEof) {
 TEST_P(SocketDataPumpTest, ReadError) {
   net::IoMode mode = GetParam();
   net::MockRead reads[] = {net::MockRead(mode, net::ERR_FAILED)};
-  const char kTestMsg[] = "hello!";
+  constexpr std::string_view kTestMsg = "hello!";
   net::MockWrite writes[] = {
-      net::MockWrite(mode, kTestMsg, strlen(kTestMsg), 0)};
+      net::MockWrite(mode, kTestMsg.data(), kTestMsg.size(), 0)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
   EXPECT_EQ("", Read(&receive_handle_, 1));
   EXPECT_EQ(net::ERR_FAILED, delegate()->WaitForReadError());
   // Writes can proceed even though there is a read error.
-  size_t num_bytes = strlen(kTestMsg);
-  EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
-                                                    MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(strlen(kTestMsg), num_bytes);
+  size_t actually_written_bytes = 0;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            send_handle_->WriteData(base::as_byte_span(kTestMsg),
+                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                    actually_written_bytes));
+  EXPECT_EQ(kTestMsg.size(), actually_written_bytes);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -284,19 +289,22 @@ TEST_P(SocketDataPumpTest, ReadError) {
 
 TEST_P(SocketDataPumpTest, WriteEof) {
   net::IoMode mode = GetParam();
-  const char kTestMsg[] = "hello!";
-  net::MockRead reads[] = {net::MockRead(mode, kTestMsg, strlen(kTestMsg), 0),
-                           net::MockRead(mode, net::OK)};
+  constexpr std::string_view kTestMsg = "hello!";
+  net::MockRead reads[] = {
+      net::MockRead(mode, kTestMsg.data(), kTestMsg.size(), 0),
+      net::MockRead(mode, net::OK)};
   net::MockWrite writes[] = {net::MockWrite(mode, net::OK)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
-  size_t num_bytes = strlen(kTestMsg);
-  EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
-                                                    MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(strlen(kTestMsg), num_bytes);
+  size_t actually_written_bytes = 0;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            send_handle_->WriteData(base::as_byte_span(kTestMsg),
+                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                    actually_written_bytes));
+  EXPECT_EQ(kTestMsg.size(), actually_written_bytes);
   EXPECT_EQ(net::OK, delegate()->WaitForWriteError());
   // Reads can proceed even though there is a read error.
-  EXPECT_EQ(kTestMsg, Read(&receive_handle_, strlen(kTestMsg)));
+  EXPECT_EQ(kTestMsg, Read(&receive_handle_, kTestMsg.size()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -305,19 +313,22 @@ TEST_P(SocketDataPumpTest, WriteEof) {
 
 TEST_P(SocketDataPumpTest, WriteError) {
   net::IoMode mode = GetParam();
-  const char kTestMsg[] = "hello!";
-  net::MockRead reads[] = {net::MockRead(mode, kTestMsg, strlen(kTestMsg), 0),
-                           net::MockRead(mode, net::OK)};
+  constexpr std::string_view kTestMsg = "hello!";
+  net::MockRead reads[] = {
+      net::MockRead(mode, kTestMsg.data(), kTestMsg.size(), 0),
+      net::MockRead(mode, net::OK)};
   net::MockWrite writes[] = {net::MockWrite(mode, net::ERR_FAILED)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
-  size_t num_bytes = strlen(kTestMsg);
-  EXPECT_EQ(MOJO_RESULT_OK, send_handle_->WriteData(&kTestMsg, &num_bytes,
-                                                    MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(strlen(kTestMsg), num_bytes);
+  size_t actually_written_bytes = 0;
+  EXPECT_EQ(MOJO_RESULT_OK,
+            send_handle_->WriteData(base::as_byte_span(kTestMsg),
+                                    MOJO_WRITE_DATA_FLAG_NONE,
+                                    actually_written_bytes));
+  EXPECT_EQ(kTestMsg.size(), actually_written_bytes);
   EXPECT_EQ(net::ERR_FAILED, delegate()->WaitForWriteError());
   // Reads can proceed even though there is a read error.
-  EXPECT_EQ(kTestMsg, Read(&receive_handle_, strlen(kTestMsg)));
+  EXPECT_EQ(kTestMsg, Read(&receive_handle_, kTestMsg.size()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());

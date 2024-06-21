@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -92,17 +93,16 @@ class SharedDictionaryDataPipeWriterTest : public ::testing::Test {
 
   std::string GetDataInComsumerHandle(bool consume = false) {
     std::string output;
-    const void* buffer;
-    size_t num_bytes;
-    MojoResult result = consumer_handle_->BeginReadData(
-        &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> buffer;
+    MojoResult result =
+        consumer_handle_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
     if (result == MOJO_RESULT_FAILED_PRECONDITION ||
         result == MOJO_RESULT_SHOULD_WAIT) {
       return output;
     }
     CHECK_EQ(MOJO_RESULT_OK, result);
-    output = std::string(reinterpret_cast<const char*>(buffer), num_bytes);
-    consumer_handle_->EndReadData(consume ? num_bytes : 0);
+    output = std::string(base::as_string_view(buffer));
+    consumer_handle_->EndReadData(consume ? buffer.size() : 0);
     return output;
   }
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -232,10 +233,9 @@ void HttpServer::OnReadable(int connection_id,
   if (!connection)
     return;
 
-  const void* read_buffer;
-  size_t bytes_read;
-  result = connection->receive_handle().BeginReadData(&read_buffer, &bytes_read,
-                                                      MOJO_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> read_buffer;
+  result = connection->receive_handle().BeginReadData(MOJO_READ_DATA_FLAG_NONE,
+                                                      read_buffer);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     connection->receive_handle().EndReadData(0);
     return;
@@ -245,16 +245,15 @@ void HttpServer::OnReadable(int connection_id,
     return;
   }
 
-  if (connection->read_buf().size() + bytes_read >
+  if (connection->read_buf().size() + read_buffer.size() >
       connection->ReadBufferSize()) {
     LOG(ERROR) << "Read buffer is full.";
-    connection->receive_handle().EndReadData(bytes_read);
+    connection->receive_handle().EndReadData(read_buffer.size());
     return;
   }
 
-  connection->read_buf().append(static_cast<const char*>(read_buffer),
-                                bytes_read);
-  connection->receive_handle().EndReadData(bytes_read);
+  connection->read_buf().append(base::as_string_view(read_buffer));
+  connection->receive_handle().EndReadData(read_buffer.size());
   HandleReadResult(connection, result);
 }
 
@@ -352,12 +351,11 @@ void HttpServer::OnWritable(int connection_id, MojoResult result) {
   if (!connection)
     return;
 
-  std::string& write_buf = connection->write_buf();
-  size_t buffer_size = write_buf.size();
-
+  size_t actually_written_bytes = 0;
   if (!connection->write_buf().empty()) {
-    result = connection->send_handle().WriteData(write_buf.data(), &buffer_size,
-                                                 MOJO_WRITE_DATA_FLAG_NONE);
+    result = connection->send_handle().WriteData(
+        base::as_byte_span(connection->write_buf()), MOJO_WRITE_DATA_FLAG_NONE,
+        actually_written_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT)
       return;
 
@@ -366,7 +364,7 @@ void HttpServer::OnWritable(int connection_id, MojoResult result) {
       return;
     }
 
-    connection->write_buf().erase(0, buffer_size);
+    connection->write_buf().erase(0, actually_written_bytes);
   }
 
   if (connection->write_buf().empty())

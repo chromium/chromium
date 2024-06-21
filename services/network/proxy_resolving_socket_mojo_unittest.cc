@@ -82,15 +82,17 @@ class ProxyResolvingSocketTestBase {
     std::string received_contents;
     while (received_contents.size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
-      std::vector<char> buffer(num_bytes);
-      size_t read_size = num_bytes - received_contents.size();
-      MojoResult result = handle->get().ReadData(buffer.data(), &read_size,
-                                                 MOJO_READ_DATA_FLAG_NONE);
+      std::string buffer(num_bytes - received_contents.size(), '\0');
+      size_t actually_read_bytes = 0;
+      MojoResult result = handle->get().ReadData(
+          MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+          actually_read_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return received_contents;
-      received_contents.append(buffer.data(), read_size);
+      received_contents.append(
+          std::string_view(buffer).substr(0, actually_read_bytes));
     }
     return received_contents;
   }
@@ -267,9 +269,9 @@ TEST_P(ProxyResolvingSocketTest, ConnectError) {
 TEST_P(ProxyResolvingSocketTest, BasicReadWrite) {
   Init("DIRECT");
   mojo::PendingRemote<mojom::ProxyResolvingSocket> socket;
-  const char kTestMsg[] = "abcdefghij";
-  const size_t kMsgSize = strlen(kTestMsg);
-  const int kNumIterations = 3;
+  constexpr std::string_view kTestMsg = "abcdefghij";
+  constexpr size_t kMsgSize = kTestMsg.size();
+  constexpr int kNumIterations = 3;
   std::vector<net::MockRead> reads;
   std::vector<net::MockWrite> writes;
   int sequence_number = 0;
@@ -304,10 +306,11 @@ TEST_P(ProxyResolvingSocketTest, BasicReadWrite) {
     EXPECT_EQ(kTestMsg, Read(&client_socket_receive_handle, kMsgSize));
     // Write multiple times.
     for (size_t i = 0; i < kMsgSize; ++i) {
-      size_t num_bytes = 1;
+      size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
                 client_socket_send_handle->WriteData(
-                    &kTestMsg[i], &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
+                    base::as_byte_span(kTestMsg).subspan(i, 1),
+                    MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes));
       // Flush the 1 byte write.
       base::RunLoop().RunUntilIdle();
     }

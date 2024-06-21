@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -81,32 +82,32 @@ class TestHttpClient {
   }
 
   void Send(const std::string& message) {
-    size_t index = 0;
-    size_t write_size = message.size();
-    while (write_size > 0) {
+    base::span<const uint8_t> bytes = base::as_byte_span(message);
+    while (!bytes.empty()) {
       base::RunLoop().RunUntilIdle();
+      size_t actually_written_bytes = 0;
       MojoResult result = send_pipe_handle_->WriteData(
-          message.data() + index, &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+          bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return;
-      index += write_size;
-      write_size = message.size() - index;
+      bytes = bytes.subspan(actually_written_bytes);
     }
   }
 
   bool Read(std::string* data, size_t num_bytes) {
     while (data->size() < num_bytes) {
       base::RunLoop().RunUntilIdle();
-      std::vector<char> buffer(num_bytes);
+      std::string buffer(num_bytes, '\0');
       MojoResult result = receive_pipe_handle_->ReadData(
-          buffer.data(), &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+          MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buffer),
+          num_bytes);
       if (result == MOJO_RESULT_SHOULD_WAIT)
         continue;
       if (result != MOJO_RESULT_OK)
         return false;
-      data->append(buffer.data(), num_bytes);
+      data->append(std::string_view(buffer).substr(0, num_bytes));
     }
     return true;
   }

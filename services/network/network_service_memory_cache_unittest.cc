@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/network_service_memory_cache.h"
+
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,7 +28,6 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
-#include "services/network/network_service_memory_cache.h"
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -1093,10 +1095,11 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
       pair.client->response_body_release();
   std::string received_body;
   while (true) {
-    char buf[kReadDataSize];
-    size_t num_bytes = kReadDataSize;
-    MojoResult result =
-        consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    std::string buf(kReadDataSize, '\0');
+    size_t actually_read_bytes = 0;
+    MojoResult result = consumer_handle->ReadData(
+        MOJO_READ_DATA_FLAG_NONE, base::as_writable_byte_span(buf),
+        actually_read_bytes);
 
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
@@ -1110,7 +1113,7 @@ TEST_F(NetworkServiceMemoryCacheTest, ServeFromCache_LargeBody) {
       break;
 
     ASSERT_EQ(result, MOJO_RESULT_OK);
-    received_body.append(buf, num_bytes);
+    received_body.append(std::string_view(buf).substr(0, actually_read_bytes));
   }
 
   pair.client->RunUntilComplete();
@@ -1143,10 +1146,10 @@ TEST_F(NetworkServiceMemoryCacheTest,
   // Read the half of the response body.
   size_t num_read = 0;
   while (num_read < kReadDataSize) {
-    char buf[kReadDataSize];
-    size_t num_bytes = kReadDataSize;
-    MojoResult result =
-        consumer_handle->ReadData(buf, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    std::vector<uint8_t> buf(kReadDataSize, 0x00);
+    size_t actually_read_bytes = 0;
+    MojoResult result = consumer_handle->ReadData(MOJO_READ_DATA_FLAG_NONE, buf,
+                                                  actually_read_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1155,7 +1158,7 @@ TEST_F(NetworkServiceMemoryCacheTest,
       continue;
     }
     ASSERT_EQ(result, MOJO_RESULT_OK);
-    num_read += num_bytes;
+    num_read += actually_read_bytes;
   }
 
   consumer_handle.reset();

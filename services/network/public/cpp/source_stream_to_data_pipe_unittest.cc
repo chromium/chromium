@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -113,10 +114,11 @@ class SourceStreamToDataPipeTest
   int ReadPipe(std::string* output) {
     MojoResult result = MOJO_RESULT_OK;
     while (result == MOJO_RESULT_OK || result == MOJO_RESULT_SHOULD_WAIT) {
-      char buffer[16];
-      size_t read_size = sizeof(buffer);
-      result =
-          consumer_end().ReadData(buffer, &read_size, MOJO_READ_DATA_FLAG_NONE);
+      std::string buffer(16, '\0');
+      size_t read_size = 0;
+      result = consumer_end().ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                       base::as_writable_byte_span(buffer),
+                                       read_size);
       if (result == MOJO_RESULT_FAILED_PRECONDITION)
         break;
       if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -124,7 +126,7 @@ class SourceStreamToDataPipeTest
         CompleteReadsIfAsync();
       } else {
         EXPECT_EQ(result, MOJO_RESULT_OK);
-        output->append(buffer, read_size);
+        output->append(std::string_view(buffer).substr(0, read_size));
       }
     }
     EXPECT_TRUE(CallbackResult().has_value());
