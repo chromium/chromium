@@ -18,8 +18,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
@@ -80,17 +80,12 @@ PickerContentsView::PickerContentsView(PickerLayoutType layout_type) {
   vertical_scroll_bar->SetInsets(GetPickerScrollBarInsets(layout_type));
   scroll_view->SetVerticalScrollBar(std::move(vertical_scroll_bar));
 
-  auto page_container = std::make_unique<views::FlexLayoutView>();
-  page_container->SetOrientation(views::LayoutOrientation::kVertical);
-  page_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-
-  // TODO(crbug.com/40232718): When respecting size constraints, the layout
-  // manager has no layout cache, so multiple levels of FlexLayoutView nesting
-  // have performance issues here, consider switching to BoxLayoutView.
-  page_container->SetLayoutManagerUseConstrainedSpace(false);
-  page_container->SetBorder(
-      views::CreateEmptyBorder(GetScrollViewContentsBorderInsets(layout_type)));
-  page_container_ = scroll_view->SetContents(std::move(page_container));
+  page_container_ = scroll_view->SetContents(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+          .SetInsideBorderInsets(GetScrollViewContentsBorderInsets(layout_type))
+          .Build());
 }
 
 PickerContentsView::~PickerContentsView() = default;
