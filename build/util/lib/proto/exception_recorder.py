@@ -70,12 +70,20 @@ def clear() -> None:
   _records.clear()
 
 
+def size() -> int:
+  """Get the current size of registered ExceptionOccurrence records."""
+  return len(_records)
+
+
 def to_dict() -> dict:
   """Convert all the registered ExceptionOccurrence records to an dict.
 
   The records are wrapped in protobuf Any message before exported as dict
   so that an additional key "@type" is included.
   """
+  if not size():
+    return {}
+
   occurrences = ExceptionOccurrences()
   occurrences.datapoints.extend(_records)
   any_msg = any_pb2.Any()

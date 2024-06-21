@@ -47,6 +47,11 @@ class ExceptionRecorderTest(unittest.TestCase):
     self.assertEqual(actual_record['name'], record.name)
     self.assertEqual(actual_record['stacktrace'], record.stacktrace)
 
+  def test_to_dict_empty(self) -> None:
+    exception_recorder.clear()
+    actual = exception_recorder.to_dict()
+    self.assertFalse(bool(actual))
+
   def test_dump(self) -> None:
     exception_recorder.clear()
     with self.assertRaises(MyClass.MyException) as cm:
