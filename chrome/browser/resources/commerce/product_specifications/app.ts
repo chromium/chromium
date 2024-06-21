@@ -343,7 +343,40 @@ export class ProductSpecificationsElement extends PolymerElement {
     }
     document.title = set.name;
     this.setName_ = set.name;
-    this.populateTable_(set.urls.map(url => url.url));
+
+    let urlSetChanged = false;
+    let orderChanged = false;
+    const tableUrls = this.getTableUrls_();
+
+    if (tableUrls.length === set.urls.length) {
+      for (const [i, setUrl] of set.urls.entries()) {
+        if (setUrl.url !== tableUrls[i]) {
+          orderChanged = true;
+        }
+
+        if (!tableUrls.includes(setUrl.url)) {
+          urlSetChanged = true;
+          break;
+        }
+      }
+    } else {
+      urlSetChanged = true;
+    }
+
+    if (urlSetChanged) {
+      this.populateTable_(set.urls.map(url => url.url));
+    } else if (orderChanged) {
+      const newCols: TableColumn[] = [];
+
+      for (const [_, setUrl] of set.urls.entries()) {
+        const existingIndex = tableUrls.indexOf(setUrl.url);
+        assert(existingIndex >= 0, 'Did not find column to reorder!');
+
+        newCols.push(this.tableColumns_[existingIndex]);
+      }
+
+      this.tableColumns_ = newCols;
+    }
   }
 
   private onSetRemoved_(id: Uuid) {

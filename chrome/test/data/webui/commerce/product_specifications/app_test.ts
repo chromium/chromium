@@ -532,6 +532,275 @@ suite('AppTest', () => {
         tableColumns);
   });
 
+  test('reacts to update event, column reordering', async () => {
+    const rowTitle = 'Section';
+
+    // Set up the first product with at least one unique description.
+    const dimensionValues1 = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [
+            {
+              descriptions: [
+                {
+                  text: 'desc 1',
+                  url: {url: ''},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const dimensionValuesMap1 = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues1]]);
+
+    const specsProduct1 = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product 1',
+      productDimensionValues: dimensionValuesMap1,
+    });
+    const info1 = createInfo({
+      clusterId: BigInt(123),
+      title: 'Product 1',
+      productUrl: {url: 'https://example.com/1'},
+      imageUrl: {url: 'http://example.com/image1.png'},
+    });
+
+    // Set up the second product - the description needs to be different from
+    // the one above.
+    const dimensionValues2 = {
+      summary: [],
+      specificationDescriptions: [
+        {
+          label: '',
+          altText: '',
+          options: [
+            {
+              descriptions: [
+                {
+                  text: 'desc 2',
+                  url: {url: ''},
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const dimensionValuesMap2 = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues2]]);
+
+    const specsProduct2 = createSpecsProduct({
+      productClusterId: BigInt(456),
+      title: 'Product 2',
+      productDimensionValues: dimensionValuesMap2,
+    });
+    const info2 = createInfo({
+      clusterId: BigInt(456),
+      title: 'Product 2',
+      productUrl: {url: 'https://example.com/2'},
+      imageUrl: {url: 'http://example.com/image2.png'},
+    });
+
+    const specsSetUrls =
+        [{url: 'https://example.com/1'}, {url: 'https://example.com/2'}];
+    const testId = '00000000-0000-0000-0000-000000000001';
+    const specsSet =
+        createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        products: [specsProduct1, specsProduct2],
+      }),
+      infos: [info1, info2],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await waitAfterNextRender(appElement);
+
+    // We should only have a single call to the backend.
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+    assertArrayEquals(
+        [{url: 'https://example.com/1'}, {url: 'https://example.com/2'}],
+        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
+
+    // Ensure column count and the first column URL is correct.
+    let columns = appElement.$.summaryTable.columns;
+    assertEquals(2, columns.length);
+    assertEquals('https://example.com/1', columns[0]?.selectedItem.url);
+    assertEquals('https://example.com/2', columns[1]?.selectedItem.url);
+
+    // Trigger an update where the URLs haven't changed, they just change order.
+    const orderSwitchedSpecsSetUrls =
+        [{url: 'https://example.com/2'}, {url: 'https://example.com/1'}];
+    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+        {urls: orderSwitchedSpecsSetUrls, uuid: {value: testId}}));
+    await waitAfterNextRender(appElement);
+
+    // Since the URLs didn't change, there should still only have been a single
+    // call to the backend.
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+
+    // After the update, the columns should be swapped.
+    columns = appElement.$.summaryTable.columns;
+    assertEquals(2, columns.length);
+    assertArrayEquals(
+        [
+          {
+            selectedItem: {
+              title: specsProduct2.title,
+              url: 'https://example.com/2',
+              imageUrl: info2.imageUrl.url,
+            },
+            productDetails: [
+              {title: rowTitle, description: 'desc 2', summary: ''},
+            ],
+          },
+          {
+            selectedItem: {
+              title: specsProduct1.title,
+              url: 'https://example.com/1',
+              imageUrl: info1.imageUrl.url,
+            },
+            productDetails: [
+              {title: rowTitle, description: 'desc 1', summary: ''},
+            ],
+          },
+        ],
+        columns);
+  });
+
+  test('reacts to update event, name only', async () => {
+    const rowTitle = 'Section';
+
+    // Set up the first product with at least one unique description.
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+
+    const specsProduct = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info1 = createInfo({
+      clusterId: BigInt(123),
+      title: 'Product',
+      productUrl: {url: 'https://example.com/'},
+      imageUrl: {url: 'http://example.com/image.png'},
+    });
+
+    const specsSetUrls = [{url: 'https://example.com/'}];
+    const testId = '00000000-0000-0000-0000-000000000001';
+    const specsSet =
+        createSpecsSet({urls: specsSetUrls, uuid: {value: testId}});
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        products: [specsProduct],
+      }),
+      infos: [info1],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await waitAfterNextRender(appElement);
+
+    // We should only have a single call to the backend.
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+    assertArrayEquals(
+        [{url: 'https://example.com/'}],
+        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
+
+    // Trigger an update where only the title has changed.
+    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+        {name: 'Diff title', urls: specsSetUrls, uuid: {value: testId}}));
+    await waitAfterNextRender(appElement);
+
+    // Since the URLs didn't change, there should still only have been a single
+    // call to the backend.
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+  });
+
+  test('reacts to update event, url change', async () => {
+    const rowTitle = 'Section';
+
+    // Set up the first product with at least one unique description.
+    const dimensionValues = {
+      summary: [],
+      specificationDescriptions: [],
+    };
+    const dimensionValuesMap = new Map<bigint, ProductSpecificationsValue>(
+        [[BigInt(2), dimensionValues]]);
+
+    const specsProduct = createSpecsProduct({
+      productClusterId: BigInt(123),
+      title: 'Product',
+      productDimensionValues: dimensionValuesMap,
+    });
+    const info1 = createInfo({
+      clusterId: BigInt(123),
+      title: 'Product',
+      productUrl: {url: 'https://example.com/'},
+      imageUrl: {url: 'http://example.com/image.png'},
+    });
+
+    const testId = '00000000-0000-0000-0000-000000000001';
+    const specsSet = createSpecsSet(
+        {urls: [{url: 'https://example.com/'}], uuid: {value: testId}});
+    shoppingServiceApi.setResultFor(
+        'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
+
+    const promiseValues = createAppPromiseValues({
+      idParam: testId,
+      specs: createSpecs({
+        productDimensionMap: new Map<bigint, string>([[BigInt(2), rowTitle]]),
+        products: [specsProduct],
+      }),
+      infos: [info1],
+    });
+    createAppElementWithPromiseValues(promiseValues);
+    appElement.resetMinLoadingAnimationMsForTesting();
+    await waitAfterNextRender(appElement);
+
+    // We should only have a single call to the backend.
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+    assertArrayEquals(
+        [{url: 'https://example.com/'}],
+        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[0]);
+
+    // Trigger an update where only the title has changed.
+    callbackRouterRemote.onProductSpecificationsSetUpdated(createSpecsSet(
+        {urls: [{url: 'https://example.com/new_url'}], uuid: {value: testId}}));
+    await waitAfterNextRender(appElement);
+
+    // A URL change should trigger another call to the backend.
+    assertEquals(
+        2, shoppingServiceApi.getCallCount('getProductSpecificationsForUrls'));
+    assertArrayEquals(
+        [{url: 'https://example.com/new_url'}],
+        shoppingServiceApi.getArgs('getProductSpecificationsForUrls')[1]);
+  });
+
   test('add url for new set creates set', async () => {
     const openTabs = [{
       title: 'title',
