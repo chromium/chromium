@@ -69,3 +69,10 @@ export function parseTemplateText(template: string): string[] {
       })
       .map(entry => entry.trim());
 }
+
+export const SEA_PEN_SUGGESTIONS: string[] = [
+  'blue',
+  'black',
+  'green',
+  'purple',
+];

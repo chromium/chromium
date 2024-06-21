@@ -5,9 +5,9 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenInputQueryElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenInputQueryElement, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPersonalizationStore} from 'test_personalization_store.js';
 import {TestSeaPenProvider} from 'test_sea_pen_interface_provider.js';
@@ -62,5 +62,16 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenInputQueryElement.i18n('seaPenCreateButton'),
         searchButton!.innerText);
     assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
+  });
+
+  test('displays suggestions', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+
+    assertTrue(!!seaPenSuggestions, 'suggestions element should exist');
   });
 });
