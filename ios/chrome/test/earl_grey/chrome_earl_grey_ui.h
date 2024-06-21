@@ -117,7 +117,16 @@
 // Focuses the omnibox by tapping and types `text` into it. The '\n' symbol can
 // be passed in order to commit the string.
 // If `text` is empty or nil, the omnibox is just focused.
+//
+// Note: This approach differs from text replacement by simulating the user's
+// keystrokes in the omnibox, rather than programmatically modifying its
+// content.
 - (void)focusOmniboxAndType:(NSString*)text;
+
+// Focuses the omnibox by tapping and replaces its content with `text`.
+// The '\n' symbol can be passed in order to commit the string.
+// If `text` is empty or nil, the omnibox is just focused.
+- (void)focusOmniboxAndReplaceText:(NSString*)text;
 
 // Focuses the omnibox by tapping it.
 - (void)focusOmnibox;

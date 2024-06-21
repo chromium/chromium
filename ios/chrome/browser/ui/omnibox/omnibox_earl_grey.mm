@@ -86,7 +86,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
     [OmniboxEarlGrey openPage:i testServer:testServer];
     GURL URL = testServer->GetURL(omnibox::PageURL(pageI));
     [ChromeEarlGreyUI
-        focusOmniboxAndType:base::SysUTF8ToNSString(omnibox::PageTitle(pageI))];
+        focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
+                                       omnibox::PageTitle(pageI))];
     [[EarlGrey selectElementWithMatcher:omnibox::PopupRowWithUrlMatcher(URL)]
         performAction:grey_tap()];
     [ChromeEarlGrey waitForWebStateContainingText:omnibox::PageContent(pageI)];

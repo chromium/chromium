@@ -114,7 +114,7 @@
   NSString* script =
       [NSString stringWithFormat:@"javascript:location.href='%s'",
                                  destinationURL.spec().c_str()];
-  [ChromeEarlGreyUI focusOmniboxAndType:script];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:script];
 
   // The omnibox popup may update multiple times.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));

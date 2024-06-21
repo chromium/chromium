@@ -373,7 +373,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
   // Type the beginning of the address to have the autocomplete suggestion.
   NSString* typedText = [pageString substringToIndex:(pageString.length - 6)];
-  [ChromeEarlGreyUI focusOmniboxAndType:typedText];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:typedText];
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
@@ -439,7 +439,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   // Type the beginning of the address to have the autocomplete suggestion.
   NSString* beginningOfAddress =
       [pageString substringToIndex:pageString.length - 6];
-  [ChromeEarlGreyUI focusOmniboxAndType:beginningOfAddress];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:beginningOfAddress];
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{

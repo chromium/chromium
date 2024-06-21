@@ -164,7 +164,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 
   // Type the URL of the first page in the omnibox to trigger it as suggestion.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(kPage1URL)];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(kPage1URL)];
 
   // Switch to the first tab, scrolling the popup if necessary.
   ScrollToSwitchToTabElement(firstPageURL);
@@ -195,7 +196,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 
   // Type the URL of the first page in the omnibox to trigger it as suggestion.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(kPage2URL)];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(kPage2URL)];
 
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
@@ -214,7 +216,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL3.host()),
                        base::SysUTF8ToNSString(_URL3.port())];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:omniboxInput];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
   // Swipe one of the historical suggestions, to the left.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -264,7 +266,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   NSString* omniboxInput = [NSString
       stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL3.host()),
                        base::SysUTF8ToNSString(_URL3.port())];
-  [ChromeEarlGreyUI focusOmniboxAndType:omniboxInput];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
   // Check that we have the switch button for the first page.
   [[EarlGrey
@@ -285,7 +287,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey loadURL:_URL3];
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(_URL3.host())];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(_URL3.host())];
 
   // Check that we have the switch button for the second page.
   [[EarlGrey
@@ -371,7 +374,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage2];
 
   // Start typing url of the first page.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(kPage1URL)];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(kPage1URL)];
 
   // Make sure that the "Switch to Open Tab" element is visible, scrolling the
   // popup if necessary.
@@ -440,7 +444,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       stringWithFormat:@"%@:%@", base::SysUTF8ToNSString(_URL3.host()),
                        base::SysUTF8ToNSString(_URL3.port())];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:omniboxInput];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
   [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL1)]
       performAction:grey_tap()];
@@ -487,7 +491,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey loadURL:GURL("about:blank")];
 
   // Clears the url and replace it with local url host.
-  [ChromeEarlGreyUI focusOmniboxAndType:@"abc"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"abc"];
 
   // Wait for the suggestions to show.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -583,7 +587,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testUpDownArrowAutocomplete {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"testupdown"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"testupdown"];
 
   // Matcher for the first autocomplete suggestions.
   id<GREYMatcher> testupDownAutocomplete1 =

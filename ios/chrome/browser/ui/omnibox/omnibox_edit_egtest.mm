@@ -75,7 +75,7 @@
 // Tests clearing text in the edit state of the omnibox.
 - (void)testClearButtonEditState {
   [OmniboxEarlGrey openPage:omnibox::Page(1) testServer:self.testServer];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"something"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"something"];
 
   // Tap the clear button.
   [[EarlGrey selectElementWithMatcher:omnibox::ClearButtonMatcher()]
@@ -113,7 +113,7 @@
   NSString* typedText = [page1URL substringToIndex:3];
   NSString* inlineAutocomplete = [page1URL substringFromIndex:typedText.length];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:typedText];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:typedText];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingAutocompleteText(
                             inlineAutocomplete)];
@@ -139,8 +139,9 @@
   omnibox::Page shortcutPage = omnibox::Page(1);
 
   // Type the shortcut input in the omnibox.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(
-                                            omnibox::PageTitle(shortcutPage))];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
+                                     omnibox::PageTitle(shortcutPage))];
 
   // The shortcut suggestion should be default match. Press enter to navigate to
   // it.
@@ -230,8 +231,9 @@
   omnibox::Page shortcutPage = omnibox::Page(1);
 
   // Type the shortcut input in the omnibox.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(
-                                            omnibox::PageTitle(shortcutPage))];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
+                                     omnibox::PageTitle(shortcutPage))];
 
   [self assertFirstSuggestionIsURL];
 
@@ -249,8 +251,9 @@
   omnibox::Page shortcutPage = omnibox::Page(1);
 
   // Type the shortcut input in the omnibox.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(
-                                            omnibox::PageTitle(shortcutPage))];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
+                                     omnibox::PageTitle(shortcutPage))];
 
   [self assertFirstSuggestionIsURL];
 
@@ -268,8 +271,9 @@
   omnibox::Page shortcutPage = omnibox::Page(1);
 
   // Type the shortcut input in the omnibox.
-  [ChromeEarlGreyUI focusOmniboxAndType:base::SysUTF8ToNSString(
-                                            omnibox::PageTitle(shortcutPage))];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:base::SysUTF8ToNSString(
+                                     omnibox::PageTitle(shortcutPage))];
 
   [self assertFirstSuggestionIsURL];
 

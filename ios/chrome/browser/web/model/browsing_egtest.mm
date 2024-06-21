@@ -336,7 +336,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       [NSString stringWithFormat:@"javascript:window.location='%s'",
                                  targetURL.spec().c_str()];
 
-  [ChromeEarlGreyUI focusOmniboxAndType:script];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:script];
 
   if (@available(iOS 16, *)) {
     // TODO(crbug.com/40227513): Move this logic into EG.
@@ -378,7 +378,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   [ChromeEarlGrey loadURL:secondURL];
 
   // Execute some JavaScript in the omnibox.
-  [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:document.write('foo')"];
+  [ChromeEarlGreyUI
+      focusOmniboxAndReplaceText:@"javascript:document.write('foo')"];
   // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];

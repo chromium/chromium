@@ -173,7 +173,7 @@ class CacheTestResponseProvider : public web::DataResponseProvider {
   [ChromeEarlGrey waitForWebStateContainingText:"serverHitCounter: 1"];
 
   // Type a search into omnnibox and select the first suggestion (second row)
-  [ChromeEarlGreyUI focusOmniboxAndType:@"cachetestfirstpage"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"cachetestfirstpage"];
   [[[[EarlGrey
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::OmniboxPopupRow(),

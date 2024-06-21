@@ -99,13 +99,13 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 
 - (void)testDisplayActions {
   // Clears the url and replace it with local url host.
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 }
 
 - (void)testTapDirectionsButton {
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 
@@ -121,7 +121,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 }
 
 - (void)testTapReviewsButton {
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 
@@ -140,7 +140,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
     return;
   }
 
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 
@@ -173,7 +173,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 
 - (void)testKeyboardArrowsHighlighting {
   BOOL isDialAppInstalled = [self dialAppInstalled];
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 
@@ -258,7 +258,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 }
 
 - (void)testReturnKeyOnDirectionsButton {
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 
@@ -285,7 +285,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 }
 
 - (void)testReturnKeyOnReviewsButton {
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 
@@ -323,7 +323,7 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
     return;
   }
 
-  [ChromeEarlGreyUI focusOmniboxAndType:@"local restaurant"];
+  [ChromeEarlGreyUI focusOmniboxAndReplaceText:@"local restaurant"];
 
   [self ensureActionButtonsAreDisplayed];
 

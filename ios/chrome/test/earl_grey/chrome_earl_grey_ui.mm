@@ -400,8 +400,16 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)focusOmniboxAndType:(NSString*)text {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_tap()];
+  [self focusOmnibox];
+
+  if (text.length) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_typeText(text)];
+  }
+}
+
+- (void)focusOmniboxAndReplaceText:(NSString*)text {
+  [self focusOmnibox];
 
   if (text.length) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
