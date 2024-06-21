@@ -9074,4 +9074,317 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NavigationBrowserTestPaintHoldingSubframe,
                          ::testing::Bool());
 
+class DeferSpeculativeRFHCreationTest : public NavigationBrowserTest {
+ public:
+  DeferSpeculativeRFHCreationTest() {
+    feature_list_.InitAndEnableFeature(features::kDeferSpeculativeRFHCreation);
+  }
+
+  RenderFrameHostImpl* GetMainFrameSpeculativeRFH(
+      WebContentsImpl* web_contents) {
+    return web_contents->GetPrimaryFrameTree()
+        .root()
+        ->render_manager()
+        ->speculative_frame_host();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify the common flow for with DeferSpeculativeRFHCreation feature.
+// The creation of the speculative RFH will be deferred until the network
+// request is sent.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       SpeculativeRFHCreationDeferred) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
+  TestNavigationManager nav_manager(web_contents, url);
+
+  // The speculative RFH shall not be created when the navigation request is
+  // created.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+  ASSERT_TRUE(navigation_request);
+  // The navigation manager pauses the navigation in the WillStartRequest
+  // throttle. The speculative RFH will be created after the throttle completes
+  // and the navigation request is sent.
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  // The loader will not be created until the WillStartRequest throttle check
+  // completed.
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::NONE);
+
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
+  // The speculative RFH shall be created after sending the request.
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_TRUE(navigation_request->HasLoader());
+  RenderFrameHostImplWrapper speculative_rfh(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(speculative_rfh);
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  // The speculative RFH shall become the primary RFH when the navigation is
+  // committed.
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(main_frame()->render_manager()->current_frame_host(),
+            speculative_rfh.get());
+}
+
+// Verify that navigating from a crashed page will create a speculative
+// RFH at once.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       NavigationFromCrashedFrameNotDeferred) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  // Crash the frame.
+  {
+    auto* process = main_frame()
+                        ->GetRenderFrameHostManager()
+                        .current_frame_host()
+                        ->GetProcess();
+    content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
+
+    RenderProcessHostWatcher watcher(
+        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    process->Shutdown(content::RESULT_CODE_KILLED);
+    watcher.Wait();
+  }
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title2.html");
+  TestNavigationManager nav_manager(web_contents, url);
+  // Navigation from a crashed frame shall immediately create a speculative RFH.
+  shell()->LoadURL(url);
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
+// Verify that navigating with the same RFH will reuse the RFH at once.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       ReuseSameRFHNotDeferred) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  TestNavigationManager nav_manager(web_contents, url);
+  // Navigation from about:blank will reuse the render frame host.
+  // The RFH will be set to current when the navigation request is created.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
+// Verify that the creation of the speculative RFH is not deferred for the
+// web pages.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       CreationNotDeferredForWebUI) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url = GetWebUIURL(kChromeUIGpuHost);
+  TestNavigationManager nav_manager(web_contents, url);
+  // The speculative RFH shall be created when the navigation starts.
+  shell()->LoadURL(url);
+  NavigationRequest* navigation_request = main_frame()->navigation_request();
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WAITING_FOR_RENDERER_RESPONSE);
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
+// Verify that the creation of the speculative RFH is not deferred for the
+// pages without a URL loader.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       CreationNotDeferredWithoutURLLoader) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url("about:blank");
+  TestNavigationManager nav_manager(web_contents, url);
+  // The speculative RFH shall be created when the navigation starts.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::READY_TO_COMMIT);
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetRenderFrameHost(),
+            GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
+// Verify that the created speculative RFH after the network request will
+// be correctly replaced if the redirection points to a different site.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       SpeculativeRFHWithRedirect) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL redirect_url = embedded_test_server()->GetURL("b.com", "/title1.html");
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + redirect_url.spec());
+  TestNavigationManager nav_manager(web_contents, url);
+
+  // The speculative RFH shall not be created when the navigation request is
+  // created.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+  ASSERT_TRUE(navigation_request);
+  // The navigation manager pauses the navigation in the WillStartRequest
+  // throttle. The speculative RFH will be created after the throttle completes
+  // and the navigation request is sent.
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  // The loader will not be created until the WillStartRequest throttle check
+  // completed.
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::NONE);
+
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
+  // The speculative RFH shall be created after sending the request.
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_TRUE(navigation_request->HasLoader());
+  ASSERT_TRUE(GetMainFrameSpeculativeRFH(web_contents));
+  RenderFrameHostImplWrapper speculative_rfh(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(speculative_rfh);
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+
+  // After receiving the redirect, a new speculative RFH shall be created for
+  // the new site if site isolation is enabled.
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+  if (AreAllSitesIsolatedForTesting()) {
+    ASSERT_TRUE(speculative_rfh.IsDestroyed());
+  }
+  RenderFrameHostImplWrapper new_speculative_rfh(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(new_speculative_rfh);
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  // The speculative RFH shall become the primary RFH when the navigation is
+  // committed.
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(main_frame()->render_manager()->current_frame_host(),
+            new_speculative_rfh.get());
+}
+
+// Test that if there is a navigation pending for commit, the deferred
+// speculative RFH will not be created event after the request is sent. The new
+// navigation will be queued until the pending navigation commits.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+                       NavigateWithPendingCommit) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  NavigationLogger logger(web_contents);
+
+  // Create first navigation and pause before commit.
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  TestNavigationManager nav_manager_b(web_contents, url_b);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url_b));
+  nav_manager_b.WaitForSpeculativeRenderFrameHostCreation();
+  RenderFrameHostImplWrapper speculative_rfh_b(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(speculative_rfh_b);
+  ASSERT_TRUE(nav_manager_b.WaitForResponse());
+  nav_manager_b.ResumeNavigation();
+  CommitNavigationPauser commit_pauser(speculative_rfh_b.get());
+  commit_pauser.WaitForCommitAndPause();
+
+  // Navigate to a new site, a new speculative RFH will not be created because
+  // of the pending navigation.
+  GURL url_c = embedded_test_server()->GetURL("c.com", "/title1.html");
+  TestNavigationManager nav_manager_c(web_contents, url_c);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url_c));
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager_c.GetNavigationHandle());
+  ASSERT_TRUE(nav_manager_c.WaitForRequestStart());
+  // Normally, the new navigation will create a speculative RFH after the
+  // network request is sent, but since there is a pre-existing speculative RFH
+  // for a pending commit navigation, the new navigation won't create a
+  // speculative RFH at this point.
+  nav_manager_c.ResumeNavigation();
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_TRUE(navigation_request->HasLoader());
+  // Verify that the speculative RFH is not replaced by the new navigation.
+  ASSERT_EQ(speculative_rfh_b.get(), GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_FALSE(speculative_rfh_b.IsDestroyed());
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::NONE);
+
+  commit_pauser.ResumePausedCommit();
+  ASSERT_TRUE(nav_manager_b.WaitForNavigationFinished());
+  // Verify that a new speculative RFH will be created after the pending
+  // navigation is committed.
+  ASSERT_TRUE(nav_manager_c.WaitForResponse());
+  RenderFrameHostImplWrapper new_speculative_rfh(
+      GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_TRUE(new_speculative_rfh);
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE);
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  ASSERT_TRUE(nav_manager_c.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(main_frame()->render_manager()->current_frame_host(),
+            new_speculative_rfh.get());
+
+  // Check that all the navigations has been committed.
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  EXPECT_TRUE(results[0].committed);
+  EXPECT_EQ(url_b, results[0].url);
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(url_c, results[1].url);
+}
+
 }  // namespace content
