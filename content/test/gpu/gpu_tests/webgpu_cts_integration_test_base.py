@@ -7,6 +7,7 @@ import enum
 import fnmatch
 import json
 import os
+import re
 import time
 from typing import Dict, List, Optional
 
@@ -63,6 +64,7 @@ MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
 MESSAGE_TYPE_TEST_LOG = 'TEST_LOG'
 MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
 
+TEST_NAME_REGEX = re.compile(r'([^:]+:[^:]+:[^:]+:).+')
 
 # This can be switched to a StrEnum once Python 3.11+ is used.
 class WorkerType(enum.Enum):
@@ -385,7 +387,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         self.skipTest('WebGPU CTS JavaScript reported test skip with logs ' +
                       log_str)
       elif status == 'fail':
-        self.fail(self._query + ' failed\n' + log_str)
+        self.fail(
+            TEST_NAME_REGEX.match(self._query).group(1) + ' failed\n' + log_str)
     except wss.ClientClosedConnectionError as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
