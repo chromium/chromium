@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
@@ -55,6 +56,15 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
       std::move(metrics_reporter));
 }
 
+std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
+    os_crypt_async::Encryptor encryptor,
+    bool success) {
+  if (!success) {
+    return nullptr;
+  }
+  return std::make_unique<os_crypt_async::Encryptor>(std::move(encryptor));
+}
+
 }  // namespace
 
 PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
@@ -62,8 +72,9 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     PrefService* prefs,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
     std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier)
-    : pref_service_(prefs) {
+    : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
@@ -83,6 +94,7 @@ void PasswordStoreBuiltInBackend::Shutdown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
   affiliated_match_helper_ = nullptr;
+  subscription_ = {};
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
     std::move(shutdown_completed).Run();
@@ -117,15 +129,20 @@ void PasswordStoreBuiltInBackend::InitBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   affiliated_match_helper_ = affiliated_match_helper;
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &LoginDatabaseAsyncHelper::Initialize,
-          base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          std::move(remote_form_changes_received),
-          std::move(sync_enabled_or_disabled_cb)),
-      base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
+
+  auto init_database_callback = base::BindOnce(
+      &PasswordStoreBuiltInBackend::OnEncryptorReceived,
+      weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
+      std::move(sync_enabled_or_disabled_cb), std::move(completion));
+
+  if (!os_crypt_async_) {
+    std::move(init_database_callback).Run(nullptr);
+    return;
+  }
+  subscription_ = os_crypt_async_->GetInstance(
+      base::BindOnce(&ConvertToUniquePtr)
+          .Then(std::move(init_database_callback)),
+      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
 }
 
 void PasswordStoreBuiltInBackend::GetAllLoginsAsync(
@@ -412,6 +429,23 @@ void PasswordStoreBuiltInBackend::OnInitComplete(
     bool result) {
   is_database_initialized_successfully_ = result;
   std::move(completion).Run(result);
+}
+
+void PasswordStoreBuiltInBackend::OnEncryptorReceived(
+    RemoteChangesReceived remote_form_changes_received,
+    base::RepeatingClosure sync_enabled_or_disabled_cb,
+    base::OnceCallback<void(bool)> completion,
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &LoginDatabaseAsyncHelper::Initialize,
+          base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
+          std::move(remote_form_changes_received),
+          std::move(sync_enabled_or_disabled_cb), std::move(encryptor)),
+      base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
 }
 
 }  // namespace password_manager

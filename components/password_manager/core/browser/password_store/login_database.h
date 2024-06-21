@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/encrypt_decrypt_intrface.h"
 #include "components/password_manager/core/browser/password_store/insecure_credentials_table.h"
@@ -80,7 +81,7 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
-  virtual bool Init();
+  virtual bool Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -370,6 +371,7 @@ class LoginDatabase : public EncryptDecryptInterface {
   InsecureCredentialsTable insecure_credentials_table_;
   PasswordNotesTable password_notes_table_;
   SyncMetadataStore password_sync_metadata_store_{&db_};
+  std::unique_ptr<os_crypt_async::Encryptor> encryptor_;
 
   std::optional<bool> were_undecryptable_logins_deleted_;
 

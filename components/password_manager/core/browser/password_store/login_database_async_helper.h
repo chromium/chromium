@@ -21,6 +21,10 @@ namespace syncer {
 class ModelTypeControllerDelegate;
 }  // namespace syncer
 
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
+
 namespace password_manager {
 
 class LoginDatabase;
@@ -45,7 +49,8 @@ class LoginDatabaseAsyncHelper : private PasswordStoreSync {
   // Opens |login_db_| and creates sync bridges.
   bool Initialize(
       PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received,
-      base::RepeatingClosure sync_enabled_or_disabled_cb);
+      base::RepeatingClosure sync_enabled_or_disabled_cb,
+      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.
   LoginsResultOrError GetAllLogins();

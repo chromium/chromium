@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
 #include "base/strings/string_util.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 
 namespace password_manager {
@@ -12,10 +13,11 @@ namespace password_manager {
 EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) const {
-  if (OSCrypt::EncryptString16(plain_text, cipher_text)) {
-    return EncryptionResult::kSuccess;
-  }
-  return EncryptionResult::kItemFailure;
+  bool result = encryptor_
+                    ? encryptor_->EncryptString16(plain_text, cipher_text)
+                    : OSCrypt::EncryptString16(plain_text, cipher_text);
+  return result ? EncryptionResult::kSuccess
+                : EncryptionResult::kServiceFailure;
 }
 
 EncryptionResult LoginDatabase::DecryptedString(
@@ -34,10 +36,12 @@ EncryptionResult LoginDatabase::DecryptedString(
     plain_text->clear();
     return EncryptionResult::kSuccess;
   }
-  if (OSCrypt::DecryptString16(cipher_text, plain_text)) {
-    return EncryptionResult::kSuccess;
-  }
-  return EncryptionResult::kItemFailure;
+
+  bool result = encryptor_
+                    ? encryptor_->DecryptString16(cipher_text, plain_text)
+                    : OSCrypt::DecryptString16(cipher_text, plain_text);
+  return result ? EncryptionResult::kSuccess
+                : EncryptionResult::kServiceFailure;
 }
 
 }  // namespace password_manager

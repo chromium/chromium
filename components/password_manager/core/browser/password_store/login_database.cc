@@ -1085,8 +1085,10 @@ LoginDatabase::LoginDatabase(const base::FilePath& db_path,
 
 LoginDatabase::~LoginDatabase() = default;
 
-bool LoginDatabase::Init() {
+bool LoginDatabase::Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
+  encryptor_ = std::move(encryptor);
+
   db_.set_histogram_tag("Passwords");
 
   if (!db_.Open(db_path_)) {
@@ -1915,7 +1917,7 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   meta_table_.Reset();
   db_.Close();
   sql::Database::Delete(db_path_);
-  return Init();
+  return Init(std::move(encryptor_));
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {

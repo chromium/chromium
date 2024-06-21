@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -23,6 +24,11 @@ class SequencedTaskRunner;
 namespace syncer {
 class SyncService;
 }  // namespace syncer
+
+namespace os_crypt_async {
+class OSCryptAsync;
+class Encryptor;
+}  // namespace os_crypt_async
 
 namespace password_manager {
 
@@ -42,6 +48,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       PrefService* prefs,
+      os_crypt_async::OSCryptAsync* os_crypt_async = nullptr,
       std::unique_ptr<UnsyncedCredentialsDeletionNotifier> notifier = nullptr);
 
   ~PasswordStoreBuiltInBackend() override;
@@ -116,6 +123,12 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       LoginsOrErrorReply callback,
       LoginsResultOrError forms_or_error);
 
+  void OnEncryptorReceived(
+      RemoteChangesReceived remote_form_changes_received,
+      base::RepeatingClosure sync_enabled_or_disabled_cb,
+      base::OnceCallback<void(bool)> completion,
+      std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+
   void OnInitComplete(base::OnceCallback<void(bool)> completion, bool result);
 
   // Ensures that all methods are called on the main sequence.
@@ -138,6 +151,12 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
 
   // Used to get information if there are any passwords saved to the login db.
   raw_ptr<PrefService> pref_service_;
+
+  raw_ptr<os_crypt_async::OSCryptAsync> const os_crypt_async_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::CallbackListSubscription subscription_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PasswordStoreBuiltInBackend> weak_ptr_factory_{this};
 };

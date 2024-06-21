@@ -47,7 +47,7 @@ class LoginDatabaseIOSTest : public PlatformTest {
         temp_dir_.GetPath().AppendASCII("temp_login.db");
     login_db_.reset(new password_manager::LoginDatabase(
         login_db_path, password_manager::IsAccountStore(false)));
-    login_db_->Init();
+    login_db_->Init(nullptr);
   }
 
  protected:
@@ -407,7 +407,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // version.
     base::HistogramTester histogram_tester;
     LoginDatabase db(get_database_path(), IsAccountStore(false));
-    ASSERT_TRUE(db.Init());
+    ASSERT_TRUE(db.Init(nullptr));
 
     // Delete password from the keychain to check that GetAllLogins no longer
     // needs to access it.
@@ -470,7 +470,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   // version.
   base::HistogramTester histogram_tester;
   LoginDatabase login_db(get_database_path(), IsAccountStore(true));
-  ASSERT_TRUE(login_db.Init());
+  ASSERT_TRUE(login_db.Init(nullptr));
 
   // Delete password from the keychain to check that GetAllLogins no longer
   // needs to access it.
@@ -495,7 +495,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   // to current version.
   base::HistogramTester histogram_tester;
   LoginDatabase login_db(get_database_path(), IsAccountStore(false));
-  ASSERT_TRUE(login_db.Init());
+  ASSERT_TRUE(login_db.Init(nullptr));
 
   std::vector<PasswordForm> forms;
   EXPECT_EQ(login_db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
@@ -521,7 +521,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // version.
     base::HistogramTester histogram_tester;
     LoginDatabase login_db(get_database_path(), IsAccountStore(false));
-    ASSERT_TRUE(login_db.Init());
+    ASSERT_TRUE(login_db.Init(nullptr));
 
     // Delete note from the keychain to check that GetAllLogins no longer needs
     // to access it;
@@ -562,7 +562,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     // version.
     base::HistogramTester histogram_tester;
     LoginDatabase login_db(get_database_path(), IsAccountStore(true));
-    ASSERT_TRUE(login_db.Init());
+    ASSERT_TRUE(login_db.Init(nullptr));
 
     // Delete note from the keychain to check that GetAllLogins no longer needs
     // to access it;
@@ -597,7 +597,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   CreateDatabase("login_db_v39_with_note_keychain_ids.sql");
   base::HistogramTester histogram_tester;
   LoginDatabase login_db(get_database_path(), IsAccountStore(false));
-  ASSERT_TRUE(login_db.Init());
+  ASSERT_TRUE(login_db.Init(nullptr));
 
   // Check that the first note is still readable and the second one was deleted
   // during migration.

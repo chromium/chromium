@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
@@ -51,14 +52,15 @@ LoginDatabaseAsyncHelper::~LoginDatabaseAsyncHelper() {
 
 bool LoginDatabaseAsyncHelper::Initialize(
     PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received,
-    base::RepeatingClosure sync_enabled_or_disabled_cb) {
+    base::RepeatingClosure sync_enabled_or_disabled_cb,
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   remote_forms_changes_received_callback_ =
       std::move(remote_form_changes_received);
 
   bool success = true;
-  if (!login_db_->Init()) {
+  if (!login_db_->Init(std::move(encryptor))) {
     login_db_.reset();
     // The initialization should be continued, because PasswordSyncBridge
     // has to be initialized even if database initialization failed.

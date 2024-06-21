@@ -53,7 +53,7 @@ class PasswordNotesTableTest : public testing::Test {
     base::FilePath file = temp_dir_.GetPath().AppendASCII("TestDatabase");
 
     login_db_ = std::make_unique<LoginDatabase>(file, IsAccountStore(false));
-    ASSERT_TRUE(login_db_->Init());
+    ASSERT_TRUE(login_db_->Init(nullptr));
   }
 
   PasswordNotesTable* table() { return &login_db_->password_notes_table(); }

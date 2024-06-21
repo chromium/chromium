@@ -101,7 +101,9 @@ class BadLoginDatabase : public LoginDatabase {
   BadLoginDatabase& operator=(const BadLoginDatabase&) = delete;
 
   // LoginDatabase:
-  bool Init() override { return false; }
+  bool Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) override {
+    return false;
+  }
 };
 
 PasswordFormData CreateTestPasswordFormData() {

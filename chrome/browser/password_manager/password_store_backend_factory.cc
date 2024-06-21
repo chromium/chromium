@@ -181,7 +181,8 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   backend = std::make_unique<PasswordStoreBuiltInBackend>(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-      prefs, std::move(unsynced_deletions_notifier));
+      prefs, /*os_crypt_async=*/nullptr,
+      std::move(unsynced_deletions_notifier));
 #else  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   if (!password_manager_android_util::AreMinUpmRequirementsMet()) {
     // Can happen if the downstream code is not available.
