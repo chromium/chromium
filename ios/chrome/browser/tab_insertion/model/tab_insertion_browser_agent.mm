@@ -110,20 +110,17 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
   params.Activate(!tab_insertion_params.in_background)
       .InheritOpener(tab_insertion_params.inherit_opener)
       .WithOpener(WebStateOpener(tab_insertion_params.parent));
+  if (tab_insertion_params.insert_in_group && tab_insertion_params.tab_group) {
+    params.InGroup(tab_insertion_params.tab_group.get());
+  }
   web::WebState* web_state_ptr = web_state.get();
   web_state_list->InsertWebState(std::move(web_state), params);
-  if (tab_insertion_params.insert_in_group) {
-    if (tab_insertion_params.tab_group) {
-      web_state_list->MoveToGroup(
-          {web_state_list->GetIndexOfWebState(web_state_ptr)},
-          tab_insertion_params.tab_group.get());
-    } else {
-      web_state_list->CreateGroup(
-          {web_state_list->GetIndexOfWebState(web_state_ptr)},
-          tab_groups::TabGroupVisualData{
-              u"", TabGroup::DefaultColorForNewTabGroup(web_state_list)},
-          tab_groups::TabGroupId::GenerateNew());
-    }
+  if (tab_insertion_params.insert_in_group && !tab_insertion_params.tab_group) {
+    web_state_list->CreateGroup(
+        {web_state_list->GetIndexOfWebState(web_state_ptr)},
+        tab_groups::TabGroupVisualData{
+            u"", TabGroup::DefaultColorForNewTabGroup(web_state_list)},
+        tab_groups::TabGroupId::GenerateNew());
   }
   return web_state_ptr;
 }
