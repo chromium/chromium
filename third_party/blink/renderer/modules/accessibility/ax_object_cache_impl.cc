@@ -3737,8 +3737,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
   }
 }
 
-bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
-  return relation_cache_ ? relation_cache_->IsAriaOwned(object) : false;
+bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object, bool checks) const {
+  return relation_cache_ ? relation_cache_->IsAriaOwned(object, checks) : false;
 }
 
 AXObject* AXObjectCacheImpl::ValidatedAriaOwner(const AXObject* object) const {

@@ -852,9 +852,10 @@ void AXObject::SetParent(AXObject* new_parent) {
   if (parent_ && new_parent != parent_ && !parent_->NeedsToUpdateChildren() &&
       !parent_->IsDetached()) {
     for (const auto& child : parent_->ChildrenIncludingIgnored()) {
-      DCHECK(child != this) << "Previous parent still has |this| child:\n"
-                            << this << " should be a child of " << new_parent
-                            << " not of " << parent_;
+      DUMP_WILL_BE_CHECK(child != this)
+          << "Previous parent still has |this| child:\n"
+          << this << " should be a child of " << new_parent << " not of "
+          << parent_;
     }
     // TODO(accessibility) This should not be reached unless this method is
     // called on an AXObject of role kRootWebArea or when the parent's
@@ -6099,6 +6100,7 @@ void AXObject::DetachFromParent() {
   if (IsDetached()) {
     return;
   }
+
   CHECK(!AXObjectCache().IsFrozen())
       << "Do not detach parent while tree is frozen: " << this;
   if (ShouldDestroyWhenDetachingFromParent()) {
@@ -7935,8 +7937,9 @@ String AXObject::ToString(bool verbose) const {
                            : CanSetFocusAttribute()) {
       string_builder = string_builder + " focusable";
     }
-    if (!IsDetached() && AXObjectCache().IsAriaOwned(this))
+    if (!IsDetached() && AXObjectCache().IsAriaOwned(this, /*checks*/ false)) {
       string_builder = string_builder + " isAriaOwned";
+    }
     if (IsIgnored()) {
       string_builder = string_builder + " isIgnored";
 #if defined(AX_FAIL_FAST_BUILD)
