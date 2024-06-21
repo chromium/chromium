@@ -98,11 +98,15 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
 };
 
 // Tests that the extensions histograms are recorded on each day.
-// TODO(crbug.com/347993521): Fix flakiness and re-enable.
 TEST_F(SupervisedUserExtensionsMetricsDelegateImplTest,
-       DISABLED_DailyRecordedExtensionsCount) {
+       DailyRecordedExtensionsCount) {
   // At the creation of metrics service we record 0 enabled and 0 installed
   // extensions.
+  int start_day = GetDayIdPref();
+  EXPECT_EQ(supervised_user::SupervisedUserMetricsService::GetDayIdForTesting(
+                base::Time::Now()),
+            start_day);
+
   histogram_tester_.ExpectBucketCount(kInstalledExtensionsCountHistogramName,
                                       /*sample=*/0,
                                       /*expected_count=*/1);
@@ -122,11 +126,23 @@ TEST_F(SupervisedUserExtensionsMetricsDelegateImplTest,
       extension1->id(), extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY);
 
   // Move to the next day and ensure the extension histograms are recorded.
-  // We record 1 enabled, 1 disabled and 2 installed extensions.
-  task_environment()->FastForwardBy(base::Hours(25));
+  task_environment()->FastForwardBy(base::Days(1));
+  int new_day = GetDayIdPref();
+  // Check that the test takes mimics recording metrics for 2 consecutive days
+  // (crbug.com/347993521).
+  ASSERT_EQ(new_day, start_day + 1);
+  
   EXPECT_EQ(supervised_user::SupervisedUserMetricsService::GetDayIdForTesting(
                 base::Time::Now()),
-            GetDayIdPref());
+            new_day);
+  // All histograms should have a total of 2 entries (1 for each day).
+  histogram_tester_.ExpectTotalCount(kInstalledExtensionsCountHistogramName,
+                                     /*expected_count=*/2);
+  histogram_tester_.ExpectTotalCount(kEnabledExtensionsCountHistogramName,
+                                     /*expected_count=*/2);
+  histogram_tester_.ExpectTotalCount(kDisabledExtensionsCountHistogramName,
+                                     /*expected_count=*/2);
+  // We now record 1 enabled, 1 disabled and 2 installed extensions.
   histogram_tester_.ExpectBucketCount(kInstalledExtensionsCountHistogramName,
                                       /*sample=*/2,
                                       /*expected_count=*/1);
