@@ -2445,8 +2445,17 @@ FindFormAndFieldForFormControlElement(
     SCOPED_CRASH_KEY_STRING64("Autofill", "url", url.spec());
     SCOPED_CRASH_KEY_STRING64("Autofill", "elem_tag_name",
                               element.TagName().Utf8());
+    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_id",
+                              element.GetIdAttribute().Utf8());
     SCOPED_CRASH_KEY_NUMBER("Autofill", "elem_form_control_type",
                             base::to_underlying(element.FormControlType()));
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_autofillable",
+                          IsAutofillableElement(element));
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_document", !document.IsNull());
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_connected", element.IsConnected());
+    SCOPED_CRASH_KEY_BOOL(
+        "Autofill", "elem_assoc_form_connected",
+        assoc_form_element && assoc_form_element.IsConnected());
     SCOPED_CRASH_KEY_BOOL("Autofill", "elem_in_shadow_dom",
                           !element.OwnerShadowHost().IsNull());
     SCOPED_CRASH_KEY_BOOL("Autofill", "elem_assoc_form",
@@ -2469,6 +2478,11 @@ FindFormAndFieldForFormControlElement(
                           extract_form_data_succeeded);
     SCOPED_CRASH_KEY_NUMBER("Autofill", "extracted_form_size",
                             form->fields().size());
+    SCOPED_CRASH_KEY_NUMBER(
+        "Autofill", "assoc_form_size",
+        document ? static_cast<int>(
+                       GetFormControlElements(document, form_element).size())
+                 : -1);
     NOTREACHED(base::NotFatalUntil::M129);
   }
   return std::nullopt;
