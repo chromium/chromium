@@ -1433,6 +1433,18 @@ void OverviewSession::OnWindowAdded(aura::Window* new_window) {
     return;
   base::AutoReset<bool> adding_new_item_resetter(&is_adding_new_item_, true);
 
+  // If `new_window` belongs to Snap Group, wait until both windows are in the
+  // desk container (handled by `SnapGroup::OnWindowParentChanged()`) before
+  // adding the corresponding `OverviewGroupItem`.
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(new_window)) {
+      if (snap_group->window1()->parent() != snap_group->window2()->parent()) {
+        return;
+      }
+    }
+  }
+
   // Avoid adding overview items for certain windows.
   if (!WindowState::Get(new_window) ||
       window_util::ShouldExcludeForOverview(new_window)) {

@@ -206,6 +206,25 @@ void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
 }
 
 aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
+  // Two windows can be on different roots during the process of being moved to
+  // another display, return the one on the same root as the current cursor
+  // position.
+  aura::Window* window1_root_window = window1_->GetRootWindow();
+  aura::Window* window2_root_window = window2_->GetRootWindow();
+  if (window1_root_window != window2_root_window) {
+    aura::Window* cursor_root_window = window_util::GetRootWindowAt(
+        display::Screen::GetScreen()->GetCursorScreenPoint());
+    return window1_root_window == cursor_root_window ? window1_root_window
+                                                     : window2_root_window;
+  }
+
+  // Two windows can be on the same root but different desk containers during
+  // the process of being moved to another desk, return the one on the active
+  // desk container.
+  if (window1_->parent() != window2_->parent()) {
+    return desks_util::BelongsToActiveDesk(window1_) ? window1_ : window2_;
+  }
+
   return window_util::IsStackedBelow(window1_, window2_) ? window2_ : window1_;
 }
 

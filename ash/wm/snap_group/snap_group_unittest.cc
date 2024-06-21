@@ -5458,6 +5458,109 @@ TEST_F(SnapGroupDesksTest, DeskSwitchingInOverview) {
   UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), snap_group_divider());
 }
 
+// Ensures no crashes occur when switching and merging desks with an active Snap
+// Group in Overview. Regression test for http://b/348067578.
+TEST_F(SnapGroupDesksTest, DesksSwitchingThenMergingInOverview) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+
+  // Create `snap_group0` on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Use `Search + ]` to switch to `desk1`.
+  PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN);
+  DeskSwitchAnimationWaiter().Wait();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Merge `desk0` into `desk1`.
+  RemoveDesk(desk0, DeskCloseType::kCombineDesks);
+
+  ASSERT_TRUE(IsInOverviewSession());
+  auto* overview_group_item = GetOverviewItemForWindow(w0.get());
+  ASSERT_TRUE(overview_group_item);
+
+  // Verify that windows in `snap_group0` have been moved to `desk1`.
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w1.get()));
+
+  // Activate the group item and verify the union bounds.
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), snap_group_divider());
+}
+
+// Ensures switching and merging desks with one Snap Group on each desk works
+// properly in Overview.
+TEST_F(SnapGroupDesksTest,
+       DesksSwitchingThenMergingWithOneSnapGroupPerDeskInOverview) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+
+  // Create `snap_group0` on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group0 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group0);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  // Create `snap_group1` on `desk1`.
+  ActivateDesk(desk1);
+  std::unique_ptr<aura::Window> w2(CreateAppWindow(gfx::Rect(0, 0, 100, 100)));
+  std::unique_ptr<aura::Window> w3(
+      CreateAppWindow(gfx::Rect(200, 20, 100, 200)));
+  SnapTwoTestWindows(w2.get(), w3.get());
+  SnapGroup* snap_group1 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w2.get());
+  ASSERT_TRUE(snap_group1);
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w2.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w3.get()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Use `Search + [` to switch to `desk0`.
+  PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN);
+  DeskSwitchAnimationWaiter().Wait();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Merge `desk0` into `desk1`.
+  RemoveDesk(desk0, DeskCloseType::kCombineDesks);
+
+  ASSERT_TRUE(IsInOverviewSession());
+  auto* overview_group_item = GetOverviewItemForWindow(w0.get());
+  ASSERT_TRUE(overview_group_item);
+
+  // Verify that windows in the Snap Group have been moved to `desk1`.
+  EXPECT_EQ(1u, desks_controller->desks().size());
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w1.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w2.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w3.get()));
+}
+
 TEST_F(SnapGroupDesksTest, DeskSwitchingWithKeyboardShortcut) {
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
