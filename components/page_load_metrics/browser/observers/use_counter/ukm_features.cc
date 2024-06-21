@@ -398,6 +398,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kSchedulingIsInputPending,
           WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,
           WebFeature::kV8GPUAdapter_RequestAdapterInfo_Method,
+          WebFeature::
+              kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin,
       }));
   return *opt_in_features;
 }
