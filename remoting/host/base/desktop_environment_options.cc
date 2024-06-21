@@ -149,6 +149,15 @@ void DesktopEnvironmentOptions::ApplySessionOptions(
   if (capture_video_on_dedicated_thread.has_value()) {
     set_capture_video_on_dedicated_thread(*capture_video_on_dedicated_thread);
   }
+
+#if BUILDFLAG(IS_MAC)
+  std::optional<bool> enable_sck_capturer =
+      options.GetBool("Enable-Sck-Capturer");
+  if (enable_sck_capturer.has_value()) {
+    desktop_capture_options_.set_allow_sck_capturer(*enable_sck_capturer);
+  }
+#endif  // IS_MAC
+
 #if defined(WEBRTC_USE_PIPEWIRE)
   desktop_capture_options_.set_allow_pipewire(true);
   desktop_capture_options_.set_pipewire_use_damage_region(true);
