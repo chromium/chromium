@@ -4,6 +4,8 @@
 
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 
+#include "base/task/sequenced_task_runner.h"
+
 namespace page_content_annotations {
 
 TestPageContentAnnotator::~TestPageContentAnnotator() = default;
@@ -31,7 +33,10 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
     }
   }
 
-  std::move(callback).Run(results);
+  // The annotations model usually runs in bg thread and callbacks are run
+  // async.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
 }
 
 void TestPageContentAnnotator::SetAlwaysHang(bool hang) {

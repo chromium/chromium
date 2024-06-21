@@ -85,6 +85,11 @@ base::TimeDelta PageContentAnnotationValidationStartupDelay();
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 size_t PageContentAnnotationsValidationBatchSize();
 
+// The timeout duration to run batch processing even when the batch size is not
+// full.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+base::TimeDelta PageContentAnnotationBatchSizeTimeoutDuration();
+
 // The amount of time the PCAService will wait for the title of a page to be
 // modified.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)

@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -77,6 +79,13 @@ struct HistoryVisit {
 
   struct Comp {
     bool operator()(const HistoryVisit& lhs, const HistoryVisit& rhs) const {
+      // The synced visits in history can be merged in any order to local model
+      // store. So, visit ID may not match the timeline order of visits. Most
+      // common case is to fetch the latest visit first and are assigned lower
+      // visit IDs. Prioritize timestamp for the comparison.
+      if (lhs.nav_entry_timestamp != rhs.nav_entry_timestamp) {
+        return lhs.nav_entry_timestamp < rhs.nav_entry_timestamp;
+      }
       if (lhs.visit_id && rhs.visit_id) {
         return *lhs.visit_id < *rhs.visit_id;
       }
@@ -84,8 +93,6 @@ struct HistoryVisit {
         // If we get here, this means that |rhs| does not have a visit ID.
         return false;
       }
-      if (lhs.nav_entry_timestamp != rhs.nav_entry_timestamp)
-        return lhs.nav_entry_timestamp < rhs.nav_entry_timestamp;
       return lhs.url < rhs.url;
     }
   };
@@ -223,7 +230,7 @@ class PageContentAnnotationsService
   bool MaybeStartAnnotateVisitBatch();
 
   // Runs the page annotation models available to |model_manager_| on all the
-  // visits within |current_visit_annotation_batch_|.
+  // visits within |visits_to_annotate_|.
   void AnnotateVisitBatch();
 
   // Runs when a single annotation job of |type| is completed and |batch_result|
@@ -373,7 +380,11 @@ class PageContentAnnotationsService
   // The set of visits to be annotated, this is added to by Annotate requests
   // from the web content observer. These will be annotated when the set is full
   // and annotations can be scheduled with minimal impact to browsing.
-  std::vector<HistoryVisit> visits_to_annotate_;
+  std::multiset<HistoryVisit, HistoryVisit::Comp> visits_to_annotate_;
+
+  // Callback to run batch annotations after a timeout if the batch size is not
+  // reached.
+  base::CancelableOnceClosure batch_annotations_start_timer_;
 
   // The set of |AnnotationType|'s to run on each of |visits_to_annotate_|.
   std::vector<AnnotationType> annotation_types_to_execute_;

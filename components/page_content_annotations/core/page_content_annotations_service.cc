@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 
+#include <iterator>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -272,7 +273,7 @@ void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
                << "URL: " << visit.url << "\n"
                << "Text: " << visit.text_to_annotate.value_or(std::string());
   }
-  visits_to_annotate_.emplace_back(visit);
+  visits_to_annotate_.insert(visit);
 
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
@@ -303,19 +304,40 @@ bool PageContentAnnotationsService::MaybeStartAnnotateVisitBatch() {
   bool batch_already_running = !current_visit_annotation_batch_.empty();
 
   if (is_full_batch_available && !batch_already_running) {
-    // Used for testing.
-    LOCAL_HISTOGRAM_BOOLEAN(
-        "PageContentAnnotations.AnnotateVisit.BatchAnnotationStarted", true);
-    current_visit_annotation_batch_ = std::move(visits_to_annotate_);
     AnnotateVisitBatch();
-
     return true;
+  }
+
+  // When the batch limit is set greater than 1, and if the visits count less
+  // than the limit, these are annotated after the timeout instead of never
+  // reaching the batch size and visits left unannotated.
+  if (visits_to_annotate_.size() > 0 && !batch_already_running &&
+      batch_annotations_start_timer_.callback().is_null()) {
+    batch_annotations_start_timer_.Reset(
+        base::BindOnce(&PageContentAnnotationsService::AnnotateVisitBatch,
+                       weak_ptr_factory_.GetWeakPtr()));
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, batch_annotations_start_timer_.callback(),
+        features::PageContentAnnotationBatchSizeTimeoutDuration());
   }
   return false;
 }
 
 void PageContentAnnotationsService::AnnotateVisitBatch() {
-  DCHECK(!current_visit_annotation_batch_.empty());
+  DCHECK(!visits_to_annotate_.empty());
+  DCHECK(current_visit_annotation_batch_.empty());
+
+  // Cancel any pending timers.
+  batch_annotations_start_timer_.Cancel();
+
+  current_visit_annotation_batch_.assign(
+      std::move_iterator(visits_to_annotate_.begin()),
+      std::make_move_iterator(visits_to_annotate_.end()));
+  visits_to_annotate_.clear();
+
+  // Used for testing.
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "PageContentAnnotations.AnnotateVisit.BatchAnnotationStarted", true);
 
   std::vector<std::string> inputs;
   for (const HistoryVisit& visit : current_visit_annotation_batch_) {
@@ -684,6 +706,7 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
 
   // By default, annotate the title.
   HistoryVisit history_visit(visit_row.visit_id);
+  history_visit.nav_entry_timestamp = visit_row.visit_time;
   history_visit.text_to_annotate = base::UTF16ToUTF8(url_row.title());
   history_visit.url = url_row.url();
   if (local_navigation_id) {

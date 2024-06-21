@@ -228,9 +228,14 @@ bool TextEmbeddingBatchAnnotationsEnabled() {
 }
 
 size_t AnnotateVisitBatchSize() {
-  return std::max(
-      1, GetFieldTrialParamByFeatureAsInt(kPageContentAnnotations,
-                                          "annotate_visit_batch_size", 1));
+  // When new visits are synced, the service gets visit notifications in a loop.
+  // The service drops new visits during processing a batch. Often only the
+  // `kDefaultBatchSize` entries are annotated when new visits are synced. Set
+  // the limit to 5 since up to 5 URLs are shown on tab resume module.
+  constexpr int kDefaultBatchSize = 5;
+  return std::max(1, GetFieldTrialParamByFeatureAsInt(
+                         kPageContentAnnotations, "annotate_visit_batch_size",
+                         kDefaultBatchSize));
 }
 
 base::TimeDelta PageContentAnnotationValidationStartupDelay() {
@@ -244,6 +249,11 @@ size_t PageContentAnnotationsValidationBatchSize() {
   return switches::PageContentAnnotationsValidationBatchSize().value_or(
       std::max(1, GetFieldTrialParamByFeatureAsInt(
                       kPageContentAnnotationsValidation, "batch_size", 25)));
+}
+
+base::TimeDelta PageContentAnnotationBatchSizeTimeoutDuration() {
+  return base::Seconds(GetFieldTrialParamByFeatureAsInt(
+      kPageContentAnnotations, "batch_annotations_timeout_seconds", 30));
 }
 
 size_t MaxVisitAnnotationCacheSize() {

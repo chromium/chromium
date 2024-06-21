@@ -4,11 +4,13 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
@@ -135,6 +137,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
           {
               {"write_to_history_service", "true"},
               {"pca_service_wait_for_title_delay_in_milliseconds", "4999"},
+              {"annotate_visit_batch_size", "1"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{
@@ -178,11 +181,13 @@ class PageContentAnnotationsServiceTest : public testing::Test {
                 const std::u16string& title,
                 history::VisitID visit_id,
                 std::optional<int64_t> local_navigation_id,
-                bool is_synced_visit = false) {
+                bool is_synced_visit = false,
+                base::Time timestamp = base::Time()) {
     history::URLRow url_row(url);
     url_row.set_title(title);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
+    new_visit.visit_time = timestamp;
     new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
     service_->OnURLVisitedWithNavigationId(history_service_.get(), url_row,
                                            new_visit, local_navigation_id);
@@ -199,8 +204,6 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 
  protected:
   std::unique_ptr<MockHistoryService> history_service_;
-
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
@@ -294,6 +297,94 @@ TEST_F(PageContentAnnotationsServiceTest, ObserveSyncedVisitsSearch) {
            /*is_synced_visit=*/true);
 
   task_environment_.FastForwardBy(base::Seconds(5));
+}
+
+TEST_F(PageContentAnnotationsServiceTest, BatchLimitTriggersJob) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPageContentAnnotations,
+        {{"annotate_visit_batch_size", "5"}}}},
+      {});
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, _))
+      .Times(5);
+#endif
+
+  for (int i = 0; i < 5; ++i) {
+    VisitURL(GURL("https://example.com"), u"test", i,
+             /*local_navigation_id=*/i,
+             /*is_synced_visit=*/false);
+  }
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
+TEST_F(PageContentAnnotationsServiceTest, BatchSizeTimeout) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPageContentAnnotations,
+        {{"annotate_visit_batch_size", "5"}}}},
+      {});
+
+  history::VisitID visit_id = 1;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id));
+#endif
+
+  VisitURL(GURL("https://example.com"), u"test", visit_id,
+           /*local_navigation_id=*/1,
+           /*is_synced_visit=*/false);
+
+  task_environment_.FastForwardBy(base::Seconds(35));
+}
+
+TEST_F(PageContentAnnotationsServiceTest, OlderVisitsDropped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPageContentAnnotations,
+        {{"annotate_visit_batch_size", "2"}}}},
+      {});
+
+  // First 2 visits are always processed, then the next 4 are queued and the
+  // most recent 2 are annotated.
+  constexpr base::Time kTestTime = base::Time() + base::Days(1000);
+  constexpr base::Time kTimestamps[6] = {
+      // Queue not full, gets annotated.
+      kTestTime + base::Days(12),
+      kTestTime,
+
+      // Annotation is running, 2 more gets queued.
+      kTestTime + base::Days(14),
+      kTestTime + base::Days(8),
+
+      // Annotation is running, queue is full, replaces the less recent entry.
+      kTestTime + base::Days(13),
+      // Annotation is running, queue is full, discarded since its the oldest.
+      kTestTime + base::Days(6),
+  };
+  base::flat_map<std::string, double> titles_to_score = {
+      {"test0", 0.5}, {"test1", 0.6}, {"test2", 0.7},
+      {"test3", 0.8}, {"test4", 0.9}, {"test5", 1.0},
+  };
+  test_annotator_->UseVisibilityScores(std::nullopt, titles_to_score);
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 1));
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 0));
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 4));
+  EXPECT_CALL(*history_service_, AddContentModelAnnotationsForVisit(_, 2));
+#endif
+
+  for (int i = 0; i < 6; ++i) {
+    VisitURL(GURL("https://example.com"),
+             base::UTF8ToUTF16((titles_to_score.begin() + i)->first), i,
+             /*local_navigation_id=*/i,
+             /*is_synced_visit=*/false, kTimestamps[i]);
+  }
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 class PageContentAnnotationsServiceRemotePageMetadataTest
