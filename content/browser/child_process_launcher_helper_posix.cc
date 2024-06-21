@@ -4,6 +4,7 @@
 
 #include "content/browser/child_process_launcher_helper_posix.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/field_trial.h"
@@ -60,10 +61,20 @@ std::unique_ptr<PosixFileDescriptorInfo> CreateDefaultPosixFilesToMap(
 
 // Mac shared memory doesn't use file descriptors.
 #if !BUILDFLAG(IS_APPLE)
-  DCHECK(mojo_channel_remote_endpoint.is_valid());
-  files_to_register->Share(
-      kMojoIPCChannel,
-      mojo_channel_remote_endpoint.platform_handle().GetFD().get());
+#if BUILDFLAG(IS_ANDROID)
+  // Android's endpoint may be a file descriptor or a binder. If it's a binder
+  // we share it by other means.
+  const bool share_channel_fd =
+      !mojo_channel_remote_endpoint.platform_handle().is_binder();
+#else
+  const bool share_channel_fd = true;
+#endif
+  if (share_channel_fd) {
+    DCHECK(mojo_channel_remote_endpoint.is_valid());
+    files_to_register->Share(
+        kMojoIPCChannel,
+        mojo_channel_remote_endpoint.platform_handle().GetFD().get());
+  }
 
   // TODO(jcivelli): remove this "if defined" by making
   // GetAdditionalMappedFilesForChildProcess a no op on Mac.

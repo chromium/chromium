@@ -154,10 +154,13 @@ public class ChildProcessConnection {
     private static class ConnectionParams {
         final Bundle mConnectionBundle;
         final List<IBinder> mClientInterfaces;
+        final IBinder mBinderBox;
 
-        ConnectionParams(Bundle connectionBundle, List<IBinder> clientInterfaces) {
+        ConnectionParams(
+                Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox) {
             mConnectionBundle = connectionBundle;
             mClientInterfaces = clientInterfaces;
+            mBinderBox = binderBox;
         }
     }
 
@@ -504,6 +507,7 @@ public class ChildProcessConnection {
      *     parameters to the service
      * @param clientInterfaces optional client specified interfaces that the child can use to
      *     communicate with the parent process
+     * @param binderBox optional binder box the child can use to unpack additional binders
      * @param connectionCallback will be called exactly once after the connection is set up or the
      *     setup fails
      * @param zygoteInfoCallback will be called exactly once after the connection is set up
@@ -511,6 +515,7 @@ public class ChildProcessConnection {
     public void setupConnection(
             Bundle connectionBundle,
             @Nullable List<IBinder> clientInterfaces,
+            @Nullable IBinder binderBox,
             ConnectionCallback connectionCallback,
             ZygoteInfoCallback zygoteInfoCallback) {
         assert isRunningOnLauncherThread();
@@ -523,7 +528,7 @@ public class ChildProcessConnection {
         try (TraceEvent te = TraceEvent.scoped("ChildProcessConnection.setupConnection")) {
             mConnectionCallback = connectionCallback;
             mZygoteInfoCallback = zygoteInfoCallback;
-            mConnectionParams = new ConnectionParams(connectionBundle, clientInterfaces);
+            mConnectionParams = new ConnectionParams(connectionBundle, clientInterfaces, binderBox);
             // Run the setup if the service is already connected. If not, doConnectionSetup() will
             // be called from onServiceConnected().
             if (mServiceConnectComplete) {
@@ -801,7 +806,8 @@ public class ChildProcessConnection {
                 mService.setupConnection(
                         mConnectionParams.mConnectionBundle,
                         parentProcess,
-                        mConnectionParams.mClientInterfaces);
+                        mConnectionParams.mClientInterfaces,
+                        mConnectionParams.mBinderBox);
             } catch (RemoteException re) {
                 Log.e(TAG, "Failed to setup connection.", re);
             }

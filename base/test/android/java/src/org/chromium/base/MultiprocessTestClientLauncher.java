@@ -160,7 +160,8 @@ public final class MultiprocessTestClientLauncher {
                         commandLine,
                         filesToMap,
                         sConnectionAllocator,
-                        Arrays.asList(mCallback, binderBox));
+                        Arrays.asList(mCallback),
+                        binderBox);
     }
 
     private boolean waitForConnection(long timeoutMs) {

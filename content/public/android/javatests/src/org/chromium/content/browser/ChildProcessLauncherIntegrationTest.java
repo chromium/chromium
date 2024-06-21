@@ -248,6 +248,7 @@ public class ChildProcessLauncherIntegrationTest {
         // Arguments to setupConnection
         private Bundle mConnectionBundle;
         private List<IBinder> mClientInterfaces;
+        private IBinder mBinderBox;
         private ConnectionCallback mConnectionCallback;
 
         public CrashOnLaunchChildProcessConnection(
@@ -271,9 +272,14 @@ public class ChildProcessLauncherIntegrationTest {
             mCrashServiceCalled = true;
             if (mConnectionBundle != null) {
                 super.setupConnection(
-                        mConnectionBundle, mClientInterfaces, mConnectionCallback, null);
+                        mConnectionBundle,
+                        mClientInterfaces,
+                        mBinderBox,
+                        mConnectionCallback,
+                        null);
                 mConnectionBundle = null;
                 mClientInterfaces = null;
+                mBinderBox = null;
                 mConnectionCallback = null;
             }
         }
@@ -288,16 +294,19 @@ public class ChildProcessLauncherIntegrationTest {
         public void setupConnection(
                 Bundle connectionBundle,
                 List<IBinder> clientInterfaces,
+                IBinder binderBox,
                 ConnectionCallback connectionCallback,
                 ZygoteInfoCallback zygoteInfoCallback) {
             // Make sure setupConnection is called after crashServiceForTesting so that
             // setupConnection is guaranteed to fail.
             if (mCrashServiceCalled) {
-                super.setupConnection(connectionBundle, clientInterfaces, connectionCallback, null);
+                super.setupConnection(
+                        connectionBundle, clientInterfaces, binderBox, connectionCallback, null);
                 return;
             }
             mConnectionBundle = connectionBundle;
             mClientInterfaces = clientInterfaces;
+            mBinderBox = binderBox;
             mConnectionCallback = connectionCallback;
         }
 

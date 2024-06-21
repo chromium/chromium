@@ -263,7 +263,8 @@ public class ChildProcessLauncherTest {
                                                 commandLine,
                                                 filesToBeMapped,
                                                 mConnectionAllocator,
-                                                Arrays.asList(childProcessBinder));
+                                                Arrays.asList(childProcessBinder),
+                                                /* binderBox= */ null);
                                 processLauncher.start(
                                         /* setupConnection= */ true,
                                         /* queueIfNoFreeConnection= */ false);
@@ -516,7 +517,8 @@ public class ChildProcessLauncherTest {
                                         new String[0],
                                         new FileDescriptorInfo[0],
                                         connectionAllocator,
-                                        /* binderCallback= */ null);
+                                        /* binderCallback= */ null,
+                                        /* binderBox= */ null);
                         if (!processLauncher.start(setupConnection, queueIfNoFreeConnection)) {
                             return null;
                         }

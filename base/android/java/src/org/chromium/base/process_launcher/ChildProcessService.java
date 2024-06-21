@@ -157,7 +157,10 @@ public class ChildProcessService {
 
                 @Override
                 public void setupConnection(
-                        Bundle args, IParentProcess parentProcess, List<IBinder> callbacks)
+                        Bundle args,
+                        IParentProcess parentProcess,
+                        List<IBinder> callbacks,
+                        IBinder binderBox)
                         throws RemoteException {
                     assert mServiceBound;
                     synchronized (mBinderLock) {
@@ -189,7 +192,7 @@ public class ChildProcessService {
                     parentProcess.finishSetupConnection(
                             pid, zygotePid, startupTimeMillis, relroBundle);
                     mParentProcess = parentProcess;
-                    processConnectionBundle(args, callbacks);
+                    processConnectionBundle(args, callbacks, binderBox);
                 }
 
                 @Override
@@ -400,7 +403,8 @@ public class ChildProcessService {
         sZygoteStartupTimeMillis = zygoteStartupTimeMillis;
     }
 
-    private void processConnectionBundle(Bundle bundle, List<IBinder> clientInterfaces) {
+    private void processConnectionBundle(
+            Bundle bundle, List<IBinder> clientInterfaces, IBinder binderBox) {
         // Required to unparcel FileDescriptorInfo.
         ClassLoader classLoader = getApplicationContext().getClassLoader();
         bundle.setClassLoader(classLoader);
@@ -420,7 +424,7 @@ public class ChildProcessService {
                 mFdInfos = new FileDescriptorInfo[fdInfosAsParcelable.length];
                 System.arraycopy(fdInfosAsParcelable, 0, mFdInfos, 0, fdInfosAsParcelable.length);
             }
-            mDelegate.onConnectionSetup(bundle, clientInterfaces);
+            mDelegate.onConnectionSetup(bundle, clientInterfaces, binderBox);
             mMainThread.notifyAll();
         }
     }

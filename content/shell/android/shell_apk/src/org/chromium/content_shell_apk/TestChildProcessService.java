@@ -53,7 +53,8 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void onConnectionSetup(Bundle connectionBundle, List<IBinder> clientInterfaces) {
+        public void onConnectionSetup(
+                Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox) {
             if (clientInterfaces != null && !clientInterfaces.isEmpty()) {
                 mIChildProcessTest = IChildProcessTest.Stub.asInterface(clientInterfaces.get(0));
             }

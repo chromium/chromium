@@ -48,9 +48,10 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     public void onServiceBound(Intent intent) {}
 
     @Override
-    public void onConnectionSetup(Bundle connectionBundle, List<IBinder> callbacks) {
+    public void onConnectionSetup(
+            Bundle connectionBundle, List<IBinder> callbacks, IBinder binderBox) {
         mTestCallback = ITestCallback.Stub.asInterface(callbacks.get(0));
-        mBinderBox = callbacks.get(1);
+        mBinderBox = binderBox;
     }
 
     @Override

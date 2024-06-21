@@ -358,7 +358,8 @@ public final class ChildProcessLauncherHelperImpl {
             long nativePointer,
             String[] commandLine,
             FileDescriptorInfo[] filesToBeMapped,
-            boolean canUseWarmUpConnection) {
+            boolean canUseWarmUpConnection,
+            @Nullable IBinder binderBox) {
         assert LauncherThread.runningOnLauncherThread();
         String processType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
@@ -400,7 +401,8 @@ public final class ChildProcessLauncherHelperImpl {
                         sandboxed,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
-                        binderCallback);
+                        binderCallback,
+                        binderBox);
         helper.start();
 
         if (sandboxed && !sCheckedServiceGroupImportance) {
@@ -646,7 +648,8 @@ public final class ChildProcessLauncherHelperImpl {
             boolean sandboxed,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
-            IBinder binderCallback) {
+            IBinder binderCallback,
+            IBinder binderBox) {
         assert LauncherThread.runningOnLauncherThread();
 
         mNativeChildProcessLauncherHelper = nativePointer;
@@ -655,6 +658,7 @@ public final class ChildProcessLauncherHelperImpl {
         mCanUseWarmUpConnection = canUseWarmUpConnection;
         ChildConnectionAllocator connectionAllocator =
                 getConnectionAllocator(ContextUtils.getApplicationContext(), sandboxed);
+
         mLauncher =
                 new ChildProcessLauncher(
                         LauncherThread.getHandler(),
@@ -662,7 +666,8 @@ public final class ChildProcessLauncherHelperImpl {
                         commandLine,
                         filesToBeMapped,
                         connectionAllocator,
-                        binderCallback == null ? null : Arrays.asList(binderCallback));
+                        binderCallback == null ? null : Arrays.asList(binderCallback),
+                        binderBox);
         mProcessType =
                 ContentSwitchUtils.getSwitchValue(commandLine, ContentSwitches.SWITCH_PROCESS_TYPE);
 
@@ -949,7 +954,8 @@ public final class ChildProcessLauncherHelperImpl {
                         sandboxed,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
-                        binderCallback);
+                        binderCallback,
+                        null);
         launcherHelper.mLauncher.start(doSetupConnection, /* queueIfNoFreeConnection= */ true);
         return launcherHelper;
     }

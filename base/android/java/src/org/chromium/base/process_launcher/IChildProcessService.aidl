@@ -23,7 +23,7 @@ interface IChildProcessService {
 
   // Sets up the initial IPC channel.
   oneway void setupConnection(in Bundle args, IParentProcess parentProcess,
-          in List<IBinder> clientInterfaces);
+          in List<IBinder> clientInterfaces, in IBinder binderBox);
 
   // Forcefully kills the child process.
   oneway void forceKill();
