@@ -104,7 +104,7 @@ TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
   auto value = base::JSONReader::Read(validOpenUrlParam);
   ASSERT_TRUE(value.has_value());
   action().Run(
-      /*campaign_id=*/1, &value->GetDict(),
+      /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
       base::BindOnce(
           &OpenUrlActionPerformerTest::RunOpenUrlActionPerformerCallback,
           base::Unretained(this)));
@@ -118,7 +118,7 @@ TEST_F(OpenUrlActionPerformerTest, TestInvalidOpenUrlParams) {
   auto value = base::JSONReader::Read(invalidOpenUrlParam);
   ASSERT_TRUE(value.has_value());
   action().Run(
-      /*campaign_id=*/1, &value->GetDict(),
+      /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
       base::BindOnce(
           &OpenUrlActionPerformerTest::RunOpenUrlActionPerformerCallback,
           base::Unretained(this)));

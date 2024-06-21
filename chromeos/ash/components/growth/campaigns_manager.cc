@@ -215,7 +215,9 @@ void CampaignsManager::SetIsUserOwner(bool is_user_owner) {
   matcher_.SetIsUserOwner(is_user_owner);
 }
 
-void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
+void CampaignsManager::PerformAction(int campaign_id,
+                                     std::optional<int> group_id,
+                                     const Action* action) {
   CHECK(action);
 
   auto* params = action->GetParams();
@@ -226,10 +228,11 @@ void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
     return;
   }
 
-  PerformAction(campaign_id, action_type.value(), params);
+  PerformAction(campaign_id, group_id, action_type.value(), params);
 }
 
 void CampaignsManager::PerformAction(int campaign_id,
+                                     std::optional<int> group_id,
                                      const ActionType action_type,
                                      const base::Value::Dict* params) {
   auto& action_performer = actions_map_.at(action_type);
@@ -239,7 +242,7 @@ void CampaignsManager::PerformAction(int campaign_id,
   }
 
   action_performer->Run(
-      campaign_id, params,
+      campaign_id, group_id, params,
       base::BindOnce(
           [](growth::ActionType action_type, growth::ActionResult result,
              std::optional<growth::ActionResultReason> reason) {

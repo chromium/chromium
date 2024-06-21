@@ -101,7 +101,7 @@ TEST_F(ShowNudgeActionPerformerTest, TestValidPayloadParams) {
   auto value = base::JSONReader::Read(validPayloadParam);
   ASSERT_TRUE(value.has_value());
   action().Run(
-      /*campaign_id=*/1, &value->GetDict(),
+      /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
       base::BindOnce(&ShowNudgeActionPerformerTest::RunActionPerformerCallback,
                      base::Unretained(this)));
 
@@ -113,7 +113,7 @@ TEST_F(ShowNudgeActionPerformerTest, TestInvalidPayloadParams) {
   auto value = base::JSONReader::Read(inValidOpenUrlParam);
   ASSERT_TRUE(value.has_value());
   action().Run(
-      /*campaign_id=*/1, &value->GetDict(),
+      /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
       base::BindOnce(&ShowNudgeActionPerformerTest::RunActionPerformerCallback,
                      base::Unretained(this)));
 
@@ -126,7 +126,7 @@ TEST_F(ShowNudgeActionPerformerTest, TestInvalidPayloadBody) {
   auto value = base::JSONReader::Read(inValidOpenUrlParam);
   ASSERT_TRUE(value.has_value());
   action().Run(
-      /*campaign_id=*/1, &value->GetDict(),
+      /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
       base::BindOnce(&ShowNudgeActionPerformerTest::RunActionPerformerCallback,
                      base::Unretained(this)));
 
@@ -140,11 +140,12 @@ TEST_F(ShowNudgeActionPerformerTest, ShouldCallOnReadyToLogImpression) {
   ASSERT_TRUE(value.has_value());
 
   int campaign_id = 100;
-  EXPECT_CALL(mock_observer_, OnReadyToLogImpression(testing::Eq(campaign_id)))
+  EXPECT_CALL(mock_observer_, OnReadyToLogImpression(testing::Eq(campaign_id),
+                                                     /*group_id=*/testing::_))
       .Times(1);
 
   action().Run(
-      campaign_id, &value->GetDict(),
+      campaign_id, /*group_id=*/std::nullopt, &value->GetDict(),
       base::BindOnce(&ShowNudgeActionPerformerTest::RunActionPerformerCallback,
                      base::Unretained(this)));
 

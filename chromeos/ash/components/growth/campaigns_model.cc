@@ -33,6 +33,7 @@ namespace {
 inline constexpr char kTargetings[] = "targetings";
 
 inline constexpr char kId[] = "id";
+inline constexpr char kGroupId[] = "groupId";
 inline constexpr char kStudyId[] = "studyId";
 inline constexpr char kShouldRegisterTrialWithTriggerEventName[] =
     "registerTrialWithTriggerEventName";
@@ -291,6 +292,10 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
 
 std::optional<int> GetCampaignId(const Campaign* campaign) {
   return campaign->FindInt(kId);
+}
+
+std::optional<int> GetCampaignGroupId(const Campaign* campaign) {
+  return campaign->FindInt(kGroupId);
 }
 
 std::optional<int> GetStudyId(const Campaign* campaign) {

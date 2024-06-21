@@ -199,24 +199,34 @@ signin::IdentityManager* CampaignsManagerClientImpl::GetIdentityManager()
   return IdentityManagerFactory::GetForProfile(GetProfile());
 }
 
-void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
+void CampaignsManagerClientImpl::OnReadyToLogImpression(
+    int campaign_id,
+    std::optional<int> group_id) {
+  // Records impression UMA metrics.
+  // TODO: b/348495965 - Verify group metrics when ready.
   RecordImpression(campaign_id);
-  campaigns_manager_->RecordEventForTargeting(
-      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
+  RecordEvents(growth::CampaignEvent::kImpression, campaign_id, group_id);
 }
 
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
+                                             std::optional<int> group_id,
                                              bool should_mark_dismissed) {
+  // Records dismissal UMA metrics.
+  // TODO: b/348495965 - Verify group metrics when ready.
   RecordDismissed(campaign_id);
-  if (should_mark_dismissed) {
-    campaigns_manager_->RecordEventForTargeting(
-        growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+
+  if (!should_mark_dismissed) {
+    return;
   }
+
+  RecordEvents(growth::CampaignEvent::kDismissed, campaign_id, group_id);
 }
 
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
+                                                 std::optional<int> group_id,
                                                  CampaignButtonId button_id,
                                                  bool should_mark_dismissed) {
+  // TODO: b/348495965 - Verify group metrics when ready.
   RecordButtonPressed(campaign_id, button_id);
 
   if (!should_mark_dismissed) {
@@ -231,8 +241,7 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
     case CampaignButtonId::kClose:
       // Primary, Secondary and close button press will treated as user
       // dismissal.
-      campaigns_manager_->RecordEventForTargeting(
-          growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+      RecordEvents(growth::CampaignEvent::kDismissed, campaign_id, group_id);
       break;
     case CampaignButtonId::kOthers:
       break;
@@ -263,4 +272,17 @@ void CampaignsManagerClientImpl::UpdateConfig(
   config_provider_.SetConfig(params);
   tracker->UpdateConfig(feature_engagement::kIPHGrowthFramework,
                         &config_provider_);
+}
+
+void CampaignsManagerClientImpl::RecordEvents(growth::CampaignEvent,
+                                              int campaign_id,
+                                              std::optional<int> group_id) {
+  campaigns_manager_->RecordEventForTargeting(
+      growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
+
+  if (group_id) {
+    campaigns_manager_->RecordEventForTargeting(
+        growth::CampaignEvent::kGroupImpression,
+        base::NumberToString(group_id.value()));
+  }
 }

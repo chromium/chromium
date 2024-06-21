@@ -211,9 +211,10 @@ ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
 }
 
 void ShowNudgeActionPerformer::Run(int campaign_id,
+                                   std::optional<int> group_id,
                                    const base::Value::Dict* action_params,
                                    growth::ActionPerformer::Callback callback) {
-  if (!ShowNudge(campaign_id, action_params)) {
+  if (!ShowNudge(campaign_id, group_id, action_params)) {
     // TODO: b/331953307 - callback with concrete failure result reason.
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
@@ -283,6 +284,7 @@ std::optional<views::View*> GetAnchor(const NudgePayload* nudge_payload) {
 }
 
 bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
+                                         std::optional<int> group_id,
                                          const NudgePayload* nudge_payload) {
   if (!nudge_payload) {
     return false;
@@ -331,11 +333,11 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
       ConvertDuration(static_cast<NudgeDuration>(duration_value));
 
   // Add buttons if available.
-  MaybeSetButtonData(campaign_id, nudge_payload->FindDict(kPrimaryButtonPath),
-                     nudge_data,
+  MaybeSetButtonData(campaign_id, group_id,
+                     nudge_payload->FindDict(kPrimaryButtonPath), nudge_data,
                      /*is_primary=*/true);
-  MaybeSetButtonData(campaign_id, nudge_payload->FindDict(kSecondaryButtonPath),
-                     nudge_data,
+  MaybeSetButtonData(campaign_id, group_id,
+                     nudge_payload->FindDict(kSecondaryButtonPath), nudge_data,
                      /*is_primary=*/false);
 
   // Set image data if available.
@@ -347,9 +349,9 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   nudge_data.arrow = ConvertArrow(static_cast<Arrow>(arrow_value));
 
   // Set nudge dismiss callback.
-  nudge_data.dismiss_callback =
-      base::BindRepeating(&ShowNudgeActionPerformer::OnNudgeDismissed,
-                          weak_ptr_factory_.GetWeakPtr(), campaign_id);
+  nudge_data.dismiss_callback = base::BindRepeating(
+      &ShowNudgeActionPerformer::OnNudgeDismissed,
+      weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id);
 
   // Shell may not be initialized in test.
   if (ash::Shell::HasInstance()) {
@@ -374,7 +376,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   }
 
   // TODO: b/331045558 - Add close button callback.
-  NotifyReadyToLogImpression(campaign_id);
+  NotifyReadyToLogImpression(campaign_id, group_id);
 
   const base::Value::List* clear_events =
       nudge_payload->FindList(kClearEventsPath);
@@ -394,6 +396,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 
 void ShowNudgeActionPerformer::MaybeSetButtonData(
     int campaign_id,
+    std::optional<int> group_id,
     const base::Value::Dict* button_dict,
     ash::AnchoredNudgeData& nudge_data,
     bool is_primary) {
@@ -415,7 +418,7 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
   auto button_text = base::UTF8ToUTF16(*button_text_value);
   auto callback = base::BindRepeating(
       &ShowNudgeActionPerformer::OnNudgeButtonClicked,
-      weak_ptr_factory_.GetWeakPtr(), campaign_id,
+      weak_ptr_factory_.GetWeakPtr(), campaign_id, group_id,
       is_primary ? CampaignButtonId::kPrimary : CampaignButtonId::kSecondary,
       action, should_mark_dismissed);
   if (is_primary) {
@@ -429,10 +432,11 @@ void ShowNudgeActionPerformer::MaybeSetButtonData(
 
 void ShowNudgeActionPerformer::OnNudgeButtonClicked(
     int campaign_id,
+    std::optional<int> group_id,
     CampaignButtonId button_id,
     const base::Value::Dict* action_dict,
     bool should_mark_dismissed) {
-  NotifyButtonPressed(campaign_id, button_id, should_mark_dismissed);
+  NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed);
 
   if (!action_dict) {
     return;
@@ -454,14 +458,15 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
   auto* campaigns_manager = growth::CampaignsManager::Get();
   CHECK(campaigns_manager);
 
-  campaigns_manager->PerformAction(campaign_id, &action);
+  campaigns_manager->PerformAction(campaign_id, group_id, &action);
 }
 
-void ShowNudgeActionPerformer::OnNudgeDismissed(int campaign_id) {
+void ShowNudgeActionPerformer::OnNudgeDismissed(int campaign_id,
+                                                std::optional<int> group_id) {
   // Dismissed automatically or by clicking on the X button. In this case, we
   // don't mark the nudge as dismissed and will resurface if impression
   // conditions met.
-  NotifyDismissed(campaign_id, /*should_mark_dismissed=*/false);
+  NotifyDismissed(campaign_id, group_id, /*should_mark_dismissed=*/false);
 }
 
 void ShowNudgeActionPerformer::OnWidgetVisibilityChanged(views::Widget* widget,

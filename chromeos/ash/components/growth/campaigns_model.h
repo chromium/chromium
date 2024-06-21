@@ -124,6 +124,9 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 std::optional<int> GetCampaignId(const Campaign* campaign);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+std::optional<int> GetCampaignGroupId(const Campaign* campaign);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 std::optional<int> GetStudyId(const Campaign* campaign);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)

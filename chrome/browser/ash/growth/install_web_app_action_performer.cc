@@ -125,6 +125,7 @@ InstallWebAppActionPerformer::~InstallWebAppActionPerformer() = default;
 
 void InstallWebAppActionPerformer::Run(
     int campaign_id,
+    std::optional<int> group_id,
     const base::Value::Dict* params,
     growth::ActionPerformer::Callback callback) {
   if (!GetWebAppProvider()) {

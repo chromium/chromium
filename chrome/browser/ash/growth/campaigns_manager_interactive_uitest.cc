@@ -272,6 +272,25 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
+                       NotifyEventGroupImpression) {
+  const std::string event_name =
+      "ChromeOSAshGrowthCampaigns_Group10_Impression";
+  EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
+
+  growth::CampaignsManager::Get()->RecordEventForTargeting(
+      growth::CampaignEvent::kGroupImpression, "10");
+}
+
+IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
+                       NotifyEventGroupDismissal) {
+  const std::string event_name = "ChromeOSAshGrowthCampaigns_Group10_Dismissed";
+  EXPECT_CALL(*GetMockTracker(), NotifyEvent(event_name)).Times(1);
+
+  growth::CampaignsManager::Get()->RecordEventForTargeting(
+      growth::CampaignEvent::kGroupDismissed, "10");
+}
+
+IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiTest,
                        NotifyEventAppOpened) {
   const std::string event_name =
       "ChromeOSAshGrowthCampaigns_AppOpened_AppId_abcd";

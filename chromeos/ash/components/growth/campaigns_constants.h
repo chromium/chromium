@@ -18,7 +18,9 @@ enum class CampaignEvent {
   // Dismissed by user explicitly, e.g. click a button in the UI.
   kDismissed,
   kAppOpened,
-  kEvent
+  kEvent,
+  kGroupImpression,
+  kGroupDismissed
 };
 
 // TODO: b/341955045 - Separate for UIEvent and AppOpenedEvent.

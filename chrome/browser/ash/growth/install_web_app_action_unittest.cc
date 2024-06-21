@@ -136,7 +136,7 @@ TEST_F(InstallWebAppActionPerformerTest, TestValidInstallation) {
       base::StringPrintf(kAppInstallTemplate, kValidURLKey, kValidURL);
   auto value = base::JSONReader::Read(validInstallDictString);
   ASSERT_TRUE(value.has_value());
-  action().Run(/*campaign_id=*/1, &value->GetDict(),
+  action().Run(/*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
                base::BindOnce(&InstallWebAppActionPerformerTest::
                                   InstallWebAppActionPerformerCallback,
                               base::Unretained(this)));
@@ -149,7 +149,7 @@ TEST_F(InstallWebAppActionPerformerTest, TestInvalidInstallationInvalidURL) {
   auto value = base::JSONReader::Read(invalidInstallDictString);
   ASSERT_TRUE(value.has_value());
 
-  action().Run(/*campaign_id=*/1, &value->GetDict(),
+  action().Run(/*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
                base::BindOnce(&InstallWebAppActionPerformerTest::
                                   InstallWebAppActionPerformerCallback,
                               base::Unretained(this)));
@@ -162,7 +162,7 @@ TEST_F(InstallWebAppActionPerformerTest, TestInvalidUrlKey) {
   auto value = base::JSONReader::Read(invalidInstallDictString);
   ASSERT_TRUE(value.has_value());
 
-  action().Run(/*campaign_id=*/1, &value->GetDict(),
+  action().Run(/*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
                base::BindOnce(&InstallWebAppActionPerformerTest::
                                   InstallWebAppActionPerformerCallback,
                               base::Unretained(this)));
@@ -177,7 +177,7 @@ TEST_F(InstallWebAppActionPerformerTest, InvalidRequest) {
     })";
   auto value = base::JSONReader::Read(kInvalidParams);
   ASSERT_TRUE(value.has_value());
-  action().Run(/*campaign_id=*/1, &value->GetDict(),
+  action().Run(/*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
                base::BindOnce(&InstallWebAppActionPerformerTest::
                                   InstallWebAppActionPerformerCallback,
                               base::Unretained(this)));

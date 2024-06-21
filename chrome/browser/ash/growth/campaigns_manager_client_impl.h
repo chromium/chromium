@@ -59,9 +59,13 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
   signin::IdentityManager* GetIdentityManager() const override;
 
   // UiActionPerformer::Observer:
-  void OnReadyToLogImpression(int campaign_id) override;
-  void OnDismissed(int campaign_id, bool should_mark_dismissed) override;
+  void OnReadyToLogImpression(int campaign_id,
+                              std::optional<int> group_id) override;
+  void OnDismissed(int campaign_id,
+                   std::optional<int> group_id,
+                   bool should_mark_dismissed) override;
   void OnButtonPressed(int campaign_id,
+                       std::optional<int> group_id,
                        CampaignButtonId button_id,
                        bool should_mark_dismissed) override;
 
@@ -71,6 +75,9 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
       component_updater::ComponentManagerAsh::Error error,
       const base::FilePath& path);
   void UpdateConfig(const std::map<std::string, std::string>& params);
+  void RecordEvents(growth::CampaignEvent,
+                    int campaign_id,
+                    std::optional<int> group_id);
 
   growth::CampaignsConfigurationProvider config_provider_;
   std::unique_ptr<growth::CampaignsManager> campaigns_manager_;

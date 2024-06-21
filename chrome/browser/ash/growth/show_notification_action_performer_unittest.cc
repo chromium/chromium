@@ -114,11 +114,13 @@ TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
   auto value = base::JSONReader::Read(valid_params);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(mock_observer_,
-              OnReadyToLogImpression(testing::Eq(kTestCampaignId)))
+              OnReadyToLogImpression(testing::Eq(kTestCampaignId),
+                                     testing::Eq(std::nullopt)))
       .Times(1);
 
   action().Run(
-      /*campaign_id=*/kTestCampaignId, &value->GetDict(),
+      /*campaign_id=*/kTestCampaignId, /*group_id=*/std::nullopt,
+      &value->GetDict(),
       base::BindOnce(&ShowNotificationActionPerformerTest::
                          RunShowNotificationActionPerformerCallback,
                      base::Unretained(this)));
@@ -151,11 +153,13 @@ TEST_F(ShowNotificationActionPerformerTest, TestInvalidParams) {
   auto value = base::JSONReader::Read(invalid_params);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(mock_observer_,
-              OnReadyToLogImpression(testing::Eq(kTestCampaignId)))
+              OnReadyToLogImpression(testing::Eq(kTestCampaignId),
+                                     testing::Eq(std::nullopt)))
       .Times(0);
 
   action().Run(
-      /*campaign_id=*/kTestCampaignId, &value->GetDict(),
+      /*campaign_id=*/kTestCampaignId, /*group_id=*/std::nullopt,
+      &value->GetDict(),
       base::BindOnce(&ShowNotificationActionPerformerTest::
                          RunShowNotificationActionPerformerCallback,
                      base::Unretained(this)));

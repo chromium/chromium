@@ -85,11 +85,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Select action performer based on the given `action`. Action includes the
   // action type and action params for performing action.
-  void PerformAction(int campaign_id, const Action* action);
+  void PerformAction(int campaign_id,
+                     std::optional<int> group_id,
+                     const Action* action);
 
   // Select action performer based on the action type and perform action with
   // action params.
   void PerformAction(int campaign_id,
+                     std::optional<int> group_id,
                      const ActionType action_type,
                      const base::Value::Dict* params);
 

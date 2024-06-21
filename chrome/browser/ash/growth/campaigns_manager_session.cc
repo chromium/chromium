@@ -110,8 +110,9 @@ void MaybeTriggerSlot(growth::Slot slot) {
     return;
   }
 
-  campaigns_manager->PerformAction(campaign_id.value(), action_type.value(),
-                                   payload);
+  campaigns_manager->PerformAction(campaign_id.value(),
+                                   growth::GetCampaignGroupId(campaign),
+                                   action_type.value(), payload);
 }
 
 void MaybeTriggerCampaignsOnEvent(const std::string& event) {

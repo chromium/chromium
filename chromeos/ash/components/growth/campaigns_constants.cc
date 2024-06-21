@@ -31,6 +31,10 @@ constexpr char kGrowthCampaignsEventNamePrefix[] = "ChromeOSAshGrowthCampaigns";
 constexpr char kCampaignEventNameImpressionTemplate[] =
     "_Campaign%s_Impression";
 constexpr char kCampaignEventNameDismissedTemplate[] = "_Campaign%s_Dismissed";
+constexpr char kCampaignEventNameGroupImpressionTemplate[] =
+    "_Group%s_Impression";
+constexpr char kCampaignEventNameGroupDismissedTemplate[] =
+    "_Group%s_Dismissed";
 
 // `CampaignEvent::kAppOpened` event names will be suffixed by individual app id
 // (e.g. [hash]).
@@ -110,6 +114,12 @@ std::string GetEventName(CampaignEvent event, const std::string& id) {
       break;
     case growth::CampaignEvent::kEvent:
       event_name = growth::kCampaignEventNameEventTemplate;
+      break;
+    case growth::CampaignEvent::kGroupImpression:
+      event_name = growth::kCampaignEventNameGroupImpressionTemplate;
+      break;
+    case growth::CampaignEvent::kGroupDismissed:
+      event_name = growth::kCampaignEventNameGroupDismissedTemplate;
       break;
   }
 

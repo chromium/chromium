@@ -54,6 +54,7 @@ class ActionPerformer {
   virtual ~ActionPerformer() = default;
 
   virtual void Run(int campaign_id,
+                   std::optional<int> group_id,
                    const base::Value::Dict* action_params,
                    Callback callback) = 0;
 
