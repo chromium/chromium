@@ -15,6 +15,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/unique_position.proto";
+
 // A Product Comparison sync entity, containing sufficient data to enable all
 // data acquisition for rendering the Compare experience.
 message ProductComparisonSpecifics {
@@ -27,14 +29,43 @@ message ProductComparisonSpecifics {
   // Tracks when this entity was last modified (milliseconds since epoch).
   optional int64 update_time_unix_epoch_millis = 3;
 
-  // The name of the comparison group.
+  // The name of the comparison group. Will de deprecated in favor of
+  // ProductComparison#name.
   optional string name = 4;
 
-  // The list of product URLs that constitute this comparison group.
+  // The list of product URLs that constitute this comparison group. Will be
+  // deprecated in favor of ProductComparisonItem#url.
   repeated ComparisonData data = 5;
+
+  // For splitting out a Product Comparison into multiple specifics.
+  oneof entity {
+    ProductComparison product_comparison = 6;
+    ProductComparisonItem product_comparison_item = 7;
+  }
 }
 
 message ComparisonData {
   // The URL of the item in the comparison.
   optional string url = 1;
+}
+
+// Product Comparison specific - top level data about the product comparison.
+message ProductComparison {
+  // Name of this Product Comparison
+  optional string name = 1;
+}
+
+// Product Comparison Item specific - data about one item in the product
+// comparison.
+message ProductComparisonItem {
+  // Identifier of top level ProductComparison specifics this item belongs to
+  optional string product_comparison_uuid = 1;
+
+  // URL for product comparison.
+  optional string url = 2;
+
+  // Ensures unique ordering among items in a product comparison. This is
+  // necessary because the ProductComparisonItems point to a ProductComparison
+  // and not the opposite, so we need to explicitly define the ordering.
+  optional UniquePosition unique_position = 3;
 }

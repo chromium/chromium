@@ -350,12 +350,24 @@ VISIT_PROTO_FIELDS(const sync_pb::ComparisonData& proto) {
   VISIT(url);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::ProductComparison& proto) {
+  VISIT(name);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonItem& proto) {
+  VISIT(product_comparison_uuid);
+  VISIT(url);
+  VISIT(unique_position);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonSpecifics& proto) {
   VISIT(uuid);
   VISIT(creation_time_unix_epoch_millis);
   VISIT(update_time_unix_epoch_millis);
   VISIT(name);
   VISIT_REP(data);
+  VISIT(product_comparison);
+  VISIT(product_comparison_item);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContactInfoSpecifics& proto) {
