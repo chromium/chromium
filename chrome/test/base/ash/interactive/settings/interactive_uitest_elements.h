@@ -55,6 +55,9 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSummaryItem();
 // The hotspot toggle in the hotspot "row" of the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery HotspotToggle();
 
+// The hotspot row's policy icon in cases where usage is restricted.
+WebContentsInteractionTestUtil::DeepQuery HotspotPolicyIcon();
+
 }  // namespace hotspot
 
 namespace wifi {

@@ -9,7 +9,10 @@ assert(is_chromeos_ash)
 source_set("interactive_ui_tests") {
   testonly = true
 
-  sources = [ "toggle_hotspot_interactive_uitest.cc" ]
+  sources = [
+    "hotspot_policy_interactive_uitest.cc",
+    "toggle_hotspot_interactive_uitest.cc",
+  ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -19,6 +22,7 @@ source_set("interactive_ui_tests") {
     "//chrome/test/base/ash/interactive/network:test_support",
     "//chrome/test/base/ash/interactive/settings:test_support",
     "//chromeos/ash/components/dbus/shill:test_support",
+    "//chromeos/ash/components/network:network",
     "//content/test:test_support",
     "//ui/base",
     "//ui/base:test_support",
