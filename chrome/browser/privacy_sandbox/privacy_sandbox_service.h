@@ -273,8 +273,10 @@ class PrivacySandboxService : public KeyedService {
 
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.
-  // TODO (crbug.com/1378703): Determine whether changes to the preference,
-  // such as by policy or extensions, should also call here.
+  // This is not fired for changes to the preference for policy or extensions,
+  // and so consent information only represents direct user actions. Note that
+  // extensions and policy can only _disable_ topics, and so cannot bypass the
+  // need for user consent where required.
   // Virtual for mocking in tests.
   virtual void TopicsToggleChanged(bool new_value) const = 0;
 
@@ -286,7 +288,6 @@ class PrivacySandboxService : public KeyedService {
 
   // Functions which returns the details of the currently recorded Topics
   // consent.
-  // TODO (crbug.com/1378703): Display the output of these functions in WebUI.
   virtual privacy_sandbox::TopicsConsentUpdateSource
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
