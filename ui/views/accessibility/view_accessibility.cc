@@ -957,4 +957,9 @@ void ViewAccessibility::SetDataForClosedWidget(ui::AXNodeData* data) const {
   }
 }
 
+void ViewAccessibility::SetHierarchicalLevel(int hierarchical_level) {
+  data_.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
+                        hierarchical_level);
+}
+
 }  // namespace views

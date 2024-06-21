@@ -305,6 +305,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetShowContextMenu(bool show_context_menu);
 
   void SetState(ax::mojom::State state, bool is_enabled);
+  void SetHierarchicalLevel(int hierarchical_level);
 
   // Updates the focusable state of the `data_` object.
   // The view is considered focusable if it is not set to never receive focus
