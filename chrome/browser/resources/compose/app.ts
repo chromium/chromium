@@ -16,8 +16,6 @@ import '//resources/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {CrA11yAnnouncerElement} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -749,12 +747,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.$.redoButton.focus();
         break;
     }
-
-    setTimeout(() => {
-      // A11y announcement for results being updated.
-      const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
-      announcer.announce(this.i18n('resultUpdatedA11yMessage'));
-    });
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
