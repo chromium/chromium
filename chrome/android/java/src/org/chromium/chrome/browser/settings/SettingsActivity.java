@@ -216,6 +216,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         setStatusBarColor();
         initBottomSheet();
+
+        mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
     }
 
     @Override
@@ -358,11 +360,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        ViewGroup contentView = findViewById(android.R.id.content);
-        mSnackbarManager = new SnackbarManager(this, contentView, null);
-
         Fragment fragment = getMainFragment();
-
         if (fragment instanceof BaseSiteSettingsFragment) {
             ChromeSiteSettingsDelegate delegate =
                     (ChromeSiteSettingsDelegate)
