@@ -116,6 +116,16 @@
   safety_check_prefs::DisableSafetyCheckInMagicStack(_localState);
 }
 
+- (void)reset {
+  _safetyCheckState = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
+                  passwordState:PasswordSafetyCheckState::kDefault
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
+                   runningState:RunningSafetyCheckState::kDefault];
+  _safetyCheckState.audience = self;
+  _safetyCheckState.safetyCheckConsumerSource = self;
+}
+
 #pragma mark - SafetyCheckConsumerSource
 
 - (void)addConsumer:(id<SafetyCheckMagicStackConsumer>)consumer {

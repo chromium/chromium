@@ -55,6 +55,9 @@ class UrlLoadingBrowserAgent;
 
 - (void)disconnect;
 
+// Resets the latest fetched tracked packages and re-fecthes if applicable.
+- (void)reset;
+
 // Returns the parcel tracking items to show.
 - (ParcelTrackingItem*)parcelTrackingItemToShow;
 

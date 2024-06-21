@@ -19,6 +19,7 @@ source_set("parcel_tracking") {
     "//base:i18n",
     "//components/commerce/core:shopping_service",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:metrics",
     "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/parcel_tracking:tracking_source",

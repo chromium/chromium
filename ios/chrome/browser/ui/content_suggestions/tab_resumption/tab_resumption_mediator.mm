@@ -368,6 +368,7 @@ const char kGStatic[] = ".gstatic.com";
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
       // If the user is signed out, remove the tab resumption tile.
       [self.delegate removeTabResumptionModule];
+      self.itemConfig = nil;
       break;
     }
     default:

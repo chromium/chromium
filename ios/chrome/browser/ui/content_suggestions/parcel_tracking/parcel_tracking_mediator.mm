@@ -8,6 +8,7 @@
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/shopping_service.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/metrics.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
@@ -45,6 +46,14 @@
   _shoppingService = nil;
   _URLLoadingBrowserAgent = nil;
   _delegate = nil;
+}
+
+- (void)reset {
+  _parcelTrackingItems = nil;
+  if (IsIOSParcelTrackingEnabled() &&
+      _shoppingService->IsParcelTrackingEligible()) {
+    [self fetchTrackedParcels];
+  }
 }
 
 #pragma mark - Public
@@ -95,16 +104,7 @@
   }
   _delegate = delegate;
   if (_delegate) {
-    __weak ParcelTrackingMediator* weakSelf = self;
-    _shoppingService->GetAllParcelStatuses(base::BindOnce(^(
-        bool success,
-        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
-      ParcelTrackingMediator* strongSelf = weakSelf;
-      if (!strongSelf || !success || !strongSelf.delegate) {
-        return;
-      }
-      [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
-    }));
+    [self fetchTrackedParcels];
   }
 }
 
@@ -118,6 +118,19 @@
 }
 
 #pragma mark - Private
+
+- (void)fetchTrackedParcels {
+  __weak ParcelTrackingMediator* weakSelf = self;
+  _shoppingService->GetAllParcelStatuses(base::BindOnce(
+      ^(bool success,
+        std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>> parcels) {
+        ParcelTrackingMediator* strongSelf = weakSelf;
+        if (!strongSelf || !success || !strongSelf.delegate) {
+          return;
+        }
+        [strongSelf parcelStatusesSuccessfullyReceived:std::move(parcels)];
+      }));
+}
 
 // Handles a parcel tracking status fetch result from the
 // commerce::ShoppingService.

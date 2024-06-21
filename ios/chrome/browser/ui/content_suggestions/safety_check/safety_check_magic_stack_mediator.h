@@ -53,6 +53,9 @@ class PrefService;
 // Disables and hides the Safety Check module in the Magic Stack.
 - (void)disableModule;
 
+// Resets the latest Safety Check State.
+- (void)reset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_MAGIC_STACK_MEDIATOR_H_

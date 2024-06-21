@@ -350,6 +350,7 @@
     options.on_demand_execution = true;
   }
   ranking_fetch_start_time_ = base::TimeTicks::Now();
+  _magicStackOrderFromSegmentationReceived = NO;
   _segmentationService->GetClassificationResult(
       segmentation_platform::kIosModuleRankerKey, options, inputContext,
       base::BindOnce(

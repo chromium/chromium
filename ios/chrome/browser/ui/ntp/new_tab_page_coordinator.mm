@@ -477,6 +477,7 @@
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
+  [self.contentSuggestionsCoordinator refresh];
   // Call this before RefreshFeed() to ensure some NTP state configs are reset
   // before callbacks in repsonse to a feed refresh are called, ensuring the NTP
   // returns to a state at the top of the surface upon refresh.
@@ -1132,7 +1133,6 @@
 }
 
 - (void)refreshNTPContent {
-  [self.contentSuggestionsCoordinator refresh];
   self.discoverFeedService->RefreshFeed(
       FeedRefreshTrigger::kForegroundFeedVisibleOther);
 }
@@ -1400,6 +1400,7 @@
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      [self.contentSuggestionsCoordinator refresh];
       [self updateFeedVisibilityForSupervision];
       break;
     }

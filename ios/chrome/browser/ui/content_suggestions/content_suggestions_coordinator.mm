@@ -438,6 +438,9 @@
 - (void)refresh {
   // Refresh in case there are new MVT to show.
   [_mostVisitedTilesMediator refreshMostVisitedTiles];
+  [_safetyCheckMediator reset];
+  [_parcelTrackingMediator reset];
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
 }
 
 #pragma mark - ContentSuggestionsCommands
