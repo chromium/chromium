@@ -1836,6 +1836,7 @@
     {
       name: "FledgeMultiBid",
       public: true,
+      status: "stable",
     },
     {
       name: "FledgeNegativeTargeting",

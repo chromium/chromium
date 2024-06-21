@@ -1111,10 +1111,10 @@ class BidderWorkletCustomAdComponentLimitTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class BidderWorkletMultiBidTest : public BidderWorkletTest {
+class BidderWorkletMultiBidDisabledTest : public BidderWorkletTest {
  public:
-  BidderWorkletMultiBidTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeMultiBid);
+  BidderWorkletMultiBidDisabledTest() {
+    feature_list_.InitAndDisableFeature(blink::features::kFledgeMultiBid);
   }
 
  protected:
@@ -2777,8 +2777,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
       {"https://url.test/ execution of `generateBid` timed out."});
 }
 
-TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
-  // For now, returning multiple bids isn't available by default.
+TEST_F(BidderWorkletMultiBidDisabledTest, GenerateBidMultiBid) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 1,
           render: "https://response.test/"}])",
@@ -2795,7 +2794,7 @@ TEST_F(BidderWorkletMultiBidAndCookieDeprecationTest, GenerateBidMultiBid) {
 
 // Make sure that fields that are only available with multibid on aren't
 // read when its off.
-TEST_F(BidderWorkletTest, ComponentTargetFieldsOnlyMultiBid) {
+TEST_F(BidderWorkletMultiBidDisabledTest, ComponentTargetFieldsOnlyMultiBid) {
   auto expected_bid = mojom::BidderWorkletBid::New(
       auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 5,
       /*bid_currency=*/std::nullopt,
@@ -2858,7 +2857,7 @@ TEST_F(BidderWorkletMultiBidAndCookieDeprecationTest,
 // when it's on. This is mostly meant to validate the multibid=off
 // version of the testcase; the actual functionality of the fields is tested
 // separately.
-TEST_F(BidderWorkletMultiBidTest, ComponentTargetFieldsOnlyMultiBid) {
+TEST_F(BidderWorkletTest, ComponentTargetFieldsOnlyMultiBid) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 5,
           render: {url: "https://response.test/"},
@@ -2884,7 +2883,7 @@ TEST_F(BidderWorkletMultiBidTest, ComponentTargetFieldsOnlyMultiBid) {
       {"https://url.test/:9 Uncaught used targetNumAdComponents."});
 }
 
-TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
+TEST_F(BidderWorkletTest, TargetNumAdComponents) {
   interest_group_ad_components_->emplace_back(
       GURL("https://ad_component2.test/"), /*metadata=*/std::nullopt);
   interest_group_ad_components_->emplace_back(
@@ -3087,7 +3086,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
-TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
+TEST_F(BidderWorkletTest, TargetNumAdComponentsKAnon) {
   const char kBid[] = R"({
     ad: "ad",
     bid: 5,
@@ -3189,7 +3188,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
                 /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
-TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
+TEST_F(BidderWorkletTest, TargetAndMandatoryAdComponentsKAnon) {
   const char kBid[] = R"({
     ad: "ad",
     bid: 5,
@@ -3303,7 +3302,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
                 /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
-TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
+TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
   multi_bid_limit_ = 2;
 
   auto expected_bid = mojom::BidderWorkletBid::New(
@@ -3466,9 +3465,9 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 }
 
-// For now multi-bid support, even in degenerate form of passing a single bid in
-// an array to SetBid(), isn't available by default.
-TEST_F(BidderWorkletTest, SetBidMultiBid) {
+// If multibid is off, even passing an array with 1 element to SetBid() isn't
+// available.
+TEST_F(BidderWorkletMultiBidDisabledTest, SetBidMultiBid) {
   RunGenerateBidWithJavascriptExpectingResult(
       R"(function generateBid() {
         setBid([{ad: "ad", bid:2, render: "https://response.test"}]);
@@ -3479,7 +3478,7 @@ TEST_F(BidderWorkletTest, SetBidMultiBid) {
       /*expected_errors=*/{"https://url.test/:3 Uncaught oh no."});
 }
 
-TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
+TEST_F(BidderWorkletTest, SetBidMultiBid) {
   multi_bid_limit_ = 2;
   interest_group_ads_.emplace_back(GURL("https://response2.test/"),
                                    /*metadata=*/std::nullopt);
@@ -5340,13 +5339,13 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest,
       "browserSignals.adComponentsLimit === 25");
 }
 
-TEST_F(BidderWorkletTest, GenerateBidMultiBidLimit) {
+TEST_F(BidderWorkletMultiBidDisabledTest, GenerateBidMultiBidLimit) {
   // If feature not enabled.
   RunGenerateBidExpectingExpressionIsTrue(
       "!('multiBidLimit' in browserSignals)");
 }
 
-TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBidLimit) {
+TEST_F(BidderWorkletTest, GenerateBidMultiBidLimit) {
   multi_bid_limit_ = 143;
   RunGenerateBidExpectingExpressionIsTrue(
       "browserSignals.multiBidLimit === 143");
@@ -11379,7 +11378,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
 
 // Test of multi-bid and k-anon: the bids are annotated with their roles
 // properly.
-TEST_F(BidderWorkletMultiBidTest, KAnonClassify) {
+TEST_F(BidderWorkletTest, KAnonClassify) {
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   multi_bid_limit_ = 3;
   interest_group_ads_.emplace_back(GURL("https://response2.test/"),
@@ -11450,7 +11449,7 @@ TEST_F(BidderWorkletMultiBidTest, KAnonClassify) {
 
 // Test for doing a re-run in multi-bid mode: returning only non-k-anon
 // bids forces a re-run.
-TEST_F(BidderWorkletMultiBidTest, KAnonRerun) {
+TEST_F(BidderWorkletTest, KAnonRerunMultiBid) {
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   multi_bid_limit_ = 3;
   interest_group_ads_.emplace_back(GURL("https://response2.test/"),
