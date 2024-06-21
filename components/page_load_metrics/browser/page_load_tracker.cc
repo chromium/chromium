@@ -1535,6 +1535,13 @@ void PageLoadTracker::UpdateMetrics(
       subresource_load_metrics, std::move(soft_navigation_metrics), page_type_);
 }
 
+void PageLoadTracker::AddCustomUserTimings(
+    std::vector<mojom::CustomUserTimingMarkPtr> custom_timings) {
+  for (const auto& observer : observers_) {
+    observer->OnCustomUserTimingMarkObserved(custom_timings);
+  }
+}
+
 void PageLoadTracker::SetPageMainFrame(content::RenderFrameHost* rfh) {
   page_main_frame_ = rfh;
 }

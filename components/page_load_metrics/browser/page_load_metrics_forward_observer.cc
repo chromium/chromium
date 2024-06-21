@@ -436,4 +436,10 @@ void PageLoadMetricsForwardObserver::OnSharedStorageSelectURLCalled() {
   parent_observer_->OnSharedStorageSelectURLCalled();
 }
 
+void PageLoadMetricsForwardObserver::OnCustomUserTimingMarkObserved(
+    const std::vector<mojom::CustomUserTimingMarkPtr>& timings) {
+  // This new API doesn't support FORWARD_OBSERVING that is discouraged for new
+  // observers.
+}
+
 }  // namespace page_load_metrics

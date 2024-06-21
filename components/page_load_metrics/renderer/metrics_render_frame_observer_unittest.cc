@@ -66,6 +66,11 @@ class TestMetricsRenderFrameObserver : public MetricsRenderFrameObserver,
                   PageTimingMetadataRecorder::MonotonicTiming());
   }
 
+  mojom::CustomUserTimingMarkPtr GetCustomUserTimingMark() const override {
+    return mojom::CustomUserTimingMark::New("fake_user_timing_mark",
+                                            base::Milliseconds(100));
+  }
+
   void ExpectSoftNavigationMetrics(
       const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
     fake_soft_navigation_metrics_ = soft_navigation_metrics.Clone();

@@ -158,6 +158,13 @@ struct InteractiveTiming {
   mojo_base.mojom.TimeDelta? first_scroll_timestamp;
 };
 
+struct CustomUserTimingMark {
+  // The mark name from performance.mark().
+  string mark_name;
+  // The startTime from performance.mark().
+  mojo_base.mojom.TimeDelta start_time;
+};
+
 // PageLoadTiming contains timing metrics associated with a page load. Many of
 // the metrics here are based on the Navigation Timing spec:
 // http://www.w3.org/TR/navigation-timing/.
@@ -579,6 +586,17 @@ interface PageLoadMetrics {
   // //cc/metrics/ukm_smoothness_data.h
   SetUpSharedMemoryForSmoothness(
       mojo_base.mojom.ReadOnlySharedMemoryRegion shared_memory);
+
+  // Called when performance entries are added via `performance.mark()` from the
+  // outermost main frame in renderer, except for the case when standard
+  // UserTiming marks `mark_fully_loaded`, `mark_fully_visible`, and
+  // `mark_interactive` occur. Unlike `UpdateTiming`, this calls are not
+  // buffered, and expects it always contains the user timing entry which is not
+  // sent yet before.
+  //
+  // `AddCustomUserTiming` should be used when the expected transport data size
+  // can be larger. Otherwise `UpdateTiming` is recommended.
+  AddCustomUserTiming(CustomUserTimingMark custom_user_timing);
 };
 
 // TimeDelta below relative to the navigation start of the navigation restoring

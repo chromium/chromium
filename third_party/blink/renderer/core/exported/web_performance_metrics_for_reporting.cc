@@ -270,6 +270,17 @@ WebPerformanceMetricsForReporting::UserTimingMarkInteractive() const {
   return private_->timingForReporting()->UserTimingMarkInteractive();
 }
 
+std::optional<std::tuple<std::string, base::TimeDelta>>
+WebPerformanceMetricsForReporting::CustomUserTimingMark() const {
+  auto mark = private_->timingForReporting()->CustomUserTimingMark();
+  if (!mark) {
+    return std::nullopt;
+  }
+  const auto [name, start_time] = mark.value();
+
+  return std::make_tuple(name.Utf8(), start_time);
+}
+
 WebPerformanceMetricsForReporting::WebPerformanceMetricsForReporting(
     WindowPerformance* performance)
     : private_(performance) {}

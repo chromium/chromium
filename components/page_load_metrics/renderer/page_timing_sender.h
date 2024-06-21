@@ -27,6 +27,7 @@ class PageTimingSender {
       const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) = 0;
   virtual void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) = 0;
+  virtual void SendCustomUserTiming(mojom::CustomUserTimingMarkPtr timing) = 0;
 };
 
 }  // namespace page_load_metrics

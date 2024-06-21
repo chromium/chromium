@@ -211,6 +211,9 @@ class AssertPageLoadMetricsObserver final
                              memory_updates) override {}
   void OnSharedStorageWorkletHostCreated() override {}
   void OnSharedStorageSelectURLCalled() override {}
+  void OnCustomUserTimingMarkObserved(
+      const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
+          timings) override {}
 
   // Reference implementations duplicated from PageLoadMetricsObserver
   ObservePolicy ShouldObserveMimeTypeByDefault(

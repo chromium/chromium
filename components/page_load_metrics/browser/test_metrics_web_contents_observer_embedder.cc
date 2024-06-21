@@ -26,6 +26,7 @@ class TimingLoggingPageLoadMetricsObserver final
       std::vector<mojom::PageLoadTimingPtr>* updated_subframe_timings,
       std::vector<mojom::PageLoadTimingPtr>* complete_timings,
       std::vector<mojom::CpuTimingPtr>* updated_cpu_timings,
+      std::vector<mojom::CustomUserTimingMarkPtr>* updated_custom_user_timings,
       std::vector<ExtraRequestCompleteInfo>* loaded_resources,
       std::vector<GURL>* observed_committed_urls,
       std::vector<GURL>* observed_aborted_urls,
@@ -36,6 +37,7 @@ class TimingLoggingPageLoadMetricsObserver final
         updated_subframe_timings_(updated_subframe_timings),
         complete_timings_(complete_timings),
         updated_cpu_timings_(updated_cpu_timings),
+        updated_custom_user_timings_(updated_custom_user_timings),
         loaded_resources_(loaded_resources),
         observed_features_(observed_features),
         observed_committed_urls_(observed_committed_urls),
@@ -84,6 +86,13 @@ class TimingLoggingPageLoadMetricsObserver final
     updated_cpu_timings_->push_back(timing.Clone());
   }
 
+  void OnCustomUserTimingMarkObserved(
+      const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override {
+    for (const auto& timing : timings) {
+      updated_custom_user_timings_->push_back(timing->Clone());
+    }
+  }
+
   void OnComplete(const mojom::PageLoadTiming& timing) override {
     complete_timings_->push_back(timing.Clone());
   }
@@ -122,6 +131,8 @@ class TimingLoggingPageLoadMetricsObserver final
       updated_subframe_timings_;
   const raw_ptr<std::vector<mojom::PageLoadTimingPtr>> complete_timings_;
   const raw_ptr<std::vector<mojom::CpuTimingPtr>> updated_cpu_timings_;
+  const raw_ptr<std::vector<mojom::CustomUserTimingMarkPtr>>
+      updated_custom_user_timings_;
   const raw_ptr<std::vector<ExtraRequestCompleteInfo>> loaded_resources_;
   const raw_ptr<std::vector<blink::UseCounterFeature>> observed_features_;
   const raw_ptr<std::vector<GURL>> observed_committed_urls_;
@@ -194,8 +205,8 @@ void TestMetricsWebContentsObserverEmbedder::RegisterObservers(
     PageLoadTracker* tracker) {
   tracker->AddObserver(std::make_unique<TimingLoggingPageLoadMetricsObserver>(
       &updated_timings_, &updated_subframe_timings_, &complete_timings_,
-      &updated_cpu_timings_, &loaded_resources_, &observed_committed_urls_,
-      &observed_aborted_urls_, &observed_features_,
+      &updated_cpu_timings_, &updated_custom_user_timings_, &loaded_resources_,
+      &observed_committed_urls_, &observed_aborted_urls_, &observed_features_,
       &is_first_navigation_in_web_contents_,
       &count_on_enter_back_forward_cache_));
   tracker->AddObserver(std::make_unique<FilteringPageLoadMetricsObserver>(
