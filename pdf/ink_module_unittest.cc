@@ -29,6 +29,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+using testing::ElementsAre;
+
 namespace chrome_pdf {
 
 namespace {
@@ -381,9 +383,9 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   // Only one stroke.
   ASSERT_EQ(all_strokes_positions.size(), 1u);
   // Check points within that stroke.
-  EXPECT_THAT(all_strokes_positions[0],
-              testing::ElementsAre(kCanonicalMouseDownPosition,
-                                   kCanonicalMouseMovePosition));
+  EXPECT_THAT(
+      all_strokes_positions[0],
+      ElementsAre(kCanonicalMouseDownPosition, kCanonicalMouseMovePosition));
 }
 
 TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
@@ -412,7 +414,7 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
   const InkAffineTransform kDrawTransform = {-1.0f, 0.0f,  54.0f,
                                              0.0f,  -1.0f, 44.0f};
   // Just one transform provided, to match the captured stroke.
-  EXPECT_THAT(draw_render_transforms, testing::ElementsAre(kDrawTransform));
+  EXPECT_THAT(draw_render_transforms, ElementsAre(kDrawTransform));
 }
 
 TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
@@ -424,9 +426,9 @@ TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
                                              gfx::Size(2.0f, 2.0f));
   const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(9.0f, 14.0f),
                                              gfx::Size(12.0f, 12.0f));
-  EXPECT_THAT(client().invalidations(),
-              testing::ElementsAre(kInvalidationAreaMouseDown,
-                                   kInvalidationAreaMouseMove));
+  EXPECT_THAT(
+      client().invalidations(),
+      ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove));
 }
 
 }  // namespace
