@@ -35,13 +35,17 @@ SignedWebBundleIntegrityBlock::Create(
                    });
 
   return SignedWebBundleIntegrityBlock(integrity_block->size,
-                                       std::move(signature_stack));
+                                       std::move(signature_stack),
+                                       /*attributes=*/std::nullopt);
 }
 
 SignedWebBundleIntegrityBlock::SignedWebBundleIntegrityBlock(
     const uint64_t size_in_bytes,
-    SignedWebBundleSignatureStack&& signature_stack)
-    : size_in_bytes_(size_in_bytes), signature_stack_(signature_stack) {
+    SignedWebBundleSignatureStack&& signature_stack,
+    std::optional<IntegrityBlockAttributes> attributes)
+    : size_in_bytes_(size_in_bytes),
+      signature_stack_(signature_stack),
+      attributes_(std::move(attributes)) {
   CHECK_GT(size_in_bytes_, 0ul);
 }
 
@@ -53,7 +57,8 @@ SignedWebBundleIntegrityBlock& SignedWebBundleIntegrityBlock::operator=(
 bool SignedWebBundleIntegrityBlock::operator==(
     const SignedWebBundleIntegrityBlock& other) const {
   return size_in_bytes_ == other.size_in_bytes_ &&
-         signature_stack_ == other.signature_stack_;
+         signature_stack_ == other.signature_stack_ &&
+         attributes_ == other.attributes_;
 }
 
 bool SignedWebBundleIntegrityBlock::operator!=(
@@ -62,6 +67,7 @@ bool SignedWebBundleIntegrityBlock::operator!=(
 }
 
 SignedWebBundleId SignedWebBundleIntegrityBlock::web_bundle_id() const {
+  // TODO(b/346753548): Check `attributes_` first.
   return absl::visit(
       base::Overloaded{
           [](const SignedWebBundleSignatureInfoEd25519& ed25519_signature_info)

@@ -67,6 +67,8 @@ source_set("mojom_mapped_types") {
     "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/ed25519_signature.cc",
     "signed_web_bundles/ed25519_signature.h",
+    "signed_web_bundles/integrity_block_attributes.cc",
+    "signed_web_bundles/integrity_block_attributes.h",
   ]
 
   deps = [

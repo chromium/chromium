@@ -11,6 +11,7 @@
 
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
@@ -55,15 +56,27 @@ class SignedWebBundleIntegrityBlock {
   // Returns the inferred id of the web bundle.
   //   * For the v1 integrity block the id is derived from the lowermost
   //   signature in the stack.
+  //   * For the v2 integrity block the id is specified as a separate attribute.
   SignedWebBundleId web_bundle_id() const;
+
+  // Only v2 integrity blocks have their own attributes.
+  bool is_v2() const { return attributes_.has_value(); }
+
+  const IntegrityBlockAttributes& attributes() const {
+    CHECK(is_v2()) << " Attributes are only present in v2 integrity blocks.";
+    return *attributes_;
+  }
 
  private:
   explicit SignedWebBundleIntegrityBlock(
       uint64_t size_in_bytes,
-      SignedWebBundleSignatureStack&& signature_stack);
+      SignedWebBundleSignatureStack&& signature_stack,
+      std::optional<IntegrityBlockAttributes> attributes);
 
   uint64_t size_in_bytes_;
   SignedWebBundleSignatureStack signature_stack_;
+
+  std::optional<IntegrityBlockAttributes> attributes_;
 };
 
 }  // namespace web_package
