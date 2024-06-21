@@ -164,6 +164,8 @@ DataControlsDialog::DataControlsDialog(
     base::OnceCallback<void(bool bypassed)> callback)
     : type_(type), web_contents_(web_contents) {
   SetOwnedByWidget(true);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   CurrentDialogsStorage()[{web_contents_, type_}] = this;
   if (callback) {
