@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
@@ -830,7 +831,9 @@ void FullRestoreService::OnSessionInformationReceived(
 }
 
 void FullRestoreService::MaybeShowInformedRestoreOnboarding(bool restore_on) {
-  if (Shell::HasInstance() && !profile_->IsNewProfile()) {
+  if (Shell::HasInstance() && !profile_->IsNewProfile() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kNoFirstRun)) {
     CHECK(Shell::Get()->pine_controller());
     Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
         restore_on);

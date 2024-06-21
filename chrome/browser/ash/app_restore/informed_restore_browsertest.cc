@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -604,7 +605,24 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   EXPECT_FALSE(GetPineDialogRestoreButton());
 }
 
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_RestoreOff) {
+class InformedRestoreOnboardingTest : public InformedRestoreTest {
+ public:
+  InformedRestoreOnboardingTest() = default;
+  InformedRestoreOnboardingTest(const InformedRestoreOnboardingTest&) = delete;
+  InformedRestoreOnboardingTest& operator=(
+      const InformedRestoreOnboardingTest&) = delete;
+  ~InformedRestoreOnboardingTest() override = default;
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InformedRestoreTest::SetUpDefaultCommandLine(command_line);
+
+    // Onboarding dialog is gated by this switch so it doesn't affect other
+    // browser tests.
+    command_line->RemoveSwitch(::switches::kNoFirstRun);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_RestoreOff) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
                     static_cast<int>(RestoreOption::kDoNotRestore));
@@ -612,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_RestoreOff) {
 }
 
 // Tests that when Restore is off, we show the onboarding dialog.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, RestoreOff) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, RestoreOff) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
@@ -631,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, RestoreOff) {
                 prefs::kRestoreAppsAndPagesPrefName));
 }
 
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_NoRestoreData) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_NoRestoreData) {
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
@@ -640,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_NoRestoreData) {
 
 // Tests that when Restore is 'Ask every time' and there is no restore data, we
 // show the onboarding dialog.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, NoRestoreData) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, NoRestoreData) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
@@ -654,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, NoRestoreData) {
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Onboarding) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_Onboarding) {
   // The restore pref setting is 'Ask every time' by default.
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
@@ -671,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Onboarding) {
 
 // Tests that when Restore is 'Ask every time' and there is restore data, we
 // show the onboarding dialog.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Onboarding) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
