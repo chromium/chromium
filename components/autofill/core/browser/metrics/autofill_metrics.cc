@@ -582,22 +582,28 @@ FieldType GetActualFieldType(const FieldTypeSet& possible_types,
   return actual_type;
 }
 
-// Check if the value of |field| is same as one of the previously autofilled
+// Check if the value of |field| is same as one of the other autofilled
 // values. This indicates a bad rationalization if |field| has
 // only_fill_when_focused set to true.
 bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
-  for (const auto& form_field : form) {
-    if (field.value() == form_field->value() && form_field->is_autofilled()) {
-      return true;
-    }
-  }
-  return false;
+  auto is_autofilled_with_same_value =
+      [&field](const std::unique_ptr<AutofillField>& form_field) {
+        if (&field == form_field.get()) {
+          // When looking for fields in the form that have been filled with
+          // the same value as `field`, skip `field`: `field` would
+          // always have a matching value but does not indicate that a
+          // *duplicate* filling happened.
+          return false;
+        }
+        return field.value() == form_field->value() &&
+               form_field->is_autofilled();
+      };
+  return base::ranges::any_of(form, is_autofilled_with_same_value);
 }
 
-void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
+void LogOnlyFillWhenFocusedRationalizationQuality(
     const std::string& aggregate_histogram,
     const std::string& type_specific_histogram,
-    const std::string& rationalization_quality_histogram,
     FieldType predicted_type,
     FieldType actual_type,
     bool is_empty,
@@ -605,6 +611,8 @@ void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
     bool log_rationalization_metrics,
     const FormStructure& form,
     const AutofillField& field) {
+  static constexpr char kRationalizationQualityHistogram[] =
+      "Autofill.Rationalization.OnlyFillWhenFocused.Quality";
   // If it is filled with values unknown, it is a true negative.
   if (actual_type == UNKNOWN_TYPE) {
     // Only log aggregate true negative; do not log type specific metrics
@@ -617,7 +625,7 @@ void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
                                   : AutofillMetrics::TRUE_NEGATIVE_UNKNOWN)));
     if (log_rationalization_metrics) {
       base::UmaHistogramSparse(
-          rationalization_quality_histogram,
+          kRationalizationQualityHistogram,
           (is_empty ? AutofillMetrics::RATIONALIZATION_GOOD
                     : AutofillMetrics::RATIONALIZATION_OK));
     }
@@ -638,7 +646,7 @@ void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
     if (log_rationalization_metrics) {
       bool duplicated_filling = DuplicatedFilling(form, field);
       base::UmaHistogramSparse(
-          rationalization_quality_histogram,
+          kRationalizationQualityHistogram,
           (duplicated_filling ? AutofillMetrics::RATIONALIZATION_BAD
                               : AutofillMetrics::RATIONALIZATION_OK));
     }
@@ -661,7 +669,7 @@ void LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
     // Logging RATIONALIZATION_OK despite of type mismatch here because autofill
     // would have got it wrong with or without rationalization. Rationalization
     // here does not help, neither does it do any harm.
-    base::UmaHistogramSparse(rationalization_quality_histogram,
+    base::UmaHistogramSparse(kRationalizationQualityHistogram,
                              AutofillMetrics::RATIONALIZATION_OK);
   }
   return;
@@ -772,8 +780,6 @@ void LogPredictionQualityMetrics(
       {"Autofill.FieldPredictionQuality.Aggregate.", source, suffix}, "");
   std::string type_specific_histogram = base::JoinString(
       {"Autofill.FieldPredictionQuality.ByFieldType.", source, suffix}, "");
-  std::string rationalization_quality_histogram = base::JoinString(
-      {"Autofill.RationalizationQuality.PhoneNumber", suffix}, "");
 
   const FieldTypeSet& possible_types =
       metric_type == AutofillMetrics::TYPE_AUTOCOMPLETE_BASED
@@ -813,10 +819,10 @@ void LogPredictionQualityMetrics(
   // be filled automatically unless user focused on the field. This requires
   // different metrics logging than normal fields.
   if (field.only_fill_when_focused()) {
-    LogPredictionQualityMetricsForFieldsOnlyFilledWhenFocused(
-        aggregate_histogram, type_specific_histogram,
-        rationalization_quality_histogram, predicted_type, actual_type,
-        is_empty, is_ambiguous, log_rationalization_metrics, form, field);
+    LogOnlyFillWhenFocusedRationalizationQuality(
+        aggregate_histogram, type_specific_histogram, predicted_type,
+        actual_type, is_empty, is_ambiguous, log_rationalization_metrics, form,
+        field);
     return;
   }
 

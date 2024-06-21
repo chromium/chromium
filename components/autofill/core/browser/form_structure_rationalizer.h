@@ -78,7 +78,7 @@ class FormStructureRationalizer {
   // fields) is autofilled in the `section`. If the section contains multiple
   // phone numbers, `set_only_fill_when_focused(true)` is set for the remaining
   // fields.
-  // Contrary to the other rationaliation logic of this class, this one happens
+  // Contrary to the other rationalization logic of this class, this one happens
   // at filling time.
   void RationalizePhoneNumbersInSection(const Section& section);
 

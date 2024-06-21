@@ -4641,13 +4641,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.RationalizationQuality.PhoneNumber"
+<histogram name="Autofill.Rationalization.OnlyFillWhenFocused.Quality"
     enum="AutofillRationalizationQualityMetric" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The quality of fields rationalization, putting rationalization result into
-    good/ok/bad categories.
+    Records whether the &quot;only_fill_when_focused&quot;-rationalization had a
+    Good, Ok or Bad impact. Good means that the rationalization prevented the
+    user from editing a field that would have been autofilled if the
+    rationalization didn't happen. Ok means that the rationalization had no
+    impact of whether the user edited the field or not. Bad means that the
+    rationalization made the user edit a field (by either typing or triggering
+    autofill a second time) that wouldn't have been edited if the
+    rationalization didn't happen.
   </summary>
 </histogram>
 

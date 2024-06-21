@@ -169,7 +169,7 @@ TEST_F(QualityMetricsTest, QualityMetrics) {
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_OK.
-TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
+TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationOk) {
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
                            FormControlType::kInputText),
@@ -215,7 +215,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
   // Rationalization quality.
   {
     std::string rationalization_histogram =
-        "Autofill.RationalizationQuality.PhoneNumber";
+        "Autofill.Rationalization.OnlyFillWhenFocused.Quality";
     // RATIONALIZATION_OK is logged 3 times.
     histogram_tester.ExpectBucketCount(rationalization_histogram,
                                        AutofillMetrics::RATIONALIZATION_OK, 3);
@@ -224,7 +224,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationOk) {
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_GOOD.
-TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
+TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationGood) {
   FormData form = CreateForm(
       {CreateTestFormField("Name", "name", "Elvis Aaron Presley",
                            FormControlType::kInputText),
@@ -254,7 +254,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
   // Rationalization quality.
   {
     std::string rationalization_histogram =
-        "Autofill.RationalizationQuality.PhoneNumber";
+        "Autofill.Rationalization.OnlyFillWhenFocused.Quality";
     // RATIONALIZATION_GOOD is logged once.
     histogram_tester.ExpectBucketCount(
         rationalization_histogram, AutofillMetrics::RATIONALIZATION_GOOD, 1);
@@ -263,7 +263,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationGood) {
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused and are supposed to log RATIONALIZATION_BAD.
-TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
+TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
   FormData form = CreateForm({
       CreateTestFormField("Name", "name", "Elvis Aaron Presley",
                           FormControlType::kInputText),
@@ -295,19 +295,15 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForRationalizationBad) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
-  // Rationalization quality.
-  {
-    std::string rationalization_histogram =
-        "Autofill.RationalizationQuality.PhoneNumber";
-    // RATIONALIZATION_BAD is logged once.
-    histogram_tester.ExpectBucketCount(rationalization_histogram,
-                                       AutofillMetrics::RATIONALIZATION_BAD, 1);
-  }
+  // RATIONALIZATION_BAD is logged once.
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Rationalization.OnlyFillWhenFocused.Quality",
+      AutofillMetrics::RATIONALIZATION_BAD, 1);
 }
 
 // Test that we log quality metrics appropriately with fields having
 // only_fill_when_focused set to true.
-TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
+TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
   FormData form = CreateForm(
       {// TRUE_POSITIVE + no rationalization logging
        CreateTestFormField("Name", "name", "Elvis Aaron Presley",
@@ -361,7 +357,7 @@ TEST_F(QualityMetricsTest, LoggedCorrecltyForOnlyFillWhenFocusedField) {
 
   // Rationalization quality.
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.RationalizationQuality.PhoneNumber"),
+                  "Autofill.Rationalization.OnlyFillWhenFocused.Quality"),
               BucketsAre(Bucket(AutofillMetrics::RATIONALIZATION_GOOD, 1),
                          Bucket(AutofillMetrics::RATIONALIZATION_OK, 1),
                          Bucket(AutofillMetrics::RATIONALIZATION_BAD, 1)));
