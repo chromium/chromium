@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -187,6 +188,15 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::
               GetPasswordSettingValue(Eq(account),
                                       Eq(PasswordManagerSetting::kAutoSignIn)))
       .Times(times);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kBiometricTouchToFill)) {
+    EXPECT_CALL(
+        *bridge_helper(),
+        GetPasswordSettingValue(
+            Eq(account),
+            Eq(PasswordManagerSetting::kBiometricReauthBeforePwdFilling)))
+        .Times(times);
+  }
 }
 
 void PasswordManagerSettingsServiceAndroidImplBaseTest::RegisterPrefs() {
@@ -213,6 +223,11 @@ void PasswordManagerSettingsServiceAndroidImplBaseTest::RegisterPrefs() {
       password_manager::prefs::kSettingsMigratedToUPMLocal, false);
   test_pref_service_.registry()->RegisterBooleanPref(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kBiometricTouchToFill)) {
+    test_pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+  }
 }
 
 // This suite starts with the pref `kPasswordsUseUPMLocalAndSeparateStores` off.
@@ -2028,4 +2043,15 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       AndroidBackendAPIErrorCode::kUnexpectedError, 1);
   histogram_tester()->ExpectUniqueSample(
       "PasswordManager.PasswordSettingsMigrationSucceeded2", false, 1);
+}
+
+TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
+       FetchesBiometricAuthenticationBeforeFillingSetting) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kBiometricTouchToFill};
+  InitializeSettingsService(/*password_sync_enabled=*/false,
+                            /*setting_sync_enabled=*/false);
+
+  ExpectSettingsRetrievalFromBackend(std::nullopt, /*times=*/1);
+  lifecycle_helper()->OnForegroundSessionStart();
 }

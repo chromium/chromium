@@ -307,4 +307,83 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
                 metricsRecorder.getValue().getSettingForTesting(),
                 PasswordManagerSetting.AUTO_SIGN_IN);
     }
+
+    @Test
+    public void testGetBiometricReauthBeforePwdFillingSucceeds() {
+        mDispatcherBridge.getSettingValue(
+                sTestAccountEmail, PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
+        ArgumentCaptor<Callback<Optional<Boolean>>> successCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mAccessorMock)
+                .getUseBiometricsForCredentials(eq(sTestAccount), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        successCallback.getValue().onResult(Optional.of(true));
+
+        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
+                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
+        verify(mReceiverBridgeMock)
+                .onSettingValueFetched(
+                        eq(PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING),
+                        eq(Optional.of(true)),
+                        metricsRecorder.capture());
+
+        assertEquals(metricsRecorder.getValue().getFunctionSuffixForTesting(), "GetSettingValue");
+        assertEquals(
+                metricsRecorder.getValue().getSettingForTesting(),
+                PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
+    }
+
+    @Test
+    public void testGetBiometricReauthBeforePwdFillingAbsentSucceeds() {
+        mDispatcherBridge.getSettingValue(
+                sTestAccountEmail, PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
+        ArgumentCaptor<Callback<Optional<Boolean>>> successCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mAccessorMock)
+                .getUseBiometricsForCredentials(eq(sTestAccount), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        successCallback.getValue().onResult(Optional.empty());
+
+        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
+                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
+        verify(mReceiverBridgeMock)
+                .onSettingValueFetched(
+                        eq(PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING),
+                        eq(Optional.empty()),
+                        metricsRecorder.capture());
+
+        assertEquals(metricsRecorder.getValue().getFunctionSuffixForTesting(), "GetSettingValue");
+        assertEquals(
+                metricsRecorder.getValue().getSettingForTesting(),
+                PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
+    }
+
+    @Test
+    public void testGetBiometricReauthBeforePwdFillingFails() {
+        mDispatcherBridge.getSettingValue(
+                sTestAccountEmail, PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mAccessorMock)
+                .getUseBiometricsForCredentials(eq(sTestAccount), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception expectedException = new Exception("Sample failure");
+        failureCallback.getValue().onResult(expectedException);
+
+        ArgumentCaptor<PasswordSettingsUpdaterMetricsRecorder> metricsRecorder =
+                ArgumentCaptor.forClass(PasswordSettingsUpdaterMetricsRecorder.class);
+        verify(mReceiverBridgeMock)
+                .handleFetchingException(
+                        eq(PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING),
+                        eq(expectedException),
+                        metricsRecorder.capture());
+
+        assertEquals(metricsRecorder.getValue().getFunctionSuffixForTesting(), "GetSettingValue");
+        assertEquals(
+                metricsRecorder.getValue().getSettingForTesting(),
+                PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
+    }
 }

@@ -341,4 +341,53 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 AndroidBackendErrorType.EXTERNAL_ERROR,
                 OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
     }
+
+    @Test
+    public void testRecordsSuccessHistogramForGetBiometricReauthBeforePwdFilling() {
+        PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
+                        PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX,
+                        mStoreType);
+
+        metricsRecorder.recordMetrics(null);
+        checkSuccessHistograms("SetSettingValue", "BiometricReauthBeforePwdFilling");
+    }
+
+    @Test
+    public void testRecordsErrorHistogramForGetBiometricReauthBeforePwdFilling() {
+        PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
+                        PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX,
+                        mStoreType);
+
+        Exception expectedException = new Exception("Sample failure");
+
+        metricsRecorder.recordMetrics(expectedException);
+        checkFailureHistograms(
+                "GetSettingValue",
+                "BiometricReauthBeforePwdFilling",
+                AndroidBackendErrorType.UNCATEGORIZED,
+                OptionalInt.empty());
+    }
+
+    @Test
+    public void testRecordsApiErrorHistogramForBiometricReauthBeforePwdFilling() {
+        PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
+                        PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX,
+                        mStoreType);
+
+        Exception expectedException =
+                new ApiException(new Status(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+
+        metricsRecorder.recordMetrics(expectedException);
+        checkFailureHistograms(
+                "GetSettingValue",
+                "BiometricReauthBeforePwdFilling",
+                AndroidBackendErrorType.EXTERNAL_ERROR,
+                OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+    }
 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnBackgroundThread;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.AUTO_SIGN_IN;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS;
 import static org.chromium.chrome.browser.password_manager.PasswordSettingsUpdaterMetricsRecorder.getStoreType;
 
@@ -79,6 +80,20 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                                 handleFetchingExceptionOnUiThread(
                                         AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
+            case BIOMETRIC_REAUTH_BEFORE_PWD_FILLING:
+                mSettingsAccessor.getUseBiometricsForCredentials(
+                        getAccount(account),
+                        value ->
+                                handleSettingValueFetchedOnUiThread(
+                                        BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
+                                        value,
+                                        metricsRecorder),
+                        exception ->
+                                handleFetchingExceptionOnUiThread(
+                                        BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
+                                        exception,
+                                        metricsRecorder));
+                break;
             default:
                 assert false : "All settings need to be handled.";
         }
@@ -116,6 +131,17 @@ public class PasswordSettingsUpdaterDispatcherBridge {
             default:
                 assert false : "All settings need to be handled.";
         }
+    }
+
+    // TODO(crbug.com/343879727) : Remove this after "Authenticate with biometrics before password
+    // filling" setting is introduced in GMS Core.
+    private void handleSettingValueFetchedOnUiThread(
+            @PasswordManagerSetting int setting,
+            Optional<Boolean> value,
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> mReceiverBridge.onSettingValueFetched(setting, value, metricsRecorder));
     }
 
     private void handleFetchingExceptionOnUiThread(

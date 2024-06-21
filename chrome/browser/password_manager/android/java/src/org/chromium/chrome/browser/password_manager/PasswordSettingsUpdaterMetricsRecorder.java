@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.AUTO_SIGN_IN;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerSetting.OFFER_TO_SAVE_PASSWORDS;
 
 import static java.util.function.Predicate.not;
@@ -77,6 +78,8 @@ class PasswordSettingsUpdaterMetricsRecorder {
                 return "OfferToSavePasswords";
             case AUTO_SIGN_IN:
                 return "AutoSignIn";
+            case BIOMETRIC_REAUTH_BEFORE_PWD_FILLING:
+                return "BiometricReauthBeforePwdFilling";
             default:
                 assert false : "All settings need to be handled.";
                 return "";

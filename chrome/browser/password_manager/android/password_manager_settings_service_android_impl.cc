@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_manager_settings_service_android_impl.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
@@ -42,9 +43,21 @@ using SyncingAccount = password_manager::
     PasswordSettingsUpdaterAndroidReceiverBridge::SyncingAccount;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
-constexpr PasswordManagerSetting kAllPasswordSettings[] = {
+const std::vector<PasswordManagerSetting> GetAllPasswordSettings() {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kBiometricTouchToFill)
+             ? std::vector(
+                   {PasswordManagerSetting::kOfferToSavePasswords,
+                    PasswordManagerSetting::kAutoSignIn,
+                    PasswordManagerSetting::kBiometricReauthBeforePwdFilling})
+             : std::vector({PasswordManagerSetting::kOfferToSavePasswords,
+                            PasswordManagerSetting::kAutoSignIn});
+}
+
+constexpr PasswordManagerSetting kMigratablePasswordSettings[] = {
     PasswordManagerSetting::kOfferToSavePasswords,
-    PasswordManagerSetting::kAutoSignIn};
+    PasswordManagerSetting::kAutoSignIn,
+};
 
 // Returns the preference in which a setting value coming from Google Mobile
 // Services should be stored.
@@ -58,6 +71,9 @@ const PrefService::Preference* GetGMSPrefFromSetting(
     case PasswordManagerSetting::kAutoSignIn:
       return pref_service->FindPreference(
           password_manager::prefs::kAutoSignInEnabledGMS);
+    case PasswordManagerSetting::kBiometricReauthBeforePwdFilling:
+      return pref_service->FindPreference(
+          password_manager::prefs::kBiometricAuthenticationBeforeFilling);
   }
 }
 
@@ -74,6 +90,10 @@ const PrefService::Preference* GetRegularPrefFromSetting(
     case PasswordManagerSetting::kAutoSignIn:
       return pref_service->FindPreference(
           password_manager::prefs::kCredentialsEnableAutosignin);
+    // Never existed in Chrome on Android before.
+    case PasswordManagerSetting::kBiometricReauthBeforePwdFilling:
+      return pref_service->FindPreference(
+          password_manager::prefs::kBiometricAuthenticationBeforeFilling);
   }
 }
 
@@ -138,6 +158,9 @@ std::string_view GetMetricsInfixForSetting(
       return "OfferToSavePasswords";
     case password_manager::PasswordManagerSetting::kAutoSignIn:
       return "AutoSignIn";
+    case password_manager::PasswordManagerSetting::
+        kBiometricReauthBeforePwdFilling:
+      return "BiometricReauthBeforePwdFilling";
   }
 }
 
@@ -452,7 +475,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // Fetch settings from the backend to align values stored in GMS Core and
   // Chrome.
   fetch_after_sync_status_change_in_progress_ = true;
-  for (PasswordManagerSetting setting : kAllPasswordSettings) {
+  for (PasswordManagerSetting setting : GetAllPasswordSettings()) {
     awaited_settings_.insert(setting);
   }
   FetchSettings();
@@ -491,7 +514,7 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
             : prefs::kGoogleServicesLastSyncingUsername);
     account = SyncingAccount(last_account_pref);
   }
-  for (PasswordManagerSetting setting : kAllPasswordSettings) {
+  for (PasswordManagerSetting setting : GetAllPasswordSettings()) {
     bridge_helper_->GetPasswordSettingValue(account, setting);
   }
 }
@@ -535,7 +558,7 @@ void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(
           &PasswordManagerSettingsServiceAndroidImpl::FinishSettingsMigration,
           weak_ptr_factory_.GetWeakPtr()));
 
-  for (auto setting : kAllPasswordSettings) {
+  for (auto setting : kMigratablePasswordSettings) {
     const PrefService::Preference* regular_pref =
         GetRegularPrefFromSetting(pref_service_, setting);
     const PrefService::Preference* android_pref =
