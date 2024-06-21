@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_constants.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -36,6 +37,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/containers/adapters.h"
+#include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/window_properties.h"
@@ -963,16 +965,38 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
                                            GetOppositeSnapType(window));
 }
 
+float GetSnapRatioGap(aura::Window* to_be_snapped,
+                      aura::Window* opposite_snapped) {
+  return std::abs(1.f - window_util::GetSnapRatioForWindow(to_be_snapped) -
+                  window_util::GetSnapRatioForWindow(opposite_snapped));
+}
+
+bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
+                                   aura::Window* opposite_snapped) {
+  const float snap_ratio_gap = GetSnapRatioGap(to_be_snapped, opposite_snapped);
+  // Use a more relaxed tolerance to allow approximate gaps.
+  const float diff = snap_ratio_gap - kSnapToReplaceRatioDiffThreshold;
+  return diff <= /*tolerance=*/0.01f;
+}
+
 float GetPhantomSnapRatio(aura::Window* to_be_snapped_window,
                           aura::Window* target_root,
                           SnapViewType snap_type) {
   if (IsSnapGroupEnabledInClamshellMode()) {
     // `GetTopmostVisibleWindowOfSnapType()` will include windows in snap
     // groups.
-    if (aura::Window* opposite =
+    if (aura::Window* opposite_window =
             GetTopmostVisibleWindowOfSnapType(to_be_snapped_window, target_root,
                                               GetOppositeSnapType(snap_type))) {
-      return 1.f - window_util::GetSnapRatioForWindow(opposite);
+      // If the gap between `opposite_window` and `to_be_snapped_window`,
+      // which will always be the default snap ratio for drag to snap, exceeds
+      // the threshold, we won't allow auto grouping, so we also don't update
+      // the phantom snap ratio.
+      if (!IsSnapRatioGapWithinThreshold(to_be_snapped_window,
+                                         opposite_window)) {
+        return chromeos::kDefaultSnapRatio;
+      }
+      return 1.f - window_util::GetSnapRatioForWindow(opposite_window);
     }
   }
   return chromeos::kDefaultSnapRatio;

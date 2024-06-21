@@ -102,6 +102,13 @@ bool SnapGroupController::OnWindowSnapped(
     return false;
   }
 
+  // Disallow adding to group if the snap ratio gap exceeds the allowed
+  // threshold.
+  if (!IsSnapRatioGapWithinThreshold(window, opposite)) {
+    base::RecordAction(base::UserMetricsAction("SnapGroups_SnapDirect"));
+    return false;
+  }
+
   // First attempt snap to replace. Snap groups in overview would be excluded by
   // `GetOppositeVisibleSnappedWindow()`.
   if (MaybeSnapToReplace(window, opposite, snap_action_source)) {
@@ -480,29 +487,6 @@ bool SnapGroupController::MaybeSnapToReplace(
     return false;
   }
 
-  const float snapped_window_snap_ratio =
-      WindowState::Get(to_be_replaced_window)
-          ->snap_ratio()
-          .value_or(chromeos::kDefaultSnapRatio);
-  const float snapping_window_snap_ratio =
-      window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
-
-  // TODO(michelefan): The two snap action sources from Lacros are currently
-  // bundled together. We should separate them.
-  if (snap_action_source == WindowSnapActionSource::kSnapByWindowLayoutMenu ||
-      snap_action_source ==
-          WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu) {
-    const float snap_ratio_diff =
-        std::abs(snapped_window_snap_ratio - snapping_window_snap_ratio);
-
-    // Disallow snap-to-replace if the snap ratio difference exceeds the allowed
-    // threshold.
-    if (snap_ratio_diff > kSnapToReplaceRatioDiffThreshold) {
-      base::RecordAction(base::UserMetricsAction("SnapGroups_SnapDirect"));
-      return false;
-    }
-  }
-
   // If the new windows can't fit, do not allow snap to replace.
   if (!CanWindowsFitInWorkArea(new_primary_window, new_secondary_window)) {
     return false;
@@ -527,6 +511,8 @@ bool SnapGroupController::MaybeSnapToReplace(
 
   // Apply the `primary_window_snap_ratio` to the `new_snap_group` such that the
   // snap ratio of the `group_to_replace` is preserved.
+  const float snapped_window_snap_ratio =
+      window_util::GetSnapRatioForWindow(to_be_replaced_window);
   const float primary_window_snap_ratio =
       new_primary_window == to_be_snapped_window
           ? snapped_window_snap_ratio

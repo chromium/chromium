@@ -2679,6 +2679,50 @@ TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapPhantomBoundsMinimumSize) {
       /*tolerance=*/kSplitviewDividerShortSideLength / 2));
 }
 
+// Tests that when the snap ratio gap exceeds the threshold, we do not update
+// the phantom bounds.
+TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapRatioGapThreshold) {
+  UpdateDisplay("800x600");
+
+  // Snap and resize `w1` so that the snap ratio gap between `w1` and the
+  // default snap ratio exceeds the threshold.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_primary);
+  auto* event_generator = GetEventGenerator();
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(w1.get());
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().right_center());
+  event_generator->DragMouseTo(105, work_area.CenterPoint().y());
+  const gfx::Rect w1_bounds(w1->GetBoundsInScreen());
+  ASSERT_EQ(105, w1_bounds.width());
+  ASSERT_GT(std::abs(1.f - *WindowState::Get(w1.get())->snap_ratio() -
+                     chromeos::kDefaultSnapRatio),
+            kSnapToReplaceRatioDiffThreshold);
+
+  // Drag to snap `window_` on the opposite side. Since we won't auto group, we
+  // also don't update the phantom bounds.
+  AllowSnap(window_.get());
+  std::unique_ptr<WindowResizer> resizer(CreateResizerForTest(window_.get()));
+  ASSERT_TRUE(resizer.get());
+  resizer->Drag(gfx::PointF(work_area.right(), work_area.CenterPoint().y()),
+                /*event_flags=*/0);
+  gfx::Rect expected_bounds(work_area);
+  expected_bounds.set_width(work_area.width() / 2);
+  expected_bounds.set_x(work_area.width() - expected_bounds.width());
+  EXPECT_EQ(expected_bounds,
+            snap_phantom_window_controller()->GetTargetWindowBounds());
+
+  // Test the window snaps at the default bounds without forming a group.
+  resizer->CompleteDrag();
+  EXPECT_FALSE(SnapGroupController::Get()->AreWindowsInSnapGroup(window_.get(),
+                                                                 w1.get()));
+  EXPECT_EQ(expected_bounds, window_->GetBoundsInScreen());
+  EXPECT_EQ(w1_bounds, w1->GetBoundsInScreen());
+}
+
 class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
  public:
   PortraitWorkspaceWindowResizerTest() = default;

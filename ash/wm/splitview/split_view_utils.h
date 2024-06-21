@@ -296,6 +296,18 @@ aura::Window* GetTopmostVisibleWindowOfSnapType(aura::Window* window_to_ignore,
 // nullptr if no such window exists.
 aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window);
 
+// Given the windows `to_be_snapped` and `opposite_snapped`, returns the snap
+// ratio gap or overlap that would be created by snapping them on opposite sides
+// of each other.
+ASH_EXPORT float GetSnapRatioGap(aura::Window* to_be_snapped,
+                                 aura::Window* opposite_snapped);
+
+// Given `window1` and the opposite snapped `window2`, returns true if the snap
+// ratio gap or overlap between them is within the snap ratio threshold for
+// auto-group and snap-to-replace.
+bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
+                                   aura::Window* opposite_snapped);
+
 // Given `to_be_snapped_window`, the `target_root` it is being dragged to, and
 // target `snap_type`, returns the snap ratio for `to_be_snapped_window` to be
 // used for phantom windows.

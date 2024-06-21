@@ -10,7 +10,9 @@ namespace ash {
 // This threshold determines if a new window can replace an existing one snapped
 // on the same side within a snap group, based on the difference in their snap
 // ratios.
-constexpr float kSnapToReplaceRatioDiffThreshold = 0.12f;
+// TODO(b/346624805): Finalize and rename the threshold value and update the
+// comments above.
+inline constexpr float kSnapToReplaceRatioDiffThreshold = 0.33f;
 
 }  // namespace ash
 

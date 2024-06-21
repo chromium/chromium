@@ -362,6 +362,19 @@ void VerifySnapGroupOnDisplay(SnapGroup* snap_group, const int64_t display_id) {
             display::Screen::GetScreen()->GetDisplayNearestWindow(root).id());
 }
 
+void ResizeDividerTo(ui::test::EventGenerator* event_generator,
+                     gfx::Point resize_point) {
+  const gfx::Point divider_center(
+      snap_group_divider_bounds_in_screen().CenterPoint());
+  event_generator->MoveMouseTo(divider_center);
+  event_generator->PressLeftButton();
+  // Resize with at least 2 steps to simulate the real CUJ of dragging the
+  // mouse. The default test EventGenerator sends only the start and end points
+  // which is an abrupt jump between points.
+  event_generator->MoveMouseTo(resize_point, /*count=*/2);
+  event_generator->ReleaseLeftButton();
+}
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -7201,8 +7214,8 @@ TEST_F(SnapGroupSnapToReplaceTest, BothWindowsMinimumSizes) {
 }
 
 // Tests that if a third window is snapped via any method except the window
-// layout menu, it should allow 'snap to replace' regardless of snap ratio
-// difference, the previous snap group's layout will be preserved.
+// layout menu, it also checks the snap ratio threshold, the previous snap
+// group's layout will be preserved.
 TEST_F(SnapGroupSnapToReplaceTest,
        SnapToReplaceWithNonWindowLayoutSnapActionSource) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -7214,23 +7227,25 @@ TEST_F(SnapGroupSnapToReplaceTest,
   const gfx::Rect w2_bounds(w2->GetBoundsInScreen());
 
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
-  const float w3_snap_ratio = 0.2;
+  const float w3_snap_ratio = 0.15f;
   SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped, w3_snap_ratio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
-  EXPECT_GT(std::abs(w3_snap_ratio - chromeos::kDefaultSnapRatio),
+
+  // Since the gap between `w3` and the opposite snapped `w2` exceeds the
+  // threshold, we do not snap to replace.
+  ASSERT_GT(std::abs(1.f - *WindowState::Get(w3.get())->snap_ratio() -
+                     *WindowState::Get(w2.get())->snap_ratio()),
             kSnapToReplaceRatioDiffThreshold);
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
   EXPECT_FALSE(
-      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_EQ(w3->GetBoundsInScreen(), w1_bounds);
-  EXPECT_EQ(w2->GetBoundsInScreen(), w2_bounds);
+      snap_group_controller->AreWindowsInSnapGroup(w3.get(), w2.get()));
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(w1_bounds, w1->GetBoundsInScreen());
+  EXPECT_EQ(w2_bounds, w2->GetBoundsInScreen());
 }
 
 // Test that the snap ratio difference is calculated before snap-to-replace when
 // snapping from window layout menu. If it's below the threshold, the
-// snap-to-replace action will occur. If not, we'll start a new faster
-// split-screen session. The previous snap ratio will be preserved after window
-// replacement within a snap group.
+// snap-to-replace action will occur. If not, we'll directly snap on top.
 TEST_F(SnapGroupSnapToReplaceTest, SnapToReplaceWithRatioMargin) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -7263,21 +7278,23 @@ TEST_F(SnapGroupSnapToReplaceTest, SnapToReplaceWithRatioMargin) {
   EXPECT_EQ(*WindowState::Get(w2.get())->snap_ratio(),
             chromeos::kDefaultSnapRatio);
 
+  // Resize `w2` and `w3` so the snap ratio gap will exceed the threshold.
+  ResizeDividerTo(GetEventGenerator(), /*resize_point=*/gfx::Point(
+                      work_area_bounds().width() * 0.8f,
+                      work_area_bounds().CenterPoint().y()));
+
   // Snap the new window `w4` with `chromeos::kOneThirdSnapRatio` ratio. Since
-  // the difference between `w4_snap_event_snap_ratio` and snap ratio of `w3` is
-  // greater than `kSnapToReplaceRatioDiffThreshold`, we will start a new faster
-  // split-screen session.
+  // the snap ratio gap between `w4` and the opposite snapped `w2` is
+  // greater than `kSnapToReplaceRatioDiffThreshold`, we directly snap on top.
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
   SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kOneThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  EXPECT_GT(std::abs(*WindowState::Get(w3.get())->snap_ratio() -
-                     chromeos::kOneThirdSnapRatio),
+  EXPECT_GT(std::abs(1.f - *WindowState::Get(w2.get())->snap_ratio() -
+                     *WindowState::Get(w4.get())->snap_ratio()),
             kSnapToReplaceRatioDiffThreshold);
-  EXPECT_FALSE(
-      snap_group_controller->AreWindowsInSnapGroup(w4.get(), w2.get()));
-  EXPECT_FALSE(
-      snap_group_controller->AreWindowsInSnapGroup(w4.get(), w3.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
 }
 
 // Tests that when dragging another window to snap in Overview with the
@@ -7633,6 +7650,68 @@ TEST_F(SnapGroupAutoSnapGroupTest, SkipPartialAndFormSnapGroup) {
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_FALSE(
       snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Tests that when the gap between the snapped window and opposite snapped
+// window exceeds the threshold, we do not auto group.
+TEST_F(SnapGroupAutoSnapGroupTest, SnapRatioGapThreshold) {
+  UpdateDisplay("1000x800");
+
+  // Snap `w1`, then resize it to be < 1/3.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point resize_point1(w1->GetBoundsInScreen().right_center());
+  event_generator->MoveMouseTo(resize_point1);
+  event_generator->DragMouseTo(250, resize_point1.y());
+  ASSERT_LT(*WindowState::Get(w1.get())->snap_ratio(),
+            chromeos::kOneThirdSnapRatio);
+
+  // Now snap `w2` to 1/3 secondary.
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_LT(*WindowState::Get(w1.get())->snap_ratio(),
+            chromeos::kOneThirdSnapRatio);
+
+  // Since the gap between `w1` and `w2` exceeds the threshold, we do not group.
+  ASSERT_GT(GetSnapRatioGap(w1.get(), w2.get()),
+            kSnapToReplaceRatioDiffThreshold);
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Tests that when the overlap between the snapped window and opposite snapped
+// window exceeds the threshold, we do not auto group.
+TEST_F(SnapGroupAutoSnapGroupTest, SnapRatioOverlapThreshold) {
+  UpdateDisplay("1000x800");
+
+  // Snap `w1` to secondary, then resize it to be > 2/3.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  const gfx::Point resize_point(w1->GetBoundsInScreen().left_center());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(resize_point);
+  event_generator->DragMouseTo(100, resize_point.y());
+  ASSERT_GT(*WindowState::Get(w1.get())->snap_ratio(),
+            chromeos::kTwoThirdSnapRatio);
+
+  // Now snap `w2` to 2/3 primary.
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w2.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+
+  // Since the overlap of `w1` and `w2` exceeds the threshold, we do not group.
+  ASSERT_GT(GetSnapRatioGap(w1.get(), w2.get()),
+            kSnapToReplaceRatioDiffThreshold);
+  EXPECT_FALSE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
 // -----------------------------------------------------------------------------
@@ -9223,12 +9302,20 @@ TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
   EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_SnapToReplace"), 1);
 
+  // Resize `w3` to be < 1/3 so the snap ratio gap exceeds the threshold.
+  auto* event_generator = GetEventGenerator();
+  const gfx::Point resize_point(w3->GetBoundsInScreen().right_center());
+  event_generator->MoveMouseTo(resize_point);
+  event_generator->DragMouseTo(150, resize_point.y());
+
   // Snap via the window layout menu with a ratio >
   // kSnapToReplaceRatioDiffThreshold to directly snap on top.
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
   SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kTwoThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  ASSERT_GT(GetSnapRatioGap(w4.get(), w2.get()),
+            kSnapToReplaceRatioDiffThreshold);
   ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
   EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_SnapDirect"), 1);
 
