@@ -12,4 +12,13 @@ option optimize_for = LITE_RUNTIME;
 
 message GoogleBottomBarIntentParams {
   repeated int32 encoded_button = 1 [packed = true];
+
+  enum VariantLayoutType {
+    NO_VARIANT = 0;
+    CHROME_CONTROLLED = 1;
+    DOUBLE_DECKER = 2;
+    SINGLE_DECKER = 3;
+    SINGLE_DECKER_WITH_RIGHT_BUTTONS = 4;
+  }
+  optional VariantLayoutType variant_layout_type = 2 [default = NO_VARIANT];
 }
