@@ -67,9 +67,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             sheetItems.add(new ListItem(BANK_ACCOUNT, model));
         }
 
-        maybeShowContinueButton(sheetItems);
-
         sheetItems.add(buildAdditionalInfo());
+
+        maybeShowContinueButton(sheetItems);
 
         sheetItems.add(0, buildHeader());
 

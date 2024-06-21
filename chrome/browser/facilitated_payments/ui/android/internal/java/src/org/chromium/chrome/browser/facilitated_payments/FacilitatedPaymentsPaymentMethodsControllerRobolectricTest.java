@@ -144,6 +144,18 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testSingleBankAccountsShown() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(4));
+        assertEquals(itemList.get(0).type, HEADER);
+        assertEquals(itemList.get(1).type, BANK_ACCOUNT);
+        assertEquals(itemList.get(2).type, ADDITIONAL_INFO);
+        assertEquals(itemList.get(3).type, CONTINUE_BUTTON);
+    }
+
+    @Test
     public void testOnDismissedIsCalled() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(true));
@@ -170,6 +182,17 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
         assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 0);
+    }
+
+    @Test
+    public void testContinueButtonClickForBankAccount() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+
+        mClock.advanceCurrentTimeMillis(InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD);
+        getModelsOfType(itemList, CONTINUE_BUTTON).get(0).get(ON_BANK_ACCOUNT_CLICK_ACTION).run();
+
+        verify(mDelegateMock).onBankAccountSelected(BANK_ACCOUNT_1.getInstrumentId());
     }
 
     @Test

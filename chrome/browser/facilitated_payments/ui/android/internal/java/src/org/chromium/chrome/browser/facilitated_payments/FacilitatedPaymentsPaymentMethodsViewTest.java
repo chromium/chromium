@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
@@ -166,6 +167,22 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(
                 descriptionLine1.getText(),
                 is("Transactions that exceed your balance will not be processed"));
+    }
+
+    @Test
+    @MediumTest
+    public void testContinueButtonText() {
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel bankAccountModel = createBankAccountModel(BANK_ACCOUNT_1);
+                    mModel.get(SHEET_ITEMS).add(new ListItem(BANK_ACCOUNT, bankAccountModel));
+                    mModel.get(SHEET_ITEMS).add(new ListItem(CONTINUE_BUTTON, bankAccountModel));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView buttonText = mView.getContentView().findViewById(R.id.touch_to_fill_button_title);
+        assertThat(buttonText.getText(), is("Continue"));
     }
 
     private PropertyModel createFacilitatedPaymentsPaymentMethodsModel() {
