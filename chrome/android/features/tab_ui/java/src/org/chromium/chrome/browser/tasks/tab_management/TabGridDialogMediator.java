@@ -28,7 +28,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -234,13 +233,6 @@ public class TabGridDialogMediator
                         // When this grid dialog is opened via the tab switcher there is a
                         // `mTabSwitcherResetHandler`.
                         boolean isTabSwitcherContext = mTabSwitcherResetHandler != null;
-
-                        // When Hub is not enabled ignore the context and always treat FROM_USER
-                        // selections as hiding the dialog. This is necessary to ensure we
-                        // correctly exit the TabSwitcherLayout.
-                        if (!HubFieldTrial.isHubEnabled()) {
-                            isTabSwitcherContext = false;
-                        }
                         if (type == TabSelectionType.FROM_USER && !isTabSwitcherContext) {
                             // Hide the dialog from the strip context only.
                             hideDialog(false);
