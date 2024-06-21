@@ -119,8 +119,13 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
 
   resetState(): void {
     this.initialPin_ = '';
-    this.pinKeyboardValue_ = '';
     this.isConfirmStep = false;
+    this.resetPinKeyboard_();
+  }
+
+  private resetPinKeyboard_(): void {
+    this.pinKeyboardValue_ = '';
+    this.problemMessage_ = '';
     this.enableSubmit = false;
   }
 
@@ -191,9 +196,8 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
         return;
       }
       this.initialPin_ = this.pinKeyboardValue_;
-      this.pinKeyboardValue_ = '';
       this.isConfirmStep = true;
-      this.problemMessage_ = '';
+      this.resetPinKeyboard_();
       this.$.pinKeyboard.focusInput();
       return;
     }
