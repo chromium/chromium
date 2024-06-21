@@ -24,14 +24,16 @@ struct ASH_EXPORT InformedRestoreContentsData {
   ~InformedRestoreContentsData();
 
   struct AppInfo {
-    explicit AppInfo(const std::string& id, const std::string& title);
+    AppInfo(const std::string& id, const std::string& title, int window_id);
     AppInfo(const std::string& app_id,
             const std::string& title,
+            int window_id,
             const std::vector<GURL>& tab_urls,
             const size_t tab_count,
             uint64_t lacros_profile_id);
     AppInfo(const AppInfo&);
     ~AppInfo();
+
     // App id. Used to retrieve the app name and app icon from the app registry
     // cache.
     std::string app_id;
@@ -41,6 +43,10 @@ struct ASH_EXPORT InformedRestoreContentsData {
     // a temporary title (last session's window title)  that will be overridden
     // once we can fetch titles from the app service using `app_id`.
     std::string title;
+
+    // Window id. Used to identify the restore content item when the
+    // corresponding content data gets updated.
+    int window_id;
 
     // Used by browser only. Urls of up to 5 tabs including the active tab. Used
     // to retrieve favicons.

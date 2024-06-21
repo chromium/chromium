@@ -114,6 +114,11 @@ class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
               (std::unique_ptr<ash::InformedRestoreContentsData> contents_data),
               (override));
   MOCK_METHOD(void, MaybeEndInformedRestoreOverviewSession, (), (override));
+  MOCK_METHOD(InformedRestoreContentsData*,
+              GetInformedRestoreContentData,
+              (),
+              (override));
+  MOCK_METHOD(void, OnInformedRestoreContentsDataUpdated, (), (override));
 };
 
 }  // namespace

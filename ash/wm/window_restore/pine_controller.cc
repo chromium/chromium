@@ -182,28 +182,35 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   // Chrome.
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Reddit",
+      /*window_id=*/0,
       std::vector<GURL>{
           GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
           GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
           GURL("https://www.google.com/")},
       /*tab_count=*/10u, /*lacros_profile_id=*/0);
   // PWA.
-  data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", "Meet");
+  data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", "Meet",
+                                /*window_id=*/0);
 
   // SWA.
-  data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh", "Camera");
-  data->apps_infos.emplace_back("odknhmnlageboeamepcngndbggdpaobj", "Settings");
-  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files");
+  data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh", "Camera",
+                                /*window_id=*/0);
+  data->apps_infos.emplace_back("odknhmnlageboeamepcngndbggdpaobj", "Settings",
+                                /*window_id=*/0);
+  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files",
+                                /*window_id=*/0);
   data->apps_infos.emplace_back("oabkinaljpjeilageghcdlnekhphhphl",
-                                "Calculator");
+                                "Calculator", /*window_id=*/0);
 
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps",
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps", /*window_id=*/0,
       std::vector<GURL>{GURL("https://www.google.com/maps/")},
       /*tab_count=*/1, /*lacros_profile_id=*/0);
-  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files");
+  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files",
+                                /*window_id=*/0);
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Twitter",
+      /*window_id=*/0,
       std::vector<GURL>{GURL("https://www.twitter.com/"),
                         GURL("https://www.youtube.com/"),
                         GURL("https://www.google.com/")},
@@ -254,6 +261,16 @@ void PineController::MaybeEndPineOverviewSession() {
   contents_data_.reset();
   OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
                                          OverviewEnterExitType::kNormal);
+}
+
+base::CallbackListSubscription
+PineController::RegisterContentsDataUpdateCallback(
+    base::RepeatingClosure callback) {
+  return contents_data_update_callbacks_.Add(std::move(callback));
+}
+
+void PineController::OnContentsDataUpdated() {
+  contents_data_update_callbacks_.Notify();
 }
 
 void PineController::OnOverviewModeEnding(OverviewSession* overview_session) {

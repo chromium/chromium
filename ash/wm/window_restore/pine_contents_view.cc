@@ -85,9 +85,14 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
   SetBetweenChildSpacing(kContentsChildSpacing);
   SetInsideBorderInsets(kContentsInsets);
 
+  auto* pine_controller = Shell::Get()->pine_controller();
+  contents_data_updated_subscription_ =
+      pine_controller->RegisterContentsDataUpdateCallback(base::BindRepeating(
+          &PineContentsView::UpdateContents, weak_ptr_factory_.GetWeakPtr()));
+
   // Update the value of `showing_list_view_` and record it.
   const InformedRestoreContentsData* contents_data =
-      Shell::Get()->pine_controller()->contents_data();
+      pine_controller->contents_data();
   CHECK(contents_data);
   showing_list_view_ = contents_data->image.isNull();
   RecordDialogScreenshotVisibility(!showing_list_view_);
@@ -154,8 +159,31 @@ std::unique_ptr<views::Widget> PineContentsView::Create(
 
 void PineContentsView::UpdateOrientation() {
   settings_button_ = nullptr;
+  preview_container_view_ = nullptr;
+  items_container_view_ = nullptr;
+  image_view_ = nullptr;
+  icon_row_container_ = nullptr;
+  screenshot_icon_row_view_ = nullptr;
   RemoveAllChildViews();
   CreateChildViews();
+}
+
+void PineContentsView::UpdateContents() {
+  const auto& apps_infos =
+      Shell::Get()->pine_controller()->contents_data()->apps_infos;
+
+  // Update the titles and favicons by recreating the items container or
+  // screenshot icon row.
+  if (showing_list_view_) {
+    preview_container_view_->RemoveChildViewT(items_container_view_);
+    items_container_view_ = preview_container_view_->AddChildViewAt(
+        std::make_unique<PineItemsContainerView>(apps_infos), 0);
+  } else {
+    icon_row_container_->RemoveChildViewT(screenshot_icon_row_view_);
+    screenshot_icon_row_view_ = icon_row_container_->AddChildView(
+        std::make_unique<PineScreenshotIconRowView>(apps_infos));
+    UpdateIconRowClipArea();
+  }
 }
 
 void PineContentsView::OnRestoreButtonPressed() {
@@ -318,56 +346,51 @@ void PineContentsView::CreateChildViews() {
           .Build());
 
   gfx::Size screenshot_size;
-  views::BoxLayoutView* preview_container_view;
+  preview_container_view_ =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetID(pine::kPreviewContainerViewID)
+                       .Build());
   if (showing_list_view_) {
-    preview_container_view = AddChildView(
+    items_container_view_ = preview_container_view_->AddChildView(
         std::make_unique<PineItemsContainerView>(contents_data->apps_infos));
-    preview_container_view->SetID(pine::kPreviewContainerViewID);
-    preview_container_view->SetPreferredSize(
+    preview_container_view_->SetPreferredSize(
         gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
   } else {
     // TODO(http://b/338666906): Fix the screenshot view when in portrait mode,
     // and after transitioning to landscape mode.
-
     const gfx::ImageSkia& image = contents_data->image;
     screenshot_size = image.size();
     screenshot_size.set_height(
         std::max(kScreenshotMinHeight, screenshot_size.height()));
 
-    views::BoxLayoutView* icon_row_container;
     views::View* icon_row_spacer;
     // This box layout is used to set the vertical space when the screenshot's
     // height is smaller than `kScreenshotContainerMinHeight`. Thus the
     // screenshot and the icon row can be centered inside the container.
-    AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .CopyAddressTo(&preview_container_view)
-            .SetID(pine::kPreviewContainerViewID)
+    preview_container_view_->AddChildView(
+        views::Builder<views::View>()
+            .SetLayoutManager(std::make_unique<views::FillLayout>())
+            .SetPreferredSize(screenshot_size)
             .AddChildren(
-                views::Builder<views::View>()
-                    .SetLayoutManager(std::make_unique<views::FillLayout>())
-                    .SetPreferredSize(screenshot_size)
-                    .AddChildren(
-                        views::Builder<views::BoxLayoutView>()
-                            .CopyAddressTo(&icon_row_container)
-                            .SetPaintToLayer()
-                            .SetOrientation(
-                                views::BoxLayout::Orientation::kVertical)
-                            .AddChildren(views::Builder<views::View>()
-                                             .CopyAddressTo(&icon_row_spacer)),
-                        views::Builder<views::ImageView>()
-                            .CopyAddressTo(&image_view_)
-                            .SetPaintToLayer()
-                            .SetImage(image)
-                            .SetImageSize(screenshot_size)))
+                views::Builder<views::BoxLayoutView>()
+                    .CopyAddressTo(&icon_row_container_)
+                    .SetPaintToLayer()
+                    .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                    .AddChildren(views::Builder<views::View>().CopyAddressTo(
+                        &icon_row_spacer)),
+                views::Builder<views::ImageView>()
+                    .CopyAddressTo(&image_view_)
+                    .SetPaintToLayer()
+                    .SetImage(image)
+                    .SetImageSize(screenshot_size))
             .Build());
 
-    icon_row_container->layer()->SetFillsBoundsOpaquely(false);
-    icon_row_container->layer()->SetRoundedCornerRadius(
+    icon_row_container_->layer()->SetFillsBoundsOpaquely(false);
+    icon_row_container_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(pine::kPreviewContainerRadius));
-    screenshot_icon_row_view_ = icon_row_container->AddChildView(
+    screenshot_icon_row_view_ = icon_row_container_->AddChildView(
         std::make_unique<PineScreenshotIconRowView>(contents_data->apps_infos));
-    icon_row_container->SetFlexForView(icon_row_spacer, 1);
+    icon_row_container_->SetFlexForView(icon_row_spacer, 1);
   }
 
   // The display orientation determines where we place the settings,
@@ -421,7 +444,7 @@ void PineContentsView::CreateChildViews() {
     const int bottom_inset = vertical_gap / 2;
     const int top_inset =
         vertical_gap % 2 == 1 ? bottom_inset + 1 : bottom_inset;
-    preview_container_view->SetInsideBorderInsets(
+    preview_container_view_->SetInsideBorderInsets(
         gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
   }
 }
@@ -432,7 +455,7 @@ void PineContentsView::OnMenuClosed() {
   context_menu_model_.reset();
 }
 
-void PineContentsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void PineContentsView::UpdateIconRowClipArea() {
   if (showing_list_view_) {
     return;
   }
@@ -448,6 +471,10 @@ void PineContentsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   builder.CutoutOuterCornerRadius(pine::kPreviewContainerRadius);
   builder.CutoutInnerCornerRadius(pine::kPreviewContainerRadius);
   image_view_->SetClipPath(builder.Build());
+}
+
+void PineContentsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  UpdateIconRowClipArea();
 }
 
 BEGIN_METADATA(PineContentsView)

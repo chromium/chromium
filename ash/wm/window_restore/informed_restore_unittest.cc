@@ -149,7 +149,8 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     data->cancel_callback = std::move(split.second);
 
     for (int i = 0; i < n; ++i) {
-      data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title");
+      data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title",
+                                    /*window_id=*/i);
     }
 
     return data;
@@ -673,7 +674,7 @@ TEST_F(InformedRestoreTest, ClickRestoreToExit) {
 
 TEST_F(InformedRestoreTest, PineItemView) {
   InformedRestoreContentsData::AppInfo app_info(
-      "TEST_ID", "TEST_TITLE",
+      "TEST_ID", "TEST_TITLE", /*window_id=*/0,
       std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u, 0);
 
   // Test when the tab count is within regular limits.
@@ -925,7 +926,7 @@ TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
   const std::string test_id = "TEST_ID";
 
   auto data = std::make_unique<InformedRestoreContentsData>();
-  data->apps_infos.emplace_back(test_id, "TEST_TITLE");
+  data->apps_infos.emplace_back(test_id, "TEST_TITLE", /*window_id=*/0);
   StartOverviewSession(std::move(data));
 
   // Before installation, the image view should show the default app icon, and

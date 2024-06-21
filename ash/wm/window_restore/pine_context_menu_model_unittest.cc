@@ -69,7 +69,8 @@ TEST_F(PineContextMenuModelTest, LayoutAndCommands) {
 // context menu.
 TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
   auto contents_data = std::make_unique<InformedRestoreContentsData>();
-  contents_data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title");
+  contents_data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title",
+                                         /*window_id=*/0);
   Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
       std::move(contents_data));
   WaitForOverviewEntered();

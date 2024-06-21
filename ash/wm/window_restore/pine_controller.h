@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -54,6 +55,10 @@ class ASH_EXPORT PineController : public OverviewObserver,
   // `contents_data_`.
   void MaybeEndPineOverviewSession();
 
+  base::CallbackListSubscription RegisterContentsDataUpdateCallback(
+      base::RepeatingClosure callback);
+  void OnContentsDataUpdated();
+
   // OverviewObserver:
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
@@ -89,6 +94,8 @@ class ASH_EXPORT PineController : public OverviewObserver,
   // deleted after the user interacts with the dialog. If the user exits
   // overview, this will persist until a window is opened.
   std::unique_ptr<InformedRestoreContentsData> contents_data_;
+
+  base::RepeatingClosureList contents_data_update_callbacks_;
 
   base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
       activation_change_observation_{this};

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/callback_list.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/widget/widget.h"
@@ -41,6 +42,10 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // Removes all child views and remakes them in the correct orientation.
   void UpdateOrientation();
 
+  // Update the contents of list view or the icon row of screenshot preview with
+  // the updated contents data.
+  void UpdateContents();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PineContextMenuModelTest,
                            ShowContextMenuOnSettingsButtonClicked);
@@ -62,6 +67,8 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // `menu_model_adapter_`.
   void OnMenuClosed();
 
+  void UpdateIconRowClipArea();
+
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
@@ -71,8 +78,15 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // The menu runner that is responsible for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
+  // The container of the items list view or screenshot.
+  raw_ptr<views::BoxLayoutView> preview_container_view_;
+
+  // The items list containing the titles and icons of the items to be restored.
+  raw_ptr<views::View> items_container_view_;
+
   // Contents of the preview when showing the screenshot.
   raw_ptr<views::View> image_view_;
+  raw_ptr<views::BoxLayoutView> icon_row_container_;
   raw_ptr<views::View> screenshot_icon_row_view_;
 
   // Time `this` was created. Used for metrics.
@@ -82,6 +96,8 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   bool close_metric_recorded_ = false;
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
+
+  base::CallbackListSubscription contents_data_updated_subscription_;
 
   base::WeakPtrFactory<PineContentsView> weak_ptr_factory_{this};
 };

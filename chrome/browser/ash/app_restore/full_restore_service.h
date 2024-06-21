@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -75,7 +76,8 @@ bool MaybeCreateFullRestoreServiceForLacros();
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
                            public message_center::NotificationObserver,
-                           public AcceleratorController::Observer {
+                           public AcceleratorController::Observer,
+                           public SessionObserver {
  public:
   // Delegate class that talks to ash shell. Ash shell is not created in
   // unit tests so this should be mocked out for testing those behaviors.
@@ -87,6 +89,8 @@ class FullRestoreService : public KeyedService,
     virtual void MaybeStartInformedRestoreOverviewSession(
         std::unique_ptr<InformedRestoreContentsData> contents_data) = 0;
     virtual void MaybeEndInformedRestoreOverviewSession() = 0;
+    virtual InformedRestoreContentsData* GetInformedRestoreContentData() = 0;
+    virtual void OnInformedRestoreContentsDataUpdated() = 0;
   };
 
   static FullRestoreService* GetForProfile(Profile* profile);
@@ -126,6 +130,9 @@ class FullRestoreService : public KeyedService,
   void OnAcceleratorControllerWillBeDestroyed(
       AcceleratorController* controller) override;
 
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
   void SetAppLaunchHandlerForTesting(
       std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler);
 
@@ -152,6 +159,8 @@ class FullRestoreService : public KeyedService,
   // apps. Otherwise, returns false.
   bool CanBeInited() const;
 
+  void InitInformedRestoreContentsData(bool last_session_crashed);
+
   // Show the restore notification on startup.
   void MaybeShowRestoreNotification(const std::string& id,
                                     bool& show_notification);
@@ -177,21 +186,16 @@ class FullRestoreService : public KeyedService,
                        SessionID active_window_id,
                        bool read_error);
   void OnGotAllSessionsAsh(
-      bool last_session_crashed,
       const std::vector<SessionWindows>& all_session_windows);
   void OnGotAllSessionsLacros(
-      bool last_session_crashed,
       std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows);
 
   // Called when session information is ready to be processed. Constructs the
   // object needed to show the informed restore dialog. It will be passed to ash
   // which will then use its contents to create and display the dialog.
-  // `restore_data` is the data read from the full restore file.
   // `session_windows_map` is the browser info retrieved from session restore.
   void OnSessionInformationReceived(
-      ::app_restore::RestoreData* restore_data,
-      const SessionWindowsMap& session_windows_map,
-      bool last_session_crashed);
+      const SessionWindowsMap& session_windows_map);
 
   // Shows the informed restore onboarding dialog when there is no restore data.
   void MaybeShowInformedRestoreOnboarding(bool restore_on);
@@ -228,6 +232,11 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler_;
 
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
+
+  // The contents data that will be presented in the informed restore dialog.
+  // Will pass the ownership to post-login controller when start post-login
+  // session.
+  std::unique_ptr<InformedRestoreContentsData> contents_data_;
 
   std::unique_ptr<message_center::Notification> notification_;
 
