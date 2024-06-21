@@ -20,6 +20,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -111,6 +112,7 @@ public class TabSwitcherActionMenuBatchedPTTest {
     /** Regression test for crbug.com/1448791 */
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/348695491")
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         PageStation page = mTransitEntryPoints.startOnBlankPage(mBatchedRule);
 
