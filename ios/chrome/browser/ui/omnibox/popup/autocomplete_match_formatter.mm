@@ -600,10 +600,14 @@ UIColor* DimColorIncognito() {
       };
     }
     default:
+      BOOL isFinanceDetailText =
+          _match.answer_type == SuggestionAnswer::ANSWER_TYPE_FINANCE &&
+          useDeemphasizedStyling;
       return @{
         NSFontAttributeName : [UIFont fontWithDescriptor:defaultFontDescriptor
                                                     size:0],
-        NSForegroundColorAttributeName : defaultColor,
+        NSForegroundColorAttributeName : isFinanceDetailText ? UIColor.grayColor
+                                                             : defaultColor,
       };
   }
 }
