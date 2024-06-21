@@ -3317,6 +3317,34 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.WebView.UserOptInKnown.EveryLoad" enum="Boolean"
+    expires_after="2024-12-18">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether user consent for Safe Browsing is known or if we are still
+    waiting for a callback to return. A value of &quot;true&quot; means the
+    consent is known (but not necessarily whether the consent is positive or
+    negative), and a value of &quot;false&quot; means we are still waiting for a
+    result callback. This histogram is recorded during every URL load when we
+    check the Safe Browsing opt-in status.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.WebView.UserOptInKnown.FirstLoad" enum="Boolean"
+    expires_after="2024-12-18">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether user consent for Safe Browsing is known or if we are still
+    waiting for a callback to return. A value of &quot;true&quot; means the
+    consent is known (but not necessarily whether the consent is positive or
+    negative), and a value of &quot;false&quot; means we are still waiting for a
+    result callback. This histogram is recorded exactly once, during the first
+    URL load in WebView.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.{CloudOrLocal}DeepScan.{Connector}.BytesPerSeconds"
     units="bytes" expires_after="2024-11-03">

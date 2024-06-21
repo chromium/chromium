@@ -20,7 +20,16 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 /** Helper class for getting the configuration settings related to safebrowsing in WebView. */
 @JNINamespace("android_webview")
 public class AwSafeBrowsingConfigHelper {
+    // This does not track the user opt-in. This value tracks whether or not the user opt-in
+    // callback has returned. Until the callback has returned, the user opt-in state is unknown.
+    private static volatile boolean sUserOptInCallbackReturned;
+    // Indicates whether or not we have already invoked getSafeBrowsingUserOptIn().
+    private static volatile boolean sHasCalledGetSafeBrowsingUserOptIn;
+    // Tracks user opt-in state.
     private static volatile boolean sSafeBrowsingUserOptIn;
+    // Tracks developer opt-in state, as expressed via the manifest tag. Note that developers can
+    // also invoke WebSettings.setSafeBrowsingEnabled() which overrides the manifest tag, however
+    // that state is tracked in AwSettings.
     private static volatile boolean sEnabledByManifest;
 
     // Used to record the UMA histogram SafeBrowsing.WebView.AppOptIn. Since these values are
@@ -94,6 +103,13 @@ public class AwSafeBrowsingConfigHelper {
     // preference. This returns false if we don't know yet what the user's preference is.
     @CalledByNative
     private static boolean getSafeBrowsingUserOptIn() {
+        if (!sHasCalledGetSafeBrowsingUserOptIn) {
+            sHasCalledGetSafeBrowsingUserOptIn = true;
+            RecordHistogram.recordBooleanHistogram(
+                    "SafeBrowsing.WebView.UserOptInKnown.FirstLoad", sUserOptInCallbackReturned);
+        }
+        RecordHistogram.recordBooleanHistogram(
+                "SafeBrowsing.WebView.UserOptInKnown.EveryLoad", sUserOptInCallbackReturned);
         return sSafeBrowsingUserOptIn;
     }
 
@@ -105,6 +121,7 @@ public class AwSafeBrowsingConfigHelper {
     }
 
     public static void setSafeBrowsingUserOptIn(boolean optin) {
+        sUserOptInCallbackReturned = true;
         sSafeBrowsingUserOptIn = optin;
     }
 
