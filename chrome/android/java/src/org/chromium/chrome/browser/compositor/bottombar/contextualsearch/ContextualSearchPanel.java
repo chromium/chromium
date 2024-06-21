@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.ContextualSearchSceneL
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -90,11 +89,11 @@ public class ContextualSearchPanel extends OverlayPanel {
     /** Used to query toolbar state. */
     private final ToolbarManager mToolbarManager;
 
-    /** The {@link ActivityType} for the current activity. */
-    private final @ActivityType int mActivityType;
-
     /** The distance of the divider from the end of the bar, in dp. */
     private final float mEndButtonWidthDp;
+
+    /** Whether the contextual search panel can be promoted to a new tab. */
+    private final boolean mCanPromoteToNewTab;
 
     /** Supplies a {@link EdgeToEdgeController} that adjusts for more screen-bottom space. */
     private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
@@ -140,8 +139,9 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The {@link ToolbarManager}, used to query for colors.
-     * @param activityType The {@link ActivityType} for the current activity.
+     * @param canPromoteToNewTab Whether the panel can be promoted to a new tab.
      * @param currentTabSupplier Supplies the current activity tab.
+     * @param edgeToEdgeControllerSupplier Controller for ddge-to-edge drawing.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -153,7 +153,7 @@ public class ContextualSearchPanel extends OverlayPanel {
             @NonNull CompositorViewHolder compositorViewHolder,
             float toolbarHeightDp,
             @NonNull ToolbarManager toolbarManager,
-            @ActivityType int activityType,
+            boolean canPromoteToNewTab,
             @NonNull Supplier<Tab> currentTabSupplier,
             @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         super(
@@ -169,7 +169,7 @@ public class ContextualSearchPanel extends OverlayPanel {
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;
-        mActivityType = activityType;
+        mCanPromoteToNewTab = canPromoteToNewTab;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
 
         mEndButtonWidthDp =
@@ -1182,7 +1182,7 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @return Whether the panel content can be displayed in a new tab.
      */
     public boolean canPromoteToNewTab() {
-        return mActivityType == ActivityType.TABBED;
+        return mCanPromoteToNewTab;
     }
 
     // ============================================================================================

@@ -215,8 +215,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         mTabModelProfileSupplier,
                         mBookmarkModelSupplier,
                         mTabBookmarkerSupplier,
-                        getContextualSearchManagerSupplier(),
                         getTabModelSelectorSupplier(),
+                        this::getLastUserInteractionTime,
                         getBrowserControlsManager(),
                         getWindowAndroid(),
                         getLifecycleDispatcher(),
@@ -417,12 +417,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     @Override
-    protected boolean isContextualSearchEnabled() {
-        if (mIntentDataProvider.isAuthView()) return false;
-        return super.isContextualSearchEnabled();
-    }
-
-    @Override
     protected void onDestroyInternal() {
         if (mFullscreenManager != null) {
             mFullscreenManager.removeObserver(mFullscreenObserver);
@@ -577,11 +571,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected int getToolbarLayoutId() {
         return R.layout.custom_tabs_toolbar;
-    }
-
-    @Override
-    public int getControlContainerHeightResource() {
-        return R.dimen.custom_tabs_control_container_height;
     }
 
     @Override
