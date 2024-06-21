@@ -55,9 +55,6 @@ class AtspiInProcessFuzzer
 
   int Fuzz(const test::fuzzing::atspi_fuzzing::FuzzCase& fuzz_case) override;
 
-  static void MutateControlPath(test::fuzzing::atspi_fuzzing::Action* message,
-                                unsigned int seed);
-
  private:
   void LoadAPage();
   static ScopedAtspiAccessible GetRootNode();
@@ -141,9 +138,6 @@ int AtspiInProcessFuzzer::Fuzz(
     // Enumerate available controls after each action we take - obviously,
     // clicking on one button may make more buttons available
     ScopedAtspiAccessible current_control = GetRootNode();
-    // Keep a record of the control path so we can cache children for later
-    // exploration
-    std::vector<uint32_t> current_control_path;
     std::vector<ScopedAtspiAccessible> children = GetChildren(current_control);
     for (const uint32_t& ordinal_number : action.path_to_control()) {
       if (children.empty()) {
@@ -156,7 +150,6 @@ int AtspiInProcessFuzzer::Fuzz(
       // improve things.
       size_t child_ordinal = ordinal_number % children.size();
       current_control = children[child_ordinal];
-      current_control_path.push_back(child_ordinal);
       children = GetChildren(current_control);
     }
 
