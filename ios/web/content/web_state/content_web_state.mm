@@ -372,7 +372,8 @@ bool ContentWebState::IsVisible() const {
 }
 
 bool ContentWebState::IsCrashed() const {
-  return false;
+  DCHECK(web_contents_);
+  return web_contents_->IsCrashed();
 }
 
 bool ContentWebState::IsEvicted() const {
@@ -380,11 +381,13 @@ bool ContentWebState::IsEvicted() const {
 }
 
 bool ContentWebState::IsBeingDestroyed() const {
-  return false;
+  DCHECK(web_contents_);
+  return web_contents_->IsBeingDestroyed();
 }
 
 bool ContentWebState::IsWebPageInFullscreenMode() const {
-  return false;
+  DCHECK(web_contents_);
+  return web_contents_->IsFullscreen();
 }
 
 const FaviconStatus& ContentWebState::GetFaviconStatus() const {
