@@ -1,4 +1,9 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to register a ServiceWorker for scope ('https://web-platform.test:8444/compression/does/not/exist') with script ('https://web-platform.test:8444/compression/decompression-buffersource.tentative.any.worker.js'): ServiceWorker script evaluation failed
+[FAIL] chunk of type Float16Array should work for deflate
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
+[FAIL] chunk of type Float16Array should work for gzip
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
+[FAIL] chunk of type Float16Array should work for deflate-raw
+  promise_test: Unhandled rejection with value: object "ReferenceError: Float16Array is not defined"
 Harness: the test ran to completion.
 
