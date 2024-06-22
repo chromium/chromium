@@ -910,7 +910,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1668435968811469751">Inscribirse manualmente</translation>
 <translation id="1668804837842452164">Guardar en el <ph name="BRAND" /> de <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Más información sobre las sugerencias</translation>
-<translation id="1670399744444387456">Básicas</translation>
+<translation id="1670399744444387456">Opciones básicas</translation>
 <translation id="1673137583248014546"><ph name="URL" /> desea ver la marca y el modelo de tu llave de seguridad</translation>
 <translation id="1674073353928166410">Abrir todo (<ph name="URL_COUNT" />) en una ventana de incógnito</translation>
 <translation id="1677306805708094828">No se puede agregar la <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
@@ -1314,7 +1314,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="197288927597451399">Conservar</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Puntos de distribución de la CRL</translation>
-<translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1974060860693918893">Opciones avanzadas</translation>
 <translation id="1974159333077206889">Mismo audio en todas las bocinas</translation>
 <translation id="1974216844776165821">Chrome guardó tu contraseña en este dispositivo, pero puedes guardarla en tu Cuenta de Google. Así, todas las contraseñas y llaves de acceso guardadas en tu Cuenta de Google también estarán disponibles cuando accedas.</translation>
 <translation id="1975841812214822307">Eliminar…</translation>
@@ -4412,7 +4412,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4305402730127028764">Copiar a <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4306119971288449206">Las apps deben incluir el encabezado content-type "<ph name="CONTENT_TYPE" />"</translation>
-<translation id="4307992518367153382">Configuración básica</translation>
+<translation id="4307992518367153382">Opciones básicas</translation>
 <translation id="4309165024397827958">Permite que los servicios y las apps para Android habilitadas usen la ubicación de este dispositivo. Es posible que Google recopile datos de ubicación anónimos periódicamente y los use para mejorar la precisión de la ubicación y los servicios basados en la ubicación.</translation>
 <translation id="4309183709806093061">Compartir también el audio del sistema. Se silenciará este dispositivo para evitar acoples.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" />K (<ph name="NUM_KILOBYTES_LIVE" />K en vivo)</translation>

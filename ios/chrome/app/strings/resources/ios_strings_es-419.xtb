@@ -185,7 +185,7 @@
 <translation id="1967461193809857427">{count,plural, =1{¿Quieres retomar la pestaña que dejaste en Android?}other{¿Quieres retomar las pestañas que dejaste en Android?}}</translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se cargará proactivamente en función de la página web que visites en el momento</translation>
 <translation id="1973912524893600642">Conservar los datos</translation>
-<translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1974060860693918893">Opciones avanzadas</translation>
 <translation id="1980417445547898121">{count,plural, =1{Obtén {count} pestaña activa recientemente de tu otro dispositivo en este iPhone}other{Obtén {count} pestañas activas recientemente de tu otro dispositivo en este iPhone}}</translation>
 <translation id="1981118202195772574">Dispositivo móvil</translation>
 <translation id="1989112275319619282">Navegar</translation>
@@ -263,7 +263,7 @@
 <translation id="236977714248711277">Los sitios no pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a la cuenta correspondiente o recordar elementos en el carrito de compras.
 
 Tampoco pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
-<translation id="2381405137052800939">Configuración básica</translation>
+<translation id="2381405137052800939">Opciones básicas</translation>
 <translation id="2386793615875593361">1 foto seleccionada</translation>
 <translation id="2390457533592708044">Ocultar "<ph name="MODULE_NAME" />"</translation>
 <translation id="2403129868389095715">No se puede entregar el paquete</translation>
