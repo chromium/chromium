@@ -1482,16 +1482,21 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         break;
 
       std::vector<int> indices = GetIndicesForCommand(context_index);
-      bool group = WillContextMenuGroup(context_index);
-      if (group) {
+      if (WillContextMenuGroup(context_index)) {
         std::optional<tab_groups::TabGroupId> new_group_id =
             AddToNewGroup(indices);
         if (new_group_id.has_value())
           OpenTabGroupEditor(new_group_id.value());
       } else {
-        RemoveFromGroup(indices);
+        std::vector<tab_groups::TabGroupId> groups_to_delete =
+            GetGroupsDestroyedFromRemovingIndices(indices);
+        if (delegate_->ConfirmRemovingAllTabsFromGroups(
+                groups_to_delete,
+                base::BindOnce(&TabStripModel::RemoveFromGroup,
+                               base::Unretained(this), indices))) {
+          RemoveFromGroup(indices);
+        }
       }
-
       break;
     }
 
@@ -1663,7 +1668,24 @@ void TabStripModel::ExecuteAddToExistingGroupCommand(
 
   if (!ContainsIndex(context_index))
     return;
-  AddToExistingGroup(GetIndicesForCommand(context_index), group);
+
+  std::vector<int> indices = GetIndicesForCommand(context_index);
+
+  std::vector<tab_groups::TabGroupId> groups_to_delete =
+      GetGroupsDestroyedFromRemovingIndices(indices);
+
+  // If there are no groups to delete OR there is only one group that was found
+  // to be deleted, but it is the group that is being added to then the there
+  // are no actual deletions occuring. Otherwise the group deletion must be
+  // confirmed.
+  if (groups_to_delete.size() == 0 ||
+      (groups_to_delete.size() == 1 && groups_to_delete[0] == group) ||
+      delegate_->ConfirmRemovingAllTabsFromGroups(
+          groups_to_delete,
+          base::BindOnce(&TabStripModel::AddToExistingGroup,
+                         base::Unretained(this), indices, group, false))) {
+    AddToExistingGroup(indices, group);
+  }
 }
 
 void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,

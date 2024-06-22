@@ -1574,14 +1574,14 @@ TEST_P(TabStripModelTest, CommandTogglePinned) {
 TEST_P(TabStripModelTest, CommandToggleGrouped) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
-  EXPECT_TRUE(tabstrip.empty());
+  ASSERT_TRUE(tabstrip.empty());
   ASSERT_TRUE(tabstrip.SupportsTabGroups());
 
   // Create three tabs, select the first two, and add the first to a group.
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 3, 0, "0 1"));
   tab_groups::TabGroupId original_group = tabstrip.AddToNewGroup({0});
-  EXPECT_TRUE(tabstrip.GetTabGroupForTab(0).has_value());
+  ASSERT_TRUE(tabstrip.GetTabGroupForTab(0).has_value());
 
   EXPECT_TRUE(tabstrip.IsContextMenuCommandEnabled(
       0, TabStripModel::CommandToggleGrouped));
