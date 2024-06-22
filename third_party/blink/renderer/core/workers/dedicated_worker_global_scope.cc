@@ -369,7 +369,6 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
                                              const PostMessageOptions* options,
                                              ExceptionState& exception_state) {
   Transferables transferables;
-  recordreplay::AutoAssertBufferAllocations autoAsserts("TT-492-1286");
   scoped_refptr<SerializedScriptValue> serialized_message =
       PostMessageHelper::SerializeMessageByMove(script_state->GetIsolate(),
                                                 message, options, transferables,

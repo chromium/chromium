@@ -73,6 +73,8 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Serialize(
     v8::Local<v8::Value> value,
     const SerializeOptions& options,
     ExceptionState& exception) {
+
+  recordreplay::AutoAssertBufferAllocations autoAsserts("TT-1403-1408");
   return SerializedScriptValueFactory::Instance().Create(isolate, value,
                                                          options, exception);
 }
