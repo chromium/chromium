@@ -31,7 +31,7 @@ class TlsClientConnection final : public openscreen::TlsConnection {
 
   // TlsConnection overrides.
   void SetClient(Client* client) final;
-  bool Send(const void* data, size_t len) final;
+  bool Send(openscreen::ByteView data) final;
   openscreen::IPEndpoint GetRemoteEndpoint() const final;
 
   // The maximum size of the vector in any single Client::OnRead() callback.

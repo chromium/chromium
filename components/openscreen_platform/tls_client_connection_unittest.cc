@@ -213,13 +213,13 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
   }
 
   // Send one message whose size is half the pipe's capacity.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(message, socket_streams()->TakeAccumulatedOutboundData());
 
   // Send two messages whose sizes are half the pipe's capacity.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
+  EXPECT_TRUE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   std::vector<uint8_t> accumulated_data =
       socket_streams()->TakeAccumulatedOutboundData();
@@ -229,9 +229,9 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
                       message.size()));
 
   // Attempt to send three messages, but expect the third to fail.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
-  EXPECT_FALSE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
+  EXPECT_TRUE(connection()->Send(message));
+  EXPECT_FALSE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   accumulated_data = socket_streams()->TakeAccumulatedOutboundData();
   ASSERT_EQ(message.size() * 2, accumulated_data.size());
@@ -240,7 +240,7 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
                       message.size()));
 
   // Sending should resume when there is capacity available again.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(message, socket_streams()->TakeAccumulatedOutboundData());
 }
@@ -251,7 +251,7 @@ TEST_F(TlsClientConnectionTest,
   connection()->SetClient(client());
 
   // Send a message and immediately close the outbound stream.
-  EXPECT_TRUE(connection()->Send(kTestMessage, sizeof(kTestMessage)));
+  EXPECT_TRUE(connection()->Send(kTestMessage));
   socket_streams()->SimulateOutboundClose();
   base::RunLoop().RunUntilIdle();
 
@@ -260,7 +260,7 @@ TEST_F(TlsClientConnectionTest,
 
   // Now, call Send() again and this should trigger a fatal error.
   EXPECT_CALL(*client(), OnError(connection(), _)).Times(1);
-  EXPECT_FALSE(connection()->Send(kTestMessage, sizeof(kTestMessage)));
+  EXPECT_FALSE(connection()->Send(kTestMessage));
 }
 
 TEST_F(TlsClientConnectionTest, CanRetrieveAddresses) {

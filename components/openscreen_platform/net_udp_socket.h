@@ -42,9 +42,8 @@ class NetUdpSocket final : public openscreen::UdpSocket {
       openscreen::NetworkInterfaceIndex ifindex) override;
   void JoinMulticastGroup(const openscreen::IPAddress& address,
                           openscreen::NetworkInterfaceIndex ifindex) override;
-  void SendMessage(const void* data,
-                   size_t length,
-                   const openscreen::IPEndpoint& dest) override;
+  void SendMessage(openscreen::ByteView data,
+                   const openscreen::IPEndpoint& dest) final;
   void SetDscp(openscreen::UdpSocket::DscpMode state) override;
 
   const raw_ptr<Client> client_;

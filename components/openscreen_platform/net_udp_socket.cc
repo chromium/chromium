@@ -163,8 +163,7 @@ void NetUdpSocket::JoinMulticastGroup(
   }
 }
 
-void NetUdpSocket::SendMessage(const void* data,
-                               size_t length,
+void NetUdpSocket::SendMessage(openscreen::ByteView data,
                                const openscreen::IPEndpoint& dest) {
   DVLOG(3) << __func__;
 
@@ -174,11 +173,11 @@ void NetUdpSocket::SendMessage(const void* data,
     return;
   }
 
-  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
-  memcpy(buffer->data(), data, length);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
+  memcpy(buffer->data(), data.data(), data.size());
 
   const int result = udp_socket_.SendTo(
-      buffer.get(), length, openscreen_platform::ToNetEndPoint(dest),
+      buffer.get(), data.size(), openscreen_platform::ToNetEndPoint(dest),
       base::BindOnce(&NetUdpSocket::OnSendToCompleted, base::Unretained(this)));
   send_pending_ = true;
 

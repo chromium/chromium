@@ -51,7 +51,7 @@ void TlsClientConnection::SetClient(Client* client) {
   client_ = client;
 }
 
-bool TlsClientConnection::Send(const void* data, size_t len) {
+bool TlsClientConnection::Send(openscreen::ByteView data) {
   if (!send_stream_.is_valid()) {
     if (client_) {
       client_->OnError(this, Error(Error::Code::kSocketClosedFailure,
@@ -60,10 +60,7 @@ bool TlsClientConnection::Send(const void* data, size_t len) {
     return false;
   }
 
-  // SAFETY: Relying on the caller to provide valid `data` and `len`.
-  // TODO(https://crbug.com/344896902): `span`-ify this API.
-  base::span<const uint8_t> span =
-      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(data), len));
+  base::span<const uint8_t> span(data.data(), data.size());
   size_t actually_written_bytes = 0;
   const MojoResult result = send_stream_->WriteData(
       span, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);

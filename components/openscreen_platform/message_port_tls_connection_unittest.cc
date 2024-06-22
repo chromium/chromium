@@ -15,6 +15,7 @@
 #include "third_party/openscreen/src/platform/api/task_runner.h"
 #include "third_party/openscreen/src/platform/api/tls_connection.h"
 #include "third_party/openscreen/src/platform/base/ip_address.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 using ::testing::_;
 using ::testing::Mock;
@@ -166,7 +167,8 @@ TEST_F(MessagePortTlsConnectionTest, Send) {
 
   // Set data is always forwarded to the underlying MessagePort's Send().
   EXPECT_CALL(*message_port_, PostMessage(message));
-  connection_->Send(message.data(), message.length());
+  connection_->Send(openscreen::ByteView(
+      reinterpret_cast<const uint8_t*>(message.data()), message.size()));
 }
 
 }  // namespace openscreen_platform

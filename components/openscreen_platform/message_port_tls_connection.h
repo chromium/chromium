@@ -38,7 +38,7 @@ class MessagePortTlsConnection final
 
   // TlsConnection overrides.
   void SetClient(TlsConnection::Client* client) final;
-  bool Send(const void* data, size_t len) final;
+  bool Send(openscreen::ByteView data) final;
   openscreen::IPEndpoint GetRemoteEndpoint() const final;
 
  private:

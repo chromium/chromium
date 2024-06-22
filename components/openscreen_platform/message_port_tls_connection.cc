@@ -27,9 +27,9 @@ void MessagePortTlsConnection::SetClient(TlsConnection::Client* client) {
   client_ = client;
 }
 
-bool MessagePortTlsConnection::Send(const void* data, size_t len) {
-  return message_port_->PostMessage(
-      std::string_view(static_cast<const char*>(data), len));
+bool MessagePortTlsConnection::Send(openscreen::ByteView data) {
+  return message_port_->PostMessage(std::string_view(
+      reinterpret_cast<const char*>(data.data()), data.size()));
 }
 
 openscreen::IPEndpoint MessagePortTlsConnection::GetRemoteEndpoint() const {
