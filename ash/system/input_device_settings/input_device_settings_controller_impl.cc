@@ -208,13 +208,20 @@ mojom::ChargeState GetChargeStateFromBluetoothDevice(
   }
 }
 
-mojom::BatteryInfoPtr GetBatteryInfo(
-    const ui::InputDevice& device,
-    BluetoothDevicesObserver* bluetooth_observer) {
-  auto* bt_device = bluetooth_observer->GetConnectedBluetoothDevice(device);
-  CHECK(bt_device);
+device::BluetoothDevice* GetBluetoothDevice(device::BluetoothAdapter* adapter,
+                                            const std::string& device_key) {
+  for (auto* device : adapter->GetDevices()) {
+    if (Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
+            device->GetVendorID(), device->GetProductID()) == device_key) {
+      return device;
+    }
+  }
+  return nullptr;
+}
+
+mojom::BatteryInfoPtr GetBatteryInfo(const device::BluetoothDevice& bt_device) {
   auto battery_info =
-      bt_device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
+      bt_device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
   if (!battery_info || !battery_info->percentage.has_value()) {
     return nullptr;
   }
@@ -225,22 +232,7 @@ mojom::BatteryInfoPtr GetBatteryInfo(
                                                  battery_info->charge_state));
 }
 
-std::string GetDeviceBluetoothAddress(
-    const ui::InputDevice& device,
-    BluetoothDevicesObserver* bluetooth_observer) {
-  return bluetooth_observer->GetConnectedBluetoothDevice(device)->GetAddress();
-}
-
-bool ShouldAddBatteryInfo(const ui::InputDevice& device,
-                          BluetoothDevicesObserver* bluetooth_observer) {
-  return features::IsWelcomeExperienceEnabled() &&
-         device.type == ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH &&
-         bluetooth_observer->IsConnectedBluetoothDevice(device);
-}
-
-mojom::KeyboardPtr BuildMojomKeyboard(
-    const ui::KeyboardDevice& keyboard,
-    BluetoothDevicesObserver* bluetooth_observer) {
+mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
@@ -262,18 +254,13 @@ mojom::KeyboardPtr BuildMojomKeyboard(
   }
   RecordKeyboardMetadataTierMetrics(keyboard);
 
-  if (ShouldAddBatteryInfo(keyboard, bluetooth_observer)) {
-    mojom_keyboard->battery_info = GetBatteryInfo(keyboard, bluetooth_observer);
-  }
-
   return mojom_keyboard;
 }
 
 mojom::MousePtr BuildMojomMouse(
     const ui::InputDevice& mouse,
     mojom::CustomizationRestriction customization_restriction,
-    mojom::MouseButtonConfig mouse_button_config,
-    BluetoothDevicesObserver* bluetooth_observer) {
+    mojom::MouseButtonConfig mouse_button_config) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
@@ -286,16 +273,10 @@ mojom::MousePtr BuildMojomMouse(
       mouse.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   RecordMouseMetadataTierMetrics(mouse, mouse_button_config);
 
-  if (ShouldAddBatteryInfo(mouse, bluetooth_observer)) {
-    mojom_mouse->battery_info = GetBatteryInfo(mouse, bluetooth_observer);
-  }
-
   return mojom_mouse;
 }
 
-mojom::TouchpadPtr BuildMojomTouchpad(
-    const ui::TouchpadDevice& touchpad,
-    BluetoothDevicesObserver* bluetooth_observer) {
+mojom::TouchpadPtr BuildMojomTouchpad(const ui::TouchpadDevice& touchpad) {
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->id = touchpad.id;
   mojom_touchpad->name = touchpad.name;
@@ -305,10 +286,6 @@ mojom::TouchpadPtr BuildMojomTouchpad(
   mojom_touchpad->is_external =
       touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   mojom_touchpad->is_haptic = touchpad.is_haptic;
-
-  if (ShouldAddBatteryInfo(touchpad, bluetooth_observer)) {
-    mojom_touchpad->battery_info = GetBatteryInfo(touchpad, bluetooth_observer);
-  }
 
   return mojom_touchpad;
 }
@@ -329,8 +306,7 @@ mojom::PointingStickPtr BuildMojomPointingStick(
 mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     const ui::InputDevice& graphics_tablet,
     mojom::CustomizationRestriction customization_restriction,
-    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config,
-    BluetoothDevicesObserver* bluetooth_observer) {
+    mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   mojom_graphics_tablet->name = graphics_tablet.name;
   mojom_graphics_tablet->id = graphics_tablet.id;
@@ -342,11 +318,6 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
           graphics_tablet);
   RecordGraphicsTabletMetadataTierMetrics(graphics_tablet,
                                           graphics_tablet_button_config);
-
-  if (ShouldAddBatteryInfo(graphics_tablet, bluetooth_observer)) {
-    mojom_graphics_tablet->battery_info =
-        GetBatteryInfo(graphics_tablet, bluetooth_observer);
-  }
 
   return mojom_graphics_tablet;
 }
@@ -646,15 +617,10 @@ void RefreshKeyDisplayGraphicsTablet(mojom::GraphicsTablet& graphics_tablet) {
       graphics_tablet.settings->pen_button_remappings);
 }
 
-void PruneBluetoothDeviceMap(
-    base::flat_map<std::string, InputDeviceSettingsController::DeviceId>&
-        bluetooth_address_to_device_id_map,
-    const std::vector<InputDeviceSettingsController::DeviceId>&
-        removed_device_ids) {
-  base::EraseIf(bluetooth_address_to_device_id_map,
-                [&removed_device_ids](const auto& pair) -> bool {
-                  return base::Contains(removed_device_ids, pair.second);
-                });
+bool BatteryInfoChanged(const mojom::BatteryInfo& existing_info,
+                        const mojom::BatteryInfo& new_info) {
+  return existing_info.battery_percentage != new_info.battery_percentage ||
+         existing_info.charge_state != new_info.charge_state;
 }
 
 }  // namespace
@@ -695,6 +661,12 @@ void InputDeviceSettingsControllerImpl::Init() {
   Shell::Get()->session_controller()->AddObserver(this);
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);
+
+  if (features::IsWelcomeExperienceEnabled()) {
+    device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+        &InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 
   InitializePolicyHandler();
   // Initialize the duplicate id finder first then the notifiers to make sure
@@ -745,15 +717,6 @@ void InputDeviceSettingsControllerImpl::Init() {
             &InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated,
             base::Unretained(this)));
   }
-  if (features::IsWelcomeExperienceEnabled()) {
-    bluetooth_devices_observer_ = std::make_unique<
-        BluetoothDevicesObserver>(base::BindRepeating(
-        &InputDeviceSettingsControllerImpl::OnBluetoothAdapterOrDeviceChanged,
-        base::Unretained(this)));
-    device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-        &InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
   metrics_manager_ = std::make_unique<InputDeviceSettingsMetricsManager>();
 }
 
@@ -772,10 +735,71 @@ void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    RefreshBatteryInfoForConnectedDevices() {
+  if (!bluetooth_adapter_) {
+    return;
+  }
+
+  for (const auto& [id, keyboard] : keyboards_) {
+    if (auto* device =
+            GetBluetoothDevice(bluetooth_adapter_.get(), keyboard->device_key);
+        device != nullptr) {
+      auto updated_battery_info = GetBatteryInfo(*device);
+      if (keyboard->battery_info.is_null() ||
+          BatteryInfoChanged(*keyboard->battery_info, *updated_battery_info)) {
+        keyboard->battery_info = std::move(updated_battery_info);
+        DispatchKeyboardBatteryInfoChanged(id);
+      }
+    }
+  }
+
+  for (const auto& [id, touchpad] : touchpads_) {
+    if (auto* device =
+            GetBluetoothDevice(bluetooth_adapter_.get(), touchpad->device_key);
+        device != nullptr) {
+      auto updated_battery_info = GetBatteryInfo(*device);
+      if (touchpad->battery_info.is_null() ||
+          BatteryInfoChanged(*touchpad->battery_info, *updated_battery_info)) {
+        touchpad->battery_info = std::move(updated_battery_info);
+        DispatchTouchpadBatteryInfoChanged(id);
+      }
+    }
+  }
+
+  for (const auto& [id, mouse] : mice_) {
+    if (auto* device =
+            GetBluetoothDevice(bluetooth_adapter_.get(), mouse->device_key);
+        device != nullptr) {
+      auto updated_battery_info = GetBatteryInfo(*device);
+      if (mouse->battery_info.is_null() ||
+          BatteryInfoChanged(*mouse->battery_info, *updated_battery_info)) {
+        mouse->battery_info = std::move(updated_battery_info);
+        DispatchMouseBatteryInfoChanged(id);
+      }
+    }
+  }
+
+  for (const auto& [id, graphics_tablet] : graphics_tablets_) {
+    if (auto* device = GetBluetoothDevice(bluetooth_adapter_.get(),
+                                          graphics_tablet->device_key);
+        device != nullptr) {
+      auto updated_battery_info = GetBatteryInfo(*device);
+      if (graphics_tablet->battery_info.is_null() ||
+          BatteryInfoChanged(*graphics_tablet->battery_info,
+                             *updated_battery_info)) {
+        graphics_tablet->battery_info = std::move(updated_battery_info);
+        DispatchGraphicsTabletBatteryInfoChanged(id);
+      }
+    }
+  }
+}
+
 void InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   bluetooth_adapter_ = adapter;
   CHECK(bluetooth_adapter_);
+  RefreshBatteryInfoForConnectedDevices();
   bluetooth_adapter_->AddObserver(this);
 }
 
@@ -1859,20 +1883,10 @@ InputDeviceSettingsControllerImpl::GetGraphicsTabletButtonConfig(
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     std::vector<ui::KeyboardDevice> keyboards_to_add,
     std::vector<DeviceId> keyboard_ids_to_remove) {
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            keyboard_ids_to_remove);
-  }
-
   for (const auto& keyboard : keyboards_to_add) {
     // Get initial settings from the pref manager and generate our local
     // storage of the device.
-    auto mojom_keyboard =
-        BuildMojomKeyboard(keyboard, bluetooth_devices_observer_.get());
-    if (!mojom_keyboard->battery_info.is_null()) {
-      bluetooth_address_to_device_id_map_[GetDeviceBluetoothAddress(
-          keyboard, bluetooth_devices_observer_.get())] = mojom_keyboard->id;
-    }
+    auto mojom_keyboard = BuildMojomKeyboard(keyboard);
     InitializeKeyboardSettings(mojom_keyboard.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_keyboard->device_key, mojom_keyboard->id);
@@ -1886,22 +1900,14 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
   }
 
   RefreshCachedKeyboardSettings();
+  RefreshBatteryInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     std::vector<ui::TouchpadDevice> touchpads_to_add,
     std::vector<DeviceId> touchpad_ids_to_remove) {
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            touchpad_ids_to_remove);
-  }
   for (const auto& touchpad : touchpads_to_add) {
-    auto mojom_touchpad =
-        BuildMojomTouchpad(touchpad, bluetooth_devices_observer_.get());
-    if (!mojom_touchpad->battery_info.is_null()) {
-      bluetooth_address_to_device_id_map_[GetDeviceBluetoothAddress(
-          touchpad, bluetooth_devices_observer_.get())] = mojom_touchpad->id;
-    }
+    auto mojom_touchpad = BuildMojomTouchpad(touchpad);
     InitializeTouchpadSettings(mojom_touchpad.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_touchpad->device_key, mojom_touchpad->id);
@@ -1915,23 +1921,16 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
   }
 
   RefreshCachedTouchpadSettings();
+  RefreshBatteryInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<ui::InputDevice> mice_to_add,
     std::vector<DeviceId> mouse_ids_to_remove) {
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            mouse_ids_to_remove);
-  }
   for (const auto& mouse : mice_to_add) {
-    auto mojom_mouse = BuildMojomMouse(
-        mouse, GetMouseCustomizationRestriction(mouse),
-        GetMouseButtonConfig(mouse), bluetooth_devices_observer_.get());
-    if (!mojom_mouse->battery_info.is_null()) {
-      bluetooth_address_to_device_id_map_[GetDeviceBluetoothAddress(
-          mouse, bluetooth_devices_observer_.get())] = mojom_mouse->id;
-    }
+    auto mojom_mouse =
+        BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse),
+                        GetMouseButtonConfig(mouse));
     InitializeMouseSettings(mojom_mouse.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_mouse->device_key, mojom_mouse->id);
@@ -1948,6 +1947,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
   }
 
   RefreshCachedMouseSettings();
+  RefreshBatteryInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
@@ -1971,21 +1971,11 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
 void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     std::vector<ui::InputDevice> graphics_tablets_to_add,
     std::vector<DeviceId> graphics_tablet_ids_to_remove) {
-  if (features::IsWelcomeExperienceEnabled()) {
-    PruneBluetoothDeviceMap(bluetooth_address_to_device_id_map_,
-                            graphics_tablet_ids_to_remove);
-  }
   for (const auto& graphics_tablet : graphics_tablets_to_add) {
     auto mojom_graphics_tablet = BuildMojomGraphicsTablet(
         graphics_tablet,
         GetGraphicsTabletCustomizationRestriction(graphics_tablet),
-        GetGraphicsTabletButtonConfig(graphics_tablet),
-        bluetooth_devices_observer_.get());
-    if (!mojom_graphics_tablet->battery_info.is_null()) {
-      bluetooth_address_to_device_id_map_[GetDeviceBluetoothAddress(
-          graphics_tablet, bluetooth_devices_observer_.get())] =
-          mojom_graphics_tablet->id;
-    }
+        GetGraphicsTabletButtonConfig(graphics_tablet));
     InitializeGraphicsTabletSettings(mojom_graphics_tablet.get());
     if (ShouldFetchDeviceImage()) {
       GetDeviceImage(mojom_graphics_tablet->device_key,
@@ -2004,6 +1994,7 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
     DispatchGraphicsTabletDisconnectedAndEraseFromList(id);
   }
   RefreshStoredLoginScreenGraphicsTabletSettings();
+  RefreshBatteryInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
@@ -2746,54 +2737,13 @@ void InputDeviceSettingsControllerImpl::OnDeviceNotificationImageDownloaded(
   }
 }
 
-// Do nothing as OnBluetoothAdapterOrDeviceChanged is very noisy and causes
-// updates to happen many times per second.
-void InputDeviceSettingsControllerImpl::OnBluetoothAdapterOrDeviceChanged(
-    device::BluetoothDevice* device) {}
-
 // TODO(b/329686601): Dispatch updates to observers.
 void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     device::BluetoothDevice::BatteryType type) {
   CHECK(features::IsWelcomeExperienceEnabled());
-  const auto iter =
-      bluetooth_address_to_device_id_map_.find(device->GetAddress());
-  if (iter == bluetooth_address_to_device_id_map_.end()) {
-    return;
-  }
-
-  const auto device_id = iter->second;
-  auto updated_battery_info =
-      device->GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
-  auto mojom_battery_info = mojom::BatteryInfo::New(
-      updated_battery_info->percentage.value(),
-      GetChargeStateFromBluetoothDevice(updated_battery_info->charge_state));
-
-  if (auto* kb = FindKeyboard(device_id); kb != nullptr) {
-    kb->battery_info = std::move(mojom_battery_info);
-    DispatchKeyboardBatteryInfoChanged(device_id);
-    return;
-  }
-
-  if (auto* mouse = FindMouse(device_id); mouse != nullptr) {
-    mouse->battery_info = std::move(mojom_battery_info);
-    DispatchMouseBatteryInfoChanged(device_id);
-    return;
-  }
-
-  if (auto* touchpad = FindTouchpad(device_id); touchpad != nullptr) {
-    touchpad->battery_info = std::move(mojom_battery_info);
-    DispatchTouchpadBatteryInfoChanged(device_id);
-    return;
-  }
-
-  if (auto* graphics_tablet = FindGraphicsTablet(device_id);
-      graphics_tablet != nullptr) {
-    graphics_tablet->battery_info = std::move(mojom_battery_info);
-    DispatchGraphicsTabletBatteryInfoChanged(device_id);
-    return;
-  }
+  RefreshBatteryInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::RefreshModifierKeys() {

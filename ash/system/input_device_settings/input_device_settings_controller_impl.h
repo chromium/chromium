@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/bluetooth_devices_observer.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/login_types.h"
@@ -148,11 +147,6 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
     return *duplicate_id_finder_;
   }
 
-  const base::flat_map<std::string, DeviceId>&
-  GetBluetoothAddressToDeviceIdMapForTesting() {
-    return bluetooth_address_to_device_id_map_;
-  }
-
  private:
   void Init();
 
@@ -274,10 +268,6 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   mojom::GraphicsTabletButtonConfig GetGraphicsTabletButtonConfig(
       const ui::InputDevice& graphics_tablet);
 
-  // Used as callback for `bluetooth_devices_observer_` whenever a bluetooth
-  // device state changes.
-  void OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device);
-
   // Determines whether a device image should be fetched.
   // Returns true if the following conditions are met:
   //  1. The welcome experience feature is enabled.
@@ -311,6 +301,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       scoped_refptr<device::BluetoothAdapter> adapter);
 
   bool IsOobe() const;
+  void RefreshBatteryInfoForConnectedDevices();
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 
@@ -329,7 +320,6 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   base::flat_map<DeviceId, mojom::MousePtr> mice_;
   base::flat_map<DeviceId, mojom::PointingStickPtr> pointing_sticks_;
   base::flat_map<DeviceId, mojom::GraphicsTabletPtr> graphics_tablets_;
-  base::flat_map<std::string, DeviceId> bluetooth_address_to_device_id_map_;
 
   // Notifiers must be declared after the `flat_map` objects as the notifiers
   // depend on these objects.
@@ -352,7 +342,6 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       notification_controller_;
 
   std::unique_ptr<InputDeviceSettingsMetadataManager> metadata_manager_;
-  std::unique_ptr<BluetoothDevicesObserver> bluetooth_devices_observer_;
   // Observe bluetooth device change events.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 

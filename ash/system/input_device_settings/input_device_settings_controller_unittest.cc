@@ -1878,23 +1878,14 @@ TEST_F(InputDeviceSettingsControllerTest, BatteryInfoUpdates) {
   // Keyboard populated with initial battery info.
   auto* keyboard = controller_->GetKeyboard(bluetooth_keyboard.id);
   ASSERT_EQ(66, keyboard->battery_info->battery_percentage);
-  auto bt_address_map =
-      controller_->GetBluetoothAddressToDeviceIdMapForTesting();
-  // BT address map should contain an entry for the connected keyboard.
-  ASSERT_EQ(1u, bt_address_map.size());
 
   // Battery percentage change should trigger a call to `DeviceBatteryChanged`.
   mock_device->SetBatteryInfo(device::BluetoothDevice::BatteryInfo(
       device::BluetoothDevice::BatteryType::kDefault, 65));
   keyboard = controller_->GetKeyboard(bluetooth_keyboard.id);
   ASSERT_EQ(65, keyboard->battery_info->battery_percentage);
-  ASSERT_EQ(1u, observer_->num_keyboard_battery_info_updated());
-
-  // Disconnecting the bluetooth device should remove the corresponding
-  // entry from the bluetooth address map.
-  ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
-  bt_address_map = controller_->GetBluetoothAddressToDeviceIdMapForTesting();
-  ASSERT_EQ(0u, bt_address_map.size());
+  // Ensure pending tasks are cleared.
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
