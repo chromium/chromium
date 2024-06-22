@@ -35,6 +35,10 @@ SigninHelper::ArcHelper::ArcHelper(
 
 SigninHelper::ArcHelper::~ArcHelper() = default;
 
+void SigninHelper::ArcHelper::SetIsAvailableInArc(bool is_available_in_arc) {
+  is_available_in_arc_ = is_available_in_arc;
+}
+
 void SigninHelper::ArcHelper::OnAccountAdded(
     const account_manager::Account& account) {
   // Don't change ARC availability after reauthentication.
@@ -69,8 +73,10 @@ SigninHelper::SigninHelper(
   DCHECK(!signin_scoped_device_id.empty());
   CHECK(show_signin_error_);
 
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
     DCHECK(arc_helper_);
+  }
 
   if (!IsInitialPrimaryAccount()) {
     restriction_fetcher_ =
@@ -132,7 +138,8 @@ void SigninHelper::UpsertAccount(const std::string& refresh_token) {
   account_manager_->UpsertAccount(account_key_, email_, refresh_token);
 
   auto new_account = account_manager::Account{account_key_, email_};
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
     arc_helper_->OnAccountAdded(new_account);
   }
   // Notify `AccountManagerMojoService` about successful account addition and
@@ -189,7 +196,36 @@ void SigninHelper::OnGetSecondaryGoogleAccountUsage(
     return;
   }
 
+  if (AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
+    restriction_fetcher_->GetSecondaryAccountAllowedInArcPolicy(
+        /*access_token_fetcher=*/GaiaAccessTokenFetcher::
+            CreateExchangeRefreshTokenForAccessTokenInstance(
+                restriction_fetcher_.get(), url_loader_factory_,
+                refresh_token_),
+        /*callback=*/base::BindOnce(
+            &SigninHelper::OnGetSecondaryAccountAllowedInArcPolicy,
+            weak_factory_.GetWeakPtr()));
+    return;
+  }
+
   // Enterprise accounts with no restrictions are allow to sign-in.
+  UpsertAccount(refresh_token_);
+  CloseDialogAndExit();
+}
+
+void SigninHelper::OnGetSecondaryAccountAllowedInArcPolicy(
+    SigninRestrictionPolicyFetcher::Status status,
+    std::optional<bool> policy_result) {
+  if (status != SigninRestrictionPolicyFetcher::Status::kSuccess) {
+    // If we can't fetch the policy, we don't know if we can sync to ARC.
+    // Block adding the account as a safety measure.
+    ShowSigninBlockedErrorPageAndExit(/*hosted_domain=*/std::string());
+    return;
+  }
+
+  DCHECK(policy_result);
+  arc_helper_->SetIsAvailableInArc(policy_result.value());
+
   UpsertAccount(refresh_token_);
   CloseDialogAndExit();
 }

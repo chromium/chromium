@@ -46,6 +46,9 @@ class SigninHelper : public GaiaAuthConsumer {
     // Should be called only once after the account is added.
     void OnAccountAdded(const account_manager::Account& account);
 
+    // Sets account availability in ARC.
+    void SetIsAvailableInArc(bool is_available_in_arc);
+
    private:
     bool is_available_in_arc_ = false;
     bool is_account_addition_ = false;
@@ -85,6 +88,10 @@ class SigninHelper : public GaiaAuthConsumer {
       UserCloudSigninRestrictionPolicyFetcher::Status status,
       std::optional<std::string> policy_result,
       const std::string& hosted_domain);
+
+  void OnGetSecondaryAccountAllowedInArcPolicy(
+      UserCloudSigninRestrictionPolicyFetcher::Status status,
+      std::optional<bool> policy_result);
 
   // Shows account sign-in blocked UI.
   void ShowSigninBlockedErrorPageAndExit(const std::string& hosted_domain);
