@@ -404,6 +404,10 @@ WindowStateType GetWindowStateTypeFromSnapPosition(SnapPosition snap_position) {
   }
 }
 
+bool IsSnapped(aura::Window* window) {
+  return window && WindowState::Get(window)->IsSnapped();
+}
+
 bool IsPhysicallyLeftOrTop(aura::Window* window) {
   chromeos::WindowStateType state_type =
       WindowState::Get(window)->GetStateType();

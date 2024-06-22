@@ -236,6 +236,14 @@ void SnapGroup::MinimizeWindows() {
 }
 
 void SnapGroup::RefreshSnapGroup() {
+  // `RefreshSnapGroup()` may be called during a work area change triggered by
+  // other pre-window state type change events, during which the windows may no
+  // longer be snapped. No-op until we receive the state type change, upon which
+  // `this` will be removed.
+  if (!IsSnapped(window1_) || !IsSnapped(window2_)) {
+    return;
+  }
+
   CHECK_EQ(window1_->GetRootWindow(), window2_->GetRootWindow());
   // If the windows + divider no longer fit in the work area, break the group.
   if (!CanWindowsFitInWorkArea(window1_, window2_)) {
