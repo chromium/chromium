@@ -31,8 +31,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/l10n_file_util.h"
 #include "extensions/browser/network_permissions_updater.h"
-#include "extensions/browser/process_manager.h"
-#include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/common/extension_id.h"
@@ -494,49 +492,6 @@ void RendererStartupHelper::BindForRenderer(
                                           std::move(receiver), process_id);
 }
 
-void RendererStartupHelper::WakeEventPage(const ExtensionId& extension_id,
-                                          WakeEventPageCallback callback) {
-  auto* browser_context = GetRendererBrowserContext();
-  if (!browser_context) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
-  if (!extension) {
-    // Don't kill the renderer, it might just be some context which hasn't
-    // caught up to extension having been uninstalled.
-    std::move(callback).Run(false);
-    return;
-  }
-
-  ProcessManager* process_manager = ProcessManager::Get(browser_context);
-
-  if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
-    // Wake the event page if it's asleep, or immediately repond with success
-    // if it's already awake.
-    if (process_manager->IsEventPageSuspended(extension_id)) {
-      process_manager->WakeEventPage(extension_id, std::move(callback));
-    } else {
-      std::move(callback).Run(true);
-    }
-    return;
-  }
-
-  if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
-    // No point in trying to wake a persistent background page. If it's open,
-    // immediately return and call it a success. If it's closed, fail.
-    std::move(callback).Run(process_manager->GetBackgroundHostForExtension(
-                                extension_id) != nullptr);
-    return;
-  }
-
-  // The extension has no background page, so there is nothing to wake.
-  std::move(callback).Run(false);
-}
-
 void RendererStartupHelper::GetMessageBundle(
     const ExtensionId& extension_id,
     GetMessageBundleCallback callback) {
@@ -624,9 +579,7 @@ RendererStartupHelperFactory* RendererStartupHelperFactory::GetInstance() {
 RendererStartupHelperFactory::RendererStartupHelperFactory()
     : BrowserContextKeyedServiceFactory(
           "RendererStartupHelper",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProcessManagerFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 RendererStartupHelperFactory::~RendererStartupHelperFactory() = default;
 

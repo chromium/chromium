@@ -10,7 +10,6 @@ const environmentSpecificBindings =
 const GetExtensionAPIDefinitionsForTest =
     requireNative('apiDefinitions').GetExtensionAPIDefinitionsForTest;
 const GetAPIFeatures = requireNative('test_features').GetAPIFeatures;
-const natives = requireNative('test_native_handler');
 const userGestures = requireNative('user_gestures');
 
 const GetModuleSystem = requireNative('v8_context').GetModuleSystem;
@@ -466,10 +465,6 @@ apiBridge.registerCustomHook(function(api) {
   apiFunctions.setHandleRequest('setExceptionHandler', function(callback) {
     chromeTest.assertEq(typeof(callback), 'function');
     bindingUtil.setExceptionHandler(callback);
-  });
-
-  apiFunctions.setHandleRequest('getWakeEventPage', function() {
-    return natives.GetWakeEventPage();
   });
 
   environmentSpecificBindings.registerHooks(api);

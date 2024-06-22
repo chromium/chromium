@@ -3960,7 +3960,6 @@ if (!is_android) {
         "../browser/extensions/user_script_listener_browsertest.cc",
         "../browser/extensions/user_script_world_browsertest.cc",
         "../browser/extensions/view_extension_source_browsertest.cc",
-        "../browser/extensions/wake_event_page_apitest.cc",
         "../browser/extensions/wasm_app_browsertest.cc",
         "../browser/extensions/wasm_mv3_browsertest.cc",
         "../browser/extensions/web_contents_browsertest.cc",

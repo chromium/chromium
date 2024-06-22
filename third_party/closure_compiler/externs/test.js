@@ -272,15 +272,6 @@ chrome.test.loadScript = function(scriptUrl) {};
 chrome.test.setExceptionHandler = function(handler) {};
 
 /**
- * Returns the wake-event-page API function, which can be called to wake up the
- * extension's event page.
- * @return {function(): void} The API function which wakes the extension's event
- *     page
- * @see https://developer.chrome.com/extensions/test#method-getWakeEventPage
- */
-chrome.test.getWakeEventPage = function() {};
-
-/**
  * Used to test sending messages to extensions.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/test#event-onMessage

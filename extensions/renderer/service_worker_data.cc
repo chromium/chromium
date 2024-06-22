@@ -34,6 +34,8 @@ ServiceWorkerData::ServiceWorkerData(
   // worker, but we will have ServiceWorkerData for it so that the
   // WakeEventPage and logging can communicate back to the browser via the
   // `mojom::RendererHost`.
+  // TODO(https://crbug.com/332366095): WakeEventPage() is dead; only populate
+  // ServiceWorkerData if `bindings_system_` is non-null.
   if (bindings_system_) {
     proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
         base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,

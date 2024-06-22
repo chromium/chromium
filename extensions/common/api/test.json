@@ -454,17 +454,6 @@
             ]
           }
         ]
-      },
-      {
-        "name": "getWakeEventPage",
-        "type": "function",
-        "description": "Returns the wake-event-page API function, which can be called to wake up the extension's event page.",
-        "nocompile": true,
-        "parameters": [],
-        "returns": {
-          "type": "function",
-          "description": "The API function which wakes the extension's event page"
-        }
       }
     ],
     "events": [

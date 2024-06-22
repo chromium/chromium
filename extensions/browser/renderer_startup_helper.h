@@ -78,8 +78,6 @@ class RendererStartupHelper : public KeyedService,
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int32_t call_type) override;
-  void WakeEventPage(const ExtensionId& extension_id,
-                     WakeEventPageCallback callback) override;
   void GetMessageBundle(const ExtensionId& extension_id,
                         GetMessageBundleCallback callback) override;
 
