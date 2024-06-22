@@ -45,7 +45,7 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
 
-    QuickAnswersState::Get()->SetEligibilityForTesting(true);
+    QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
     controller()->SetClient(std::make_unique<quick_answers::QuickAnswersClient>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -121,7 +121,7 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
 };
 
 TEST_F(QuickAnswersControllerTest, ShouldNotShowWhenFeatureNotEligible) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(false);
+  QuickAnswersState::Get()->set_eligibility_for_testing(false);
   ShowView();
 
   // The feature is not eligible, nothing should be shown.

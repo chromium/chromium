@@ -141,7 +141,7 @@ TEST_P(ReadWriteCardsManagerImplTest, InputPassword) {
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   TestingProfile profile;
 
@@ -197,7 +197,7 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersApproved) {
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   TestingProfile profile;
 
@@ -254,7 +254,7 @@ TEST_P(ReadWriteCardsManagerImplTest, QuickAnswersAndMahiControllersDeclined) {
 
 TEST_P(ReadWriteCardsManagerImplTest,
        MagicBoostOptInQuickAnswerAndMahiNoSelectedText) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kUnset);
 
@@ -286,7 +286,7 @@ TEST_P(ReadWriteCardsManagerImplTest,
 
 TEST_P(ReadWriteCardsManagerImplTest,
        MagicBoostOptInQuickAnswerAndMahiSelectedText) {
-  QuickAnswersState::Get()->SetEligibilityForTesting(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   TestingProfile profile;
   content::ContextMenuParams params;

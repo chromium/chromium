@@ -125,7 +125,7 @@ void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   quick_answers::RecordFeatureEnabled(
       pref_service->GetBoolean(kQuickAnswersEnabled));
 
-  MaybeNotifyEligibilityChanged();
+  UpdateEligibility();
 }
 
 void QuickAnswersStateAsh::AsyncWriteConsentUiImpressionCount(int32_t count) {
@@ -237,7 +237,7 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
     observer.OnApplicationLocaleReady(resolved_locale);
   }
 
-  MaybeNotifyEligibilityChanged();
+  UpdateEligibility();
 }
 
 void QuickAnswersStateAsh::UpdatePreferredLanguages() {

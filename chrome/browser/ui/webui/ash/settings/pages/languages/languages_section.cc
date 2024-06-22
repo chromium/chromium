@@ -145,8 +145,7 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "translateTargetLabel",
       l10n_util::GetStringUTF16(
-          QuickAnswersState::IsEligibleAs(
-              QuickAnswersState::FeatureType::kQuickAnswers)
+          QuickAnswersState::Get() && QuickAnswersState::Get()->is_eligible()
               ? IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL_WITH_QUICK_ANSWERS
               : IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL));
   html_source->AddString(

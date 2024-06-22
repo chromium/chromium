@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/types/expected.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 
 // The consent will appear up to a total of 6 times.
@@ -40,42 +39,13 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
   virtual void OnPreferredLanguagesChanged(
       const std::string& preferred_languages) {}
   virtual void OnEligibilityChanged(bool eligible) {}
-
-  // TODO(b/340628526): Delete this method. Each value observer is called once a
-  // pref gets initialized.
   virtual void OnPrefsInitialized() {}
 };
 
-// `QuickAnswersState` manages states related to Quick Answers as a capability.
-// `QuickAnswersState` allows you to query states of Quick Answers capability in
-// a specified feature context, e.g., check if Quick Answers capability is
-// available under Hmr feature. `QuickAnswersState` expect that `FeatureType`
-// does not change in a session.
-//
-// Terminology:
-// - Quick Answers capability: a capability where a user can find definition,
-//   translation, unit conversion of a right-clicked text.
-// - Quick Answers feature: a feature called Quick Answers. It provides Quick
-//   Answers capabpility.
-// - Hmr feature: a feature called Hmr. It provides Mahi and Quick Answers
-//   capability.
+// A class that holds Quick Answers related prefs and states.
 class QuickAnswersState {
  public:
-  enum class FeatureType {
-    kHmr,
-    kQuickAnswers,
-  };
-
-  enum class Error {
-    kUninitialized,
-  };
-
   static QuickAnswersState* Get();
-
-  // Accessor methods. Those methods handle error cases (Error::kUninitialized,
-  // etc) in a fail-safe way.
-  static bool IsEligible();
-  static bool IsEligibleAs(FeatureType feature_type);
 
   QuickAnswersState();
 
@@ -84,7 +54,6 @@ class QuickAnswersState {
 
   virtual ~QuickAnswersState();
 
-  // Observers are notified only in the context of current feature type.
   void AddObserver(QuickAnswersStateObserver* observer);
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
@@ -104,7 +73,7 @@ class QuickAnswersState {
 
   bool ShouldUseQuickAnswersTextAnnotator();
 
-  bool IsSupportedLanguage(const std::string& language) const;
+  bool IsSupportedLanguage(const std::string& language);
 
   bool settings_enabled() const { return settings_enabled_; }
   quick_answers::prefs::ConsentStatus consent_status() const {
@@ -120,9 +89,12 @@ class QuickAnswersState {
     return preferred_languages_;
   }
   bool spoken_feedback_enabled() const { return spoken_feedback_enabled_; }
+  bool is_eligible() const { return is_eligible_; }
   bool prefs_initialized() const { return prefs_initialized_; }
 
-  void SetEligibilityForTesting(bool is_eligible);
+  void set_eligibility_for_testing(bool is_eligible) {
+    is_eligible_ = is_eligible;
+  }
   void set_use_text_annotator_for_testing() {
     use_text_annotator_for_testing_ = true;
   }
@@ -138,9 +110,8 @@ class QuickAnswersState {
 
   void InitializeObserver(QuickAnswersStateObserver* observer);
 
-  // Notify eligibility change to observers in the current feature type if it
-  // has changed.
-  void MaybeNotifyEligibilityChanged();
+  // Called when the feature eligibility might change.
+  void UpdateEligibility();
 
   // Record the consent result with how many times the user has seen the consent
   // and impression duration.
@@ -174,6 +145,10 @@ class QuickAnswersState {
   // Whether the a11y spoken feedback tool is enabled.
   bool spoken_feedback_enabled_;
 
+  // Whether the Quick Answers feature is eligible. The value is derived from a
+  // number of other states.
+  bool is_eligible_ = false;
+
   // The number of times a user has seen the consent.
   int32_t consent_ui_impression_count_ = 0;
 
@@ -184,23 +159,6 @@ class QuickAnswersState {
   bool use_text_annotator_for_testing_ = false;
 
   base::ObserverList<QuickAnswersStateObserver> observers_;
-
- private:
-  // Use `base::expected` instead of `std::optional` to avoid implicit bool
-  // conversion: https://abseil.io/tips/141.
-  // TODO(b/340628526): Implement functions for:
-  // - IsEnabled
-  // - GetConsentStatus
-  // - IsIntentEnabled
-  base::expected<bool, Error> IsEligibleExpected() const;
-  base::expected<bool, Error> IsEligibleExpectedAs(
-      FeatureType feature_type) const;
-
-  // Last notified value of whether the Quick Answers capability is eligible in
-  // the current feature type.
-  base::expected<bool, Error> last_notified_is_eligible_ =
-      base::unexpected(Error::kUninitialized);
-  std::optional<bool> is_eligible_for_testing_;
 };
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_STATE_H_

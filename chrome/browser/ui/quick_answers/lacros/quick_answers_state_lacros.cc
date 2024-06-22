@@ -81,7 +81,7 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
     observer.OnPrefsInitialized();
   }
 
-  MaybeNotifyEligibilityChanged();
+  UpdateEligibility();
 }
 
 QuickAnswersStateLacros::~QuickAnswersStateLacros() = default;
@@ -180,7 +180,7 @@ void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
     observer.OnApplicationLocaleReady(resolved_locale);
   }
 
-  MaybeNotifyEligibilityChanged();
+  UpdateEligibility();
 }
 
 void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {

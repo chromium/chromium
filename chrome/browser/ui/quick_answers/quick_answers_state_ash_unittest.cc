@@ -246,38 +246,38 @@ TEST_F(QuickAnswersStateAshTest, UpdateSpokenFeedbackEnabled) {
 TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_FALSE(QuickAnswersState::IsEligible());
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   prefs()->SetString(language::prefs::kApplicationLocale, "pt");
   SimulateUserLogin(kTestUser);
-  EXPECT_TRUE(QuickAnswersState::IsEligible());
+  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
   EXPECT_TRUE(observer()->is_eligible());
 
   ClearLogin();
 
   prefs()->SetString(language::prefs::kApplicationLocale, "en");
   SimulateUserLogin(kTestUser);
-  EXPECT_TRUE(QuickAnswersState::IsEligible());
+  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
   EXPECT_TRUE(observer()->is_eligible());
 }
 
 TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
   QuickAnswersState::Get()->AddObserver(observer());
 
-  EXPECT_FALSE(QuickAnswersState::IsEligible());
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   prefs()->SetString(language::prefs::kApplicationLocale, "zh");
   SimulateUserLogin(kTestUser);
-  EXPECT_FALSE(QuickAnswersState::IsEligible());
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());
 
   ClearLogin();
 
   prefs()->SetString(language::prefs::kApplicationLocale, "ja");
   SimulateUserLogin(kTestUser);
-  EXPECT_FALSE(QuickAnswersState::IsEligible());
+  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
   EXPECT_FALSE(observer()->is_eligible());
 }
 
