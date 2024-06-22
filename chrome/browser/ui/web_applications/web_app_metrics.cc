@@ -77,13 +77,6 @@ void RecordTabOrWindowHistogram(
       histogram_prefix + (in_window ? ".InWindow" : ".InTab"), engagement_type);
 }
 
-void RecordUserInstalledHistogram(
-    bool in_window,
-    site_engagement::EngagementType engagement_type) {
-  const std::string histogram_prefix = "WebApp.Engagement.UserInstalled";
-  RecordTabOrWindowHistogram(histogram_prefix, in_window, engagement_type);
-}
-
 bool IsPreferredAppForSupportedLinks(const webapps::AppId& app_id,
                                      Profile* profile) {
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
@@ -172,15 +165,24 @@ void WebAppMetrics::OnEngagementEvent(
 
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
-  const bool user_installed = WebAppProvider::GetForLocalAppsUnchecked(profile_)
-                                  ->registrar_unsafe()
-                                  .WasInstalledByUser(*app_id);
+  WebAppRegistrar& registrar =
+      WebAppProvider::GetForLocalAppsUnchecked(profile_)->registrar_unsafe();
+  const bool user_installed = registrar.WasInstalledByUser(*app_id);
+  const bool is_diy_app = registrar.IsDiyApp(*app_id);
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);
 
   if (user_installed) {
-    RecordUserInstalledHistogram(in_window, engagement_type);
+    RecordTabOrWindowHistogram("WebApp.Engagement.UserInstalled", in_window,
+                               engagement_type);
+    if (is_diy_app) {
+      RecordTabOrWindowHistogram("WebApp.Engagement.UserInstalled.Diy",
+                                 in_window, engagement_type);
+    } else {
+      RecordTabOrWindowHistogram("WebApp.Engagement.UserInstalled.Crafted",
+                                 in_window, engagement_type);
+    }
   } else {
     // Record this app into more specific bucket if was installed by default:
     RecordTabOrWindowHistogram("WebApp.Engagement.DefaultInstalled", in_window,

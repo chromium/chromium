@@ -481,17 +481,55 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="WebApp.Engagement"
-    enum="SiteEngagementServiceEngagementType" expires_after="2024-12-08">
-  <owner>mgiuca@chromium.org</owner>
+<histogram name="WebApp.Engagement.{EngagementType}"
+    enum="SiteEngagementServiceEngagementType" expires_after="2025-06-21">
+  <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     The type of engagement (navigation, user input, etc.) which led to an
-    accumulation in site engagement within a web app window or tab. Should be
+    accumulation in site engagement that {EngagementType}. This is collected for
+    a subset of SiteEngagementService.EngagementType, which is triggered for all
+    browsing contexts. Recorded at the time of engagement accumulation (e.g.,
+    when mouse is clicked).
+  </summary>
+  <token key="EngagementType">
+    <variant name="MoreThanThreeUserInstalledApps"
+        summary="happened in web site for user with 4 or more user-installed
+                 apps"/>
+    <variant name="NoUserInstalledApps"
+        summary="happened in web site for user without user-installed apps"/>
+    <variant name="UpToThreeUserInstalledApps"
+        summary="happened in web site for user with [1-3] user-installed apps"/>
+  </token>
+</histogram>
+
+<histogram name="WebApp.Engagement{Context}.{Container}"
+    enum="SiteEngagementServiceEngagementType" expires_after="2025-06-21">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The type of engagement (navigation, user input, etc.) which led to an
+    accumulation in site engagement that {Container} for {Context}. This is
     collected for a subset of SiteEngagementService.EngagementType, which is
     triggered for all browsing contexts. Recorded at the time of engagement
     accumulation (e.g., when mouse is clicked).
   </summary>
+  <token key="Context">
+    <variant name="" summary="all web app types"/>
+    <variant name=".DefaultInstalled"
+        summary="an app installed by default on profile creation"/>
+    <variant name=".UserInstalled" summary="an app installed by the user"/>
+    <variant name=".UserInstalled.Crafted"
+        summary="a 'crafted' app installed by the user (where the app was
+                 normally installable)"/>
+    <variant name=".UserInstalled.Diy"
+        summary="a 'DIY' app installed by the user (where the app was not
+                 normally installable)"/>
+  </token>
+  <token key="Container">
+    <variant name="InTab" summary="happened in app running in a browser tab"/>
+    <variant name="InWindow" summary="happened in app running as a window"/>
+  </token>
 </histogram>
 
 <histogram name="WebApp.FileHandlersRegistration.Result" enum="BooleanSuccess"
@@ -800,7 +838,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
-    expires_after="2024-11-03">
+    expires_after="2025-06-21">
   <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -824,7 +862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Source.Failure" enum="WebappInstallSource"
-    expires_after="2024-12-01">
+    expires_after="2025-06-21">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -834,7 +872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Source.Success" enum="WebappInstallSource"
-    expires_after="2024-12-01">
+    expires_after="2025-06-21">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

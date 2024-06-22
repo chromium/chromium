@@ -4462,28 +4462,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Media.Video.Roughness"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebAppContainerEngagementType" separator=".">
-  <suffix name="InTab" label="Happened in app running as a tab"/>
-  <suffix name="InWindow" label="Happened in app running as a window"/>
-  <affected-histogram name="WebApp.Engagement"/>
-  <affected-histogram name="WebApp.Engagement.DefaultInstalled"/>
-  <affected-histogram name="WebApp.Engagement.UserInstalled"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebAppEngagementType" separator=".">
-  <suffix base="true" name="DefaultInstalled" label="Happened in default app"/>
-  <suffix name="MoreThanThreeUserInstalledApps"
-      label="Happenned in web site for user with 4 or more user-installed
-             apps"/>
-  <suffix name="NoUserInstalledApps"
-      label="Happenned in web site for user without user-installed apps"/>
-  <suffix name="UpToThreeUserInstalledApps"
-      label="Happenned in web site for user with [1-3] user-installed apps"/>
-  <suffix base="true" name="UserInstalled"
-      label="Happened in user-installed app"/>
-  <affected-histogram name="WebApp.Engagement"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebAppSystemAppInternalName" separator=".">
   <suffix name="Boca" label="Boca"/>
   <suffix name="Camera" label="Camera"/>
