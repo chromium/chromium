@@ -1463,3 +1463,5 @@ crbug.com/328860404 virtual/disable-intersection-optimization/external/wpt/html/
 crbug.com/328849073 virtual/no-auto-wpt-origin-isolation/external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Slow ]
 
 crbug.com/328501805 external/wpt/html/semantics/interactive-elements/the-summary-element/interactive-content.html [ Slow ]
+
+crbug.com/341380030 [ Mac ] external/wpt/css/css-pseudo/text-selection.html [ Slow ]

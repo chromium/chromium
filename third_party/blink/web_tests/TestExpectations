@@ -2785,7 +2785,6 @@ crbug.com/626703 external/wpt/css/css-text/letter-spacing/letter-spacing-percent
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/word-spacing/word-spacing-percent-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-shadow/svg-stroke.html [ Failure ]
-crbug.com/626703 [ Mac12-arm64 ] external/wpt/css/css-pseudo/text-selection.html [ Timeout ]
 crbug.com/626703 external/wpt/quirks/line-height-preserved-segment-break.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/smooth-scroll-in-load-event.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/svg/render/order/z-index.svg [ Failure ]
