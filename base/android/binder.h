@@ -282,7 +282,7 @@ class TypedBinderRef : public BinderRef {
   // call when it's known that the binder hasn't been associated with any other
   // class in the calling process yet.
   explicit TypedBinderRef(BinderRef binder) {
-    CHECK(binder.AssociateWithClass(T::GetBinderClass()));
+    CHECK(!binder || binder.AssociateWithClass(T::GetBinderClass()));
     binder_ = binder.release();
   }
 

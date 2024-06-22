@@ -237,6 +237,14 @@ class AddService : public SupportsBinder<AddInterface::Class> {
   base::RepeatingClosure binder_destruction_callback_;
 };
 
+TEST_F(BinderTest, NullBinderRef) {
+  BinderRef ref;
+  EXPECT_FALSE(ref);
+
+  TypedBinderRef<AddInterface::Class> typed_ref(std::move(ref));
+  EXPECT_FALSE(typed_ref);
+}
+
 TEST_F(BinderTest, BasicTransaction) {
   auto add42_service = base::MakeRefCounted<AddService>(42);
   AddInterface::Proxy add42(add42_service->GetBinder());
