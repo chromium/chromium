@@ -51,8 +51,10 @@ AccountAppsAvailabilityFactory::BuildServiceInstanceForBrowserContext(
   if (!IsAccountManagerAvailable(profile))
     return nullptr;
 
-  if (!AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+  if (!AccountAppsAvailability::IsArcAccountRestrictionsEnabled() &&
+      !AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
     return nullptr;
+  }
 
   return std::make_unique<AccountAppsAvailability>(
       ::GetAccountManagerFacade(profile->GetPath().value()),

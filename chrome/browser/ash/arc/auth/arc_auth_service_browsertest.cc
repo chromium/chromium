@@ -305,6 +305,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         ash::standalone_browser::GetFeatureRefs();
     lacros.push_back(
         ash::standalone_browser::features::kLacrosForSupervisedUsers);
+    lacros.push_back(
+        ash::features::kSecondaryAccountAllowedInArcPolicy);
     if (IsArcAccountRestrictionsEnabled()) {
       feature_list_.InitWithFeatures(lacros, {});
     } else {

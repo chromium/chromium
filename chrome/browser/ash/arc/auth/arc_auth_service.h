@@ -212,6 +212,10 @@ class ArcAuthService : public KeyedService,
   // Response for |mojom::GetMainAccountResolutionStatus|.
   void OnMainAccountResolutionStatus(mojom::MainAccountResolutionStatus status);
 
+  // Whether we selectively push accounts to ARC based on policy or user
+  // request.
+  static bool AreAccountsRestricted();
+
   // Non-owning pointers.
   const raw_ptr<Profile> profile_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

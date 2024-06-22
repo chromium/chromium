@@ -331,7 +331,8 @@ void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
     return;
   }
 
-  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled()) {
     ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
         ->GetAccounts(base::BindOnce(
             &InlineLoginHandlerImpl::OnGetAccountsToCompleteLogin,

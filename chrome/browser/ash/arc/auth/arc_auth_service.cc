@@ -243,8 +243,7 @@ ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
   ArcSessionManager::Get()->AddObserver(this);
   identity_manager_->AddObserver(this);
 
-  if (ash::IsAccountManagerAvailable(profile_) &&
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (ash::IsAccountManagerAvailable(profile_) && AreAccountsRestricted()) {
     account_apps_availability_ =
         ash::AccountAppsAvailabilityFactory::GetForProfile(profile_);
 
@@ -537,7 +536,7 @@ void ArcAuthService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   // Should be consistent with OnAccountAvailableInArc.
   // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AreAccountsRestricted()) {
     return;
   }
 
@@ -548,7 +547,7 @@ void ArcAuthService::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
   // Should be consistent with OnAccountUnavailableInArc.
   // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AreAccountsRestricted()) {
     return;
   }
 
@@ -560,7 +559,7 @@ void ArcAuthService::OnExtendedAccountInfoRemoved(
 void ArcAuthService::OnAccountAvailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AreAccountsRestricted());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
   CoreAccountInfo account_info =
@@ -581,7 +580,7 @@ void ArcAuthService::OnAccountAvailableInArc(
 void ArcAuthService::OnAccountUnavailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AreAccountsRestricted());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
   DCHECK(!IsPrimaryGaiaAccount(account.key.id()));
@@ -818,7 +817,7 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
   VLOG(1) << "Pushing accounts to ARC "
           << (filter_primary_account ? "without primary account"
                                      : "with primary account");
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AreAccountsRestricted()) {
     VLOG(1) << "Using AccountAppsAvailability to get available accounts";
     account_apps_availability_->GetAccountsAvailableInArc(
         base::BindOnce(&ArcAuthService::CompleteAccountsPushToArc,
@@ -840,7 +839,7 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
 void ArcAuthService::CompleteAccountsPushToArc(
     bool filter_primary_account,
     const base::flat_set<account_manager::Account>& accounts) {
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AreAccountsRestricted());
 
   std::vector<mojom::ArcAccountInfoPtr> arc_accounts =
       std::vector<mojom::ArcAccountInfoPtr>();
@@ -894,6 +893,11 @@ void ArcAuthService::OnMainAccountResolutionStatus(
 // static
 void ArcAuthService::EnsureFactoryBuilt() {
   ArcAuthServiceFactory::GetInstance();
+}
+
+bool ArcAuthService::AreAccountsRestricted() {
+  return ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
+         ash::AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled();
 }
 
 }  // namespace arc
