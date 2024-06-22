@@ -13,6 +13,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_permission_controller.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
@@ -20,7 +22,9 @@
 #include "mojo/public/cpp/bindings/equals_traits.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 namespace content {
 
@@ -93,10 +97,20 @@ class KeySystemSupportImplTest : public RenderViewHostTestHarness {
   void SetUp() override {
     LOG(ERROR) << __func__;
     RenderViewHostTestHarness::SetUp();
+
+    test_browser_context_ = std::make_unique<content::TestBrowserContext>();
+    test_browser_context_->SetPermissionControllerForTesting(
+        std::make_unique<testing::NiceMock<MockPermissionController>>());
+
     KeySystemSupportImpl::GetOrCreateForCurrentDocument(main_rfh())
         ->SetGetKeySystemCapabilitiesUpdateCbForTesting(get_support_cb_.Get());
     KeySystemSupportImpl::GetOrCreateForCurrentDocument(main_rfh())
         ->Bind(key_system_support_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    test_browser_context_.reset();
+    RenderViewHostTestHarness::TearDown();
   }
 
   void OnKeySystemSupportUpdated(int observer_id,
@@ -104,6 +118,23 @@ class KeySystemSupportImplTest : public RenderViewHostTestHarness {
                                  KeySystemCapabilities capabilities) {
     results_[observer_id].push_back(std::move(capabilities));
     std::move(done_cb).Run();
+  }
+
+  void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
+    auto* mock_permission_controller = static_cast<MockPermissionController*>(
+        test_browser_context_->GetPermissionController());
+
+    ON_CALL(*mock_permission_controller,
+            RequestPermissionFromCurrentDocument(
+                main_rfh(),
+                PermissionRequestDescription(
+                    blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+                    main_rfh()->HasTransientUserActivation()),
+                _))
+        .WillByDefault(RunOnceCallback<2>(permission_status));
+
+    KeySystemSupportImpl::GetForCurrentDocument(main_rfh())
+        ->OnProtectedMediaIdentifierPermissionUpdated(permission_status);
   }
 
  protected:
@@ -128,11 +159,12 @@ class KeySystemSupportImplTest : public RenderViewHostTestHarness {
   // KeySystemSupport update results. It's a map from the "observer ID" to the
   // list of updates received by that observer.
   std::map<int, std::vector<KeySystemCapabilities>> results_;
+  std::unique_ptr<content::TestBrowserContext> test_browser_context_;
 };
 
 TEST_F(KeySystemSupportImplTest, NoKeySystems) {
-  EXPECT_CALL(get_support_cb_, Run(_))
-      .WillOnce(RunOnceCallback<0>(KeySystemCapabilities()));
+  EXPECT_CALL(get_support_cb_, Run(_, _))
+      .WillOnce(RunOnceCallback<1>(KeySystemCapabilities()));
   GetKeySystemSupport();
 
   EXPECT_EQ(results_.size(), 1u);              // One observer
@@ -144,8 +176,8 @@ TEST_F(KeySystemSupportImplTest, NoKeySystems) {
 }
 
 TEST_F(KeySystemSupportImplTest, OneObserver) {
-  EXPECT_CALL(get_support_cb_, Run(_))
-      .WillOnce(RunOnceCallback<0>(
+  EXPECT_CALL(get_support_cb_, Run(_, _))
+      .WillOnce(RunOnceCallback<1>(
           TestKeySystemCapabilities(TestCdmCapability(), std::nullopt)));
   GetKeySystemSupport();
 
@@ -161,8 +193,8 @@ TEST_F(KeySystemSupportImplTest, OneObserver) {
 }
 
 TEST_F(KeySystemSupportImplTest, TwoObservers) {
-  EXPECT_CALL(get_support_cb_, Run(_))
-      .WillOnce(RunOnceCallback<0>(
+  EXPECT_CALL(get_support_cb_, Run(_, _))
+      .WillOnce(RunOnceCallback<1>(
           TestKeySystemCapabilities(TestCdmCapability(), std::nullopt)));
 
   base::RunLoop run_loop;
@@ -199,7 +231,7 @@ TEST_F(KeySystemSupportImplTest, TwoObservers) {
 
 TEST_F(KeySystemSupportImplTest, TwoUpdates) {
   KeySystemCapabilitiesUpdateCB callback;
-  EXPECT_CALL(get_support_cb_, Run(_)).WillOnce(SaveArg<0>(&callback));
+  EXPECT_CALL(get_support_cb_, Run(_, _)).WillOnce(SaveArg<1>(&callback));
 
   base::RunLoop run_loop_1;
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
@@ -233,6 +265,36 @@ TEST_F(KeySystemSupportImplTest, TwoUpdates) {
   const auto& capability_2 = capabilities_2[kTestKeySystem];
   EXPECT_TRUE(capability_2.sw_secure_capability);
   EXPECT_TRUE(capability_2.hw_secure_capability);
+}
+
+TEST_F(KeySystemSupportImplTest, AllowHWSecureCapability) {
+  base::RunLoop run_loop_1;
+  mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<KeySystemSupportObserverImpl>(base::BindRepeating(
+          &KeySystemSupportImplTest::OnKeySystemSupportUpdated,
+          base::Unretained(this), kObserver1, base::DoNothing())),
+      observer_remote.InitWithNewPipeAndPassReceiver());
+  key_system_support_->AddObserver(std::move(observer_remote));
+
+// Only windows can disallow hw secure capability.
+#if BUILDFLAG(IS_WIN)
+  EXPECT_CALL(get_support_cb_, Run(testing::IsFalse(), _))
+      .WillOnce(RunOnceCallback<1>(KeySystemCapabilities()));
+#else
+  EXPECT_CALL(get_support_cb_, Run(testing::IsTrue(), _))
+      .WillOnce(RunOnceCallback<1>(KeySystemCapabilities()));
+#endif
+
+  SetPermissionStatus(blink::mojom::PermissionStatus::DENIED);
+  run_loop_1.RunUntilIdle();
+
+  // Switching the permission to GRANTED should change hw secure capability.
+  base::RunLoop run_loop_2;
+  EXPECT_CALL(get_support_cb_, Run(testing::IsTrue(), _))
+      .WillOnce(RunOnceCallback<1>(KeySystemCapabilities()));
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+  run_loop_2.RunUntilIdle();
 }
 
 }  // namespace content

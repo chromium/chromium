@@ -300,8 +300,9 @@ void CdmRegistryImpl::SetHardwareSecureCdmStatus(CdmInfo::Status status) {
   // If there are `key_system_capabilities_update_callbacks_` registered,
   // finalize key system capabilities and notify the callbacks. Otherwise  we'll
   // finalize key system capabilities in `ObserveKeySystemCapabilities()`.
-  if (!key_system_capabilities_update_callbacks_.empty())
+  if (!key_system_capabilities_update_callbacks_.empty()) {
     FinalizeKeySystemCapabilities();
+  }
 }
 
 void CdmRegistryImpl::OnGpuInfoUpdate() {
@@ -336,25 +337,38 @@ std::unique_ptr<CdmInfo> CdmRegistryImpl::GetCdmInfo(
   return nullptr;
 }
 
-void CdmRegistryImpl::ObserveKeySystemCapabilities(
+base::CallbackListSubscription CdmRegistryImpl::ObserveKeySystemCapabilities(
+    bool allow_hw_secure_capability_check,
     KeySystemCapabilitiesUpdateCB cb) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  key_system_capabilities_update_callbacks_.AddUnsafe(cb);
+  auto subscription = key_system_capabilities_update_callbacks_.Add(cb);
+
+  // Re-trigger Hardware secure capability check when we encounter the first
+  // observer that allows the check.
+  if (allow_hw_secure_capability_check && !allow_hw_secure_capability_check_) {
+    allow_hw_secure_capability_check_ = true;
+    key_system_capabilities_.reset();
+    pending_lazy_initializations_.clear();
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    FinalizeKeySystemCapabilities();
+    return subscription;
+  }
 
   if (!pending_lazy_initializations_.empty()) {
     // Lazy initializing some key systems. All callbacks will be notified when
     // that's finished.
-    return;
+    return subscription;
   }
 
   if (key_system_capabilities_.has_value()) {
     cb.Run(key_system_capabilities_.value());
-    return;
+    return subscription;
   }
 
   FinalizeKeySystemCapabilities();
+  return subscription;
 }
 
 std::pair<std::optional<media::CdmCapability>, CdmInfo::Status>
@@ -439,8 +453,9 @@ CdmRegistryImpl::GetFinalCapability(const std::string& key_system,
                                     CdmInfo::Robustness robustness) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // `status` could be kUninitialized if HW secure capability checking is not
+  // allowed.
   const auto [capability, status] = GetCapability(key_system, robustness);
-  DCHECK(status != CdmInfo::Status::kUninitialized);
 
   return {IsEnabled(status) ? capability : std::nullopt, status};
 }
@@ -460,7 +475,7 @@ void CdmRegistryImpl::FinalizeKeySystemCapabilities() {
   // while iterating through it.
   std::set<std::string> supported_key_systems = GetSupportedKeySystems();
 
-  // Finalize software secure capabilities for all key systems.
+  // Attempt to finalize capabilities for all key systems.
   for (const auto& key_system : supported_key_systems) {
     for (const auto robustness : {CdmInfo::Robustness::kSoftwareSecure,
                                   CdmInfo::Robustness::kHardwareSecure}) {
@@ -484,6 +499,14 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
 
   if (cdm_info->status != CdmInfo::Status::kUninitialized) {
     DVLOG(1) << robustness << " capability already finalized for "
+             << key_system;
+    return;
+  }
+
+  if (robustness == CdmInfo::Robustness::kHardwareSecure &&
+      !allow_hw_secure_capability_check_) {
+    DVLOG(1) << robustness
+             << " Not allowed to get hardware secure capability for "
              << key_system;
     return;
   }
@@ -599,6 +622,7 @@ void CdmRegistryImpl::FinalizeCapability(
 void CdmRegistryImpl::UpdateAndNotifyKeySystemCapabilities() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pending_lazy_initializations_.empty());
 
   auto key_system_capabilities = GetKeySystemCapabilities();
 

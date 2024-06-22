@@ -61,8 +61,15 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
 
   // Observes key system capabilities updates. The updated capabilities are
   // guaranteed to be finalized. The `cb` is always called on the original
-  // thread this function was called on.
-  void ObserveKeySystemCapabilities(KeySystemCapabilitiesUpdateCB cb);
+  // thread this function was called on. If `allow_hw_secure_capability_check`
+  // is true, then `this` is allowed to check capability for hardware secure key
+  // systems.
+  //
+  // Returns a `base::CallbackListSubscription` which is owned by the caller. If
+  // that is destroyed, the `cb` is cancelled.
+  base::CallbackListSubscription ObserveKeySystemCapabilities(
+      bool allow_hw_secure_capability_check,
+      KeySystemCapabilitiesUpdateCB cb);
 
  private:
   // Make the test a friend class so it could create CdmRegistryImpl directly,
@@ -153,6 +160,9 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
 
   // Callback for testing to avoid device dependency.
   CapabilityCB capability_cb_for_testing_;
+
+  // Whether HW secure capability checking is allowed.
+  bool allow_hw_secure_capability_check_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
