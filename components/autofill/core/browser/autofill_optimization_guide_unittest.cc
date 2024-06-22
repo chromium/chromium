@@ -597,7 +597,7 @@ TEST_F(
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmexCategoryBenefits) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableCardBenefitsForAmericanExpress};
+      features::kAutofillEnableCardBenefitsSync};
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -627,7 +627,7 @@ TEST_F(AutofillOptimizationGuideTest,
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_CapitalOneCategoryBenefits) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableCardBenefitsForCapitalOne};
+      features::kAutofillEnableCardBenefitsSync};
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -657,13 +657,11 @@ TEST_F(AutofillOptimizationGuideTest,
 }
 
 // Test that the Amex category-benefit optimization types are not registered
-// when the kAutofillEnableCardBenefitsForAmericanExpress experiment is
-// disabled.
+// when the kAutofillEnableCardBenefitsSync experiment is disabled.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_AmexCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableCardBenefitsForAmericanExpress);
+  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefitsSync);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
@@ -690,13 +688,11 @@ TEST_F(AutofillOptimizationGuideTest,
 }
 
 // Test that the Capital One category-benefit optimization types are not
-// registered when the kAutofillEnableCardBenefitsForCapitalOne experiment is
-// disabled.
+// registered when the kAutofillEnableCardBenefitsSync experiment is disabled.
 TEST_F(AutofillOptimizationGuideTest,
        CreditCardFormFound_CapitalOneCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnableCardBenefitsForCapitalOne);
+  feature_list.InitAndDisableFeature(features::kAutofillEnableCardBenefitsSync);
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
