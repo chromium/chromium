@@ -9501,7 +9501,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="803771048473350947">Arquivo</translation>
 <translation id="8037801708772278989">Verificado agora mesmo</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copiando 1 arquivo para o <ph name="CLOUD_PROVIDER" />}one{Copiando {NUM_OF_FILES} arquivo para o <ph name="CLOUD_PROVIDER" />}other{Copiando {NUM_OF_FILES} arquivos para o <ph name="CLOUD_PROVIDER" />}}</translation>
-<translation id="8041089156583427627">Enviar comentários</translation>
+<translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8041267120753677077">Fazer transmissão dos apps no seu smartphone</translation>
 <translation id="8042142357103597104">Opacidade do texto</translation>
 <translation id="8042331986490021244">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google</translation>

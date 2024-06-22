@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">हल्के पीले</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1059913517121127803">स्कैन करने की प्रोसेस शुरू नहीं हो सकी</translation>
+<translation id="1061864016440983342">जगह की जानकारी की सुविधा चालू किए बिना इस्तेमाल करें</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> में से <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फ़ायरवॉल पहचाना गया</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
 <translation id="2082932131694554252">असाइन किए गए कीबोर्ड बटन</translation>
 <translation id="2085089206770112532">डिसप्ले की रोशनी कम करने वाला बटन</translation>
+<translation id="2086091080968010660">ऐसा हो सकता है कि समय के हिसाब से किए गए बदलाव सटीक न हों. सेटिंग में जाकर, सिस्टम की जगह की जानकारी देने वाली सुविधा चालू करें.</translation>
 <translation id="2102231663024125441">टेक्स्ट में बदलाव करना</translation>
 <translation id="2105810540595158374">डिवाइस एक गेम कंट्रोलर है.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, वर्शन <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">डिफ़ॉल्ट बटन लेबल पहले जैसा करें</translation>
 <translation id="2286454467119466181">आसान</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
+<translation id="2294577623958216786">मौजूदा शेड्यूल को <ph name="SUNRISE" /> से <ph name="SUNSET" /> पर सेट किया गया है. सूर्योदय और सूर्यास्त का शेड्यूल अपने-आप अपडेट होने की सुविधा चालू करने के लिए, सिस्टम की जगह की जानकारी देने वाली सुविधा चालू करें.</translation>
 <translation id="2305172810646967500">ब्लैक</translation>
 <translation id="2307344026739914387">मौजूदा कुंजी के जोड़े का इस्तेमाल करें</translation>
 <translation id="2308243864813041101">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> का यूएसबी केबल हटाएं</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">कीबोर्ड की रोशनी</translation>
 <translation id="6412715219990689313">पहले से मौजूद कीबोर्ड</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">सिस्टम की जगह की जानकारी देने वाली सुविधा चालू करें</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>

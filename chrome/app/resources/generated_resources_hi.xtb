@@ -411,6 +411,7 @@
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1294807885394205587">इस प्रोसेस में कुछ मिनट लग सकते हैं. कंटेनर मैनेजर शुरू हो रहा है.</translation>
 <translation id="12951065153783848">आपका संगठन आपके खाते को मैनेज करता है</translation>
+<translation id="1296410481664942178">Google Calendar न दिखाएं</translation>
 <translation id="1296911687402551044">चुने गए टैब को पिन करें</translation>
 <translation id="1297175357211070620">गंतव्य</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> के लिए सुझाव, शिकायत या राय भेजें</translation>
@@ -449,6 +450,7 @@
 <translation id="1327495825214193325">ADB डीबग करने की सुविधा चालू करने के लिए, इस <ph name="DEVICE_TYPE" /> को रीस्टार्ट करना ज़रूरी है. इस सुविधा को बंद करने के लिए, डिवाइस को फ़ैक्ट्री सेटिंग पर रीसेट करना ज़रूरी है.</translation>
 <translation id="1327527584824210101">अपनी पासकी इस्तेमाल करें</translation>
 <translation id="1327794256477341646">जिन सुविधाओं के लिए जगह की जानकारी की ज़रूरत होती है वे काम नहीं करेंगी</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> घंटे में</translation>
 <translation id="1329466763986822896">इस हॉटस्पॉट के लिए निजता सेटिंग को बेहतर करें</translation>
 <translation id="1331977651797684645">यह मैं ही था/थी.</translation>
 <translation id="1333489022424033687"><ph name="ORIGIN" /> पर मौजूद कुछ सुविधाएं तब तक काम नहीं करेंगी, जब तक आप उस डेटा को नहीं मिटाते जिसे दूसरी साइटों ने आपके डिवाइस पर सेव किया हुआ है</translation>
@@ -1007,6 +1009,7 @@
 <translation id="1709762881904163296">नेटवर्क सेटिंग</translation>
 <translation id="1709916727352927457">पासकी मिटाएं</translation>
 <translation id="1709972045049031556">फ़ाइल शेयर नहीं की जा सकती</translation>
+<translation id="1712143791363119140">प्रोसेस जारी है</translation>
 <translation id="1714644264617423774">अपने डिवाइस को आसानी से इस्तेमाल करने के लिए सुलभता सुविधाएं चालू करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">क्या आपको <ph name="SITE_NAME" /> और इसके इंस्टॉल किए गए ऐप्लिकेशन के लिए, साइट डेटा और अनुमतियां मिटानी हैं?</translation>
 <translation id="171826447717908393">आइसोलेटेड वेब ऐप्लिकेशन (बीटा वर्शन)</translation>
@@ -1411,6 +1414,7 @@
 <translation id="200928901437634269">अपने बच्चे के Google खाते या स्कूल वाले खाते का इस्तेमाल करें. माता-पिता के कंट्रोल की सुविधा भी सेट की जा सकती है.</translation>
 <translation id="2009590708342941694">इमोजी टूल</translation>
 <translation id="2010501376126504057">इसके साथ काम करने वाले डिवाइस</translation>
+<translation id="2010636492623189611">चुना गया.</translation>
 <translation id="201217432804812273">"ग्रुप सेव करें" को चालू करें</translation>
 <translation id="2012935757369720523">फ़ाइल मिटाएं</translation>
 <translation id="2013467735169740431">साइटें, आपके कीबोर्ड को लॉक करने की अनुमति मांग सकती हैं</translation>
@@ -2006,6 +2010,7 @@
 <translation id="2435248616906486374">नेटवर्क डिस्‍कनेक्‍ट है</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
 <translation id="2436385001956947090">&amp;लिंक कॉपी करें</translation>
+<translation id="2437561292559037753">डेटा शेयर करने के लिए</translation>
 <translation id="2438853563451647815">प्रिंटर से कनेक्ट नहीं है</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> का पासवर्ड रीसेट करें</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड हो रहा है</translation>
@@ -2583,6 +2588,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> मेमोरी खाली की गई</translation>
 <translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिंट जॉब देखें और प्रबंधित करें</translation>
+<translation id="2845276301195220700">Google Calendar के लिए ज़्यादा कार्रवाइयां</translation>
 <translation id="2845382757467349449">बुकमार्क बार हमेशा दिखाएं</translation>
 <translation id="2845751331501453107">ब्राउज़ करते समय दिखने वाला विज्ञापन आपकी पसंद के मुताबिक है या नहीं, यह इस सेटिंग, <ph name="BEGIN_LINK1" />साइट के सुझाए गए विज्ञापनों<ph name="LINK_END1" />, और आपकी <ph name="BEGIN_LINK2" />कुकी सेटिंग<ph name="LINK_END2" /> के आधार पर तय होता है. इनके अलावा, यह इस बात पर भी निर्भर होता है कि आप जिस साइट पर हैं वह, दिलचस्पी के मुताबिक विज्ञापन दिखाने की सुविधा देती है या नहीं</translation>
 <translation id="284581348330507117">यूनीक पासवर्ड बनाएं</translation>
@@ -3698,6 +3704,7 @@
 <translation id="3694590407685276748">टेक्स्ट कर्सर को हाइलाइट करें</translation>
 <translation id="369489984217678710">पासवर्ड और दूसरे साइन-इन डेटा</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{सुरक्षा जांच पूरी हो गई. आपका डेटा अपलोड कर दिया जाएगा.}=1{सुरक्षा जांच पूरी हो गई. आपकी फ़ाइल अपलोड कर दी जाएगी.}one{सुरक्षा जांच पूरी हो गई. आपकी फ़ाइलें अपलोड कर दी जाएंगी.}other{सुरक्षा जांच पूरी हो गईं. आपकी फ़ाइलें अपलोड कर दी जाएंगी.}}</translation>
+<translation id="3695339288331169103">इसे <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> से डाउनलोड किया गया</translation>
 <translation id="369736917241079046">लॉन्चर + लेफ़्ट ऐरो</translation>
 <translation id="3697716475445175867">पिछली बार खोला गया</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{आने वाले समय में, इस साइट को सूचनाएं भेजने से रोका जा सकता है.}one{आने वाले समय में, इस साइट को सूचनाएं भेजने से रोका जा सकता है.}other{आने वाले समय में, इन साइटों को सूचनाएं भेजने से रोका जा सकता है.}}</translation>
@@ -4996,6 +5003,7 @@
 <translation id="4650591383426000695">अपने फ़ोन को <ph name="DEVICE_TYPE" /> से डिसकनेक्ट करें</translation>
 <translation id="4651484272688821107">डेमो मोड संसाधनों के साथ ऑनलाइन हिस्से लोड नहीं किए जा सके.</translation>
 <translation id="4651921906638302153">इस खाते से साइन इन नहीं किया जा सकता</translation>
+<translation id="4652921642122345344">बोलने की रफ़्तार <ph name="RATE" /> गुना है</translation>
 <translation id="4652935475563630866">कैमरे की सेटिंग में बदलाव करने के लिए, Parallels Desktop का फिर से लॉन्च होना ज़रूरी है. आगे बढ़ने के लिए, Parallels Desktop को फिर से लॉन्च करें.</translation>
 <translation id="4653116291358041820">छोटा शैडो</translation>
 <translation id="4653405415038586100">Linux को कॉन्फ़िगर करने में गड़बड़ी हुई</translation>
@@ -5194,6 +5202,7 @@
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4811212958317149293">कीबोर्ड में अपने-आप स्कैन करने की सुविधा को ऐक्सेस करने का तरीका बदलें</translation>
 <translation id="4811503964269049987">चुने गए टैब का ग्रुप बनाएं</translation>
+<translation id="4812073856515324252">चुनें कि <ph name="APP_NAME" /> के लिए अपनी पासकी कहां सेव करनी है</translation>
 <translation id="4813512666221746211">नेटवर्क गड़बड़ी</translation>
 <translation id="4814114628197290459">IBAN मिटाएं</translation>
 <translation id="4814327014588285482">छोड़ें और बाद में याद दिलाएं</translation>
@@ -5660,6 +5669,7 @@
 <translation id="5160634252433617617">सामान्य कीबोर्ड के विकल्प</translation>
 <translation id="5160857336552977725">अपने <ph name="DEVICE_TYPE" /> में साइन इन करें</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> के यूएसबी डिवाइस</translation>
+<translation id="5161442190864186925">मीटिंग में शामिल हों</translation>
 <translation id="5161827038979306924">Chrome के ब्राउज़िंग इतिहास और खोज इतिहास में क्या अंतर है?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> को रोक दिया गया है</translation>
 <translation id="5163910114647549394">टैब को टैबस्ट्रिप (टैब वाली लाइन) के आखिर में ले जाया गया</translation>
@@ -7968,6 +7978,7 @@
 <translation id="6912007319859991306">सेल्युलर सिम के लिए पिन सेट करें</translation>
 <translation id="6912380255120084882">किसी दूसरे डिवाइस पर इस्तेमाल करके देखें</translation>
 <translation id="691289340230098384">कैप्शन की प्राथमिकताएं</translation>
+<translation id="6913051485529944333">आपको इस पेज पर Google Calendar दोबारा नहीं दिखेगा</translation>
 <translation id="6914812290245989348">असुरक्षित साइटों पर जाने से पहले कोई चेतावनी नहीं दिखेगी</translation>
 <translation id="6916590542764765824">एक्‍सटेंशन मैनेज करें</translation>
 <translation id="6918677045355889289">ChromeOS को अपडेट करना ज़रूरी है</translation>
@@ -9170,6 +9181,7 @@
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
 <translation id="7810367892333449285">आपकी एंट्री <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ पता<ph name="LPA_2" />$<ph name="LPA_3" />मेल खाने वाला वैकल्पिक आईडी<ph name="LPA_4" /> के फ़ॉर्मैट में होनी चाहिए</translation>
 <translation id="7811263553491007091">फिर से कोशिश करें या पहले जनरेट की गई इनमें से किसी एक थीम को चुनें.</translation>
+<translation id="7812170317334653156">Google Calendar को छिपाया गया</translation>
 <translation id="7814090115158024843">इन साइटों के लिए लिखने में मदद पाने की सुविधा न दें</translation>
 <translation id="7814458197256864873">&amp;प्रतिलिपि बनाएं</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9228,6 +9240,7 @@
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>
 <translation id="7853999103056713222">ज़्यादा सुरक्षित पासवर्ड इस्तेमाल करें</translation>
 <translation id="7855678561139483478">टैब को नई विंडो पर ले जाएं</translation>
+<translation id="7856117067008941054">Google Calendar को छिपाएं</translation>
 <translation id="7857004848504343806">आपके कंप्यूटर में एक ऐसा सुरक्षित मॉड्यूल है जिसे ChromeOS Flex की सुरक्षा से जुड़ी कई अहम सुविधाओं को लागू करने में इस्तेमाल किया जाता है. ज़्यादा जानने के लिए Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">टाइपिंग के समय मिलने वाले शब्दों के सुझाव</translation>
 <translation id="7858120906780498731">ChromeOS से कनेक्ट किए गए इनपुट डिवाइस</translation>
@@ -9236,6 +9249,7 @@
 <translation id="786073089922909430">सेवा: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;डाउनलोड</translation>
 <translation id="7861846108263890455">Google खाते की भाषा</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> मिनट में</translation>
 <translation id="7864539943188674973">ब्लूटूथ अक्षम करें</translation>
 <translation id="7864825798076155402">क्या आपको इसे अपने Google खाते में सेव करना है?</translation>
 <translation id="7865127013871431856">Google Translate के विकल्प</translation>

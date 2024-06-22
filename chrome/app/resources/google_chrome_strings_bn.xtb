@@ -171,6 +171,7 @@
 <translation id="3261565993776444564">আপনার ব্রাউজার কাস্টমাইজ করতে, নতুন কোনও রঙ ব্যবহার করে দেখুন</translation>
 <translation id="3282568296779691940">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="3286538390144397061">এখন পুর্নসূচনা করবেন</translation>
+<translation id="3292333338048274092">আপনাকে তারপরে Chrome আবার চালু করতে হবে।</translation>
 <translation id="3360895254066713204">Chrome সহায়তাকারী</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome এখন আবার লঞ্চ হবে}=1{Chrome ১ সেকেন্ডের মধ্যে আবার লঞ্চ হবে}one{Chrome # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}other{Chrome # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="3396977131400919238">ইনস্টলেশনের সময় অপারেটিং সিস্টেমে একটি ত্রুটি ঘটেছিল৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
@@ -215,6 +216,7 @@
 <translation id="4035053306113201399">আপডেটটি প্রয়োগ করতে ChromeOS আবার চালু করা প্রয়োজন।</translation>
 <translation id="4050175100176540509">গুরুত্বপূর্ণ নিরাপত্তা উন্নতি এবং নতুন বৈশিষ্ট্যগুলি সর্বশেষ ভার্সনে উপলভ্য।</translation>
 <translation id="4053720452172726777">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন</translation>
+<translation id="4084404300720192944">আপনার উইন্ডো শেয়ার করতে, সিস্টেম প্রেফারেন্স থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিং চালু করুন।</translation>
 <translation id="4106587138345390261">Chrome নতুন ফিচার এক্সপ্লোর করছে যা সাইটগুলিকে আপনার কম তথ্য ব্যবহার করে একই ব্রাউজিং অভিজ্ঞতা প্রদান করতে দেয়</translation>
 <translation id="4110895483821904099">আপনার নতুন Chrome প্রোফাইল সেট আপ করুন</translation>
 <translation id="4111566860456076004">এই এক্সটেনশন কোথা থেকে এসেছে তা Chrome যাচাই করতে পারে না এবং এটি নিরাপদ নাও হতে পারে। Chrome থেকে এটি সরান যাতে ব্যক্তিগত তথ্য সহ আপনার ভিজিট করা সাইটের ডেটা এটি আর দেখতে না পায় এবং তা পরিবর্তন করতে না পারে।</translation>
@@ -351,6 +353,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
 <translation id="6200139057479872438">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
+<translation id="621585339844629864">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম প্রেফারেন্স থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিং চালু করুন।</translation>
 <translation id="6235018212288296708">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="624230925347970731">Chrome শীঘ্রই বন্ধ হয়ে যাবে</translation>
 <translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
