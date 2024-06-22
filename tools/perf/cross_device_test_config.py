@@ -238,7 +238,7 @@ TARGET_DEVICES = {
         'speedometer3-nominorms': {
             'Speedometer3': 20,
         },
-        'speedometer3.crossbench': 20,
+        'rendering.desktop.notracing': 20,
     },
     'mac-m1_mini_2020-perf-pgo': {
         'jetstream2': {
@@ -258,5 +258,6 @@ TARGET_DEVICES = {
         'speedometer3': {
             'Speedometer3': 20,
         },
+        'rendering.desktop.notracing': 20,
     },
 }
