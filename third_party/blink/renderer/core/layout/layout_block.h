@@ -135,8 +135,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // These two functions are overridden for inline-block.
   LayoutUnit FirstLineHeight() const override;
 
-  bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
-
   const char* GetName() const override;
 
  protected:

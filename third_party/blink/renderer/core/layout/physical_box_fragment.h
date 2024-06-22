@@ -163,12 +163,11 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return use_last_baseline_for_inline_baseline_;
   }
 
-  bool UseBlockEndMarginEdgeForInlineBaseline() const {
-    if (!use_last_baseline_for_inline_baseline_)
-      return false;
-    if (const auto* layout_block = DynamicTo<LayoutBlock>(GetLayoutObject()))
-      return layout_block->UseLogicalBottomMarginEdgeForInlineBlockBaseline();
-    return false;
+  // Some scroll-containers will force baseline synthesis for the inline-block
+  // baseline algorithm.
+  bool ForceInlineBaselineSynthesis() const {
+    return use_last_baseline_for_inline_baseline_ && IsScrollContainer() &&
+           !Style().ShouldIgnoreOverflowPropertyForInlineBlockBaseline();
   }
 
   LogicalRect TableGridRect() const {

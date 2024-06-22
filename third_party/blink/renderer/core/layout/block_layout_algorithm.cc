@@ -3260,8 +3260,8 @@ void BlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
   // When computing baselines for an inline-block, some block-boxes (e.g. with
   // "overflow: hidden") will force the baseline to the block-end margin edge.
   if (baseline_algorithm == BaselineAlgorithmType::kInlineBlock &&
-      physical_fragment.UseBlockEndMarginEdgeForInlineBaseline() &&
-      !child.ShouldApplyLayoutContainment() && fragment.IsWritingModeEqual()) {
+      physical_fragment.ForceInlineBaselineSynthesis() &&
+      fragment.IsWritingModeEqual()) {
     last_baseline = fragment.BlockSize() + margins.block_end;
   }
 

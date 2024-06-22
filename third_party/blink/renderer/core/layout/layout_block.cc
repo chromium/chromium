@@ -607,21 +607,6 @@ LayoutUnit LayoutBlock::FirstLineHeight() const {
   return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
-bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {
-  NOT_DESTROYED();
-  // CSS2.1 states that the baseline of an 'inline-block' is:
-  // the baseline of the last line box in the normal flow, unless it has
-  // either no in-flow line boxes or if its 'overflow' property has a computed
-  // value other than 'visible', in which case the baseline is the bottom
-  // margin edge.
-  // We likewise avoid using the last line box in the case of size containment,
-  // where the block's contents shouldn't be considered when laying out its
-  // ancestors or siblings.
-  return (!StyleRef().IsOverflowVisibleOrClip() &&
-          !StyleRef().ShouldIgnoreOverflowPropertyForInlineBlockBaseline()) ||
-         ShouldApplyLayoutContainment();
-}
-
 const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   NOT_DESTROYED();
   const LayoutBlock* first_line_block = this;

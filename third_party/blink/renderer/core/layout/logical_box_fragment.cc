@@ -22,13 +22,7 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
     case EBaselineSource::kAuto: {
       baseline = fragment.UseLastBaselineForInlineBaseline() ? LastBaseline()
                                                              : FirstBaseline();
-
-      // Some scroll containers force baseline synthesis.
-      bool force_baseline_synthesis =
-          fragment.UseLastBaselineForInlineBaseline() &&
-          (fragment.IsScrollContainer() &&
-           !style.ShouldIgnoreOverflowPropertyForInlineBlockBaseline());
-      if (force_baseline_synthesis) {
+      if (fragment.ForceInlineBaselineSynthesis()) {
         baseline = std::nullopt;
       }
       break;
