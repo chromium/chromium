@@ -49,6 +49,7 @@
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -516,6 +517,11 @@ void ShelfLayoutManager::InitObservers() {
   auto* shell = Shell::Get();
   shell->AddShellObserver(this);
   SplitViewController::Get(shelf_widget_->GetNativeWindow())->AddObserver(this);
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    snap_group_controller->AddObserver(this);
+  }
+
   ShelfConfig::Get()->AddObserver(this);
   shell->overview_controller()->AddObserver(this);
   shell->app_list_controller()->AddObserver(this);
@@ -527,8 +533,9 @@ void ShelfLayoutManager::InitObservers() {
   wallpaper_controller_observation_.Observe(shell->wallpaper_controller());
 
   // DesksController could be null when virtual desks feature is not enabled.
-  if (DesksController::Get())
-    DesksController::Get()->AddObserver(this);
+  if (DesksController* desks_controller = DesksController::Get()) {
+    desks_controller->AddObserver(this);
+  }
 }
 
 void ShelfLayoutManager::PrepareForShutdown() {
@@ -549,6 +556,11 @@ void ShelfLayoutManager::PrepareForShutdown() {
 
   SplitViewController::Get(shelf_widget_->GetNativeWindow())
       ->RemoveObserver(this);
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    snap_group_controller->RemoveObserver(this);
+  }
+
   shelf_->RemoveObserver(this);
 }
 
@@ -1145,19 +1157,23 @@ ShelfBackgroundType ShelfLayoutManager::ComputeShelfBackgroundType() const {
     return ShelfBackgroundType::kLogin;
   }
 
+  const aura::Window* shelf_native_window = shelf_widget_->GetNativeWindow();
   const bool in_split_view_mode =
-      SplitViewController::Get(shelf_widget_->GetNativeWindow())
-          ->InSplitViewMode();
+      SplitViewController::Get(shelf_native_window)->InSplitViewMode();
+
+  // Shelf defaults to rounded corners. We square them when a Snap Group is
+  // created and fully visible. Maybe restore rounded corners on Snap Group
+  // removal if no visible snap groups remain.
   SnapGroupController* snap_group_controller = SnapGroupController::Get();
   const bool has_visible_snap_group =
-      snap_group_controller && snap_group_controller->GetTopmostSnapGroup();
+      snap_group_controller &&
+      snap_group_controller->GetTopmostVisibleSnapGroup(
+          shelf_native_window->GetRootWindow());
   const bool maximized =
       in_split_view_mode || has_visible_snap_group ||
       state_.window_state == WorkspaceWindowState::kFullscreen ||
       state_.window_state == WorkspaceWindowState::kMaximized;
-  const bool in_overview =
-      Shell::Get()->overview_controller() &&
-      Shell::Get()->overview_controller()->InOverviewSession();
+  const bool in_overview = IsInOverviewSession();
   if (Shell::Get()->IsInTabletMode()) {
     const bool app_list_target_visibility =
         Shell::Get()->app_list_controller() &&
@@ -1303,6 +1319,15 @@ void ShelfLayoutManager::OnSplitViewStateChanged(
       state == SplitViewController::State::kNoSnap) {
     MaybeUpdateShelfBackground(AnimationChangeType::ANIMATE);
   }
+}
+
+void ShelfLayoutManager::OnSnapGroupAdded(SnapGroup* snap_group) {
+  MaybeUpdateShelfBackground(AnimationChangeType::ANIMATE);
+}
+
+void ShelfLayoutManager::OnSnapGroupRemoving(SnapGroup* snap_group,
+                                             SnapGroupExitPoint exit_pint) {
+  MaybeUpdateShelfBackground(AnimationChangeType::ANIMATE);
 }
 
 void ShelfLayoutManager::OnOverviewModeWillStart() {

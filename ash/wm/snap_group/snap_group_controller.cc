@@ -198,8 +198,12 @@ SnapGroup* SnapGroupController::AddSnapGroup(
   // will not be precisely calculated see `GetCurrentSnapRatio()` in
   // window_state.cc.
   auto* snap_group_ptr = snap_group.get();
+
   snap_groups_.push_back(std::move(snap_group));
-  // TODO(b/346624805): Unify the group and divider bounds updates.
+
+  for (auto& observer : observers_) {
+    observer.OnSnapGroupAdded(snap_group_ptr);
+  }
 
   if (!replace) {
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());

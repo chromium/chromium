@@ -2758,9 +2758,9 @@ TEST_F(SnapGroupTest, DisallowVisibleOnAllWorkspacesWindowToFormGroup) {
 }
 
 // Tests that the shelf's corners are rounded by default. Upon Snap Group
-// creation,  the shelf's corners become sharp. When the Snap Group breaks, the
+// creation, the shelf's corners become sharp. When the Snap Group breaks, the
 // shelf returns to its default state with rounded corners.
-TEST_F(SnapGroupTest, ShelfBehavior) {
+TEST_F(SnapGroupTest, ShelfRoundedCornersInFasterSplitScreenEntryPoint) {
   ShelfLayoutManager* shelf_layout_manager =
       AshTestBase::GetPrimaryShelf()->shelf_layout_manager();
   ASSERT_EQ(ShelfBackgroundType::kDefaultBg,
@@ -2784,6 +2784,8 @@ TEST_F(SnapGroupTest, ShelfBehavior) {
   event_generator->MoveMouseBy(50, 200);
   EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
   event_generator->ReleaseLeftButton();
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 
   // Verify that Shelf restores its default background type with rounded
   // corners.
@@ -7914,6 +7916,50 @@ TEST_F(SnapGroupAutoSnapGroupTest, SnapRatioOverlapThreshold) {
             kSnapToReplaceRatioDiffThreshold);
   EXPECT_FALSE(
       SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Verifies shelf rounded corners behavior in relation to Snap Group state.
+// - By default (no Snap Group): Shelf corners are rounded.
+// - Upon Snap Group creation (auto-group entry point): Corners become sharp.
+// - Upon Snap Group break: Corners revert to default rounded state.
+TEST_F(SnapGroupAutoSnapGroupTest, ShelfRoundedCornersInAutoGroupEntryPoint) {
+  ShelfLayoutManager* shelf_layout_manager =
+      AshTestBase::GetPrimaryShelf()->shelf_layout_manager();
+  ASSERT_EQ(ShelfBackgroundType::kDefaultBg,
+            shelf_layout_manager->shelf_background_type());
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Test that Shelf will be updated to have sharp rounded corners.
+  EXPECT_EQ(ShelfBackgroundType::kMaximized,
+            shelf_layout_manager->shelf_background_type());
+
+  // Drag `w1` out to break the group.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().top_center());
+  aura::test::TestWindowDelegate().set_window_component(HTCAPTION);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(50, 200);
+  EXPECT_TRUE(WindowState::Get(w1.get())->is_dragged());
+  event_generator->ReleaseLeftButton();
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Verify that Shelf restores its default background type with rounded
+  // corners.
+  EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
+            shelf_layout_manager->shelf_background_type());
 }
 
 // -----------------------------------------------------------------------------

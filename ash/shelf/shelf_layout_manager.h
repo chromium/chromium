@@ -26,6 +26,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/lock_state_observer.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
@@ -75,8 +77,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
                                       public ShelfObserver,
                                       public ShellObserver,
                                       public SplitViewObserver,
+                                      public SnapGroupObserver,
                                       public OverviewObserver,
-                                      public ::wm::ActivationChangeObserver,
+                                      public wm::ActivationChangeObserver,
                                       public LockStateObserver,
                                       public WmDefaultLayoutManager,
                                       public display::DisplayObserver,
@@ -275,6 +278,11 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
+
+  // SnapGroupObserver:
+  void OnSnapGroupAdded(SnapGroup* snap_group) override;
+  void OnSnapGroupRemoving(SnapGroup* snap_group,
+                           SnapGroupExitPoint exit_pint) override;
 
   // OverviewObserver:
   void OnOverviewModeWillStart() override;

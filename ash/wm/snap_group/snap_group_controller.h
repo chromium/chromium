@@ -89,9 +89,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   SnapGroup* GetTopmostVisibleSnapGroup(const aura::Window* target_root) const;
 
   // Returns the topmost snap group in unminimized state.
-  // TODO(b/333772909): Currently used mostly for group minimize shortcut, which
-  // does not differentiate between root windows. See if we can remove it when
-  // we remove group minimize.
   SnapGroup* GetTopmostSnapGroup() const;
 
   // Determines which windows can be used for snap-to-replace with keyboard

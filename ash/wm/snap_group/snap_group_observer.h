@@ -15,6 +15,9 @@ class SnapGroup;
 // Define an interface for observing changes in the `SnapGroupController`.
 class SnapGroupObserver : public base::CheckedObserver {
  public:
+  // Called when the given `snap_group` is added.
+  virtual void OnSnapGroupAdded(SnapGroup* snap_group) {}
+
   // Called when the `snap_group` being removed due to the given `exist_point`
   // reason.
   virtual void OnSnapGroupRemoving(SnapGroup* snap_group,
