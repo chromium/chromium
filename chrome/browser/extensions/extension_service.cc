@@ -1856,7 +1856,7 @@ void ExtensionService::OnExtensionInstalled(
       // Transfer ownership of |extension|.
       delayed_installs_.Insert(extension);
 
-      if (delay_reason == ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE) {
+      if (delay_reason == ExtensionPrefs::DelayReason::kWaitForIdle) {
         // Notify observers that app update is available.
         for (auto& observer : update_observers_)
           observer.OnAppUpdateAvailable(extension);

@@ -1036,23 +1036,26 @@ void ExtensionPrefs::AddDisableReasons(const ExtensionId& extension_id,
                                        int disable_reasons) {
   DCHECK(!DoesExtensionHaveState(extension_id, Extension::ENABLED) ||
          blocklist_prefs::IsExtensionBlocklisted(extension_id, this));
-  ModifyDisableReasons(extension_id, disable_reasons, BIT_MAP_PREF_ADD);
+  ModifyDisableReasons(extension_id, disable_reasons,
+                       BitMapPrefOperation::kAdd);
 }
 
 void ExtensionPrefs::RemoveDisableReason(
     const ExtensionId& extension_id,
     disable_reason::DisableReason disable_reason) {
-  ModifyDisableReasons(extension_id, disable_reason, BIT_MAP_PREF_REMOVE);
+  ModifyDisableReasons(extension_id, disable_reason,
+                       BitMapPrefOperation::kRemove);
 }
 
 void ExtensionPrefs::ReplaceDisableReasons(const ExtensionId& extension_id,
                                            int disable_reasons) {
-  ModifyDisableReasons(extension_id, disable_reasons, BIT_MAP_PREF_REPLACE);
+  ModifyDisableReasons(extension_id, disable_reasons,
+                       BitMapPrefOperation::kReplace);
 }
 
 void ExtensionPrefs::ClearDisableReasons(const ExtensionId& extension_id) {
   ModifyDisableReasons(extension_id, disable_reason::DISABLE_NONE,
-                       BIT_MAP_PREF_CLEAR);
+                       BitMapPrefOperation::kClear);
 }
 
 void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(
@@ -1069,7 +1072,7 @@ void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(
   ModifyDisableReasons(
       component_extension_id,
       allowed_disable_reasons & GetDisableReasons(component_extension_id),
-      BIT_MAP_PREF_REPLACE);
+      BitMapPrefOperation::kReplace);
 }
 
 void ExtensionPrefs::ModifyDisableReasons(const ExtensionId& extension_id,
@@ -1097,16 +1100,16 @@ void ExtensionPrefs::ModifyBitMapPrefBits(const ExtensionId& extension_id,
   int old_value = GetBitMapPrefBits(extension_id, pref_key, default_bit);
   int new_value = old_value;
   switch (operation) {
-    case BIT_MAP_PREF_ADD:
+    case BitMapPrefOperation::kAdd:
       new_value |= pending_bits;
       break;
-    case BIT_MAP_PREF_REMOVE:
+    case BitMapPrefOperation::kRemove:
       new_value &= ~pending_bits;
       break;
-    case BIT_MAP_PREF_REPLACE:
+    case BitMapPrefOperation::kReplace:
       new_value = pending_bits;
       break;
-    case BIT_MAP_PREF_CLEAR:
+    case BitMapPrefOperation::kClear:
       new_value = pending_bits;
       break;
   }
@@ -1693,15 +1696,15 @@ ExtensionPrefs::DelayReason ExtensionPrefs::GetDelayedInstallReason(
     const ExtensionId& extension_id) const {
   const base::Value::Dict* extension_prefs = GetExtensionPref(extension_id);
   if (!extension_prefs)
-    return DELAY_REASON_NONE;
+    return DelayReason::kNone;
 
   const base::Value::Dict* ext = extension_prefs->FindDict(kDelayedInstallInfo);
   if (!ext)
-    return DELAY_REASON_NONE;
+    return DelayReason::kNone;
 
   std::optional<int> delay_reason = ext->FindInt(kDelayedInstallReason);
   if (!delay_reason)
-    return DELAY_REASON_NONE;
+    return DelayReason::kNone;
 
   return static_cast<DelayReason>(*delay_reason);
 }

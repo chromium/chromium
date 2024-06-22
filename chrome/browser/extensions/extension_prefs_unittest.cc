@@ -481,7 +481,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     ASSERT_EQ(id, extension->id());
     prefs()->SetDelayedInstallInfo(extension.get(), Extension::ENABLED,
                                    kInstallFlagNone,
-                                   ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE,
+                                   ExtensionPrefs::DelayReason::kWaitForIdle,
                                    syncer::StringOrdinal(), std::string());
   }
 
@@ -605,7 +605,7 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     ASSERT_EQ(id_, new_extension->id());
     prefs()->SetDelayedInstallInfo(new_extension.get(), Extension::ENABLED,
                                    kInstallFlagNone,
-                                   ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE,
+                                   ExtensionPrefs::DelayReason::kWaitForIdle,
                                    syncer::StringOrdinal(), "Param");
 
     // Finish idle installation
@@ -750,13 +750,13 @@ class ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue
     extension_ = prefs_.AddExtension("test1");
     prefs()->ModifyBitMapPrefBits(
         extension_->id(), disable_reason::DISABLE_PERMISSIONS_INCREASE,
-        ExtensionPrefs::BIT_MAP_PREF_ADD, "disable_reasons",
+        ExtensionPrefs::BitMapPrefOperation::kAdd, "disable_reasons",
         disable_reason::DISABLE_USER_ACTION);
     // Set the bit map pref value to the default value, it should clear the
     // pref.
     prefs()->ModifyBitMapPrefBits(
         extension_->id(), disable_reason::DISABLE_USER_ACTION,
-        ExtensionPrefs::BIT_MAP_PREF_REPLACE, "disable_reasons",
+        ExtensionPrefs::BitMapPrefOperation::kReplace, "disable_reasons",
         disable_reason::DISABLE_USER_ACTION);
   }
 

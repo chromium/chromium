@@ -1143,8 +1143,8 @@ TEST_F(ExtensionServiceTest, PendingImports) {
   // Make sure the import started for the extension with a dependency.
   EXPECT_TRUE(
       prefs->GetDelayedInstallInfo("behllobkkfkfnphdnhnkndlbkcpglgmj"));
-  EXPECT_EQ(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
-      prefs->GetDelayedInstallReason("behllobkkfkfnphdnhnkndlbkcpglgmj"));
+  EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
+            prefs->GetDelayedInstallReason("behllobkkfkfnphdnhnkndlbkcpglgmj"));
 
   EXPECT_FALSE(base::PathExists(extensions_install_dir().AppendASCII(
       "behllobkkfkfnphdnhnkndlbkcpglgmj/1.0.0.0")));
@@ -1214,7 +1214,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
 
   // Make sure the import started for the extension with a dependency.
   EXPECT_TRUE(prefs->GetDelayedInstallInfo(id));
-  EXPECT_EQ(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
+  EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
             prefs->GetDelayedInstallReason(id));
 
   const std::string pending_id(32, 'e');
@@ -1237,7 +1237,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
 
   // The update should remain delayed, with the import pending.
   EXPECT_TRUE(prefs->GetDelayedInstallInfo(id));
-  EXPECT_EQ(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
+  EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
             prefs->GetDelayedInstallReason(id));
 
   // Attempt delayed installed - similar to reloading the extension, the update
@@ -1247,7 +1247,7 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
   extension = registry()->GetInstalledExtension(id);
   ASSERT_TRUE(extension);
   EXPECT_EQ("1.0.0", extension->VersionString());
-  EXPECT_EQ(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
+  EXPECT_EQ(ExtensionPrefs::DelayReason::kWaitForImports,
             prefs->GetDelayedInstallReason(id));
   EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(pending_id));
 

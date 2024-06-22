@@ -221,7 +221,7 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
     // installation until the extension is idle.
     update_install_gate_ =
         std::make_unique<UpdateInstallGate>(service()->profile());
-    service()->RegisterInstallGate(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE,
+    service()->RegisterInstallGate(ExtensionPrefs::DelayReason::kWaitForIdle,
                                    update_install_gate_.get());
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(browser_context()))
         ->SetReady();

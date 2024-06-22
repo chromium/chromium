@@ -33,7 +33,7 @@ class ExtensionInstallGateImpl : public extensions::InstallGate,
             extensions::ExtensionSystem::Get(profile)->extension_service()) {
     CHECK(extension_service_);
     extension_service_->RegisterInstallGate(
-        extensions::ExtensionPrefs::DelayReason::DELAY_REASON_GC,
+        extensions::ExtensionPrefs::DelayReason::kGc,
         static_cast<ExtensionInstallGateImpl*>(this));
   }
 

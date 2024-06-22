@@ -464,7 +464,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
   // will register one specifically.
   service_->ClearProvidersForTesting();
 
-  service_->RegisterInstallGate(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
+  service_->RegisterInstallGate(ExtensionPrefs::DelayReason::kWaitForImports,
                                 service_->shared_module_service());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

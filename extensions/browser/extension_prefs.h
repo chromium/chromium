@@ -87,20 +87,20 @@ class ExtensionPrefs : public KeyedService {
   // This enum is used to store the reason an extension's install has been
   // delayed.  Do not remove items or re-order this enum as it is used in
   // preferences.
-  enum DelayReason {
-    DELAY_REASON_NONE = 0,
-    DELAY_REASON_GC = 1,
-    DELAY_REASON_WAIT_FOR_IDLE = 2,
-    DELAY_REASON_WAIT_FOR_IMPORTS = 3,
-    DELAY_REASON_WAIT_FOR_OS_UPDATE = 4,
+  enum class DelayReason {
+    kNone = 0,
+    kGc = 1,
+    kWaitForIdle = 2,
+    kWaitForImports = 3,
+    kWaitForOsUpdate = 4,
   };
 
   // This enum is used to specify the operation for bit map prefs.
-  enum BitMapPrefOperation {
-    BIT_MAP_PREF_ADD,
-    BIT_MAP_PREF_REMOVE,
-    BIT_MAP_PREF_REPLACE,
-    BIT_MAP_PREF_CLEAR
+  enum class BitMapPrefOperation {
+    kAdd,
+    kRemove,
+    kReplace,
+    kClear,
   };
 
   // Wrappers around a prefs::ScopedDictionaryPrefUpdate, which allow us to
@@ -268,8 +268,9 @@ class ExtensionPrefs : public KeyedService {
                         int default_bit) const;
   // Modifies the extensions bit map pref |pref_key| to add a new bit value,
   // remove an existing bit value, or clear all bits. If |operation| is
-  // BIT_MAP_PREF_CLEAR, then |pending_bits| are ignored. If the updated pref
-  // value is the same as the |default_bit|, the pref value will be set to null.
+  // BitMapPrefOperation::kClear, then `pending_bits` are ignored. If the
+  // updated pref value is the same as the |default_bit|, the pref value will be
+  // set to null.
   void ModifyBitMapPrefBits(const ExtensionId& extension_id,
                             int pending_bits,
                             BitMapPrefOperation operation,
@@ -868,7 +869,7 @@ class ExtensionPrefs : public KeyedService {
   // Modifies the extensions disable reasons to add a new reason, remove an
   // existing reason, or clear all reasons. Notifies observers if the set of
   // DisableReasons has changed.
-  // If |operation| is BIT_MAP_PREF_CLEAR, then |reasons| are ignored.
+  // If `operation` is BitMapPrefOperation::kClear, then `reasons` are ignored.
   void ModifyDisableReasons(const ExtensionId& extension_id,
                             int reasons,
                             BitMapPrefOperation operation);
