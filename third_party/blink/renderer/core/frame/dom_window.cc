@@ -761,7 +761,8 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
 
     auto location = CaptureSourceLocation(
         ExecutionContext::From(isolate->GetCurrentContext()));
-    // TODO(b/346585140): Update to use SourceLocation typemap.
+    // TODO(arthursonzogni): Once implemented, use the SourceLocation typemap
+    // https://chromium-review.googlesource.com/c/chromium/src/+/2041657
     auto source_location = network::mojom::blink::SourceLocation::New(
         location->Url() ? location->Url() : "", location->LineNumber(),
         location->ColumnNumber());

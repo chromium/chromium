@@ -40,7 +40,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
-#include "services/network/public/mojom/source_location.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -383,11 +382,10 @@ class RestrictedCookieManagerInterceptor
                            const url::Origin& top_frame_origin,
                            bool has_storage_access,
                            const std::string& cookie,
-                           network::mojom::SourceLocationPtr source_location,
                            SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
-        std::move(cookie), std::move(source_location), std::move(callback));
+        std::move(cookie), std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,

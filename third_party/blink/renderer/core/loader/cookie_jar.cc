@@ -3,16 +3,13 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
-
 #include <cstdint>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "services/network/public/mojom/source_location.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -62,15 +59,9 @@ void CookieJar::SetCookie(const String& value) {
 
   base::ElapsedTimer timer;
   RequestRestrictedCookieManagerIfNeeded();
-  auto location = CaptureSourceLocation(document_->GetExecutionContext());
-  // TODO(b/346585140): Update to use SourceLocation typemap.
-  auto source_location = network::mojom::blink::SourceLocation::New(
-      location->Url() ? location->Url() : "", location->LineNumber(),
-      location->ColumnNumber());
   backend_->SetCookieFromString(
       cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
-      document_->GetExecutionContext()->HasStorageAccess(), value,
-      std::move(source_location));
+      document_->GetExecutionContext()->HasStorageAccess(), value);
   last_operation_was_set_ = true;
   base::UmaHistogramTimes("Blink.SetCookieTime", timer.Elapsed());
 

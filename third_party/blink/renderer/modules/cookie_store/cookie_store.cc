@@ -12,8 +12,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
-#include "services/network/public/mojom/source_location.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -554,15 +552,10 @@ ScriptPromise<IDLUndefined> CookieStore::DoWrite(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  auto location = CaptureSourceLocation(context);
-  // TODO(b/346585140): Update to use SourceLocation typemap.
-  auto source_location = network::mojom::blink::SourceLocation::New(
-      location->Url() ? location->Url() : "", location->LineNumber(),
-      location->ColumnNumber());
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
       default_site_for_cookies_, default_top_frame_origin_,
-      context->HasStorageAccess(), status, std::move(source_location),
+      context->HasStorageAccess(), status,
       WTF::BindOnce(&CookieStore::OnSetCanonicalCookieResult,
                     WrapPersistent(resolver)));
   return resolver->Promise();

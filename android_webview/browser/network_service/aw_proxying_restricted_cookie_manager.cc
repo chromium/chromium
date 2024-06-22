@@ -22,7 +22,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/cookies/parsed_cookie.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
-#include "services/network/public/mojom/source_location.mojom.h"
 #include "url/gurl.h"
 
 namespace android_webview {
@@ -139,7 +138,6 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     const url::Origin& top_frame_origin,
     bool has_storage_access,
     net::CookieInclusionStatus status,
-    network::mojom::SourceLocationPtr source_location,
     SetCanonicalCookieCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   PrivacySetting cookieState =
@@ -153,7 +151,7 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
   if (cookie.IsPartitioned() || cookieState == PrivacySetting::kStateAllowed) {
     underlying_restricted_cookie_manager_->SetCanonicalCookie(
         cookie, url, site_for_cookies, top_frame_origin, has_storage_access,
-        status, std::move(source_location), std::move(callback));
+        status, std::move(callback));
   } else {
     std::move(callback).Run(false);
   }
@@ -190,7 +188,6 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     const url::Origin& top_frame_origin,
     bool has_storage_access,
     const std::string& cookie,
-    network::mojom::SourceLocationPtr source_location,
     SetCookieFromStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -212,7 +209,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
        parsed_cookie.IsSecure())) {
     underlying_restricted_cookie_manager_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, has_storage_access, cookie,
-        std::move(source_location), std::move(callback));
+        std::move(callback));
   } else {
     std::move(callback).Run();
   }

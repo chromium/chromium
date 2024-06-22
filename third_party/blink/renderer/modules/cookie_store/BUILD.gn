@@ -18,8 +18,5 @@ blink_modules_sources("cookie_store") {
     "global_cookie_store.h",
   ]
 
-  deps = [
-    "//services/network/public/mojom:mojom_source_location_blink",
-    "//third_party/blink/renderer/platform",
-  ]
+  deps = [ "//third_party/blink/renderer/platform" ]
 }

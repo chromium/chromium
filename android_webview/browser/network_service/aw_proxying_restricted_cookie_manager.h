@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_delegate.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
-#include "services/network/public/mojom/source_location.mojom.h"
 
 class GURL;
 
@@ -67,7 +66,6 @@ class AwProxyingRestrictedCookieManager
                           const url::Origin& top_frame_origin,
                           bool has_storage_access,
                           net::CookieInclusionStatus status,
-                          network::mojom::SourceLocationPtr source_location,
                           SetCanonicalCookieCallback callback) override;
   void AddChangeListener(
       const GURL& url,
@@ -82,7 +80,6 @@ class AwProxyingRestrictedCookieManager
                            const url::Origin& top_frame_origin,
                            bool has_storage_access,
                            const std::string& cookie,
-                           network::mojom::SourceLocationPtr source_location,
                            SetCookieFromStringCallback callback) override;
 
   void GetCookiesString(const GURL& url,

@@ -44,7 +44,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/source_location.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -669,7 +668,6 @@ void RestrictedCookieManager::SetCanonicalCookie(
     const url::Origin& top_frame_origin,
     bool has_storage_access,
     net::CookieInclusionStatus status,
-    mojom::SourceLocationPtr source_location,
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't allow a status that has an exclusion reason as they should have
@@ -734,7 +732,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
           /*devtools_request_id=*/std::nullopt,
           /*count=*/1,
           /*is_ad_tagged=*/false, cookie_setting_overrides,
-          std::move(source_location)));
+          /*source_location=*/nullptr));
     }
     std::move(callback).Run(false);
     return;
@@ -822,7 +820,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
                      weak_ptr_factory_.GetWeakPtr(), url,
                      isolated_top_frame_origin, cookie_setting_overrides,
                      site_for_cookies, cookie_copy, options,
-                     std::move(source_location), std::move(callback)),
+                     std::move(callback)),
       cookie_access_result);
 }
 
@@ -833,7 +831,6 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
     const net::SiteForCookies& site_for_cookies,
     const net::CanonicalCookie& cookie,
     const net::CookieOptions& net_options,
-    mojom::SourceLocationPtr source_location,
     SetCanonicalCookieCallback user_callback,
     net::CookieAccessResult access_result) {
   // TODO(crbug.com/40632967): Only report pure INCLUDE once samesite
@@ -853,7 +850,7 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
           isolated_top_frame_origin, site_for_cookies, std::move(notify),
           /*devtools_request_id=*/std::nullopt, /*count=*/1,
           /*is_ad_tagged=*/false, cookie_setting_overrides,
-          std::move(source_location)));
+          /*source_location=*/nullptr));
     }
   }
   std::move(user_callback).Run(access_result.status.IsInclude());
@@ -898,7 +895,6 @@ void RestrictedCookieManager::SetCookieFromString(
     const url::Origin& top_frame_origin,
     bool has_storage_access,
     const std::string& cookie,
-    mojom::SourceLocationPtr source_location,
     SetCookieFromStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -934,7 +930,7 @@ void RestrictedCookieManager::SetCookieFromString(
               has_storage_access,
               /*is_ad_tagged=*/false,
               /*force_disable_third_party_cookies=*/false),
-          std::move(source_location)));
+          /*source_location=*/nullptr));
     }
     return;
   }
@@ -943,8 +939,7 @@ void RestrictedCookieManager::SetCookieFromString(
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
-                     has_storage_access, status, std::move(source_location),
-                     base::DoNothing());
+                     has_storage_access, status, base::DoNothing());
 }
 
 void RestrictedCookieManager::GetCookiesString(
