@@ -3725,6 +3725,8 @@ if (!is_android) {
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
         "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
         "../browser/controlled_frame/controlled_frame_apitest.cc",
+        "../browser/controlled_frame/controlled_frame_test_base.cc",
+        "../browser/controlled_frame/controlled_frame_test_base.h",
         "../browser/extensions/alert_apitest.cc",
         "../browser/extensions/all_urls_apitest.cc",
         "../browser/extensions/api/activity_log_private/activity_log_private_apitest.cc",

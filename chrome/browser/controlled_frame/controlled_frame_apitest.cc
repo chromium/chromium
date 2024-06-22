@@ -7,11 +7,12 @@
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/service_worker_apitest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_frame_host.h"
@@ -30,7 +31,6 @@
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace controlled_frame {
 
@@ -204,58 +204,11 @@ const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
 
 }  // namespace
 
-class ControlledFrameApiTest
-    : public web_app::IsolatedWebAppBrowserTestHarness {
+class ControlledFrameApiTest : public ControlledFrameTestBase {
  public:
   void SetUpOnMainThread() override {
-    web_app::IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    embedded_https_test_server().ServeFilesFromSourceDirectory(
-        GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
-    ASSERT_TRUE(embedded_https_test_server().Start());
-  }
-
-  web_app::IsolatedWebAppUrlInfo CreateAndInstallEmptyApp(
-      const web_app::ManifestBuilder& manifest_builder) {
-    app_ = web_app::IsolatedWebAppBuilder(manifest_builder).BuildBundle();
-    app_->TrustSigningKey();
-    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
-        app_->Install(profile());
-    CHECK(url_info.has_value()) << url_info.error();
-    return url_info.value();
-  }
-
-  [[nodiscard]] bool CreateControlledFrame(content::RenderFrameHost* frame,
-                                           const GURL& src) {
-    static std::string kCreateControlledFrame = R"(
-        new Promise((resolve, reject) => {
-          const controlledframe = document.createElement('controlledframe');
-          if (!('src' in controlledframe)) {
-            // Tag is undefined or generates a malformed response.
-            reject('FAIL');
-            return;
-          }
-          controlledframe.setAttribute('src', $1);
-          controlledframe.addEventListener('loadstop', resolve);
-          controlledframe.addEventListener('loadabort', reject);
-          document.body.appendChild(controlledframe);
-        });
-    )";
-    return ExecJs(frame, content::JsReplace(kCreateControlledFrame, src));
-  }
-
-  extensions::WebViewGuest* GetWebViewGuest(
-      content::RenderFrameHost* embedder_frame) {
-    extensions::WebViewGuest* web_view_guest = nullptr;
-    embedder_frame->ForEachRenderFrameHostWithAction(
-        [&web_view_guest](content::RenderFrameHost* rfh) {
-          if (auto* web_view =
-                  extensions::WebViewGuest::FromRenderFrameHost(rfh)) {
-            web_view_guest = web_view;
-            return content::RenderFrameHost::FrameIterationAction::kStop;
-          }
-          return content::RenderFrameHost::FrameIterationAction::kContinue;
-        });
-    return web_view_guest;
+    ControlledFrameTestBase::SetUpOnMainThread();
+    StartContentServer("web_apps/simple_isolated_app");
   }
 
   void ExpectMenuItemWithIdAndTitle(
@@ -269,11 +222,6 @@ class ControlledFrameApiTest
     ASSERT_TRUE(menu_item);
     EXPECT_EQ(expected_title, menu_item->title());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kIsolateSandboxedIframes};
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
 };
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ContextMenusCreate) {
