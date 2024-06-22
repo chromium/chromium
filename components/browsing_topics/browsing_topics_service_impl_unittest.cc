@@ -417,6 +417,44 @@ TEST_F(BrowsingTopicsServiceImplTest, EmptyInitialState_CalculationScheduling) {
       kTime2 - kTime1, 1);
 }
 
+TEST_F(BrowsingTopicsServiceImplTest, WallTimeScheduling) {
+  base::queue<EpochTopics> mock_calculator_results;
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(1), {}},
+                                                         {Topic(2), {}},
+                                                         {Topic(3), {}},
+                                                         {Topic(4), {}},
+                                                         {Topic(5), {}}},
+                                                        kTime1));
+  mock_calculator_results.emplace(CreateTestEpochTopics({{Topic(6), {}},
+                                                         {Topic(7), {}},
+                                                         {Topic(8), {}},
+                                                         {Topic(9), {}},
+                                                         {Topic(10), {}}},
+                                                        kTime2));
+
+  InitializeBrowsingTopicsService(std::move(mock_calculator_results));
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 0u);
+
+  // Finish file loading.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 1u);
+
+  EXPECT_TRUE(browsing_topics_state().epochs().empty());
+
+  // Finish the calculation.
+  task_environment()->FastForwardBy(kCalculatorDelay);
+
+  EXPECT_EQ(browsing_topics_state().epochs().size(), 1u);
+
+  // Advance the time to the scheduled calculation time and simulate system
+  // sleep for this period. A calculation should happen.
+  task_environment()->SuspendedFastForwardBy(kEpoch);
+
+  EXPECT_EQ(browsing_topics_service_->started_calculations_count(), 2u);
+}
+
 TEST_F(BrowsingTopicsServiceImplTest,
        StartFromPreexistingState_CalculateAtScheduledTime) {
   base::Time start_time = base::Time::Now();

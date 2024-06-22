@@ -559,7 +559,7 @@ void BrowsingTopicsServiceImpl::GetBrowsingTopicsStateForWebUi(
 
   if (calculate_now) {
     get_state_for_webui_callbacks_.push_back(std::move(callback));
-    schedule_calculate_timer_.AbandonAndStop();
+    schedule_calculate_timer_.Stop();
     CalculateBrowsingTopics(/*is_manually_triggered=*/true,
                             /*previous_timeout_count=*/0);
     return;
@@ -636,7 +636,7 @@ void BrowsingTopicsServiceImpl::ValidateCalculationSchedule() {
         schedule_calculate_timer_.IsRunning());
 
     base::TimeDelta remaining_time_in_calculator_timer =
-        schedule_calculate_timer_.desired_run_time() - base::TimeTicks::Now();
+        schedule_calculate_timer_.desired_run_time() - base::Time::Now();
 
     base::UmaHistogramBoolean(
         "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
@@ -731,7 +731,7 @@ void BrowsingTopicsServiceImpl::ScheduleBrowsingTopicsCalculation(
   // `this` owns the timer, which is automatically cancelled on destruction, so
   // base::Unretained(this) is safe.
   schedule_calculate_timer_.Start(
-      FROM_HERE, delay,
+      FROM_HERE, base::Time::Now() + delay,
       base::BindOnce(&BrowsingTopicsServiceImpl::CalculateBrowsingTopics,
                      base::Unretained(this), is_manually_triggered,
                      previous_timeout_count));
