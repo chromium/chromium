@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -400,9 +401,10 @@ class PeerConnectionStaticDeps {
 
   // PeerConnection threads. signaling_thread_ is created from the "current"
   // (main) chrome thread.
-  rtc::Thread* signaling_thread_ = nullptr;
-  rtc::Thread* worker_thread_ = nullptr;
-  rtc::Thread* network_thread_ = nullptr;
+  // RAW_PTR_EXCLUSION: #addr-of
+  RAW_PTR_EXCLUSION rtc::Thread* signaling_thread_ = nullptr;
+  RAW_PTR_EXCLUSION rtc::Thread* worker_thread_ = nullptr;
+  RAW_PTR_EXCLUSION rtc::Thread* network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
   std::optional<base::Thread> chrome_network_thread_;

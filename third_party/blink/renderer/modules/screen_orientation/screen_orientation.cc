@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -35,7 +36,8 @@ STATIC_ASSERT_ENUM(
 namespace blink {
 
 struct ScreenOrientationInfo {
-  const AtomicString& name;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const AtomicString& name;
   device::mojom::blink::ScreenOrientationLockType orientation;
 };
 

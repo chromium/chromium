@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -170,7 +171,8 @@ class SynchronousLayerTreeFrameSink
   viz::ServerSharedBitmapManager shared_bitmap_manager_;
 
   // Only valid (non-null) during a DemandDrawSw() call.
-  SkCanvas* current_sw_canvas_ = nullptr;
+  // RAW_PTR_EXCLUSION: #addr-of
+  RAW_PTR_EXCLUSION SkCanvas* current_sw_canvas_ = nullptr;
 
   cc::ManagedMemoryPolicy memory_policy_;
   bool in_software_draw_ = false;

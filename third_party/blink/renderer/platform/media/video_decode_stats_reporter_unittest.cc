@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -362,7 +363,8 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
   // Points to the interceptor that acts as a VideoDecodeStatsRecorder. The
   // object is owned by mojo::Remote<VideoDecodeStatsRecorder>, which is itself
   // owned by |reporter_|.
-  RecordInterceptor* interceptor_ = nullptr;
+  // RAW_PTR_EXCLUSION: #addr-of
+  RAW_PTR_EXCLUSION RecordInterceptor* interceptor_ = nullptr;
 
   // The VideoDecodeStatsReporter being tested.
   std::unique_ptr<VideoDecodeStatsReporter> reporter_;

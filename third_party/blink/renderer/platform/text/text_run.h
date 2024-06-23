@@ -28,6 +28,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -202,9 +203,10 @@ class PLATFORM_EXPORT TextRun final {
 
  private:
   union {
-    const LChar* characters8;
-    const UChar* characters16;
-    const void* bytes_;
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION const LChar* characters8;
+    RAW_PTR_EXCLUSION const UChar* characters16;
+    RAW_PTR_EXCLUSION const void* bytes_;
   } data_;
   unsigned len_;
 

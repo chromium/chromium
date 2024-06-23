@@ -116,7 +116,7 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
   v8::Context::Scope scope(context);
 
   v8::Local<v8::Function> parent_interface_object;
-  if (auto* parent = type->parent_class.get()) {
+  if (auto* parent = type->parent_class) {
     if (parent->is_skipped_in_interface_object_prototype_chain) {
       // This is a special case for WindowProperties.
       // We need to set up the inheritance of Window as the following:

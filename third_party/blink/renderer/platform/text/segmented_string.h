@@ -157,8 +157,9 @@ class PLATFORM_EXPORT SegmentedSubstring {
   }
 
   union {
-    const LChar* string8_ptr;
-    const UChar* string16_ptr;
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION const LChar* string8_ptr;
+    RAW_PTR_EXCLUSION const UChar* string16_ptr;
   } data_;
   raw_ptr<const LChar, AllowPtrArithmetic | DanglingUntriaged> data_start_;
   // |data_last_char_| points to the last character (or nullptr). This is to

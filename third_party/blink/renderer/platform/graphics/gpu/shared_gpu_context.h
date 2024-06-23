@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_SHARED_GPU_CONTEXT_H_
 
 #include <memory>
+
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
@@ -87,7 +89,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   std::unique_ptr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;
 
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
+  // RAW_PTR_EXCLUSION: #addr-of
+  RAW_PTR_EXCLUSION gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ =
+      nullptr;
 };
 
 }  // blink
