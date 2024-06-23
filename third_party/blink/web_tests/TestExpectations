@@ -2566,6 +2566,7 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/geolocation/tojson.https.window.html [ Timeout ]
 crbug.com/348474007 [ Win11-arm64 ] external/wpt/compression/decompression-buffersource.tentative.any.sharedworker.html [ Failure Timeout ]
 crbug.com/348474007 [ Win11-arm64 ] external/wpt/compression/decompression-buffersource.tentative.any.worker.html [ Failure Timeout ]
 [ Mac13 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/aggregatable-report-deduplication.sub.https.html?input=negated_filters_match [ Skip Timeout ]
