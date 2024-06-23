@@ -162,6 +162,19 @@ bool ShouldWarnAboutPermissionPolicyDefault(
   return ShouldWarnAboutPermissionPolicyDefault(*parent, feature);
 }
 
+void RecordBaDataConstructionResultMetric(size_t data_size,
+                                          base::TimeTicks start_time) {
+  // Request sizes only increase by factors of two so we only need to sample
+  // the powers of two. The maximum of 1 GB size is much larger than it should
+  // ever be.
+  base::UmaHistogramCustomCounts(/*name=*/"Ads.InterestGroup.BaDataSize2",
+                                 /*sample=*/data_size, /*min=*/1,
+                                 /*exclusive_max=*/1 << 30, /*buckets=*/30);
+
+  base::UmaHistogramTimes(/*name=*/"Ads.InterestGroup.BaDataConstructionTime2",
+                          /*sample=*/base::TimeTicks::Now() - start_time);
+}
+
 }  // namespace
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -1071,7 +1084,13 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
 void AdAuctionServiceImpl::ReturnEmptyGetInterestGroupAdAuctionDataCallback(
     const std::string msg) {
   if (!ba_data_callbacks_.empty()) {
-    std::move(ba_data_callbacks_.front().callback).Run({}, {}, msg);
+    BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
+
+    if (msg.empty()) {
+      RecordBaDataConstructionResultMetric(/*data_size=*/0, state.start_time);
+    }
+
+    std::move(state.callback).Run({}, {}, msg);
     ba_data_callbacks_.pop();
   }
   if (!ba_data_callbacks_.empty()) {
@@ -1212,14 +1231,7 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
 
   std::move(state.callback).Run(std::move(buf), state.request_id, "");
 
-  // Request sizes only increase by factors of two so we only need to sample
-  // the powers of two. The maximum of 1 GB size is much larger than it should
-  // ever be.
-  base::UmaHistogramCustomCounts(/*name=*/"Ads.InterestGroup.BaDataSize",
-                                 /*sample=*/data.size(), /*min=*/1,
-                                 /*exclusive_max=*/1 << 30, /*buckets=*/30);
-  base::UmaHistogramTimes(/*name=*/"Ads.InterestGroup.BaDataConstructionTime",
-                          /*sample=*/base::TimeTicks::Now() - state.start_time);
+  RecordBaDataConstructionResultMetric(data.size(), state.start_time);
 
   ba_data_callbacks_.pop();
   if (!ba_data_callbacks_.empty()) {

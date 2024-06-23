@@ -1134,7 +1134,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.BaDataConstructionTime" units="ms"
+<histogram name="Ads.InterestGroup.BaDataConstructionTime2" units="ms"
     expires_after="2024-11-17">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
@@ -1148,10 +1148,11 @@ chromium-metrics-reviews@google.com.
     message.
 
     Only the times for blobs that are constructed successfully are recorded.
+    This includes cases with no interest groups.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.BaDataSize" units="bytes"
+<histogram name="Ads.InterestGroup.BaDataSize2" units="bytes"
     expires_after="2024-11-17">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
@@ -1160,7 +1161,8 @@ chromium-metrics-reviews@google.com.
     The unencrypted size of Bidding and Auction data blob produced in response
     to the getInterestGroupAdAuctionData() call to the Bidding and Auction API.
 
-    Only the sizes of blobs that are constructed successfully are recorded.
+    Only the sizes of blobs that are constructed successfully are recorded. This
+    includes cases with no interest groups.
   </summary>
 </histogram>
 

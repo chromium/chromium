@@ -12172,8 +12172,8 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
   EXPECT_EQ("", result.value().request);
   EXPECT_EQ("API not allowed for this origin", result.value().error_message);
 
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataSize", 0);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataSize2", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 0);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
@@ -12263,9 +12263,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Request.NumGroups",
                           1, 1);
   hist.ExpectUniqueSample(
@@ -12366,9 +12366,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -12454,9 +12454,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -12611,9 +12611,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 1);
 }
@@ -12684,9 +12684,9 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -12768,9 +12768,9 @@ TEST_F(AdAuctionServiceImplBAndATest,
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -12871,9 +12871,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -12960,9 +12960,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -13088,9 +13088,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
@@ -13259,9 +13259,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
@@ -13432,9 +13432,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWithLocal) {
@@ -13567,9 +13567,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -13709,9 +13709,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
   hist.ExpectTotalCount(
       "Ads.InterestGroup.Auction.ParseBaServerResponseDuration", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.EndToEndTime", 0);
@@ -13754,6 +13754,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
 
 TEST_F(AdAuctionServiceImplBAndATest,
        GetInterestGroupAdAuctionDataKeysAndNoInterestGroups) {
+  base::HistogramTester hist;
+
   ProvideKeys();
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
 
@@ -13763,6 +13765,9 @@ TEST_F(AdAuctionServiceImplBAndATest,
   EXPECT_TRUE(output.has_value());
   EXPECT_TRUE(output->request.empty());
   EXPECT_TRUE(output->error_message.empty());
+
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", /*sample=*/0, 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
@@ -14104,9 +14109,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
@@ -14204,9 +14209,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
@@ -14304,9 +14309,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest,
@@ -14405,9 +14410,9 @@ function reportResult(auctionConfig, browserSignals) {
 
   // Request should be padded to 5k bytes.
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunServerMultiSellerBAndAAuction) {
@@ -14545,9 +14550,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunServerMultiSellerBAndAAuction) {
                       "https://e.test/topLevelSellerInteractionReporting"))))));
 
   const size_t kExpectedBaDataSize = 5 * 1024;
-  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize", kExpectedBaDataSize,
+  hist.ExpectUniqueSample("Ads.InterestGroup.BaDataSize2", kExpectedBaDataSize,
                           1);
-  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime", 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.BaDataConstructionTime2", 1);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithBid) {
