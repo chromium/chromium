@@ -85,23 +85,32 @@ class MetadataWriter {
 
   // Defines a feature based on a SQL query.
   struct SqlFeature {
+    STACK_ALLOCATED();
+
+   public:
     const char* const sql{nullptr};
     struct EventAndMetrics {
+      STACK_ALLOCATED();
+
+     public:
       const UkmEventHash event_hash;
-      const raw_ptr<const UkmMetricHash, AllowPtrArithmetic> metrics{nullptr};
+      const UkmMetricHash* const metrics = nullptr;
       const size_t metrics_size{0};
     };
-    const raw_ptr<const EventAndMetrics, AllowPtrArithmetic> events{nullptr};
+    const EventAndMetrics* const events = nullptr;
     const size_t events_size{0};
   };
 
   // Defines a feature based on a custom input.
   struct CustomInput {
+    STACK_ALLOCATED();
+
+   public:
     const uint64_t tensor_length{0};
     const proto::CustomInput::FillPolicy fill_policy{
         proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
     const size_t default_values_size{0};
-    const raw_ptr<const float, AllowPtrArithmetic> default_values = nullptr;
+    const float* const default_values = nullptr;
     const char* name{nullptr};
 
     using Arg = std::pair<const char*, const char*>;
