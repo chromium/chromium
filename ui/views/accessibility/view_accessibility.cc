@@ -970,5 +970,16 @@ void ViewAccessibility::SetState(ax::mojom::State state, bool is_enabled) {
     data_.RemoveState(state);
   }
 }
+void ViewAccessibility::SetIsHovered(bool is_hovered) {
+  if (is_hovered == GetIsHovered()) {
+    return;
+  }
+
+  SetState(ax::mojom::State::kHovered, is_hovered);
+}
+
+bool ViewAccessibility::GetIsHovered() const {
+  return data_.HasState(ax::mojom::State::kHovered);
+}
 
 }  // namespace views
