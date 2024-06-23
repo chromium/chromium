@@ -588,7 +588,7 @@ FieldType GetActualFieldType(const FieldTypeSet& possible_types,
 bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
   auto is_autofilled_with_same_value =
       [&field](const std::unique_ptr<AutofillField>& form_field) {
-        if (&field == form_field.get()) {
+        if (field.global_id() == form_field->global_id()) {
           // When looking for fields in the form that have been filled with
           // the same value as `field`, skip `field`: `field` would
           // always have a matching value but does not indicate that a
