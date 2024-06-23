@@ -139451,6 +139451,32 @@
         }
        ]
       ],
+      "image-orientation-exif-png-2.html": [
+       "9c70b08ab814747ae0cc1f8aad3499f5087a8892",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-exif-png-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "image-orientation-exif-png-3.html": [
+       "536b7d2560c2fb1e595033b5397a654ff68533c2",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-exif-png-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "image-orientation-exif-png.html": [
        "85d807e39869cfc5f847bb7454b2465de9eb8c40",
        [
@@ -324743,6 +324769,10 @@
        ]
       },
       "support": {
+       "F-exif-chunk-early.png": [
+        "24bd924e9e71eaaee22961c26e87de314d90f719",
+        []
+       ],
        "F-exif-early.png": [
         "6714cec8253723237cfbe95b319e0ae2162120e6",
         []
