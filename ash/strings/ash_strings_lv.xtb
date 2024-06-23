@@ -903,6 +903,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4381031910344220229">Atļauj piekļuvi mikrofonam lietotnei <ph name="APP_NAME" /> un visām lietotnēm un vietnēm, kurām ir mikrofona atļauja.</translation>
 <translation id="4382340674111381977">Pāriet atpakaļ uz iepriekšējo lapu</translation>
 <translation id="4389184120735010762">Jūs nospiedāt dokotās lupas īsinājumtaustiņu. Vai vēlaties to ieslēgt?</translation>
+<translation id="4394466652057229831">Noklikšķiniet ar peles labo pogu, lai izveidotu apkopojumu</translation>
 <translation id="439598569299422042">Apturēta, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nevar saglabāt ekrānierakstu</translation>
 <translation id="4405151984121254935">Pievienotās perifērās ierīces veids netiek atbalstīts.</translation>
@@ -1939,6 +1940,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>
 <translation id="8113515504791187892">Poga “Atlasīt, lai izrunātu”</translation>
 <translation id="8120151603115102514">Jūsu tālrunim nav iespējots bloķēšanas ekrāns. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
+<translation id="8120249852906205273">Restartēt</translation>
 <translation id="8127095419621171197">Atvērt lietotni Kalkulators</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Doties uz dokumenta sākumu</translation>
@@ -2033,6 +2035,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="85123341071060231">Jūsu Chromebook datorā ir izslēgts Bluetooth savienojums. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
 <translation id="8513108775083588393">Pagriezt aut.</translation>
 <translation id="851458219935658693">Atlasīta poga “Rādīt pašreizējās darbvietas logus”</translation>
+<translation id="851660987304951246">Izmantojiet funkciju “Palīdzība lasīšanā”, lai ātri iegūtu satura apkopojumu vai uzdotu jautājumus</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofona ievadi kontrolē lietotne <ph name="APP_NAME" />}zero{Mikrofona ievadi kontrolē # lietotnes}one{Mikrofona ievadi kontrolē # lietotne}other{Mikrofona ievadi kontrolē # lietotnes}}</translation>
 <translation id="8535393432370007982">Atsaukt kārtošanu pēc krāsas</translation>

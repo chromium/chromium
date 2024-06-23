@@ -458,6 +458,7 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="1369698103169067223">Glanceables staan niet aan voor gebruikers.</translation>
 <translation id="1371626834351873151">Inkorting van user-agent wordt aangezet voor alle origins.</translation>
 <translation id="1371851989348083665">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet toestaan</translation>
+<translation id="1372511977715560169">Bepalen of de functie <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> kan worden aangezet</translation>
 <translation id="1372618949173323717">JavaScript uitzetten</translation>
 <translation id="1376119291123231789">Geavanceerde batterijoplaadmodus aanzetten</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
@@ -1463,6 +1464,7 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
 <translation id="2136073175041447267">Cloudschijven (Google Drive, Microsoft OneDrive) instellen in <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2140379319368541863">GenAI Wallpaper niet toestaan</translation>
 <translation id="2144236546337326489">Toestaan dat Telefoonhub-taakvoortzetting wordt aangezet</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
 <translation id="2146103669166779785">Hexadecimale kleur waarmee een thema voor de browser wordt samengesteld en toegepast.</translation>
@@ -1739,6 +1741,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Als je het beleid niet instelt, is <ph name="DEFAULT_CLIPBOARD_SETTING" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
+<translation id="2297432074108752232">GenAI VC Background toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="2299220924812062390">Lijst met aangezette plug-ins specificeren</translation>
 <translation id="2299815818824242485">Lookups via proxy met hogere beveiliging niet toestaan</translation>
 <translation id="2303795211377219696">Automatisch invullen aanzetten voor creditcards</translation>
@@ -2733,6 +2736,7 @@ Dit beleid is tijdelijk en wordt in de toekomst verwijderd.</translation>
       Als een site overeenkomt met een URL-patroon in dit beleid, wordt er geen rekening gehouden met de volgende beleidsregels: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
+<translation id="3111315283985318774">Bepalen of de functie <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> kan worden aangezet</translation>
 <translation id="3112501357749061018">Een lijst met TLS-certificaten die <ph name="PRODUCT_NAME" /> moet vertrouwen voor serververificatie, met beperkingen die buiten het certificaat worden toegevoegd. Als er geen beperking van een bepaald type aanwezig is, is elke naam van dat type toegestaan.
 Certificaten moeten base64-gecodeerd zijn. Er moet minstens één beperking worden gespecificeerd voor elk certificaat.</translation>
 <translation id="3118552207903834734">Toestaan dat een gebruiker de hostnaam van het eigen apparaat instelt</translation>
@@ -3178,6 +3182,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 
           Als dit beleid niet is ingesteld, staat 'Selecteer om voor te lezen' in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="3483585138745445814">Toestaan dat gebruikers Dichtbij delen aanzetten</translation>
+<translation id="3484305545282013129">Toestaan dat oorsprongen toegang hebben tot browserrechten die beschikbaar zijn voor de installatieoorsprong van webkiosks.</translation>
 <translation id="3485200437120267231">Onderschepping bij inloggen uitzetten</translation>
 <translation id="3487651201232258606">Systeemeigen berichten</translation>
 <translation id="3488551354274495283">Weergave van introductiescherm voor <ph name="FEATURE_NAME" /> aanzetten tijdens inloggen</translation>
@@ -3294,6 +3299,7 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
 <translation id="3550875587920006460">Hiermee kan een custom planning worden ingesteld om te controleren op updates. Dit is van toepassing op alle gebruikers en op alle interfaces op het apparaat. Nadat de planning is ingesteld, controleert het apparaat op updates in overeenstemming met de planning. Het beleid moet worden verwijderd om meer geplande updatecontroles te annuleren.</translation>
 <translation id="3550963062099410653">Uitgebreide automatische updates aan-/uitzetten</translation>
 <translation id="355118380775352753">Websites die worden geopend in de alternatieve browser</translation>
+<translation id="3553017634884660206">Bestemming voor migratie van lokale gebruikersbestanden</translation>
 <translation id="3554498762428140109">Native occlusie van vensters aanzetten</translation>
 <translation id="3554984410014457319">De Google Assistent laten luisteren naar de spraakactiveringszin</translation>
 <translation id="3557586898458302131">Niet-standaardpoort in gemaakte Kerberos-SPN opnemen</translation>
@@ -3458,6 +3464,7 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3695204334462456702">Op zeroconf gebaseerde (mDNS + DNS-SD) protocolbestemmingen (beëindigd)</translation>
 <translation id="3695706037816556327">Actie bij verwijdering van beveiligingstoken (bijv. smartcard) voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Oplaadgeluiden uitzetten</translation>
+<translation id="3699322543136447790">GenAI Wallpaper toestaan zonder AI-modellen te verbeteren</translation>
 <translation id="3699986274986041335">Altijd toestemming vragen als een site het recht voor lokale lettertypen wil hebben</translation>
 <translation id="3700193037252896716">Frequentie waarmee opnieuw opstarten moet plaatsvinden.</translation>
 <translation id="3700318587977845664">Frequentie waarmee de updatecheck moet worden herhaald.</translation>
@@ -6188,6 +6195,9 @@ Als je het beleid niet toepast, worden geluiden in Focusmodus uitgezet.</transla
 <translation id="5951418260805607969">Melding tonen bij weinig schrijfruimte</translation>
 <translation id="5958746038080720143">WPAD-optimalisaties (Web Proxy Auto-Discovery) aanzetten</translation>
 <translation id="5961137303188584693">MAC-adres van ingebouwde NIC van apparaat</translation>
+<translation id="5961565154633996542">Als je het beleid instelt, hebben vermelde aanvullende oorsprongen toegang tot browserrechten (zoals geolocatie, camera en microfoon) die al beschikbaar zijn voor de installatieoorsprong van webkiosk-apps.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5962271004971310788">Extensies die de gebruiker in de incognitomodus moet toestaan om te kunnen navigeren in de incognitomodus</translation>
 <translation id="5963752574792883406">poort 990 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
 <translation id="5964583455815172553">Als je het beleid instelt, geef je een lijst op met geïsoleerde web-apps (IWA's) die op de achtergrond worden geïnstalleerd.
@@ -6411,6 +6421,7 @@ Als je dit beleid niet toepast, staat de Sneltoetsen-app in de modus Alleen leze
 <translation id="6155936611791017817">De standaardstatus van de grote cursor op het inlogscherm instellen</translation>
 <translation id="6157537876488211233">Door komma's gescheiden lijst van regels voor proxyomzeiling</translation>
 <translation id="6158324314836466367">Naam van zakelijke webwinkel (verouderd)</translation>
+<translation id="6162385223000257668">Lokale bestanden migreren naar Google Drive en lokale mappen verbergen</translation>
 <translation id="6164441518097008843">Inloggen beperken tot een lijst gebruikers</translation>
 <translation id="6169504363239921686">Als je het beleid instelt op <ph name="BR_ENABLED" />, staat de back-up- en herstelfunctie van Android in eerste instantie aan. Als je dit beleid instelt op <ph name="BR_DISABLED" />, of niet instelt, blijft de back-up- en herstelfunctie uitstaan tijdens het instellen.
 
@@ -7099,6 +7110,13 @@ Opmerking: Het cachegeheugen wordt gewist als je opnieuw opstart en uitlogt.</tr
 <translation id="658537215958747575">Toestaan dat in aanmerking komende bronnen directe netwerkverbindingen gebruiken</translation>
 <translation id="6588634282328239769">De volledige URL tonen</translation>
 <translation id="6589049539706330510">Ondersteuning aanzetten</translation>
+<translation id="6590906503707750118">Met dit beleid kun je <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
+0 = <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> niet toestaan.
+
+1 = <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> toestaan zonder AI-modellen te verbeteren.
+
+Als je dit beleid niet instelt, is de functie <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> toegestaan zonder AI-modellen te verbeteren voor zakelijke en EDU-gebruikers.
+In M127 werd het beleid standaard niet toegepast voor zakelijke gebruikers.</translation>
 <translation id="6593025196187527239">Tenzij ARC op een andere manier is uitgezet, kunnen gebruikers ARC gebruiken als je het beleid instelt op True, of niet instelt. Als je het beleid instelt op False, kunnen niet-aangesloten gebruikers ARC niet gebruiken.
 
 Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bijvoorbeeld bij het opstarten van ChromeOS.</translation>
@@ -7534,6 +7552,13 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6932282102911647185">Paarse achtergrondverlichting van toetsenbord</translation>
+<translation id="6934127980901887540">Met dit beleid kun je de functie <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> aan- of uitzetten voor <ph name="PRODUCT_OS_NAME" />.
+0 = <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> niet toestaan.
+
+1 = <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> toestaan zonder AI-modellen te verbeteren.
+
+Als je dit beleid niet instelt, is de functie <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> toegestaan voor zakelijke en EDU-gebruikers.
+In M127 werd het beleid standaard niet toegepast voor zakelijke gebruikers.</translation>
 <translation id="6938424179790370595">Als je het beleid instelt op None (Geen), wordt het vergrootglas uitgezet.
 
 Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit, maar kunnen gebruikers dit op elk moment aanzetten.</translation>
@@ -7592,6 +7617,12 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprog
 
       Als dit beleid niet wordt ingesteld, wordt HTTP/0.9 uitgezet op niet-standaardpoorten.</translation>
 <translation id="6969332115615661188">Video-invoer uitzetten</translation>
+<translation id="6971579036359007697">Bepaalt de migratie van lokale bestanden naar de cloud.
+Geldt alleen voor SkyVault-gebruikers, d.w.z. als LocalUserFilesAllowed is ingesteld op False. Anders wordt dit genegeerd.
+
+Als je dit beleid instelt op google_drive, worden lokale bestanden verplaatst naar Google Drive en worden lokale mappen verborgen.
+Als je dit beleid instelt op microsoft_onedrive, worden lokale bestanden verplaatst naar OneDrive en worden lokale mappen verborgen.
+Als je dit beleid instelt op alleen lezen of niet instelt, blijven lokale bestanden in de modus Alleen lezen staan.</translation>
 <translation id="6972540544240464302">Geselecteerde taakplannerconfiguratie</translation>
 <translation id="6975533677426693807">Pdf-bestanden altijd openen met de interne pdf-viewer</translation>
 <translation id="6986172482189158664">Instellingen voor levensduur van browsegegevens</translation>
@@ -8203,6 +8234,7 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 
       Als je het beleid niet toepast, toont de pagina Nieuw tabblad de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is.
       </translation>
+<translation id="7457431437931521451">GenAI VC Background niet toestaan</translation>
 <translation id="7459601923199346224">Beheert het gebruikers- en apparaatbeleid voor certificaatbeheer.</translation>
 <translation id="7459633275230216698">Dialoogvensters voor bestandsselectie toestaan</translation>
 <translation id="7462256705280836453">Kiezen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties kan worden uitgezet</translation>
@@ -9412,6 +9444,7 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 <translation id="8422866312638683210">Als je het beleid instelt, probeert <ph name="PRODUCT_NAME" /> zichzelf aan te melden bij <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. De waarde van dit beleid is een token voor inschrijving die je kunt ophalen uit de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
+<translation id="8423237137411858515">Lokale bestanden in de modus Alleen lezen houden</translation>
 <translation id="8424255554404582727">Standaard displayrotatie instellen, wordt telkens toegepast na opnieuw opstarten</translation>
 <translation id="8426231401662877819">Scherm 90 graden met de klok mee draaien</translation>
 <translation id="8426326725481825773">Dit beleid bepaalt het gedrag voor het opnieuw toewijzen van de Home/End-toetsen op de subpagina voor het opnieuw toewijzen van toetsen. Op de subpagina voor het opnieuw toewijzen van toetsen kunnen gebruikers de toetsen van het toetsenbord aanpassen. Als je dit beleid aanzet, kunnen gebruikers deze specifieke toewijzingen niet aanpassen. Als je het beleid niet instelt, zijn op zoekopdrachten gebaseerde sneltoetsen de standaardinstelling en kunnen gebruikers de sneltoetsen configureren.</translation>
@@ -9456,6 +9489,7 @@ De patronen voor overeenkomende oorsprong gebruiken een vergelijkbare indeling a
 
 De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoeveelheid gegevens in bytes aan die de patrooncontrole activeert. Dit betekent dat een schrijfactie naar het klembord vanaf een geblokkeerde URL is toegestaan als de grootte van de gekopieerde gegevens kleiner is dan de waarde in dit veld. De standaardwaarde is 100 bytes als het veld niet is ingesteld.</translation>
 <translation id="8473107305327396242">Importeer door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
+<translation id="8473841363404590708">Lokale bestanden migreren naar Microsoft OneDrive en lokale mappen verbergen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC gebruikt alle beschikbare interfaces als naar het beste pad wordt gezocht.</translation>
 <translation id="8479496880635054740">Virtueel toetsenbord voor toegankelijkheid op het inlogscherm uitzetten</translation>

@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">चालू है</translation>
 <translation id="1394698770495054737">पूरा धुंधलापन</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 दिन पहले}one{# दिन पहले}other{# दिन पहले}}</translation>
 <translation id="1404963891829069586">फ़ोकस मोड के लिए साउंड</translation>
 <translation id="1407069428457324124">गहरे रंग वाली थीम</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. किसी एक तारीख से दूसरी पर जाने के लिए ऐरो बटन का इस्तेमाल करें.</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">मार्कर बंद है.</translation>
 <translation id="1743570585616704562">उंगली की पहचान नहीं हो सकी</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> की सूचना को छोटा करें</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{एक घंटे के अंदर}=1{1 घंटा पहले}one{# घंटा पहले}other{# घंटे पहले}}</translation>
 <translation id="1746730358044914197">इनपुट विधियों को आपका व्यवस्थापक कॉन्फ़िगर करता है.</translation>
 <translation id="1747336645387973286">असाइनमेंट पूरा करने की तारीख: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ऑन-स्‍क्रीन कीबोर्ड सक्षम है</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2360398059912971776">बैटरी</translation>
 <translation id="2361210043495191221">वाई-फ़ाई टॉगल. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> से भेजा गया</translation>
 <translation id="2367186422933365202">आपके Chromebook में साइन इन नहीं हो पाया</translation>
 <translation id="2367972762794486313">ऐप्स  दिखाएं</translation>
 <translation id="2368828502825385061">फ़ोन का पता लगाएं</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">माइक्रोफ़ोन का ऐक्सेस देना है?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड नहीं की जा सकीं</translation>
+<translation id="2968761508099987738">फ़िलहाल, यह सुविधा आपकी मौजूदा जगह में उपलब्ध नहीं है.</translation>
 <translation id="2970920913501714344">ऐप्लिकेशन, एक्सटेंशन, और थीम इंस्टॉल करें</translation>
 <translation id="2977598380246111477">अगला नंबर</translation>
 <translation id="2985148236010982088">सभी ऐप्लिकेशन देखें</translation>
@@ -900,6 +904,7 @@
 <translation id="4381031910344220229">इससे <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को माइक्रोफ़ोन ऐक्सेस करने की अनुमति मिलती है जिनके पास माइक्रोफ़ोन का इस्तेमाल करने की अनुमति है</translation>
 <translation id="4382340674111381977">पिछले पेज पर वापस जाएं</translation>
 <translation id="4389184120735010762">आपने 'सामग्री को बड़ा दिखाने वाली डॉक की गई सेवा' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
+<translation id="4394466652057229831">खास जानकारी पाने के लिए राइट क्लिक करें</translation>
 <translation id="439598569299422042">रोका गया, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">स्क्रीनकास्ट सेव नहीं किया जा सका</translation>
 <translation id="4405151984121254935">कनेक्ट किए गए सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते</translation>
@@ -980,6 +985,7 @@
 <translation id="468293128311738995">आपके फ़ोन में इंस्टॉल किए गए ऐप्लिकेशन</translation>
 <translation id="4690510401873698237">शेल्फ़, स्क्रीन पर सबसे नीचे है</translation>
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
+<translation id="4697357603686181098">आपके इस अनुरोध को पूरा नहीं किया जा सकता. कोई दूसरा अनुरोध करें.</translation>
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
 <translation id="4706121060329443414">बाद में, डाउनलोड करने की कोशिश की जाएगी. अब स्पीच को प्रोसेस करने के लिए, Google को भेजा जाएगा.</translation>
 <translation id="470644585772471629">रंग बदलने की सुविधा</translation>
@@ -1902,6 +1908,7 @@
 <translation id="7982878511129296052">बंद हो रहा है...</translation>
 <translation id="7984197416080286869">फ़िंगरप्रिंट से बहुत ज़्यादा बार कोशिश की गई</translation>
 <translation id="798779949890829624">इस सेटिंग को आपका एडमिन मैनेज करता है</translation>
+<translation id="7989206653429884947">अक्सर इस्तेमाल किया जाने वाला ऐप्लिकेशन</translation>
 <translation id="799296642788192631">ज़रूरी फ़ाइलों को पिन किया जा सकता है. किसी आइटम को पिन करने के लिए, उस पर कर्सर ले जाएं या Files खोलें और उस आइटम पर दायां क्लिक करें.</translation>
 <translation id="7994370417837006925">एक से ज़्यादा साइन-इन</translation>
 <translation id="7995804128062002838">स्क्रीन कैप्चर नहीं हो पाई</translation>
@@ -1934,6 +1941,7 @@
 <translation id="8113423164597455979">चालू, सभी ऐप</translation>
 <translation id="8113515504791187892">चुनें और सुनें बटन</translation>
 <translation id="8120151603115102514">आपके फ़ोन में लॉक स्क्रीन की सुविधा चालू नहीं है. अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें.</translation>
+<translation id="8120249852906205273">रीस्टार्ट करें</translation>
 <translation id="8127095419621171197">कैलकुलेटर ऐप्लिकेशन खोलने के लिए</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">दस्‍तावेज़ की शुरुआत में जाएं</translation>
@@ -2028,6 +2036,7 @@
 <translation id="85123341071060231">आपके Chromebook का ब्लूटूथ बंद है. अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें.</translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="851458219935658693">मौजूदा डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
+<translation id="851660987304951246">कॉन्टेंट के बारे में तुरंत खास जानकारी पाने या सवाल पूछने के लिए, 'पढ़ने में मेरी मदद करें' सुविधा का इस्तेमाल करें</translation>
 <translation id="8517041960877371778">हो सकता है आपका <ph name="DEVICE_TYPE" /> चालू होने पर चार्ज नहीं होता हो.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{माइक इनपुट को <ph name="APP_NAME" /> से कंट्रोल किया जाता है}one{माइक इनपुट को # ऐप्लिकेशन से कंट्रोल किया जाता है}other{माइक इनपुट को # ऐप्लिकेशन से कंट्रोल किया जाता है}}</translation>
 <translation id="8535393432370007982">रंग के हिसाब से लगाए गए क्रम को पहले जैसा करें</translation>
@@ -2087,6 +2096,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">समय पूरा हुआ. बहुत बढ़िया! 🎉</translation>
+<translation id="8753368202781196133">फ़िलहाल, इस भाषा का इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="8755498163081687682">अपनी पहचान की पुष्टि करें: <ph name="ORIGIN_NAME" /> आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="875593634123171288">VPN सेटिंग दिखाएं</translation>
 <translation id="8756799553341497810">इस व्यू से बाहर निकलने के बाद, ऐप्लिकेशन के लेआउट को पसंद के मुताबिक बनाया जा सकता है.</translation>

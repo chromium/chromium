@@ -123,6 +123,7 @@
 
 Энэ тохиргоог өөрчлөхийн тулд <ph name="BEGIN_LINK" />бүртгэлийнхээ Chromium-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Chromium-д Төлбөрийн хэрэгслүүдийн тохиргооны хуудсыг нээнэ.</translation>
+<translation id="458786853569524949">Та одоо Chromium-г имэйл, баримт бичиг, бусад апп дахь холбоосыг товших бүрдээ ашиглах боломжтой.</translation>
 <translation id="459080529287102949">Chromium-с визуалууд хайх</translation>
 <translation id="4633738821577273991">Chromium-н энэ профайлд мөн Сайжруулсан аюулгүй хөтчийг аваарай</translation>
 <translation id="4638625642619341392">Chromium-г эндээс татна уу.</translation>
@@ -290,6 +291,7 @@
 Таны өгөгдлийг <ph name="TIME" />-д таны нэвтрэх үгээр шифрлэсэн. Google Бүртгэлдээ Chromium-н өгөгдлөө ашиглах болон хадгалахын тулд үүнийг оруулна уу.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>
 <translation id="9050790730841755540">Бусад аппад холбооснуудыг товших бүрдээ Chromium-г ашиглана уу.</translation>
+<translation id="9057082013386654559">iPad-д Chrome-г өгөгдмөлөөр ашиглана уу</translation>
 <translation id="9059693977935746710">Та энэ нууц үгийг санах шаардлагагүй. Үүнийг <ph name="EMAIL" />-д зориулж Нууц үгний менежерт хадгална</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
 <translation id="9110075932708282655">Chromium-г өгөгдмөлөөр ашиглана уу</translation>

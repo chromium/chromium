@@ -123,6 +123,7 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chromium-eko datuak Google-ko kontua
 
 Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Chromium-eko ordainketa-metodoen ezarpenen orria irekitzen du.</translation>
+<translation id="458786853569524949">Orain, Chromium erabili ahalko duzu mezu elektronikoetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="459080529287102949">Bilatu irudi bidez Chromium-en</translation>
 <translation id="4633738821577273991">Lortu Arakatze seguru hobetua Chromium-eko profil honetan ere</translation>
 <translation id="4638625642619341392">Deskargatu Chromium hemen.</translation>
@@ -290,6 +291,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chromium-eko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatz ezazu.</translation>
 <translation id="9022552996538154597">Hasi saioa Chromium-en</translation>
 <translation id="9050790730841755540">Erabili Chromium beste aplikazioetako estekak sakatzen dituzunean.</translation>
+<translation id="9057082013386654559">Erabili iPad-etarako Chromium modu lehenetsian</translation>
 <translation id="9059693977935746710">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Pasahitz-kudeatzailea zerbitzuan gordeko da.</translation>
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="9110075932708282655">Erabili Chromium modu lehenetsian</translation>

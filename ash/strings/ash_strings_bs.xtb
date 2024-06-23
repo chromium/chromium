@@ -903,7 +903,7 @@ Neke funkcije su ograničene radi povećanja vijeka trajanja baterije.</translat
 <translation id="4381031910344220229">Ovo omogućava pristup mikrofonu za aplikaciju <ph name="APP_NAME" /> te sve druge aplikacije i web lokacije koje imaju odobrenje za njega</translation>
 <translation id="4382340674111381977">Povratak na prethodnu stranicu</translation>
 <translation id="4389184120735010762">Pritisnuli ste prečicu na tastaturi za lupu priključne stanice. Želite li je uključiti?</translation>
-<translation id="4394466652057229831">Kliknite desnom tipkom radi sažimanja</translation>
+<translation id="4394466652057229831">Sažmite sadržaj desnim klikom</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nije moguće sačuvati snimanje ekrana</translation>
 <translation id="4405151984121254935">Vrsta povezanog perifernog uređaja nije podržana</translation>
@@ -1940,7 +1940,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8113423164597455979">Uključeno, sve</translation>
 <translation id="8113515504791187892">Dugme Odaberite za govor</translation>
 <translation id="8120151603115102514">Vaš telefon nema zaključani ekran. Da otključate Chromebook, unesite lozinku.</translation>
-<translation id="8120249852906205273">Ponovno pokreni</translation>
+<translation id="8120249852906205273">Ponovo pokreni</translation>
 <translation id="8127095419621171197">Otvorite aplikaciju Kalkulator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Vraćanje na početak dokumenta</translation>
@@ -2035,7 +2035,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="85123341071060231">Bluetooth na vašem Chromebooku je isključen. Da otključate Chromebook, unesite lozinku.</translation>
 <translation id="8513108775083588393">Aut. rotiranje</translation>
 <translation id="851458219935658693">Prikazivanje prozora s trenutne radne površine, odabrano je dugme za izbor</translation>
-<translation id="851660987304951246">Upotrijebite značajku Pomozi mi čitati da biste brzo saželi sadržaj ili postavili pitanja</translation>
+<translation id="851660987304951246">Koristite Pomoć u čitanju da brzo sažmete sadržaj ili postavite pitanja</translation>
 <translation id="8517041960877371778">Moguće je da se vaš uređaj <ph name="DEVICE_TYPE" /> neće puniti dok je uključen.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Ulazom mikrofona upravlja aplikacija <ph name="APP_NAME" />}one{Ulazom mikrofona upravlja # aplikacija}few{Ulazom mikrofona upravljaju # aplikacije}other{Ulazom mikrofona upravlja # aplikacija}}</translation>
 <translation id="8535393432370007982">Poništavanje načina sortiranja po boji</translation>

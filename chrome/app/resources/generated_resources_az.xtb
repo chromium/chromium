@@ -2939,6 +2939,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3109724472072898302">Yığcamlaşdı</translation>
 <translation id="3112292765614504292">Tətbiq ölçüsü: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">Saytlara cihazınızdakı faylları və ya qovluqları redaktə etmək icazəsi verməyin</translation>
+<translation id="3113970906450647715">Düymə bərkidilmədi</translation>
 <translation id="3115147772012638511">Keş gözlənilir...</translation>
 <translation id="3115580024857770654">Hamısını yığcamlaşdırın</translation>
 <translation id="3115728370128632723">Vebin təkmilləşdirilməsi dedikdə aşağıdakılar nəzərdə tutulur:
@@ -5307,6 +5308,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4883436287898674711">Bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="48838266408104654">&amp;Tapşırıq Meneceri</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">Google Linza qısayolu hər zaman göstərilsin</translation>
 <translation id="4885692421645694729">Bu artırmanın əlavə sayt girişi yoxdur</translation>
 <translation id="4887424188275796356">Sistem İzləyici ilə Açın</translation>
 <translation id="488785315393301722">Detalları göstər</translation>
@@ -6116,6 +6118,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="549602578321198708">Söz</translation>
 <translation id="5496587651328244253">Təşkil etmək</translation>
 <translation id="5496730470963166430">Anidən görünən bildirişlər göndərmək və ya yönləndirmələrdən istifadə etməyə icazə verilmir</translation>
+<translation id="5497250476399536588">Bunu Ünvanlar və s. bölməsinə tapa bilərsiniz</translation>
 <translation id="5497251278400702716">Bu fayl</translation>
 <translation id="5497739595514726398">Chrome bu quraşdırma paketini doğrulaya bilmədi</translation>
 <translation id="5498967291577176373">Adınız, ünvanınız və ya telefon nömrəniz kimi sətir içi təkliflərlə daha sürətli yazın</translation>
@@ -6884,6 +6887,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6082877069782862752">Açarların əks olunması</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Adsız qrupun hissəsi</translation>
 <translation id="6086004606538989567">Doğruladığınız hesabın bu cihaza giriş icazəsi yoxdur.</translation>
+<translation id="6086418630711763366">Səhifələr arasında mətn kursoru ilə keçid edə bilərsiniz. Söndürmək üçün Ctrl + <ph name="KEY" /> üstünə basın.</translation>
 <translation id="6086846494333236931">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="6087746524533454243">Brauzerin haqqında səhifəsini axtarırsınız? Ziyarət edin</translation>
 <translation id="6087960857463881712">Zəhmli üz</translation>
@@ -6948,6 +6952,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6130692320435119637">Wi-Fi əlavə edin</translation>
 <translation id="6130807998512240230">Telefon Mərkəzi, Yaxındakılarla Paylaşma</translation>
 <translation id="6130887916931372608">Klaviatura düyməsi</translation>
+<translation id="6132251717264923430">Düymə bərkidildi</translation>
 <translation id="6132714462430777655">Məktəb qeydiyyatı keçilsin?</translation>
 <translation id="6134428719487602109">Tam yeniləmək üçün istifadəçi hesablarını silin və Chromebook-u sıfırlayın.</translation>
 <translation id="6135823405800500595">Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun</translation>
@@ -8080,6 +8085,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6988572888918530647">Google Hesabını İdarə Edin</translation>
 <translation id="6989274756151920076">Burada qalın</translation>
 <translation id="6991665348624301627">Təyinat yeri seçin</translation>
+<translation id="6991926986715044139">Google Linza qısayolu hər zaman göstərilsin</translation>
 <translation id="6992554835374084304">Qabaqcıl orfoqrafik yoxlamanı aktiv edin</translation>
 <translation id="6993000214273684335">Tab adsız qrupdan silindi - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Chrome brauzeri güncəllənir</translation>
@@ -8290,6 +8296,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7154020516215182599">Rəyinizi paylaşın və ya probleminizi təsvir edin. Mümkünsə, probleminizi təkrarlamaq üçün addımlar əlavə edin.</translation>
 <translation id="7154130902455071009">Başlanğıc səhifənizi buna dəyişin: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Daha yaxşı video keyfiyyəti əldə edin və batareyaya qənaət edin. Video yalnız yayım icazəli ekranda oxudulacaq.</translation>
+<translation id="7159695867335480590">Oxudun/durdurun</translation>
 <translation id="7159953856712257647">Defolt olaraq quraşdırılıb</translation>
 <translation id="7160182524506337403">İndi telefonunuzun bildirişlərinə baxa bilərsiniz</translation>
 <translation id="7160911207516219534">Yan panellər</translation>
@@ -9795,6 +9802,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8252569384384439529">Yüklənir...</translation>
 <translation id="8253198102038551905">Şəbəkə xüsusiyyətlərini əldə etmək üçün '+' klikləyin</translation>
 <translation id="8255212965098517578">Son fotolar, bildirişlər və tətbiqlər</translation>
+<translation id="8255927332875030912">Axtarış + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">Sparky</translation>
 <translation id="8257950718085972371">Kamera girişini blok etməyə davam edin</translation>
 <translation id="8258027225380843424">İmport edildi!</translation>

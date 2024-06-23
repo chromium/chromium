@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK मिलेन</translation>
 <translation id="4057991113334098539">सक्रिय गरिँदै छ…</translation>
 <translation id="4092890906744441904">आइरिस</translation>
+<translation id="4101601646343868113">आफ्नो मोबाइल नेटवर्कमा साइन इन गर्नुहोस् र आफ्नो मोबाइल डेटा प्याक सक्रिय छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="4124731372776320263">Drive मा रहेको एउटा फाइल सिंक गरिँदै छ</translation>
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="4131235941541910880">आफूलाई नचाहिने फाइलहरू सारेर ट्र्यासमा लैजानुहोस्</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">तमिल Tamil99 किबोर्ड</translation>
 <translation id="5633226425545095130">तपाईंले यो वस्तु सार्नुभयो भने '<ph name="DESTINATION_NAME" />' नामक साझा फोल्डर हेर्न सक्ने सबै जनासँग यो वस्तु सेयर हुने छ।</translation>
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
+<translation id="5650895901941743674">आफ्नो APN कन्फिगुरेसन जाँच्नुहोस्</translation>
 <translation id="5669691691057771421">नयाँ PIN हाल्नुहोस्</translation>
 <translation id="5678784840044122290">Linux एप तपाईंको टर्मिनलअन्तर्गत उपलब्ध हुने छ तपाईंको लन्चरमा कुनै आइकन देखाउन पनि सक्छ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />अभिलेख वा भर्चुअल डिस्कबाट विच्छेदन गर्न सकिँदैन<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
 <translation id="8601932370724196034">Crostini छवि फाइल</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
+<translation id="8630384863424041081">आफ्नो SIM कार्डको PIN वा टेलिफोन कम्पनीले उपलब्ध गराएको डिफल्ट PIN हाल्नुहोस्। यस सम्बन्धमा सहायता प्राप्त गर्न आफ्नो टेलिफोन कम्पनीमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="863903787380594467">PIN मिलेन। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - पोर्ट</translation>
 <translation id="8656407365183407932">तपाईंका अफलाइन फाइलहरू हटाइएका छन्</translation>

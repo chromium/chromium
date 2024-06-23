@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">ትክክል ያልኾነ PUK</translation>
 <translation id="4057991113334098539">በማግበር ላይ...</translation>
 <translation id="4092890906744441904">አይርላንድኛ</translation>
+<translation id="4101601646343868113">በመለያ ወደ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ይግቡ እና የተንቀሳቃሽ ስልክ ውሂብ ዕቅድዎ ንቁ መሆኑን ያረጋግጡ</translation>
 <translation id="4124731372776320263">1 የDrive ፋይልን በማስመር ላይ</translation>
 <translation id="4124935795427217608">ዩኒኮርን</translation>
 <translation id="4131235941541910880">የማያስፈልጉዎትን ንጥሎች ወደ መጣያ ይውሰዷቸው</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">ታሚልኛ በTamil99 ቁልፍ ሰሌዳ</translation>
 <translation id="5633226425545095130">ይህን ንጥል መውሰድ የተጋራውን አቃፊ «<ph name="DESTINATION_NAME" />» ማየት ለሚችል ለሁሉም ሰው እንዲጋራ ያደርገዋል።</translation>
 <translation id="5649768706273821470">አዳምጥ</translation>
+<translation id="5650895901941743674">የኤፒኤን ውቅረትዎን ይፈትሹት</translation>
 <translation id="5669691691057771421">አዲስ ፒን ያስገቡ</translation>
 <translation id="5678784840044122290">የLinux መተግበሪያው በእርስዎ መነሻ ጣቢያ ውስጥ ይገኛል። እንዲሁም በእርስዎ አስጀማሪ ውስጥ አዶ ሊያሳይ ይችል ይሆናል።</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ከማህደር ወይም ከምናባዊ ዲስክ ማለያየት አይቻልም<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">የፋይል ዝርዝር ወደ ድንክየ ዕይታ ተለውጧል።</translation>
 <translation id="8601932370724196034">የCrostini ምስል ፋይል</translation>
 <translation id="8609695766746872526">አይስላንድኛ</translation>
+<translation id="8630384863424041081">የሲም ካርድ ፒንዎን ወይም በአገልግሎት አቅራቢዎ የቀረበውን ነባሪ ፒን ያስገቡ። ለድጋፍ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="863903787380594467">የተሳሳተ ፒን። እርስዎ <ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ወደብ</translation>
 <translation id="8656407365183407932">የእርስዎ ከመስመር ውጭ ፋይሎች መወገድ ነበረባቸው</translation>

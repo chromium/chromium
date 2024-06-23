@@ -123,6 +123,7 @@ Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i de
 
 Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Obre la pàgina de configuració de les formes de pagament a Chromium.</translation>
+<translation id="458786853569524949">Ara pots utilitzar Chromium cada vegada que toquis enllaços en correus electrònics, documents i altres aplicacions.</translation>
 <translation id="459080529287102949">Cerca elements visuals a Chromium</translation>
 <translation id="4633738821577273991">Obtén també Navegació segura millorada per a aquest perfil de Chromium</translation>
 <translation id="4638625642619341392">Baixa Chromium aquí.</translation>
@@ -290,6 +291,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME" />. Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9050790730841755540">Utilitza Chromium cada vegada que toquis enllaços en altres aplicacions.</translation>
+<translation id="9057082013386654559">Utilitza Chromium per a l'iPad de manera predeterminada</translation>
 <translation id="9059693977935746710">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes per a <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="9110075932708282655">Utilitza Chromium de manera predeterminada</translation>

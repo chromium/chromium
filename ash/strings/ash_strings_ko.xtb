@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">마이크 권한이 있는 모든 앱 및 웹사이트와 <ph name="APP_NAME" />의 마이크 액세스를 허용합니다.</translation>
 <translation id="4382340674111381977">이전 페이지로 돌아가기</translation>
 <translation id="4389184120735010762">고정 돋보기 단축키를 누르셨습니다. 사용 설정할까요?</translation>
+<translation id="4394466652057229831">마우스 오른쪽 버튼으로 클릭하여 요약하기</translation>
 <translation id="439598569299422042">일시중지됨, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">스크린캐스트를 저장할 수 없음</translation>
 <translation id="4405151984121254935">지원되지 않는 유형의 주변기기가 연결되었습니다.</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>
 <translation id="8113515504791187892">텍스트 읽어주기 버튼</translation>
 <translation id="8120151603115102514">휴대전화에 잠금 화면이 없습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
+<translation id="8120249852906205273">다시 시작</translation>
 <translation id="8127095419621171197">계산기 앱 열기</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8130528849632411619">문서 처음으로 이동</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">Chromebook의 블루투스가 꺼져 있습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
+<translation id="851660987304951246">콘텐츠를 빠르게 요약하거나 질문하려면 읽기 지원을 사용하세요</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{마이크 입력은 <ph name="APP_NAME" />에 의해 제어됨}other{마이크 입력은 앱 #개에 의해 제어됨}}</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>

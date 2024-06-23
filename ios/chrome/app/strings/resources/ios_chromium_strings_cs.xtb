@@ -122,6 +122,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 
 Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otevře stránku nastavení platebních metod v prohlížeči Chromium.</translation>
+<translation id="458786853569524949">Teď můžete Chromium použít pokaždé, když klepnete na odkazy v e‑mailech, dokumentech a jiných aplikacích.</translation>
 <translation id="459080529287102949">Vyhledat obrazový materiál v prohlížeči Chromium</translation>
 <translation id="4633738821577273991">Zapněte pro tento profil prohlížeče Chromium také Vylepšené Bezpečné prohlížení</translation>
 <translation id="4638625642619341392">Chromium si můžete stáhnout zde.</translation>
@@ -289,6 +290,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, zadejte ji.</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
 <translation id="9050790730841755540">Používejte Chromium, kdykoli klepnete na odkazy v jiných aplikacích.</translation>
+<translation id="9057082013386654559">Používejte Chromium pro iPad jako výchozí prohlížeč</translation>
 <translation id="9059693977935746710">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel pro účet <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Prohlížeč Chromium je zastaralý</translation>
 <translation id="9110075932708282655">Používejte ve výchozím nastavení Chromium</translation>

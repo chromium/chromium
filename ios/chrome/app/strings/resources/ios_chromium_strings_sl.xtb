@@ -123,6 +123,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 
 Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">V Chromiumu odpre stran z nastavitvijo plačilnih sredstev.</translation>
+<translation id="458786853569524949">Zdaj lahko uporabljate Chromium, kadar koli se dotaknete povezav v e-poštnih sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="459080529287102949">Slikovno iskanje v Chromiumu</translation>
 <translation id="4633738821577273991">Zagotovite si izboljšano varno brskanje tudi za ta profil v Chromiumu.</translation>
 <translation id="4638625642619341392">Tukaj prenesite Chromium.</translation>
@@ -290,6 +291,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če želite podatke iz Chromiuma uporabljati in shranjevati v računu Google.</translation>
 <translation id="9022552996538154597">Prijava v Chromium</translation>
 <translation id="9050790730841755540">Chromium lahko uporabljate, kadar koli se dotaknete povezav v drugih aplikacijah.</translation>
+<translation id="9057082013386654559">Privzeto uporabljajte Chromium za iPad</translation>
 <translation id="9059693977935746710">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Chromium je zastarel</translation>
 <translation id="9110075932708282655">Privzeto uporabljajte Chromium</translation>

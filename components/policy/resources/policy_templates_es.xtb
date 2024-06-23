@@ -279,6 +279,7 @@ Si se habilita esta política, se permitirá que los usuarios usen el hardware e
 <translation id="120937472976628837">Enviar información sobre ventiladores</translation>
 <translation id="1212233008927724662">Inhabilita la carga en diferido de la WebUI de inicio de sesión.</translation>
 <translation id="1214639335214075459">Habilitar decodificación de vídeo del hardware GPU</translation>
+<translation id="1214942205301731697">No permitir el uso del modo Desarrollador en la página de extensiones</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Usar la configuración predeterminada para poner el proceso de audio en un entorno aislado</translation>
 <translation id="1221359380862872747">Cargar URL especificadas en el inicio de sesión de demostración</translation>
@@ -1808,6 +1809,7 @@ NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente refle
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior es una función de <ph name="PRODUCT_NAME" /> que hace que los marcos <ph name="ABOUT_BLANK_PAGE" /> y <ph name="ABOUT_SRCDOC_PAGE" /> hereden siempre sus valores de URL base mediante instantáneas de la URL base de su iniciador. Consulta más información en https://chromestatus.com/feature/5161101671530496.
 
 Si se inhabilita esta política, los usuarios o las variaciones de <ph name="PRODUCT_NAME" /> no podrán habilitar NewBaseUrlInheritanceBehavior en caso de que se detecten problemas de compatibilidad. Si la política se habilita o no se establece, se permitirá habilitar NewBaseUrlInheritanceBehavior.</translation>
+<translation id="2361182501645567439">Controlar la disponibilidad del modo Desarrollador en la página de extensiones</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
 <translation id="2362539163677485510">El token de registro de la política relativa a la nube</translation>
 <translation id="2363928351203698966">Si se le asigna un valor válido a esta política, <ph name="PRODUCT_NAME" /> no podrá usar las versiones de SSL/TLS anteriores a la versión especificada. Los valores que no se reconozcan se ignorarán.
@@ -3200,6 +3202,13 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
       La disponibilidad de esta función dependerá también de la política de usuarios correspondiente.</translation>
 <translation id="3495602011142234826">Si se le asigna el valor true, esta extensión podrá firmar datos arbitrarios usando todas las claves designadas para uso corporativo. Si se le asigna el valor false, la extensión no podrá acceder a las claves y el usuario no podrá dar el permiso. De forma excepcional, una extensión podrá acceder a una clave una sola vez si esa extensión ha generado la clave.</translation>
 <translation id="3496296378755072552">Gestor de contraseñas</translation>
+<translation id="3496519114741602716">Controla si los usuarios pueden activar el modo Desarrollador en chrome://extensions.
+
+Si no se define esta política, los usuarios podrán activar el modo Desarrollador en la página de extensiones, a menos que se asigne el valor (2) <ph name="DEVELOPER_TOOLS_DISALLOWED" /> a la política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+Si se le asigna el valor <ph name="ALLOW" /> (0) a esta política, los usuarios podrán activar el modo Desarrollador en la página de extensiones.
+Si se le asigna el valor <ph name="DISALLOW" /> (1) a esta política, los usuarios no podrán activar el modo Desarrollador en la página de extensiones.
+
+Si se establece esta política, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ya no podrá controlar el modo Desarrollador de extensiones.</translation>
 <translation id="3496761649331792755">Habilitar barra de marcadores</translation>
 <translation id="3498109920669229084">Si se define esta política, se especificarán las extensiones que no están sujetas a la lista de bloqueadas.
 
@@ -5406,6 +5415,15 @@ Para obtener más información sobre contextos seguros, consulta la página Secu
 <translation id="5307432759655324440">Disponibilidad del modo Incógnito</translation>
 <translation id="5308551343115571396">Después de que se inhabilite <ph name="LACROS_NAME" />, intentaremos conservar tantos datos de usuario como sea posible y eliminaremos todos los datos del navegador.</translation>
 <translation id="530949964068726932">Ocultar las opciones de accesibilidad en el menú de la bandeja del sistema</translation>
+<translation id="5310544046492594469">Si se asigna el valor "0" (predeterminado) a esta política, podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript, pero no en extensiones instaladas por políticas de empresa o, desde la versión 114 y si se trata de un usuario gestionado, no podrás acceder a las herramientas para desarrolladores ni a la consola de JavaScript en extensiones integradas en el navegador. Si se le asigna el valor "1", podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript sin excepciones, incluso en extensiones instaladas por políticas de empresa. Si se le asigna el valor "2", no podrás acceder a las herramientas para desarrolladores ni tampoco podrás inspeccionar elementos de sitios web.
+
+      Este ajuste también desactiva las combinaciones de teclas y las entradas de menús o menús contextuales que permiten abrir las herramientas para desarrolladores y la consola de JavaScript.
+
+      A partir de la versión 99 de <ph name="PRODUCT_NAME" />, este ajuste también controla los puntos de entrada de la función Ver código fuente de la página. Si se asigna el valor "DeveloperToolsDisallowed" (valor 2) a esta política, los usuarios no podrán visualizar el código fuente a través de una combinación de teclas ni mediante el menú contextual. Para bloquear completamente la visualización del código fuente, también debes añadir "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      A partir de la versión 119 de <ph name="PRODUCT_NAME" />, este ajuste también controla si se puede activar y usar el modo Desarrollador para aplicaciones web aisladas.
+
+      A partir de la versión 128 de <ph name="PRODUCT_NAME" />, este ajuste no controlará el modo Desarrollador en la página de extensiones si se define la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5311275381462687162">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> predeterminada</translation>
 <translation id="5312253627576569499">Porcentaje de ajuste del retraso de atenuación de pantalla cuando se observa la actividad del usuario con la pantalla atenuada o poco después de que esta se haya desactivado</translation>
 <translation id="5316856058059940708">Inhabilitar el cursor grande</translation>
@@ -6148,6 +6166,15 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
 
       Si no se define esta política, <ph name="PRODUCT_NAME" /> podrá decidir qué enfoque se debe utilizar.</translation>
 <translation id="5888645257599699215">Informar sobre el estado del audio del dispositivo</translation>
+<translation id="5888861702011257917">El modo Sin distracciones es una función que controla el modo No molestar mediante un temporizador y está diseñada para reducir las distracciones del usuario. Una función del modo Sin distracciones permite que los usuarios escuchen un conjunto limitado de música para ayudarles a concentrarse. Esta política controla el acceso a esta función.
+
+Si no se define esta política, se inhabilitarán todos los sonidos para los usuarios gestionados.
+
+Si se habilita esta política, se permitirá el acceso a todos los sonidos en el modo Sin distracciones.
+
+Si se le asigna el valor "EnabledFocusSoundsOnly", se habilitará la función de sonido únicamente con sonidos de concentración.
+
+Si se inhabilita esta política, se inhabilitarán los sonidos en el modo Sin distracciones.</translation>
 <translation id="5890063326284543943">Controlar el uso de la API Serial</translation>
 <translation id="5893223274510346852">Inhabilitar la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5893303508158298667">Si se habilita <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />, siempre y cuando se habilite <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no se le asigne ningún valor, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este equipo cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
@@ -6620,6 +6647,17 @@ Consulta https://developer.chrome.com/blog/immutable-document-domain/ para obten
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
 <translation id="6276087670023098167">Inhabilitar informes con datos sobre la identificación de equipos</translation>
+<translation id="627645565733796818">Los certificados X.509 pueden codificar restricciones, como restricciones de nombres, en extensiones del certificado. RFC 5280 especifica que implementar obligatoriamente estas restricciones en los certificados de anclas de confianza es opcional. A partir de la versión 112 de <ph name="PRODUCT_NAME" />, se implementarán obligatoriamente estas restricciones en los certificados cargados desde el almacén de certificados de la plataforma.
+
+Esta política es un mecanismo temporal para inhabilitar dicha implementación si una empresa tiene problemas con las restricciones codificadas en sus certificados raíz privados. En ese caso, esta política se puede usar para inhabilitar temporalmente la implementación obligatoria de las restricciones mientras esa empresa corrige los problemas de los certificados.
+
+Si esta política se habilita o no se define, <ph name="PRODUCT_NAME" /> implementará obligatoriamente las restricciones codificadas en anclas de confianza cargadas desde el almacén de confianza de la plataforma.
+
+Si esta política se inhabilita, <ph name="PRODUCT_NAME" /> no implementará obligatoriamente las restricciones codificadas en anclas de confianza cargadas desde el almacén de confianza de la plataforma.
+
+En la versión 112 de <ph name="PRODUCT_NAME" />, esta política no tendrá efecto si se inhabilita la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />.
+
+Esta política se retiró en la versión 126 de <ph name="PRODUCT_NAME" />. Desde esa versión, las restricciones de las anclas de confianza siempre se implementan obligatoriamente.</translation>
 <translation id="627672037430076089">Impedir conexiones de asistencia remota a este equipo</translation>
 <translation id="6277314550042130537">Usar la aprobación de políticas de KDC durante la autenticación de HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7048,6 +7086,13 @@ Nota: Las contraseñas podrían mantenerse más tiempo del especificado si el cl
 <translation id="6554236101741861403">Intervalo en el que se recogen datos de telemetría de sitios web en dispositivos registrados de usuarios afiliados. El valor mínimo permitido es 5 minutos.
 
 Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
+<translation id="6555378905432946848">Si se le asigna un valor a esta política, se desactivará la implementación obligatoria de los requisitos de divulgación de transparencia en los certificados de una lista de autoridades de certificación (CA) antiguas con cadenas de certificados que incluyan un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificado. Los hosts empresariales podrán seguir usando certificados que, en otro caso, no serían de confianza (por no haberse comunicado públicamente de forma correcta). Para desactivar la implementación obligatoria, el hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> debe aparecer en un certificado de CA que se reconozca como autoridad de certificación antigua. Esas autoridades de certificación antiguas se consideran de confianza en uno o más sistemas operativos compatibles con <ph name="PRODUCT_NAME" />, pero no en el Proyecto de Software Libre de Android o <ph name="PRODUCT_OS_NAME" />.
+
+      Para especificar un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />, se vinculan el nombre del algoritmo de hash, una barra y la codificación Base64 de ese algoritmo de hash aplicado al <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en codificación DER del certificado especificado. La codificación Base64 tiene el mismo formato que el de una huella digital SPKI. El único algoritmo de hash reconocido es sha256; los demás se ignorarán.
+
+      Si no se asigna ningún valor a esta política, los certificados que se deban comunicar a través de la transparencia en los certificados no serán de confianza para <ph name="PRODUCT_NAME" /> si no se comunican.
+
+      Esta política se retiró en la versión 128 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6556586932263358975">Permitir el bloqueo de la pantalla</translation>
 <translation id="6558013557780651644">Retraso antes de ejecutar acciones por inactividad</translation>
 <translation id="6558812160831988140">Informes de uso de aplicaciones</translation>
@@ -10466,6 +10511,7 @@ Si se inhabilita esta política, las encuestas en el producto no se mostrarán a
 
 Esta política no tendrá efecto si se inhabilita <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" />, lo que también inhabilita las encuestas en el producto.</translation>
 <translation id="9173633148008709976">Habilitar aceleración de gráficos</translation>
+<translation id="9177661626040846628">Permitir el uso del modo Desarrollador en la página de extensiones</translation>
 <translation id="9180108183162961002">Permitir que se inicie sesión en el navegador con el modo Invitado</translation>
 <translation id="9185963199234034321">Habilitar el contraste alto en la pantalla de inicio de sesión y permitir que el usuario lo inhabilite temporalmente</translation>
 <translation id="9187743794267626640">Inhabilitar la activación del almacenamiento externo</translation>

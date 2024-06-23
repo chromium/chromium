@@ -123,6 +123,7 @@
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4576283463017113841">使用 Chromium 開啟「付款方式設定」頁面。</translation>
+<translation id="458786853569524949">現在隨時可以使用 Chromium 開啟電子郵件、文件和其他應用程式中的連結。</translation>
 <translation id="459080529287102949">在 Chromium 中搜尋影像內容</translation>
 <translation id="4633738821577273991">一併為這個 Chromium 設定檔啟用安全瀏覽強化防護功能</translation>
 <translation id="4638625642619341392">在這裡下載 Chromium。</translation>
@@ -290,6 +291,7 @@
 你已在 <ph name="TIME" />使用通關密語加密資料。輸入通關密語後，你就可以將 Chromium 的資料儲存到 Google 帳戶及使用這類資料。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9050790730841755540">隨時可以使用 Chromium 開啟其他應用程式中的連結。</translation>
+<translation id="9057082013386654559">在 iPad 上預設使用 Chromium</translation>
 <translation id="9059693977935746710">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9110075932708282655">預設為使用 Chromium</translation>

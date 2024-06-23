@@ -814,6 +814,7 @@
 <translation id="5150492518600715772">ส่งไปที่อุปกรณ์</translation>
 <translation id="5157638238828697074">เกิดข้อผิดพลาด เปิดแอปพลิเคชันไม่ได้</translation>
 <translation id="5168414296986405587">สร้างมาเพื่อใช้กับ iPadOS</translation>
+<translation id="5169725654005786900">กำลังดำเนินการ…</translation>
 <translation id="5173088371991956744">การซิงค์จะต้องยืนยันว่าเป็นคุณ</translation>
 <translation id="5173493422621051500">ใช้แป้นพิมพ์</translation>
 <translation id="5176312250994681348">เก็บรหัสผ่านล่าสุด</translation>
@@ -848,6 +849,7 @@
 <translation id="5327753393331509826">รับการแจ้งเตือนเนื้อหา</translation>
 <translation id="5329451663851195956">คุณสามารถดึงลงเพื่อรีเฟรช</translation>
 <translation id="5333148247954006827">เปลี่ยนไปใช้โปรไฟล์อื่น</translation>
+<translation id="5338512273860059533">กำลังลงชื่อเข้าใช้</translation>
 <translation id="5339316356165661760">เปิดการซิงค์</translation>
 <translation id="5343472494710226394">ข่าวสาร กีฬา และเนื้อหาตามความสนใจของคุณ</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{ติดตามพัสดุนี้ไหม}other{ติดตามพัสดุ {COUNT} รายการไหม}}</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Mali ang PUK</translation>
 <translation id="4057991113334098539">Ina-activate...</translation>
 <translation id="4092890906744441904">Irish</translation>
+<translation id="4101601646343868113">Mag-sign in sa iyong mobile network at kumpirmahin kung aktibo ang mobile data plan mo</translation>
 <translation id="4124731372776320263">Sini-sync ang 1 file sa Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Ilipat sa trash ang mga item na hindi mo kailangan</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamil na may Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Kapag inilipat ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
+<translation id="5650895901941743674">Tingnan ang configuration ng APN mo</translation>
 <translation id="5669691691057771421">Ilagay ang bagong PIN</translation>
 <translation id="5678784840044122290">Magiging available ang Linux application sa iyong Terminal at maaari din itong magpakita ng icon sa Launcher mo.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Hindi makadiskonekta sa isang archive o virtual disk<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Naging thumbnail view ang listahan ng file.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
+<translation id="8630384863424041081">Ilagay ang PIN ng iyong SIM card o ang default na PIN na ibinigay ng carrier mo. Makipag-ugnayan sa iyong carrier para sa suporta.</translation>
 <translation id="863903787380594467">Mali ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">Kinailangang alisin ang iyong mga offline na file</translation>

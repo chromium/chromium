@@ -279,6 +279,7 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
 <translation id="1212233008927724662">Désactiver le chargement différé du WebUI de connexion.</translation>
 <translation id="1214639335214075459">Activer le décodage vidéo matériel GPU</translation>
+<translation id="1214942205301731697">Ne pas autoriser l'utilisation du mode développeur sur la page des extensions</translation>
 <translation id="1216919699175573511">Activer la compatibilité avec la fonctionnalité Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Utiliser la configuration par défaut pour le bac à sable du processus audio</translation>
 <translation id="1221359380862872747">Charger les URL spécifiées lors de la connexion à la démonstration</translation>
@@ -1807,6 +1808,7 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior est une fonctionnalité <ph name="PRODUCT_NAME" /> qui entraîne l'héritage systématique des valeurs d'URL de base par les frames <ph name="ABOUT_BLANK_PAGE" /> et <ph name="ABOUT_SRCDOC_PAGE" /> via des instantanés de l'URL de base de leur créateur. Pour en savoir plus, consultez https://chromestatus.com/feature/5161101671530496.
 
 Si la règle est désactivée, elle empêche les utilisateurs ou les variantes de <ph name="PRODUCT_NAME" /> d'activer NewBaseUrlInheritanceBehavior si des problèmes de compatibilité sont détectés. Si la règle est activée ou n'est pas configurée, NewBaseUrlInheritanceBehavior peut être activée.</translation>
+<translation id="2361182501645567439">Contrôler la disponibilité du mode développeur sur la page des extensions</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
 <translation id="2362539163677485510">Jeton d'enregistrement des règles relatives au cloud</translation>
 <translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à celle spécifiée. Les valeurs non reconnues sont ignorées.
@@ -3193,6 +3195,13 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       La disponibilité de cette règle dépend également des règles relatives aux utilisateurs correspondantes.</translation>
 <translation id="3495602011142234826">Si cette règle est définie sur "True", cette extension peut se servir de toutes les clés destinées à une utilisation en entreprise pour signer des données arbitraires. Si cette règle est définie sur "False", l'extension ne peut accéder à aucune de ces clés, et l'utilisateur ne peut pas non plus accorder une telle autorisation. À titre d'exception, une extension peut accéder une seule fois à l'une de ces clés si celle-ci a été générée par la même extension.</translation>
 <translation id="3496296378755072552">Gestionnaire de mots de passe</translation>
+<translation id="3496519114741602716">Détermine si les utilisateurs peuvent activer le mode développeur sur chrome://extensions.
+
+Si la règle n'est pas configurée, les utilisateurs peuvent activer le mode développeur sur la page des extensions, sauf si la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est définie sur <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2).
+Si la règle est définie sur <ph name="ALLOW" /> (0), les utilisateurs peuvent activer le mode développeur sur la page des extensions.
+Si elle est définie sur <ph name="DISALLOW" /> (1), les utilisateurs ne peuvent pas activer le mode développeur sur la page des extensions.
+
+Si cette règle est configurée, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne peut plus contrôler le mode développeur des extensions.</translation>
 <translation id="3496761649331792755">Activer la barre de favoris</translation>
 <translation id="3498109920669229084">Permet de spécifier les extensions à exclure de la liste de blocage.
 
@@ -5386,6 +5395,15 @@ Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/
 <translation id="5307432759655324440">Disponibilité du mode navigation privée</translation>
 <translation id="5308551343115571396">Une fois <ph name="LACROS_NAME" /> désactivé, nous essayons de conserver le plus de données utilisateur possible, tout en supprimant toutes les données du navigateur.</translation>
 <translation id="530949964068726932">Masquer les options d'accessibilité dans le menu de la barre d'état système</translation>
+<translation id="5310544046492594469">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf dans le cas d'extensions installées dans le cadre des règles de l'entreprise ou, depuis la version 114 et s'il s'agit d'un utilisateur géré, d'extensions intégrées au navigateur. Si elle est définie sur 1, vous pouvez accéder à ces outils et à cette console dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si elle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
+
+      En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.
+
+      Depuis <ph name="PRODUCT_NAME" /> version 99, ce paramètre contrôle également les points d'entrée de la fonctionnalité "Afficher le code source de la page". Si cette règle est définie sur "DeveloperToolsDisallowed" (valeur 2), les utilisateurs ne peuvent pas accéder à l'affichage du code source via le raccourci clavier ou le menu contextuel. Pour empêcher complètement l'affichage du code source, vous devez également ajouter "view-source:*" à la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      Depuis <ph name="PRODUCT_NAME" /> version 119, ce paramètre contrôle également si le mode développeur peut être activé et utilisé pour les applis Web isolées.
+
+      Depuis <ph name="PRODUCT_NAME" /> version 128, ce paramètre ne contrôle plus le mode développeur sur la page des extensions si la règle <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> est configurée.</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
 <translation id="5312253627576569499">Pourcentage d'adaptation du délai d'assombrissement de l'écran en cas d'activité de l'utilisateur lors de la réduction de la luminosité ou peu de temps après la désactivation de l'écran.</translation>
 <translation id="5316856058059940708">Désactiver le grand curseur</translation>
@@ -6128,6 +6146,15 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut choisir l'approche à utiliser.</translation>
 <translation id="5888645257599699215">Signaler l'état audio des appareils</translation>
+<translation id="5888861702011257917">Le mode Sans distractions contrôle Ne pas déranger à l'aide d'un minuteur et vise à réduire les distractions pour les utilisateurs. Une fonctionnalité de ce mode permet aux utilisateurs d'écouter un ensemble limité de musiques pour les aider à se concentrer. Cette règle contrôle l'accès à cette fonctionnalité.
+
+Si cette règle n'est pas configurée, tous les sons sont désactivés pour les utilisateurs gérés.
+
+Si cette règle est activée, tous les sons sont accessibles en mode Sans distractions.
+
+Si cette règle est définie sur "EnabledFocusSoundsOnly", la fonctionnalité de sons sera activée avec uniquement les sons pour se concentrer.
+
+Si cette règle est désactivée, les sons seront désactivés en mode Sans distractions.</translation>
 <translation id="5890063326284543943">Contrôler l'utilisation de l'API Serial</translation>
 <translation id="5893223274510346852">Désactiver la fonctionnalité IP Protection de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5893303508158298667">Si la règle <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> est activée ou qu'elle n'est pas configurée, et que la règle <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> est activée, les clients distants peuvent utiliser des serveurs relais pour se connecter à cet ordinateur quand aucune connexion directe n'est disponible (par exemple, en raison de restrictions du pare-feu).
@@ -6597,6 +6624,17 @@ Pour en savoir plus, consultez https://developer.chrome.com/blog/immutable-docum
 
       La suppression de cette règle avait été annoncée pour la version 82 de <ph name="PRODUCT_NAME" />, mais elle a eu lieu à la version 84.</translation>
 <translation id="6276087670023098167">Désactiver les rapports sur les informations d'identification de l'ordinateur</translation>
+<translation id="627645565733796818">Les certificats X.509 peuvent encoder des contraintes, telles que des contraintes de nom, dans les extensions du certificat. RFC 5280 spécifie que l'application de ces contraintes sur les certificats d'ancres de confiance est facultative. À partir de <ph name="PRODUCT_NAME" /> 112, de telles contraintes dans les certificats chargées à partir du magasin de certificats de la plate-forme seront désormais appliquées.
+
+Cette règle existe en tant que désactivation temporaire, au cas où une entreprise rencontre des problèmes avec les contraintes encodées dans ses racines privées. Dans ce cas, cette règle peut être utilisée pour désactiver temporairement l'application des contraintes tout en corrigeant les problèmes de certificat.
+
+Si cette règle n'est pas configurée ou qu'elle est activée, <ph name="PRODUCT_NAME" /> appliquera des contraintes encodées dans les ancres de confiance chargées à partir du magasin de confiance de la plate-forme.
+
+Lorsque cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'appliquera pas les contraintes encodées dans les ancres de confiance chargées depuis le magasin de confiance de la plate-forme.
+
+Dans la version 112 de <ph name="PRODUCT_NAME" />, cette règle n'a aucun effet si la règle <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est désactivée.
+
+Cette règle a été supprimée dans la version 126 de <ph name="PRODUCT_NAME" />. À partir de cette version, les contraintes dans les ancres de confiance sont toujours appliquées.</translation>
 <translation id="627672037430076089">Empêcher les connexions d'assistance à distance à cet appareil</translation>
 <translation id="6277314550042130537">Utiliser l'approbation par la règle KDC lors de l'authentification HTTP</translation>
 <translation id="6278428485366576908">Thème</translation>
@@ -7012,6 +7050,13 @@ Remarque : La validité des mots de passe peut dépasser le délai spécifié e
 <translation id="6554236101741861403">Fréquence à laquelle les données de télémétrie de site Web sont collectées sur les appareils enregistrés pour les utilisateurs affiliés. La valeur minimale autorisée est de cinq minutes.
 
 Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
+<translation id="6555378905432946848">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats. S'applique à une liste d'autorités de certification héritées, concernant les chaînes de certificats avec un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> spécifié. Les hôtes Enterprise peuvent ainsi continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit). Pour procéder à cette désactivation, le hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> doit figurer dans un certificat CA reconnu comme une autorité de certification héritée. Une autorité de certification héritée est reconnue publiquement par un ou plusieurs systèmes d'exploitation compatibles avec <ph name="PRODUCT_NAME" /> (mais pas avec le Projet Android Open Source ni avec <ph name="PRODUCT_OS_NAME" />).
+
+      Spécifiez un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en concaténant le nom de l'algorithme de hachage, une barre oblique et l'encodage Base64 de cet algorithme de hachage, appliqué à l'élément <ph name="SUBJECT_PUBLIC_KEY_INFO" /> encodé en DER du certificat spécifié. Le format d'encodage Base64 correspond à celui d'une empreinte SPKI. SHA-256 est le seul algorithme de hachage reconnu (les autres sont ignorés).
+
+      Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.
+
+      Cette règle a été supprimée dans la version 128 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6556586932263358975">Autoriser le verrouillage de l'écran</translation>
 <translation id="6558013557780651644">Délai avant exécution des actions en cas d'inactivité</translation>
 <translation id="6558812160831988140">Rapports sur l'utilisation des applis</translation>
@@ -10403,6 +10448,7 @@ Si cette règle est désactivée, les enquêtes intégrées ne sont pas présent
 
 Cette règle n'a aucun effet si la règle <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> est désactivée, ce qui désactive également les enquêtes intégrées.</translation>
 <translation id="9173633148008709976">Activer l'accélération graphique</translation>
+<translation id="9177661626040846628">Autoriser l'utilisation du mode développeur sur la page des extensions</translation>
 <translation id="9180108183162961002">Autoriser les connexions en mode Invité dans le navigateur</translation>
 <translation id="9185963199234034321">Activer le contraste élevé sur l'écran de connexion et permettre à l'utilisateur de le désactiver temporairement</translation>
 <translation id="9187743794267626640">Désactiver le montage de périphériques de stockage externe</translation>

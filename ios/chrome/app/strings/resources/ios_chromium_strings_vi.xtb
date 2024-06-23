@@ -123,6 +123,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 
 Để thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chromium khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Mở trang Cài đặt phương thức thanh toán trên Chromium.</translation>
+<translation id="458786853569524949">Giờ đây, bạn có thể dùng Chromium mỗi khi nhấn vào các đường liên kết trong email, tài liệu và các ứng dụng khác.</translation>
 <translation id="459080529287102949">Tìm kiếm hình ảnh trong Chromium</translation>
 <translation id="4633738821577273991">Bạn có thể dùng tính năng Duyệt web an toàn có tăng cường bảo vệ cho cả hồ sơ Chromium này</translation>
 <translation id="4638625642619341392">Tải Chromium xuống tại đây.</translation>
@@ -290,6 +291,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 Dữ liệu của bạn đã được mã hoá bằng cụm mật khẩu vào <ph name="TIME" />. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu Chromium vào Tài khoản Google của bạn.</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>
 <translation id="9050790730841755540">Dùng Chromium mỗi khi bạn nhấn vào đường liên kết trong các ứng dụng khác.</translation>
+<translation id="9057082013386654559">Sử dụng Chromium cho iPad theo mặc định</translation>
 <translation id="9059693977935746710">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu cho <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
 <translation id="9110075932708282655">Sử dụng Chromium theo Mặc định</translation>

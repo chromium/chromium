@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK ไม่ถูกต้อง</translation>
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
+<translation id="4101601646343868113">ลงชื่อเข้าใช้เครือข่ายมือถือและยืนยันว่าแพ็กเกจอินเทอร์เน็ตมือถือของคุณใช้งานได้</translation>
 <translation id="4124731372776320263">กำลังซิงค์ไฟล์ในไดรฟ์ 1 รายการ</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">ทมิฬด้วยแป้นพิมพ์ Tamil99</translation>
 <translation id="5633226425545095130">การย้ายรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
 <translation id="5649768706273821470">ฟัง</translation>
+<translation id="5650895901941743674">ตรวจสอบการกำหนดค่า APN</translation>
 <translation id="5669691691057771421">ป้อน PIN ใหม่</translation>
 <translation id="5678784840044122290">แอปพลิเคชัน Linux จะพร้อมให้ใช้งานในเทอร์มินัลของคุณและอาจแสดงไอคอนใน Launcher ด้วย</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ยกเลิกการเชื่อมต่อจากที่เก็บถาวรหรือดิสก์เสมือนไม่สำเร็จ<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
+<translation id="8630384863424041081">ป้อน PIN ของซิมการ์ดหรือ PIN เริ่มต้นที่ผู้ให้บริการให้ไว้ ติดต่อผู้ให้บริการเพื่อขอรับการสนับสนุน</translation>
 <translation id="863903787380594467">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>
 <translation id="8656407365183407932">ต้องนําไฟล์ออฟไลน์ออก</translation>

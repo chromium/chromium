@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Mã PUK không chính xác</translation>
 <translation id="4057991113334098539">Đang kích hoạt...</translation>
 <translation id="4092890906744441904">Tiếng Ireland</translation>
+<translation id="4101601646343868113">Đăng nhập vào mạng di động và xác nhận rằng gói dữ liệu di động của bạn đang hoạt động</translation>
 <translation id="4124731372776320263">Đang đồng bộ hoá 1 tệp trên Drive</translation>
 <translation id="4124935795427217608">Kỳ lân</translation>
 <translation id="4131235941541910880">Chuyển các mục bạn không cần vào thùng rác</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tiếng Tamil bằng bàn phím Tamil99</translation>
 <translation id="5633226425545095130">Khi bạn di chuyển mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Nghe</translation>
+<translation id="5650895901941743674">Hãy kiểm tra cấu hình APN của bạn</translation>
 <translation id="5669691691057771421">Nhập mã PIN mới</translation>
 <translation id="5678784840044122290">Ứng dụng Linux sẽ có trong Thiết bị của bạn và cũng có thể hiển thị một biểu tượng trong Trình chạy.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Không thể ngắt kết nối khỏi vùng lưu trữ hoặc ổ đĩa ảo<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Danh sách tệp đã thay đổi thành chế độ xem hình thu nhỏ.</translation>
 <translation id="8601932370724196034">Tệp hình ảnh Crostini</translation>
 <translation id="8609695766746872526">Tiếng Iceland</translation>
+<translation id="8630384863424041081">Nhập mã PIN của thẻ SIM hoặc mã PIN mặc định do nhà mạng cung cấp. Liên hệ với nhà mạng của bạn để được hỗ trợ.</translation>
 <translation id="863903787380594467">Mã PIN không chính xác. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Cổng</translation>
 <translation id="8656407365183407932">Hệ thống buộc phải xoá các tệp ngoại tuyến của bạn</translation>

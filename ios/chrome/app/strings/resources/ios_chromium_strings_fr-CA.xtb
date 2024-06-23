@@ -123,6 +123,7 @@ Vos données sont chiffrées avec votre phrase de passe. Entrez-la pour utiliser
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Ouvre la page de configuration de modes de paiement dans Chromium.</translation>
+<translation id="458786853569524949">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des courriels, des documents et d'autres applis.</translation>
 <translation id="459080529287102949">Rechercher des visuels dans Chromium</translation>
 <translation id="4633738821577273991">Bénéficiez également de la navigation sécurisée améliorée pour ce profil Chromium</translation>
 <translation id="4638625642619341392">Téléchargez Chromium ici.</translation>
@@ -290,6 +291,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 Vos données ont été chiffrées avec votre phrase de passe le <ph name="TIME" />. Entrez-la pour utiliser et enregistrer les données Chromium dans votre compte Google.</translation>
 <translation id="9022552996538154597">Connexion à Chromium</translation>
 <translation id="9050790730841755540">Utilisez Chromium chaque fois que vous touchez des liens dans d'autres applications.</translation>
+<translation id="9057082013386654559">Utiliser Chromium pour iPad par défaut</translation>
 <translation id="9059693977935746710">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe de ce compte : <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium n'est pas à jour</translation>
 <translation id="9110075932708282655">Utilisez Chromium par défaut</translation>

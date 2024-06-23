@@ -784,7 +784,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4971735654804503942">Brža, proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija. Upozorava vas na narušavanje lozinki. Zahtijeva da se podaci o pregledanju šalju Googleu.</translation>
 <translation id="4979397965658815378">Prijavite se na svoj Google račun da dobijete oznake, lozinke, historiju i ostale postavke na svim svojim uređajima.</translation>
 <translation id="4989065233040279145">Odaberite gdje želite sačuvati fajl <ph name="FILENAME" /></translation>
-<translation id="4992255726304765516">Boja grupe kartica <ph name="COLOR" /></translation>
+<translation id="4992255726304765516">Boja grupe kartica: <ph name="COLOR" /></translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5016420433031926653">Pošaljite primaocu <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Podsjeti me kasnije</translation>
@@ -814,7 +814,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5150492518600715772">Pošalji na uređaj</translation>
 <translation id="5157638238828697074">Nešto nije uredu. Otvaranje aplikacije nije uspjelo.</translation>
 <translation id="5168414296986405587">Napravljeno za iPadOS</translation>
-<translation id="5169725654005786900">Radnja u tijeku…</translation>
+<translation id="5169725654005786900">Radnja je u toku…</translation>
 <translation id="5173088371991956744">Sinhronizacija mora potvrditi da ste to vi</translation>
 <translation id="5173493422621051500">Koristite tastaturu</translation>
 <translation id="5176312250994681348">Zadrži nedavnu lozinku</translation>
@@ -849,7 +849,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="5327753393331509826">Dobijajte obavještenja o sadržaju</translation>
 <translation id="5329451663851195956">Možete povući nadolje da osvježite.</translation>
 <translation id="5333148247954006827">Prebacite se na drugi profil</translation>
-<translation id="5338512273860059533">Prijava u tijeku.</translation>
+<translation id="5338512273860059533">Prijava je u toku.</translation>
 <translation id="5339316356165661760">Uključi sinhronizaciju</translation>
 <translation id="5343472494710226394">Vijesti, sportovi i sadržaj na osnovu vaših interesovanja.</translation>
 <translation id="5345660046352249607">{COUNT,plural, =1{Pratiti ovaj paket?}one{Pratiti {COUNT} paket?}few{Pratiti {COUNT} paketa?}other{Pratiti {COUNT} paketa?}}</translation>

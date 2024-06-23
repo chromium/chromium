@@ -1463,6 +1463,7 @@
 <translation id="2048254245884707305">กำลังตรวจหามัลแวร์...</translation>
 <translation id="2048554637254265991">เกิดข้อผิดพลาดขณะเริ่มต้นตัวจัดการคอนเทนเนอร์ โปรดลองอีกครั้ง</translation>
 <translation id="2048653237708779538">การดำเนินการไม่พร้อมให้ใช้งาน</translation>
+<translation id="2049021651258469175">คุณยังใช้และบันทึกรหัสผ่านและอื่นๆ จากบัญชี Google ได้ด้วย</translation>
 <translation id="204914487372604757">สร้างทางลัด</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2051266530792296582">เครื่องมือจัดการรหัสผ่านบน Google ได้สร้างรหัสผ่านที่รัดกุมสำหรับเว็บไซต์นี้</translation>
@@ -2940,6 +2941,7 @@
 <translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="3112292765614504292">ขนาดแอป: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">ไม่อนุญาตให้เว็บไซต์แก้ไขไฟล์หรือโฟลเดอร์ในอุปกรณ์ของคุณ</translation>
+<translation id="3113970906450647715">เลิกปักหมุดปุ่มแล้ว</translation>
 <translation id="3115147772012638511">กำลังรอแคช...</translation>
 <translation id="3115580024857770654">ยุบทั้งหมด</translation>
 <translation id="3115728370128632723">การทำให้ประสบการณ์การใช้งานเว็บดียิ่งขึ้นสำหรับคุณหมายถึงสิ่งต่อไปนี้
@@ -5308,6 +5310,7 @@
 <translation id="4883436287898674711">ไซต์ <ph name="WEBSITE_1" /> ทั้งหมด</translation>
 <translation id="48838266408104654">&amp;ตัวจัดการงาน</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">แสดงทางลัด Google Lens เสมอ</translation>
 <translation id="4885692421645694729">ส่วนขยายนี้ไม่มีการเข้าถึงเว็บไซต์เพิ่มเติม</translation>
 <translation id="4887424188275796356">เปิดด้วยเครื่องมือดูระบบ</translation>
 <translation id="488785315393301722">แสดงรายละเอียด</translation>
@@ -5476,6 +5479,7 @@
 <translation id="5021750053540820849">ยังไม่ได้อัปเดต</translation>
 <translation id="5022206631034207923">ล็อกการควบคุมหน้าจอ</translation>
 <translation id="5024511550058813796">อุปกรณ์ทั้งหมดที่ซิงค์ไว้จะมีประวัติการเข้าชมของคุณอยู่ ดังนั้นคุณสามารถทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>
+<translation id="5024992827689317672">ลบข้อมูลแล้ว</translation>
 <translation id="5026492829171796515">ลงชื่อเข้าใช้เพื่อเพิ่มบัญชี Google</translation>
 <translation id="5026806129670917316">เปิด Wi-Fi</translation>
 <translation id="5026874946691314267">ไม่ต้องแสดงข้อความนี้อีก</translation>
@@ -6116,6 +6120,7 @@
 <translation id="549602578321198708">คำ</translation>
 <translation id="5496587651328244253">จัดระเบียบ</translation>
 <translation id="5496730470963166430">ไม่ได้รับอนุญาตให้ส่งป๊อปอัปหรือใช้การเปลี่ยนเส้นทาง</translation>
+<translation id="5497250476399536588">คุณดูข้อมูลนี้ได้ใน "ที่อยู่และอื่นๆ"</translation>
 <translation id="5497251278400702716">ไฟล์นี้</translation>
 <translation id="5497739595514726398">Chrome ไม่สามารถยืนยันแพ็กเกจการติดตั้งนี้ได้</translation>
 <translation id="5498967291577176373">เขียนชื่อ ที่อยู่ หรือหมายเลขโทรศัพท์ของคุณได้เร็วขึ้นด้วยคำแนะนำในบรรทัด</translation>
@@ -6883,6 +6888,7 @@
 <translation id="6082877069782862752">การแมปคีย์</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ส่วนหนึ่งของกลุ่มที่ไม่มีชื่อ</translation>
 <translation id="6086004606538989567">บัญชีที่คุณยืนยันไม่ได้รับอนุญาตให้เข้าถึงอุปกรณ์นี้</translation>
+<translation id="6086418630711763366">คุณไปยังส่วนต่างๆ ของหน้าได้ด้วยเคอร์เซอร์ข้อความ กด Ctrl + <ph name="KEY" /> เพื่อปิด</translation>
 <translation id="6086846494333236931">ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="6087746524533454243">หากต้องการดูหน้าข้อมูลเกี่ยวกับเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="6087960857463881712">ใบหน้าเจ๋ง</translation>
@@ -6947,6 +6953,7 @@
 <translation id="6130692320435119637">เพิ่ม Wi-Fi</translation>
 <translation id="6130807998512240230">ฮับโทรศัพท์ การแชร์ใกล้เคียง</translation>
 <translation id="6130887916931372608">ปุ่มบนแป้นพิมพ์</translation>
+<translation id="6132251717264923430">ปักหมุดปุ่มแล้ว</translation>
 <translation id="6132714462430777655">ข้ามการลงทะเบียนโรงเรียนไหม</translation>
 <translation id="6134428719487602109">นําบัญชีผู้ใช้ทั้งหมดออกและรีเซ็ต Chromebook ให้เหมือนใหม่</translation>
 <translation id="6135823405800500595">ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกแล้ว และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
@@ -8079,6 +8086,7 @@
 <translation id="6988572888918530647">จัดการบัญชี Google</translation>
 <translation id="6989274756151920076">อยู่ที่นี่ต่อ</translation>
 <translation id="6991665348624301627">เลือกปลายทาง</translation>
+<translation id="6991926986715044139">แสดงทางลัด Google Lens เสมอ</translation>
 <translation id="6992554835374084304">เปิดฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="6993000214273684335">แท็บถูกนำออกจากกลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">กำลังอัปเดตเบราว์เซอร์ Chrome</translation>
@@ -8290,6 +8298,7 @@
 <translation id="7154020516215182599">แชร์ความคิดเห็นหรืออธิบายปัญหาของคุณ หากเป็นไปได้ ให้ระบุขั้นตอนต่างๆ เพื่อจำลองปัญหา</translation>
 <translation id="7154130902455071009">เปลี่ยนหน้าเริ่มต้นของคุณเป็น: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">ดูวิดีโอคุณภาพดีขึ้นและยืดระยะเวลาการใช้งานแบตเตอรี่ วิดีโอจะเล่นในหน้าจอที่พร้อมใช้งาน Cast เท่านั้น</translation>
+<translation id="7159695867335480590">เล่น/หยุดชั่วคราว</translation>
 <translation id="7159953856712257647">ติดตั้งโดยค่าเริ่มต้นแล้ว</translation>
 <translation id="7160182524506337403">ตอนนี้คุณดูการแจ้งเตือนในโทรศัพท์ได้แล้ว</translation>
 <translation id="7160911207516219534">แผงด้านข้าง</translation>
@@ -8633,6 +8642,7 @@
 <translation id="7417435070053325657">บล็อกแล้ว <ph name="BLOCKED_APPS_SIZE" /> จาก <ph name="APPS_LIST_SIZE" /> แอป</translation>
 <translation id="741906494724992817">แอปนี้ไม่ต้องการสิทธิ์พิเศษ</translation>
 <translation id="7419142833919893307">ไม่ได้เพิ่มชื่อผู้ใช้</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN ไม่ถูกต้อง พยายามได้อีก 1 ครั้ง}other{PIN ไม่ถูกต้อง พยายามได้อีก # ครั้ง}}</translation>
 <translation id="7419565702166471774">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
 <translation id="7419819959108735624">เลือกอะไรก็ได้เพื่อค้นหาด้วย Google Lens</translation>
 <translation id="742130257665691897">นำบุ๊กมาร์กออกแล้ว</translation>
@@ -9795,6 +9805,7 @@
 <translation id="8252569384384439529">กำลังอัปโหลด...</translation>
 <translation id="8253198102038551905">คลิก "+" เพื่อดูคุณสมบัติของเครือข่าย</translation>
 <translation id="8255212965098517578">รูปภาพ การแจ้งเตือน และแอปล่าสุด</translation>
+<translation id="8255927332875030912">ค้นหา + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">สปาร์กกี้</translation>
 <translation id="8257950718085972371">บล็อกการเข้าถึงกล้องต่อไป</translation>
 <translation id="8258027225380843424">นำเข้าเสร็จเรียบร้อย</translation>
@@ -9805,6 +9816,7 @@
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8261625296061301062">ติดตั้งซอฟต์แวร์เครื่องสแกนแล้ว</translation>
 <translation id="8262971894813353037">เปิดใช้การออกแบบเดสก์ท็อปใหม่สำหรับ WebUI รวมถึงต้องเปิดใช้การออกแบบ Chrome โฉมใหม่ปี 2023 ด้วย</translation>
+<translation id="8263228331881858381">บันทึกพาสคีย์แล้ว</translation>
 <translation id="8263336784344783289">ตั้งชื่อกลุ่มนี้</translation>
 <translation id="8264024885325823677">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="826511437356419340">เข้าสู่โหมดภาพรวมหน้าต่างแล้ว เลื่อนเพื่อไปยังส่วนต่างๆ หรือกด Tab หากใช้แป้นพิมพ์</translation>

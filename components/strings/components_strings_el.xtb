@@ -41,6 +41,7 @@
 <translation id="1070901266639972381">Νύχτα</translation>
 <translation id="1073690811593784042">Γυαλί (Έγχρωμο)</translation>
 <translation id="1074497978438210769">Μη ασφαλής</translation>
+<translation id="1074779248866616641">Αποτέλεσμα</translation>
 <translation id="1075364221219156102">Χρήση κλειδιού πρόσβασης</translation>
 <translation id="1080116354587839789">Προσαρμογή στο πλάτος</translation>
 <translation id="1081061862829655580">Τροφοδότης χαρτιού 19</translation>
@@ -1156,6 +1157,7 @@
 <translation id="3209034400446768650">Η σελίδα ενδέχεται να σας χρεώσει</translation>
 <translation id="3212581601480735796">Η δραστηριότητά σας στο <ph name="HOSTNAME" /> παρακολουθείται</translation>
 <translation id="3215092763954878852">Δεν ήταν δυνατή η χρήση του WebAuthn</translation>
+<translation id="3215311088819828484">Το αποτέλεσμα ενημερώθηκε</translation>
 <translation id="3216313131063488104">Μπλουζ</translation>
 <translation id="3218181027817787318">Σχετική</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Απαιτείται ενημέρωση τώρα}=2{Απαιτείται ενημέρωση έως αύριο}other{Απαιτείται ενημέρωση εντός # ημερών}}</translation>
@@ -3155,6 +3157,7 @@
 <translation id="7031646650991750659">Ποιες εφαρμογές Google Play έχετε εγκαταστήσει</translation>
 <translation id="7035705295266423040">Η τράπεζα θέλει να επαληθεύσει την ταυτότητά σας</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να διαχειριστείτε τις ρυθμίσεις απορρήτου του Λογαριασμού σας Google.</translation>
+<translation id="7042616127917168121">Περιορισμός αποτελεσμάτων</translation>
 <translation id="7043552168914147882">Μέσα με καρτέλες</translation>
 <translation id="7044081119134178347">Επιτράπηκε η χρήση της κάμερας για αυτήν τη φορά</translation>
 <translation id="7048095965575426564">European Fanfold</translation>

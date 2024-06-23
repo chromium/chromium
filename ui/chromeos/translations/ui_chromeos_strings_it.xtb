@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK errato</translation>
 <translation id="4057991113334098539">In fase di attivazione...</translation>
 <translation id="4092890906744441904">Irlandese</translation>
+<translation id="4101601646343868113">Accedi alla tua rete mobile e verifica che il tuo piano dati mobili sia attivo</translation>
 <translation id="4124731372776320263">Sincronizzazione di 1 file di Drive in corso…</translation>
 <translation id="4124935795427217608">Unicorno</translation>
 <translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
@@ -602,6 +603,7 @@
 <translation id="5625294776298156701">Tamil con tastiera Tamil99</translation>
 <translation id="5633226425545095130">Se lo sposti, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ascolta</translation>
+<translation id="5650895901941743674">Controlla configurazione APN</translation>
 <translation id="5669691691057771421">Inserisci il nuovo PIN</translation>
 <translation id="5678784840044122290">L'applicazione Linux sarà disponibile nel terminale e potrebbe anche essere visualizzata un'icona nell'Avvio app.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossibile disconnettere un archivio o un disco virtuale<ph name="END_BOLD" />
@@ -1007,6 +1009,7 @@
 <translation id="8600173386174225982">L'elenco dei file è stato modificato in visualizzazione miniatura.</translation>
 <translation id="8601932370724196034">File immagine Crostini</translation>
 <translation id="8609695766746872526">Islandese</translation>
+<translation id="8630384863424041081">Inserisci il PIN della scheda SIM o il PIN predefinito fornito dall'operatore. Contatta il tuo operatore per ricevere assistenza.</translation>
 <translation id="863903787380594467">PIN errato. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
 <translation id="8656407365183407932">È stato necessario rimuovere i file offline</translation>

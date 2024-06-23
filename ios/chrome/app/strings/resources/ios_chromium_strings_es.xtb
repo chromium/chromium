@@ -123,6 +123,7 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 
 Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Abre la página de configuración de métodos de pago en Chromium.</translation>
+<translation id="458786853569524949">Ahora puedes usar Chromium cada vez que hagas clic en enlaces de correos, documentos y otras aplicaciones.</translation>
 <translation id="459080529287102949">Buscar elementos visuales en Chromium</translation>
 <translation id="4633738821577273991">Usa Navegación segura mejorada en este perfil de Chromium también</translation>
 <translation id="4638625642619341392">Descarga Chromium aquí.</translation>
@@ -290,6 +291,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Introdúcela para usar y guardar datos de Chromium en tu cuenta de Google.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9050790730841755540">Usa Chromium siempre que toques enlaces de otras aplicaciones.</translation>
+<translation id="9057082013386654559">Usar Chromium para iPad de forma predeterminada</translation>
 <translation id="9059693977935746710">No tendrás que recordar esta contraseña. Se guardará en el gestor de contraseñas de <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="9110075932708282655">Usa Chromium de forma predeterminada</translation>

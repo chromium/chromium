@@ -904,6 +904,7 @@
 <translation id="4381031910344220229">Энэ нь <ph name="APP_NAME" /> болон микрофоны зөвшөөрөлтэй бүх апп болон вебсайтад микрофоны хандалтыг зөвшөөрнө</translation>
 <translation id="4382340674111381977">Өмнөх хуудас руу буцах</translation>
 <translation id="4389184120735010762">Та суурилуулсан томруулагчийн товчлуурын шууд холбоосыг дарсан байна. Үүнийг асаах уу?</translation>
+<translation id="4394466652057229831">Хураангуйлахын тулд хулганын баруун талыг товш</translation>
 <translation id="439598569299422042">Түр зогсоосон, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Дэлгэцийн видео бичлэгийг хадгалах боломжгүй</translation>
 <translation id="4405151984121254935">Холбогдсон нэмэлтийн төрлийг дэмждэггүй</translation>
@@ -1940,6 +1941,7 @@
 <translation id="8113423164597455979">Бүх аппд и.тэй</translation>
 <translation id="8113515504791187892">Ярихаар сонгох товчлуур</translation>
 <translation id="8120151603115102514">Таны утсанд түгжигдсэн дэлгэц байхгүй байна. Chromebook-нхээ түгжээг тайлахын тулд нууц үг оруулна уу.</translation>
+<translation id="8120249852906205273">Дахин эхлүүлэх</translation>
 <translation id="8127095419621171197">Тооны машин аппыг нээх</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8130528849632411619">Документийн эхлэл хэсэгт очих</translation>
@@ -2035,6 +2037,7 @@
 <translation id="85123341071060231">Таны Chromebook-н Bluetooth унтраалттай байна. Chromebook-нхээ түгжээг тайлахын тулд нууц үг оруулна уу.</translation>
 <translation id="8513108775083588393">Автомат эргэх</translation>
 <translation id="851458219935658693">Одоогийн дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
+<translation id="851660987304951246">Контентыг шуурхай хураангуйлах эсвэл асуулт асуухын тулд Надад уншихад тусал онцлогийг ашиглана уу</translation>
 <translation id="8517041960877371778">Таны <ph name="DEVICE_TYPE" /> асаалттай үед цэнэглэхгүй.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофоны оролтыг <ph name="APP_NAME" /> хянадаг}other{Микрофоны оролтыг # апп хянадаг}}</translation>
 <translation id="8535393432370007982">Өнгөөр эрэмбэлэх дарааллыг болих</translation>

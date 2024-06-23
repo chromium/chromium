@@ -903,6 +903,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4381031910344220229">To omogoča dostop do mikrofona za aplikacijo <ph name="APP_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za mikrofon.</translation>
 <translation id="4382340674111381977">Nazaj na prejšnjo stran</translation>
 <translation id="4389184120735010762">Pritisnili ste bližnjično tipko za zasidrano lupo. Ali jo želite vklopiti?</translation>
+<translation id="4394466652057229831">Za povzetek kliknite z desnim gumbom</translation>
 <translation id="439598569299422042">Začasno zaustavljeno, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Snemanja zaslona ni mogoče shraniti</translation>
 <translation id="4405151984121254935">Vrsta povezane zunanje naprave ni podprta.</translation>
@@ -1939,6 +1940,7 @@ Nova namestitev</translation>
 <translation id="8113423164597455979">Vklop. za vse</translation>
 <translation id="8113515504791187892">Gumb za »Izberite in poslušajte«</translation>
 <translation id="8120151603115102514">Telefon nima zaklepanja zaslona. Če želite odkleniti Chromebook, vnesite geslo.</translation>
+<translation id="8120249852906205273">Zaženi znova</translation>
 <translation id="8127095419621171197">Odpiranje aplikacije Računalo</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Premik na začetek dokumenta</translation>
@@ -2033,6 +2035,7 @@ Nova namestitev</translation>
 <translation id="85123341071060231">Bluetooth v Chromebooku je izklopljen. Če želite odkleniti Chromebook, vnesite geslo.</translation>
 <translation id="8513108775083588393">Samodej. zasuk</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>
+<translation id="851660987304951246">Uporabite funkcijo Pomagaj mi brati za hiter povzetek vsebine ali postavljanje vprašanj</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Vhod za mikrofon nadzira aplikacija <ph name="APP_NAME" />}one{Vhod za mikrofon nadzira # aplikacija}two{Vhod za mikrofon nadzirata # aplikaciji}few{Vhod za mikrofon nadzirajo # aplikacije}other{Vhod za mikrofon nadzira # aplikacij}}</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>

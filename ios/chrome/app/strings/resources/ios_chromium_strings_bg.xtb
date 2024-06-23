@@ -123,6 +123,7 @@
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Отваря страницата с настройки за начините на плащане в Chromium.</translation>
+<translation id="458786853569524949">Вече можете да използвате Chromium всеки път, когато докоснете връзки в имейли, документи и други приложения.</translation>
 <translation id="459080529287102949">Търсене на визуални елементи в Chromium</translation>
 <translation id="4633738821577273991">Възползвайте се от подобрена защита от Безопасно сърфиране и за този потребителски профил в Chromium</translation>
 <translation id="4638625642619341392">Изтеглете Chromium оттук.</translation>
@@ -290,6 +291,7 @@
 На <ph name="TIME" /> данните ви бяха шифровани с пропуска ви. Въведете го, за да използвате и запазвате данните от Chromium в профила си в Google.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
 <translation id="9050790730841755540">Използвайте Chromium всеки път, когато докоснете връзки в други приложения.</translation>
+<translation id="9057082013386654559">Използване на Chromium на iPad по подразбиране</translation>
 <translation id="9059693977935746710">Няма да е нужно да помните тази парола. Тя ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="9110075932708282655">Използване на Chromium по подразбиране</translation>

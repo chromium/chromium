@@ -379,7 +379,7 @@
 <translation id="4040753847560036377">Pogrešan PUK</translation>
 <translation id="4057991113334098539">Aktiviranje…</translation>
 <translation id="4092890906744441904">irski</translation>
-<translation id="4101601646343868113">Prijavite se na svoju mobilnu mrežu i potvrdite da je vaš paket mobilnih podataka aktivan</translation>
+<translation id="4101601646343868113">Prijavite se na mobilnu mrežu i potvrdite da je paket prijenosa podataka na mobilnoj mreži aktivan</translation>
 <translation id="4124731372776320263">Sinhronizacija 1 fajla s Diska</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Premjestite stavke koje su vam nepotrebne u otpad</translation>
@@ -1010,7 +1010,7 @@
 <translation id="8600173386174225982">Spisak fajlova je izmijenjen na prikaz sličica.</translation>
 <translation id="8601932370724196034">Crostini fajl slike</translation>
 <translation id="8609695766746872526">islandski</translation>
-<translation id="8630384863424041081">Unesite PIN svoje SIM kartice ili zadani PIN koji ste dobili od mobilnog operatera. Obratite se mobilnom operateru radi podrške.</translation>
+<translation id="8630384863424041081">Unesite PIN za SIM karticu ili zadani PIN koji ste dobili od operatera. Kontaktirajte operatera za podršku.</translation>
 <translation id="863903787380594467">Pogrešan PIN. Broj preostalih pokušaja: <ph name="RETRIES" /></translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – priključak</translation>
 <translation id="8656407365183407932">Offline fajlovi su se morali ukloniti</translation>

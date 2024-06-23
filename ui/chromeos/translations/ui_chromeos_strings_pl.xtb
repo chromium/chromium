@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Nieprawidłowy kod PUK</translation>
 <translation id="4057991113334098539">Aktywowanie...</translation>
 <translation id="4092890906744441904">Irlandzki</translation>
+<translation id="4101601646343868113">Zaloguj się w swojej sieci komórkowej i potwierdź, że Twój abonament na mobilną transmisję danych jest aktywny</translation>
 <translation id="4124731372776320263">Synchronizuję 1 plik z Dysku</translation>
 <translation id="4124935795427217608">Jednorożec</translation>
 <translation id="4131235941541910880">Przenieś niepotrzebne elementy do kosza</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamilski z klawiaturą Tamil99</translation>
 <translation id="5633226425545095130">Przeniesienie tego elementu spowoduje jego udostępnienie wszystkim osobom, które mogą widzieć udostępniony folder „<ph name="DESTINATION_NAME" />”.</translation>
 <translation id="5649768706273821470">Posłuchaj</translation>
+<translation id="5650895901941743674">Sprawdź konfigurację APN</translation>
 <translation id="5669691691057771421">Wpisz nowy kod PIN</translation>
 <translation id="5678784840044122290">Aplikacja na Linuksa będzie dostępna na terminalu. Może mieć też ikonę w Menu z aplikacjami.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nie można odłączyć archiwum lub dysku wirtualnego<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Lista plików została przełączona na widok miniatur.</translation>
 <translation id="8601932370724196034">Plik graficzny Crostini</translation>
 <translation id="8609695766746872526">Islandzki</translation>
+<translation id="8630384863424041081">Wpisz kod PIN karty SIM lub domyślny kod PIN podany przez operatora. Aby uzyskać pomoc, skontaktuj się z operatorem.</translation>
 <translation id="863903787380594467">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Pliki offline musiały zostać usunięte</translation>

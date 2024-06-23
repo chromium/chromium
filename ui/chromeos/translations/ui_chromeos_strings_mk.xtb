@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Погрешен PUK</translation>
 <translation id="4057991113334098539">Се активира…</translation>
 <translation id="4092890906744441904">ирски</translation>
+<translation id="4101601646343868113">Најавете се на вашата мобилна мрежа и потврдете дека е активен вашиот пакет за мобилен интернет</translation>
 <translation id="4124731372776320263">Се синхронизира 1 датотека на Drive</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете ги ставките што не ви требаат во корпата.</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">тамилски со тастатура Tamil99</translation>
 <translation id="5633226425545095130">Ако ја преместите ставкава, таа ќе биде споделена со сите кои можат да ја видат споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Слушај</translation>
+<translation id="5650895901941743674">Проверете ја вашата APN-конфигурација</translation>
 <translation id="5669691691057771421">Внесете го новиот PIN</translation>
 <translation id="5678784840044122290">Апликацијата за Linux ќе биде достапна во вашиот терминал, а може да се прикаже икона и во „Стартерот“.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се исклучи од архива или виртуелен диск<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Списокот со датотеки се смени во преглед на сликички.</translation>
 <translation id="8601932370724196034">Датотека со слика Crostini</translation>
 <translation id="8609695766746872526">исландски</translation>
+<translation id="8630384863424041081">Внесете го PIN-кодот за вашата SIM-картичка или стандардниот PIN од операторот. За поддршка, контактирајте со операторот.</translation>
 <translation id="863903787380594467">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порта</translation>
 <translation id="8656407365183407932">Мораше да се отстранат вашите офлајн датотеки</translation>

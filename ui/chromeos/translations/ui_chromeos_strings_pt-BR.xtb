@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK incorreta</translation>
 <translation id="4057991113334098539">Ativando...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
+<translation id="4101601646343868113">Faça login na sua rede móvel e confirme se o plano de dados móveis está ativo</translation>
 <translation id="4124731372776320263">Sincronizando 1 arquivo do Drive</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens desnecessários para a lixeira</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se você mover esse item, ele será compartilhado com todos que podem ver a pasta compartilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ouvir</translation>
+<translation id="5650895901941743674">Verifique a configuração do APN</translation>
 <translation id="5669691691057771421">Digite o novo PIN</translation>
 <translation id="5678784840044122290">O aplicativo Linux estará disponível no seu terminal e também poderá mostrar um ícone no acesso rápido.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Não é possível desconectar de um arquivo ou disco virtual<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">A lista de arquivos foi alterada para a visualização em miniatura.</translation>
 <translation id="8601932370724196034">Arquivo de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
+<translation id="8630384863424041081">Insira o PIN do chip ou o PIN padrão fornecido pela operadora. Entre em contato com a operadora para receber ajuda.</translation>
 <translation id="863903787380594467">PIN incorreto. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
 <translation id="8656407365183407932">Seus arquivos off-line precisaram ser removidos</translation>

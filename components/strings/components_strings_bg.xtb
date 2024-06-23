@@ -508,6 +508,7 @@
 <translation id="192095259937375524">Бутон за споделяне на раздела. Активирайте, за да споделите този раздел чрез изпращане на връзка, създаване на QR код, предаване и др.</translation>
 <translation id="1924727005275031552">Нов</translation>
 <translation id="1927439846988093361">Грижи за косата</translation>
+<translation id="1935353813610900265">Изпращане на отзиви за търсенето в историята, базирано на AI</translation>
 <translation id="1935995810530254458">Копиране въпреки това</translation>
 <translation id="1939059826036755332">Автоматичен режим „картина в картината“</translation>
 <translation id="1939175642807587452">Може да поиска разрешение да изпраща известия</translation>
@@ -827,6 +828,7 @@
 <translation id="2526280916094749336">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">Кодът за проверка се намира върху лицевата страна на картата ви. Това е 4-цифреният код горе вдясно над номера на картата.</translation>
 <translation id="2529899080962247600">Това поле не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа. Следващите се пренебрегват.</translation>
+<translation id="2530042584066815841">Заключване и използване на мишката</translation>
 <translation id="2533649878691950253">Достъпът на този сайт до точното ви местоположение бе блокиран, защото обикновено не го разрешавате</translation>
 <translation id="253493526287553278">Преглед на подробностите за промоционалния код</translation>
 <translation id="2535585790302968248">Отворете нов раздел в режим „инкогнито“, за да сърфирате частно</translation>
@@ -852,6 +854,7 @@
 <translation id="255497580849974774">Устройството ви трябва да е свързано със зарядно по време на актуализацията.</translation>
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
 <translation id="2559566667529177711">Многослоен носител</translation>
+<translation id="2565789370591907825">Заключване и използване на клавиатурата</translation>
 <translation id="2570734079541893434">Управление на настройките</translation>
 <translation id="2573170131138724450">Телевизори</translation>
 <translation id="257674075312929031">Група</translation>
@@ -899,6 +902,7 @@
 <translation id="2687555958734450033">Напасване</translation>
 <translation id="2688186765492306706">500 x 760 мм</translation>
 <translation id="2688969097326701645">Да, продължаване</translation>
+<translation id="2690699652723742414">Последните 30 дни</translation>
 <translation id="2691924980723297736">Предупреждение за безопасност</translation>
 <translation id="2699273987028089219">Налично е подменю. Използвайте <ph name="SHORTCUT" />, за да навигирате до допълнителните опции.</translation>
 <translation id="2701514975700770343">С отпечатаната страна надолу</translation>
@@ -1028,6 +1032,7 @@
 <translation id="297173220375858963">Настолна издателска дейност</translation>
 <translation id="2972581237482394796">&amp;Възстановяване</translation>
 <translation id="2977665033722899841">Понастоящем сте избрали реда „<ph name="ROW_NAME" />“. <ph name="ROW_CONTENT" /></translation>
+<translation id="2977847223286097084">Заключване и използване на клавиатурата ви</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурси за писатели</translation>
 <translation id="2980742331521553164">Кодът за проверка на тази карта ще бъде шифрован и запазен в профила ви в Google с цел по-бързо плащане</translation>
@@ -1100,6 +1105,7 @@
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Опитайте да стартирате диагностика на свързаността<ph name="END_LINK" />.</translation>
 <translation id="3120807611504813890">Плик (лека хартия)</translation>
 <translation id="3121994479408824897">Към <ph name="DOMAIN" /></translation>
+<translation id="3122696783148405307">Показване на резултатите от последните 30 дни</translation>
 <translation id="3126023634486644099">Етикети (постоянни)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> вече е основната ви търсеща машина</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – търсене в(ъв) <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1469,6 +1475,7 @@
 <translation id="3781428340399460090">ярко розово</translation>
 <translation id="3783418713923659662">Mastercard</translation>
 <translation id="3784372983762739446">Bluetooth устройства</translation>
+<translation id="378611282717571199">Най-добрите съответствия за „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="3789155188480882154">Размер 16</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> инча)</translation>
@@ -1488,6 +1495,7 @@
 <translation id="3815434930383843058">8 x 12 инча</translation>
 <translation id="3816482573645936981">Стойност (заменена)</translation>
 <translation id="382115839591654906">Код за проверка за <ph name="CARD_NAME" /></translation>
+<translation id="3822492359574576064">заключване и използване на мишката</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Браузърът ви се управлява от <ph name="BROWSER_DOMAIN" />, а потребителският ви профил – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ако използвате прокси сървър...</translation>
@@ -1812,6 +1820,7 @@
 <translation id="4438821706955556403">Обичайна цена</translation>
 <translation id="4441832193888514600">Пренебрегнато, защото правилото може да бъде зададено само като правило за потребители в облака.</translation>
 <translation id="4445133368066241428">Популярни теми</translation>
+<translation id="4445964943162061557">Това е експериментална функция и понякога греши.</translation>
 <translation id="4449116177348980384">Бутон „Управление на настройките за сайтовете“. Активирайте, за да управлявате разрешенията и съхраняваните данни от сайтовете в настройките на Chrome</translation>
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
 <translation id="4451684391620232683">Показан на потребителя текст:</translation>
@@ -1890,6 +1899,7 @@
 <translation id="4631881646528206880">Регистриране на виртуална карта</translation>
 <translation id="4635278307999235413">Данните се изпращат до конзолата за администратори</translation>
 <translation id="4636930964841734540">Информация</translation>
+<translation id="4640225694041297329">Показване на резултатите от последните 7 дни</translation>
 <translation id="464342062220857295">Функции за търсене</translation>
 <translation id="4644670975240021822">В обратен ред с отпечатаната страна надолу</translation>
 <translation id="4646534391647090355">Към изтеглянията</translation>
@@ -1969,6 +1979,7 @@
 <translation id="4780366598804516005">Пощенска кутия 1</translation>
 <translation id="4785376858512657294">Управление на профила в Google</translation>
 <translation id="4785689107224900852">Превключване към този раздел</translation>
+<translation id="4785998536350006000">Търси се „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="4786804728079074733">Волейбол</translation>
 <translation id="4787182171088676626">Плик (фин)</translation>
 <translation id="4789704664580239421">В отворените ви раздели ще се показват сигнали за понижение на цената</translation>
@@ -2006,6 +2017,7 @@
 <translation id="4864801646102013152">Подобрение на дома</translation>
 <translation id="4866506163384898554">Натиснете |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, за да се покаже курсорът</translation>
 <translation id="4873616204573862158">Очила</translation>
+<translation id="4873807733347502026">Заключване и използване на мишката ви</translation>
 <translation id="4876188919622883022">Опростен изглед</translation>
 <translation id="4876305945144899064">Няма потребителско име</translation>
 <translation id="4876327226315760474">Това означава, че функциите на сайта би трябвало да работят по очаквания начин, но може да разполагате с по-ниско ниво на защита при сърфиране.</translation>
@@ -2093,6 +2105,7 @@
 <translation id="5018802455907704660">16 x 20 инча</translation>
 <translation id="5019198164206649151">Допълнителното хранилище е в лошо състояние</translation>
 <translation id="5019293549442035120">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="5019952743397118625">Правилото <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е зададено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> няма да контролира наличността на режима за програмисти на страницата с разширения.</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
 <translation id="5030338702439866405">Издаден от</translation>
@@ -2430,6 +2443,7 @@
 <translation id="5667827081946850877">Аудиокниги</translation>
 <translation id="5675650730144413517">Тази страница не работи</translation>
 <translation id="5675809467256309336">Денс и електронна музика</translation>
+<translation id="5675959228867414813">Показване по дата</translation>
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5678007133659493065">Фолио</translation>
 <translation id="5680642791693447368">Трилъри, криминални и детективски филми</translation>
@@ -2647,6 +2661,7 @@
 <translation id="6108702513636120202">Вашата търсеща машина в Chromium</translation>
 <translation id="6108849843016142864">Влечуги и земноводни</translation>
 <translation id="610911394827799129">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="611018310643025551">Търсенията ви, най-добрите съответствия и съдържанието на страниците се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция.</translation>
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
 <translation id="6117833587752089929">Снимка (сатен)</translation>
 <translation id="6118782133429281336">Списъкът с източници е празен.</translation>
@@ -2903,6 +2918,7 @@
 <translation id="6587923378399804057">Копирана от вас връзка</translation>
 <translation id="6591833882275308647">Устройството ви <ph name="DEVICE_TYPE" /> не е управлявано</translation>
 <translation id="6596325263575161958">Опции за шифроване</translation>
+<translation id="6596573334527383067">Показване на резултатите от вчера</translation>
 <translation id="6597665340361269064">90 градуса</translation>
 <translation id="6598976221101665070">Драматични филми</translation>
 <translation id="6599642189720630047">Проследявани продукти</translation>
@@ -3373,6 +3389,7 @@
 <translation id="7489392576326061356">Шампоани и балсами</translation>
 <translation id="7495528107193238112">Това съдържание е блокирано. Свържете се със собственика на сайта, за да отстрани проблема.</translation>
 <translation id="749865518782565832">Водопроводни услуги</translation>
+<translation id="7500917112031739411">Показване по група</translation>
 <translation id="7501663406926337752">За сайта е подаден сигнал от организацията ви</translation>
 <translation id="7507075214339298899">Плик №9</translation>
 <translation id="7508255263130623398">Върнатият от правилата идентификационен номер на устройството е празен или не съответства на текущия</translation>
@@ -3573,6 +3590,7 @@
 <translation id="7825558994363763489">Микровълнови фурни</translation>
 <translation id="782886543891417279">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите страницата й за вход.</translation>
 <translation id="7831993212387676366">Какво представлява списъкът за пазаруване?</translation>
+<translation id="7832078172950550575">Използвайте общ език, за да търсите в историята си на сърфиране, например фрази като „пицарии в района“ или „подходящи за цялото семейство паркове в центъра“. Търсенията ви, най-добрите съответствия и съдържанието на страниците се изпращат до Google и може да бъдат видени от проверяващи лица с цел подобряване на тази функция. <ph name="BEGIN_LINK" />Управление на настройката за търсене в историята<ph name="END_LINK" /></translation>
 <translation id="7840103971441592723">Функцията за заснемане на екрана стартира</translation>
 <translation id="784137052867620416">Статистика за Пазаруване</translation>
 <translation id="784404208867107517">Групирана история</translation>
@@ -3868,6 +3886,7 @@
 <translation id="8398335999901363925">Списъкът с начини на плащане, които да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
 <translation id="8398446215576328011">Връщане на приложените правила в предишното им състояние</translation>
 <translation id="8398790343843005537">Намиране на телефона ви</translation>
+<translation id="8399276468426899527">заключване и използване на клавиатурата</translation>
 <translation id="8400929824946688748">Работа и образование</translation>
 <translation id="8403506619177967839">Фен фикшън</translation>
 <translation id="8405579342203358118">Управление на данните, които да се синхронизират, от настройките на Chrome</translation>
@@ -4209,6 +4228,7 @@
 <translation id="9089260154716455634">Пренебрегване на правилата:</translation>
 <translation id="9090218457905363312">Реге и карибска музика</translation>
 <translation id="9090243919347147717">Прикачени файлове</translation>
+<translation id="9090548458280093580">Търсене в историята ви, базирано на AI</translation>
 <translation id="9090993752571911635">Доставчици на интернет услуги</translation>
 <translation id="9093723786115107672">Спално облекло</translation>
 <translation id="9094544726794842788">Чрез бутона „Не ми харесва“ се отваря формуляр за изпращане на подробни отзиви за причината, поради която не харесвате съответните резултати</translation>

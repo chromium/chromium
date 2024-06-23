@@ -286,6 +286,7 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
 <translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="1214639335214075459">Ativar decodificação de vídeo por hardware da GPU</translation>
+<translation id="1214942205301731697">Não permitir o uso do modo de desenvolvedor na página de extensões</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
 <translation id="1219027971768347970">Usar a configuração padrão para o sandbox de áudio</translation>
 <translation id="1221359380862872747">Carrega os urls especificados no login de demonstração</translation>
@@ -466,6 +467,7 @@ Se a política for definida como "Desativada" ou não for definida, as configura
 <translation id="1369698103169067223">Os Glanceables não estão ativados para os usuários.</translation>
 <translation id="1371626834351873151">A redução do user agent vai ser ativada para todas as origens.</translation>
 <translation id="1371851989348083665">Permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
+<translation id="1372511977715560169">Controlar a ativação do recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1372618949173323717">Desativar JavaScript</translation>
 <translation id="1376119291123231789">Ativar o modo avançado de carregamento da bateria</translation>
 <translation id="1376765488559847650">CloudUpload</translation>
@@ -1519,6 +1521,7 @@ atualizados para HTTPS por esse recurso.</translation>
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> não for definida, o provedor de pesquisa não terá um ícone.</translation>
 <translation id="2136073175041447267">Configure os drives na nuvem (Google Drive, Microsoft OneDrive) no <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2140379319368541863">Não permitir o recurso "GenAI Wallpaper"</translation>
 <translation id="2144236546337326489">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada</translation>
 <translation id="2145735238144543545">Certificados do cliente obrigatórios</translation>
 <translation id="2146103669166779785">Cor hexadecimal que será usada para gerar e aplicar um tema ao navegador.</translation>
@@ -1796,6 +1799,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Se a política não tiver definição, <ph name="DEFAULT_CLIPBOARD_SETTING" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
+<translation id="2297432074108752232">Permitir o recurso "GenAI VC Background" sem melhorar os modelos de IA</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
 <translation id="2299815818824242485">Não permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>
@@ -1872,6 +1876,7 @@ política enquanto o navegador estiver em execução.</translation>
 <translation id="235987002603620567">O NewBaseUrlInheritanceBehavior é um recurso do <ph name="PRODUCT_NAME" /> que faz com que os frames <ph name="ABOUT_BLANK_PAGE" /> e <ph name="ABOUT_SRCDOC_PAGE" /> herdem os valores do URL base de maneira consistente por snapshots do URL base do iniciador. Confira mais detalhes em https://chromestatus.com/feature/5161101671530496.
 
 Quando a política é desativada, ela impede que usuários ou variações do <ph name="PRODUCT_NAME" /> ativem o recurso NewBaseUrlInheritanceBehavior caso problemas de compatibilidade sejam descobertos. Quando ativada ou deixada sem definição, ela permite a ativação do recurso NewBaseUrlInheritanceBehavior.</translation>
+<translation id="2361182501645567439">Controlar a disponibilidade do modo de desenvolvedor na página de extensões</translation>
 <translation id="2362469626417133796">Janela de tempo de reinicialização</translation>
 <translation id="2362539163677485510">Token de registro da política de nuvem</translation>
 <translation id="2363928351203698966">Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
@@ -2833,6 +2838,7 @@ Essa política é temporária e vai ser removida.</translation>
       Se um site corresponder a um padrão de URL nesta política, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> e <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> não serão consideradas.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  A política só faz a correspondência com base na origem, então os caminhos no padrão do URL serão ignorados.</translation>
+<translation id="3111315283985318774">Controlar a ativação do recurso <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3112501357749061018">Uma lista de certificados TLS em que o <ph name="PRODUCT_NAME" /> confia para autenticação do servidor, com restrições adicionadas fora do certificado. Se nenhuma restrição de um determinado tipo estiver presente, qualquer nome desse tipo será permitido.
 Os certificados precisam ser codificados em base64. É preciso especificar pelo menos uma restrição para cada certificado.</translation>
 <translation id="3118552207903834734">Permitir que o usuário configure o nome do host do dispositivo</translation>
@@ -3278,6 +3284,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 
           Se esta política não for definida, o recurso "Selecionar para ouvir" ficará inicialmente desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="3483585138745445814">Permitir que os usuários ativem o recurso "Compartilhar por proximidade"</translation>
+<translation id="3484305545282013129">Permitir que as origens acessem as permissões do navegador disponíveis para a origem de instalação do quiosque da Web.</translation>
 <translation id="3485200437120267231">Desativar interceptação de login</translation>
 <translation id="3487651201232258606">Mensagens nativas</translation>
 <translation id="3488551354274495283">Ativar a exibição da tela inicial do <ph name="FEATURE_NAME" /> durante o login</translation>
@@ -3289,6 +3296,13 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       A disponibilidade da funcionalidade dependerá também da política do usuário correspondente.</translation>
 <translation id="3495602011142234826">Se for definida como verdadeira, essa extensão poderá usar todas as chaves designadas para uso corporativo para assinar dados arbitrários. Se definida como falsa, ela não poderá acessar nenhuma dessas chaves e o usuário também não poderá conceder permissão de acesso. No entanto, uma extensão poderá acessar uma chave uma única vez se a mesma extensão tiver gerado essa chave.</translation>
 <translation id="3496296378755072552">Gerenciador de senhas</translation>
+<translation id="3496519114741602716">Controle se os usuários podem ativar o modo de desenvolvedor em chrome://extensions.
+
+Se a política não for definida, os usuários poderão ativar o modo de desenvolvedor na página da extensão, a menos que a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> seja definida como <ph name="DEVELOPER_TOOLS_DISALLOWED" /> (2).
+Se for definida como <ph name="ALLOW" /> (0), os usuários poderão ativar o modo de desenvolvedor na página de extensões.
+Se for definida como <ph name="DISALLOW" /> (1), os usuários não poderão ativar o modo de desenvolvedor na página de extensões.
+
+Se for definida, o <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não poderá mais controlar o modo de desenvolvedor de extensões.</translation>
 <translation id="3496761649331792755">Ativar a barra de favoritos</translation>
 <translation id="3498109920669229084">Se definida, a política especificará as extensões que não estão sujeitas à lista de bloqueio.
 
@@ -3385,6 +3399,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="3550875587920006460">Permite configurar uma programação personalizada para verificar se há atualizações. Isso se aplica a todos os usuários e a todas as interfaces no dispositivo. Depois de configurada, o dispositivo verificará se há atualizações de acordo com a programação. A política precisa ser removida para cancelar outras verificações de atualização programadas.</translation>
 <translation id="3550963062099410653">Ativar/desativar atualizações automáticas estendidas</translation>
 <translation id="355118380775352753">Sites que serão abertos no navegador alternativo</translation>
+<translation id="3553017634884660206">Destino da migração de arquivos locais do usuário</translation>
 <translation id="3554498762428140109">Ativar a oclusão de janelas nativas</translation>
 <translation id="3554984410014457319">Permitir que a frase de ativação por voz seja ouvida pelo Google Assistente</translation>
 <translation id="3557586898458302131">Incluir porta não padrão no SPN do Kerberos gerado</translation>
@@ -3573,6 +3588,7 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="3695204334462456702">Destinos de protocolo que não precisam de configuração (mDNS e DNS-SD) (descontinuado)</translation>
 <translation id="3695706037816556327">Ação na remoção do token de segurança (por exemplo, um cartão inteligente) do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Desativar sons de carregamento</translation>
+<translation id="3699322543136447790">Permitir o uso do recurso "GenAI Wallpaper" sem melhorar os modelos de IA</translation>
 <translation id="3699986274986041335">Perguntar sempre que um site quiser uma permissão para fontes locais</translation>
 <translation id="3700193037252896716">Frequência com que a reinicialização acontecerá.</translation>
 <translation id="3700318587977845664">Periodicidade de recorrência da verificação de atualização.</translation>
@@ -5567,6 +5583,15 @@ Para mais informações sobre contextos seguros, consulte "Secure Contexts" (htt
 <translation id="5307432759655324440">Disponibilidade do modo de navegação anônima</translation>
 <translation id="5308551343115571396">Após a desativação do <ph name="LACROS_NAME" />, vamos tentar manter o máximo possível de dados do usuário, removendo todos os dados do navegador.</translation>
 <translation id="530949964068726932">Ocultar opções de acessibilidade no menu da bandeja do sistema</translation>
+<translation id="5310544046492594469">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas por uma política da empresa ou (da versão 114 em diante), se for um usuário gerenciado, extensões integradas no navegador. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
+
+      Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.
+
+      A partir da versão 99 do <ph name="PRODUCT_NAME" />, essa configuração também vai controlar pontos de entrada para o recurso "Ver código-fonte da página". Se a política foi definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar a visualização do código-fonte pelo atalho do teclado nem pelo menu de contexto. Para bloquear totalmente a visualização do código-fonte, também é preciso adicionar "view-source:*" à política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      A partir da versão 119 do <ph name="PRODUCT_NAME" />, essa configuração também controla se o modo de desenvolvedor para Apps Isolados da Web pode ser ativado e usado.
+
+      A partir da versão 128 do <ph name="PRODUCT_NAME" />, essa configuração não vai controlar o modo de desenvolvedor na página de extensões se a política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> estiver definida.</translation>
 <translation id="5311275381462687162">Configuração padrão do comportamento de cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado.</translation>
 <translation id="5312253627576569499">Porcentagem de aumento do intervalo de escurecimento da tela quando a atividade do usuário é observada enquanto a tela está escurecida ou pouco depois de ela ter sido desligada.</translation>
 <translation id="5316856058059940708">Desativar o cursor grande</translation>
@@ -6313,6 +6338,15 @@ e serão desativadas por padrão se a política não for definida. Se você defi
 
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> poderá decidir qual abordagem usar.</translation>
 <translation id="5888645257599699215">Informar o status do áudio do dispositivo</translation>
+<translation id="5888861702011257917">O "Modo sem distrações" é um recurso que controla o "Não perturbe" com um timer e tem o objetivo de reduzir as distrações do usuário. Um recurso do "Modo sem distrações" permite que os usuários ouçam músicas específicas para se concentrar melhor. Esta política controla o acesso ao recurso.
+
+Se ela for deixada sem definição, todos os sons serão desativados para os usuários gerenciados.
+
+Se for ativada, todos os sons poderão ser acessados no "Modo sem distrações".
+
+Se for definida como "Ativar somente sons de foco", o recurso de som será ativado apenas para sons de foco.
+
+Se a política for desativada, os sons no "Modo sem distrações" também serão.</translation>
 <translation id="5890063326284543943">Controlar o uso da API Serial</translation>
 <translation id="5893223274510346852">Desativar o recurso de proteção de IP do <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5893303508158298667">Se a <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> for ativada, definir <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição permitirá que clientes remotos usem servidores de redirecionamento para se conectar a esta máquina quando uma conexão direta não estiver disponível (por exemplo, por conta de uma restrição de firewall).
@@ -6378,6 +6412,9 @@ e serão desativadas por padrão se a política não for definida. Se você defi
 <translation id="5951418260805607969">Mostrar uma notificação quando houver pouco espaço em disco</translation>
 <translation id="5958746038080720143">Permitir otimizações de descoberta automática de proxies da Web (WPAD, na sigla em inglês)</translation>
 <translation id="5961137303188584693">Endereço MAC da placa de rede integrada do dispositivo</translation>
+<translation id="5961565154633996542">Se a política for definida, origens adicionais listadas poderão acessar permissões do navegador (por exemplo, geolocalização, câmera e microfone) que já estão disponíveis para a origem de instalação dos aplicativos de quiosque da Web.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="5962271004971310788">Extensões que precisam ser executadas pelo usuário no modo de navegação anônima para navegar nesse modo</translation>
 <translation id="5963752574792883406">porta 990 (pode ser desbloqueada até 01/02/2022)</translation>
 <translation id="5964583455815172553">A definição da política especifica uma lista de apps isolados da Web (IWAs, na sigla em inglês) que são instalados sem interação do usuário.
@@ -6613,6 +6650,7 @@ Quando ela estiver desativada, o app vai estar no modo somente leitura, impedind
 <translation id="6155936611791017817">Definir estado padrão do cursor grande na tela de login</translation>
 <translation id="6157537876488211233">Lista separada por vírgulas das regras de proxies ignoráveis</translation>
 <translation id="6158324314836466367">Nome da loja on-line da empresa (uso suspenso)</translation>
+<translation id="6162385223000257668">Migrar arquivos locais para o Google Drive e ocultar pastas locais</translation>
 <translation id="6164441518097008843">Restringir o login a uma lista de usuários</translation>
 <translation id="6169504363239921686">Se a política for definida como <ph name="BR_ENABLED" />, o recurso de backup e restauração do Android estará inicialmente ativado. Se ela for definida como <ph name="BR_DISABLED" /> ou não for definida, o recurso de backup e restauração vai continuar desativado durante a configuração.
 
@@ -6806,6 +6844,33 @@ Confira mais detalhes em https://developer.chrome.com/blog/immutable-document-do
 
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
 <translation id="6276087670023098167">Desativar relatórios sobre informações de identificação da máquina</translation>
+<translation id="627645565733796818">Os certificados X.509 podem codificar restrições, como as de nome,
+em extensões do certificado. A RFC 5280 especifica que a aplicação dessas
+restrições a certificados de âncoras de confiança é opcional. Da versão 112 em diante
+do <ph name="PRODUCT_NAME" />, essas restrições
+em certificados carregados do repositório de certificados da plataforma passam a ser
+aplicadas.
+
+Esta política existe como uma desativação temporária caso uma empresa encontre
+problemas com as restrições codificadas nas raízes particulares. Nesse caso, esta
+política pode ser usada para desativar temporariamente a aplicação das restrições
+enquanto corrige os problemas de certificado.
+
+Quando esta política for deixada sem definição ou for ativada,
+o <ph name="PRODUCT_NAME" /> vai aplicar
+restrições codificadas a âncoras carregadas pelo repositório de confiança da plataforma.
+
+Quando ela for desativada,
+o <ph name="PRODUCT_NAME" /> não vai aplicar
+restrições codificadas a âncoras carregadas do repositório de confiança da plataforma.
+
+Na versão 112 do <ph name="PRODUCT_NAME" />,
+esta política não terá efeito se a
+<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />
+for desativada.
+
+Esta política foi removida na versão 126 do <ph name="PRODUCT_NAME" />. A partir
+dessa versão, as restrições em âncoras de confiança são sempre aplicadas.</translation>
 <translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7269,6 +7334,13 @@ Observação: as senhas podem ser mais velhas do que o número especificado de d
 <translation id="6554236101741861403">Taxa em que os dados de telemetria do site são coletados em dispositivos registrados para usuários afiliados. O mínimo permitido é de 5 minutos.
 
 Se deixada sem definição, a frequência padrão de 15 minutos será usada.</translation>
+<translation id="6555378905432946848">A definição da política desativa a aplicação dos requisitos de divulgação da Transparência dos certificados para uma lista de autoridades de certificação (CA, na sigla em inglês) antigas relacionadas a cadeias de certificado com um hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificado. Os hosts comerciais podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que eles não foram divulgados publicamente de maneira adequada. Para desativar a aplicação, o hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> precisa aparecer em um certificado de uma CA reconhecida como antiga. Uma CA antiga é considerada confiável por um ou mais sistemas operacionais compatíveis com o <ph name="PRODUCT_NAME" />, mas não pelo Android Open Source Project ou pelo <ph name="PRODUCT_OS_NAME" />.
+
+      Especifique um hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> vinculando o nome do algoritmo dele, uma barra e a codificação Base64 desse algoritmo de hash aplicado ao <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado por DER do certificado especificado. O formato de codificação Base64 corresponde ao de uma impressão digital SPKI. O único algoritmo de hash reconhecido é sha256, enquanto os outros são ignorados.
+
+      Deixar esta política sem definição significa que se os certificados que precisam ser divulgados via Transparência dos certificados não o forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.
+
+      Esta política foi removida na versão 128 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6556586932263358975">Permitir o bloqueio da tela</translation>
 <translation id="6558013557780651644">Atraso antes de executar ações de inatividade</translation>
 <translation id="6558812160831988140">Relatórios de uso do app</translation>
@@ -7344,6 +7416,13 @@ Observação: reiniciar o dispositivo ou sair da conta faz com que o cache seja 
 <translation id="658537215958747575">Permitir que origens qualificadas usem a API Direct Sockets</translation>
 <translation id="6588634282328239769">Mostrar o URL completo</translation>
 <translation id="6589049539706330510">Ativar suporte</translation>
+<translation id="6590906503707750118">Esta política ativa ou desativa o recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" />.
+0 = Não permitir <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" />.
+
+1 = Permitir <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> sem melhorar os modelos de IA.
+
+Se a política for deixada sem definição, o recurso <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> será autorizado sem melhorar os modelos de IA para usuários corporativos e educacionais.
+Na versão M127, a política foi desativada para usuários corporativos por padrão.</translation>
 <translation id="6593025196187527239">A não ser que o ARC seja desativado por outros meios, definir a política como verdadeira ou não defini-la vai permitir que os usuários usem o ARC. Definir a política como falsa vai impedir que usuários sem afiliação usem o ARC.
 
 Mudanças na política são aplicadas apenas enquanto o ARC não está em execução, como durante a inicialização do ChromeOS.</translation>
@@ -7794,6 +7873,13 @@ bloqueio dessas solicitações será aplicado.</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
 <translation id="6932282102911647185">Luz de fundo roxa do teclado</translation>
+<translation id="6934127980901887540">Esta política ativa ou desativa o recurso <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> no <ph name="PRODUCT_OS_NAME" />.
+0 = Não permitir <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" />.
+
+1 = Permitir <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> sem melhorar os modelos de IA.
+
+Se a política for deixada sem definição, o recurso <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> será permitido para usuários corporativos e educacionais.
+Na versão M127, a política foi desativada para usuários corporativos por padrão.</translation>
 <translation id="6938424179790370595">Se a política for definida como "Nenhuma", a lupa será desativada.
 
 Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>
@@ -7854,6 +7940,12 @@ Esta política será removida após o lançamento do recurso de drivers de impre
 
       Se esta política não for definida, o HTTP/0.9 será desativado em portas não padrão.</translation>
 <translation id="6969332115615661188">Desativar entrada de vídeo</translation>
+<translation id="6971579036359007697">Controla a migração de arquivos locais para a nuvem.
+Aplicável apenas a usuários do SkyVault, ou seja, quando o valor LocalUserFilesAllowed é falso. Caso contrário, a política é ignorada.
+
+Se definida como "google_drive", os arquivos locais são movidos para o Google Drive e as pastas locais são ocultas.
+Se definida como "microsoft_onedrive", os arquivos locais são movidos para o OneDrive e as pastas locais são ocultas.
+Se definida como "somente leitura" ou deixada sem definição: os arquivos locais vão continuar no modo somente leitura.</translation>
 <translation id="6972540544240464302">Seleciona a configuração do programador de tarefas</translation>
 <translation id="6975533677426693807">Sempre abrir arquivos PDF usando o leitor de PDF interno</translation>
 <translation id="6986172482189158664">Configurações do ciclo de vida dos dados de navegação</translation>
@@ -8475,6 +8567,7 @@ a leitura em voz alta será ativada.</translation>
       Se a política estiver definida como Ativada, a página "Nova guia" vai mostrar o aviso abaixo da caixa de pesquisa, caso esteja disponível.
 
       Se a política estiver definida como Desativada, a página "Nova guia" não vai mostrar o aviso abaixo da caixa de pesquisa, mesmo se estiver disponível.</translation>
+<translation id="7457431437931521451">Não permitir o recurso "GenAI VC Background"</translation>
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
 <translation id="7459633275230216698">Permitir caixas de diálogo para seleção de arquivo</translation>
 <translation id="7462256705280836453">Definir se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos pelo site pode ser desativada</translation>
@@ -9720,6 +9813,7 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
 <translation id="8422866312638683210">Se a política for definida, o <ph name="PRODUCT_NAME" /> tentará se registrar como <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. O valor desta política é um token de inscrição que pode ser recuperado pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
       Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="8423237137411858515">Manter os arquivos locais no modo somente leitura</translation>
 <translation id="8424255554404582727">Definir rotação padrão da tela, reaplicada em cada reinicialização</translation>
 <translation id="8426231401662877819">Girar tela no sentido horário em 90 graus</translation>
 <translation id="8426326725481825773">Esta política determina o comportamento de remapeamento das teclas Home/End
@@ -9769,6 +9863,7 @@ Os padrões de correspondência de origem usam um formato semelhante aos da pol�
 
 O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade mínima de dados em bytes que aciona a verificação de padrões. Isso significa que a cópia para a área de transferência de um URL bloqueado é autorizada se o tamanho dos dados copiados for menor que o valor especificado nesse campo. Se o campo não for definido, o valor padrão será de 100 bytes.</translation>
 <translation id="8473107305327396242">Importar certificados de servidor TLS adicionados pelo usuário de repositórios de confiança da plataforma.</translation>
+<translation id="8473841363404590708">Migrar arquivos locais para o Microsoft OneDrive e ocultar pastas locais</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">O WebRTC usará todas as interfaces disponíveis ao procurar o melhor caminho.</translation>
 <translation id="8479496880635054740">Desativar o teclado virtual de acessibilidade na tela de login</translation>
@@ -10750,6 +10845,7 @@ Quando ela estiver desativada, as pesquisas no produto não vão ser mostradas a
 
 A política não terá efeito se a <ph name="METRICS_REPORTING_ENABLED_POLICY_NAME" /> for desativada, o que também desativa as pesquisas no produto.</translation>
 <translation id="9173633148008709976">Ativar aceleração gráfica</translation>
+<translation id="9177661626040846628">Permitir o uso do modo de desenvolvedor na página de extensões</translation>
 <translation id="9180108183162961002">Permitir logins em navegação como visitante</translation>
 <translation id="9185963199234034321">Ativar o alto contraste na tela de login e permitir que o usuário o desative temporariamente</translation>
 <translation id="9187743794267626640">Desativa a montagem de armazenamento externo</translation>

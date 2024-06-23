@@ -123,6 +123,7 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 
 Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chromium nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Apre la pagina delle impostazioni dei metodi di pagamento in Chromium.</translation>
+<translation id="458786853569524949">Ora puoi usare Chromium ogni volta che tocchi i link in email, documenti e altre app.</translation>
 <translation id="459080529287102949">Cerca immagini in Chromium</translation>
 <translation id="4633738821577273991">Attiva la funzionalità Navigazione sicura avanzata anche per questo profilo Chromium</translation>
 <translation id="4638625642619341392">Scarica Chromium qui.</translation>
@@ -290,6 +291,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" />. Inseriscila per utilizzare e salvare i dati di Chromium nel tuo Account Google.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
 <translation id="9050790730841755540">Utilizza Chromium ogni volta che tocchi i link in altre app.</translation>
+<translation id="9057082013386654559">Usa Chromium per iPad per impostazione predefinita</translation>
 <translation id="9059693977935746710">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password per <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="9110075932708282655">Usa Chromium per impostazione predefinita</translation>

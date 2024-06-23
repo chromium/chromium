@@ -900,6 +900,7 @@
 <translation id="4381031910344220229">這將允許「<ph name="APP_NAME" />」和具有麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="4382340674111381977">返回上一頁</translation>
 <translation id="4389184120735010762">你按下了停駐放大鏡的鍵盤快速鍵。確定要啟用這項功能嗎？</translation>
+<translation id="4394466652057229831">按一下滑鼠右鍵進行重點摘要</translation>
 <translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">無法儲存螢幕側錄內容</translation>
 <translation id="4405151984121254935">系統不支援連接的周邊裝置類型</translation>
@@ -1935,6 +1936,7 @@
 <translation id="8113423164597455979">開啟，所有應用程式</translation>
 <translation id="8113515504791187892">隨選朗讀按鈕</translation>
 <translation id="8120151603115102514">你的手機未設定螢幕鎖定。如要解鎖 Chromebook，請輸入密碼。</translation>
+<translation id="8120249852906205273">重新啟動</translation>
 <translation id="8127095419621171197">開啟「計算機」應用程式</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">前往文件開頭</translation>
@@ -2029,6 +2031,7 @@
 <translation id="85123341071060231">Chromebook 的藍牙功能已關閉。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="851458219935658693">顯示目前桌面的視窗，已點選圓形按鈕</translation>
+<translation id="851660987304951246">使用「幫我讀」功能，快速總結內容或提問</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{麥克風輸入來源由「<ph name="APP_NAME" />」控制}other{麥克風輸入來源由 # 個應用程式控制}}</translation>
 <translation id="8535393432370007982">復原依顏色排列順序</translation>

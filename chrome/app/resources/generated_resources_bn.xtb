@@ -413,6 +413,7 @@
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">এই প্রক্রিয়া সম্পূর্ণ করতে কয়েক মিনিট সময় লাগতে পারে। কন্টেনার ম্যানেজার শুরু করা হচ্ছে।</translation>
 <translation id="12951065153783848">আপনার প্রতিষ্ঠান আপনার অ্যাকাউন্ট ম্যানেজ করে</translation>
+<translation id="1296410481664942178">Google Calendar দেখতে চাই না</translation>
 <translation id="1296911687402551044">বেছে নেওয়া ট্যাব পিন করুন</translation>
 <translation id="1297175357211070620">গন্তব্য</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />-এর জন্য মতামত জানান</translation>
@@ -451,6 +452,7 @@
 <translation id="1327495825214193325">ADB ডিবাগিং চালু করতে, এই <ph name="DEVICE_TYPE" /> রিস্টার্ট করতে হবে। এটি বন্ধ করতে ফ্যাক্টরি সেটিংসে রিসেট করতে হবে।</translation>
 <translation id="1327527584824210101">আপনার 'পাসকী' ব্যবহার করা</translation>
 <translation id="1327794256477341646">যেসব ফিচার ব্যবহার করতে আপনার লোকেশন জানা দরকার সেগুলি কাজ করবে না</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> ঘণ্টার মধ্যে</translation>
 <translation id="1329466763986822896">এই হটস্পটের জন্য গোপনীয়তা উন্নত করুন</translation>
 <translation id="1331977651797684645">এটা আমিই।</translation>
 <translation id="1333489022424033687">অন্যান্য সাইটের যেসব ডেটা আপনার ডিভাইসে রয়েছে, সেগুলি মুছে না দেওয়া পর্যন্ত কিছু ফিচার <ph name="ORIGIN" />-এ হয়ত কাজ করবে না</translation>
@@ -1009,6 +1011,7 @@
 <translation id="1709762881904163296">নেটওয়ার্ক সেটিংস</translation>
 <translation id="1709916727352927457">পাসকী মুছুন</translation>
 <translation id="1709972045049031556">শেয়ার করা যাচ্ছে না</translation>
+<translation id="1712143791363119140">কাজ চলছে</translation>
 <translation id="1714644264617423774">আপনার ডিভাইস আরও সহজে ব্যবহার করতে অ্যাক্সেসিবিলিটি ফিচার চালু করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> ও এটির ইনস্টল করা অ্যাপের জন্য সাইট ডেটা ও অনুমতি মুছবেন?</translation>
 <translation id="171826447717908393">আইসোলেটেড ওয়েব অ্যাপ (বিটা)</translation>
@@ -1415,6 +1418,7 @@
 <translation id="200928901437634269">আপনার সন্তানের Google অ্যাকাউন্ট বা স্কুলের অ্যাকাউন্ট ব্যবহার করুন। এছাড়াও, আপনি 'অভিভাবকীয় নিয়ন্ত্রণ' ফিচার সেট-আপ করতে পারবেন।</translation>
 <translation id="2009590708342941694">ইমোজি টুল</translation>
 <translation id="2010501376126504057">মানানসই ডিভাইস</translation>
+<translation id="2010636492623189611">বেছে নেওয়া হয়েছে।</translation>
 <translation id="201217432804812273">"গ্রুপ সেভ করুন" বিকল্প চালু করুন</translation>
 <translation id="2012935757369720523">ফাইল মুছে দিন</translation>
 <translation id="2013550551806600826">এটি ব্যবহার করে দেখুন। সেটিং চালু বা বন্ধ করুন, তারপরে টেস্ট এরিয়ায় দুটি আঙুল দিয়ে আপনার টাচপ্যাডে স্ক্রল করুন। এছাড়া, আপনি পরে এটি 'সেটিংস &gt; ডিভাইস &gt; মাউস ও টাচপ্যাড' বিকল্পে খুঁজে পাবেন।</translation>
@@ -2011,6 +2015,7 @@
 <translation id="2435248616906486374">নেটওয়ার্ক সংযোগ বিচ্ছিন্ন হয়েছে</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2436385001956947090">&amp;লিঙ্ক কপি করুন</translation>
+<translation id="2437561292559037753">ডেটা শেয়ারিং</translation>
 <translation id="2438853563451647815">প্রিন্টারের সাথে কানেক্ট করা নেই</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-এর পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> লোড করা হচ্ছে</translation>
@@ -2589,6 +2594,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> খালি করা হয়েছে</translation>
 <translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
 <translation id="2844809857160214557">প্রিন্ট করার কাজগুলি দেখুন ও ম্যানেজ করুন</translation>
+<translation id="2845276301195220700">Google Calendar সংক্রান্ত আরও অ্যাকশন</translation>
 <translation id="2845382757467349449">সবসময় বুকমার্কস বার দেখান</translation>
 <translation id="2845751331501453107">আপনি ব্রাউজ করার সময়, আপনাকে পছন্দমতো বিজ্ঞাপন দেখানো হবে কিনা তা এই সেটিংয়ের ভিত্তিতে নির্ধারিত হয়, যেমন <ph name="BEGIN_LINK1" />সাইটের সাজেস্ট করা বিজ্ঞাপন<ph name="LINK_END1" />, আপনার <ph name="BEGIN_LINK2" />কুকি সেটিংস<ph name="LINK_END2" /> এবং আপনার দেখা সাইটটি পছন্দমতো বিজ্ঞাপন সাজায় কিনা</translation>
 <translation id="284581348330507117">অনন্য পাসওয়ার্ড তৈরি করুন</translation>
@@ -3703,6 +3709,7 @@
 <translation id="3694590407685276748">টেক্সট কার্সর হাইলাইট করুন</translation>
 <translation id="369489984217678710">পাসওয়ার্ড এবং অন্যান্য সাইন-ইন ডেটা</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{নিরাপত্তা পরীক্ষা করা হয়েছে। আপনার ডেটা আপলোড করা হবে।}=1{নিরাপত্তা পরীক্ষা করা হয়েছে। আপনার ফাইল আপলোড করা হবে।}one{নিরাপত্তা পরীক্ষা করা হয়েছে। আপনার ফাইলগুলি আপলোড করা হবে।}other{নিরাপত্তা পরীক্ষা করা হয়েছে। আপনার ফাইলগুলি আপলোড করা হবে।}}</translation>
+<translation id="3695339288331169103"><ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /> থেকে</translation>
 <translation id="369736917241079046">launcher + left arrow</translation>
 <translation id="3697716475445175867">শেষ যখন খোলা হয়েছে</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{আপনি এই সাইট থেকে ভবিষ্যতের বিজ্ঞপ্তি পাঠানোর সুবিধা বন্ধ করতে পারবেন।}one{আপনি এইসব সাইট থেকে ভবিষ্যতের বিজ্ঞপ্তি পাঠানোর সুবিধা বন্ধ করতে পারবেন।}other{আপনি এইসব সাইট থেকে ভবিষ্যতের বিজ্ঞপ্তি পাঠানোর সুবিধা বন্ধ করতে পারবেন।}}</translation>
@@ -5006,6 +5013,7 @@
 <translation id="4650591383426000695"><ph name="DEVICE_TYPE" /> থেকে আপনার ফোন ডিসকানেক্ট করুন</translation>
 <translation id="4651484272688821107">ডেমো মোড রিসোর্স সহ অনলাইন কম্পোনেন্ট লোড করা যায়নি।</translation>
 <translation id="4651921906638302153">এই অ্যাকাউন্টের মাধ্যমে সাইন-ইন করতে পারবেন না</translation>
+<translation id="4652921642122345344">ভয়েস স্পিড <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">ক্যামেরা সেটিংয়ে পরিবর্তন করতে হলে, Parallels Desktop আবার লঞ্চ করতে হবে। আগে কাজ চালিয়ে যাওয়ার জন্য, Parallels Desktop আবার লঞ্চ করুন।</translation>
 <translation id="4653116291358041820">ছোট শ্যাডো</translation>
 <translation id="4653405415038586100">Linux কনফিগার করার সময় কোনও সমস্যা হয়েছে</translation>
@@ -5205,6 +5213,7 @@
 <translation id="4809927044794281115">হালকা থিম</translation>
 <translation id="4811212958317149293">কীবোর্ড অটোমেটিক স্ক্যান করার অ্যাক্সেস পাল্টান</translation>
 <translation id="4811503964269049987">বেছে নেওয়া ট্যাবকে নতুন কোনও গ্রুপে যুক্ত করুন</translation>
+<translation id="4812073856515324252"><ph name="APP_NAME" /> অ্যাপের জন্য পাসকী কোথায় সেভ করবেন তা বেছে নিন</translation>
 <translation id="4813512666221746211">নেটওয়ার্ক  ত্রুটি</translation>
 <translation id="4814114628197290459">IBAN মুছুন</translation>
 <translation id="4814327014588285482">এড়িয়ে যাও ও আমাকে পরে মনে করিও না</translation>
@@ -5673,6 +5682,7 @@
 <translation id="5160634252433617617">ফিজিক্যাল কীবোর্ড</translation>
 <translation id="5160857336552977725">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করুন</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />-এর ইউএসবি ডিভাইস</translation>
+<translation id="5161442190864186925">মিটিংয়ে যোগ দিন</translation>
 <translation id="5161827038979306924">Chrome-এ আপনার ব্রাউজিং ইতিহাস ও সার্চ ইতিহাসের মধ্যে পার্থক্য কী?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ব্লক করা হয়েছে</translation>
 <translation id="5163910114647549394">ট্যাবস্ট্রিপের শেষে ট্যাব সরানো হয়েছে</translation>
@@ -7990,6 +8000,7 @@
 <translation id="6912007319859991306">মোবাইল সিম কার্ডের পিন</translation>
 <translation id="6912380255120084882">অন্য ডিভাইস ব্যবহার করে দেখুন</translation>
 <translation id="691289340230098384">ক্যাপশন সংক্রান্ত পছন্দ</translation>
+<translation id="6913051485529944333">এই পৃষ্ঠায় আপনি আর Google Calendar দেখতে পাবেন না</translation>
 <translation id="6914812290245989348">অসুরক্ষিত সাইটে যাওয়ার আগে কোনও সতর্কতা দেখতে পাওয়া যাবে না</translation>
 <translation id="6916590542764765824">এক্সটেনশানগুলি পরিচালনা করুন</translation>
 <translation id="6918677045355889289">ChromeOS আপডেট করতে হবে</translation>
@@ -9196,6 +9207,7 @@
 <translation id="7810202088502699111">এই পৃষ্ঠাতে পপ-আপগুলি ব্লক করা হয়েছে৷</translation>
 <translation id="7810367892333449285">আপনার এন্ট্রির ফর্ম্যাট হতে হবে <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ঠিকানা<ph name="LPA_2" />$<ph name="LPA_3" />ঐচ্ছিক মিল থাকা আইডি<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">আবার চেষ্টা করুন বা আগে তৈরি হওয়া নিচের থিম থেকে বেছে নিন।</translation>
+<translation id="7812170317334653156">Google Calendar লুকানো হয়েছে</translation>
 <translation id="7814090115158024843">এইসব সাইটে কখনও লেখার জন্য সহায়তা অফার করবেন না</translation>
 <translation id="7814458197256864873">&amp;কপি করুন</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9254,6 +9266,7 @@
 <translation id="7853747251428735">আরও সর&amp;ঞ্জাম</translation>
 <translation id="7853999103056713222">নিরাপদ পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="7855678561139483478">ট্যাবটি নতুন উইন্ডোতে খুলুন</translation>
+<translation id="7856117067008941054">Google Calendar লুকান</translation>
 <translation id="7857004848504343806">আপনার কম্পিউটারে একটি নিরাপদ মডিউল আছে, যেটির সাহায্যে ChromeOS Flex-এর বিভিন্ন জটিল নিরাপত্তা ফিচার ব্যবহার করা হয়। আরও জানতে Chromebook সহায়তা কেন্দ্রে যান: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">টেক্সট সংক্রান্ত সাজেশন</translation>
 <translation id="7858120906780498731">ChromeOS কানেক্ট করা ইনপুট ডিভাইস</translation>
@@ -9262,6 +9275,7 @@
 <translation id="786073089922909430">পরিষেবা: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;ডাউনলোড করা</translation>
 <translation id="7861846108263890455">Google অ্যাকাউন্টের ভাষা</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> মিনিটের মধ্যে</translation>
 <translation id="7864539943188674973">ব্লুটুথ অক্ষম করুন</translation>
 <translation id="7864825798076155402">আপনার Google অ্যাকাউন্টে সেভ করতে চান?</translation>
 <translation id="7865127013871431856">অনুবাদের বিকল্প</translation>

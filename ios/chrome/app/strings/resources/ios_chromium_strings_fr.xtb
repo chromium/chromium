@@ -123,6 +123,7 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chromium de votre compte<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Ouvre la page des paramètres des modes de paiement dans Chromium.</translation>
+<translation id="458786853569524949">Vous pouvez désormais utiliser Chromium chaque fois que vous appuyez sur des liens dans des e-mails, des documents et d'autres applis.</translation>
 <translation id="459080529287102949">Rechercher des images dans Chromium</translation>
 <translation id="4633738821577273991">Profitez aussi sous ce profil Chromium de la navigation sécurisée avec protection renforcée</translation>
 <translation id="4638625642619341392">Téléchargez Chromium ici.</translation>
@@ -289,6 +290,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" />. Saisissez-la pour utiliser et enregistrer les données Chromium dans votre compte Google.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
 <translation id="9050790730841755540">Utiliser Chromium chaque fois que vous appuyez sur un lien dans d'autres applis.</translation>
+<translation id="9057082013386654559">Utiliser Chromium pour iPad par défaut</translation>
 <translation id="9059693977935746710">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe pour <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="9110075932708282655">Utiliser Chromium par défaut</translation>
