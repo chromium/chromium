@@ -24,8 +24,7 @@ const char kShapeDetectionTestHtml[] = "/media/shape_detection_test.html";
 struct TestParameters {
   const std::string detector_name;
   const std::string image_path;
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer, global-scope
+  // RAW_PTR_EXCLUSION: global-scope
   RAW_PTR_EXCLUSION const std::vector<std::vector<float>>&
       expected_bounding_boxes;
 } const kTestParameters[] = {

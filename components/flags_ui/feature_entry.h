@@ -149,8 +149,7 @@ struct FeatureEntry {
     // get translated. The other parts here use ids for historical reasons and
     // can realistically also be moved to direct description_texts.
     const char* description_text;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope, #constexpr-var-initializer
+    // RAW_PTR_EXCLUSION: #global-scope
     RAW_PTR_EXCLUSION const FeatureParam* params;
     int num_params;
     // A variation id number in the format of

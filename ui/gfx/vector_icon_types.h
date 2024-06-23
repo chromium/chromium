@@ -96,8 +96,7 @@ struct VectorIconRep {
   VectorIconRep(const VectorIconRep&) = delete;
   VectorIconRep& operator=(const VectorIconRep&) = delete;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-ctor-field-initializer
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const PathElement* path = nullptr;
 
   // The length of |path|.
@@ -118,8 +117,7 @@ struct VectorIcon {
 
   bool is_empty() const { return !reps; }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-ctor-field-initializer
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const VectorIconRep* const reps = nullptr;
   size_t reps_size = 0u;
 

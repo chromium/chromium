@@ -86,8 +86,7 @@ class QuitListener : public IPC::Listener {
 
   bool bad_message_received_ = false;
   bool quit_message_received_ = false;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer, #addr-of
+  // RAW_PTR_EXCLUSION: #addr-of
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 };
 
@@ -130,8 +129,7 @@ class ChannelReflectorListener : public IPC::Listener {
     run_loop_->QuitWhenIdle();
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer, #addr-of
+  // RAW_PTR_EXCLUSION: #addr-of
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 
  private:

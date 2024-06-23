@@ -189,9 +189,8 @@ class GFX_EXPORT NativeWindow {
 #if defined(__has_feature) && __has_feature(objc_arc)
   __unsafe_unretained NSWindow* ns_window_ = nullptr;
 #else
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer, #global-scope, #union
-  // This field also points to Objective-C object.
+  // RAW_PTR_EXCLUSION: #global-scope, #union; Also, points to Objective-C
+  // object which isn't supported.
   RAW_PTR_EXCLUSION NSWindow* ns_window_ = nullptr;
 #endif
 };

@@ -175,8 +175,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementIdentifier final {
   // The value of the identifier. Because all non-null values point to static
   // ElementIdentifierImpl objects this can be treated as a value from a set of
   // unique, opaque handles.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union, #global-scope, #constexpr-ctor-field-initializer
+  // RAW_PTR_EXCLUSION: #union, #global-scope
   RAW_PTR_EXCLUSION const internal::ElementIdentifierImpl* handle_ = nullptr;
 };
 

@@ -367,8 +367,7 @@ namespace {
 // be set to true if the experiment state should be listed on
 // chrome://safe-browsing. Features should be listed in alphabetical order.
 constexpr struct {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-var-initializer
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const base::Feature* feature;
   // True if the feature's state should be listed on chrome://safe-browsing.
   bool show_state;

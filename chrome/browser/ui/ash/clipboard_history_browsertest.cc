@@ -124,8 +124,7 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
     return clipboard_data == nullptr || *clipboard_data == *clipboard_data_;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of, #constexpr-ctor-field-initializer
+  // RAW_PTR_EXCLUSION: #addr-of
   RAW_PTR_EXCLUSION const ui::ClipboardData* clipboard_data_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };

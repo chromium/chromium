@@ -58,8 +58,7 @@ INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
 
 struct BuildHtmlTestParameter {
   bool allow_access_requests;
-  // These fields are not a raw_ref<> because they were filtered by the rewriter
-  // for: #constexpr-ctor-field-initializer, global-scope
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const std::string& profile_image_url;
   RAW_PTR_EXCLUSION const std::string& profile_image_url2;
   RAW_PTR_EXCLUSION const std::string& custodian;

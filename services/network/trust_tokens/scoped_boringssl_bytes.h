@@ -45,8 +45,7 @@ class ScopedBoringsslBytes {
 
  private:
   size_t len_ = 0;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer, #addr-of
+  // RAW_PTR_EXCLUSION: #addr-of
   RAW_PTR_EXCLUSION uint8_t* ptr_ = nullptr;
 };
 

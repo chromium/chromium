@@ -19,15 +19,13 @@ namespace tracing {
 struct MessageInfo {
   // List of accepted field ids in the output for this message. The end of list
   // is marked by a -1.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-var-initializer
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const int* accepted_field_ids;
 
   // List of sub messages that correspond to the accepted field ids list. There
   // is no end of list marker and the length is this list is equal to length of
   // |accepted_field_ids| - 1.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope, #constexpr-var-initializer
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const MessageInfo* const* const sub_messages;
 };
 

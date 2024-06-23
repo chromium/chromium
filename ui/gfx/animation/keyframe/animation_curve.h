@@ -61,8 +61,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT AnimationCurve {
   virtual base::TimeDelta TickInterval() const;
 };
 
-// |target_| field is not a raw_ptr<> because it was filtered by the rewriter
-// for: #constexpr-ctor-field-initializer, #macro
+// RAW_PTR_EXCLUSION: #macro
 #define DECLARE_ANIMATION_CURVE_BODY(T, Name)                                \
  public:                                                                     \
   static const Name##AnimationCurve* To##Name##AnimationCurve(               \

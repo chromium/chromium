@@ -769,8 +769,7 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
 }
 
 struct MaskCredentialsTestCase {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #constexpr-var-initializer, #global-scope
+  // RAW_PTR_EXCLUSION: #global-scope
   RAW_PTR_EXCLUSION const OncValueSignature* onc_signature;
   const char* onc;
   const char* expected_after_masking;

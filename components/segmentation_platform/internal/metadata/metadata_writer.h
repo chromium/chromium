@@ -10,7 +10,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -27,19 +27,18 @@ class MetadataWriter {
 
   // Defines a feature based on UMA metric.
   struct UMAFeature {
+    STACK_ALLOCATED();
+
+   public:
     const proto::SignalType signal_type{proto::SignalType::UNKNOWN_SIGNAL_TYPE};
     const char* name{nullptr};
     const uint64_t bucket_count{0};
     const uint64_t tensor_length{0};
     const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
     const size_t enum_ids_size{0};
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-var-initializer
-    RAW_PTR_EXCLUSION const int32_t* const accepted_enum_ids = nullptr;
+    const int32_t* const accepted_enum_ids = nullptr;
     const size_t default_values_size{0};
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #constexpr-var-initializer
-    RAW_PTR_EXCLUSION const float* const default_values = nullptr;
+    const float* const default_values = nullptr;
 
     static constexpr UMAFeature FromUserAction(const char* name,
                                                uint64_t bucket_count) {
