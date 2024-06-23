@@ -56,3 +56,19 @@ static_library("page_info") {
     deps += [ "//ui/native_theme" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "page_info_ui_unittest.cc" ]
+
+  deps = [
+    ":page_info",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/strings:components_strings_grit",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base:base",
+  ]
+}
