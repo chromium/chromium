@@ -1586,7 +1586,7 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
   // the decoder's dtor explicitly resolves all these callbacks.
   return base::BindOnce(
       [](WebGPUDecoderImpl* decoder, wgpu::Adapter adapter,
-         std::unique_ptr<WGPUDeviceDescriptor> descriptor,
+         std::unique_ptr<WGPUDeviceDescriptorDeepCopy> descriptor,
          CallbackInfo callback_info, bool run) {
         if (run) {
           DCHECK(decoder->isolation_key_);
