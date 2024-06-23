@@ -76,6 +76,7 @@
 
 using blink::WebAutofillState;
 using blink::WebDocument;
+using blink::WebDocumentLoader;
 using blink::WebElement;
 using blink::WebElementCollection;
 using blink::WebFormControlElement;
@@ -84,7 +85,9 @@ using blink::WebFrame;
 using blink::WebInputElement;
 using blink::WebLocalFrame;
 using blink::WebNode;
+using blink::WebSecurityOrigin;
 using blink::WebString;
+using blink::WebURL;
 using blink::WebVector;
 using blink::WebView;
 
@@ -288,7 +291,7 @@ std::string GetAlternativeFormSignatureAsString(const FormData& form_data) {
 // happen while ScriptForbiddenScope is active (e.g. during
 // blink::FrameLoader::FinishedParsing(), see crbug.com/1219852). Therefore,
 // this function should be called asynchronously via SetAttributeAsync.
-void SetAttributeInternal(blink::WebElement target,
+void SetAttributeInternal(WebElement target,
                           const std::string& attribute_utf8,
                           const std::string& value_utf8) {
   target.SetAttribute(WebString::FromUTF8(attribute_utf8),
@@ -296,7 +299,7 @@ void SetAttributeInternal(blink::WebElement target,
 }
 
 // Posts an async task to call SetAttributeInternal.
-void SetAttributeAsync(blink::WebElement target,
+void SetAttributeAsync(WebElement target,
                        const std::string& attribute_utf8,
                        const std::string& value_utf8) {
   if (target.IsNull())
@@ -311,10 +314,10 @@ void SetAttributeAsync(blink::WebElement target,
 // Annotate `fields` with field signatures, form signature and visibility state
 // as HTML attributes.
 void AnnotateFieldsWithSignatures(
-    base::span<const blink::WebFormControlElement> fields,
+    base::span<const WebFormControlElement> fields,
     const std::string& form_signature,
     const std::string& alternative_form_signature) {
-  for (const blink::WebFormControlElement& control_element : fields) {
+  for (const WebFormControlElement& control_element : fields) {
     FieldSignature field_signature = CalculateFieldSignatureByNameAndType(
         control_element.NameForAutofill().Utf16(),
         form_util::ToAutofillFormControlType(
@@ -521,8 +524,8 @@ bool IsWebAuthnForm(const FormData* form_data) {
 // only two fields.
 mojom::SubmissionReadinessState CalculateSubmissionReadiness(
     const FormData& form_data,
-    WebInputElement& username_element,
-    WebInputElement& password_element) {
+    const WebInputElement& username_element,
+    WebInputElement password_element) {
   if (password_element.IsNull()) {
     return mojom::SubmissionReadinessState::kNoPasswordField;
   }
@@ -851,7 +854,7 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
 // LINT.ThenChange(//components/password_manager/core/browser/password_manager.cc:update_password_state_for_text_change)
 
 void PasswordAutofillAgent::TrackAutofilledElement(
-    const blink::WebFormControlElement& element) {
+    const WebFormControlElement& element) {
   autofill_agent_->TrackAutofilledElement(element);
 }
 
@@ -955,7 +958,7 @@ void PasswordAutofillAgent::FillField(FieldRendererId field_id,
   DoFillField(input_element, value);
 }
 
-void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
+void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
                                            const std::u16string& credential,
                                            bool is_password) {
   CHECK(!input.IsNull());
@@ -967,7 +970,7 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement& input,
   input.SetSuggestedValue(WebString::FromUTF16(credential));
 }
 
-void PasswordAutofillAgent::DoFillField(WebInputElement& input,
+void PasswordAutofillAgent::DoFillField(WebInputElement input,
                                         const std::u16string& credential) {
   CHECK(!input.IsNull());
   input.SetAutofillValue(WebString::FromUTF16(credential));
@@ -978,7 +981,7 @@ void PasswordAutofillAgent::DoFillField(WebInputElement& input,
 }
 
 void PasswordAutofillAgent::FillPasswordFieldAndSave(
-    WebInputElement& password_input,
+    WebInputElement password_input,
     const std::u16string& credential) {
   CHECK(password_input.IsPasswordFieldForAutofill());
   DoFillField(password_input, credential);
@@ -1226,7 +1229,7 @@ bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
   // about:blank or about:srcdoc frames should not be allowed to use password
   // manager.  See https://crbug.com/756587.
   WebLocalFrame* frame = render_frame()->GetWebFrame();
-  blink::WebURL url = frame->GetDocument().Url();
+  WebURL url = frame->GetDocument().Url();
   if (!url.ProtocolIs(url::kHttpScheme) && !url.ProtocolIs(url::kHttpsScheme))
     return false;
   return frame->GetSecurityOrigin().CanAccessPasswordManager();
@@ -1248,7 +1251,7 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
     return;
   }
   WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-  for (WebFormElement& form : forms) {
+  for (const WebFormElement& form : forms) {
     std::unique_ptr<FormData> form_data = GetFormDataFromWebForm(form);
     std::string form_signature;
     std::string alternative_form_signature;
@@ -1295,7 +1298,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 
   // Make sure that this security origin is allowed to use password manager.
   WebDocument doc = frame->GetDocument();
-  blink::WebSecurityOrigin origin = doc.GetSecurityOrigin();
+  WebSecurityOrigin origin = doc.GetSecurityOrigin();
   if (logger) {
     logger->LogURL(Logger::STRING_SECURITY_ORIGIN,
                    GURL(origin.ToString().Utf8()));
@@ -1436,13 +1439,13 @@ bool PasswordAutofillAgent::IsPrerendering() const {
 }
 
 bool PasswordAutofillAgent::IsUsernameInputField(
-    const blink::WebInputElement& input_element) const {
+    const WebInputElement& input_element) const {
   return input_element && !input_element.IsPasswordFieldForAutofill() &&
          base::Contains(web_input_to_password_info_, FieldRef(input_element));
 }
 
 void PasswordAutofillAgent::ReadyToCommitNavigation(
-    blink::WebDocumentLoader* document_loader) {
+    WebDocumentLoader* document_loader) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
     logger = std::make_unique<RendererSavePasswordProgressLogger>(
@@ -1543,15 +1546,15 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
     elements.push_back(form_util::GetFormControlByRendererId(id));
   }
 
-  for (WebFormControlElement& element : elements) {
+  for (WebFormControlElement element : elements) {
     if (element.IsNull())
       continue;
     // Don't clear the actual value of fields that the user has edited manually
     // (which changes the autofill state back to kNotFilled).
     if (element.IsAutofilled()) {
-      element.SetValue(blink::WebString());
+      element.SetValue(WebString());
     }
-    element.SetSuggestedValue(blink::WebString());
+    element.SetSuggestedValue(WebString());
   }
   all_autofilled_elements_.clear();
 
@@ -1671,7 +1674,7 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
 // PasswordAutofillAgent, private:
 
 bool PasswordAutofillAgent::ShowSuggestionsForDomain(
-    const blink::WebInputElement& element,
+    const WebInputElement& element,
     AutofillSuggestionTriggerSource trigger_source) {
   WebInputElement username_element;
   WebInputElement password_element;
@@ -1752,7 +1755,7 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
 }
 
 bool PasswordAutofillAgent::ShowManualFallbackSuggestions(
-    const blink::WebInputElement& element) {
+    const WebInputElement& element) {
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;

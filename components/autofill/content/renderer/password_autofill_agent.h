@@ -422,18 +422,18 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Sets suggested value of the `input` to `credential`. Persists the
   // information about `input` to clear the previewed value in the future.
-  void DoPreviewField(blink::WebInputElement& input,
+  void DoPreviewField(blink::WebInputElement input,
                       const std::u16string& credential,
                       bool is_password);
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
-  void DoFillField(blink::WebInputElement& input,
+  void DoFillField(blink::WebInputElement input,
                    const std::u16string& credential);
 
   // Uses `FillField` to fill the given `credential` into the `password_input`.
   // Saves the password for its associated form.
-  void FillPasswordFieldAndSave(blink::WebInputElement& password_input,
+  void FillPasswordFieldAndSave(blink::WebInputElement password_input,
                                 const std::u16string& credential);
 
   // This function attempts to fill `username_element` and `password_element`
