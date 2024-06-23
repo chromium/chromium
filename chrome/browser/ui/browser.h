@@ -17,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -79,6 +81,7 @@ class TabMenuModelDelegate;
 
 namespace tab_groups {
 class DeletionDialogController;
+class SavedTabGroupModel;
 }
 
 namespace blink {
@@ -1425,6 +1428,12 @@ class Browser : public TabStripModelObserver,
       breadcrumb_manager_browser_agent_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  // Observe saved tab group model events for normal browser type to
+  // update the session restore metadata with the correct saved group ID.
+  base::ScopedObservation<tab_groups::SavedTabGroupModel,
+                          tab_groups::SavedTabGroupModelObserver>
+      saved_tab_group_observation_{this};
 
   WarnBeforeClosingCallback warn_before_closing_callback_;
 

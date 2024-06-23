@@ -598,11 +598,13 @@ Browser::Browser(const CreateParams& params)
 
   tab_strip_model_->AddObserver(this);
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+  if (tab_groups::IsTabGroupsSaveV2Enabled() &&
+      tab_strip_model_->SupportsTabGroups() && is_type_normal()) {
     auto* saved_tab_group_keyed_service =
         tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
     if (saved_tab_group_keyed_service) {
-      saved_tab_group_keyed_service->model()->AddObserver(this);
+      saved_tab_group_observation_.Observe(
+          saved_tab_group_keyed_service->model());
     }
   }
 
@@ -666,13 +668,7 @@ Browser::Browser(const CreateParams& params)
 }
 
 Browser::~Browser() {
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    auto* saved_tab_group_keyed_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-    if (saved_tab_group_keyed_service) {
-      saved_tab_group_keyed_service->model()->RemoveObserver(this);
-    }
-  }
+  saved_tab_group_observation_.Reset();
 
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
