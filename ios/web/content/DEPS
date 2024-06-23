@@ -8,6 +8,7 @@ specific_include_rules = {
     "+components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h",
     "+components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h",
     "+third_party/blink/public/mojom/favicon/favicon_url.mojom.h",
+    "+third_party/blink/public/mojom/page/page_visibility_state.mojom.h",
     "+skia/ext/skia_utils_ios.h",
   ],
 }

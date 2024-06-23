@@ -33,6 +33,7 @@
 #import "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#import "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #import "ui/display/display.h"
 #import "ui/display/screen.h"
 
@@ -368,7 +369,12 @@ double ContentWebState::GetLoadingProgress() const {
 }
 
 bool ContentWebState::IsVisible() const {
-  return true;
+  auto* render_frame_host = web_contents_->GetPrimaryMainFrame();
+  DCHECK(render_frame_host);
+  return render_frame_host->GetVisibilityState() ==
+                 blink::mojom::PageVisibilityState::kVisible
+             ? true
+             : false;
 }
 
 bool ContentWebState::IsCrashed() const {
