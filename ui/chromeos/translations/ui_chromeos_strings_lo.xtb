@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">PUK ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4057991113334098539">ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
+<translation id="4101601646343868113">ເຂົ້າສູ່ລະບົບເຄືອຂ່າຍມືຖືຂອງທ່ານ ແລະ ຢືນຢັນວ່າແພັກເກດອິນເຕີເນັດມືຖືຂອງທ່ານເປີດນຳໃຊ້ຢູ່</translation>
 <translation id="4124731372776320263">ກຳລັງຊິ້ງໄຟລ໌ Drive 1 ລາຍການ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4131235941541910880">ຍ້າຍລາຍການທີ່ທ່ານບໍ່ຕ້ອງການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມ Tamil99</translation>
 <translation id="5633226425545095130">ການຍ້າຍລາຍການນີ້ຈະແບ່ງປັນມັນໃຫ້ກັບທຸກຄົນທີ່ສາມາດເບິ່ງເຫັນໂຟນເດີທີ່ແບ່ງປັນ '<ph name="DESTINATION_NAME" />' ໄດ້.</translation>
 <translation id="5649768706273821470">​ຟັງ</translation>
+<translation id="5650895901941743674">ກວດສອບການຕັ້ງຄ່າ APN ຂອງທ່ານ</translation>
 <translation id="5669691691057771421">ປ້ອນ PIN ໃໝ່</translation>
 <translation id="5678784840044122290">ແອັບພລິເຄຊັນ Linux ຈະສາມາດໃຊ້ໄດ້ພາຍໃນອຸປະກອນປາຍທາງຂອງທ່ານ ແລະ ອາດຈະສະແດງໄອຄອນໃນຕົວເປີດໃຊ້ຂອງທ່ານນຳອີກ.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ບໍ່ສາມາດຕັດເຊື່ອມຕໍ່ຈາກແຟ້ມຈັດເກັບ ຫຼື ດິສສະເໝືອນຈິງໄດ້<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງຮູບຫຍໍ້ແລ້ວ.</translation>
 <translation id="8601932370724196034">ໄຟລ໌ຮູບພາບ Crostini</translation>
 <translation id="8609695766746872526">ພາສາໄອແລນດິກ</translation>
+<translation id="8630384863424041081">ໃສ່ PIN ຂອງຊິມກາດຂອງທ່ານ ຫຼື PIN ຕາມຄ່າເລີ່ມຕົ້ນທີ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານໃຫ້ໄວ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານເພື່ອຂໍຄວາມຊ່ວຍເຫຼືອ.</translation>
 <translation id="863903787380594467">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ຜອດ</translation>
 <translation id="8656407365183407932">ຕ້ອງລຶບໄຟລ໌ອອບລາຍຂອງທ່ານອອກ</translation>

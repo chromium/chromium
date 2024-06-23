@@ -2950,6 +2950,7 @@
 <translation id="3109724472072898302">جمع شده</translation>
 <translation id="3112292765614504292">اندازه برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
+<translation id="3113970906450647715">سنجاق دکمه برداشته شد</translation>
 <translation id="3115147772012638511">منتظر حافظهٔ پنهان...</translation>
 <translation id="3115580024857770654">کوچک کردن همه موارد</translation>
 <translation id="3115728370128632723">‏بهبود عملکرد وب برای ابزارهای شما:
@@ -5320,6 +5321,7 @@
 <translation id="4883436287898674711">همه سایت‌های <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">مدیر &amp;فعالیت ها</translation>
 <translation id="4884987973312178454">۶ برابر</translation>
+<translation id="4885446229353981848">‏میان‌بر «لنز Google» همیشه نشان داده شود</translation>
 <translation id="4885692421645694729">این افزونه هیچ‌گونه دسترسی اضافی به سایت ندارد</translation>
 <translation id="4887424188275796356">‏باز کردن با System Viewer</translation>
 <translation id="488785315393301722">نمایش جزئیات</translation>
@@ -6129,6 +6131,7 @@
 <translation id="549602578321198708">کلمه</translation>
 <translation id="5496587651328244253">سازماندهی</translation>
 <translation id="5496730470963166430">اجازه ندارد بالاپر ارسال کند یا از هدایت‌ها استفاده کند</translation>
+<translation id="5497250476399536588">می‌توانید آن را در بخش «نشانی‌ها و سایر موارد» پیدا کنید</translation>
 <translation id="5497251278400702716">این فایل</translation>
 <translation id="5497739595514726398">‏Chrome نمی‌تواند این بسته نصب را تأیید کند</translation>
 <translation id="5498967291577176373">نوشتن سریع‌تر با پیشنهادهای به‌خط برای نام، نشانی، یا شماره تلفن</translation>
@@ -6899,6 +6902,7 @@
 <translation id="6082877069782862752">نگاشتن کلید</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - بخشی از گروه بدون نام</translation>
 <translation id="6086004606538989567">حسابی که به‌تأیید رساندید اجازه ندارد به این دستگاه دسترسی پیدا کند.</translation>
+<translation id="6086418630711763366">‏با نشانگر نوشتار می‌توانید در صفحه‌ها پیمایش کنید. برای خاموش کردن، «Ctrl + <ph name="KEY" />» را فشار دهید.</translation>
 <translation id="6086846494333236931">سرپرست سیستم شما نصب کرده است.</translation>
 <translation id="6087746524533454243">به‌دنبال صفحه درباره مرورگر هستید؟ از این پیوند استفاده کنید:</translation>
 <translation id="6087960857463881712">چهره تأثیرگذار</translation>
@@ -6963,6 +6967,7 @@
 <translation id="6130692320435119637">‏افزودن Wi-Fi</translation>
 <translation id="6130807998512240230">مرکز کنترل تلفن، هم‌رسانی با اطراف</translation>
 <translation id="6130887916931372608">کلید صفحه‌کلید</translation>
+<translation id="6132251717264923430">دکمه سنجاق شد</translation>
 <translation id="6132714462430777655">ثبت‌نام مدرسه رد شود؟</translation>
 <translation id="6134428719487602109">‏همه حساب‌های کاربر برداشته می‌شود و دستگاه Chromebook شما بازنشانی و مثل دستگاه جدید می‌شود.</translation>
 <translation id="6135823405800500595">‏مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز باشد، و بلوتوث و Wi-Fi روشن باشند</translation>
@@ -8097,6 +8102,7 @@
 <translation id="6988572888918530647">‏مدیریت «حساب Google»</translation>
 <translation id="6989274756151920076">ماندن در اینجا</translation>
 <translation id="6991665348624301627">انتخاب مقصد</translation>
+<translation id="6991926986715044139">‏میان‌بر «لنز Google» همیشه نشان داده شود</translation>
 <translation id="6992554835374084304">روشن کردن غلط‌گیر املای بهبودیافته</translation>
 <translation id="6993000214273684335">برگه از گروه بی‌نام برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">‏به‌روزرسانی مرورگر Chrome</translation>
@@ -8308,6 +8314,7 @@
 <translation id="7154020516215182599">بازخوردتان را با ما درمیان بگذارید یا مشکلتان را شرح دهید. درصورت امکان، مراحل لازم برای بازسازی مشکل را اضافه کنید.</translation>
 <translation id="7154130902455071009">تغییر صفحه شروعتان به: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">‏کیفیت ویدیو بهتری دریافت کنید و در مصرف باتری صرفه‌جویی کنید. ویدیو فقط در صفحه‌نمایش سازگار با Cast پخش خواهد شد.</translation>
+<translation id="7159695867335480590">پخش/ مکث</translation>
 <translation id="7159953856712257647">نصب‌شده به‌طور پیش‌فرض</translation>
 <translation id="7160182524506337403">اکنون می‌توانید اعلان‌های تلفنتان را مشاهده کنید</translation>
 <translation id="7160911207516219534">پانل‌های کناری</translation>
@@ -9813,6 +9820,7 @@
 <translation id="8252569384384439529">درحال بارگذاری…</translation>
 <translation id="8253198102038551905">روی «+» کلیک کنید تا مشخصات شبکه را دریافت کنید</translation>
 <translation id="8255212965098517578">عکس‌ها، اعلان‌ها، و برنامه‌های اخیر</translation>
+<translation id="8255927332875030912">جستجو + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">سرزنده</translation>
 <translation id="8257950718085972371">ادامه مسدود کردن دسترسی به دوربین</translation>
 <translation id="8258027225380843424">باموفقیت وارد شد!</translation>

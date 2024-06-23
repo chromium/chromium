@@ -1462,6 +1462,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2048254245884707305">Zararli dasturlar qidirilmoqda...</translation>
 <translation id="2048554637254265991">Konteynerlar menejeri ishga tushmadi. Qayta urining.</translation>
 <translation id="2048653237708779538">Bu amal ishlamaydi</translation>
+<translation id="2049021651258469175">Bunda Google hisobidagi parollar kabi maʼlumotlardan foydalanish va ularni saqlash imkoniga ega boʻlasiz.</translation>
 <translation id="204914487372604757">Yorliq yaratish</translation>
 <translation id="2050339315714019657">Tik</translation>
 <translation id="2051266530792296582">Google Parollar menejeri bu sayt uchun ishonchli parol yaratdi</translation>
@@ -5478,6 +5479,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5021750053540820849">Yangilanmagan</translation>
 <translation id="5022206631034207923">Ekran qulfi, sozlamalar</translation>
 <translation id="5024511550058813796">Brauzer tarixingiz barcha qurilmalaringizda sinxronlanadi va ishni qolgan joyingizdan davom ettira olasiz</translation>
+<translation id="5024992827689317672">Axborot oʻchirildi</translation>
 <translation id="5026492829171796515">Google hisobini kiritish uchun kiring</translation>
 <translation id="5026806129670917316">Wi-Fi aloqasini yoqish</translation>
 <translation id="5026874946691314267">Bu xabar boshqa ko‘rsatilmasin</translation>
@@ -8638,6 +8640,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> ta ilova bloklangan</translation>
 <translation id="741906494724992817">Bu ilova hech qanday maxsus ruxsat talab qilmaydi.</translation>
 <translation id="7419142833919893307">Foydalanuvchi nomi kiritilmagan</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN kod xato. 1 ta urinish qoldi.}other{PIN kod xato. # ta urinish qoldi.}}</translation>
 <translation id="7419565702166471774">Doim xavfsiz ulanish ishlatilsin</translation>
 <translation id="7419819959108735624">Google Lens bilan qidirish uchun istalgan obyektni tanlang</translation>
 <translation id="742130257665691897">Bukmarklar olib tashlandi</translation>
@@ -9809,6 +9812,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8261625296061301062">Skaner dasturi oʻrnatildi</translation>
 <translation id="8262971894813353037">Kompyuter uchun yangi WebUI dizaynini faollashtiradi. Chrome Refresh 2023 ham yoniq boʻlishi zarur.</translation>
+<translation id="8263228331881858381">Kalit saqlandi</translation>
 <translation id="8263336784344783289">Bu guruhni nomlang</translation>
 <translation id="8264024885325823677">Bu sozlama administrator tomonidan boshqariladi.</translation>
 <translation id="826511437356419340">Umumiy nazar rejimi yoqildi. Orqaga yoki oldinga oʻtkazish uchun suring yoki klaviatura bor boʻlsa, tab tugmasini bosing</translation>

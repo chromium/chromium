@@ -216,6 +216,7 @@
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> વિન્ડોની સોંપણી બધા ડેસ્કને કરવામાં આવી છે</translation>
 <translation id="1750088060796401187">માત્ર <ph name="MAX_DESK_LIMIT" /> ડેસ્કની મંજૂરી આપવામાં આવી છે. નવી ડેસ્ક ખોલવા માટે, એક ડેસ્ક કાઢી નાખો.</translation>
+<translation id="1751335846119670066">વાંચવામાં મારી સહાય કરો</translation>
 <translation id="1755408179247123630">સાંભળવા માટે પસંદ કરો સુવિધા ચાલુ કરવી છે?</translation>
 <translation id="1755556344721611131">ડાયગ્નોસ્ટિક્સ ઍપ</translation>
 <translation id="1756833229520115364">નમૂનો સાચવી ન શક્યાં. ઘણી બધી વિન્ડો અને ટૅબ છે.</translation>
@@ -227,6 +228,7 @@
 <translation id="178347895271755507">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
+<translation id="179842970735685253">Googleની સેવાની શરતો</translation>
 <translation id="181103072419391116">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1816896987747843206">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="1823873187264960516">ઇથરનેટ: <ph name="ADDRESS" /></translation>
@@ -552,6 +554,7 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ક્લાસવર્કનો પ્રકાર</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3134486240968249588">ધ્યાનમાં રાખવા જેવી થોડી બાબતો</translation>
 <translation id="3139188263101386725">અપડેટ કરેલા શૉર્ટકટનો ઉપયોગ કરો</translation>
 <translation id="3139942575505304791">ડેસ્ક 1</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
@@ -961,6 +964,7 @@
 <translation id="4585337515783392668">અજાણ્યા પ્રાપ્તકર્તા પર કાસ્ટ કરવાનું રોકો</translation>
 <translation id="4596144739579517758">ઘેરી થીમ બંધ છે</translation>
 <translation id="4596442969149038771"><ph name="USER" /> દ્વારા શેર કરાઈ</translation>
+<translation id="4610493115106525653">સારો આઉટપુટ</translation>
 <translation id="4611292653554630842">લૉગ ઇન કરો</translation>
 <translation id="462160925400706389"><ph name="NAME" /> કનેક્ટ થયા</translation>
 <translation id="4623167406982293031">એકાઉન્ટ ચકાસો</translation>
@@ -1118,6 +1122,7 @@
 <translation id="5121628974188116412">પેજના તળિયે જાઓ</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" />નો પ્રીવ્યૂ કરો. નિષ્ક્રિય ડેસ્કટૉપ.</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
+<translation id="5140105873789567560">'લખવામાં મારી સહાય કરો' અને 'વાંચવામાં મારી સહાય કરો' સુવિધાનો ઉપયોગ કરવા માટે, તમારી ઉંમર ઓછામાં ઓછી 18 વર્ષ હોવી આવશ્યક છે.</translation>
 <translation id="5144005092084035179">ઑડિયો ઇનપુટ સ્વિચ કરીએ?</translation>
 <translation id="5147567197700016471">અનલૉક કર્યું</translation>
 <translation id="5150070631291639005">પ્રાઇવસી સેટિંગ</translation>
@@ -1558,6 +1563,7 @@
 <translation id="6696025732084565524">અલગ પાડી શકાય તેવા તમારા કીબોર્ડ માટે મહત્ત્વપૂર્ણ અપડેટ જરૂરી છે</translation>
 <translation id="6697913454192220372">નવું ડેસ્ક ઉમેરો</translation>
 <translation id="6700713906295497288">IME મેનૂ બટન</translation>
+<translation id="6704375469818246414">જનરેટિવ AIનો ઉપયોગ કરતી વખતે ક્વૉલિટીમાં કદાચ જનરેટિવ AIજનરેટિવ AI ફેરફાર આવી શકે છે.</translation>
 <translation id="6706742084323792866">કીબોર્ડને પિન કરો</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6723839937902243910">પાવર</translation>
@@ -1825,9 +1831,11 @@
 <translation id="7726391492136714301">તમારા ફોનના નોટિફિકેશન અને ઍપ જુઓ</translation>
 <translation id="7727952505535211425">નવા ટૅબમાં ઍડ્રેસ બારમાં વેબસાઇટ ખોલો</translation>
 <translation id="7742327441377685481">કોઈ નોટિફિકેશન નથી</translation>
+<translation id="774736258792760908">જ્યારે તમે 'લખવામાં મારી સહાય કરો' અને 'વાંચવામાં મારી સહાય કરો' સુવિધા ચાલુ કરો, ત્યારે <ph name="LINK_TO_SERVICE_TERMS" />ને આધીન રહીને લેખન સંબંધિત સૂચનો અને સારાંશો જનરેટ કરવા, પ્રશ્નોના જવાબ આપવા અને પ્રોડક્ટ બહેતર બનાવવા માટે ઇનપુટ ટેક્સ્ટ અને દસ્તાવેજનું કન્ટેન્ટ Google AIને મોકલવામાં આવે છે. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ કરશો નહીં.</translation>
 <translation id="7748275671948949022">શેલ્ફ પર લૉન્ચર બટનને હાઇલાઇટ કરો</translation>
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7759183637555564029">તમે કોઈપણ સમયે સેટિંગમાંથી 'લખવામાં મારી સહાય કરો' અને 'વાંચવામાં મારી સહાય કરો' સુવિધા બંધ કરી શકો છો. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">સાંભળવા માટે પસંદ કરો</translation>
 <translation id="7769299611924763557">તમારું GIF ટૂંક સમયમાં તૈયાર થઈ જશે</translation>
 <translation id="7773536009433685931">તેના બદલે વાઇ-ફાઇ ચાલુ કરો</translation>
@@ -1836,6 +1844,7 @@
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7787212146956232129">ઇનપુટ અને આઉટપુટ ડિવાઇસ સેટ કરેલા છે. બદલવા માટે સેટિંગ પર જાઓ.</translation>
 <translation id="7792590255364786396">દેખાય છે</translation>
+<translation id="7793389284006812057">જનરેટિવ AI પ્રાયોગિક છે અને વિકાસના પ્રારંભિક તબક્કામાં છે તથા હાલમાં તેની ઉપલબ્ધતા મર્યાદિત છે.</translation>
 <translation id="7796735576426975947">નવું નોટિફિકેશન છુપાવ્યું</translation>
 <translation id="7798302898096527229">રદ કરવા માટે Search અથવા Shift દબાવો.</translation>
 <translation id="780301667611848630">ના, આભાર</translation>
@@ -1990,6 +1999,7 @@
 <translation id="8331351032546853669">ડાઉનલોડ બાકી</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
+<translation id="834414266279889566">ખરાબ આઉટપુટ</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> વિન્ડો પસંદ કરી</translation>
 <translation id="8349826889576450703">લૉન્ચર</translation>
 <translation id="8349964124165471584">નવી વિન્ડોમાં લિંક ખોલો</translation>

@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">‏PUK نادرست است</translation>
 <translation id="4057991113334098539">فعالسازی...</translation>
 <translation id="4092890906744441904">ایرلندی</translation>
+<translation id="4101601646343868113">به سیستم شبکه تلفن همراهتان وارد شوید و بررسی کنید طرح داده تلفن همراهتان فعال باشد</translation>
 <translation id="4124731372776320263">‏درحال همگام‌سازی یک فایل Drive</translation>
 <translation id="4124935795427217608">تک‌شاخ</translation>
 <translation id="4131235941541910880">مواردی را که نیاز ندارید به «حذف‌شده‌ها» منتقل کنید</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">‏تامیل با صفحه کلید Tamil99</translation>
 <translation id="5633226425545095130">اگر این مورد را منتقل کنید با همه افرادی که می‌توانند پوشه هم‌رسانی‌شده «<ph name="DESTINATION_NAME" />» را ببینند هم‌رسانی خواهد شد.</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
+<translation id="5650895901941743674">‏پیکربندی APN را بررسی کنید</translation>
 <translation id="5669691691057771421">پین جدید را وارد کنید</translation>
 <translation id="5678784840044122290">‏برنامه Linux در «ترمینال» دردسترس خواهد بود و ممکن است در «راه‌انداز» هم نمادی نشان داده شود.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ارتباط با بایگانی یا دیسک مجازی نمی‌تواند قطع شود<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">فهرست فایل به نمای تصویر کوچک تغییر کرده است.</translation>
 <translation id="8601932370724196034">‏فایل تصویری Crostini</translation>
 <translation id="8609695766746872526">ایسلندی</translation>
+<translation id="8630384863424041081">پین سیم‌کارت یا پین پیش‌فرضی را که شرکت مخابراتی‌تان ارائه کرده است وارد کنید. برای پشتیبانی با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="863903787380594467">پین اشتباه است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - درگاه</translation>
 <translation id="8656407365183407932">فایل‌های آفلاین شما باید برداشته می‌شدند</translation>

@@ -41,6 +41,7 @@
 <translation id="1070901266639972381">రాత్రి</translation>
 <translation id="1073690811593784042">గ్లాస్ (కలర్డ్)</translation>
 <translation id="1074497978438210769">సురక్షితం కాదు</translation>
+<translation id="1074779248866616641">ఫలితం</translation>
 <translation id="1075364221219156102">పాస్-కీని ఉపయోగించండి</translation>
 <translation id="1080116354587839789">వెడల్పు సరిపోయేలా అమర్చు</translation>
 <translation id="1081061862829655580">ట్రే 19</translation>
@@ -1151,6 +1152,7 @@
 <translation id="3209034400446768650">పేజీ, నగదును ఛార్జ్ చేయవచ్చు</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />లోని మీ యాక్టివిటీ పర్యవేక్షించబడుతోంది</translation>
 <translation id="3215092763954878852">WebAuthn ఉపయోగించడం సాధ్యం కాలేదు</translation>
+<translation id="3215311088819828484">ఫలితం అప్‌డేట్ చేయబడింది</translation>
 <translation id="3216313131063488104">బ్లూస్</translation>
 <translation id="3218181027817787318">సంబంధిత</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{ఇప్పుడే అప్‌డేట్ చేయాలి}=2{రేపుటి లోపు అప్‌డేట్ చేయాలి}other{# రోజులలోపు అప్‌డేట్ చేయాలి}}</translation>
@@ -3149,6 +3151,7 @@
 <translation id="7031646650991750659">ఏ Google Play యాప్‌లు మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="7035705295266423040">ఇది మీరేనని మీ బ్యాంక్ వెరిఫై చేయాలనుకుంటుంది</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
+<translation id="7042616127917168121">ఫలితాలను మెరుగుపరుస్తుంది</translation>
 <translation id="7043552168914147882">ట్యాబ్ స్టాక్</translation>
 <translation id="7044081119134178347">ఈసారి కెమెరాకు అనుమతి ఉంది</translation>
 <translation id="7048095965575426564">యూరోపియన్ ఫ్యాన్‌ఫోల్డ్</translation>

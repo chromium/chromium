@@ -79,6 +79,8 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2329088755516916767">Yoniqligida, Chromium kezish va qidiruvni tezlashtirish uchun sahifalarni oldindan yuklaydi.</translation>
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
+<translation id="2361918034042471035">"<ph name="EXTENSION_NAME" />" kengaytmasi Chromium hisobiga kirishni soʻramoqda</translation>
+<translation id="2374216753258219393">Bu kengaytmani <ph name="USER_EMAIL_ADDRESS" /> sifatida ishlatish uchun Chromium tizimiga kiring.</translation>
 <translation id="2384373936468275798">ChromiumOS maʼlumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}=1{1 ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}other{# ta HID qurilmasi kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}}</translation>
 <translation id="2401032172288869980">Chromium bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
@@ -240,9 +242,11 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4893347770495441059">&amp;Chromium brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="4942295735032723435">Chromium yangilanishlari macOS 11 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium orqa fon rejimida ishlamoqda.</translation>
+<translation id="494490797786467921">Chromium tizimiga kirish oynasini yopish uchun bosing</translation>
 <translation id="4987820182225656817">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chromium mehmon rejimidan foydalaning.</translation>
 <translation id="4994636714258228724">Chromium foydalanuvchini qo‘shish</translation>
 <translation id="5114678101347489141">Chromium saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
+<translation id="5187123684706427865">Chromium hisobi uchun qayta autentifikatsiya kerak</translation>
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5231355151045086930">Chromium hisobidan chiqish</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> allaqachon ushbu Chromium profiliga kirgan. Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chromium profili yaratiladi</translation>

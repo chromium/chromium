@@ -89,6 +89,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="1390418506739274310">Chromeમાં અન્ય ઍપ દ્વારા ખોલવામાં આવતી લિંકનો ઇતિહાસ કદાચ તમે જોઈ શકશો. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો હોઈ શકે છે.</translation>
 <translation id="13931502444227376">આગળ વધવા માટે, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> તમારું નામ, ઇમેઇલ ઍડ્રેસ અને પ્રોફાઇલ ફોટો આ સાઇટ સાથે શેર કરશે. આ સાઇટની <ph name="BEGIN_LINK1" />સેવાની શરતો<ph name="END_LINK1" /> જુઓ.</translation>
+<translation id="139752016751285248">સંપૂર્ણ ઊંચાઈએ કિંમત વિશે જાણકારીની બોટમ શીટ ખુલ્લી છે</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> વડે શોધો</translation>
 <translation id="1398057416966591719">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK1" />Chromeનો કયો ડેટા સાચવવામાં આવે છે<ph name="END_LINK1" /> તેને તમે મેનેજ કરી શકો છો.
 
@@ -179,6 +180,7 @@
 <translation id="1877073879466606884">તમે જે પ્રોફાઇલમાં સાઇન ઇન કરેલું છે તે મેનેજ કરેલી પ્રોફાઇલ છે. તમારા ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલના સેટિંગમાં રિમોટલી ફેરફાર કરી શકે, રિપોર્ટિંગ મારફતે બ્રાઉઝર વિશેની માહિતીનું વિશ્લેષણ કરી શકે અને અન્ય જરૂરી કાર્યો કરી શકે.</translation>
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
 <translation id="189358972401248634">અન્ય ભાષાઓ</translation>
+<translation id="1899175549411605574">કિંમત વિશે જાણકારીની બોટમ શીટ</translation>
 <translation id="1900260903084164610">આગળ વધીને, તમે <ph name="BEGIN_TOS_LINK" />સેવાની શરતો<ph name="END_TOS_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="1904580727789512086">તમે મુલાકાત લો છો તે URLsને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે</translation>
 <translation id="1910950723001426294">શેરિંગના વિકલ્પોની સૂચિ બંધ છે.</translation>
@@ -520,6 +522,7 @@
 <translation id="3587596251841506391">વેબ પર સુરક્ષા સુધારવા સહાય કરો</translation>
 <translation id="3597179440835065298">બહેતર સૂચનો મેળવો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
+<translation id="3614126103057878858">કિંમત વિશે જાણકારી</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3622349720008044802">વિન્ડો મેનેજ કરો</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 સાઇટ}one{+ # સાઇટ}other{+ # સાઇટ}}</translation>
@@ -529,6 +532,7 @@
 <translation id="3637744895182738742">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="3674208116086565128">Google ઍપના હોમ ટૅબ પર જાઓ</translation>
 <translation id="368329460027487650">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટેના વિકલ્પો ખોલે છે.</translation>
+<translation id="3684540848053703310">કિંમત વિશે જાણકારીની બોટમ શીટ બંધ છે</translation>
 <translation id="3687645719033307815">તમે આ પેજનો પ્રીવ્યૂ જોઈ રહ્યાં છો</translation>
 <translation id="3690369331356918524">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="3692944402865947621">સ્ટોરેજ સ્થાન સુધી પહોંચી ન શકવાને કારણે <ph name="FILE_NAME" />નું ડાઉનલોડ નિષ્ફળ થયું.</translation>

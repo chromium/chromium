@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">Netinkamas PUK kodas</translation>
 <translation id="4057991113334098539">Aktyvinama...</translation>
 <translation id="4092890906744441904">Airių k.</translation>
+<translation id="4101601646343868113">Prisijunkite prie mobiliojo ryšio tinklo ir patvirtinkite, kad mobiliojo ryšio duomenų planas aktyvus</translation>
 <translation id="4124731372776320263">Sinchronizuojamas vienas Disko failas</translation>
 <translation id="4124935795427217608">Vienaragis</translation>
 <translation id="4131235941541910880">Perkelkite nereikalingus elementus į šiukšliadėžę</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">Tamilų k. su „Tamil99“ klaviatūra</translation>
 <translation id="5633226425545095130">Perkėlus šį elementą jis bus bendrinamas su visais, kurie gali peržiūrėti bendrinamą aplanką „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Klausyti</translation>
+<translation id="5650895901941743674">APN konfigūracijos tikrinimas</translation>
 <translation id="5669691691057771421">Įveskite naują PIN kodą</translation>
 <translation id="5678784840044122290">„Linux“ programa pasiekiama jūsų terminale ir piktograma taip pat gali būti rodoma Paleidimo priemonėje.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Negalima atsijungti nuo archyvo ar virtualiojo disko<ph name="END_BOLD" />
@@ -1008,6 +1010,7 @@
 <translation id="8600173386174225982">Failų sąrašas pakeistas į miniatiūrų rodinį.</translation>
 <translation id="8601932370724196034">„Crostini“ vaizdo failas</translation>
 <translation id="8609695766746872526">Islandų k.</translation>
+<translation id="8630384863424041081">Įveskite SIM kortelės PIN kodą arba numatytąjį operatoriaus pateiktą PIN kodą. Dėl palaikymo susisiekite su operatoriumi.</translation>
 <translation id="863903787380594467">Netinkamas PIN kodas. Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – prievadas</translation>
 <translation id="8656407365183407932">Neprisijungus pasiekiamus failus teko pašalinti</translation>

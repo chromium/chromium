@@ -65,6 +65,7 @@
 <translation id="1118429183611783760">વેક્યૂમ ક્લિનર અને ફ્લોરની સંભાળ</translation>
 <translation id="1122714970786750095">ઇલેક્ટ્રોનિક અને ઇલેક્ટ્રિકલ</translation>
 <translation id="1123753900084781868">આ સમયે લાઇવ કૅપ્શનની સુવિધા ઉપલબ્ધ નથી</translation>
+<translation id="1125453215844207206">લેબલ વિનાનું ગ્રાફિક. ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ, જે Google AI દ્વારા સંચાલિત છે</translation>
 <translation id="1125573121925420732">વેબસાઇટ તેમની સુરક્ષા અપડેટ કરી રહ્યાં હોય ત્યારે ચેતવણીઓ દેખાવી સામાન્ય બાબત છે. ટૂંક સમયમાં જ આમાં સુધારો કરવામાં આવશે.</translation>
 <translation id="112840717907525620">પૉલિસી કૅશ મેમરી ઓકે</translation>
 <translation id="1131264053432022307">તમે કૉપિ કરેલી છબી</translation>
@@ -403,6 +404,7 @@
 <translation id="1719838434204287058">24 x 30 ઇંચ</translation>
 <translation id="1720941539803966190">ટ્યૂટૉરિઅલ બંધ કરો</translation>
 <translation id="1721424275792716183">* ફીલ્ડ આવશ્યક છે</translation>
+<translation id="1723505128907434375">બુકમાર્ક સાચવ્યું.</translation>
 <translation id="1725591448053514783">એન્વલપ યુ 6</translation>
 <translation id="1727613060316725209">પ્રમાણપત્ર માન્ય છે</translation>
 <translation id="1728677426644403582">તમે વેબ પેજનો સ્રોત જોઈ રહ્યાં છો</translation>
@@ -1071,6 +1073,7 @@
 <translation id="3041612393474885105">પ્રમાણપત્ર માહિતી</translation>
 <translation id="3045769629416806687">જોખમવાળી રમતો</translation>
 <translation id="305162504811187366">ટાઇમસ્ટેમ્પ, હોસ્ટ અને ક્લાયન્ટ સત્ર ids સહિત Chrome રીમોટ ડેસ્કટૉપનો ઇતિહાસ</translation>
+<translation id="3052868890529250114">સામાન્ય રીતે તમને સુરક્ષિત રીતે બધી સાઇટ સાથે કનેક્ટ કરવામાં આવે છે, પરંતુ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ હુમલાખોર તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
 <translation id="3054512251683174387">Chrome 4 અઠવાડિયાથી વધુ જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જેમ-જેમ તમે બ્રાઉઝ કરતા જશો, તેમ-તેમ સૂચિમાં કોઈ વિષય ફરીથી દેખાઈ શકે છે. અથવા અન્ય સાઇટ સાથે Chrome શેર ન કરે એવું જો તમે ઇચ્છતા હો, તો તમે તેવા વિષયોને બ્લૉક કરી શકો છો. Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા વિશે વધુ જાણો.</translation>
 <translation id="3061707000357573562">પૅચ સેવા</translation>
@@ -1271,6 +1274,7 @@
 <translation id="342781501876943858">જો તમે અન્ય સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chromium તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates સર્વરના નમૂનાની એક કે તેથી વધુ URI અમાન્ય છે અને તેનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="3428789896412418755">ગ્રૂપ કરેલો ઇતિહાસ</translation>
+<translation id="3430206873883193118">તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો તે સાઇટ પરના હુમલાખોરો યુક્તિ અજમાવીને તમને સૉફ્ટવેર ઇન્સ્ટૉલ કરવા કે તમારા પાસવર્ડ, ફોન કે ક્રેડિટ કાર્ડ નંબર જેવી બાબતો જણાવવા છેતરી શકે છે. Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">પેજ બંધ કરો</translation>
 <translation id="3433111389595862568">સહયોગ અને કૉન્ફરન્સ માટેના સૉફ્ટવેર</translation>
 <translation id="3433144818443565002">વૉઇસ અને વીડિયો ચૅટ</translation>
@@ -1367,6 +1371,7 @@
 <translation id="3585455899094692781">ઉપલબ્ધ કૅમેરાનો ઉપયોગ કરો અને તેને ખસેડો (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">વેટ ફિલ્મ</translation>
 <translation id="3586931643579894722">વિગતો છુપાવો</translation>
+<translation id="3587725436724465984">તમારી સંસ્થાએ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ને પૉલિસીનું ઉલ્લંઘન કરી શકે તેવી સાઇટ તરીકે ઓળખી છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">મધ્ય</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google પ્રાઇવસી સેટિંગ મેનેજ કરો' બટન, તમારા Google એકાઉન્ટના પ્રાઇવસી સેટિંગની મુલાકાત લેવા માટે સક્રિય કરો</translation>
@@ -1376,6 +1381,7 @@
 <translation id="3608932978122581043">ફીડ ઓરિએન્ટેશન</translation>
 <translation id="3610142117915544498">આગલી વખતે વધુ ઝડપથી ચુકવણી કરવા માટે, તમારા કાર્ડ, નામ અને બિલિંગ સરનામાને તમારા Google એકાઉન્ટમાં સાચવો</translation>
 <translation id="3612660594051121194">લાંબા અંતરની બસ અને રેલ</translation>
+<translation id="3614001939154393113">હુમલાખોરો <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />માંથી તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ, મેસેજ અથવા ક્રેડિટ કાર્ડ) ચોરવાનો પ્રયાસ કરી રહ્યાં હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">કદ 2</translation>
 <translation id="361438452008624280">સૂચિની એન્ટ્રી "<ph name="LANGUAGE_ID" />": અજાણી અથવા અસમર્થિત ભાષા.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
@@ -1526,6 +1532,7 @@
 <translation id="3880456882942693779">આર્ટ અને મનોરંજન</translation>
 <translation id="3880589673277376494">ઇન્ટરનેટ અને ટેલિકોમ</translation>
 <translation id="3881478300875776315">ઓછી પંક્તિઓ બતાવો</translation>
+<translation id="3883437137686353397">તમે સામાન્ય રીતે આ સાઇટ સાથે સુરક્ષિત રીતે કનેક્ટ કરો છો, પણ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ હુમલાખોર તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3883500545751229739">ખલેલ પાડતી જાહેરાતો</translation>
 <translation id="3884278016824448484">વિરોધાભાસી ઉપકરણ ઓળખકર્તા</translation>
 <translation id="388632593194507180">નિરીક્ષણ કરતું જણાયું</translation>
@@ -1653,6 +1660,7 @@
 <translation id="4140905530744469899">પ્રોફાઇલ ID:</translation>
 <translation id="4142935452406587478">ટ્રે 10</translation>
 <translation id="4148925816941278100">American Express</translation>
+<translation id="4149757165376323512">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી અને તમે Googleનો અદ્યતન સુરક્ષા પ્રોગ્રામ ચાલુ કર્યો છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4150099059797363385">એન્વલપ ચાઇનીઝ #4</translation>
 <translation id="4151403195736952345">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (શોધો)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{પેજ 1}one{પેજ {COUNT}}other{પેજ {COUNT}}}</translation>
@@ -2176,6 +2184,7 @@
 <translation id="514704532284964975">તમે તમારા ફોન વડે NFC ડિવાઇસ પર જે માહિતી ટૅપ કરો છો તેને <ph name="URL" /> જોવા અને બદલવા માગે છે</translation>
 <translation id="5147633291963801297">બાજુની પૅનલમાં કિંમતમાં ઘટાડો જુઓ</translation>
 <translation id="5148809049217731050">ઉપર તરફ</translation>
+<translation id="5148889558173091794">તમારી સંસ્થાએ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />ને બ્લૉક કર્યું છે, કારણ કે તે કોઈ પૉલિસીનું ઉલ્લંઘન કરે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5157504274688344097">થોક વેપારીઓ અને ડિપાર્ટમેન્ટ સ્ટોર</translation>
 <translation id="5158275234811857234">કવર</translation>
 <translation id="5159010409087891077">એક નવી છુપી વિંડોમાં પેજ ખોલો (⇧⌘N)</translation>
@@ -2458,6 +2467,7 @@
 <translation id="5689516760719285838">સ્થાન</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplatesનું મૂલ્ય સંબંધિત નથી અને જો DnsOverHttpsMode નીતિને <ph name="SECURE_DNS_MODE_AUTOMATIC" /> અથવા <ph name="SECURE_DNS_MODE_SECURE" /> પર સેટ કરવામાં નહીં આવી હોય, તો તે મૂલ્યનો ઉપયોગ કરવામાં આવશે નહીં.</translation>
 <translation id="5691848789297492617">સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવેલા કાર્ડને સાચવો.</translation>
+<translation id="5692655638459249302">તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો તે સાઇટ પર હુમલાખોરો હાનિકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરી શકે છે જે તમારા પાસવર્ડ, ફોટા, મેસેજ કે ક્રેડિટ કાર્ડ નંબર ચોરી કે ડિલીટ કરી શકે છે. Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">તમારી ખરીદી ચકાસવા અને પૂર્ણ કરવા Windows Helloનો ઉપયોગ કરીએ?</translation>
 <translation id="5699628521141772782">દૂધની વસ્તુઓ અને ઈંડા</translation>
 <translation id="5700761515355162635">ત્રીજા પક્ષની કુકીને મંજૂરી આપી</translation>
@@ -2753,6 +2763,7 @@
 <translation id="6284449872909111707">ટેક્સ્ટ અને ઇન્સ્ટન્ટ મેસેજિંગ</translation>
 <translation id="6284517535531159884">વૅરિએશન સીડનો પ્રકાર</translation>
 <translation id="6287197303017372967">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને દરેક વળાંક પર માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો.</translation>
+<translation id="6288521565586608304">તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો તે સાઇટ પરના હુમલાખોરો યુક્તિ અજમાવીને તમને હાનિકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરવા છેતરી શકે છે જે તમારી બ્રાઉઝ કરવાની રીતને અસર કરી શકે છે — દાખલા તરીકે, તમારા હોમપેજમાં ફેરફાર કરીને કે તમે મુલાકાત લઈ રહ્યાં હો તે સાઇટ પર વધારાની જાહેરાતો બતાવીને. નુકસાન ટાળવા માટે, Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">ડિસ્કાઉન્ટ મળ્યું</translation>
 <translation id="6289939620939689042">પેજનો રંગ</translation>
 <translation id="6292819926564202163">Chromeમાંનું તમારું શોધ એન્જિન</translation>
@@ -2786,6 +2797,7 @@
 <translation id="634500758737709758">દિશાનિર્દેશો</translation>
 <translation id="6348220984832452017">સક્રિય વિવિધતાઓ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
+<translation id="6351398281531821890">જુઓ</translation>
 <translation id="6351658970066645919">બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}=2{2 પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}one{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}other{# પાસવર્ડ (<ph name="DOMAIN_LIST" /> માટે, સિંક કરેલા)}}</translation>
 <translation id="6355392890578844978">આ બ્રાઉઝર કંપની દ્વારા અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવતું નથી. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromiumની બહારથી મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -3118,6 +3130,7 @@
 <translation id="6978722349058177832">જો તમે આ ડિવાઇસ શેર કરતા હો, તો જ્યારે પણ તમે ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરીને ચુકવણી કરો, ત્યારે Chromium તમને ચકાસણી કરવા માટે કહી શકે છે</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">મ્યૂટ કરો (ડિફૉલ્ટ)</translation>
+<translation id="6984270784814146224">લેબલ વિનાની છબી. ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ, જે Google AI દ્વારા સંચાલિત છે</translation>
 <translation id="6987806006823772670">એન્વેલોપ (કોટેડ)</translation>
 <translation id="6989763994942163495">વિગતવાર સેટિંગ બતાવો...</translation>
 <translation id="6996312675313362352">હંમેશાં <ph name="ORIGINAL_LANGUAGE" />નો અનુવાદ કરો</translation>
@@ -3186,6 +3199,7 @@
 <translation id="7112327784801341716">શું તમારી હાલની માહિતી દેખાઈ રહી નથી? તેને અપડેટ કરવા માટે તમારી બેંકનો સંપર્ક કરો.</translation>
 <translation id="7116334367957017155">તમારી પાસે કોઇ સાચવેલું સરનામું નથી. કોઈ સરનામું ઉમેરો, જેથી Googleની સમગ્ર પ્રોડક્ટમાં તેનો ઉપયોગ કરી શકાય.</translation>
 <translation id="7118618213916969306">ક્લિપબોર્ડ URL શોધો, <ph name="SHORT_URL" /></translation>
+<translation id="7118852830504022370">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">ટીવી ડ્રામા</translation>
 <translation id="7119371694555167493">કૉપિ કરવાનો સમય સમાપ્ત થયો</translation>
 <translation id="7119414471315195487">અન્ય ટૅબ અથવા પ્રોગ્રામ બંધ કરો</translation>
@@ -4105,6 +4119,7 @@
 <translation id="882338992931677877">મેન્યુઅલ સ્લૉટ</translation>
 <translation id="8830320733681313421">Hagaki પોસ્ટકાર્ડ</translation>
 <translation id="8833007469711500369">વૉશર અને ડ્રાયર</translation>
+<translation id="8834962751196791179">તમે આ ચેતવણી જોઈ રહ્યાં છો કારણ કે આ સાઇટ HTTPSને સપોર્ટ કરતી નથી અને તમે છૂપા મોડમાં છો. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">સાયન્સ ફિક્શન અને કાલ્પનિક ટીવી શો</translation>
 <translation id="883848425547221593">અન્ય બુકમાર્ક</translation>
 <translation id="8842351563145134519">ટચ કરીને ભરવાની ઉપલબ્ધ ચુકવણી પદ્ધતિઓની સૂચિ અડધી ઊંચાઈએ ખૂલી.</translation>

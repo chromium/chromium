@@ -64,6 +64,7 @@
 <translation id="1118429183611783760">جاروبرقی و مراقبت از کف</translation>
 <translation id="1122714970786750095">دستگاه‌های الکترونیکی و برقی</translation>
 <translation id="1123753900084781868">درحال‌حاضر «زیرنویس ناشنوایان زنده» در دسترس نیست</translation>
+<translation id="1125453215844207206">‏گرافیک بدون برچسب. درحال استخراج نوشتار با بهره‌گیری از هوش مصنوعی Google</translation>
 <translation id="1125573121925420732">در مدتی که وب‌سایت‌ها امنیتشان را به‌روزرسانی می‌کنند، ممکن است به‌طور معمول اخطارهایی دریافت کنید. این مورد به‌زودی اصلاح می‌شود.</translation>
 <translation id="112840717907525620">حافظه پنهان خط‌مشی مورد تأیید است</translation>
 <translation id="1131264053432022307">تصویری که کپی کرده‌اید</translation>
@@ -402,6 +403,7 @@
 <translation id="1719838434204287058">۳۰ × ۲۴ اینچ</translation>
 <translation id="1720941539803966190">بستن آموزش گام‌به‌گام</translation>
 <translation id="1721424275792716183">* این فیلد اجباری است</translation>
+<translation id="1723505128907434375">نشانک ذخیره شد.</translation>
 <translation id="1725591448053514783">پاکت یو ۶</translation>
 <translation id="1727613060316725209">گواهینامه معتبر است</translation>
 <translation id="1728677426644403582">درحال مشاهده منبع یک صفحه وب هستید</translation>
@@ -1070,6 +1072,7 @@
 <translation id="3041612393474885105">اطلاعات گواهی</translation>
 <translation id="3045769629416806687">ورزش‌های سنگین</translation>
 <translation id="305162504811187366">‏سابقه «رایانه ازدور Chrome»، ازجمله مُهرهای زمان، میزبان‌ها، و شناسه‌های جلسه کارخواه</translation>
+<translation id="3052868890529250114">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
 <translation id="3054512251683174387">‏Chrome موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست ظاهر شود. یا می‌توانید موضوعاتی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید. درباره مدیریت حریم خصوصی آگهی در Chrome بیشتر بدانید.</translation>
 <translation id="3061707000357573562">سرویس وصله</translation>
@@ -1269,6 +1272,7 @@
 <translation id="342781501876943858">‏Chromium توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
 <translation id="3428151540071562330">‏یک یا چند سرور نشانی وب الگوی سرور DnsOverHttpsTemplates نامعتبر است و استفاده نخواهد شد.</translation>
 <translation id="3428789896412418755">سابقه گروه‌بندی‌شده</translation>
+<translation id="3430206873883193118">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزاری نصب کنید یا مواردی مثل گذرواژه، شماره تلفن، یا شماره کارت اعتباری را ارائه دهید. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3432601291244612633">بستن صفحه</translation>
 <translation id="3433111389595862568">نرم‌افزار کنفرانس و مشارکت</translation>
 <translation id="3433144818443565002">گپ صوتی و ویدیویی</translation>
@@ -1365,6 +1369,7 @@
 <translation id="3585455899094692781">استفاده و حرکت دادن دوربین‌های دردسترس (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">فیلم خیس</translation>
 <translation id="3586931643579894722">عدم نمایش جزئیات</translation>
+<translation id="3587725436724465984">سازمان شما <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> را به‌عنوان سایتی که شاید خط‌مشی را نقض می‌کند شناسایی کرده است. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">وسط</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏دکمه «مدیریت تنظیمات حریم خصوصی Google»؛ برای رفتن به تنظیمات حریم خصوصی «حساب Google»، آن را فعال کنید</translation>
@@ -1374,6 +1379,7 @@
 <translation id="3608932978122581043">جهت تغذیه کاغذ</translation>
 <translation id="3610142117915544498">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت، نام، و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="3612660594051121194">اتوبوس و قطار بین‌شهری</translation>
+<translation id="3614001939154393113">ممکن است مهاجمان قصد داشته باشند اطلاعات شما (مثل گذرواژه‌ها، پیام‌ها، یا کارت‌های اعتباری) را از <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> به‌سرقت ببرند. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3614103345592970299">اندازه ۲</translation>
 <translation id="361438452008624280">ورودی فهرست «<ph name="LANGUAGE_ID" />»: زبان ناشناس یا پشتیبانی‌نشده.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
@@ -1524,6 +1530,7 @@
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
 <translation id="3880589673277376494">اینترنت و مخابرات</translation>
 <translation id="3881478300875776315">نمایش خطوط کمتر</translation>
+<translation id="3883437137686353397">‏معمولاً ازطریق اتصال ایمن به این سایت متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3883500545751229739">آگهی‌های مزاحم</translation>
 <translation id="3884278016824448484">شناسه دستگاه یکسان نیست</translation>
 <translation id="388632593194507180">نظارت تشخیص داده شد</translation>
@@ -1651,6 +1658,7 @@
 <translation id="4140905530744469899">شناسه نمایه:</translation>
 <translation id="4142935452406587478">سینی ۱۰</translation>
 <translation id="4148925816941278100">American Express</translation>
+<translation id="4149757165376323512">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند و شما «برنامه محافظت پیشرفته Google» را فعال کرده‌اید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4150099059797363385">پاکت چینی شماره ۴</translation>
 <translation id="4151403195736952345">استفاده از پیش‌فرض کلی (تشخیص)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{صفحه ۱}one{صفحه {COUNT}}other{صفحه {COUNT}}}</translation>
@@ -2174,6 +2182,7 @@
 <translation id="514704532284964975">‏<ph name="URL" /> می‌خواهد اطلاعات دستگاه‌های NFC را که با تلفن روی آن‌ها ضربه می‌زنید ببیند و تغییر دهد</translation>
 <translation id="5147633291963801297">کاهش قیمت را در پانل کناری مشاهده کنید</translation>
 <translation id="5148809049217731050">روبه‌بالا</translation>
+<translation id="5148889558173091794">سازمان شما <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> را به‌دلیل نقض خط‌مشی مسدود کرده است. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5157504274688344097">بازرگانان عمده‌فروش و فروشگاه‌های زنجیره‌ای</translation>
 <translation id="5158275234811857234">جلد</translation>
 <translation id="5159010409087891077">‏صفحه را در پنجره «ناشناس» جدیدی باز کنید (N⌘⇧)</translation>
@@ -2456,6 +2465,7 @@
 <translation id="5689516760719285838">مکان</translation>
 <translation id="569000877158168851">‏مقدار DnsOverHttpsTemplates مرتبط نیست و استفاده نخواهد شد، مگراینکه خط‌مشی DnsOverHttpsMode روی <ph name="SECURE_DNS_MODE_AUTOMATIC" /> یا<ph name="SECURE_DNS_MODE_SECURE" /> تنظیم شده باشد.</translation>
 <translation id="5691848789297492617">ذخیره کردن کارت به‌صورت کامل باز شده است.</translation>
+<translation id="5692655638459249302">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید نرم‌افزار مخربی نصب کنند که مواردی مثل گذرواژه، عکس‌ها، پیام‌ها، یا شماره کارت اعتباری شما را به‌سرقت می‌برد یا حذف می‌کند. ‫Chrome اکیداً توصیه می‌کند به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="5695542892312572833">‏برای تأیید و تکمیل خریدتان از Windows Hello استفاده شود؟</translation>
 <translation id="5699628521141772782">لبنیات و تخم‌مرغ</translation>
 <translation id="5700761515355162635">کوکی‌های شخص ثالث مجاز هستند</translation>
@@ -2751,6 +2761,7 @@
 <translation id="6284449872909111707">پیامک و پیام‌رسانی فوری</translation>
 <translation id="6284517535531159884">نوع پیگردی گونه‌ها</translation>
 <translation id="6287197303017372967">با‌استفاده از ویژگی ناوبری، مسیرهای رسیدن به مقصد را با راهنمایی گام‌به‌گام دریافت کنید.</translation>
+<translation id="6288521565586608304">‏مهاجمان ممکن است در سایتی که می‌خواهید بازدید کنید شما را فریب دهند تا نرم‌افزار مخربی را نصب کنید که بر نحوه مرورتان تأثیر می‌گذارد — برای مثال، با تغییر صفحه اصلی یا نمایش آگهی‌های اضافی در سایت‌هایی که بازدید می‌کنید. ‫Chrome اکیداً توصیه می‌کند برای جلوگیری از آسیب، به ایمنی بازگردید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="628877850550444614">تخفیف پیدا شد</translation>
 <translation id="6289939620939689042">رنگ صفحه</translation>
 <translation id="6292819926564202163">‏موتور جستجوی شما در Chrome</translation>
@@ -2784,6 +2795,7 @@
 <translation id="634500758737709758">مسیرها</translation>
 <translation id="6348220984832452017">گونه‌های فعال</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
+<translation id="6351398281531821890">مشاهده</translation>
 <translation id="6351658970066645919">حذف کردن داده‌های مرور</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{هیچ‌کدام}=1{۱ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}=2{۲ گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}one{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}other{# گذرواژه (برای <ph name="DOMAIN_LIST" />، همگام‌سازی‌شده)}}</translation>
 <translation id="6355392890578844978">‏شرکت یا سازمان دیگری این مرورگر را مدیریت نمی‌کند. ممکن است فعالیت‌های انجام‌شده در این دستگاه خارج از Chromium مدیریت شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -3116,6 +3128,7 @@
 <translation id="6978722349058177832">‏اگر مشترک با دیگران از این دستگاه استفاده می‌کنید، Chromium می‌تواند هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید از شما بخواهد آن را تأیید کنید</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">بی‌صدا (پیش‌فرض)</translation>
+<translation id="6984270784814146224">‏تصویر بدون برچسب. درحال استخراج نوشتار با بهره‌گیری از هوش مصنوعی Google</translation>
 <translation id="6987806006823772670">پاکت (روکش‌دار)</translation>
 <translation id="6989763994942163495">نمایش تنظیمات پیشرفته ...</translation>
 <translation id="6996312675313362352"><ph name="ORIGINAL_LANGUAGE" /> همیشه ترجمه شود</translation>
@@ -3183,6 +3196,7 @@
 <translation id="7112327784801341716">اطلاعات کنونی‌تان را نمی‌بینید؟ برای به‌روزرسانی آن، با بانکتان تماس بگیرید.</translation>
 <translation id="7116334367957017155">‏نشانی ذخیره‌شده‌ای ندارید. یک نشانی اضافه کنید تا در بین محصولات Google استفاده شود.</translation>
 <translation id="7118618213916969306">جستجوی نشانی وب بریده‌دان، <ph name="SHORT_URL" /></translation>
+<translation id="7118852830504022370">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7119063404975271297">نمایش درام تلویزیونی</translation>
 <translation id="7119371694555167493">مهلت زمانی کپی کردن تمام شد</translation>
 <translation id="7119414471315195487">برگه‌ها یا برنامه‌های دیگر را ببندید</translation>
@@ -4102,6 +4116,7 @@
 <translation id="882338992931677877">شیار دستی</translation>
 <translation id="8830320733681313421">کارت‌پستال هاگاکی</translation>
 <translation id="8833007469711500369">ماشین لباس‌شویی و خشک‌کن</translation>
+<translation id="8834962751196791179">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند و در حالت «ناشناس» هستید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8837398923270275776">نمایش تلویزیونی علمی تخیلی و فانتزی</translation>
 <translation id="883848425547221593">نشانک‌های دیگر</translation>
 <translation id="8842351563145134519">روش‌های پرداخت دردسترس که باید با لمس کردن تکمیل شود به‌صورت نیمه باز شده است.</translation>

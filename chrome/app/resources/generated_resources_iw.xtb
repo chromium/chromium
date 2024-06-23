@@ -400,7 +400,7 @@
 <translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
 <translation id="1283126956823499975">משהו השתבש בהגדרת המכשיר</translation>
 <translation id="1284277788676816155">אין לאפשר שמירת נתונים</translation>
-<translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
+<translation id="1285320974508926690">אל תתרגמו את האתר הזה</translation>
 <translation id="1285484354230578868">‏אחסון נתונים בחשבון Google Drive</translation>
 <translation id="1285625592773741684">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'נתונים סלולריים'</translation>
 <translation id="1285815028662278915">יכול להיות שחבילת הגלישה שלך לא כוללת תמיכה בנקודה לשיתוף אינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1472,6 +1472,7 @@
 <translation id="2048254245884707305">מתבצעת בדיקה לאיתור תוכנות זדוניות…</translation>
 <translation id="2048554637254265991">שגיאה בהפעלת מנהל המאגר. יש לנסות שוב.</translation>
 <translation id="2048653237708779538">הפעולה לא זמינה</translation>
+<translation id="2049021651258469175">‏תהיה לך גם אפשרות להשתמש בסיסמאות שלך ולשמור אותן בחשבון Google.</translation>
 <translation id="204914487372604757">יצירת קיצור דרך</translation>
 <translation id="2050339315714019657">לאורך</translation>
 <translation id="2051266530792296582">‏מנהל הסיסמאות של Google יצר סיסמה חזקה לאתר הזה</translation>
@@ -5491,6 +5492,7 @@
 <translation id="5021750053540820849">עדיין לא מעודכן</translation>
 <translation id="5022206631034207923">נעילת מסך, פקדים</translation>
 <translation id="5024511550058813796">תהיה לך גישה להיסטוריה שלך בכל המכשירים המסונכרנים, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
+<translation id="5024992827689317672">הנתונים נמחקו</translation>
 <translation id="5026492829171796515">‏יש להיכנס לחשבון כדי להוסיף חשבון Google</translation>
 <translation id="5026806129670917316">‏הפעלת Wi-Fi</translation>
 <translation id="5026874946691314267">אני לא רוצה לראות את ההודעה הזו שוב</translation>
@@ -8656,6 +8658,7 @@
 <translation id="7417435070053325657">‫<ph name="BLOCKED_APPS_SIZE" /> מתוך <ph name="APPS_LIST_SIZE" /> אפליקציות חסומות</translation>
 <translation id="741906494724992817">אין צורך בהרשאות מיוחדות עבור האפליקציה הזו.</translation>
 <translation id="7419142833919893307">לא נוסף שם משתמש</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{קוד האימות שגוי. נותר ניסיון אחד.}one{קוד האימות שגוי. נותרו # ניסיונות.}two{קוד האימות שגוי. נותרו # ניסיונות.}other{קוד האימות שגוי. נותרו # ניסיונות.}}</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>
 <translation id="7419819959108735624">‏אפשר לבחור משהו לחיפוש באמצעות Google Lens</translation>
 <translation id="742130257665691897">סימניות הוסרו</translation>
@@ -9830,6 +9833,7 @@
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8261625296061301062">הותקנה תוכנה לסורק</translation>
 <translation id="8262971894813353037">‏הפעלת העיצוב החדש של שולחן העבודה ב-WebUI. צריך להפעיל גם את Chrome Refresh 2023.</translation>
+<translation id="8263228331881858381">מפתח הגישה נשמר</translation>
 <translation id="8263336784344783289">כאן נותנים שם לקבוצה</translation>
 <translation id="8264024885325823677">ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
 <translation id="826511437356419340">‏נכנסת למצב סקירה כללית של חלון. כדי לנווט, יש להחליק על המסך, או להקיש על מקש Tab אם משתמשים במקלדת.</translation>
@@ -10574,7 +10578,7 @@
 <translation id="8795916974678578410">חלון חדש</translation>
 <translation id="8796907593900732741">‏רק שירותי המערכת יכולים להשתמש במיקום שלך. עם זאת, יכול להיות שהאזור הכללי עדיין יהיה גלוי לאפליקציות ולאתרים באמצעות פרטים כמו כתובת ה-IP שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">‏&amp;התאמה אישית של Chrome</translation>
-<translation id="8797459392481275117">איני רוצה לקבל תרגום של אתר זה בכלל</translation>
+<translation id="8797459392481275117">אל תתרגמו את האתר הזה אף פעם</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8800034312320686233">האתר לא פועל?</translation>
 <translation id="8803526663383843427">במצב מופעל</translation>

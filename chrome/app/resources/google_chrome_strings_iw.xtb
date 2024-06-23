@@ -5,6 +5,8 @@
 <translation id="1026101648481255140">המשך בהתקנה</translation>
 <translation id="102763973188675173">‏כדי להתאים אישית את Google Chrome ולשלוט בו טוב יותר, יש להוריד את העדכון החדש.</translation>
 <translation id="1028061813283459617">‏כדי למחוק את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון שלך ב-Google, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chrome<ph name="END_LINK" />.</translation>
+<translation id="1042270987544905725">‏אפשר ללחוץ כדי לסגור את תיבת הדו-שיח של הכניסה ל-Chrome</translation>
+<translation id="1059838145689930908">‏כדי להשתמש בתוסף הזה בתור <ph name="USER_EMAIL_ADDRESS" />, עליך להיכנס ל-Chrome.</translation>
 <translation id="1065672644894730302">לא הייתה אפשרות לקרוא את ההעדפות שלך. ייתכן שחלק מהתכונות לא יהיו זמינות ושינויים בהעדפות לא יישמרו.</translation>
 <translation id="1088300314857992706">‏בכתובת <ph name="USER_EMAIL_ADDRESS" /> השתמשו בעבר ב-Chrome</translation>
 <translation id="110877069173485804">‏זה ה-Chrome שלך</translation>
@@ -365,6 +367,7 @@
 <translation id="6291089322031436445">‏אפליקציות לגרסת הפיתוח של Chrome</translation>
 <translation id="6291549208091401781">‏Google Chrome כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="6319856120645568262">‏ל-Chrome נדרשת הרשאה כדי למפות את הסביבה שלך ולעקוב אחרי תנועות הידיים</translation>
+<translation id="6321592572353357376">‏התוסף "<ph name="EXTENSION_NAME" />" מבקש ממך להיכנס ל-Chrome</translation>
 <translation id="6326175484149238433">‏הסרה מ-Chrome</translation>
 <translation id="6327105987658262776">אין עדכונים זמינים.</translation>
 <translation id="6360449101159168105">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chrome ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>
@@ -457,6 +460,7 @@
 <translation id="7655455401911432608">‏היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chrome במכשיר הזה.</translation>
 <translation id="7661924425853052955">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאות '<ph name="PERMISSION_1" />', '<ph name="PERMISSION_2" />' ועוד <ph name="COUNT" /> הרשאות הוסרו על ידי Chrome</translation>
 <translation id="7668816516367091728">אפשר לבצע משימות כמו תרגום, חישוב ועוד ישירות מסרגל הכתובות</translation>
+<translation id="7670287553302121848">‏נדרש אימות מחדש לחשבון Chrome</translation>
 <translation id="769538538642757151">‏Chrome יעדכן אותך אם יש משהו שצריך לבדוק</translation>
 <translation id="7747138024166251722">המתקין לא הצליח ליצור ספרייה זמנית. יש לבדוק את המקום הפנוי בדיסק ואת האישור להתקנת תוכנה.</translation>
 <translation id="7761834446675418963">‏אפשר ללחוץ על השם שלך כדי לפתוח את Chrome ולהתחיל לגלוש.</translation>

@@ -1470,6 +1470,7 @@
 <translation id="2048254245884707305">ກຳລັງກວດຫາເມົາແວ...</translation>
 <translation id="2048554637254265991">ເກີດຜິດພາດໃນການເລີ່ມຕົວຈັດການກ່ອງບັນຈຸ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="2048653237708779538">ຄຳສັ່ງບໍ່ສາມາດໃຊ້ໄດ້</translation>
+<translation id="2049021651258469175">ນອກຈາກນີ້, ທ່ານຍັງສາມາດໃຊ້ ແລະ ບັນທຶກລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກບັນຊີ Google ຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="204914487372604757">ສ້າງ​ທາງ​ລັດ</translation>
 <translation id="2050339315714019657">ແນວຕັ້ງ</translation>
 <translation id="2051266530792296582">ຕົວຈັດການລະຫັດຜ່ານ Google ໄດ້ສ້າງລະຫັດຜ່ານຍາກສຳລັບເວັບໄຊນີ້</translation>
@@ -2952,6 +2953,7 @@
 <translation id="3109724472072898302">ຫຍໍ້ລົງ</translation>
 <translation id="3112292765614504292">ຂະໜາດແອັບ: <ph name="APP_SIZE" /></translation>
 <translation id="311394601889664316">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊແກ້ໄຂໄຟລ໌ ຫຼື ໂຟນເດີຢູ່ອຸປະກອນຂອງທ່ານ</translation>
+<translation id="3113970906450647715">ຖອນໝຸດປຸ່ມແລ້ວ</translation>
 <translation id="3115147772012638511">ກໍາລັງລໍຖ້າແຄຊ໌...</translation>
 <translation id="3115580024857770654">ຫຍໍ້ທັງໝົດເຂົ້າ</translation>
 <translation id="3115728370128632723">ການເຮັດໃຫ້ເວັບເຮັດວຽກໄດ້ດີຂຶ້ນສຳລັບທ່ານໝາຍເຖິງ:
@@ -5322,6 +5324,7 @@
 <translation id="4883436287898674711">ທຸກເວັບໄຊທ໌ <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885446229353981848">ສະແດງທາງລັດຂອງ Google Lens ສະເໝີ</translation>
 <translation id="4885692421645694729">ສ່ວນຂະຫຍາຍນີ້ບໍ່ມີສິດເຂົ້າເຖິງເວັບໄຊເພີ່ມເຕີມ</translation>
 <translation id="4887424188275796356">ເປີດດ້ວຍຕົວເບິ່ງລະບົບ</translation>
 <translation id="488785315393301722">ສະແດງລາຍລະອຽດ</translation>
@@ -5490,6 +5493,7 @@
 <translation id="5021750053540820849">ບໍ່ຮອງຮັບເທື່ອ</translation>
 <translation id="5022206631034207923">ໜ້າຈໍລັອກ, ການຄວບຄຸມ</translation>
 <translation id="5024511550058813796">ທ່ານຈະສາມາດໃຊ້ປະຫວັດຂອງທ່ານໄດ້ຢູ່ອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນແລ້ວທັງໝົດຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດສືບຕໍ່ສິ່ງທີ່ທ່ານກຳລັງເຮັດຢູ່ໄດ້</translation>
+<translation id="5024992827689317672">ລຶບຂໍ້ມູນແລ້ວ</translation>
 <translation id="5026492829171796515">ເຂົ້າສູ່ລະບົບເພື່ອເພີ່ມບັນຊີ Google</translation>
 <translation id="5026806129670917316">ເປີດ Wi-Fi</translation>
 <translation id="5026874946691314267">ຢ່າສະແດງອັນນີ້ອີກ</translation>
@@ -6130,6 +6134,7 @@
 <translation id="549602578321198708">ຄໍາເວົ້າ</translation>
 <translation id="5496587651328244253">ຈັດຕັ້ງ</translation>
 <translation id="5496730470963166430">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ສົ່ງປັອບອັບ ຫຼື ໃຊ້ການປ່ຽນເສັ້ນທາງ</translation>
+<translation id="5497250476399536588">ທ່ານສາມາດຊອກຫາຂໍ້ມູນນີ້ໄດ້ໃນທີ່ຢູ່ ແລະ ອື່ນໆຂອງທ່ານ</translation>
 <translation id="5497251278400702716">ໄຟລ໌ນີ້</translation>
 <translation id="5497739595514726398">Chrome ຢັ້ງຢືນຊຸດການຕິດຕັ້ງນີ້ບໍ່ສຳເລັດ</translation>
 <translation id="5498967291577176373">ຂຽນໄດ້ໄວກວ່າດ້ວຍການແນະນຳໃນແຖວສຳລັບຊື່, ທີ່ຢູ່ ຫຼື ເບີໂທລະສັບຂອງທ່ານ</translation>
@@ -6900,6 +6905,7 @@
 <translation id="6082877069782862752">ການຈັບຄູ່ປຸ່ມ</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ສ່ວນໜຶ່ງຂອງກຸ່ມທີ່ບໍ່ມີຊື່</translation>
 <translation id="6086004606538989567">ບັນຊີທີ່ທ່ານຢັ້ງຢືນແລ້ວນັ້ນບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າເຖິງອຸປະກອນນີ້.</translation>
+<translation id="6086418630711763366">ທ່ານສາມາດໄປຫາສ່ວນຕ່າງໆຂອງໜ້າໄດ້ດ້ວຍເຄີເຊີຂໍ້ຄວາມ. ກົດ Ctrl + <ph name="KEY" /> ເພື່ອປິດ.</translation>
 <translation id="6086846494333236931">ຕິດ​ຕັ້ງ​ໂດຍ​ຜູ້​ບໍ​ລິ​ຫານ​ຂອງ​ທ່ານ​ແລ້ວ</translation>
 <translation id="6087746524533454243">ກຳລັງຊອກຫາໜ້າກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບບໍ? ເຂົ້າເບິ່ງ</translation>
 <translation id="6087960857463881712">ໃບໜ້າພິລຶກ</translation>
@@ -6964,6 +6970,7 @@
 <translation id="6130692320435119637">ເພີ່ມ Wi-Fi</translation>
 <translation id="6130807998512240230">Phone Hub, ການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="6130887916931372608">ປຸ່ມແປ້ນພິມ</translation>
+<translation id="6132251717264923430">ປັກໝຸດປຸ່ມແລ້ວ</translation>
 <translation id="6132714462430777655">ຂ້າມການລົງທະບຽນເຂົ້າໂຮງຮຽນບໍ?</translation>
 <translation id="6134428719487602109">ລຶບບັນຊີຜູ້ໃຊ້ທັງໝົດອອກແລ້ວຣີເຊັດ Chromebook ຂອງທ່ານເພື່ອໃຫ້ເປັນຄືອັນໃໝ່.</translation>
 <translation id="6135823405800500595">ກະລຸນາກວດສອບວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ໆ, ປົດລັອກແລ້ວ ແລະ ເປີດ Bluetooth ກັບ Wi-Fi ໄວ້ຢູ່</translation>
@@ -8096,6 +8103,7 @@
 <translation id="6988572888918530647">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6989274756151920076">ຢູ່ບ່ອນນີ້ຕໍ່</translation>
 <translation id="6991665348624301627">ເລືອກປາຍ​ທາງ</translation>
+<translation id="6991926986715044139">ສະແດງທາງລັດຂອງ Google Lens ສະເໝີ</translation>
 <translation id="6992554835374084304">ເປີດການກວດການສະກົດຄຳທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
 <translation id="6993000214273684335">ລຶບແຖບອອກຈາກກຸ່ມທີ່ບໍ່ມີຊື່ - <ph name="GROUP_CONTENTS" /> ແລ້ວ</translation>
 <translation id="6993050154661569036">ກຳລັງອັບເດດໂປຣແກຣມທ່ອງເວັບ Chrome</translation>
@@ -8306,6 +8314,7 @@
 <translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
 <translation id="7154130902455071009">ປ່ຽນໜ້າເລີ່ມຕົ້ນຂອງທ່ານເປັນ​: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">ເບິ່ງວິດີໂອຄຸນນະພາບດີຂຶ້ນ ແລະ ຂະຫຍາຍອາຍຸແບັດເຕີຣີ. ວິດີໂອຈະຫຼິ້ນໃນໜ້າຈໍຂອງທ່ານທີ່ເປີດການນຳໃຊ້ Cast ໄວ້ເທົ່ານັ້ນ.</translation>
+<translation id="7159695867335480590">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
 <translation id="7159953856712257647">ຕິດຕັ້ງໂດຍຄ່າເລີ່ມຕົ້ນແລ້ວ</translation>
 <translation id="7160182524506337403">ຕອນນີ້ທ່ານສາມາດເບິ່ງການແຈ້ງເຕືອນຫຼ້າສຸດຂອງໂທລະສັບທ່ານໄດ້ແລ້ວ</translation>
 <translation id="7160911207516219534">ແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
@@ -8649,6 +8658,7 @@
 <translation id="7417435070053325657">ບລັອກແລ້ວ <ph name="BLOCKED_APPS_SIZE" /> ຈາກທັງໝົດ <ph name="APPS_LIST_SIZE" /> ແອັບ</translation>
 <translation id="741906494724992817">ແອັບນີ້ບໍ່​ຕ້ອງມີ​ການ​ອະ​ນຸ​ຍາດ​ເປັນ​ພິ​ເສດ​.</translation>
 <translation id="7419142833919893307">ບໍ່ມີການເພີ່ມຊື່ຜູ້ໃຊ້</translation>
+<translation id="7419426517282923105">{NUM_ATTEMPTS,plural, =1{PIN ບໍ່ຖືກຕ້ອງ. ພະຍາຍາມໄດ້ອີກ 1 ເທື່ອ.}other{PIN ບໍ່ຖືກຕ້ອງ. ພະຍາຍາມໄດ້ອີກ # ເທື່ອ.}}</translation>
 <translation id="7419565702166471774">ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພທຸກເທື່ອ</translation>
 <translation id="7419819959108735624">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="742130257665691897">ລຶບບຸກມາກອອກແລ້ວ</translation>
@@ -9809,6 +9819,7 @@
 <translation id="8252569384384439529">ກຳລັງອັບໂຫລດ...</translation>
 <translation id="8253198102038551905">ຄ​ລິກ '+' ເພື່ອ​ເອົາ​ຄຸນ​ສົມ​ບັດ​ເຄືອ​ຂ່າຍ</translation>
 <translation id="8255212965098517578">ຮູບພາບ, ການແຈ້ງເຕືອນ ແລະ ແອັບຫຼ້າສຸດ</translation>
+<translation id="8255927332875030912">ຊອກຫາ + <ph name="KEY" /></translation>
 <translation id="8256319818471787266">ມີປະກາຍໄຟ</translation>
 <translation id="8257950718085972371">ສືບ​ຕໍ່ບລັອກການເຂົ້າຫາກ້ອງຖ່າຍຮູບ</translation>
 <translation id="8258027225380843424">ນຳເຂົ້າສຳເລັດແລ້ວ!</translation>
@@ -9819,6 +9830,7 @@
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8261625296061301062">ຕິດຕັ້ງຊອບແວເຄື່ອງສະແກນແລ້ວ</translation>
 <translation id="8262971894813353037">ເປີດການນຳໃຊ້ການອອກແບບເດັສທັອບໃໝ່ສຳລັບ WebUI. ຈະຕ້ອງເປີດການນຳໃຊ້ Chrome Refresh 2023 ນຳ.</translation>
+<translation id="8263228331881858381">ບັນທຶກກະແຈຜ່ານແລ້ວ</translation>
 <translation id="8263336784344783289">ຕັ້ງຊື່ໃຫ້ກຸ່ມນີ້</translation>
 <translation id="8264024885325823677">ການຕັ້ງຄ່ານີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="826511437356419340">ເຂົ້າສູ່ໂໝດພາບຮວມໜ້າຈໍແລ້ວ. ປັດເພື່ອໄປຍັງສ່ວນຕ່າງໆ ຫຼື ກົດ Tab ຖ້າກຳລັງໃຊ້ແປ້ນພິມຢູ່.</translation>

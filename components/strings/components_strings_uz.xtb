@@ -41,6 +41,7 @@
 <translation id="1070901266639972381">Tun</translation>
 <translation id="1073690811593784042">Shisha (rangli)</translation>
 <translation id="1074497978438210769">Xavfsiz emas</translation>
+<translation id="1074779248866616641">Natija</translation>
 <translation id="1075364221219156102">Kalit ishlatish</translation>
 <translation id="1080116354587839789">Oynani eniga tekislash</translation>
 <translation id="1081061862829655580">Tarnov 19</translation>
@@ -1150,6 +1151,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3209034400446768650">Sahifa pul yechib olishi mumkin</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> saytidagi harakatlaringiz kuzatuv ostida</translation>
 <translation id="3215092763954878852">WebAuthn ishlatib boʻlmadi</translation>
+<translation id="3215311088819828484">Natija yangilandi</translation>
 <translation id="3216313131063488104">Blyuz</translation>
 <translation id="3218181027817787318">Aloqador</translation>
 <translation id="3218247554732884571">{DAYS_UNTIL_DEADLINE,plural, =1{Hozir yangilanishi kerak}=2{Ertaga yangilanishi kerak}other{# kun ichida yangilanishi kerak}}</translation>
@@ -3135,6 +3137,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7031646650991750659">Google Play Marketdan oʻrnatilgan ilovalar</translation>
 <translation id="7035705295266423040">Bankingiz shaxsingizni tasdiqlamoqchi</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobi maxfiylik sozlamalarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
+<translation id="7042616127917168121">Natijalarni aniqlashtirish</translation>
 <translation id="7043552168914147882">Ajratkich</translation>
 <translation id="7044081119134178347">Kameraga shu safar ruxsat berildi</translation>
 <translation id="7048095965575426564">European Fanfold</translation>

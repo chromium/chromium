@@ -379,6 +379,7 @@
 <translation id="4040753847560036377">ખોટો PUK</translation>
 <translation id="4057991113334098539">સક્રિય કરી રહ્યું છે</translation>
 <translation id="4092890906744441904">આઇરિશ</translation>
+<translation id="4101601646343868113">તમારા મોબાઇલ નેટવર્કમાં સાઇન ઇન કરો અને કન્ફર્મ કરો કે તમારો મોબાઇલ ડેટા પ્લાન સક્રિય છે</translation>
 <translation id="4124731372776320263">1 Drive ફાઇલ સિંક કરી રહ્યાં છીએ</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
 <translation id="4131235941541910880">તમને જરૂર ન હોય તેવી આઇટમ ટ્રેશમાં ખસેડો</translation>
@@ -603,6 +604,7 @@
 <translation id="5625294776298156701">તમિળ, તમિળ99 કીબોર્ડ સાથે</translation>
 <translation id="5633226425545095130">આ આઇટમ ખસેડવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
+<translation id="5650895901941743674">તમારું APN કન્ફિગ્યુરેશન ચેક કરો</translation>
 <translation id="5669691691057771421">નવો PIN દાખલ કરો</translation>
 <translation id="5678784840044122290">Linux ઍપ્લિકેશન તમારા ટર્મિનલમાં ઉપલબ્ધ થશે અને તમારા લૉન્ચરમાં આઇકન પણ બતાવી શકે છે.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />આર્કાઇવ અથવા વર્ચ્યુઅલ ડિસ્ક પરથી ડિસ્કનેક્ટ કરી શકતાં નથી<ph name="END_BOLD" />
@@ -1006,6 +1008,7 @@
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>
+<translation id="8630384863424041081">તમારો સિમ કાર્ડ પિન અથવા તમારા મોબાઇલ ઑપરેટર દ્વારા પ્રદાન કરેલો ડિફૉલ્ટ પિન દાખલ કરો. સપોર્ટ માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="863903787380594467">ખોટો પિન. તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - પોર્ટ</translation>
 <translation id="8656407365183407932">તમારી ઑફલાઇન ફાઇલો કાઢી નાખવાની હતી</translation>

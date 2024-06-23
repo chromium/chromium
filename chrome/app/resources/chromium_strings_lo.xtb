@@ -81,6 +81,8 @@
 <translation id="2329088755516916767">ເມື່ອເປີດ, Chromium ຈະໂຫຼດໜ້າເວັບກ່ອນລ່ວງໜ້າເຊິ່ງເຮັດໃຫ້ທ່ອງເວັບ ແລະ ຊອກຫາໄດ້ໄວຂຶ້ນ.</translation>
 <translation id="2343156876103232566">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
+<translation id="2361918034042471035">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຕ້ອງການໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chromium</translation>
+<translation id="2374216753258219393">ເພື່ອໃຊ້ສ່ວນຂະຫຍາຍນີ້ດ້ວຍ <ph name="USER_EMAIL_ADDRESS" />, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium.</translation>
 <translation id="2384373936468275798">ChromiumOS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບຂອງທ່ານເກົ່າແລ້ວ.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{ມີສ່ວນຂະຫຍາຍ Chromium ຢ່າງໜ້ອຍ 1 ລາຍການກຳລັງເຂົ້າເຖິງອຸປະກອນ HID 1 ເຄື່ອງ}=1{ມີສ່ວນຂະຫຍາຍ Chromium ຢ່າງໜ້ອຍ 1 ລາຍການກຳລັງເຂົ້າເຖິງອຸປະກອນ HID 1 ເຄື່ອງ}other{ມີສ່ວນຂະຫຍາຍ Chromium ຢ່າງໜ້ອຍ 1 ລາຍການກຳລັງເຂົ້າເຖິງອຸປະກອນ HID # ເຄື່ອງ}}</translation>
 <translation id="2401032172288869980">Chromium ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນສຳລັບເວັບໄຊນີ້</translation>
@@ -244,9 +246,11 @@
 <translation id="4893347770495441059">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chromium</translation>
 <translation id="4942295735032723435">ເພື່ອຮັບການອັບເດດ Chromium ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ macOS 11 ຂຶ້ນໄປ. ຄອມພິວເຕີເຄື່ອງນີ້ກຳລັງໃຊ້ macOS 10.15.</translation>
 <translation id="4943838377383847465">Chromium ຢູ່ໃນໂໝດພື້ນຫຼັງ.</translation>
+<translation id="494490797786467921">ຄລິກເພື່ອປິດກ່ອງໂຕ້ຕອບການເຂົ້າສູ່ລະບົບ Chromium</translation>
 <translation id="4987820182225656817">ແຂກສາມາດໃຊ້ Chromium ໂດຍ​ບໍ່​ມີ​ການປະອັນໃດໄວ້ເບື້ອງຫຼັງ.</translation>
 <translation id="4994636714258228724">ເພີ່ມທ່ານເອງໃສ່ Chromium</translation>
 <translation id="5114678101347489141">Chromium ກຳລັງສຳຫຼວດຄຸນສົມບັດໃໝ່ໆທີ່ເຮັດໃຫ້ເວັບໄຊຕ່າງໆສາມາດສະໜອງປະສົບການໃນການທ່ອງເວັບແບບດຽວກັນໂດຍໃຊ້ຂໍ້ມູນຂອງທ່ານໃຫ້ໜ້ອຍລົງ</translation>
+<translation id="5187123684706427865">ບັນຊີ Chromium ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5231355151045086930">ອອກຈາກລະບົບ Chromium</translation>
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chromium ນີ້ຢູ່ກ່ອນແລ້ວ. ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chromium ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
