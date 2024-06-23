@@ -271,9 +271,7 @@ class ChromotingHostTest : public testing::Test {
   std::string owner_email_;
   raw_ptr<protocol::FakeConnectionToClient, DanglingUntriaged> connection1_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection1_;
-  // This field is not a raw_ptr<> to avoid returning a reference to a temporary
-  // T* (result of implicitly casting raw_ptr<T> to T*).
-  RAW_PTR_EXCLUSION ClientSession* client1_;
+  raw_ptr<ClientSession, DanglingUntriaged> client1_;
   std::string session_jid1_;
   raw_ptr<MockSession, DanglingUntriaged> session1_;  // Owned by |connection_|.
   std::unique_ptr<SessionConfig> session_config1_;
@@ -281,9 +279,7 @@ class ChromotingHostTest : public testing::Test {
   MockHostStub host_stub1_;
   raw_ptr<protocol::FakeConnectionToClient, DanglingUntriaged> connection2_;
   std::unique_ptr<protocol::FakeConnectionToClient> owned_connection2_;
-  // This field is not a raw_ptr<> to avoid returning a reference to a temporary
-  // T* (result of implicitly casting raw_ptr<T> to T*).
-  RAW_PTR_EXCLUSION ClientSession* client2_;
+  raw_ptr<ClientSession, DanglingUntriaged> client2_;
   std::string session_jid2_;
   raw_ptr<MockSession, DanglingUntriaged>
       session2_;  // Owned by |connection2_|.
@@ -304,7 +300,7 @@ class ChromotingHostTest : public testing::Test {
       session_unowned2_event_handler_;
 
   // Returns the cached client pointers client1_ or client2_.
-  ClientSession*& get_client(int connection_index) {
+  raw_ptr<ClientSession, DanglingUntriaged>& get_client(int connection_index) {
     return (connection_index == 0) ? client1_ : client2_;
   }
 

@@ -30,15 +30,6 @@ gpu::MockTransferBuffer::ExpectedMemoryInfo::ptr
 WebUITabStripContainerView::tab_counter_
 DownloadItemView::review_button_
 
-# Populated manually to avoid returning a reference to a temporary T* (result of
-# implicitly casting raw_ptr<T> to T*).  This covers functions that return
-# |SomeClass*&| and local variables with that type.
-AllTabContentsesList::Iterator::cur_
-remoting::ChromotingHostTest::client1_
-remoting::ChromotingHostTest::client2_
-WTF::ICUConverterWrapper::converter
-(anonymous namespace)::WebAuthnCableSecondFactor::controller_
-
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
 extensions::GlobalShortcutListenerX11::x_display_
