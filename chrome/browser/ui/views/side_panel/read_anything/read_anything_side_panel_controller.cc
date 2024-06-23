@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"

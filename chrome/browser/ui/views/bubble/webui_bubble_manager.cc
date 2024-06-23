@@ -7,7 +7,6 @@
 #include "base/notimplemented.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "content/public/browser/render_frame_host.h"

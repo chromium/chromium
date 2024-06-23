@@ -13,8 +13,6 @@
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"

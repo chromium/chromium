@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "content/public/browser/file_select_listener.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
