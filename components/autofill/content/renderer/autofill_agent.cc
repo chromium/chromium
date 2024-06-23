@@ -1053,6 +1053,13 @@ void AutofillAgent::ApplyFieldAction(
             form_control.SelectText(/*select_all=*/true);
             break;
         }
+        // AutofillAgent::DoFillFieldWithValue dispatches many events that can
+        // trigger JS and therefore disconnect `form_control` from the DOM or
+        // delete the frame. Therefore we apply this GetElement(GetId(element))
+        // pattern in order to ensure we're not holding a reference to a
+        // disconnected element.
+        form_control = form_util::GetFormControlByRendererId(
+            form_util::GetFieldRendererId(form_control));
         if (base::FeatureList::IsEnabled(
                 features::kAutofillUnifyAndFixFormTracking)) {
           if (WebFormElement form_element =
