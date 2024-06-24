@@ -862,29 +862,6 @@ TEST_F(MLGraphTest, BuildTest) {
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(*outputs.at("output"), output->Descriptor());
   }
-  {
-    // Testing throwing exception if the ArrayBufferView of a constant operand
-    // is detached.
-    auto* a =
-        BuildInput(builder, "a", {3, 4}, V8MLOperandDataType::Enum::kFloat32,
-                   scope.GetExceptionState());
-    auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({4, 3});
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-    NotShared<DOMArrayBufferView> buffer_view =
-        CreateDOMArrayBufferView(12, V8MLOperandDataType::Enum::kFloat32);
-    auto* b = builder->constant(desc, buffer_view, scope.GetExceptionState());
-    auto* c = BuildGemm(scope, builder, a, b);
-
-    // Detach the ArrayBufferView of constant b for testing.
-    buffer_view->DetachForTesting();
-
-    auto [graph, error_name, error_message] =
-        BuildGraph(scope, builder, {{"c", c}});
-    EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message,
-              "The array buffer view of the constant operand is detached.");
-  }
 }
 
 // Helper struct to create an ArrayBufferView for MLNamedArrayBufferViews test.

@@ -728,19 +728,6 @@ DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
             continue;
           }
           visited_input_operands.insert(operand);
-          // If the operand is a constant operand, validate its ArrayBufferView
-          // is not detached, because the backends may access its content in
-          // `CreateAndBuild()`. A constant operand may carry a detached
-          // ArrayBufferView if the JS code first calls
-          // `MLGraphBuilder.constant()` to build a constant operand with a
-          // valid ArrayBufferView, then detaches the ArrayBufferView and calls
-          // `MLGraphBuilder.build()` to build the graph with this constant
-          // operand.
-          CHECK(operand->ArrayBufferView());
-          if (operand->ArrayBufferView()->IsDetached()) {
-            return base::unexpected(
-                "The array buffer view of the constant operand is detached.");
-          }
           break;
       }
     }
@@ -797,13 +784,8 @@ base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
               operand_id,
               mojo::ConvertTo<webnn::mojom::blink::OperandPtr>(operand.Get()));
           //  Build the map of constant operands for this graph with the id.
-          const auto* array_buffer_view = operand->ArrayBufferView();
-          CHECK(array_buffer_view);
-          CHECK(!array_buffer_view->IsDetached());
-          graph_info->constant_id_to_buffer_map.insert(
-              operand_id, base::make_span(static_cast<const uint8_t*>(
-                                              array_buffer_view->BaseAddress()),
-                                          array_buffer_view->byteLength()));
+          graph_info->constant_id_to_buffer_map.insert(operand_id,
+                                                       operand->Bytes());
           operand_to_id_map.insert(operand, operand_id);
           break;
         }

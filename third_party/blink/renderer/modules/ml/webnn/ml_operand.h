@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -65,7 +66,7 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   MLGraphBuilder* Builder() const;
   webnn::mojom::blink::Operand::Kind Kind() const;
   const String& Name() const;
-  const DOMArrayBufferView* ArrayBufferView() const;
+  base::span<const uint8_t> Bytes() const;
   const MLOperator* Operator() const;
 
   // Convenience methods for accessing native types, which avoid a copy
@@ -102,11 +103,9 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-input, only input operand
   // is created with a name.
   String name_;
-  // The buffer view of constant operand. According to
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-constant, only constant
-  // operand is associated with an array buffer view that contains the
-  // user-supplied constant data.
-  Member<const DOMArrayBufferView> array_buffer_view_;
+  // Bytes associated with a constant operand. See
+  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-constant.
+  Vector<uint8_t> constant_bytes_;
   // The operator that produces the output operand. Only output operand has an
   // operator that produces the operand by an operator build method of
   // MLGraphBuilder interface.

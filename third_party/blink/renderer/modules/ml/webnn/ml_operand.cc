@@ -90,7 +90,7 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateConstant(
   auto* constant = MakeGarbageCollected<MLOperand>(
       builder, webnn::mojom::blink::Operand::Kind::kConstant,
       std::move(descriptor));
-  constant->array_buffer_view_ = array_buffer_view;
+  constant->constant_bytes_ = Vector<uint8_t>(array_buffer_view->ByteSpan());
   return constant;
 }
 
@@ -127,9 +127,9 @@ const String& MLOperand::Name() const {
   return name_;
 }
 
-const DOMArrayBufferView* MLOperand::ArrayBufferView() const {
+base::span<const uint8_t> MLOperand::Bytes() const {
   DCHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kConstant);
-  return array_buffer_view_.Get();
+  return constant_bytes_;
 }
 
 const MLOperator* MLOperand::Operator() const {
@@ -173,7 +173,6 @@ V8MLOperandDataType MLOperand::dataType() const {
 
 void MLOperand::Trace(Visitor* visitor) const {
   visitor->Trace(builder_);
-  visitor->Trace(array_buffer_view_);
   visitor->Trace(operator_);
   ScriptWrappable::Trace(visitor);
 }
