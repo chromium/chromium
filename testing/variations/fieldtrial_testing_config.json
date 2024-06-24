@@ -23901,6 +23901,21 @@
             ]
         }
     ],
+    "VersionedWallpaperInfo": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VersionedWallpaperInfo"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoConferenceRollout": [
         {
             "platforms": [
