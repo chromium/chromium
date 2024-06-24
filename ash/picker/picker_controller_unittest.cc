@@ -334,7 +334,7 @@ TEST_F(PickerControllerTest,
   controller.InsertResultOnNextFocus(PickerSearchResult::Clipboard(
       *clipboard_item_id,
       PickerSearchResult::ClipboardData::DisplayFormat::kText,
-      /*display_text=*/u"", /*display_image=*/{}));
+      /*display_text=*/u"", /*display_image=*/{}, /*is_recent=*/false));
   controller.widget_for_testing()->CloseNow();
   ClipboardPasteWaiter waiter;
   // Create a new to focus on.
@@ -853,7 +853,8 @@ INSTANTIATE_TEST_SUITE_P(
                 base::UnguessableToken::Create(),
                 PickerSearchResult::ClipboardData::DisplayFormat::kFile,
                 u"",
-                {}),
+                {},
+                false),
             .no_selection_action = PickerActionType::kInsert,
             .has_selection_action = PickerActionType::kInsert,
         },

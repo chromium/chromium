@@ -92,11 +92,13 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     DisplayFormat display_format;
     std::u16string display_text;
     std::optional<ui::ImageModel> display_image;
+    bool is_recent;
 
     ClipboardData(base::UnguessableToken item_id,
                   DisplayFormat display_format,
                   std::u16string display_text,
-                  std::optional<ui::ImageModel> display_image);
+                  std::optional<ui::ImageModel> display_image,
+                  bool is_recent);
     ClipboardData(const ClipboardData&);
     ClipboardData& operator=(const ClipboardData&);
     ~ClipboardData();
@@ -261,7 +263,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       base::UnguessableToken item_id,
       ClipboardData::DisplayFormat display_format,
       std::u16string display_text,
-      std::optional<ui::ImageModel> display_image);
+      std::optional<ui::ImageModel> display_image,
+      bool is_recent);
   static PickerSearchResult Gif(const GURL& preview_url,
                                 const GURL& preview_image_url,
                                 const gfx::Size& preview_dimensions,

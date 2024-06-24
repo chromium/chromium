@@ -33,13 +33,11 @@ class ASH_EXPORT PickerClipboardProvider {
 
   // Fetches clipboard items which were copied within `recency` time duration.
   void FetchResults(OnFetchResultsCallback callback,
-                    const std::u16string& query = u"",
-                    base::TimeDelta recency = base::TimeDelta::Max());
+                    const std::u16string& query = u"");
 
  private:
   void OnFetchHistory(OnFetchResultsCallback callback,
                       const std::u16string& query,
-                      base::TimeDelta recency,
                       std::vector<ClipboardHistoryItem> items);
 
   raw_ptr<base::Clock> clock_;

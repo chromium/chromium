@@ -50,11 +50,13 @@ PickerSearchResult::ClipboardData::ClipboardData(
     base::UnguessableToken item_id,
     DisplayFormat display_format,
     std::u16string display_text,
-    std::optional<ui::ImageModel> display_image)
+    std::optional<ui::ImageModel> display_image,
+    bool is_recent)
     : item_id(item_id),
       display_format(display_format),
       display_text(std::move(display_text)),
-      display_image(std::move(display_image)) {}
+      display_image(std::move(display_image)),
+      is_recent(is_recent) {}
 
 PickerSearchResult::ClipboardData::ClipboardData(
     const PickerSearchResult::ClipboardData&) = default;
@@ -214,10 +216,11 @@ PickerSearchResult PickerSearchResult::Clipboard(
     base::UnguessableToken item_id,
     ClipboardData::DisplayFormat display_format,
     std::u16string display_text,
-    std::optional<ui::ImageModel> display_image) {
+    std::optional<ui::ImageModel> display_image,
+    bool is_recent) {
   return PickerSearchResult(ClipboardData(item_id, display_format,
                                           std::move(display_text),
-                                          std::move(display_image)));
+                                          std::move(display_image), is_recent));
 }
 
 PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,

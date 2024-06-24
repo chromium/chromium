@@ -55,7 +55,7 @@ TEST_F(PickerClipboardProviderTest, FetchesTextResult) {
                   VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
                       expected_item_id,
                       PickerSearchResult::ClipboardData::DisplayFormat::kText,
-                      u"xyz", std::nullopt)))));
+                      u"xyz", std::nullopt, true)))));
 }
 
 TEST_F(PickerClipboardProviderTest, FetchesImageResult) {
@@ -89,19 +89,22 @@ TEST_F(PickerClipboardProviderTest, FetchesImageResult) {
                   VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
                       expected_item_id,
                       PickerSearchResult::ClipboardData::DisplayFormat::kImage,
-                      _, expected_display_image)))));
+                      _, expected_display_image, true)))));
 }
 
-TEST_F(PickerClipboardProviderTest, DoesNotFetchOldResult) {
+TEST_F(PickerClipboardProviderTest, SetsIsRecentFieldFalse) {
+  base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
-          [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
+          [&](ClipboardHistoryController::GetHistoryValuesCallback callback) {
             ClipboardHistoryItemBuilder builder;
-            std::move(callback).Run(
-                {builder.SetFormat(ui::ClipboardInternalFormat::kText)
-                     .SetText("xyz")
-                     .Build()});
+            ClipboardHistoryItem item =
+                builder.SetFormat(ui::ClipboardInternalFormat::kText)
+                    .SetText("xyz")
+                    .Build();
+            expected_item_id = item.id();
+            std::move(callback).Run({item});
           });
 
   base::SimpleTestClock clock;
@@ -110,10 +113,15 @@ TEST_F(PickerClipboardProviderTest, DoesNotFetchOldResult) {
   clock.Advance(base::Hours(1));
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
-  provider.FetchResults(future.GetCallback(), /*query=*/u"",
-                        base::Seconds(120));
+  provider.FetchResults(future.GetCallback(), /*query=*/u"");
 
-  EXPECT_THAT(future.Get(), IsEmpty());
+  EXPECT_THAT(future.Get(),
+              ElementsAre(Property(
+                  "data", &PickerSearchResult::data,
+                  VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
+                      expected_item_id,
+                      PickerSearchResult::ClipboardData::DisplayFormat::kText,
+                      u"xyz", std::nullopt, false)))));
 }
 
 TEST_F(PickerClipboardProviderTest, FiletersResultByQuery) {
@@ -134,7 +142,6 @@ TEST_F(PickerClipboardProviderTest, FiletersResultByQuery) {
   base::SimpleTestClock clock;
   PickerClipboardProvider provider(&clock);
   clock.SetNow(base::Time::Now());
-  clock.Advance(base::Hours(1));
 
   base::test::TestFuture<std::vector<PickerSearchResult>> future;
   provider.FetchResults(future.GetCallback(), /*query=*/u"123");
@@ -145,7 +152,7 @@ TEST_F(PickerClipboardProviderTest, FiletersResultByQuery) {
           "data", &PickerSearchResult::data,
           VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
               _, PickerSearchResult::ClipboardData::DisplayFormat::kText,
-              u"12345", std::nullopt)))));
+              u"12345", std::nullopt, true)))));
 }
 }  // namespace
 }  // namespace ash
