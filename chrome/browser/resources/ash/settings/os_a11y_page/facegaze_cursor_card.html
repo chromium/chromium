@@ -7,6 +7,10 @@
     padding-inline-start: var(--cr-section-indent-width);
   }
 
+  .short {
+    min-height: 44px;
+  }
+
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
@@ -16,8 +20,6 @@
 
 <!-- TODO(b:341770655): Investigate whether the speed sliders should be
      refactored to a custom element. -->
-<!-- TODO(b:341770655): Some of these rows have a shorter height in
-     the spec. -->
 
 <settings-card header-text="Cursor movement">
   <settings-toggle-button
@@ -25,11 +27,11 @@
       label="$i18n{faceGazeCursorControlEnabledLabel}"
       pref="{{prefs.settings.a11y.face_gaze.cursor_control_enabled}}">
   </settings-toggle-button>
-  <div class="settings-box">
+  <div class="settings-box short">
     $i18n{faceGazeCursorSpeedSectionName}
   </div>
   <settings-toggle-button
-      class="sub-item"
+      class="sub-item short"
       id="faceGazeCursorAdjustSeparatelyButton"
       label="$i18n{faceGazeCursorAdjustSeparatelyLabel}"
       pref="{{prefs.settings.a11y.face_gaze.adjust_speed_separately}}">
@@ -45,8 +47,8 @@
           pref="{{syntheticCombinedCursorSpeedPref_}}"
           min="1" max="100"
           label-aria="$i18n{faceGazeCursorSpeedLabel}"
-          label-min="$i18n{sliderLabel1}"
-          label-max="$i18n{sliderLabel100}">
+          label-min="$i18n{faceGazeCursorSpeedSlow}"
+          label-max="$i18n{faceGazeCursorSpeedFast}">
       </settings-slider>
     </div>
   </template>
@@ -61,8 +63,8 @@
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_up}}"
           min="1" max="100"
           label-aria="$i18n{faceGazeCursorUpSpeedLabel}"
-          label-min="$i18n{sliderLabel1}"
-          label-max="$i18n{sliderLabel100}">
+          label-min="$i18n{faceGazeCursorSpeedSlow}"
+          label-max="$i18n{faceGazeCursorSpeedFast}">
       </settings-slider>
     </div>
     <div class="settings-box sub-item">
@@ -74,8 +76,8 @@
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_down}}"
           min="1" max="100"
           label-aria="$i18n{faceGazeCursorDownSpeedLabel}"
-          label-min="$i18n{sliderLabel1}"
-          label-max="$i18n{sliderLabel100}">
+          label-min="$i18n{faceGazeCursorSpeedSlow}"
+          label-max="$i18n{faceGazeCursorSpeedFast}">
       </settings-slider>
     </div>
     <div class="settings-box sub-item">
@@ -87,8 +89,8 @@
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_left}}"
           min="1" max="100"
           label-aria="$i18n{faceGazeCursorLeftSpeedLabel}"
-          label-min="$i18n{sliderLabel1}"
-          label-max="$i18n{sliderLabel100}">
+          label-min="$i18n{faceGazeCursorSpeedSlow}"
+          label-max="$i18n{faceGazeCursorSpeedFast}">
       </settings-slider>
       </div>
       <div class="settings-box sub-item">
@@ -100,27 +102,42 @@
           pref="{{prefs.settings.a11y.face_gaze.cursor_speed_right}}"
           min="1" max="100"
           label-aria="$i18n{faceGazeCursorRightSpeedLabel}"
-          label-min="$i18n{sliderLabel1}"
-          label-max="$i18n{sliderLabel100}">
+          label-min="$i18n{faceGazeCursorSpeedSlow}"
+          label-max="$i18n{faceGazeCursorSpeedFast}">
       </settings-slider>
     </div>
   </template>
   <div class="settings-box">
-    <div class="start settings-box-text" aria-hidden="true">
-      $i18n{faceGazeCursorSmoothingLabel}
+    <div class="start settings-box-text">
+      <div class="label" aria-hidden="true" id="faceGazeCursorSmoothingLabel">
+        $i18n{faceGazeCursorSmoothingLabel}
+      </div>
+      <div class="secondary label">
+        $i18n{faceGazeCursorSmoothingDescription}
+      </div>
     </div>
     <settings-slider
         id="cursorSmoothingSlider"
         pref="{{prefs.settings.a11y.face_gaze.cursor_smoothing}}"
-        min="1" max="100"
-        label-min="$i18n{sliderLabel1}"
-        label-max="$i18n{sliderLabel100}">
+        min="1" max="20"
+        label-aria="$i18n{faceGazeCursorSmoothingLabel}"
+        label-min="$i18n{faceGazeCursorSliderLabelResponsive}"
+        label-max="$i18n{faceGazeCursorSliderLabelSmooth}">
     </settings-slider>
   </div>
   <settings-toggle-button
       class="hr"
       id="accelerationButton"
       label="$i18n{faceGazeCursorAccelerationLabel}"
+      sub-label="$i18n{faceGazeCursorAccelerationDescription}"
       pref="{{prefs.settings.a11y.face_gaze.cursor_use_acceleration}}">
   </settings-toggle-button>
+  <div class="settings-box">
+    <cr-button
+        id="cursorResetButton"
+        class="button"
+        on-click="onFaceGazeCursorResetButtonClick_">
+      $i18n{faceGazeCursorSettingsReset}
+    </cr-button>
+  </div>
 </settings-card>

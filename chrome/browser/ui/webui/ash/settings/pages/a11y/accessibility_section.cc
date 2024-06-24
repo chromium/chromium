@@ -926,8 +926,12 @@ void AccessibilitySection::AddLoadTimeData(
       {"caretBlinkIntervalFast", IDS_SETTINGS_CARET_BLINK_INTERVAL_FAST},
       {"faceGazeCursorAccelerationLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL},
+      {"faceGazeCursorAccelerationDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_DESCRIPTION},
       {"faceGazeCursorSmoothingLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_LABEL},
+      {"faceGazeCursorSmoothingDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_DESCRIPTION},
       {"faceGazeCursorDownSpeedLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_DOWN_LABEL},
       {"faceGazeCursorLeftSpeedLabel",
@@ -944,8 +948,18 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ADJUST_SEPARATELY_LABEL},
       {"faceGazeCursorSpeedLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LABEL},
+      {"faceGazeCursorSpeedSlow",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SLOW},
+      {"faceGazeCursorSpeedFast",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_FAST},
+      {"faceGazeCursorSliderLabelResponsive",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SLIDER_LABEL_RESPONSIVE},
+      {"faceGazeCursorSliderLabelSmooth",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SLIDER_LABEL_SMOOTH},
       {"faceGazeCursorSpeedSectionName",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME},
+      {"faceGazeCursorSettingsReset",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET},
       {"keyboardAndTextInputHeading",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING},
       {"keyboardAndTextInputLinkDescription",
@@ -1269,6 +1283,10 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddInteger("defaultFaceGazeCursorSpeed",
                           ash::kDefaultFaceGazeCursorSpeed);
+  html_source->AddInteger("defaultFaceGazeCursorSmoothing",
+                          ash::kDefaultFaceGazeCursorSmoothing);
+  html_source->AddBoolean("defaultFaceGazeCursorUseAcceleration",
+                          ash::kDefaultFaceGazeCursorUseAcceleration);
 
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",

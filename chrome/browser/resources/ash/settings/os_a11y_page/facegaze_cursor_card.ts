@@ -113,6 +113,17 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
     this.setPrefValue('settings.a11y.face_gaze.cursor_speed_left', speed);
     this.setPrefValue('settings.a11y.face_gaze.cursor_speed_right', speed);
   }
+
+  private onFaceGazeCursorResetButtonClick_(): void {
+    this.setPrefValue('settings.a11y.face_gaze.adjust_speed_separately', false);
+    this.setCombinedCursorSpeed_();
+    this.setPrefValue(
+        'settings.a11y.face_gaze.cursor_use_acceleration',
+        loadTimeData.getBoolean('defaultFaceGazeCursorUseAcceleration'));
+    this.setPrefValue(
+        'settings.a11y.face_gaze.cursor_smoothing',
+        loadTimeData.getInteger('defaultFaceGazeCursorSmoothing'));
+  }
 }
 
 declare global {

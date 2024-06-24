@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {FaceGazeCursorCardElement} from 'chrome://os-settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -59,8 +59,10 @@ suite('<facegaze-cursor-card>', () => {
 
   test('cursor control enabled button syncs to pref', async () => {
     await initPage();
-    assertTrue(faceGazeCursorCard.prefs.settings.a11y.face_gaze
-                   .cursor_control_enabled.value);
+
+    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
+    assertTrue(prefs.cursor_control_enabled.value);
 
     const button = faceGazeCursorCard.shadowRoot!
                        .querySelector<SettingsToggleButtonElement>(
@@ -73,8 +75,7 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertFalse(button.checked);
-    assertFalse(faceGazeCursorCard.prefs.settings.a11y.face_gaze
-                    .cursor_control_enabled.value);
+    assertFalse(prefs.cursor_control_enabled.value);
   });
 
   test(
@@ -82,8 +83,9 @@ suite('<facegaze-cursor-card>', () => {
       async () => {
         await initPage();
 
-        assertFalse(faceGazeCursorCard.prefs.settings.a11y.face_gaze
-                        .adjust_speed_separately.value);
+        const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
+        assertFalse(prefs.adjust_speed_separately.value);
 
         const adjustSpeedsSeparatelyButton =
             faceGazeCursorCard.shadowRoot!
@@ -102,22 +104,10 @@ suite('<facegaze-cursor-card>', () => {
         assertEquals(combinedSlider.pref.value, 20);
 
         // Speed adjustments also have default values.
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_up
-                .value,
-            20);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_down
-                .value,
-            20);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_left
-                .value,
-            20);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_right
-                .value,
-            20);
+        assertEquals(prefs.cursor_speed_up.value, 20);
+        assertEquals(prefs.cursor_speed_down.value, 20);
+        assertEquals(prefs.cursor_speed_left.value, 20);
+        assertEquals(prefs.cursor_speed_right.value, 20);
 
         // Other sliders are hidden.
         let speedUpSlider =
@@ -142,8 +132,7 @@ suite('<facegaze-cursor-card>', () => {
         flush();
 
         assertTrue(adjustSpeedsSeparatelyButton.checked);
-        assertTrue(faceGazeCursorCard.prefs.settings.a11y.face_gaze
-                       .adjust_speed_separately.value);
+        assertTrue(prefs.adjust_speed_separately.value);
 
         // Now the combined slider is hidden.
         assertFalse(isVisible(combinedSlider));
@@ -181,6 +170,8 @@ suite('<facegaze-cursor-card>', () => {
   test('adjusting combined cursor speed adjusts all directions', async () => {
     await initPage();
 
+    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
     const combinedSlider =
         faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
             '#combinedSpeedSlider');
@@ -191,21 +182,10 @@ suite('<facegaze-cursor-card>', () => {
     assertEquals(combinedSlider.pref.value, value);
 
     // Speed prefs have default value.
-    assertEquals(
-        faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_up.value,
-        value);
-    assertEquals(
-        faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_down
-            .value,
-        value);
-    assertEquals(
-        faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_left
-            .value,
-        value);
-    assertEquals(
-        faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_right
-            .value,
-        value);
+    assertEquals(prefs.cursor_speed_up.value, value);
+    assertEquals(prefs.cursor_speed_down.value, value);
+    assertEquals(prefs.cursor_speed_left.value, value);
+    assertEquals(prefs.cursor_speed_right.value, value);
 
     // Adjust the value a few times, all the individual prefs get adjusted.
     for (let i = 0; i < 3; i++) {
@@ -213,22 +193,10 @@ suite('<facegaze-cursor-card>', () => {
 
       value++;
       assertEquals(value, combinedSlider.pref.value);
-      assertEquals(
-          faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_up
-              .value,
-          value);
-      assertEquals(
-          faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_down
-              .value,
-          value);
-      assertEquals(
-          faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_left
-              .value,
-          value);
-      assertEquals(
-          faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_right
-              .value,
-          value);
+      assertEquals(prefs.cursor_speed_up.value, value);
+      assertEquals(prefs.cursor_speed_down.value, value);
+      assertEquals(prefs.cursor_speed_left.value, value);
+      assertEquals(prefs.cursor_speed_right.value, value);
     }
 
     // Showing the individual sliders shows they've taken on the value of
@@ -276,6 +244,8 @@ suite('<facegaze-cursor-card>', () => {
       async () => {
         await initPage();
 
+        const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
         const adjustSpeedsSeparatelyButton =
             faceGazeCursorCard.shadowRoot!
                 .querySelector<SettingsToggleButtonElement>(
@@ -284,10 +254,7 @@ suite('<facegaze-cursor-card>', () => {
         adjustSpeedsSeparatelyButton.click();
         flush();
 
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_up
-                .value,
-            20);
+        assertEquals(prefs.cursor_speed_up.value, 20);
         const speedUpSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedUpSlider');
@@ -296,15 +263,9 @@ suite('<facegaze-cursor-card>', () => {
         assertEquals(speedUpSlider.pref.value, 20);
         await pressArrowOnSlider(speedUpSlider, /*isRight=*/ true);
         assertEquals(speedUpSlider.pref.value, 21);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_up
-                .value,
-            21);
+        assertEquals(prefs.cursor_speed_up.value, 21);
 
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_down
-                .value,
-            20);
+        assertEquals(prefs.cursor_speed_down.value, 20);
         const speedDownSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedDownSlider');
@@ -314,15 +275,9 @@ suite('<facegaze-cursor-card>', () => {
         await pressArrowOnSlider(speedDownSlider, /*isRight=*/ true);
         await pressArrowOnSlider(speedDownSlider, /*isRight=*/ true);
         assertEquals(speedDownSlider.pref.value, 22);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_down
-                .value,
-            22);
+        assertEquals(prefs.cursor_speed_down.value, 22);
 
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_left
-                .value,
-            20);
+        assertEquals(prefs.cursor_speed_left.value, 20);
         const speedLeftSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedLeftSlider');
@@ -331,15 +286,9 @@ suite('<facegaze-cursor-card>', () => {
         assertEquals(speedLeftSlider.pref.value, 20);
         await pressArrowOnSlider(speedLeftSlider, /*isRight=*/ false);
         assertEquals(speedLeftSlider.pref.value, 19);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_left
-                .value,
-            19);
+        assertEquals(prefs.cursor_speed_left.value, 19);
 
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_right
-                .value,
-            20);
+        assertEquals(prefs.cursor_speed_right.value, 20);
         const speedRightSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedRightSlider');
@@ -349,10 +298,7 @@ suite('<facegaze-cursor-card>', () => {
         await pressArrowOnSlider(speedRightSlider, /*isRight=*/ false);
         await pressArrowOnSlider(speedRightSlider, /*isRight=*/ false);
         assertEquals(speedRightSlider.pref.value, 18);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_right
-                .value,
-            18);
+        assertEquals(prefs.cursor_speed_right.value, 18);
 
         // Turning off "adjust separately" resets to defaults.
         adjustSpeedsSeparatelyButton.click();
@@ -365,21 +311,102 @@ suite('<facegaze-cursor-card>', () => {
         assertTrue(isVisible(combinedSlider));
         assertEquals(combinedSlider.pref.value, 20);
 
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_up
-                .value,
-            20);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_down
-                .value,
-            20);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_left
-                .value,
-            20);
-        assertEquals(
-            faceGazeCursorCard.prefs.settings.a11y.face_gaze.cursor_speed_right
-                .value,
-            20);
+        assertEquals(prefs.cursor_speed_up.value, 20);
+        assertEquals(prefs.cursor_speed_down.value, 20);
+        assertEquals(prefs.cursor_speed_left.value, 20);
+        assertEquals(prefs.cursor_speed_right.value, 20);
       });
+
+  test('reset button resets to defaults', async () => {
+    await initPage();
+
+    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
+    // Change the adjust speeds separately value.
+    const adjustSpeedsSeparatelyButton =
+        faceGazeCursorCard.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>(
+                '#faceGazeCursorAdjustSeparatelyButton');
+    assert(adjustSpeedsSeparatelyButton);
+    adjustSpeedsSeparatelyButton.click();
+    flush();
+    assertTrue(prefs.adjust_speed_separately.value);
+
+    // The individual sliders are all shown, change their values.
+    const speedUpSlider =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#speedUpSlider');
+    assert(speedUpSlider);
+    assertTrue(isVisible(speedUpSlider));
+    assertEquals(prefs.cursor_speed_down.value, 20);
+    pressArrowOnSlider(speedUpSlider, /*isRight=*/ true);
+    flush();
+    assertEquals(prefs.cursor_speed_up.value, 21);
+
+    const speedDownSlider =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#speedDownSlider');
+    assert(speedDownSlider);
+    assertTrue(isVisible(speedDownSlider));
+    assertEquals(prefs.cursor_speed_down.value, 20);
+    pressArrowOnSlider(speedDownSlider, /*isRight=*/ false);
+    flush();
+    assertEquals(prefs.cursor_speed_down.value, 19);
+
+    const speedLeftSlider =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#speedLeftSlider');
+    assert(speedLeftSlider);
+    assertTrue(isVisible(speedLeftSlider));
+    assertEquals(prefs.cursor_speed_left.value, 20);
+    pressArrowOnSlider(speedLeftSlider, /*isRight=*/ true);
+    flush();
+    assertEquals(prefs.cursor_speed_left.value, 21);
+
+    const speedRightSlider =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#speedRightSlider');
+    assert(speedRightSlider);
+    assertTrue(isVisible(speedRightSlider));
+    assertEquals(prefs.cursor_speed_right.value, 20);
+    pressArrowOnSlider(speedRightSlider, /*isRight=*/ false);
+    flush();
+    assertEquals(prefs.cursor_speed_right.value, 19);
+
+    const cursorSmoothingSlider =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#cursorSmoothingSlider');
+    assert(cursorSmoothingSlider);
+    assertTrue(isVisible(cursorSmoothingSlider));
+    assertEquals(prefs.cursor_smoothing.value, 6);
+    pressArrowOnSlider(cursorSmoothingSlider, /*isRight=*/ true);
+    flush();
+    assertEquals(prefs.cursor_smoothing.value, 7);
+
+    const accelerationButton =
+        faceGazeCursorCard.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>('#accelerationButton');
+    assert(accelerationButton);
+    assertTrue(isVisible(accelerationButton));
+    accelerationButton.click();
+    flush();
+    assertFalse(prefs.cursor_use_acceleration.value);
+
+    // Now, reset everything.
+    const resetButton =
+        faceGazeCursorCard.shadowRoot!.querySelector<CrButtonElement>(
+            '#cursorResetButton');
+    assert(resetButton);
+    assertTrue(isVisible(resetButton));
+    resetButton.click();
+    flush();
+
+    assertFalse(prefs.adjust_speed_separately.value);
+    assertEquals(prefs.cursor_smoothing.value, 6);
+    assertTrue(prefs.cursor_use_acceleration.value);
+    assertEquals(prefs.cursor_speed_up.value, 20);
+    assertEquals(prefs.cursor_speed_down.value, 20);
+    assertEquals(prefs.cursor_speed_left.value, 20);
+    assertEquals(prefs.cursor_speed_right.value, 20);
+  });
 });

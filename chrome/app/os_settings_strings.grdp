@@ -1283,44 +1283,65 @@
     Show large mouse cursor
   </message>
   <!-- TODO(b/341770655): Finalize strings for Facegaze and mark translatable -->
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements.">
     Face control
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements." translateable="false">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements.">
     Use face and gaze movement to control cursor and keyboard
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME" desc="The name of a section in settings for controlling the cursor speed." translateable="false">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME" desc="The name of a section in settings for controlling the cursor speed.">
     Speed
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_UP_LABEL" desc="Label description for a slider that adjusts the cursor speed up for Face Gaze. This makes the cursor move faster or slower as the head moves up." translateable="false">
-    Cursor speed - up
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_UP_LABEL" desc="Label description for a slider that adjusts the cursor speed up for Face Gaze. This makes the cursor move faster or slower as the head moves up.">
+    Up
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_DOWN_LABEL" desc="Label description for a slider that adjusts the cursor speed down for Face Gaze. This makes the cursor move faster or slower as the head moves down." translateable="false">
-    Cursor speed - down
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_DOWN_LABEL" desc="Label description for a slider that adjusts the cursor speed down for Face Gaze. This makes the cursor move faster or slower as the head moves down.">
+    Down
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LEFT_LABEL" desc="Label description for a slider that adjusts the cursor speed to the left for Face Gaze. This makes the cursor move faster or slower as the head moves to the left." translateable="false">
-    Cursor speed - left
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LEFT_LABEL" desc="Label description for a slider that adjusts the cursor speed to the left for Face Gaze. This makes the cursor move faster or slower as the head moves to the left.">
+    Left
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_RIGHT_LABEL" desc="Label description for a slider that adjusts the cursor speed to the right for Face Gaze. This makes the cursor move faster or slower as the head moves to the right." translateable="false">
-    Cursor speed - right
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_RIGHT_LABEL" desc="Label description for a slider that adjusts the cursor speed to the right for Face Gaze. This makes the cursor move faster or slower as the head moves to the right.">
+    Right
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_LABEL" desc="Label description for a slider that adjusts the cursor smoothing rate for Face Gaze. Smoothing makes the cursor movement less jumpy at the expense of being reactive." translateable="false">
-    (Advanced) Smooth pointer
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_FAST" desc="Label for the 'fast' side of a cursor speed slider that goes from 'slow' to 'fast'.">
+    Fast
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL" desc="Label description for a toggle button that turns on mouse acceleration for Face Gaze. Mouse acceleration makes the cursor move faster when the head moves quickly." translateable="false">
-    (Advanced) Use mouse acceleration
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SLOW" desc="Label for the 'slow' side of a cursor speed slider that goes from 'slow' to 'fast'.">
+    Slow
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ENABLED_LABEL" desc="Label description for a toggle button that enables or disables using facial gestures to trigger actions." translateable="false">
-    Use facial gestures to trigger actions
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_LABEL" desc="Label description for a slider that adjusts the cursor smoothing rate for Face Gaze. Smoothing makes the cursor movement less jumpy at the expense of being reactive.">
+    Smoothness
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_DESCRIPTION" desc="Description for a slider that adjusts the cursor smoothing rate for Face Gaze. Smoothing makes the cursor movement less jumpy at the expense of being reactive.">
+    You can prevent your cursor from jumping around for slight head movements, but there will be a short delay.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL" desc="Label description for a toggle button that turns on mouse acceleration for Face Gaze. Mouse acceleration makes the cursor move faster when the head moves quickly.">
+    Cursor acceleration
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_DESCRIPTION" desc="Description for a toggle button that turns on mouse acceleration for Face Gaze. Mouse acceleration makes the cursor move faster when the head moves quickly.">
+    Bigger head movements will move the cursor farther
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ENABLED_LABEL" desc="Label description for a toggle button that enables or disables using facial gestures to trigger actions.">
+    Use facial gestures to perform actions
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_CONTROL_ENABLED_LABEL" desc="Label description for a toggle button that enables or disables using head movement to control the mouse cursor." translateable="false">
-    Use head movement to control mouse cursor
+    Use head movements to control mouse cursor
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ADJUST_SEPARATELY_LABEL" desc="Label for a toggle button that allows the user to adjust the cursor speed separately for up/down/left/right speeds in FaceGaze." translateable="false">
-    Adjust speed in every direction separately
+    Adjust speed separately for each direction
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LABEL" desc="Label description for a slider that adjusts the cursor speed for Face Gaze. This makes the cursor move faster or slower as the head moves." translateable="false">
     Cursor speed
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SLIDER_LABEL_RESPONSIVE" desc="Label for the 'responsive' side of a smoothness slider that goes from 'responsive' to 'smooth'.">
+    Responsive
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SLIDER_LABEL_SMOOTH" desc="Label for the 'smooth' side of a smoothness slider that goes from 'responsive' to 'smooth'.">
+    Smooth
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET" desc="Label for the 'reset' button in FaceGaze cursor settings, that brings cursor settings back to default.">
+    Reset
   </message>
   <message name="IDS_OS_SETTINGS_SLIDER_LABEL_100" desc="Label for the side of a slider that goes from or to 100.">
     100
