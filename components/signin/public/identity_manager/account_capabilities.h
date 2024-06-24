@@ -52,6 +52,10 @@ class AccountCapabilities {
 #endif
   // Keep sorted alphabetically.
 
+  // Chrome can fetch information related to the family group for accounts
+  // with this capability.
+  signin::Tribool can_fetch_family_member_info() const;
+
   // Chrome can display the email address for accounts with this capability.
   signin::Tribool can_have_email_address_displayed() const;
 

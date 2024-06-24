@@ -24,6 +24,7 @@ class AccountCapabilitiesTestMutator {
       bool value);
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
   void set_is_opted_in_to_parental_supervision(bool value);
+  void set_can_fetch_family_member_info(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_can_use_chrome_ip_protection(bool value);
   void set_can_use_devtools_generative_ai_features(bool value);

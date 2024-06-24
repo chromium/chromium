@@ -51,6 +51,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canRunChromePrivacySandboxTrials();
             case AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME:
                 return capabilities.isOptedInToParentalSupervision();
+            case AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME:
+                return capabilities.canFetchFamilyMemberInfo();
             case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
                 return capabilities.canToggleAutoUpdates();
             case AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME:
@@ -144,6 +146,9 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME),
+                        new ParameterSet()
+                            .name("CanFetchFamilyMemberInfo")
+                            .value(AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
                         new ParameterSet()
                                 .name("IsSubjectToParentalControls")
                                 .value(

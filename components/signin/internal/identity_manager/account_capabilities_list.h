@@ -35,6 +35,10 @@ ACCOUNT_CAPABILITY(kIsOptedInToParentalSupervisionCapabilityName,
                    IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME,
                    "accountcapabilities/guzdslldmfya")
 
+ACCOUNT_CAPABILITY(kCanFetchFamilyMemberInfoCapabilityName,
+                   CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME,
+                   "accountcapabilities/ge2dinbnmnqxa")
+
 ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    CAN_TOGGLE_AUTO_UPDATES_NAME,
                    "accountcapabilities/gu4dmlldmfya")

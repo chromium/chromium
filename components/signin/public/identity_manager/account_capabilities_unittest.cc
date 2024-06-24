@@ -13,6 +13,21 @@
 
 class AccountCapabilitiesTest : public testing::Test {};
 
+TEST_F(AccountCapabilitiesTest, CanFetchFamilyMemberInfo) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_fetch_family_member_info(true);
+  EXPECT_EQ(capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_fetch_family_member_info(false);
+  EXPECT_EQ(capabilities.can_fetch_family_member_info(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_have_email_address_displayed(),

@@ -16,6 +16,12 @@ AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames() {
   return AccountCapabilities::GetSupportedAccountCapabilityNames();
 }
 
+void AccountCapabilitiesTestMutator::set_can_fetch_family_member_info(
+    bool value) {
+  capabilities_->capabilities_map_[kCanFetchFamilyMemberInfoCapabilityName] =
+      value;
+}
+
 void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
     bool value) {
   capabilities_

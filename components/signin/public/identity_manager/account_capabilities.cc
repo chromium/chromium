@@ -70,6 +70,10 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
   return iterator->second ? signin::Tribool::kTrue : signin::Tribool::kFalse;
 }
 
+signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
+  return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
+}
+
 signin::Tribool AccountCapabilities::can_have_email_address_displayed() const {
   return GetCapabilityByName(kCanHaveEmailAddressDisplayedCapabilityName);
 }

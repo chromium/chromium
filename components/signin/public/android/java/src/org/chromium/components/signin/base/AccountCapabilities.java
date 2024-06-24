@@ -100,6 +100,14 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canFetchFamilyMemberInfo capability value.
+     */
+    public @Tribool int canFetchFamilyMemberInfo() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME);
+    }
+
+    /**
      * @return canToggleAutoUpdates capability value.
      */
     public @Tribool int canToggleAutoUpdates() {
