@@ -70,6 +70,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   MOCK_CONST_METHOD0(IsPresent, bool());
   MOCK_CONST_METHOD0(IsPowered, bool());
   MOCK_CONST_METHOD0(GetOsPermissionStatus, PermissionStatus());
+  MOCK_METHOD1(RequestSystemPermission, void(RequestSystemPermissionCallback));
   MOCK_CONST_METHOD0(CanPower, bool());
   MOCK_METHOD3(SetPowered,
                void(bool powered,

@@ -991,6 +991,8 @@ void AuthenticatorRequestDialogController::EnsureBleAdapterIsPoweredAndContinue(
   if (transport_availability_.ble_status ==
       BleStatus::kPendingPermissionRequest) {
     // Trigger requesting Bluetooth permissions on macOS.
+    model_->ui_disabled_ = true;
+    model_->OnSheetModelChanged();
     request_ble_permission_callback_.Run(
         base::BindOnce(&AuthenticatorRequestDialogController::OnBleStatusKnown,
                        weak_factory_.GetWeakPtr()));
@@ -1001,6 +1003,15 @@ void AuthenticatorRequestDialogController::EnsureBleAdapterIsPoweredAndContinue(
 
 void AuthenticatorRequestDialogController::OnBleStatusKnown(
     BleStatus ble_status) {
+  if (!after_ble_adapter_powered_) {
+    // Drop the callback if there is no action pending after the adapter is
+    // powered. This could happen e.g. if the
+    // EnsureBleAdapterIsPoweredAndContinue was called twice before
+    // OnBleStatusKnown had a chance to resolve.
+    FIDO_LOG(ERROR) << "Ignoring BLE status: no action pending.";
+    return;
+  }
+  model_->ui_disabled_ = false;
   transport_availability_.ble_status = ble_status;
   model_->ble_adapter_is_powered =
       transport_availability_.ble_status ==

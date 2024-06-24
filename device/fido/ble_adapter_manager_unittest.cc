@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -140,6 +141,14 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
     return data;
   }
 
+  void SetAdapterPermissions(BluetoothAdapter::PermissionStatus status) {
+    EXPECT_CALL(*adapter(), RequestSystemPermission)
+        .WillOnce([status](MockBluetoothAdapter::RequestSystemPermissionCallback
+                               callback) { std::move(callback).Run(status); });
+    EXPECT_CALL(*adapter(), GetOsPermissionStatus)
+        .WillOnce(::testing::Return(status));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
@@ -226,27 +235,22 @@ TEST_F(FidoBleAdapterManagerTest, SetBluetoothPowerOn) {
 
 TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionAllowed) {
   task_environment_.RunUntilIdle();
-  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
-      .WillOnce(
-          ::testing::Return(BluetoothAdapter::PermissionStatus::kAllowed));
-  EXPECT_CALL(*adapter(), IsPowered).WillRepeatedly(::testing::Return(true));
+  SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kAllowed);
+  EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(true));
 
   test::ValueCallbackReceiver<BleStatus> callback;
-  fake_request_handler_->RequestBluetoothPermissionMayBlock(
-      callback.callback());
+  fake_request_handler_->RequestBluetoothPermission(callback.callback());
   callback.WaitForCallback();
   EXPECT_EQ(callback.value(), BleStatus::kOn);
 }
 
 TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionDenied) {
   task_environment_.RunUntilIdle();
-  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
-      .WillOnce(::testing::Return(BluetoothAdapter::PermissionStatus::kDenied));
-  EXPECT_CALL(*adapter(), IsPowered).WillRepeatedly(::testing::Return(true));
+  SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kDenied);
+  EXPECT_CALL(*adapter(), IsPowered).Times(0);
 
   test::ValueCallbackReceiver<BleStatus> callback;
-  fake_request_handler_->RequestBluetoothPermissionMayBlock(
-      callback.callback());
+  fake_request_handler_->RequestBluetoothPermission(callback.callback());
   callback.WaitForCallback();
   EXPECT_EQ(callback.value(), BleStatus::kPermissionDenied);
 }
@@ -257,14 +261,11 @@ TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionDenied) {
 TEST_F(FidoBleAdapterManagerTest,
        RequestBluetoothPermissionHandlesUndetermined) {
   task_environment_.RunUntilIdle();
-  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
-      .WillOnce(
-          ::testing::Return(BluetoothAdapter::PermissionStatus::kUndetermined));
-  EXPECT_CALL(*adapter(), IsPowered).WillRepeatedly(::testing::Return(true));
+  SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kUndetermined);
+  EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(true));
 
   test::ValueCallbackReceiver<BleStatus> callback;
-  fake_request_handler_->RequestBluetoothPermissionMayBlock(
-      callback.callback());
+  fake_request_handler_->RequestBluetoothPermission(callback.callback());
   callback.WaitForCallback();
   EXPECT_EQ(callback.value(), BleStatus::kOn);
 }

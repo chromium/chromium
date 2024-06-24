@@ -749,7 +749,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
           req_state_->request_handler
               ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */,
       base::BindRepeating(
-          &device::FidoRequestHandlerBase::RequestBluetoothPermissionMayBlock,
+          &device::FidoRequestHandlerBase::RequestBluetoothPermission,
           req_state_->request_handler
               ->GetWeakPtr()) /* request_ble_permission_callback */);
   req_state_->request_handler->set_observer(req_state_->request_delegate.get());
@@ -815,7 +815,7 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
           request_handler
               ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */,
       base::BindRepeating(
-          &device::FidoRequestHandlerBase::RequestBluetoothPermissionMayBlock,
+          &device::FidoRequestHandlerBase::RequestBluetoothPermission,
           request_handler->GetWeakPtr()) /* request_ble_permission_callback */);
 
   request_handler->set_observer(req_state_->request_delegate.get());

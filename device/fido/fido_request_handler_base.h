@@ -330,9 +330,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // kPendingPermissionRequest, in which case the OS will display a blocking
   // permissions prompt. Once the user allows or denies the prompt, |callback|
   // will be executed with the result.
-  // TODO(crbug.com/345753557): tickle the Bluetooth API in the background so it
-  // doesn't block.
-  void RequestBluetoothPermissionMayBlock(BlePermissionCallback callback);
+  void RequestBluetoothPermission(BlePermissionCallback callback);
 
   base::WeakPtr<FidoRequestHandlerBase> GetWeakPtr();
 

@@ -62,10 +62,16 @@ void BleAdapterManager::SetAdapterPower(bool set_power_on) {
   adapter_->SetPowered(set_power_on, base::DoNothing(), base::DoNothing());
 }
 
-void BleAdapterManager::RequestBluetoothPermissionMayBlock(
+void BleAdapterManager::RequestBluetoothPermission(
     FidoRequestHandlerBase::BlePermissionCallback callback) {
-  // Tickle the BLE API to trigger the prompt.
-  adapter_->IsPowered();
+  adapter_->RequestSystemPermission(
+      base::IgnoreArgs<BluetoothAdapter::PermissionStatus>(
+          base::BindOnce(&BleAdapterManager::OnHaveBluetoothPermission,
+                         weak_factory_.GetWeakPtr(), std::move(callback))));
+}
+
+void BleAdapterManager::OnHaveBluetoothPermission(
+    FidoRequestHandlerBase::BlePermissionCallback callback) {
   BleStatus ble_status = GetBleAdapterStatus(*adapter_);
   if (ble_status == BleStatus::kPendingPermissionRequest) {
     FIDO_LOG(ERROR) << "Bluetooth API reports status as undetermined after "

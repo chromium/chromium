@@ -346,9 +346,9 @@ void FidoRequestHandlerBase::PowerOnBluetoothAdapter() {
   bluetooth_adapter_manager_->SetAdapterPower(true /* set_power_on */);
 }
 
-void FidoRequestHandlerBase::RequestBluetoothPermissionMayBlock(
+void FidoRequestHandlerBase::RequestBluetoothPermission(
     BlePermissionCallback callback) {
-  return bluetooth_adapter_manager_->RequestBluetoothPermissionMayBlock(
+  return bluetooth_adapter_manager_->RequestBluetoothPermission(
       std::move(callback));
 }
 
