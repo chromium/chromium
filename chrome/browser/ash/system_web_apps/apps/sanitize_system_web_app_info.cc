@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/webui/grit/ash_sanitize_app_resources.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
@@ -26,6 +27,10 @@ CreateWebAppInfoForSanitizeSystemWebApp() {
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUISanitizeAppURL);
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url(),
+      {{"app_icon_192.png", 192, IDR_ASH_SANITIZE_APP_APP_ICON_192_PNG}},
+      *info);
 
   info->title = l10n_util::GetStringUTF16(IDS_OS_SANITIZE_APP_NAME);
   info->theme_color =
@@ -52,6 +57,10 @@ SanitizeSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool SanitizeSystemAppDelegate::ShouldAllowResize() const {
+  return false;
+}
+
+bool SanitizeSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 

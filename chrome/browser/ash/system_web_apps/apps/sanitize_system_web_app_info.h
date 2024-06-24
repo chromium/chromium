@@ -22,6 +22,7 @@ class SanitizeSystemAppDelegate : public ash::SystemWebAppDelegate {
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldAllowResize() const override;
+  bool ShouldShowInLauncher() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
 };
 
