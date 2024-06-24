@@ -21,10 +21,6 @@ const char kNewTabPageMetricSuffix[] = "NewTabPage";
 const char kLinkPreviewMetricsSuffix[] = "LinkPreview";
 // LINT.ThenChange()
 
-bool IsDirectUrlInputPrerenderEnabled() {
-  return base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2);
-}
-
 bool IsSearchSuggestionPrerenderEnabled() {
   return base::FeatureList::IsEnabled(
       features::kSupportSearchSuggestionForPrerender2);

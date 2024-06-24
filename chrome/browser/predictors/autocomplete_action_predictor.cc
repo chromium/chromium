@@ -210,10 +210,6 @@ void AutocompleteActionPredictor::StartPrerendering(
 
   SetIsNavigationInDomainCallback(preloading_data);
 
-  if (!prerender_utils::IsDirectUrlInputPrerenderEnabled()) {
-    return;
-  }
-
   // Create new PreloadingAttempt and pass all the values corresponding to this
   // prerendering attempt for Prerender.
   content::PreloadingAttempt* preloading_attempt =

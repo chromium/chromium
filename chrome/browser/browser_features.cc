@@ -217,12 +217,6 @@ base::FeatureParam<bool> kNotificationOneTapUnsubscribeUseServiceIntentParam{
     &kNotificationOneTapUnsubscribe, "use_service_intent", false};
 #endif
 
-// This flag is used for enabling Omnibox triggered prerendering. See
-// crbug.com/1166085 for more details of Omnibox triggered prerendering.
-BASE_FEATURE(kOmniboxTriggerForPrerender2,
-             "OmniboxTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables AES keys support in the chrome.enterprise.platformKeys and
 // chrome.platformKeys APIs. The new operations include `sign`, `encrypt` and

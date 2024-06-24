@@ -19,8 +19,6 @@ extern const char kBookmarkBarMetricSuffix[];
 extern const char kNewTabPageMetricSuffix[];
 extern const char kLinkPreviewMetricsSuffix[];
 
-bool IsDirectUrlInputPrerenderEnabled();
-
 bool IsSearchSuggestionPrerenderEnabled();
 
 // Whether supporting shareable search prefetch cache. By enabling this feature,
