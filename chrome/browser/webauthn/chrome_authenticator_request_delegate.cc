@@ -178,14 +178,14 @@ bool IsCredentialFromPlatformAuthenticator(
          cred.source != device::AuthenticatorType::kPhone;
 }
 
-// Returns true iff |cred_id| starts with the prefix reserved for passkeys used
+// Returns true iff |user_id| starts with the prefix reserved for passkeys used
 // to authenticate to Google services.
-bool CredIdHasGooglePasskeyAuthPrefix(const std::vector<uint8_t>& cred_id) {
+bool UserIdHasGooglePasskeyAuthPrefix(const std::vector<uint8_t>& user_id) {
   constexpr std::string_view kPrefix = "GOOGLE_ACCOUNT:";
-  if (cred_id.size() < kPrefix.size()) {
+  if (user_id.size() < kPrefix.size()) {
     return false;
   }
-  return memcmp(cred_id.data(), kPrefix.data(), kPrefix.size()) == 0;
+  return memcmp(user_id.data(), kPrefix.data(), kPrefix.size()) == 0;
 }
 
 // Filters |passkeys| to only contain credentials that are used to authenticate
@@ -194,7 +194,7 @@ void FilterGoogleAuthPasskeys(
     std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
   std::erase_if(*passkeys, [](const auto& passkey) {
     return IsCredentialFromPlatformAuthenticator(passkey) &&
-           !CredIdHasGooglePasskeyAuthPrefix(passkey.user.id);
+           !UserIdHasGooglePasskeyAuthPrefix(passkey.user.id);
   });
 }
 
