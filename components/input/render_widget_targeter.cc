@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/render_widget_targeter.h"
+#include "components/input/render_widget_targeter.h"
 
 #include <memory>
 
@@ -11,12 +11,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "content/common/input/render_widget_host_view_input.h"
-#include "content/common/input/render_input_router.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/blink_event_util.h"
 
-namespace content {
+namespace input {
 
 namespace {
 
@@ -118,8 +117,8 @@ blink::WebInputEvent* RenderWidgetTargeter::TargetingRequest::GetEvent() {
   return event.get();
 }
 
-RenderWidgetHostViewInput* RenderWidgetTargeter::TargetingRequest::GetRootView()
-    const {
+RenderWidgetHostViewInput*
+RenderWidgetTargeter::TargetingRequest::GetRootView() const {
   return root_view.get();
 }
 
@@ -448,4 +447,4 @@ void RenderWidgetTargeter::OnInputTargetDisconnect(
   FoundTarget(target.get(), location, &request);
 }
 
-}  // namespace content
+}  // namespace input

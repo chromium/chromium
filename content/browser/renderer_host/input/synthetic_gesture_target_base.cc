@@ -4,10 +4,10 @@
 
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/input/events_helper.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"

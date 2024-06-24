@@ -6,24 +6,25 @@
 #define CONTENT_TEST_MOCK_RENDER_INPUT_ROUTER_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
-#include "content/common/input/render_input_router.h"
+#include "components/input/render_input_router.h"
 #include "content/test/mock_widget_input_handler.h"
 
 using blink::WebGestureEvent;
 
 namespace content {
 
-class MockRenderInputRouter : public RenderInputRouter {
+class MockRenderInputRouter : public input::RenderInputRouter {
  public:
-  using RenderInputRouter::input_router_;
+  using input::RenderInputRouter::input_router_;
 
   explicit MockRenderInputRouter(
       input::InputRouterClient* host,
       std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
-      RenderInputRouterDelegate* delegate,
+      input::RenderInputRouterDelegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   MockRenderInputRouter(const MockRenderInputRouter&) = delete;

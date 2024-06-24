@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
-#define CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
+#ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
+#define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
 
-namespace content {
+namespace input {
 
 class RenderInputRouter;
 
-class CONTENT_EXPORT RenderInputRouterIterator {
+class COMPONENT_EXPORT(INPUT) RenderInputRouterIterator {
  public:
   virtual ~RenderInputRouterIterator() = default;
 
@@ -18,6 +18,6 @@ class CONTENT_EXPORT RenderInputRouterIterator {
   virtual RenderInputRouter* GetNextRouter() = 0;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
+#endif  // COMPONENTS_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_

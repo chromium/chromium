@@ -11,8 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "content/common/input/touch_emulator.h"
-#include "content/common/input/touch_emulator_client.h"
+#include "components/input/touch_emulator.h"
+#include "components/input/touch_emulator_client.h"
+#include "content/common/content_export.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
@@ -24,13 +25,16 @@ class WebMouseEvent;
 class WebMouseWheelEvent;
 }  // namespace blink
 
+namespace input {
+class RenderWidgetHostViewInput;
+}  // namespace input
+
 namespace content {
 
-class RenderWidgetHostViewInput;
-
-class CONTENT_EXPORT TouchEmulatorImpl : public TouchEmulator {
+class CONTENT_EXPORT TouchEmulatorImpl : public input::TouchEmulator {
  public:
-  TouchEmulatorImpl(TouchEmulatorClient* client, float device_scale_factor);
+  TouchEmulatorImpl(input::TouchEmulatorClient* client,
+                    float device_scale_factor);
 
   TouchEmulatorImpl(const TouchEmulatorImpl&) = delete;
   TouchEmulatorImpl& operator=(const TouchEmulatorImpl&) = delete;
@@ -42,9 +46,11 @@ class CONTENT_EXPORT TouchEmulatorImpl : public TouchEmulator {
   void SetDoubleTapSupportForPageEnabled(bool enabled) override;
   bool IsEnabled() const override;
   bool HandleTouchEvent(const blink::WebTouchEvent& event) override;
-  void OnGestureEventAck(const blink::WebGestureEvent& event,
-                         RenderWidgetHostViewInput* target_view) override;
-  void OnViewDestroyed(RenderWidgetHostViewInput* destroyed_view) override;
+  void OnGestureEventAck(
+      const blink::WebGestureEvent& event,
+      input::RenderWidgetHostViewInput* target_view) override;
+  void OnViewDestroyed(
+      input::RenderWidgetHostViewInput* destroyed_view) override;
   bool HandleTouchEventAck(
       const blink::WebTouchEvent& event,
       blink::mojom::InputEventResultState ack_result) override;
@@ -56,14 +62,14 @@ class CONTENT_EXPORT TouchEmulatorImpl : public TouchEmulator {
   // propagate any further.
   // TODO(dgozman): maybe pass latency info together with events.
   bool HandleMouseEvent(const blink::WebMouseEvent& event,
-                        RenderWidgetHostViewInput* target_view);
+                        input::RenderWidgetHostViewInput* target_view);
   bool HandleMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   bool HandleKeyboardEvent(const blink::WebKeyboardEvent& event);
 
   // Injects a touch event to be processed for gestures and optionally
   // forwarded to the client. Only works in kInjectingTouchEvents mode.
   void InjectTouchEvent(const blink::WebTouchEvent& event,
-                        RenderWidgetHostViewInput* target_view,
+                        input::RenderWidgetHostViewInput* target_view,
                         base::OnceClosure completion_callback);
 
   // Cancel any touches, for example, when focus is lost.
@@ -107,12 +113,12 @@ class CONTENT_EXPORT TouchEmulatorImpl : public TouchEmulator {
   // it to the client if appropriate. Returns whether event was handled
   // synchronously, and there will be no ack.
   bool HandleEmulatedTouchEvent(blink::WebTouchEvent event,
-                                RenderWidgetHostViewInput* target_view);
+                                input::RenderWidgetHostViewInput* target_view);
 
   // Called when ack for injected touch has been received.
   void OnInjectedTouchCompleted();
 
-  const raw_ptr<TouchEmulatorClient> client_;
+  const raw_ptr<input::TouchEmulatorClient> client_;
 
   // Emulator is enabled iff gesture provider is created.
   // Disabled emulator does only process touch acks left from previous
@@ -142,7 +148,7 @@ class CONTENT_EXPORT TouchEmulatorImpl : public TouchEmulator {
   blink::WebTouchEvent touch_event_;
   int emulated_stream_active_sequence_count_;
   int native_stream_active_sequence_count_;
-  raw_ptr<RenderWidgetHostViewInput> last_emulated_start_target_;
+  raw_ptr<input::RenderWidgetHostViewInput> last_emulated_start_target_;
   // TODO(einbinder): this relies on synchronous tap gesture generation and does
   // not work for any other gestures. We should switch to callbacks which go
   // through touches and gestures once that's available.

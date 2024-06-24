@@ -15,6 +15,8 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/input/event_with_latency_info.h"
+#include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_view_input_observer.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -34,8 +36,6 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
-#include "content/common/input/render_widget_host_view_input_observer.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -684,16 +684,17 @@ float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
 }
 
-base::WeakPtr<RenderWidgetHostViewInput>
+base::WeakPtr<input::RenderWidgetHostViewInput>
 RenderWidgetHostViewBase::GetInputWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-RenderInputRouter* RenderWidgetHostViewBase::GetViewRenderInputRouter() {
+input::RenderInputRouter* RenderWidgetHostViewBase::GetViewRenderInputRouter() {
   return host()->GetRenderInputRouter();
 }
 
-RenderWidgetHostViewInput* RenderWidgetHostViewBase::GetParentViewInput() {
+input::RenderWidgetHostViewInput*
+RenderWidgetHostViewBase::GetParentViewInput() {
   return nullptr;
 }
 
@@ -743,7 +744,7 @@ void RenderWidgetHostViewBase::DisplayCursor(const ui::Cursor& cursor) {
   return;
 }
 
-CursorManager* RenderWidgetHostViewBase::GetCursorManager() {
+input::CursorManager* RenderWidgetHostViewBase::GetCursorManager() {
   return nullptr;
 }
 
@@ -851,7 +852,7 @@ gfx::PointF RenderWidgetHostViewBase::TransformRootPointToViewCoordSpace(
 
 bool RenderWidgetHostViewBase::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewInput* target_view,
+    input::RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
   NOTREACHED_IN_MIGRATION();
   return true;
@@ -940,12 +941,12 @@ void RenderWidgetHostViewBase::StopFling() {
 }
 
 void RenderWidgetHostViewBase::AddObserver(
-    RenderWidgetHostViewInputObserver* observer) {
+    input::RenderWidgetHostViewInputObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void RenderWidgetHostViewBase::RemoveObserver(
-    RenderWidgetHostViewInputObserver* observer) {
+    input::RenderWidgetHostViewInputObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -1001,8 +1002,8 @@ void RenderWidgetHostViewBase::SetTooltipObserverForTesting(
 // TODO(wjmaclean): Would it simplify this function if we re-implemented it
 // using GetTransformToViewCoordSpace()?
 bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
-    RenderWidgetHostViewInput* original_view,
-    RenderWidgetHostViewInput* target_view,
+    input::RenderWidgetHostViewInput* original_view,
+    input::RenderWidgetHostViewInput* target_view,
     const gfx::PointF& point,
     gfx::PointF* transformed_point) const {
   CHECK(original_view);
@@ -1020,7 +1021,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   std::vector<viz::FrameSinkId> target_ancestors;
   target_ancestors.push_back(target_view->GetFrameSinkId());
 
-  RenderWidgetHostViewInput* cur_view = target_view;
+  input::RenderWidgetHostViewInput* cur_view = target_view;
   while (cur_view->GetParentViewInput()) {
     cur_view = cur_view->GetParentViewInput();
     if (!cur_view)
@@ -1054,7 +1055,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
 }
 
 bool RenderWidgetHostViewBase::GetTransformToViewCoordSpace(
-    RenderWidgetHostViewInput* target_view,
+    input::RenderWidgetHostViewInput* target_view,
     gfx::Transform* transform) {
   CHECK(transform);
   if (target_view == this) {

@@ -480,7 +480,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return input_handler()->GetAndResetDispatchedMessages();
   }
 
-  RenderInputRouter* GetRenderInputRouter() override {
+  input::RenderInputRouter* GetRenderInputRouter() override {
     return render_input_router_.get();
   }
 

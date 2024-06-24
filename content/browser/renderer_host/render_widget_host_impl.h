@@ -35,6 +35,9 @@
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_router_impl.h"
+#include "components/input/render_input_router.h"
+#include "components/input/render_input_router_delegate.h"
+#include "components/input/touch_emulator_client.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
@@ -45,11 +48,8 @@
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
-#include "content/common/input/render_input_router.h"
-#include "content/common/input/render_input_router_delegate.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
-#include "content/common/input/touch_emulator_client.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host.h"
@@ -160,7 +160,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public blink::mojom::PopupWidgetHost,
       public blink::mojom::WidgetHost,
       public blink::mojom::PointerLockContext,
-      public RenderInputRouterDelegate {
+      public input::RenderInputRouterDelegate {
  public:
   // See the constructor for documentation.
   //
@@ -364,11 +364,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                       SetPopupBoundsCallback callback) override;
 
   // RenderInputRouterDelegate implementation.
-  RenderWidgetHostViewInput* GetPointerLockView() override;
+  input::RenderWidgetHostViewInput* GetPointerLockView() override;
   const cc::RenderFrameMetadata& GetLastRenderFrameMetadata() override;
-  std::unique_ptr<RenderInputRouterIterator> GetEmbeddedRenderInputRouters()
-      override;
-  RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
+  std::unique_ptr<input::RenderInputRouterIterator>
+  GetEmbeddedRenderInputRouters() override;
+  input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   void ForwardDelegatedInkPoint(gfx::DelegatedInkPoint& delegated_ink_point,
                                 bool& ended_delegated_ink_trail) override;
   void ResetDelegatedInkPointPrediction(
@@ -991,7 +991,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // the owned `compositor_metric_recorder_`.
   void DisableCompositorMetricRecording();
 
-  virtual RenderInputRouter* GetRenderInputRouter();  // virtual for testing.
+  virtual input::RenderInputRouter*
+  GetRenderInputRouter();  // virtual for testing.
 
   // Requests a commit and forced redraw in the renderer compositor.
   void ForceRedrawForTesting();
@@ -1448,7 +1449,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       user_input_active_handle_;
 
   // Receives and handles input events.
-  std::unique_ptr<RenderInputRouter> render_input_router_;
+  std::unique_ptr<input::RenderInputRouter> render_input_router_;
 
   base::CallbackListSubscription
       render_process_blocked_state_changed_subscription_;

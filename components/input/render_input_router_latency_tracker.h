@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_LATENCY_TRACKER_H_
-#define CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_LATENCY_TRACKER_H_
+#ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_LATENCY_TRACKER_H_
+#define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_LATENCY_TRACKER_H_
 
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/input/event_with_latency_info.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/latency/latency_info.h"
 #include "ui/latency/latency_tracker.h"
 
-namespace content {
+namespace input {
 
 class RenderInputRouterDelegate;
 
 // Utility class for tracking the latency of events passing through
 // a given RenderWidgetHost.
-class CONTENT_EXPORT RenderInputRouterLatencyTracker {
+class COMPONENT_EXPORT(INPUT) RenderInputRouterLatencyTracker {
  public:
   explicit RenderInputRouterLatencyTracker(RenderInputRouterDelegate* delegate);
 
@@ -69,6 +69,6 @@ class CONTENT_EXPORT RenderInputRouterLatencyTracker {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_LATENCY_TRACKER_H_
+#endif  // COMPONENTS_INPUT_RENDER_INPUT_ROUTER_LATENCY_TRACKER_H_

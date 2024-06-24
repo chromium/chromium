@@ -71,7 +71,7 @@ class MockRenderWidgetHost : public RenderWidgetHostImpl {
       int32_t routing_id,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget);
 
-  RenderInputRouter* GetRenderInputRouter() override;
+  input::RenderInputRouter* GetRenderInputRouter() override;
 
  protected:
   void NotifyNewContentRenderingTimeoutForTesting() override;

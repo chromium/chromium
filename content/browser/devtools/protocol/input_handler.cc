@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "content/browser/devtools/protocol/protocol.h"
@@ -35,7 +36,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_pinch_gesture.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
 #include "content/common/input/synthetic_pointer_action.h"
@@ -738,7 +738,7 @@ class InputHandler::InputInjector
 
     widget_host_->Focus();
     widget_host_->GetTouchEmulator(/*create_if_necessary=*/true)
-        ->Enable(TouchEmulator::Mode::kInjectingTouchEvents,
+        ->Enable(input::TouchEmulator::Mode::kInjectingTouchEvents,
                  ui::GestureProviderConfigType::CURRENT_PLATFORM);
     base::OnceClosure closure = base::BindOnce(
         &DispatchTouchEventCallback::sendSuccess, std::move(callback));

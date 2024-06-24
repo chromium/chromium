@@ -52,6 +52,8 @@
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/attribution_reporting/features.h"
 #include "components/download/public/common/download_stats.h"
+#include "components/input/cursor_manager.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -122,8 +124,6 @@
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
-#include "content/common/input/cursor_manager.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
@@ -635,7 +635,7 @@ using RenderWidgetHostAtPointCallback =
                             std::optional<gfx::PointF>)>;
 
 void RunCallback(RenderWidgetHostAtPointCallback callback,
-                 base::WeakPtr<RenderWidgetHostViewInput> view,
+                 base::WeakPtr<input::RenderWidgetHostViewInput> view,
                  std::optional<gfx::PointF> point) {
   auto* target = static_cast<RenderWidgetHostViewBase*>(view.get());
   if (!callback.is_null()) {
@@ -3986,7 +3986,8 @@ bool WebContentsImpl::PreHandleGestureEvent(
   return delegate_ && delegate_->PreHandleGestureEvent(this, event);
 }
 
-RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
+input::RenderWidgetHostInputEventRouter*
+WebContentsImpl::GetInputEventRouter() {
   if (!IsBeingDestroyed()) {
     if (GetOuterWebContents()) {
       return GetOuterWebContents()->GetInputEventRouter();
@@ -3994,7 +3995,7 @@ RenderWidgetHostInputEventRouter* WebContentsImpl::GetInputEventRouter() {
 
     if (!rwh_input_event_router_.get()) {
       rwh_input_event_router_ =
-          std::make_unique<RenderWidgetHostInputEventRouter>(
+          std::make_unique<input::RenderWidgetHostInputEventRouter>(
               GetHostFrameSinkManager(), this);
     }
   }
@@ -6785,7 +6786,8 @@ void WebContentsImpl::NotifyNavigationStateChangedFromController(
   NotifyNavigationStateChanged(changed_flags);
 }
 
-TouchEmulator* WebContentsImpl::GetTouchEmulator(bool create_if_necessary) {
+input::TouchEmulator* WebContentsImpl::GetTouchEmulator(
+    bool create_if_necessary) {
   CHECK(rwh_input_event_router_);
 
   if (!touch_emulator_ && create_if_necessary) {

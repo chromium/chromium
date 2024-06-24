@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/render_input_router_latency_tracker.h"
+#include "components/input/render_input_router_latency_tracker.h"
 
 #include <stddef.h>
 #include <string>
@@ -13,8 +13,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/common/input/render_input_router_delegate.h"
-#include "content/public/common/content_client.h"
+#include "components/input/render_input_router_delegate.h"
 #include "ui/events/blink/web_input_event_traits.h"
 
 using blink::WebGestureEvent;
@@ -24,7 +23,7 @@ using blink::WebMouseWheelEvent;
 using blink::WebTouchEvent;
 using ui::LatencyInfo;
 
-namespace content {
+namespace input {
 namespace {
 const char* GetTraceNameFromType(blink::WebInputEvent::Type type) {
 #define CASE_TYPE(t)              \
@@ -224,4 +223,4 @@ void RenderInputRouterLatencyTracker::OnEventStart(ui::LatencyInfo* latency) {
       render_input_router_delegate_->GetCurrentPageUkmSourceId());
 }
 
-}  // namespace content
+}  // namespace input

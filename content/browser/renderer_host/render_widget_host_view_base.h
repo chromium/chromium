@@ -23,12 +23,13 @@
 #include "build/build_config.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_router_impl.h"
+#include "components/input/render_input_router.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/common/content_export.h"
-#include "content/common/input/render_widget_host_view_input.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/page_visibility_state.h"
@@ -57,6 +58,11 @@ class WebMouseEvent;
 class WebMouseWheelEvent;
 }
 
+namespace input {
+class CursorManager;
+class RenderWidgetHostViewInputObserver;
+}  // namespace input
+
 namespace ui {
 class Compositor;
 class Cursor;
@@ -68,11 +74,9 @@ struct DidOverscrollParams;
 
 namespace content {
 
-class CursorManager;
 class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
 class RenderWidgetHostImpl;
-class RenderWidgetHostViewInputObserver;
 class ScopedViewTransitionResources;
 class TextInputManager;
 class TouchSelectionControllerClientManager;
@@ -83,7 +87,7 @@ class SyntheticGestureTarget;
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase
     : public RenderWidgetHostView,
-      public RenderWidgetHostViewInput {
+      public input::RenderWidgetHostViewInput {
  public:
   // The TooltipObserver is used in browser tests only.
   class CONTENT_EXPORT TooltipObserver {
@@ -136,8 +140,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void ResetGestureDetection();
 
   // RenderWidgetHostViewInput implementation
-  base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() override;
-  RenderInputRouter* GetViewRenderInputRouter() override;
+  base::WeakPtr<input::RenderWidgetHostViewInput> GetInputWeakPtr() override;
+  input::RenderInputRouter* GetViewRenderInputRouter() override;
   void ProcessMouseEvent(const blink::WebMouseEvent& event,
                          const ui::LatencyInfo& latency) override;
   void ProcessMouseWheelEvent(const blink::WebMouseWheelEvent& event,
@@ -166,12 +170,13 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
                                        gfx::PointF* transformed_point) override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewInput* target_view,
+      input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
-  bool GetTransformToViewCoordSpace(RenderWidgetHostViewInput* target_view,
-                                    gfx::Transform* transform) override;
+  bool GetTransformToViewCoordSpace(
+      input::RenderWidgetHostViewInput* target_view,
+      gfx::Transform* transform) override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
-  RenderWidgetHostViewInput* GetParentViewInput() override;
+  input::RenderWidgetHostViewInput* GetParentViewInput() override;
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
   void GestureEventAck(const blink::WebGestureEvent& event,
@@ -187,7 +192,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) override {}
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override {}
   void DisplayCursor(const ui::Cursor& cursor) override;
-  CursorManager* GetCursorManager() override;
+  input::CursorManager* GetCursorManager() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override {}
   void UpdateTooltip(const std::u16string& tooltip_text) override {}
   int GetMouseWheelMinimumGranularity() const override;
@@ -195,8 +200,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       const gfx::Rect& focused_edit_bounds,
       const gfx::Rect& caret_bounds) override {}
   void OnAutoscrollStart() override;
-  void AddObserver(RenderWidgetHostViewInputObserver* observer) override;
-  void RemoveObserver(RenderWidgetHostViewInputObserver* observer) override;
+  void AddObserver(input::RenderWidgetHostViewInputObserver* observer) override;
+  void RemoveObserver(
+      input::RenderWidgetHostViewInputObserver* observer) override;
 
   float GetDeviceScaleFactor() const final;
   bool IsPointerLocked() override;
@@ -685,8 +691,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // space. Result is stored in |transformed_point|. Returns true if the
   // transform is successful, false otherwise.
   bool TransformPointToTargetCoordSpace(
-      RenderWidgetHostViewInput* original_view,
-      RenderWidgetHostViewInput* target_view,
+      input::RenderWidgetHostViewInput* original_view,
+      input::RenderWidgetHostViewInput* target_view,
       const gfx::PointF& point,
       gfx::PointF* transformed_point) const;
 
@@ -698,7 +704,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
     return view_stopped_flinging_for_test_;
   }
 
-  base::ObserverList<RenderWidgetHostViewInputObserver>::Unchecked observers_;
+  base::ObserverList<input::RenderWidgetHostViewInputObserver>::Unchecked
+      observers_;
 
   std::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 

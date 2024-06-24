@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/render_widget_host_view_input_observer.h"
+#include "components/input/render_widget_host_view_input_observer.h"
 
-namespace content {
+namespace input {
 
 RenderWidgetHostViewInputObserver::~RenderWidgetHostViewInputObserver() =
     default;
@@ -12,4 +12,4 @@ RenderWidgetHostViewInputObserver::~RenderWidgetHostViewInputObserver() =
 void RenderWidgetHostViewInputObserver::OnRenderWidgetHostViewInputDestroyed(
     RenderWidgetHostViewInput*) {}
 
-}  // namespace content
+}  // namespace input

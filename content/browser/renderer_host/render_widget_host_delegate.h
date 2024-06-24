@@ -42,6 +42,7 @@ class Size;
 
 namespace input {
 struct NativeWebKeyboardEvent;
+class RenderWidgetHostInputEventRouter;
 }  // namespace input
 
 namespace ui {
@@ -53,7 +54,6 @@ namespace content {
 class BrowserAccessibilityManager;
 class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
-class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
 class VisibleTimeRequestTrigger;
@@ -170,7 +170,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Request the renderer to Move the caret to the new position.
   virtual void MoveCaret(const gfx::Point& extent) {}
 
-  virtual RenderWidgetHostInputEventRouter* GetInputEventRouter();
+  virtual input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
 
   virtual void GetRenderWidgetHostAtPointAsynchronously(
       RenderWidgetHostViewBase* root_view,

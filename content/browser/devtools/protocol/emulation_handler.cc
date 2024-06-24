@@ -895,7 +895,7 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
     if (auto* touch_emulator = host_->GetRenderWidgetHost()->GetTouchEmulator(
             /*create_if_necessary=*/true)) {
       touch_emulator->Enable(
-          TouchEmulator::Mode::kEmulatingTouchFromMouse,
+          input::TouchEmulator::Mode::kEmulatingTouchFromMouse,
           TouchEmulationConfigurationToType(touch_emulation_configuration_));
     }
   } else {

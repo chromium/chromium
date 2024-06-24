@@ -22,6 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "components/input/cursor_manager.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/common/features.h"
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
 #include "content/browser/compositor/surface_utils.h"
@@ -29,8 +31,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/site_per_process_browsertest.h"
-#include "content/common/input/cursor_manager.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/common/input/synthetic_tap_gesture.h"
 #include "content/common/input/synthetic_touchpad_pinch_gesture.h"
@@ -180,7 +180,7 @@ void UpdateEventRootLocation(ui::LocatedEvent* event,
 #endif  // defined(USE_AURA)
 
 void RouteMouseEventAndWaitUntilDispatch(
-    RenderWidgetHostInputEventRouter* router,
+    input::RenderWidgetHostInputEventRouter* router,
     RenderWidgetHostViewBase* root_view,
     RenderWidgetHostViewBase* expected_target,
     blink::WebMouseEvent* event) {
@@ -1226,7 +1226,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostViewBase* child_rwhv = static_cast<RenderWidgetHostViewBase*>(
       iframe_node->current_frame_host()->GetRenderWidgetHost()->GetView());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
 
@@ -1319,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderFrameSubmissionObserver render_frame_submission_observer(
       shell()->web_contents());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   const float scale_factor =
@@ -1757,7 +1757,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostViewBase* root_rwhv = static_cast<RenderWidgetHostViewBase*>(
       root->current_frame_host()->GetRenderWidgetHost()->GetView());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
 
@@ -1905,7 +1905,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
               ->GetRenderWidgetHost()
               ->GetView());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
 
@@ -2014,7 +2014,7 @@ class SitePerProcessEmulatedTouchBrowserTest
                                                    ->GetRenderWidgetHost()
                                                    ->GetView());
 
-    RenderWidgetHostInputEventRouter* router =
+    input::RenderWidgetHostInputEventRouter* router =
         static_cast<WebContentsImpl*>(shell()->web_contents())
             ->GetInputEventRouter();
 
@@ -2086,7 +2086,7 @@ class SitePerProcessEmulatedTouchBrowserTest
     auto* touch_emulator =
         root_rwhv->host()->GetTouchEmulator(/*create_if_necessary=*/true);
     ASSERT_TRUE(touch_emulator);
-    touch_emulator->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
+    touch_emulator->Enable(input::TouchEmulator::Mode::kEmulatingTouchFromMouse,
                            ui::GestureProviderConfigType::CURRENT_PLATFORM);
 
     // Create mouse events to emulate touch scroll. Since the page has no touch
@@ -2293,7 +2293,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   ASSERT_TRUE(last_root_metadata.is_scroll_offset_at_top);
   ASSERT_TRUE(last_child_metadata.is_scroll_offset_at_top);
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
 
@@ -2531,7 +2531,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   WaitForHitTestData(child_node->current_frame_host());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   // Create listener for input events.
@@ -2798,7 +2798,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostMouseEventMonitor child_frame_monitor(
       child_node1->current_frame_host()->GetRenderWidgetHost());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
@@ -3080,7 +3080,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       "      C = http://bar.com/",
       DepictFrameTree(root));
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   WaitForHitTestData(child_node->current_frame_host());
@@ -3145,7 +3145,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
       "      C = http://bar.com/",
       DepictFrameTree(root));
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   WaitForHitTestData(child_node->current_frame_host());
@@ -3591,7 +3591,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   WaitForHitTestData(child_node->current_frame_host());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
   scoped_refptr<SetMouseCaptureInterceptor> child_interceptor =
       new SetMouseCaptureInterceptor(static_cast<RenderWidgetHostImpl*>(
@@ -3750,7 +3750,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   RenderWidgetHostMouseEventMonitor child_frame_monitor(
       child_node->current_frame_host()->GetRenderWidgetHost());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
@@ -4172,7 +4172,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   WaitForHitTestData(child_node->current_frame_host());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
@@ -4734,7 +4734,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
       root->child_at(0)->current_frame_host()->GetView());
   WaitForHitTestData(root->child_at(0)->current_frame_host());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   // Send a mouse wheel event to child.
@@ -4793,7 +4793,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
           root->child_at(0)->current_frame_host()->GetView());
   WaitForHitTestData(root->child_at(0)->current_frame_host());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   auto await_gesture_event_with_position = base::BindRepeating(
@@ -5099,7 +5099,7 @@ namespace {
 uint32_t SendTouchTapWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& touch_point,
-    raw_ptr<RenderWidgetHostViewInput>& router_touch_target,
+    raw_ptr<input::RenderWidgetHostViewInput>& router_touch_target,
     RenderWidgetHostViewBase* expected_target,
     RenderWidgetHostImpl* child_render_widget_host) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
@@ -5144,7 +5144,7 @@ uint32_t SendTouchTapWithExpectedTarget(
 void SendGestureTapSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    base::WeakPtr<RenderWidgetHostViewInput>& router_gesture_target,
+    base::WeakPtr<input::RenderWidgetHostViewInput>& router_gesture_target,
     const RenderWidgetHostViewBase* expected_target,
     const uint32_t unique_touch_event_id) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
@@ -5203,7 +5203,7 @@ void SendGestureTapSequenceWithExpectedTarget(
 void SendTouchpadPinchSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    raw_ptr<RenderWidgetHostViewInput>& router_touchpad_gesture_target,
+    raw_ptr<input::RenderWidgetHostViewInput>& router_touchpad_gesture_target,
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 
@@ -5255,7 +5255,7 @@ void SendTouchpadPinchSequenceWithExpectedTarget(
 void SendTouchpadFlingSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    raw_ptr<RenderWidgetHostViewInput>& router_wheel_target,
+    raw_ptr<input::RenderWidgetHostViewInput>& router_wheel_target,
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_aura = static_cast<RenderWidgetHostViewAura*>(root_view);
 
@@ -5329,7 +5329,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   auto* rwhv_parent = static_cast<RenderWidgetHostViewBase*>(
       contents->GetRenderWidgetHostView());
 
-  RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* router =
+      contents->GetInputEventRouter();
   EXPECT_TRUE(router->touchscreen_gesture_target_map_.empty());
   EXPECT_EQ(nullptr, router->touchscreen_gesture_target_);
 
@@ -5418,7 +5419,8 @@ IN_PROC_BROWSER_TEST_F(
   auto* rwhv_parent = static_cast<RenderWidgetHostViewBase*>(
       contents->GetRenderWidgetHostView());
 
-  RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* router =
+      contents->GetInputEventRouter();
   EXPECT_TRUE(router->touchscreen_gesture_target_map_.empty());
   EXPECT_EQ(nullptr, router->touchscreen_gesture_target_);
 
@@ -5489,7 +5491,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   auto* rwhv_parent = static_cast<RenderWidgetHostViewBase*>(
       contents->GetRenderWidgetHostView());
 
-  RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* router =
+      contents->GetInputEventRouter();
   EXPECT_EQ(nullptr, router->touchpad_gesture_target_);
 
   // TODO(crbug.com/40578618): If we send multiple touchpad pinch sequences to
@@ -5588,7 +5591,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   auto* rwhv_parent = static_cast<RenderWidgetHostViewBase*>(
       contents->GetRenderWidgetHostView());
 
-  RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* router =
+      contents->GetInputEventRouter();
   EXPECT_EQ(nullptr, router->touchpad_gesture_target_);
 
   const float scale_factor =
@@ -5713,7 +5717,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   const gfx::PointF root_location(
       point_in_screen - root_view->GetViewBounds().OffsetFromOrigin());
 
-  RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* router =
+      contents->GetInputEventRouter();
 
   blink::WebGestureEvent double_tap_zoom(
       blink::WebInputEvent::Type::kGestureDoubleTap,
@@ -5819,7 +5824,7 @@ void CreateContextMenuTestHelper(
   ContextMenuObserverDelegate context_menu_delegate;
   shell->web_contents()->SetDelegate(&context_menu_delegate);
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell->web_contents())
           ->GetInputEventRouter();
 
@@ -5963,7 +5968,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   // option). See https://crbug.com/703191.
   int process_id = child_node->current_frame_host()->GetProcess()->GetID();
   popup_waiter.emplace(web_contents(), child_node->current_frame_host());
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
   // Re-open the select element.
@@ -6639,7 +6644,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessNonIntegerScaleFactorHitTestBrowserTest,
   RenderWidgetHostViewBase* rwhv = static_cast<RenderWidgetHostViewBase*>(
       root->current_frame_host()->GetRenderWidgetHost()->GetView());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
 
@@ -6704,7 +6709,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, HitTestClippedFrame) {
 
   RenderWidgetHostViewBase* rwhv_root = static_cast<RenderWidgetHostViewBase*>(
       root->current_frame_host()->GetRenderWidgetHost()->GetView());
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   EXPECT_EQ(
@@ -7457,7 +7462,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDelegatedInkBrowserTest,
   RenderWidgetHostViewBase* rwhv_child =
       static_cast<RenderWidgetHostViewBase*>(child_rwh->GetView());
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       web_contents()->GetInputEventRouter();
 
   EXPECT_FALSE(web_contents()->IsDelegatedInkRendererBoundForTest());

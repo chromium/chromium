@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_H_
-#define CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_H_
+#ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_
+#define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_
 
 #include <cstdint>
 #include <memory>
@@ -14,12 +14,11 @@
 #include "components/input/fling_scheduler_base.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_router_impl.h"
+#include "base/component_export.h"
 #include "components/input/peak_gpu_memory_tracker.h"
-#include "content/common/content_export.h"
-#include "content/common/input/input_injector.mojom-shared.h"
-#include "content/common/input/render_input_router_delegate.h"
-#include "content/common/input/render_input_router_iterator.h"
-#include "content/common/input/render_input_router_latency_tracker.h"
+#include "components/input/render_input_router_delegate.h"
+#include "components/input/render_input_router_iterator.h"
+#include "components/input/render_input_router_latency_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,13 +29,11 @@
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
-namespace input {
-class PeakGpuMemoryTracker;
-}  // namespace input
-
 namespace content {
-
 class MockRenderInputRouter;
+} // namespace content
+
+namespace input {
 
 // RenderInputRouter is currently owned by RenderWidgetHostImpl and is being
 // used for forwarding input events. It maintains mojo connections
@@ -45,16 +42,17 @@ class MockRenderInputRouter;
 // (https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE),
 // this will also be used to handle input events on VizCompositorThread (GPU
 // process).
-class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
-                                         public input::InputDispositionHandler {
+class COMPONENT_EXPORT(INPUT) RenderInputRouter
+    : public InputRouterClient,
+      public InputDispositionHandler {
  public:
   RenderInputRouter(const RenderInputRouter&) = delete;
   RenderInputRouter& operator=(const RenderInputRouter&) = delete;
 
   ~RenderInputRouter() override;
 
-  RenderInputRouter(input::InputRouterClient* host,
-                    std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
+  RenderInputRouter(InputRouterClient* host,
+                    std::unique_ptr<FlingSchedulerBase> fling_scheduler,
                     RenderInputRouterDelegate* delegate,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -65,7 +63,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
 
   void RendererWidgetCreated(bool for_frame_widget);
 
-  input::InputRouter* input_router() { return input_router_.get(); }
+  InputRouter* input_router() { return input_router_.get(); }
   RenderInputRouterDelegate* delegate() { return delegate_; }
 
   void SetForceEnableZoom(bool);
@@ -85,7 +83,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
       const std::optional<std::vector<gfx::Rect>>& character_bounds,
       const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnImeCancelComposition() override;
-  input::StylusInterface* GetStylusInterface() override;
+  StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
@@ -95,7 +93,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
   void RequestMouseLock(
       bool from_user_gesture,
       bool unadjusted_movement,
-      input::InputRouterImpl::RequestMouseLockCallback response) override;
+      InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& event,
@@ -117,14 +115,14 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
       const ui::LatencyInfo& latency_info) override;
 
   // InputDispositionHandler
-  void OnWheelEventAck(const input::MouseWheelEventWithLatencyInfo& event,
+  void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
-  void OnTouchEventAck(const input::TouchEventWithLatencyInfo& event,
+  void OnTouchEventAck(const TouchEventWithLatencyInfo& event,
                        blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void OnGestureEventAck(
-      const input::GestureEventWithLatencyInfo& event,
+      const GestureEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override;
 
@@ -150,7 +148,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
                               const ui::MenuSourceType source_type);
 
   void SendGestureEventWithLatencyInfo(
-      const input::GestureEventWithLatencyInfo& gesture_with_latency);
+      const GestureEventWithLatencyInfo& gesture_with_latency);
 
   // Signals if this host has forwarded a GestureScrollBegin without yet having
   // forwarded a matching GestureScrollEnd/GestureFlingStart.
@@ -161,7 +159,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
 
   void DidStopFlinging() { is_in_touchpad_gesture_fling_ = false; }
 
-  content::RenderInputRouterLatencyTracker* GetLatencyTracker() {
+  RenderInputRouterLatencyTracker* GetLatencyTracker() {
     return latency_tracker_.get();
   }
 
@@ -192,14 +190,14 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
       mojo::Remote<viz::mojom::InputTargetClient> input_target_client);
 
  private:
-  friend MockRenderInputRouter;
+  friend content::MockRenderInputRouter;
 
   bool is_currently_scrolling_viewport_ = false;
 
   // Must be declared before `input_router_`. The latter is constructed by
   // borrowing a reference to this object, so it must be deleted first.
-  std::unique_ptr<input::FlingSchedulerBase> fling_scheduler_;
-  std::unique_ptr<input::InputRouter> input_router_;
+  std::unique_ptr<FlingSchedulerBase> fling_scheduler_;
+  std::unique_ptr<InputRouter> input_router_;
 
   // TODO(wjmaclean) Remove the code for supporting resending gesture events
   // when WebView transitions to OOPIF and BrowserPlugin is removed.
@@ -210,9 +208,9 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
   bool is_in_touchpad_gesture_fling_ = false;
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
-  std::unique_ptr<input::PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
+  std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
-  raw_ptr<input::InputRouterClient> input_router_impl_client_;
+  raw_ptr<InputRouterClient> input_router_impl_client_;
   raw_ptr<RenderInputRouterDelegate> delegate_;
 
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;
@@ -228,6 +226,6 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
   base::WeakPtr<RenderWidgetHostViewInput> view_input_;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_H_
+#endif  // COMPONENTS_INPUT_RENDER_INPUT_ROUTER_H_

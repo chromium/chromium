@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_CURSOR_MANAGER_H_
-#define CONTENT_COMMON_INPUT_CURSOR_MANAGER_H_
+#ifndef COMPONENTS_INPUT_CURSOR_MANAGER_H_
+#define COMPONENTS_INPUT_CURSOR_MANAGER_H_
 
 #include <map>
 #include <vector>
@@ -11,11 +11,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
-namespace content {
+namespace input {
 
 class RenderWidgetHostViewInput;
 
@@ -24,7 +24,7 @@ class RenderWidgetHostViewInput;
 // calls back to its DisplayCursor method when the cursor needs to change,
 // either because the mouse moved over a different view or because a cursor
 // update was received for the current view.
-class CONTENT_EXPORT CursorManager {
+class COMPONENT_EXPORT(INPUT) CursorManager {
  public:
   explicit CursorManager(RenderWidgetHostViewInput* root);
   ~CursorManager();
@@ -71,7 +71,8 @@ class CONTENT_EXPORT CursorManager {
   // The view currently underneath the cursor, which corresponds to the cursor
   // currently displayed.
   // TODO(crbug.com/324115585): Fix FlakyDanglingUntriaged.
-  raw_ptr<RenderWidgetHostViewInput, FlakyDanglingUntriaged> view_under_cursor_;
+  raw_ptr<RenderWidgetHostViewInput, FlakyDanglingUntriaged>
+      view_under_cursor_;
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
@@ -87,6 +88,6 @@ class CONTENT_EXPORT CursorManager {
   base::WeakPtrFactory<CursorManager> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_CURSOR_MANAGER_H_
+#endif  // COMPONENTS_INPUT_CURSOR_MANAGER_H_

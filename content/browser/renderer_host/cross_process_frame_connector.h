@@ -32,6 +32,10 @@ namespace cc {
 class RenderFrameMetadata;
 }
 
+namespace input {
+class RenderWidgetHostViewInput;
+}  // namespace input
+
 namespace ui {
 class Cursor;
 }
@@ -45,7 +49,6 @@ namespace content {
 class RenderFrameHostImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHostViewBase;
-class RenderWidgetHostViewInput;
 class RenderWidgetHostViewChildFrame;
 
 // CrossProcessFrameConnector provides the platform view abstraction for
@@ -164,10 +167,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // RenderWidgetHostView. RenderWidgetHostViewInput is the abstract class that
   // defines the interface for handling user input and is one to one with
   // RenderWidgetHostViewBase in the browser.
-  bool TransformPointToCoordSpaceForView(const gfx::PointF& point,
-                                         RenderWidgetHostViewInput* target_view,
-                                         const viz::SurfaceId& local_surface_id,
-                                         gfx::PointF* transformed_point);
+  bool TransformPointToCoordSpaceForView(
+      const gfx::PointF& point,
+      input::RenderWidgetHostViewInput* target_view,
+      const viz::SurfaceId& local_surface_id,
+      gfx::PointF* transformed_point);
 
   // Pass acked touchpad pinch or double tap gesture events to the root view
   // for processing.

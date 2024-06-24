@@ -384,7 +384,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     return static_cast<MockRenderInputRouter*>(render_input_router_.get());
   }
 
-  RenderInputRouter* GetRenderInputRouter() override {
+  input::RenderInputRouter* GetRenderInputRouter() override {
     return render_input_router_.get();
   }
 

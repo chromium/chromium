@@ -62,7 +62,7 @@ BrowserAccessibilityManager*
 
 // If a delegate does not override this, the RenderWidgetHostView will
 // assume it is the sole platform event consumer.
-RenderWidgetHostInputEventRouter*
+input::RenderWidgetHostInputEventRouter*
 RenderWidgetHostDelegate::GetInputEventRouter() {
   return nullptr;
 }

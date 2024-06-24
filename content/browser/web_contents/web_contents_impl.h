@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -50,7 +51,6 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/common/content_export.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
@@ -110,6 +110,10 @@ class WakeLock;
 }
 }  // namespace device
 
+namespace input {
+class RenderWidgetHostInputEventRouter;
+}  // namespace input
+
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
 }  // namespace network::mojom
@@ -138,7 +142,6 @@ class RenderFrameHostImpl;
 class RenderViewHost;
 class RenderViewHostDelegateView;
 class RenderWidgetHostImpl;
-class RenderWidgetHostInputEventRouter;
 class SafeAreaInsetsHost;
 class SavePackage;
 class ScopedAccessibilityMode;
@@ -201,7 +204,7 @@ class CONTENT_EXPORT WebContentsImpl
       public NavigatorDelegate,
       public ui::NativeThemeObserver,
       public ui::ColorProviderSourceObserver,
-      public RenderWidgetHostInputEventRouter::Delegate {
+      public input::RenderWidgetHostInputEventRouter::Delegate {
  public:
   class FriendWrapper;
 
@@ -1052,7 +1055,7 @@ class CONTENT_EXPORT WebContentsImpl
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
                                         bool show_selection_menu) override;
-  RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
+  input::RenderWidgetHostInputEventRouter* GetInputEventRouter() override;
   void GetRenderWidgetHostAtPointAsynchronously(
       RenderWidgetHostViewBase* root_view,
       const gfx::PointF& point,
@@ -1176,7 +1179,7 @@ class CONTENT_EXPORT WebContentsImpl
       InvalidateTypes changed_flags) override;
 
   //  RenderWidgetHostInputEventRouter::Delegate -------------------------------
-  TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
+  input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
 
   // Invoked before a form repost warning is shown.
   void NotifyBeforeFormRepostWarningShow() override;
@@ -2339,7 +2342,8 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<PepperPlaybackObserver> pepper_playback_observer_;
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
-  std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
+  std::unique_ptr<input::RenderWidgetHostInputEventRouter>
+      rwh_input_event_router_;
 
   std::unique_ptr<TouchEmulatorImpl> touch_emulator_;
 

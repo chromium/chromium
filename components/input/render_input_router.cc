@@ -1,7 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "content/common/input/render_input_router.h"
+#include "components/input/render_input_router.h"
 
 #include <utility>
 #include <vector>
@@ -14,9 +14,9 @@
 #include "base/memory/ptr_util.h"
 #include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/input/input_router_config_helper.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
-#include "content/common/input/render_widget_host_view_input.h"
-#include "content/common/input/touch_emulator.h"
+#include "components/input/touch_emulator.h"
+#include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,7 +25,7 @@
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
 
-namespace content {
+namespace input {
 namespace {
 
 class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
@@ -113,8 +113,8 @@ base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
 RenderInputRouter::~RenderInputRouter() = default;
 
 RenderInputRouter::RenderInputRouter(
-    input::InputRouterClient* host,
-    std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
+    InputRouterClient* host,
+    std::unique_ptr<FlingSchedulerBase> fling_scheduler,
     RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : fling_scheduler_(std::move(fling_scheduler)),
@@ -127,9 +127,9 @@ RenderInputRouter::RenderInputRouter(
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("toplevel.flow", "RenderInputRouter::SetupInputRouter");
 
-  input_router_ = std::make_unique<input::InputRouterImpl>(
+  input_router_ = std::make_unique<InputRouterImpl>(
       this, this, fling_scheduler_.get(),
-      input::GetInputRouterConfigForPlatform(task_runner_));
+      GetInputRouterConfigForPlatform(task_runner_));
 
   // input_router_ recreated, need to update the force_enable_zoom_ state.
   input_router_->SetForceEnableZoom(force_enable_zoom_);
@@ -202,7 +202,7 @@ void RenderInputRouter::OnImeCancelComposition() {
   input_router_impl_client_->OnImeCancelComposition();
 }
 
-input::StylusInterface* RenderInputRouter::GetStylusInterface() {
+StylusInterface* RenderInputRouter::GetStylusInterface() {
   return input_router_impl_client_->GetStylusInterface();
 }
 
@@ -232,7 +232,7 @@ void RenderInputRouter::SetAutoscrollSelectionActiveInMainFrame(
 void RenderInputRouter::RequestMouseLock(
     bool from_user_gesture,
     bool unadjusted_movement,
-    input::InputRouterImpl::RequestMouseLockCallback response) {
+    InputRouterImpl::RequestMouseLockCallback response) {
   input_router_impl_client_->RequestMouseLock(
       from_user_gesture, unadjusted_movement, std::move(response));
 }
@@ -426,7 +426,7 @@ void RenderInputRouter::ShowContextMenuAtPoint(
 }
 
 void RenderInputRouter::SendGestureEventWithLatencyInfo(
-    const input::GestureEventWithLatencyInfo& gesture_with_latency) {
+    const GestureEventWithLatencyInfo& gesture_with_latency) {
   const blink::WebGestureEvent& gesture_event = gesture_with_latency.event;
   if (gesture_event.GetType() == WebInputEvent::Type::kGestureScrollBegin) {
     DCHECK(
@@ -497,4 +497,4 @@ void RenderInputRouter::SetInputTargetClientForTesting(
   input_target_client_ = std::move(input_target_client);
 }
 
-}  // namespace content
+}  // namespace input

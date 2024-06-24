@@ -14,12 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/input/cursor_manager.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/common/input/cursor_manager.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
@@ -130,7 +130,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
   ui::Compositor* GetCompositor() override;
-  CursorManager* GetCursorManager() override;
+  input::CursorManager* GetCursorManager() override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override {}
 
   bool is_showing() const { return is_showing_; }
@@ -195,7 +195,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
 
   raw_ptr<ui::Compositor, DanglingUntriaged> compositor_ = nullptr;
 
-  CursorManager cursor_manager_;
+  input::CursorManager cursor_manager_;
 };
 
 // TestRenderWidgetHostViewChildFrame -----------------------------------------

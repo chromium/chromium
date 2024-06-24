@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
-#define CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
+#ifndef COMPONENTS_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
+#define COMPONENTS_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
 
 #include <stdint.h>
 
@@ -18,10 +18,10 @@
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/common/content_export.h"
-#include "content/common/input/render_widget_host_view_input_observer.h"
-#include "content/common/input/render_widget_targeter.h"
-#include "content/common/input/touch_emulator_client.h"
+#include "base/component_export.h"
+#include "components/input/render_widget_host_view_input_observer.h"
+#include "components/input/render_widget_targeter.h"
+#include "components/input/touch_emulator_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/geometry/transform.h"
@@ -42,6 +42,34 @@ class Point;
 class PointF;
 }
 
+namespace content {
+class RenderWidgetHostInputEventRouterTest;
+FORWARD_DECLARE_TEST(
+      BrowserSideFlingBrowserTest,
+      DISABLED_InertialGSUBubblingStopsWhenParentCannotScroll);
+FORWARD_DECLARE_TEST(
+      WebContentsImplBrowserTest,
+      MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection);
+FORWARD_DECLARE_TEST(SitePerProcessHitTestBrowserTest,
+                           CacheCoordinateTransformUponMouseDown);
+FORWARD_DECLARE_TEST(SitePerProcessHitTestBrowserTest,
+                           HitTestStaleDataDeletedView);
+FORWARD_DECLARE_TEST(SitePerProcessHitTestBrowserTest,
+                           InputEventRouterGestureTargetMapTest);
+FORWARD_DECLARE_TEST(SitePerProcessHitTestBrowserTest,
+                           InputEventRouterGesturePreventDefaultTargetMapTest);
+FORWARD_DECLARE_TEST(SitePerProcessHitTestBrowserTest,
+                           InputEventRouterTouchpadGestureTargetTest);
+FORWARD_DECLARE_TEST(SitePerProcessHitTestBrowserTest,
+                           TouchpadPinchOverOOPIF);
+FORWARD_DECLARE_TEST(SitePerProcessMouseWheelHitTestBrowserTest,
+                           InputEventRouterWheelTargetTest);
+FORWARD_DECLARE_TEST(SitePerProcessMacBrowserTest,
+                           InputEventRouterTouchpadGestureTargetTest);
+FORWARD_DECLARE_TEST(SitePerProcessDelegatedInkBrowserTest,
+                           MetadataAndPointGoThroughOOPIF);
+}  // namespace content
+
 namespace ui {
 class LatencyInfo;
 }
@@ -50,7 +78,7 @@ namespace viz {
 class HitTestDataProvider;
 }
 
-namespace content {
+namespace input {
 
 class RenderWidgetHostViewInput;
 class RenderWidgetTargeter;
@@ -67,7 +95,7 @@ viz::HitTestQuery* GetHitTestQuery(viz::HitTestDataProvider* provider,
 // own. When an input event requires routing based on window coordinates,
 // this class requests a Surface hit test from the provided |root_view| and
 // forwards the event to the owning RWHV of the returned Surface ID.
-class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
+class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
     : public RenderWidgetHostViewInputObserver,
       public RenderWidgetTargeter::Delegate,
       public TouchEmulatorClient,
@@ -102,7 +130,7 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
                          const blink::WebGestureEvent* event,
                          const ui::LatencyInfo& latency);
   void OnHandledTouchStartOrFirstTouchMove(uint32_t unique_touch_event_id);
-  void ProcessAckedTouchEvent(const input::TouchEventWithLatencyInfo& event,
+  void ProcessAckedTouchEvent(const TouchEventWithLatencyInfo& event,
                               blink::mojom::InputEventResultState ack_result,
                               RenderWidgetHostViewInput* view);
   void RouteTouchEvent(RenderWidgetHostViewInput* root_view,
@@ -117,7 +145,8 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewInput* target_view,
       RenderWidgetHostViewInput* resending_view,
       const blink::WebGestureEvent& event);
-  void WillDetachChildView(const RenderWidgetHostViewInput* detaching_view);
+  void WillDetachChildView(
+      const RenderWidgetHostViewInput* detaching_view);
 
   void AddFrameSinkIdOwner(const viz::FrameSinkId& id,
                            RenderWidgetHostViewInput* owner);
@@ -180,12 +209,14 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
   // TouchEmulatorClient:
   void ForwardEmulatedGestureEvent(
       const blink::WebGestureEvent& event) override;
-  void ForwardEmulatedTouchEvent(const blink::WebTouchEvent& event,
-                                 RenderWidgetHostViewInput* target) override;
+  void ForwardEmulatedTouchEvent(
+      const blink::WebTouchEvent& event,
+      RenderWidgetHostViewInput* target) override;
   void SetCursor(const ui::Cursor& cursor) override;
-  void ShowContextMenuAtPoint(const gfx::Point& point,
-                              const ui::MenuSourceType source_type,
-                              RenderWidgetHostViewInput* target) override;
+  void ShowContextMenuAtPoint(
+      const gfx::Point& point,
+      const ui::MenuSourceType source_type,
+      RenderWidgetHostViewInput* target) override;
 
   // HitTestRegionObserver
   void OnAggregatedHitTestRegionListUpdated(
@@ -208,10 +239,10 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
-      BrowserSideFlingBrowserTest,
+      content::BrowserSideFlingBrowserTest,
       DISABLED_InertialGSUBubblingStopsWhenParentCannotScroll);
   FRIEND_TEST_ALL_PREFIXES(
-      WebContentsImplBrowserTest,
+      content::WebContentsImplBrowserTest,
       MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection);
 
   using FrameSinkIdOwnerMap =
@@ -325,8 +356,9 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
       const std::optional<gfx::PointF>& target_location);
 
   // TODO(crbug.com/41380487): Remove once this issue no longer occurs.
-  void ReportBubblingScrollToSameView(const blink::WebGestureEvent& event,
-                                      const RenderWidgetHostViewInput* view);
+  void ReportBubblingScrollToSameView(
+      const blink::WebGestureEvent& event,
+      const RenderWidgetHostViewInput* view);
 
   // RenderWidgetTargeter::Delegate:
   RenderWidgetTargetResult FindTargetSynchronouslyAtPoint(
@@ -477,27 +509,27 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
   base::WeakPtrFactory<RenderWidgetHostInputEventRouter> weak_ptr_factory_{
       this};
-  friend class RenderWidgetHostInputEventRouterTest;
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
+  friend class content::RenderWidgetHostInputEventRouterTest;
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessHitTestBrowserTest,
                            CacheCoordinateTransformUponMouseDown);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessHitTestBrowserTest,
                            HitTestStaleDataDeletedView);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessHitTestBrowserTest,
                            InputEventRouterGestureTargetMapTest);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessHitTestBrowserTest,
                            InputEventRouterGesturePreventDefaultTargetMapTest);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessHitTestBrowserTest,
                            InputEventRouterTouchpadGestureTargetTest);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessHitTestBrowserTest,
                            TouchpadPinchOverOOPIF);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessMouseWheelHitTestBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessMouseWheelHitTestBrowserTest,
                            InputEventRouterWheelTargetTest);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessMacBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessMacBrowserTest,
                            InputEventRouterTouchpadGestureTargetTest);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessDelegatedInkBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(content::SitePerProcessDelegatedInkBrowserTest,
                            MetadataAndPointGoThroughOOPIF);
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_
+#endif  // COMPONENTS_INPUT_RENDER_WIDGET_HOST_INPUT_EVENT_ROUTER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_TARGETER_H_
-#define CONTENT_COMMON_INPUT_RENDER_WIDGET_TARGETER_H_
+#ifndef COMPONENTS_INPUT_RENDER_WIDGET_TARGETER_H_
+#define COMPONENTS_INPUT_RENDER_WIDGET_TARGETER_H_
 
 #include <optional>
 #include <queue>
@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
-#include "content/common/input/render_widget_host_view_input.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/latency/latency_info.h"
 
@@ -26,14 +26,14 @@ namespace gfx {
 class PointF;
 }
 
-namespace content {
+namespace input {
 
 class RenderWidgetHostViewInput;
 
 // TODO(sunxd): Make |RenderWidgetTargetResult| a class. Merge the booleans into
 // a mask to reduce the size. Make the constructor take in enums for better
 // readability.
-struct CONTENT_EXPORT RenderWidgetTargetResult {
+struct COMPONENT_EXPORT(INPUT) RenderWidgetTargetResult {
   RenderWidgetTargetResult();
   RenderWidgetTargetResult(const RenderWidgetTargetResult&);
   RenderWidgetTargetResult(RenderWidgetHostViewInput* view,
@@ -218,8 +218,9 @@ class RenderWidgetTargeter {
       base::WeakPtr<RenderWidgetHostViewInput> last_request_target,
       const gfx::PointF& last_target_location);
 
-  void OnInputTargetDisconnect(base::WeakPtr<RenderWidgetHostViewInput> target,
-                               const gfx::PointF& location);
+  void OnInputTargetDisconnect(
+      base::WeakPtr<RenderWidgetHostViewInput> target,
+      const gfx::PointF& location);
 
   HitTestResultsMatch GetHitTestResultsMatchBucket(
       RenderWidgetHostViewInput* target,
@@ -254,6 +255,6 @@ class RenderWidgetTargeter {
   base::WeakPtrFactory<RenderWidgetTargeter> weak_ptr_factory_{this};
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_TARGETER_H_
+#endif  // COMPONENTS_INPUT_RENDER_WIDGET_TARGETER_H_

@@ -11,12 +11,12 @@ namespace content {
 MockRenderInputRouter::MockRenderInputRouter(
     input::InputRouterClient* host,
     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
-    RenderInputRouterDelegate* delegate,
+    input::RenderInputRouterDelegate* delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : RenderInputRouter(host,
-                        std::move(fling_scheduler),
-                        delegate,
-                        std::move(task_runner)) {
+    : input::RenderInputRouter(host,
+                               std::move(fling_scheduler),
+                               delegate,
+                               std::move(task_runner)) {
   acked_touch_event_type_ = blink::WebInputEvent::Type::kUndefined;
   mock_widget_input_handler_ = std::make_unique<MockWidgetInputHandler>();
 }

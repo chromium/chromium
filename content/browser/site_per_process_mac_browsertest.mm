@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
-
 #include <Cocoa/Cocoa.h>
 
 #include "base/functional/bind.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -257,7 +256,7 @@ id MockGestureEvent(NSEventType type,
 void SendMacTouchpadPinchSequenceWithExpectedTarget(
     RenderWidgetHostViewBase* root_view,
     const gfx::Point& gesture_point,
-    raw_ptr<RenderWidgetHostViewInput>& router_touchpad_gesture_target,
+    raw_ptr<input::RenderWidgetHostViewInput>& router_touchpad_gesture_target,
     RenderWidgetHostViewBase* expected_target) {
   auto* root_view_mac = static_cast<RenderWidgetHostViewMac*>(root_view);
   RenderWidgetHostViewCocoa* cocoa_view = root_view_mac->GetInProcessNSView();
@@ -316,7 +315,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   auto* rwhv_parent = static_cast<RenderWidgetHostViewBase*>(
       contents->GetRenderWidgetHostView());
 
-  RenderWidgetHostInputEventRouter* router = contents->GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* router =
+      contents->GetInputEventRouter();
   EXPECT_EQ(nullptr, router->touchpad_gesture_target_);
 
   gfx::Point main_frame_point(25, 575);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/cursor_manager.h"
+#include "components/input/cursor_manager.h"
 
 #include <algorithm>
 #include <string>
@@ -10,12 +10,12 @@
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
-#include "content/common/input/render_widget_host_view_input.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-namespace content {
+namespace input {
 
 CursorManager::CursorManager(RenderWidgetHostViewInput* root)
     : view_under_cursor_(root), root_view_(root) {}
@@ -30,7 +30,8 @@ void CursorManager::UpdateCursor(RenderWidgetHostViewInput* view,
   }
 }
 
-void CursorManager::UpdateViewUnderCursor(RenderWidgetHostViewInput* view) {
+void CursorManager::UpdateViewUnderCursor(
+    RenderWidgetHostViewInput* view) {
   if (view == view_under_cursor_)
     return;
 
@@ -53,7 +54,8 @@ void CursorManager::ViewBeingDestroyed(RenderWidgetHostViewInput* view) {
     UpdateViewUnderCursor(root_view_);
 }
 
-bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewInput* view) const {
+bool CursorManager::IsViewUnderCursor(
+    RenderWidgetHostViewInput* view) const {
   return view == view_under_cursor_;
 }
 
@@ -125,4 +127,4 @@ void CursorManager::UpdateCursor() {
   root_view_->DisplayCursor(cursor);
 }
 
-}  // namespace content
+}  // namespace input

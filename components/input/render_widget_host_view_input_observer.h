@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_OBSERVER_H_
-#define CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_OBSERVER_H_
+#ifndef COMPONENTS_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_OBSERVER_H_
+#define COMPONENTS_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_OBSERVER_H_
 
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 
-namespace content {
+namespace input {
 
 class RenderWidgetHostViewInput;
 
-class CONTENT_EXPORT RenderWidgetHostViewInputObserver {
+class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInputObserver {
  public:
   RenderWidgetHostViewInputObserver(const RenderWidgetHostViewInputObserver&) =
       delete;
@@ -28,6 +28,6 @@ class CONTENT_EXPORT RenderWidgetHostViewInputObserver {
   virtual ~RenderWidgetHostViewInputObserver();
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_OBSERVER_H_
+#endif  // COMPONENTS_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_OBSERVER_H_

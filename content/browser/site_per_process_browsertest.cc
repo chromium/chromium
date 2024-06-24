@@ -53,6 +53,7 @@
 #include "cc/base/math_util.h"
 #include "cc/input/touch_action.h"
 #include "components/input/input_router.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/switches.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -78,7 +79,6 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/input/actions_parser.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_target.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
@@ -11245,7 +11245,7 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
   // descendent) of |rwhv_root| to get the touch action of. |event_position|
   // should be within |rwhv_child| in |rwhv_root|'s coordinate space.
   void GetTouchActionsForChild(
-      RenderWidgetHostInputEventRouter* router,
+      input::RenderWidgetHostInputEventRouter* router,
       RenderWidgetHostViewBase* rwhv_root,
       RenderWidgetHostViewBase* rwhv_child,
       const gfx::Point& event_position,
@@ -11445,7 +11445,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   gfx::Point point_inside_child = ToFlooredPoint(
       child_view->TransformPointToRootCoordSpaceF(gfx::PointF(+5.f, +5.f)));
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(web_contents())->GetInputEventRouter();
 
   WaitForTouchActionUpdated(root_thread_observer.get(),
@@ -11523,7 +11523,7 @@ IN_PROC_BROWSER_TEST_F(
   gfx::Point point_inside_child = ToFlooredPoint(
       child_view->TransformPointToRootCoordSpaceF(gfx::PointF(+5.f, +5.f)));
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(web_contents())->GetInputEventRouter();
 
   // Child should inherit effective touch action none from root.
@@ -11602,7 +11602,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   gfx::Point point_inside_child = gfx::ToFlooredPoint(
       child_view->TransformPointToRootCoordSpaceF(gfx::PointF(+5.f, +5.f)));
 
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(web_contents())->GetInputEventRouter();
   // Child should inherit effective touch action none from root.
   WaitForTouchActionUpdated(root_thread_observer.get(),

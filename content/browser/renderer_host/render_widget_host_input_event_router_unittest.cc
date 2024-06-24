@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_input_event_router.h"
 
 #include <memory>
 
@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/input/render_widget_targeter.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
@@ -21,7 +22,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/site_instance_group.h"
-#include "content/common/input/render_widget_targeter.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -121,7 +121,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
 
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewInput* target_view,
+      input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override {
     return true;
   }
@@ -196,7 +196,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
  protected:
   RenderWidgetHostInputEventRouterTest() = default;
 
-  RenderWidgetHostInputEventRouter* rwhier() {
+  input::RenderWidgetHostInputEventRouter* rwhier() {
     return delegate_->GetInputEventRouter();
   }
 
@@ -315,14 +315,16 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 #endif
   }
 
-  RenderWidgetHostViewInput* touch_target() { return rwhier()->touch_target_; }
-  RenderWidgetHostViewInput* touchscreen_gesture_target() {
+  input::RenderWidgetHostViewInput* touch_target() {
+    return rwhier()->touch_target_;
+  }
+  input::RenderWidgetHostViewInput* touchscreen_gesture_target() {
     return rwhier()->touchscreen_gesture_target_.get();
   }
-  RenderWidgetHostViewInput* bubbling_gesture_scroll_origin() {
+  input::RenderWidgetHostViewInput* bubbling_gesture_scroll_origin() {
     return rwhier()->bubbling_gesture_scroll_origin_;
   }
-  RenderWidgetHostViewInput* bubbling_gesture_scroll_target() {
+  input::RenderWidgetHostViewInput* bubbling_gesture_scroll_target() {
     return rwhier()->bubbling_gesture_scroll_target_;
   }
 
@@ -539,7 +541,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceTouchEvents) {
   // circuited.
   ChildViewState child = MakeChildView(view_root_.get());
 
-  RenderWidgetTargeter* targeter = rwhier()->GetRenderWidgetTargeterForTests();
+  input::RenderWidgetTargeter* targeter =
+      rwhier()->GetRenderWidgetTargeterForTests();
   view_root_->SetHittestResult(view_root_.get(), true);
 
   // Send TouchStart, TouchMove, TouchMove, TouchMove, TouchEnd and make sure
@@ -588,7 +591,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceGestureEvents) {
   // circuited.
   ChildViewState child = MakeChildView(view_root_.get());
 
-  RenderWidgetTargeter* targeter = rwhier()->GetRenderWidgetTargeterForTests();
+  input::RenderWidgetTargeter* targeter =
+      rwhier()->GetRenderWidgetTargeterForTests();
   view_root_->SetHittestResult(view_root_.get(), true);
 
   // Send TouchStart, GestureTapDown, TouchEnd, GestureScrollBegin,
@@ -1055,7 +1059,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   mouse_event.button = blink::WebPointerProperties::Button::kMiddle;
 
   view_root_->SetHittestResult(child.view.get(), false);
-  RenderWidgetTargeter* targeter = rwhier()->GetRenderWidgetTargeterForTests();
+  input::RenderWidgetTargeter* targeter =
+      rwhier()->GetRenderWidgetTargeterForTests();
   rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
                             ui::LatencyInfo(ui::SourceEventType::MOUSE));
   // Set middle click autoscroll in progress to true.

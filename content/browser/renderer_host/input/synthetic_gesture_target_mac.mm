@@ -4,9 +4,9 @@
 
 #include "content/browser/renderer_host/input/synthetic_gesture_target_mac.h"
 
+#include "components/input/render_widget_host_input_event_router.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"

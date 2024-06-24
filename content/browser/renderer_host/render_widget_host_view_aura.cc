@@ -25,6 +25,8 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "components/input/cursor_manager.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -48,9 +50,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
-#include "content/common/input/cursor_manager.h"
 #include "content/common/input/events_helper.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -293,7 +293,7 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);
 
-  cursor_manager_ = std::make_unique<CursorManager>(this);
+  cursor_manager_ = std::make_unique<input::CursorManager>(this);
 
   selection_controller_client_ =
       std::make_unique<TouchSelectionControllerClientAura>(this);
@@ -883,7 +883,7 @@ void RenderWidgetHostViewAura::DisplayCursor(const ui::Cursor& cursor) {
   UpdateCursorIfOverSelf();
 }
 
-CursorManager* RenderWidgetHostViewAura::GetCursorManager() {
+input::CursorManager* RenderWidgetHostViewAura::GetCursorManager() {
   return cursor_manager_.get();
 }
 
@@ -2103,7 +2103,7 @@ bool RenderWidgetHostViewAura::HasFallbackSurface() const {
 
 bool RenderWidgetHostViewAura::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewInput* target_view,
+    input::RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 

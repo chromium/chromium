@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/render_input_router_latency_tracker.h"
+#include "components/input/render_input_router_latency_tracker.h"
 
 #include <memory>
 #include <string>
@@ -36,7 +36,7 @@ namespace {
 const char kUrl[] = "http://www.foo.bar.com/subpage/1";
 
 void AddFakeComponentsWithTimeStamp(
-    const RenderInputRouterLatencyTracker& tracker,
+    const input::RenderInputRouterLatencyTracker& tracker,
     ui::LatencyInfo* latency,
     base::TimeTicks time_stamp) {
   latency->AddLatencyNumberWithTimestamp(ui::INPUT_EVENT_LATENCY_UI_COMPONENT,
@@ -125,7 +125,7 @@ class RenderInputRouterLatencyTrackerTest
     }
   }
 
-  RenderInputRouterLatencyTracker* tracker() { return tracker_.get(); }
+  input::RenderInputRouterLatencyTracker* tracker() { return tracker_.get(); }
   ui::LatencyTracker* viz_tracker() { return &viz_tracker_; }
 
   void ResetHistograms() {
@@ -139,7 +139,7 @@ class RenderInputRouterLatencyTrackerTest
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     old_browser_client_ = SetBrowserClientForTesting(&test_browser_client_);
-    tracker_ = std::make_unique<RenderInputRouterLatencyTracker>(
+    tracker_ = std::make_unique<input::RenderInputRouterLatencyTracker>(
         main_test_rfh()->GetRenderWidgetHost());
   }
 
@@ -152,7 +152,7 @@ class RenderInputRouterLatencyTrackerTest
 
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  std::unique_ptr<RenderInputRouterLatencyTracker> tracker_;
+  std::unique_ptr<input::RenderInputRouterLatencyTracker> tracker_;
   ui::LatencyTracker viz_tracker_;
   RenderInputRouterLatencyTrackerTestBrowserClient test_browser_client_;
   raw_ptr<ContentBrowserClient> old_browser_client_;

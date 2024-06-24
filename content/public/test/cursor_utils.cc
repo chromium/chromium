@@ -4,10 +4,10 @@
 
 #include "content/public/test/cursor_utils.h"
 
+#include "components/input/cursor_manager.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/input/cursor_manager.h"
 
 namespace content {
 
@@ -16,10 +16,10 @@ ui::mojom::CursorType CursorUtils::GetLastCursorForWebContents(
     WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
-  CursorManager* manager = web_contents_impl->GetPrimaryMainFrame()
-                               ->GetRenderWidgetHost()
-                               ->GetRenderWidgetHostViewBase()
-                               ->GetCursorManager();
+  input::CursorManager* manager = web_contents_impl->GetPrimaryMainFrame()
+                                      ->GetRenderWidgetHost()
+                                      ->GetRenderWidgetHostViewBase()
+                                      ->GetCursorManager();
   return manager->GetLastSetCursorTypeForTesting();
 }
 

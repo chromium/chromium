@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/cursor_manager.h"
+#include "components/input/cursor_manager.h"
 
 #include <memory>
 #include <utility>
@@ -49,7 +49,7 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
   MockRenderWidgetHostViewForCursors(RenderWidgetHost* host, bool top_view)
       : TestRenderWidgetHostView(host) {
     if (top_view) {
-      cursor_manager_ = std::make_unique<CursorManager>(this);
+      cursor_manager_ = std::make_unique<input::CursorManager>(this);
     }
   }
 
@@ -57,13 +57,15 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
     current_cursor_ = cursor;
   }
 
-  CursorManager* GetCursorManager() override { return cursor_manager_.get(); }
+  input::CursorManager* GetCursorManager() override {
+    return cursor_manager_.get();
+  }
 
   const ui::Cursor& cursor() { return current_cursor_; }
 
  private:
   ui::Cursor current_cursor_;
-  std::unique_ptr<CursorManager> cursor_manager_;
+  std::unique_ptr<input::CursorManager> cursor_manager_;
 };
 
 class CursorManagerTest : public testing::Test {

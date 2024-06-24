@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/input/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_input_event_router.h"
 
 #include <algorithm>
 #include <deque>
@@ -18,9 +18,8 @@
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
-#include "content/common/input/cursor_manager.h"
-#include "content/common/input/render_input_router.h"
-#include "content/common/input/touch_emulator.h"
+#include "components/input/cursor_manager.h"
+#include "components/input/touch_emulator.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -50,7 +49,7 @@ bool IsMouseButtonDown(const blink::WebMouseEvent& event) {
 
 }  // anonymous namespace
 
-namespace content {
+namespace input {
 
 // Helper method also used from hit_test_debug_key_event_observer.cc
 viz::HitTestQuery* GetHitTestQuery(viz::HitTestDataProvider* provider,
@@ -81,7 +80,7 @@ class TouchEventAckQueue {
   enum class TouchEventAckStatus { TouchEventNotAcked, TouchEventAcked };
   enum class TouchEventSource { SystemTouchEvent, EmulatedTouchEvent };
   struct AckData {
-    input::TouchEventWithLatencyInfo touch_event;
+    TouchEventWithLatencyInfo touch_event;
     raw_ptr<RenderWidgetHostViewInput> target_view;
     raw_ptr<RenderWidgetHostViewInput> root_view;
     TouchEventSource touch_event_source;
@@ -94,19 +93,19 @@ class TouchEventAckQueue {
     DCHECK(client_);
   }
 
-  void Add(const input::TouchEventWithLatencyInfo& touch_event,
+  void Add(const TouchEventWithLatencyInfo& touch_event,
            RenderWidgetHostViewInput* target_view,
            RenderWidgetHostViewInput* root_view,
            TouchEventSource touch_event_source,
            TouchEventAckStatus touch_event_ack_status,
            blink::mojom::InputEventResultState ack_result);
 
-  void Add(const input::TouchEventWithLatencyInfo& touch_event,
+  void Add(const TouchEventWithLatencyInfo& touch_event,
            RenderWidgetHostViewInput* target_view,
            RenderWidgetHostViewInput* root_view,
            TouchEventSource touch_event_source);
 
-  void MarkAcked(const input::TouchEventWithLatencyInfo& touch_event,
+  void MarkAcked(const TouchEventWithLatencyInfo& touch_event,
                  blink::mojom::InputEventResultState ack_result,
                  RenderWidgetHostViewInput* target_view);
 
@@ -122,7 +121,7 @@ class TouchEventAckQueue {
 };
 
 void TouchEventAckQueue::Add(
-    const input::TouchEventWithLatencyInfo& touch_event,
+    const TouchEventWithLatencyInfo& touch_event,
     RenderWidgetHostViewInput* target_view,
     RenderWidgetHostViewInput* root_view,
     TouchEventSource touch_event_source,
@@ -140,7 +139,7 @@ void TouchEventAckQueue::Add(
 }
 
 void TouchEventAckQueue::Add(
-    const input::TouchEventWithLatencyInfo& touch_event,
+    const TouchEventWithLatencyInfo& touch_event,
     RenderWidgetHostViewInput* target_view,
     RenderWidgetHostViewInput* root_view,
     TouchEventSource touch_event_source) {
@@ -150,7 +149,7 @@ void TouchEventAckQueue::Add(
 }
 
 void TouchEventAckQueue::MarkAcked(
-    const input::TouchEventWithLatencyInfo& touch_event,
+    const TouchEventWithLatencyInfo& touch_event,
     blink::mojom::InputEventResultState ack_result,
     RenderWidgetHostViewInput* target_view) {
   auto it = find_if(ack_queue_.begin(), ack_queue_.end(),
@@ -903,7 +902,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
           : TouchEventAckQueue::TouchEventSource::SystemTouchEvent;
   if (!touch_target_) {
     touch_event_ack_queue_->Add(
-        input::TouchEventWithLatencyInfo(touch_event), nullptr, root_view,
+        TouchEventWithLatencyInfo(touch_event), nullptr, root_view,
         event_source, TouchEventAckQueue::TouchEventAckStatus::TouchEventAcked,
         blink::mojom::InputEventResultState::kNoConsumerExists);
     return;
@@ -934,7 +933,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
     CancelScrollBubblingIfConflicting(touch_target_);
   }
 
-  touch_event_ack_queue_->Add(input::TouchEventWithLatencyInfo(touch_event),
+  touch_event_ack_queue_->Add(TouchEventWithLatencyInfo(touch_event),
                               touch_target_, root_view, event_source);
 
   blink::WebTouchEvent event(touch_event);
@@ -946,7 +945,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
 }
 
 void RenderWidgetHostInputEventRouter::ProcessAckedTouchEvent(
-    const input::TouchEventWithLatencyInfo& event,
+    const TouchEventWithLatencyInfo& event,
     blink::mojom::InputEventResultState ack_result,
     RenderWidgetHostViewInput* view) {
   TRACE_EVENT("input",
@@ -1098,7 +1097,8 @@ void RenderWidgetHostInputEventRouter::ReportBubblingScrollToSameView(
 #if 0
   // For now, we've disabled the DumpWithoutCrashing as it's no longer
   // providing useful information.
-  // TODO(crbug.com/41380487): Determine useful crash keys and reenable the report.
+  // TODO(crbug.com/41380487): Determine useful crash keys and reenable the
+  // report.
   base::debug::DumpWithoutCrashing();
 #endif
 }
@@ -1907,7 +1907,7 @@ void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
   }
   if (blink::WebInputEvent::IsTouchEventType(event->GetType())) {
     auto& touch_event = *static_cast<blink::WebTouchEvent*>(event);
-    input::TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
+    TouchEventWithLatencyInfo touch_with_latency(touch_event, latency);
     auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);
     if (touch_emulator &&
         touch_emulator->HandleTouchEvent(touch_with_latency.event)) {
@@ -2080,4 +2080,4 @@ void RenderWidgetHostInputEventRouter::ForwardDelegatedInkPoint(
   }
 }
 
-}  // namespace content
+}  // namespace input

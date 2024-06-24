@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/input/input_router_impl.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/touch_action_filter.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
@@ -23,7 +24,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_smooth_drag_gesture.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -204,7 +204,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
       event.button = blink::WebMouseEvent::Button::kLeft;
     }
     event.SetTimeStamp(GetNextSimulatedEventTime());
-    RenderWidgetHostInputEventRouter* router =
+    input::RenderWidgetHostInputEventRouter* router =
         static_cast<WebContentsImpl*>(shell()->web_contents())
             ->GetInputEventRouter();
     ASSERT_TRUE(router);
@@ -239,7 +239,7 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
                        TouchEmulatorPinchWithGestureFling) {
   auto* touch_emulator = host()->GetTouchEmulator(/*create_if_necessary=*/true);
-  touch_emulator->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
+  touch_emulator->Enable(input::TouchEmulator::Mode::kEmulatingTouchFromMouse,
                          ui::GestureProviderConfigType::GENERIC_MOBILE);
   touch_emulator->SetPinchGestureModeForTesting(true);
 
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
                        MAYBE_TouchEmulator) {
   host()
       ->GetTouchEmulator(/*create_if_necessary=*/true)
-      ->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
+      ->Enable(input::TouchEmulator::Mode::kEmulatingTouchFromMouse,
                ui::GestureProviderConfigType::GENERIC_MOBILE);
 
   TestInputEventObserver observer;
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostTouchEmulatorBrowserTest,
   // Turn on emulation.
   host()
       ->GetTouchEmulator(/*create_if_necessary=*/true)
-      ->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
+      ->Enable(input::TouchEmulator::Mode::kEmulatingTouchFromMouse,
                ui::GestureProviderConfigType::GENERIC_MOBILE);
 
   // Another touch.

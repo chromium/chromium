@@ -10,10 +10,10 @@
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/input/render_widget_host_view_input.h"
 #include "components/input/web_touch_event_traits.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
 #include "content/common/input/events_helper.h"
-#include "content/common/input/render_widget_host_view_input.h"
 #include "content/grit/content_resources.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -43,13 +43,13 @@ namespace {
 
 ui::GestureProvider::Config GetEmulatorGestureProviderConfig(
     ui::GestureProviderConfigType config_type,
-    TouchEmulator::Mode mode) {
+    input::TouchEmulator::Mode mode) {
   ui::GestureProvider::Config config =
       ui::GetGestureProviderConfig(config_type);
   config.gesture_begin_end_types_enabled = false;
   config.gesture_detector_config.swipe_enabled = false;
   config.gesture_detector_config.two_finger_tap_enabled = false;
-  if (mode == TouchEmulator::Mode::kInjectingTouchEvents) {
+  if (mode == input::TouchEmulator::Mode::kInjectingTouchEvents) {
     config.gesture_detector_config.longpress_timeout = base::TimeDelta::Max();
     config.gesture_detector_config.showpress_timeout = base::TimeDelta::Max();
   }
@@ -69,7 +69,7 @@ constexpr base::TimeDelta kMouseMoveDropInterval = base::Milliseconds(5);
 
 }  // namespace
 
-TouchEmulatorImpl::TouchEmulatorImpl(TouchEmulatorClient* client,
+TouchEmulatorImpl::TouchEmulatorImpl(input::TouchEmulatorClient* client,
                                      float device_scale_factor)
     : client_(client),
       gesture_provider_config_type_(
@@ -183,7 +183,7 @@ ui::Cursor TouchEmulatorImpl::InitCursorFromResource(int resource_id) {
 
 bool TouchEmulatorImpl::HandleMouseEvent(
     const WebMouseEvent& mouse_event,
-    RenderWidgetHostViewInput* target_view) {
+    input::RenderWidgetHostViewInput* target_view) {
   if (!IsEnabled() || mode_ != Mode::kEmulatingTouchFromMouse)
     return false;
 
@@ -285,7 +285,7 @@ bool TouchEmulatorImpl::HandleTouchEvent(const blink::WebTouchEvent& event) {
 
 bool TouchEmulatorImpl::HandleEmulatedTouchEvent(
     blink::WebTouchEvent event,
-    RenderWidgetHostViewInput* target_view) {
+    input::RenderWidgetHostViewInput* target_view) {
   DCHECK(gesture_provider_);
   event.unique_touch_event_id = ui::GetNextTouchEventId();
   auto result = gesture_provider_->OnTouchEvent(MotionEventWeb(event));
@@ -350,7 +350,7 @@ bool TouchEmulatorImpl::HandleTouchEventAck(
 }
 
 void TouchEmulatorImpl::OnGestureEventAck(const WebGestureEvent& event,
-                                          RenderWidgetHostViewInput*) {
+                                          input::RenderWidgetHostViewInput*) {
   if (event.GetType() != WebInputEvent::Type::kGestureTap)
     return;
   if (pending_taps_count_) {
@@ -360,7 +360,7 @@ void TouchEmulatorImpl::OnGestureEventAck(const WebGestureEvent& event,
 }
 
 void TouchEmulatorImpl::OnViewDestroyed(
-    RenderWidgetHostViewInput* destroyed_view) {
+    input::RenderWidgetHostViewInput* destroyed_view) {
   if (destroyed_view != last_emulated_start_target_)
     return;
 
@@ -458,9 +458,10 @@ bool TouchEmulatorImpl::RequiresDoubleTapGestureEvents() const {
   return true;
 }
 
-void TouchEmulatorImpl::InjectTouchEvent(const blink::WebTouchEvent& event,
-                                         RenderWidgetHostViewInput* target_view,
-                                         base::OnceClosure callback) {
+void TouchEmulatorImpl::InjectTouchEvent(
+    const blink::WebTouchEvent& event,
+    input::RenderWidgetHostViewInput* target_view,
+    base::OnceClosure callback) {
   DCHECK(IsEnabled() && mode_ == Mode::kInjectingTouchEvents);
   touch_event_ = event;
   injected_touch_completion_callbacks_.push(std::move(callback));

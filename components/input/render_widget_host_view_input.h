@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
-#define CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
+#ifndef COMPONENTS_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
+#define COMPONENTS_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
 
 #include <memory>
 #include <optional>
@@ -12,9 +12,10 @@
 
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_router_impl.h"
+#include "components/input/render_input_router.h"
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/common/content_export.h"
+#include "base/component_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event.h"
@@ -29,7 +30,7 @@ class Cursor;
 class LatencyInfo;
 }  // namespace ui
 
-namespace content {
+namespace input {
 
 class CursorManager;
 class RenderInputRouter;
@@ -47,7 +48,8 @@ class RenderWidgetHostViewInputObserver;
 // The lifetime of RenderWidgetHostViewInput is tied to the lifetime of the
 // renderer process. If the render process dies, the RenderWidgetHostViewInput
 // goes away and all references to it must become nullptr.
-class CONTENT_EXPORT RenderWidgetHostViewInput : public input::StylusInterface {
+class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
+    public StylusInterface {
  public:
   virtual base::WeakPtr<RenderWidgetHostViewInput> GetInputWeakPtr() = 0;
 
@@ -74,7 +76,7 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public input::StylusInterface {
   // |touch|'s coordinates are in the coordinate space of the view to which it
   // was targeted.
   virtual void ProcessAckedTouchEvent(
-      const input::TouchEventWithLatencyInfo& touch,
+      const TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) = 0;
 
   virtual void DidOverscroll(const ui::DidOverscrollParams& params) = 0;
@@ -236,8 +238,10 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public input::StylusInterface {
   // Add and remove observers for lifetime event notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be
   // sure to remove the observer before they go away.
-  virtual void AddObserver(RenderWidgetHostViewInputObserver* observer) = 0;
-  virtual void RemoveObserver(RenderWidgetHostViewInputObserver* observer) = 0;
+  virtual void AddObserver(
+      RenderWidgetHostViewInputObserver* observer) = 0;
+  virtual void RemoveObserver(
+      RenderWidgetHostViewInputObserver* observer) = 0;
 
  protected:
   virtual void UpdateFrameSinkIdRegistration() = 0;
@@ -255,6 +259,6 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public input::StylusInterface {
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) = 0;
 };
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_
+#endif  // COMPONENTS_INPUT_RENDER_WIDGET_HOST_VIEW_INPUT_H_

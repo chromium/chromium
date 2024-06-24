@@ -46,6 +46,7 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -81,7 +82,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
 #include "content/common/input/synthetic_gesture.h"
 #include "content/common/input/synthetic_gesture_controller.h"
 #include "content/common/input/synthetic_gesture_target.h"
@@ -186,7 +186,7 @@ base::LazyInstance<RoutingIDWidgetMap>::DestructorAtExit
 // live RenderWidgetHost (or corresponding RenderInputRouter) at each iteration
 // (or NULL if there isn't any left).
 class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator,
-                                     public RenderInputRouterIterator {
+                                     public input::RenderInputRouterIterator {
  public:
   RenderWidgetHostIteratorImpl() = default;
 
@@ -212,7 +212,7 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator,
   }
 
   // RenderInputRouterIterator:
-  RenderInputRouter* GetNextRouter() override {
+  input::RenderInputRouter* GetNextRouter() override {
     RenderWidgetHost* host = GetNextHost();
     if (!host) {
       return nullptr;
@@ -2439,11 +2439,12 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
   std::move(callback).Run();
 }
 
-RenderWidgetHostInputEventRouter* RenderWidgetHostImpl::GetInputEventRouter() {
+input::RenderWidgetHostInputEventRouter*
+RenderWidgetHostImpl::GetInputEventRouter() {
   return delegate()->GetInputEventRouter();
 }
 
-RenderWidgetHostViewInput* RenderWidgetHostImpl::GetPointerLockView() {
+input::RenderWidgetHostViewInput* RenderWidgetHostImpl::GetPointerLockView() {
   return delegate()->GetPointerLockWidget()->GetView();
 }
 
@@ -3635,12 +3636,12 @@ RenderWidgetHostImpl::MakeFlingScheduler() {
 #endif
 }
 
-RenderInputRouter* RenderWidgetHostImpl::GetRenderInputRouter() {
+input::RenderInputRouter* RenderWidgetHostImpl::GetRenderInputRouter() {
   return render_input_router_.get();
 }
 
 void RenderWidgetHostImpl::SetupRenderInputRouter() {
-  render_input_router_ = std::make_unique<RenderInputRouter>(
+  render_input_router_ = std::make_unique<input::RenderInputRouter>(
       this, MakeFlingScheduler(), this,
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   SetupInputRouter();
@@ -3772,7 +3773,7 @@ RenderWidgetHostImpl::CollectSurfaceIdsForEviction() {
   return rvh->CollectSurfaceIdsForEviction();
 }
 
-std::unique_ptr<RenderInputRouterIterator>
+std::unique_ptr<input::RenderInputRouterIterator>
 RenderWidgetHostImpl::GetEmbeddedRenderInputRouters() {
   return GetEmbeddedRenderWidgetHosts(GetView());
 }

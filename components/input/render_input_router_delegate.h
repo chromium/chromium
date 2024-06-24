@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
-#define CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
+#ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
+#define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
 
 #include <memory>
 
@@ -12,14 +12,14 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/delegated_ink_point.h"
 
-namespace content {
+namespace input {
 
 class RenderWidgetHostViewInput;
 class RenderInputRouterIterator;
 class RenderWidgetHostInputEventRouter;
 class TouchEmulator;
 
-class CONTENT_EXPORT RenderInputRouterDelegate {
+class COMPONENT_EXPORT(INPUT) RenderInputRouterDelegate {
  public:
   virtual ~RenderInputRouterDelegate() = default;
 
@@ -73,6 +73,6 @@ class CONTENT_EXPORT RenderInputRouterDelegate {
       blink::mojom::InputEventResultState ack_result) = 0;
 };
 
-}  // namespace content
+}  // namespace input
 
-#endif  // CONTENT_COMMON_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_
+#endif  // COMPONENTS_INPUT_RENDER_INPUT_ROUTER_DELEGATE_H_

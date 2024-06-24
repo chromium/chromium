@@ -4,11 +4,12 @@
 
 #include "content/browser/devtools/protocol/overlay_handler.h"
 
-#include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/input/render_widget_host_input_event_router.h"
-
 #include <stdint.h>
+
 #include <utility>
+
+#include "components/input/render_widget_host_input_event_router.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 
 namespace content {
 namespace protocol {

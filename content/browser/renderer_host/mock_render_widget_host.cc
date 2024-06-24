@@ -49,7 +49,7 @@ std::unique_ptr<MockRenderWidgetHost> MockRenderWidgetHost::Create(
       std::move(pending_blink_widget)));
 }
 
-RenderInputRouter* MockRenderWidgetHost::GetRenderInputRouter() {
+input::RenderInputRouter* MockRenderWidgetHost::GetRenderInputRouter() {
   return render_input_router_.get();
 }
 
