@@ -646,7 +646,7 @@ AccountSelectionModalView::CreateBrandIconImageView(
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          kModalIdpIconSize, /*should_circle_crop=*/false);
+          kModalIdpIconSize, /*should_circle_crop=*/true);
   brand_icon_ = brand_icon_image_view.get();
   brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
