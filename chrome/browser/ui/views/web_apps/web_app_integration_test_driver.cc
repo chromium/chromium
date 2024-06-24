@@ -189,7 +189,6 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_launch.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/test/base/launchservices_utils_mac.h"

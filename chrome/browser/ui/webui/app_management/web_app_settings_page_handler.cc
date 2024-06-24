@@ -27,7 +27,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #endif
 
 namespace {

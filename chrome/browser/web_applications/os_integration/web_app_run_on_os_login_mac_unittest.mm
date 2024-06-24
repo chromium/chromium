@@ -19,7 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"

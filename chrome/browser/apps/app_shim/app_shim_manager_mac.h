@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/webapps/common/web_app_id.h"

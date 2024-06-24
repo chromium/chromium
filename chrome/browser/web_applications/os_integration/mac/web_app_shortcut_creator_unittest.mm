@@ -22,6 +22,7 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -35,7 +36,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 
 using ::testing::_;
 using ::testing::Return;

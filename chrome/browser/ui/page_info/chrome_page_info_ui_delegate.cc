@@ -52,7 +52,7 @@
 #include "base/mac/mac_util.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
 

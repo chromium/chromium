@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
 
-#import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#import "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 
 namespace web_app::internals {

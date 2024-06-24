@@ -2,93 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 
-#import <Cocoa/Cocoa.h>
-#include <stdint.h>
-
-#include <algorithm>
-#include <list>
-#include <map>
+#include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 
-#include "base/apple/bridging.h"
-#include "base/apple/bundle_locations.h"
-#include "base/apple/foundation_util.h"
-#include "base/apple/scoped_cftyperef.h"
-#include "base/base_switches.h"
+#import "base/apple/foundation_util.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
-#import "base/mac/launch_application.h"
-#include "base/mac/mac_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
-#include "base/path_service.h"
-#include "base/process/process_handle.h"
-#include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/version.h"
-#include "cc/paint/paint_flags.h"
-#import "chrome/browser/mac/dock.h"
-#include "chrome/browser/shell_integration.h"
-#include "chrome/browser/shortcuts/platform_util_mac.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
-#include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
-#include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
-#import "chrome/common/mac/app_mode_common.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
-#include "components/variations/net/variations_command_line.h"
-#include "components/version_info/version_info.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#include "mojo/core/embedder/embedder.h"
-#include "mojo/core/embedder/features.h"
-#include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkColorType.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkRect.h"
-#include "third_party/skia/include/effects/SkImageFilters.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image_family.h"
 
 namespace web_app {
 

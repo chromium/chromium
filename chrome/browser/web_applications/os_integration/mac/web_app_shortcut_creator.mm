@@ -38,7 +38,7 @@
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"

@@ -404,11 +404,11 @@ source_set("web_applications") {
       "os_integration/mac/web_app_auto_login_util.h",
       "os_integration/mac/web_app_shortcut_creator.h",
       "os_integration/mac/web_app_shortcut_creator.mm",
+      "os_integration/mac/web_app_shortcut_mac.h",
+      "os_integration/mac/web_app_shortcut_mac.mm",
       "os_integration/web_app_file_handler_registration_mac.cc",
       "os_integration/web_app_protocol_handler_registration_mac.cc",
       "os_integration/web_app_run_on_os_login_mac.mm",
-      "os_integration/web_app_shortcut_mac.h",
-      "os_integration/web_app_shortcut_mac.mm",
     ]
   }
 

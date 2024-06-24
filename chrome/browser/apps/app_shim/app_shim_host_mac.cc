@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/histogram_controller.h"
