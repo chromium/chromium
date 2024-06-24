@@ -1020,9 +1020,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
                            /*unminimize=*/false);
   }
 
-  if (features::IsPerDeskZOrderEnabled()) {
-    TrackWindowOnAllDesks(window);
-  }
+  TrackWindowOnAllDesks(window);
 
   if (do_window_bound_animation) {
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -1037,9 +1035,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
-    if (features::IsPerDeskZOrderEnabled()) {
-      UntrackWindowFromAllDesks(window);
-    }
+    UntrackWindowFromAllDesks(window);
 
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     NotifyAllDesksForContentChanged();
@@ -1052,7 +1048,6 @@ void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
 }
 
 void DesksController::NotifyAllDeskWindowMovedToNewRoot(aura::Window* window) {
-  CHECK(features::IsPerDeskZOrderEnabled());
   for (auto& desk : desks_) {
     desk->AllDeskWindowMovedToNewRoot(window);
   }
@@ -1725,9 +1720,7 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   // `old_active` desk do not activate other windows on the same desk. See
   // `ash::AshFocusRules::GetNextActivatableWindow()`.
   Desk* old_active = active_desk_;
-
-  if (features::IsPerDeskZOrderEnabled())
-    old_active->BuildAllDeskStackingData();
+  old_active->BuildAllDeskStackingData();
 
   auto* shell = Shell::Get();
   auto* overview_controller = shell->overview_controller();
@@ -2316,65 +2309,7 @@ void DesksController::NotifyFullScreenStateChangedAcrossDesksIfNeeded(
 }
 
 void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
-  if (features::IsPerDeskZOrderEnabled()) {
-    active_desk_->RestackAllDeskWindows();
-    return;
-  }
-
-  auto mru_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  for (aura::Window* visible_on_all_desks_window :
-       visible_on_all_desks_windows_) {
-    // If the window is floated, it will always be on top, so there is no need
-    // to restack it.
-    if (WindowState::Get(visible_on_all_desks_window)->IsFloated()) {
-      continue;
-    }
-
-    auto visible_on_all_desks_window_iter =
-        base::ranges::find(mru_windows, visible_on_all_desks_window);
-    if (visible_on_all_desks_window_iter == mru_windows.end())
-      continue;
-
-    auto* desk_container =
-        visible_on_all_desks_window->GetRootWindow()->GetChildById(
-            active_desk_->container_id());
-    if (desk_container != visible_on_all_desks_window->parent()) {
-      // TODO(b/295371112): Clean this up when the root cause has been resolved.
-      // This can sometimes happen and we're still trying to nail down the root
-      // cause. Rather than proceeding to stack the window (which will crash),
-      // we'll log some info and skip the window.
-      SCOPED_CRASH_KEY_NUMBER(
-          "Restack", "adw_app_type",
-          static_cast<int>(
-              visible_on_all_desks_window->GetProperty(chromeos::kAppTypeKey)));
-      SCOPED_CRASH_KEY_STRING32(
-          "Restack", "adw_app_id",
-          ::full_restore::GetAppId(visible_on_all_desks_window));
-      base::debug::DumpWithoutCrashing();
-      continue;
-    }
-
-    // Search through the MRU list for the next element that shares the same
-    // parent. This will be used to stack |visible_on_all_desks_window| in
-    // the active desk so its stacking respects global MRU order.
-    auto closest_window_below_iter =
-        std::next(visible_on_all_desks_window_iter);
-    while (closest_window_below_iter != mru_windows.end() &&
-           (*closest_window_below_iter)->parent() !=
-               visible_on_all_desks_window->parent()) {
-      closest_window_below_iter = std::next(closest_window_below_iter);
-    }
-
-    if (closest_window_below_iter == mru_windows.end()) {
-      // There was no element in the MRU list that was used after
-      // |visible_on_all_desks_window| so stack it at the bottom.
-      desk_container->StackChildAtBottom(visible_on_all_desks_window);
-    } else {
-      desk_container->StackChildAbove(visible_on_all_desks_window,
-                                      *closest_window_below_iter);
-    }
-  }
+  active_desk_->RestackAllDeskWindows();
 }
 
 const Desk* DesksController::FindDeskOfWindow(aura::Window* window) const {

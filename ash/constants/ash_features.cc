@@ -834,11 +834,6 @@ BASE_FEATURE(kEnableAllSystemWebApps,
              "EnableAllSystemWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables per-desk Z order for all-desk windows.
-BASE_FEATURE(kEnablePerDeskZOrder,
-             "EnablePerDeskZOrder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables RFC8925 (prefer IPv6-only on an IPv6-only-capable network).
 BASE_FEATURE(kEnableRFC8925, "EnableRFC8925", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4390,10 +4385,6 @@ bool IsProjectorGm3Enabled() {
 
 bool IsQuickDimEnabled() {
   return base::FeatureList::IsEnabled(kQuickDim) && switches::HasHps();
-}
-
-bool IsPerDeskZOrderEnabled() {
-  return base::FeatureList::IsEnabled(kEnablePerDeskZOrder);
 }
 
 bool IsRenderArcNotificationsByChromeEnabled() {

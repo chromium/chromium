@@ -1111,7 +1111,7 @@ void FloatController::FloatImpl(aura::Window* window) {
 
   // Since a floated window is always on top, we don't want to track its
   // z-ordering.
-  if (reset_all_desks && features::IsPerDeskZOrderEnabled()) {
+  if (reset_all_desks) {
     desk_controller->UntrackWindowFromAllDesks(window);
   }
 
@@ -1164,8 +1164,7 @@ void FloatController::UnfloatImpl(aura::Window* window) {
 
   // A floated window does not have per-desk z-order, so we need to start
   // tracking the window again after it is unfloated.
-  if (desks_util::IsWindowVisibleOnAllWorkspaces(window) &&
-      features::IsPerDeskZOrderEnabled()) {
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     DesksController::Get()->TrackWindowOnAllDesks(window);
   }
 }

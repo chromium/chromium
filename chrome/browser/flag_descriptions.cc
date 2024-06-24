@@ -6580,13 +6580,6 @@ const char kEnableFastTouchpadClickName[] = "Enable Fast Touchpad Click";
 const char kEnableFastTouchpadClickDescription[] =
     "If enabled, reduce the time after touchpad click before cursor can move.";
 
-const char kEnablePerDeskZOrderName[] =
-    "Enable per-desk Z-order for all-desk windows.";
-const char kEnablePerDeskZOrderDescription[] =
-    "The Z-order of all-desk windows is maintained on a per-desk basis. This "
-    "means that all-desk windows will not keep popping to the front when "
-    "switching desks.";
-
 const char kEnableRemoveStalePolicyPinnedAppsFromShelfName[] =
     "Enable removing stale policy-pinned apps from shelf.";
 const char kEnableRemoveStalePolicyPinnedAppsFromShelfDescription[] =

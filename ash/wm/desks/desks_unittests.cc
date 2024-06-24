@@ -4183,17 +4183,10 @@ class DesksPerDeskZOrderTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kEnablePerDeskZOrder);
-
     AshTestBase::SetUp();
 
     // Start the test with two desks.
     NewDesk();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    scoped_feature_list_.Reset();
   }
 
   void RunTests(const std::vector<PerDeskZOrderTestCase>& tests) {
@@ -4382,9 +4375,6 @@ class DesksPerDeskZOrderTest : public AshTestBase {
                 actual_active_window_id);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DesksPerDeskZOrderTest, SingleDisplay) {
@@ -4859,15 +4849,7 @@ TEST_F(DesksPerDeskZOrderTest, MultiDisplayMultipleAdwWithMoving) {
   });
 }
 
-class FloatAllDesksWithZOrderTest : public AshTestBase {
- public:
-  FloatAllDesksWithZOrderTest()
-      : scoped_feature_list_(features::kEnablePerDeskZOrder) {}
-  ~FloatAllDesksWithZOrderTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using FloatAllDesksWithZOrderTest = AshTestBase;
 
 // Tests that floating a window that is already visible on all desks removes its
 // z-ordering data, and unfloating the window restores the data.
@@ -4952,41 +4934,6 @@ TEST_F(FloatAllDesksWithZOrderTest, AllDesksThenFloatThenClose) {
 
   // Then switch desks.
   ActivateDesk(DesksController::Get()->GetDeskAtIndex(1));
-}
-
-class FloatAllDesksWithoutZOrderTest : public AshTestBase {
- public:
-  FloatAllDesksWithoutZOrderTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kEnablePerDeskZOrder);
-  }
-  ~FloatAllDesksWithoutZOrderTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that restacking a floated all desk window after a desk switch does not
-// cause a crash.
-TEST_F(FloatAllDesksWithoutZOrderTest, RestackOnDeskSwitch) {
-  // Start the test with two desks.
-  NewDesk();
-
-  // Create a floated window that is visible on both desks.
-  auto floated_adw = CreateAppWindow();
-  views::Widget::GetWidgetForNativeWindow(floated_adw.get())
-      ->SetVisibleOnAllWorkspaces(true);
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  auto* desks_controller = DesksController::Get();
-  ASSERT_EQ(1u, desks_controller->visible_on_all_desks_windows().size());
-  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(floated_adw.get()));
-  EXPECT_TRUE(desks_util::BelongsToActiveDesk(floated_adw.get()));
-  EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
-
-  // Switch desks, the window should still be floated on the new desk without
-  // crashing.
-  ActivateDesk(desks_controller->GetDeskAtIndex(1));
-  EXPECT_TRUE(desks_util::BelongsToActiveDesk(floated_adw.get()));
-  EXPECT_TRUE(WindowState::Get(floated_adw.get())->IsFloated());
 }
 
 constexpr char kUser1Email[] = "user1@desks";
@@ -6717,73 +6664,6 @@ TEST_P(DesksTest, VisibleOnAllDesksGlobalBounds) {
   EXPECT_EQ(1u, desk_1_children.size());
   EXPECT_EQ(window.get(), desk_1_children[0]);
   EXPECT_EQ(window_moved_bounds, window->bounds());
-}
-
-// Tests that the z-ordering of windows that are visible on all desks respects
-// its global MRU ordering.
-TEST_P(DesksTest, VisibleOnAllDesksGlobalZOrder) {
-  if (features::IsPerDeskZOrderEnabled()) {
-    // Z-ordering of windows is changed when this flag is enabled. The test
-    // below is written to expect the legacy behavior.
-    return;
-  }
-
-  auto* controller = DesksController::Get();
-  NewDesk();
-  const Desk* desk_1 = controller->GetDeskAtIndex(0);
-  const Desk* desk_2 = controller->GetDeskAtIndex(1);
-  auto* root = Shell::GetPrimaryRootWindow();
-
-  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
-  auto win1 = CreateAppWindow(gfx::Rect(1, 1, 150, 150));
-  auto win2 = CreateAppWindow(gfx::Rect(2, 2, 200, 200));
-  auto* widget0 = views::Widget::GetWidgetForNativeWindow(win0.get());
-  auto* widget1 = views::Widget::GetWidgetForNativeWindow(win1.get());
-  auto* widget2 = views::Widget::GetWidgetForNativeWindow(win2.get());
-  ASSERT_TRUE(window_util::IsStackedBelow(win0.get(), win1.get()));
-  ASSERT_TRUE(window_util::IsStackedBelow(win1.get(), win2.get()));
-
-  // Assign |win1| to all desks. It shouldn't change stacking order.
-  widget1->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
-  EXPECT_TRUE(window_util::IsStackedBelow(win0.get(), win1.get()));
-  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win2.get()));
-  EXPECT_EQ(1u, controller->visible_on_all_desks_windows().size());
-
-  // Move to desk 2. The only window on the new desk should be |win1|.
-  ActivateDesk(desk_2);
-  auto desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
-  EXPECT_EQ(1u, desk_2_children.size());
-  EXPECT_EQ(win1.get(), desk_2_children[0]);
-
-  // Move to desk 1. Since |win1|  was activated last, |win1| should be on top
-  // of the stacking order.
-  ActivateDesk(desk_1);
-  auto desk_1_children = desk_1->GetDeskContainerForRoot(root)->children();
-  EXPECT_EQ(3u, desk_1_children.size());
-  EXPECT_TRUE(window_util::IsStackedBelow(win0.get(), win2.get()));
-  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win1.get()));
-
-  // Assign all the other windows and rearrange the order by activating the
-  // windows.
-  widget0->SetVisibleOnAllWorkspaces(true);
-  widget2->SetVisibleOnAllWorkspaces(true);
-  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win1.get()));
-  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(win2.get()));
-  wm::ActivateWindow(win2.get());
-  wm::ActivateWindow(win1.get());
-  wm::ActivateWindow(win0.get());
-  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win1.get()));
-  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win0.get()));
-  EXPECT_EQ(3u, controller->visible_on_all_desks_windows().size());
-
-  // Move to desk 2. All the windows should move to the new desk and maintain
-  // their order.
-  ActivateDesk(desk_2);
-  desk_2_children = desk_2->GetDeskContainerForRoot(root)->children();
-  EXPECT_EQ(3u, desk_2_children.size());
-  EXPECT_TRUE(window_util::IsStackedBelow(win2.get(), win1.get()));
-  EXPECT_TRUE(window_util::IsStackedBelow(win1.get(), win0.get()));
 }
 
 // Tests the behavior of windows that are visible on all desks when the active
