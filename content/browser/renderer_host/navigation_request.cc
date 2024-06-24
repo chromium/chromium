@@ -3686,7 +3686,7 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   bool expects_origin_agent_cluster = is_requested || IsIsolationImplied();
   bool is_origin_keyed_process_implied =
       IsIsolationImplied() &&
-      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
   bool requires_origin_keyed_process =
       (is_requested || is_origin_keyed_process_implied) &&
       SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();

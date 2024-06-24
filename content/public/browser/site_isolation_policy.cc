@@ -198,6 +198,15 @@ bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
 }
 
 // static
+bool SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault() {
+  // Note: this is expected to be the only place
+  // features::kOriginKeyedProcessesByDefault is checked outside of tests.
+  return base::FeatureList::IsEnabled(
+             features::kOriginKeyedProcessesByDefault) &&
+         UseDedicatedProcessesForAllSites();
+}
+
+// static
 bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
     BrowserContext* browser_context) {
   // OriginAgentClusters are enabled by default if OriginAgentCluster and
@@ -210,8 +219,7 @@ bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
   return IsOriginAgentClusterEnabled() &&
          (base::FeatureList::IsEnabled(
               blink::features::kOriginAgentClusterDefaultEnabled) ||
-          base::FeatureList::IsEnabled(
-              features::kOriginKeyedProcessesByDefault)) &&
+          AreOriginKeyedProcessesEnabledByDefault()) &&
          !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
              browser_context);
 }

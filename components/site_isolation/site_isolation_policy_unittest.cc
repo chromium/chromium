@@ -114,6 +114,36 @@ class BaseSiteIsolationTest : public testing::Test {
   raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
 };
 
+// Tests with OriginKeyedProcessesByDefault enabled.
+class OriginKeyedProcessesByDefaultSiteIsolationPolicyTest
+    : public BaseSiteIsolationTest {
+ public:
+  OriginKeyedProcessesByDefaultSiteIsolationPolicyTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{::features::kOriginKeyedProcessesByDefault},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Make sure AreOriginKeyedProcessesEnabledByDefault() only returns true when
+// StrictSiteIsolation is enabled.
+TEST_F(OriginKeyedProcessesByDefaultSiteIsolationPolicyTest,
+       RequiresStrictSiteIsolation) {
+  SetEnableStrictSiteIsolation(false);
+  EXPECT_FALSE(
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+  SetEnableStrictSiteIsolation(true);
+  // When this runs on Android, the return value from
+  // SiteIsolationContentBrowserClient::ShouldDisableSiteIsolation() may still
+  // override our attempt to SetEnableStrictSiteIsolation(true).
+  EXPECT_EQ(
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+}
+
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
  public:
   explicit SiteIsolationPolicyTest(

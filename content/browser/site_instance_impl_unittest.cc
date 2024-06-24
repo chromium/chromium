@@ -558,8 +558,19 @@ TEST_F(SiteInstanceTest,
   GURL url("https://www.foo.com/");
   SiteInfo site_info =
       SiteInfo::CreateForTesting(IsolationContext(&browser_context), url);
-  EXPECT_TRUE(site_info.requires_origin_keyed_process());
-  EXPECT_EQ(url, site_info.process_lock_url());
+  // Note: for Android we expect `ShouldEnableStrictSiteIsolation()` to default
+  // to false.
+  bool should_enable_strict_site_isolation =
+      GetContentClientForTesting()
+          ->browser()
+          ->ShouldEnableStrictSiteIsolation();
+  EXPECT_EQ(should_enable_strict_site_isolation,
+            site_info.requires_origin_keyed_process());
+  if (should_enable_strict_site_isolation) {
+    EXPECT_EQ(url, site_info.process_lock_url());
+  } else {
+    EXPECT_EQ(GURL("https://foo.com/"), site_info.process_lock_url());
+  }
 }
 
 // Verifies some basic properties of default SiteInstances.
