@@ -132,7 +132,7 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
 SVGResourceDocumentContent::UpdateResult
 SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
                                            const KURL& request_url) {
-  if (data->empty()) {
+  if (data->empty() || was_disposed_) {
     return UpdateResult::kError;
   }
   CHECK(!document_host_);
@@ -168,6 +168,7 @@ void SVGResourceDocumentContent::AsyncLoadingFinished() {
 
 void SVGResourceDocumentContent::Dispose() {
   ClearDocument();
+  was_disposed_ = true;
 }
 
 void SVGResourceDocumentContent::ClearDocument() {

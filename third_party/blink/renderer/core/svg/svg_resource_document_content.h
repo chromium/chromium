@@ -108,6 +108,7 @@ class CORE_EXPORT SVGResourceDocumentContent final
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   KURL url_;
   ResourceStatus status_ = ResourceStatus::kNotStarted;
+  bool was_disposed_ = false;
 };
 
 }  // namespace blink
