@@ -29,11 +29,6 @@
 -org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
 -org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
 
-# crbug.com/1036556
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
-
 # crbug.com/1429741
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverForced

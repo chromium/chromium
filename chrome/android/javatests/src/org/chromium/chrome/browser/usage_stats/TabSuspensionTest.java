@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
@@ -215,6 +216,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = 29, message = "https://crbug.com/1036556")
     public void testMediaSuspension() throws TimeoutException {
         mActivityTestRule.loadUrl(
                 mTestServer.getURLWithHostName(STARTING_FQDN, MEDIA_FILE_TEST_PATH));
@@ -304,6 +306,7 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = 30, message = "https://crbug.com/1036556")
     public void testTabAddedFromCustomTab() {
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(

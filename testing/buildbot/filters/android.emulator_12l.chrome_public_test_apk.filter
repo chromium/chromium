@@ -5,11 +5,6 @@
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
-# crbug.com/1036556
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
-
 # crbug.com/1225709
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
