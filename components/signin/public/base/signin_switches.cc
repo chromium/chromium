@@ -128,18 +128,11 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-// Android is launched (enabled by default), iOS is pending.
-#if BUILDFLAG(IS_ANDROID)
-#define MINOR_MODE_FEATURE_DEFAULT_STATUS base::FEATURE_ENABLED_BY_DEFAULT
-#else
-#define MINOR_MODE_FEATURE_DEFAULT_STATUS base::FEATURE_DISABLED_BY_DEFAULT
-#endif
+#if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
              "MinorModeRestrictionsForHistorySyncOptIn",
-             MINOR_MODE_FEATURE_DEFAULT_STATUS);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Based on Signin.AccountCapabilities.UserVisibleLatency
 constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =

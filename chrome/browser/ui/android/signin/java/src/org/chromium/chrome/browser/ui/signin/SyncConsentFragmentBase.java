@@ -402,15 +402,12 @@ public abstract class SyncConsentFragmentBase extends Fragment
     private void createSigninView(LayoutInflater inflater, ViewGroup container) {
         mSigninView = (SigninView) inflater.inflate(R.layout.signin_view, container, false);
 
-        if (SigninFeatureMap.isEnabled(
-                SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
-            // Buttons are temporary to satisfy view calculations. Will be replaced by target
-            // ones with recreateButtons call originating at
-            // SyncConsentFragmentBase.updateProfileData once
-            // IdentityManager provides the data on how to display them
-            mSigninView.getAcceptButton().setVisibility(View.GONE);
-            mSigninView.getRefuseButton().setVisibility(View.GONE);
-        }
+        // Buttons are temporary to satisfy view calculations. Will be replaced by target
+        // ones with recreateButtons call originating at
+        // SyncConsentFragmentBase.updateProfileData once
+        // IdentityManager provides the data on how to display them
+        mSigninView.getAcceptButton().setVisibility(View.GONE);
+        mSigninView.getRefuseButton().setVisibility(View.GONE);
 
         mSigninView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
         mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
@@ -656,20 +653,14 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 return;
                             }
 
-                            if (SigninFeatureMap.isEnabled(
-                                    SigninFeatures
-                                            .MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
-                                // Shows buttons hidden by createSigninView.
-                                // MinorModeHelper.resolveMinorMode will either show the buttons
-                                // immediately or after a short timeout during which the button
-                                // configuration is retrieved.
-                                MinorModeHelper.resolveMinorMode(
-                                        identityManager,
-                                        account,
-                                        mSigninView::recreateSyncConsentButtons);
-                            } else {
-                                MinorModeHelper.trackLatency(identityManager, account);
-                            }
+                            // Shows buttons hidden by createSigninView.
+                            // MinorModeHelper.resolveMinorMode will either show the buttons
+                            // immediately or after a short timeout during which the button
+                            // configuration is retrieved.
+                            MinorModeHelper.resolveMinorMode(
+                                    identityManager,
+                                    account,
+                                    mSigninView::recreateSyncConsentButtons);
                         });
     }
 
@@ -901,10 +892,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         if (mSelectedAccountEmail != null) {
             updateProfileData(mSelectedAccountEmail);
         } else {
-            if (SigninFeatureMap.isEnabled(
-                    SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)) {
-                mSigninView.recreateAddAccountButtons();
-            }
+            mSigninView.recreateAddAccountButtons();
         }
 
         updateAccounts(

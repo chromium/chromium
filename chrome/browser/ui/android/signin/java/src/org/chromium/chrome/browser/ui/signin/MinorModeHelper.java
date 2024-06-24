@@ -12,8 +12,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -201,14 +199,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         // When the sDisableHistorySyncOptInTimeoutForTesting is enabled in tests, the buttons
         // should only be updated due to a capability change and not due to a timeout.
         if (!sDisableHistorySyncOptInTimeoutForTesting) {
-            int timeoutMs =
-                    SigninFeatureMap.getInstance()
-                            .getFieldTrialParamByFeatureAsInt(
-                                    SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN,
-                                    "MinorModeRestrictionsFetchDeadlineMs",
-                                    1000);
-
-            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::onDeadline, timeoutMs);
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::onDeadline, /* delay= */ 1000);
         }
     }
 

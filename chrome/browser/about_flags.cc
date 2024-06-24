@@ -11478,15 +11478,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncForceOff)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Controls the view mode for (history) sync screen.
-#if BUILDFLAG(IS_ANDROID)
-    {"minor-mode-restrictions-for-history-sync-opt-in",
-     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInName,
-     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
-#endif
-
     {"autofill-shared-storage-server-card-data",
      flag_descriptions::kAutofillSharedStorageServerCardDataName,
      flag_descriptions::kAutofillSharedStorageServerCardDataDescription, kOsAll,

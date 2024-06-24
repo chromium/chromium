@@ -21,8 +21,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.drawable.AnimationLooper;
 
@@ -242,15 +240,12 @@ class SigninView extends LinearLayout {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        @DualControlLayout.ButtonType
-        int acceptButtonType =
-                SigninFeatureMap.isEnabled(
-                                SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
-                        ? DualControlLayout.ButtonType.PRIMARY_TEXT
-                        : DualControlLayout.ButtonType.PRIMARY_FILLED;
         mAcceptButton =
                 DualControlLayout.createButtonForLayout(
-                        getContext(), acceptButtonType, "", this::acceptOnClickListenerProxy);
+                        getContext(),
+                        DualControlLayout.ButtonType.PRIMARY_TEXT,
+                        "",
+                        this::acceptOnClickListenerProxy);
         mAcceptButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
