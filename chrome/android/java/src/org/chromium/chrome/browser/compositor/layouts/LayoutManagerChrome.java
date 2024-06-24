@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * A {@link Layout} controller for the more complicated Chrome browser. This is currently a superset
@@ -79,7 +78,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private final Supplier<TabSwitcher> mTabSwitcherSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ScrimCoordinator mScrimCoordinator;
-    private final Callable<ViewGroup> mCreateTabSwitcherOrStartSurfaceCallable;
 
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
@@ -104,7 +102,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
      *     when overview is visible.
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
-     * @param delayedTabSwitcherOrStartSurfaceCallable Callable to create StartSurface/GTS views.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
     public LayoutManagerChrome(
@@ -118,7 +115,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             ViewGroup tabSwitcherScrimAnchor,
             ScrimCoordinator scrimCoordinator,
-            Callable<ViewGroup> delayedTabSwitcherOrStartSurfaceCallable,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
         // Build Event Filter Handlers
@@ -131,7 +127,6 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mScrimCoordinator = scrimCoordinator;
-        mCreateTabSwitcherOrStartSurfaceCallable = delayedTabSwitcherOrStartSurfaceCallable;
         mHubLayoutDependencyHolder = hubLayoutDependencyHolder;
 
         if (mStartSurfaceSupplier.hasValue() || mTabSwitcherSupplier.hasValue()) {

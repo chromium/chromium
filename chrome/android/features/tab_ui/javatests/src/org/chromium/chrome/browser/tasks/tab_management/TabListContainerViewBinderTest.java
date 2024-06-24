@@ -4,14 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -19,30 +14,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.areAnimatorsEnabled;
-
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,46 +37,11 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase {
-    private static final int CONTAINER_HEIGHT = 56;
-    private static final int INCREASED_CONTAINER_HEIGHT = 76;
     private PropertyModel mContainerModel;
     private PropertyModelChangeProcessor mMCP;
     private TabListRecyclerView mRecyclerView;
     @Spy private GridLayoutManager mGridLayoutManager;
     @Spy private LinearLayoutManager mLinearLayoutManager;
-    private CallbackHelper mStartedShowingCallback;
-    private CallbackHelper mFinishedShowingCallback;
-    private CallbackHelper mStartedHidingCallback;
-    private CallbackHelper mFinishedHidingCallback;
-    private boolean mIsAnimating;
-    private boolean mShouldShowShadow;
-
-    private TabListRecyclerView.VisibilityListener mMockVisibilityListener =
-            new TabListRecyclerView.VisibilityListener() {
-                @Override
-                public void startedShowing(boolean isAnimating) {
-                    mStartedShowingCallback.notifyCalled();
-                    mIsAnimating = isAnimating;
-                    // Simulate invocation of #setShadowVisibility to reflect actual method call.
-                    mRecyclerView.setShadowVisibility(mShouldShowShadow);
-                }
-
-                @Override
-                public void finishedShowing() {
-                    mFinishedShowingCallback.notifyCalled();
-                }
-
-                @Override
-                public void startedHiding(boolean isAnimating) {
-                    mStartedHidingCallback.notifyCalled();
-                    mIsAnimating = isAnimating;
-                }
-
-                @Override
-                public void finishedHiding() {
-                    mFinishedHidingCallback.notifyCalled();
-                }
-            };
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -110,11 +57,6 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
                     mRecyclerView = getActivity().findViewById(R.id.tab_list_recycler_view);
                 });
 
-        mStartedShowingCallback = new CallbackHelper();
-        mFinishedShowingCallback = new CallbackHelper();
-        mStartedHidingCallback = new CallbackHelper();
-        mFinishedHidingCallback = new CallbackHelper();
-
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
@@ -125,8 +67,6 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
                                     mRecyclerView,
                                     TabListContainerViewBinder::bind);
                 });
-
-        mShouldShowShadow = false;
     }
 
     private void setUpGridLayoutManager() {
@@ -143,213 +83,6 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
                     mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
                     mRecyclerView.setLayoutManager(mLinearLayoutManager);
                 });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testShowWithAnimation() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerModel.set(
-                            TabListContainerProperties.VISIBILITY_LISTENER,
-                            mMockVisibilityListener);
-
-                    mContainerModel.set(
-                            TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, true);
-                    mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-                });
-        assertThat(mStartedShowingCallback.getCallCount(), equalTo(1));
-        assertThat(mRecyclerView.getVisibility(), equalTo(View.VISIBLE));
-        if (areAnimatorsEnabled()) {
-            assertThat(mRecyclerView.getAlpha(), equalTo(0.0f));
-        }
-        assertThat(mIsAnimating, equalTo(true));
-
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(mRecyclerView.getAlpha(), Matchers.is(1.0f)));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testShowWithoutAnimation() {
-        mContainerModel.set(
-                TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
-
-        mContainerModel.set(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-
-        assertThat(mStartedShowingCallback.getCallCount(), equalTo(1));
-        assertThat(mRecyclerView.getVisibility(), equalTo(View.VISIBLE));
-        assertThat(mRecyclerView.isAnimating(), equalTo(false));
-        assertThat(mRecyclerView.getAlpha(), equalTo(1.0f));
-        assertThat(mFinishedShowingCallback.getCallCount(), equalTo(1));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testHidesWithAnimation() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerModel.set(
-                            TabListContainerProperties.VISIBILITY_LISTENER,
-                            mMockVisibilityListener);
-
-                    mContainerModel.set(
-                            TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
-                    mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-                });
-
-        assertThat(mRecyclerView.getVisibility(), equalTo(View.VISIBLE));
-        assertThat(mRecyclerView.getAlpha(), equalTo(1.0f));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerModel.set(
-                            TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, true);
-                    mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
-                });
-
-        assertThat(mStartedHidingCallback.getCallCount(), equalTo(1));
-        assertThat(mRecyclerView.getVisibility(), equalTo(View.VISIBLE));
-        if (areAnimatorsEnabled()) {
-            assertThat(mRecyclerView.getAlpha(), equalTo(1.0f));
-        }
-        assertThat(mIsAnimating, equalTo(true));
-        // Invisibility signals the end of the animation, not alpha being zero.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(mRecyclerView.getVisibility(), Matchers.is(View.INVISIBLE));
-                });
-        assertThat(mRecyclerView.getAlpha(), equalTo(0.0f));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testHidesWithoutAnimation() {
-        mContainerModel.set(
-                TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
-
-        mContainerModel.set(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-
-        assertThat(mRecyclerView.getVisibility(), equalTo(View.VISIBLE));
-        assertThat(mRecyclerView.getAlpha(), equalTo(1.0f));
-
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
-
-        assertThat(mStartedHidingCallback.getCallCount(), equalTo(1));
-        assertThat(mRecyclerView.isAnimating(), equalTo(false));
-        assertThat(mRecyclerView.getAlpha(), equalTo(0.0f));
-        assertThat(mRecyclerView.getVisibility(), equalTo(View.INVISIBLE));
-        assertThat(mFinishedHidingCallback.getCallCount(), equalTo(1));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testTopMarginSetsTopMargin() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerModel.set(
-                            TabListContainerProperties.VISIBILITY_LISTENER,
-                            mMockVisibilityListener);
-                    mContainerModel.set(
-                            TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
-                });
-        assertThat(mRecyclerView.getLayoutParams(), instanceOf(FrameLayout.LayoutParams.class));
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin, equalTo(0));
-
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
-        mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin, equalTo(0));
-
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
-                equalTo(CONTAINER_HEIGHT));
-
-        mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT + 1);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
-                equalTo(CONTAINER_HEIGHT + 1));
-
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
-        mContainerModel.set(TabListContainerProperties.TOP_MARGIN, CONTAINER_HEIGHT);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).topMargin,
-                equalTo(CONTAINER_HEIGHT + 1));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testBottomContainerHeightSetsBottomMargin() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContainerModel.set(
-                            TabListContainerProperties.VISIBILITY_LISTENER,
-                            mMockVisibilityListener);
-                    mContainerModel.set(
-                            TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
-                });
-        assertThat(mRecyclerView.getLayoutParams(), instanceOf(FrameLayout.LayoutParams.class));
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
-                equalTo(0));
-
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, false);
-        mContainerModel.set(TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT, CONTAINER_HEIGHT);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
-                equalTo(0));
-
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
-                equalTo(CONTAINER_HEIGHT));
-
-        mContainerModel.set(TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT, 0);
-        assertThat(
-                ((FrameLayout.LayoutParams) mRecyclerView.getLayoutParams()).bottomMargin,
-                equalTo(0));
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testSetShadowTopOffsetUpdatesTranslation() {
-        mContainerModel.set(
-                TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
-
-        mContainerModel.set(TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES, false);
-        mContainerModel.set(TabListContainerProperties.IS_VISIBLE, true);
-
-        ImageView shadowImageView = mRecyclerView.getShadowImageViewForTesting();
-
-        assertEquals(0, shadowImageView.getTranslationY(), MathUtils.EPSILON);
-
-        mContainerModel.set(
-                TabListContainerProperties.SHADOW_TOP_OFFSET, INCREASED_CONTAINER_HEIGHT);
-        assertEquals(
-                INCREASED_CONTAINER_HEIGHT, shadowImageView.getTranslationY(), MathUtils.EPSILON);
-    }
-
-    @Test
-    @MediumTest
-    @UiThreadTest
-    public void testBottomPaddingSetsBottomPadding() {
-        assertThat(mRecyclerView.getPaddingBottom(), equalTo(0));
-
-        mContainerModel.set(TabListContainerProperties.BOTTOM_PADDING, CONTAINER_HEIGHT);
-        assertThat(mRecyclerView.getPaddingBottom(), equalTo(CONTAINER_HEIGHT));
     }
 
     @Test

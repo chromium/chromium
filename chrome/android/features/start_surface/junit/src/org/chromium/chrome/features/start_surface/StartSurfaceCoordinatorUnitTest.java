@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher.TabSwitcherType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -74,9 +73,6 @@ public class StartSurfaceCoordinatorUnitTest {
         TabSwitcher tabSwitcherModule =
                 mCoordinator.getMediatorForTesting().getTabSwitcherModuleForTesting();
         assertNotNull(tabSwitcherModule);
-        assertEquals(
-                TabSwitcherType.SINGLE,
-                tabSwitcherModule.getTabListDelegate().getListModeForTesting());
         assertNotNull(mCoordinator.getViewForTesting());
 
         mCoordinator.show(false);

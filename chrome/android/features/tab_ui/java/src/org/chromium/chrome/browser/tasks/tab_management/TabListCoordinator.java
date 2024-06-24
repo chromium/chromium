@@ -705,12 +705,6 @@ public class TabListCoordinator
         }
     }
 
-    void prepareTabSwitcherView() {
-        registerLayoutChangeListener();
-        mRecyclerView.prepareTabSwitcherView();
-        mMediator.registerOnScrolledListener(mRecyclerView);
-    }
-
     void prepareTabSwitcherPaneView() {
         registerLayoutChangeListener();
         mRecyclerView.prepareTabSwitcherPaneView();

@@ -812,10 +812,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getBrowserControlsManager(),
                             getTabContentManagerSupplier(),
                             mRootUiCoordinator::getTopUiThemeColorProvider,
-                            () -> {
-                                createGridTabSwitcher(compositorViewHolder, compositorViewHolder);
-                                return compositorViewHolder;
-                            },
                             createHubLayoutDependencyHolder());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
@@ -859,7 +855,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             tabSwitcherViewHolder,
                             mRootUiCoordinator.getScrimCoordinator(),
                             getLifecycleDispatcher(),
-                            () -> createAndSetStartSurfaceForTablet(),
                             createHubLayoutDependencyHolder(),
                             mMultiInstanceManager,
                             mDragDropDelegate,
@@ -1003,33 +998,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getModalDialogManagerSupplier());
     }
 
-    private void createGridTabSwitcher(
-            CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
-        var tabSwitcher =
-                TabManagementDelegateProvider.getDelegate()
-                        .createGridTabSwitcher(
-                                this,
-                                getLifecycleDispatcher(),
-                                getTabModelSelector(),
-                                getTabContentManager(),
-                                getBrowserControlsManager(),
-                                getTabCreatorManagerSupplier().get(),
-                                getMenuOrKeyboardActionController(),
-                                tabSwitcherContainer,
-                                getMultiWindowModeStateDispatcher(),
-                                mRootUiCoordinator.getScrimCoordinator(),
-                                /* rootView= */ tabSwitcherContainer,
-                                compositorViewHolder::getDynamicResourceLoader,
-                                getSnackbarManager(),
-                                getModalDialogManager(),
-                                mRootUiCoordinator.getBottomSheetController(),
-                                mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
-                                mBackPressManager,
-                                mLayoutStateProviderSupplier);
-        mTabSwitcherSupplier.set(tabSwitcher);
-        mIncognitoTabSwitcherSupplier.set(tabSwitcher);
-    }
-
     private void setupCompositorContent() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.setupCompositorContent")) {
             if (!isLayoutManagerCreated()) {
@@ -1109,29 +1077,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // assert !(mOverviewModeController != null
             //         && mOverviewModeController.overviewVisible());
         }
-    }
-
-    private ViewGroup createAndSetStartSurfaceForTablet() {
-        assert isTablet();
-        final long startTimeMs = SystemClock.uptimeMillis();
-        CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
-        // Inflate view holder for polish GTS.
-        ViewGroup containerView =
-                (ViewGroup) ((ViewStub) findViewById(R.id.tab_switcher_view_holder_stub)).inflate();
-        // Set view in toolbar manager to set toolbar stub.
-        getToolbarManager().setTabSwitcherFullScreenView(containerView);
-
-        // If Hub is enabled we don't create a GTS here because the TabSwitcherPane is created
-        // when loading the Hub.
-        // If Hub is disabled we need to create a GTS for tablets however, this method is only
-        // called when opening the tab switcher the first time.
-        if (!HubFieldTrial.isHubEnabled()) {
-            createGridTabSwitcher(compositorViewHolder, containerView);
-        }
-        maybeCreateStartSurface(compositorViewHolder, containerView);
-        RecordHistogram.recordTimesHistogram(
-                TAB_SWITCHER_CREATION_TIME, SystemClock.uptimeMillis() - startTimeMs);
-        return containerView;
     }
 
     private void maybeCreateIncognitoTabSnapshotController() {

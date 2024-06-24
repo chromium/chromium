@@ -21,7 +21,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.C
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -52,50 +50,6 @@ import java.util.function.DoubleConsumer;
 
 /** Impl class that will resolve components for tab management. */
 public class TabManagementDelegateImpl implements TabManagementDelegate {
-    @Override
-    public TabSwitcher createGridTabSwitcher(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull ViewGroup containerView,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull ViewGroup rootView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @Nullable BackPressManager backPressManager,
-            @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
-        return new TabSwitcherCoordinator(
-                activity,
-                activityLifecycleDispatcher,
-                tabModelSelector,
-                tabContentManager,
-                browserControlsStateProvider,
-                tabCreatorManager,
-                menuOrKeyboardActionController,
-                containerView,
-                multiWindowModeStateDispatcher,
-                scrimCoordinator,
-                TabUiFeatureUtilities.shouldUseListMode()
-                        ? TabListCoordinator.TabListMode.LIST
-                        : TabListCoordinator.TabListMode.GRID,
-                rootView,
-                dynamicResourceLoaderSupplier,
-                snackbarManager,
-                modalDialogManager,
-                bottomSheetController,
-                incognitoReauthControllerSupplier,
-                backPressManager,
-                layoutStateProviderSupplier);
-    }
-
     @Override
     public TabGroupUi createTabGroupUi(
             @NonNull Activity activity,

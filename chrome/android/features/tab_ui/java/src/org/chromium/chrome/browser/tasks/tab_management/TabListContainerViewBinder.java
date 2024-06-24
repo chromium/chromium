@@ -6,26 +6,18 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ANIMATE_VISIBILITY_CHANGES;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BLOCK_TOUCH_INPUT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_CONTROLS_HEIGHT;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BOTTOM_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_INCOGNITO;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SHADOW_TOP_OFFSET;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TOP_MARGIN;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -33,11 +25,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -45,48 +34,29 @@ import org.chromium.ui.modelutil.PropertyModel;
 class TabListContainerViewBinder {
     /**
      * Bind the given model to the given view, updating the payload in propertyKey.
+     *
      * @param model The model to use.
      * @param view The View to use.
      * @param propertyKey The key for the property to update for.
      */
     public static void bind(
             PropertyModel model, TabListRecyclerView view, PropertyKey propertyKey) {
-        if (IS_VISIBLE == propertyKey) {
-            updateMargins(model, view);
-            if (model.get(IS_VISIBLE)) {
-                view.startShowing(model.get(ANIMATE_VISIBILITY_CHANGES));
-            } else {
-                view.startHiding(model.get(ANIMATE_VISIBILITY_CHANGES));
-            }
-        } else if (BLOCK_TOUCH_INPUT == propertyKey) {
+        if (BLOCK_TOUCH_INPUT == propertyKey) {
             view.setBlockTouchInput(model.get(BLOCK_TOUCH_INPUT));
         } else if (IS_INCOGNITO == propertyKey) {
             Context context = view.getContext();
             boolean isIncognito = model.get(IS_INCOGNITO);
-            final @ColorInt int primaryBackgroundColor =
-                    HubFieldTrial.isHubEnabled()
-                            ? Color.TRANSPARENT
-                            : ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
+            final @ColorInt int primaryBackgroundColor = Color.TRANSPARENT;
             view.setBackgroundColor(primaryBackgroundColor);
             view.setToolbarHairlineColor(
                     ThemeUtils.getToolbarHairlineColor(
                             context, primaryBackgroundColor, isIncognito));
-        } else if (VISIBILITY_LISTENER == propertyKey) {
-            view.setVisibilityListener(model.get(VISIBILITY_LISTENER));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             int index = (Integer) model.get(INITIAL_SCROLL_INDEX);
             int offset = computeOffset(view, model);
             // RecyclerView#scrollToPosition(int) behaves incorrectly first time after cold start.
             ((LinearLayoutManager) view.getLayoutManager())
                     .scrollToPositionWithOffset(index, offset);
-        } else if (TOP_MARGIN == propertyKey) {
-            updateMargins(model, view);
-        } else if (BOTTOM_CONTROLS_HEIGHT == propertyKey) {
-            updateMargins(model, view);
-        } else if (SHADOW_TOP_OFFSET == propertyKey) {
-            view.setShadowTopOffset(model.get(SHADOW_TOP_OFFSET));
-        } else if (BOTTOM_PADDING == propertyKey) {
-            view.setBottomPadding(model.get(BOTTOM_PADDING));
         } else if (FOCUS_TAB_INDEX_FOR_ACCESSIBILITY == propertyKey) {
             int index = model.get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
             RecyclerView.ViewHolder selectedViewHolder =
@@ -96,31 +66,6 @@ class TabListContainerViewBinder {
             focusView.requestFocus();
             focusView.sendAccessibilityEvent(TYPE_VIEW_FOCUSED);
         }
-    }
-
-    private static void updateMargins(PropertyModel model, TabListRecyclerView view) {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-        final int oldTopMargin = params.topMargin;
-        final int oldBottomMargin = params.bottomMargin;
-        if (model.get(IS_VISIBLE)) {
-            params.topMargin = model.get(TOP_MARGIN);
-            params.bottomMargin = model.get(BOTTOM_CONTROLS_HEIGHT);
-        } else {
-            // Treat the bottom margin as 0 to avoid layout shift in tab shrink animations.
-            // IS_VISIBLE will be set to true after the tab shrink animation see
-            // {@link TabSwitcherMediator#showTabSwitcherView(boolean)}.
-            params.bottomMargin = 0;
-
-            // Leave the top margin unchanged to avoid relayouts during scrolls and for top
-            // toolbar indicators while the view is not visible. Once visible the offset will
-            // adjust accordingly.
-        }
-        if (!model.get(IS_VISIBLE)
-                || (oldTopMargin == params.topMargin && oldBottomMargin == params.bottomMargin)) {
-            return;
-        }
-
-        ViewUtils.requestLayout(view, "TabListContainerViewBinder.bind updateMargins");
     }
 
     private static int computeOffset(TabListRecyclerView view, PropertyModel model) {

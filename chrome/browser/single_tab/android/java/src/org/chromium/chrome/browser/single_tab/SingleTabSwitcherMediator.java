@@ -245,9 +245,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public void prepareHideTabSwitcherView() {}
-
-    @Override
     public void hideTabSwitcherView(boolean animate) {
         if (!mPropertyModel.get(IS_VISIBLE)) return;
 
@@ -332,13 +329,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public boolean onBackPressed() {
-        // The singe tab switcher shouldn't handle any back button. The back button will be handled
-        // by the ChromeTabbedActivity. See https://crbug.com/1187714.
-        return false;
-    }
-
-    @Override
     public @BackPressResult int handleBackPress() {
         return BackPressResult.FAILURE;
     }
@@ -358,22 +348,9 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public boolean isDialogVisible() {
-        return false;
-    }
-
-    @Override
-    public ObservableSupplier<Boolean> isDialogVisibleSupplier() {
-        return new ObservableSupplierImpl<>();
-    }
-
-    @Override
     public @TabSwitcherType int getTabSwitcherType() {
         return TabSwitcherType.SINGLE;
     }
-
-    @Override
-    public void onHomepageChanged() {}
 
     private void updateSelectedTab(Tab tab) {
         if (tab.isLoading() && TextUtils.isEmpty(tab.getTitle())) {

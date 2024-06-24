@@ -49,14 +49,6 @@ public class TabSwitcherPaneAdapter implements TabSwitcher {
     }
 
     @Override
-    public TabListDelegate getTabListDelegate() {
-        // TODO(crbug.com/40946413): So far no elements of TabListDelegate are needed. Consider
-        // deprecation.
-        assert false : "Not implemented.";
-        return null;
-    }
-
-    @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         return mTabSwitcherPane.getTabGridDialogVisibilitySupplier();
     }

@@ -1066,7 +1066,7 @@ class TabListMediator {
                         boolean delayAdd =
                                 (type == TabLaunchType.FROM_TAB_SWITCHER_UI)
                                         && markedForSelection
-                                        && TabSwitcherCoordinator.COMPONENT_NAME.equals(
+                                        && TabSwitcherPaneCoordinator.COMPONENT_NAME.equals(
                                                 mComponentName);
                         if (delayAdd) {
                             mTabToAddDelayed = tab;
@@ -1385,7 +1385,7 @@ class TabListMediator {
         @TabClosedFrom int from;
         if (fromComponent.equals(TabGroupUiCoordinator.COMPONENT_NAME)) {
             from = TabClosedFrom.TAB_STRIP;
-        } else if (fromComponent.equals(TabSwitcherCoordinator.COMPONENT_NAME)) {
+        } else if (fromComponent.equals(TabSwitcherPaneCoordinator.COMPONENT_NAME)) {
             from = TabClosedFrom.GRID_TAB_SWITCHER;
         } else {
             Log.w(TAG, "Attempting to close tab from Unknown UI");
@@ -3006,7 +3006,7 @@ class TabListMediator {
     }
 
     private boolean isParentComponentTabSwitcher() {
-        return TabSwitcherCoordinator.COMPONENT_NAME.equals(mComponentName);
+        return TabSwitcherPaneCoordinator.COMPONENT_NAME.equals(mComponentName);
     }
 
     @TabListMode

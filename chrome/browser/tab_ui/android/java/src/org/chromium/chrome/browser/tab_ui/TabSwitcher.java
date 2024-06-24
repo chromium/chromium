@@ -4,16 +4,11 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import android.graphics.Rect;
 import android.os.SystemClock;
-import android.util.Size;
-import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -87,46 +82,23 @@ public interface TabSwitcher {
          */
         void removeTabSwitcherViewObserver(TabSwitcherViewObserver listener);
 
-        /** Before tab switcher starts hiding. */
-        void prepareHideTabSwitcherView();
-
         /**
          * Hide the tab switcher view.
+         *
          * @param animate Whether we should animate while hiding.
          */
         void hideTabSwitcherView(boolean animate);
 
-        /** Before tab switcher starts showing. */
-        default void prepareShowTabSwitcherView() {}
-
         /**
          * Show the tab switcher view.
+         *
          * @param animate Whether we should animate while showing.
          */
         void showTabSwitcherView(boolean animate);
 
-        /**
-         * Called by the StartSurfaceLayout when the system back button is pressed.
-         * @return Whether or not the TabSwitcher consumed the event.
-         */
-        boolean onBackPressed();
-
-        /** Returns whether any dialog is opened. */
-        boolean isDialogVisible();
-
-        /**
-         * Returns an {@link ObservableSupplier<Boolean>} which yields true if any dialog is opened.
-         */
-        ObservableSupplier<Boolean> isDialogVisibleSupplier();
-
         /** Returns the tab switcher type. */
         @TabSwitcherType
         int getTabSwitcherType();
-
-        /** Called when start surface is showing or hiding. */
-        // TODO(crbug.com/40221888): Remove this API when tab switcher and start surface are
-        // decoupled.
-        void onHomepageChanged();
 
         /**
          * Called after the Chrome activity is launched.
@@ -136,19 +108,6 @@ public interface TabSwitcher {
         // TODO(crbug.com/40221888): Remove this API when tab switcher and start surface are
         // decoupled.
         void onOverviewShownAtLaunch(long activityCreationTimeMs);
-
-        /**
-         * Sets the parent view for snackbars. If <code>null</code> is given, the original parent
-         * view is restored.
-         *
-         * @param parentView The {@link ViewGroup} to attach snackbars to.
-         */
-        default void setSnackbarParentView(ViewGroup parentView) {}
-
-        /** Returns the Tab switcher container view. */
-        default ViewGroup getTabSwitcherContainer() {
-            return null;
-        }
     }
 
     /**
@@ -156,66 +115,6 @@ public interface TabSwitcher {
      * changes.
      */
     Controller getController();
-
-    // TODO(crbug.com/40946413): Post AndroidHub launch this will only be used by
-    // SingleTabSwitcherCoordinator. Consider deprecating this interface and migrating
-    // SingleTabSwitcherCoordinator's usage to be internal to start_surface/.
-    /** Interface to access the Tab List. */
-    interface TabListDelegate {
-        /** Returns the dynamic resource ID of the TabSwitcher RecyclerView. */
-        int getResourceId();
-
-        /**
-         * Before calling {@link Controller#showTabSwitcherView} to start showing the
-         * TabSwitcher {@link TabListRecyclerView}, call this to populate it without making it
-         * visible.
-         * @return Whether the {@link TabListRecyclerView} can be shown quickly.
-         */
-        boolean prepareTabSwitcherView();
-
-        /**
-         * This is called after the compositor animation is done, for potential clean-up work.
-         * {@link TabSwitcherViewObserver#finishedHiding} happens after
-         * the Android View animation, but before the compositor animation.
-         */
-        void postHiding();
-
-        /**
-         * Returns the {@link Rect} of the thumbnail of the current tab, relative to the TabSwitcher
-         * {@link TabListRecyclerView} coordinates.
-         */
-        @NonNull
-        Rect getThumbnailLocationOfCurrentTab();
-
-        /** Returns the {@link Size} of a thumbnail. */
-        @NonNull
-        Size getThumbnailSize();
-
-        /**
-         * Returns the {@link Rect} of the {@link TabListRecyclerView} relative to its container.
-         */
-        Rect getRecyclerViewLocation();
-
-        /**
-         * Returns the top offset from top toolbar to tab list. Used to adjust the animations for
-         * tab switcher.
-         */
-        int getTabListTopOffset();
-
-        /** Request accessibility focus for the currently selected tab. */
-        default void requestFocusOnCurrentTab() {}
-
-        /**
-         * @param r Runnable executed on next layout pass to run a show animation.
-         */
-        void runAnimationOnNextLayout(Runnable r);
-
-        /** Returns the mode of the list of Tabs. */
-        int getListModeForTesting();
-    }
-
-    /** Returns the {@link TabListDelegate}. */
-    TabListDelegate getTabListDelegate();
 
     /** Returns a {@link Supplier} that provides dialog visibility. */
     Supplier<Boolean> getTabGridDialogVisibilitySupplier();

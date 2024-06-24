@@ -1116,7 +1116,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabAddition_GTS_delayAdd() {
-        mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -1170,7 +1170,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabAddition_GTS_delayAdd_WithUnexpectedUpdate() {
-        mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -2771,7 +2771,7 @@ public class TabListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
         doReturn(true).when(mMediatorSpy).isTabInTabGroup(any());
 
-        mMediatorSpy.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        mMediatorSpy.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties(mMediatorSpy);
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -2805,7 +2805,7 @@ public class TabListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
         doReturn(true).when(mMediatorSpy).isTabInTabGroup(any());
 
-        mMediatorSpy.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        mMediatorSpy.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties(mMediatorSpy);
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -2839,7 +2839,7 @@ public class TabListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(true);
         doReturn(true).when(mMediatorSpy).isTabInTabGroup(any());
 
-        mMediatorSpy.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        mMediatorSpy.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
         initAndAssertAllProperties(mMediatorSpy);
 
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
@@ -3927,7 +3927,7 @@ public class TabListMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PANE_ANDROID)
     public void testIsTabGroup_TabSwitcher() {
-        mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 

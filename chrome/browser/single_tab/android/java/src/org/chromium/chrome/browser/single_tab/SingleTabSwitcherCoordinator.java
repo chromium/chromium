@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.single_tab;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Rect;
-import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +38,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     private final SingleTabSwitcherMediator mMediator;
     private final SingleTabSwitcherOnNtpMediator mMediatorOnNtp;
     private final TabListFaviconProvider mTabListFaviconProvider;
-    private final TabSwitcher.TabListDelegate mTabListDelegate;
     private boolean mIsShownOnNtp;
     private TabObserver mLastActiveTabObserver;
     private Tab mLastActiveTab;
@@ -113,57 +110,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
                             moduleDelegate);
             mMediator = null;
         }
-        // Most of these interfaces should be unused. They are invalid implementations.
-        mTabListDelegate =
-                new TabSwitcher.TabListDelegate() {
-                    @Override
-                    public int getResourceId() {
-                        return 0;
-                    }
-
-                    @Override
-                    @VisibleForTesting
-                    public int getTabListTopOffset() {
-                        return 0;
-                    }
-
-                    @Override
-                    @VisibleForTesting
-                    public Rect getRecyclerViewLocation() {
-                        return null;
-                    }
-
-                    @Override
-                    public int getListModeForTesting() {
-                        assert false : "should not reach here";
-                        return 0;
-                    }
-
-                    @Override
-                    public boolean prepareTabSwitcherView() {
-                        return true;
-                    }
-
-                    @Override
-                    public void postHiding() {}
-
-                    @Override
-                    public Rect getThumbnailLocationOfCurrentTab() {
-                        assert false : "should not reach here";
-                        return null;
-                    }
-
-                    @Override
-                    public Size getThumbnailSize() {
-                        assert false : "should not reach here";
-                        return null;
-                    }
-
-                    @Override
-                    public void runAnimationOnNextLayout(Runnable r) {
-                        assert false : "should not reach here";
-                    }
-                };
 
         if (mLastActiveTab != null) {
             beginObserving();
@@ -212,11 +158,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
     @Override
     public Controller getController() {
         return mMediator;
-    }
-
-    @Override
-    public TabListDelegate getTabListDelegate() {
-        return mTabListDelegate;
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -42,8 +41,6 @@ import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
@@ -68,27 +65,6 @@ class TabListRecyclerView extends RecyclerView
 
     public static final long BASE_ANIMATION_DURATION_MS = 218;
     public static final long FINAL_FADE_IN_DURATION_MS = 50;
-
-    /** An interface to listen to visibility related changes on this {@link RecyclerView}. */
-    interface VisibilityListener {
-        /**
-         * Called before the animation to show the tab list has started.
-         * @param isAnimating Whether visibility is changing with animation
-         */
-        void startedShowing(boolean isAnimating);
-
-        /** Called when the animation to show the tab list is finished. */
-        void finishedShowing();
-
-        /**
-         * Called before the animation to hide the tab list has started.
-         * @param isAnimating Whether visibility is changing with animation
-         */
-        void startedHiding(boolean isAnimating);
-
-        /** Called when the animation to show the tab list is finished. */
-        void finishedHiding();
-    }
 
     private class TabListOnScrollListener extends RecyclerView.OnScrollListener {
         @Override
@@ -132,15 +108,11 @@ class TabListRecyclerView extends RecyclerView
     }
 
     private final int mResourceId;
-    private ValueAnimator mFadeInAnimator;
-    private ValueAnimator mFadeOutAnimator;
-    private VisibilityListener mListener;
     private DynamicResourceLoader mLoader;
     private ViewResourceAdapter mDynamicView;
     private boolean mBlockTouchInput;
     private boolean mIsDynamicViewRegistered;
     private ImageView mShadowImageView;
-    private int mShadowTopOffset;
     private TabListOnScrollListener mScrollListener;
     private RecyclerView.ItemAnimator mOriginalAnimator;
     // Null unless item animations are disabled.
@@ -225,17 +197,10 @@ class TabListRecyclerView extends RecyclerView
     }
 
     /**
-     * Set the {@link VisibilityListener} that will listen on granular visibility events.
-     * @param listener The {@link VisibilityListener} to use.
-     */
-    void setVisibilityListener(VisibilityListener listener) {
-        mListener = listener;
-    }
-
-    /**
      * Set whether to block touch inputs. For example, during an animated transition the
      * TabListRecyclerView may still be visible, but interacting with it could trigger repeat
      * animations or unexpected state changes.
+     *
      * @param blockTouchInput Whether the touch inputs should be blocked.
      */
     void setBlockTouchInput(boolean blockTouchInput) {
@@ -255,71 +220,14 @@ class TabListRecyclerView extends RecyclerView
         }
     }
 
-    void prepareTabSwitcherView() {
-        endAllAnimations();
-
-        registerDynamicView();
-
-        // Stop all the animations to make all the items show up and scroll to position immediately.
-        mOriginalAnimator = getItemAnimator();
-        setItemAnimator(null);
-    }
-
     void prepareTabSwitcherPaneView() {
-        endAllAnimations();
-        // Ignore the rest of prepareTabSwitcherView since the pane version doesn't use a dynamic
-        // view and the items should already be visible. Don't replace the item animator as
-        // startShowing is skipped for panes meaning the animator would never be re-added.
-    }
-
-    /**
-     * Start showing the tab list.
-     * @param animate Whether the visibility change should be animated.
-     */
-    void startShowing(boolean animate) {
-        assert mFadeOutAnimator == null;
-        mListener.startedShowing(animate);
-
-        long duration =
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
-                        ? FINAL_FADE_IN_DURATION_MS
-                        : BASE_ANIMATION_DURATION_MS;
-
-        setAlpha(0);
-        setVisibility(View.VISIBLE);
-        mFadeInAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, 1);
-        mFadeInAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
-        mFadeInAnimator.setDuration(duration);
-        mFadeInAnimator.start();
-        mFadeInAnimator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mFadeInAnimator = null;
-                        mSuppressCapture = true;
-                        mListener.finishedShowing();
-                        // Restore the original value.
-                        setItemAnimator(mOriginalAnimator);
-                        setShadowVisibility(computeVerticalScrollOffset() > 0);
-                        if (mDynamicView != null) {
-                            unregisterDynamicView();
-                            mDynamicView.dropCachedBitmap();
-                        }
-                        // TODO(crbug.com/40631247): remove this band-aid after we know why GTS is
-                        // invisible.
-                        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())) {
-                            ViewUtils.requestLayout(
-                                    TabListRecyclerView.this,
-                                    "TabListRecyclerView.startShowing.AnimatorListenerAdapter.onAnimationEnd");
-                        }
-                    }
-                });
-        if (!animate) mFadeInAnimator.end();
+        // TODO(crbug.com/346777141): Add something like RemoveItemAnimator here.
     }
 
     /**
      * Updates the toolbar hairline drawable color appropriately for the regular and incognito tab
      * models.
+     *
      * @param color The toolbar hairline color.
      */
     void setToolbarHairlineColor(@ColorInt int color) {
@@ -347,7 +255,6 @@ class TabListRecyclerView extends RecyclerView
                         new FrameLayout.LayoutParams(
                                 LayoutParams.MATCH_PARENT, shadowHeight, Gravity.TOP);
                 mShadowImageView.setLayoutParams(params);
-                mShadowImageView.setTranslationY(mShadowTopOffset);
                 FrameLayout parent = (FrameLayout) getParent();
                 parent.addView(mShadowImageView);
             } else if (getParent() instanceof RelativeLayout) {
@@ -370,31 +277,6 @@ class TabListRecyclerView extends RecyclerView
         } else if (!shouldShowShadow && mShadowImageView.getVisibility() != GONE) {
             mShadowImageView.setVisibility(GONE);
         }
-    }
-
-    void setShadowTopOffset(int shadowTopOffset) {
-        mShadowTopOffset = shadowTopOffset;
-
-        if (mShadowImageView != null && getParent() instanceof FrameLayout) {
-            // Since the shadow has no functionality, other than just existing visually, we can use
-            // translationY to position it using the top offset. This is preferable to setting a
-            // margin because translation doesn't require a relayout.
-            mShadowImageView.setTranslationY(mShadowTopOffset);
-
-            // Set the shadow visibility using the newly computed scroll offset in case the new
-            // layout requires us to toggle the shadow visibility. E.g. the height increases and the
-            // grid isn't scrolled anymore.
-            final int scrollOffset = computeVerticalScrollOffset();
-            if (scrollOffset == 0) {
-                setShadowVisibility(false);
-            } else if (scrollOffset > 0) {
-                setShadowVisibility(true);
-            }
-        }
-    }
-
-    void setBottomPadding(int bottomPadding) {
-        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), bottomPadding);
     }
 
     /**
@@ -532,60 +414,10 @@ class TabListRecyclerView extends RecyclerView
         }
     }
 
-    /**
-     * Start hiding the tab list.
-     * @param animate Whether the visibility change should be animated.
-     */
-    void startHiding(boolean animate) {
-        endAllAnimations();
-
-        registerDynamicView();
-        if (mDynamicView == null) {
-            hideAnimation(animate);
-            return;
-        }
-        DynamicResourceReadyOnceCallback.onNext(
-                mDynamicView,
-                resource -> {
-                    mSuppressCapture = false;
-                    hideAnimation(animate);
-                });
-        mDynamicView.triggerBitmapCapture();
-    }
-
-    private void hideAnimation(boolean animate) {
-        mListener.startedHiding(animate);
-        mFadeOutAnimator = ObjectAnimator.ofFloat(this, View.ALPHA, 0);
-        mFadeOutAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
-        mFadeOutAnimator.setDuration(BASE_ANIMATION_DURATION_MS);
-        mFadeOutAnimator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mFadeOutAnimator = null;
-                        setVisibility(View.INVISIBLE);
-                        mSuppressCapture = true;
-                        mListener.finishedHiding();
-                    }
-                });
-        setShadowVisibility(false);
-        mFadeOutAnimator.start();
-        if (!animate) mFadeOutAnimator.end();
-    }
-
     void postHiding() {
         if (mDynamicView != null) {
             unregisterDynamicView();
             mDynamicView.dropCachedBitmap();
-        }
-    }
-
-    private void endAllAnimations() {
-        if (mFadeInAnimator != null) {
-            mFadeInAnimator.end();
-        }
-        if (mFadeOutAnimator != null) {
-            mFadeOutAnimator.end();
         }
     }
 

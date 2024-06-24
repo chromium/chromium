@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -45,51 +43,6 @@ import java.util.function.DoubleConsumer;
 
 /** Interface to get access to components concerning tab management. */
 public interface TabManagementDelegate {
-    /**
-     * Create the {@link TabSwitcher} to display Tabs in grid.
-     *
-     * @param activity The current android {@link Activity}.
-     * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
-     * @param tabModelSelector Gives access to the current set of {@TabModel}.
-     * @param tabContentManager Gives access to the tab content.
-     * @param browserControlsStateProvider Gives access to the state of the browser controls.
-     * @param tabCreatorManager Manages creation of tabs.
-     * @param menuOrKeyboardActionController allows access to menu or keyboard actions.
-     * @param containerView The {@link ViewGroup} to add the switcher to.
-     * @param multiWindowModeStateDispatcher Gives access to the multi window mode state.
-     * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
-     * @param rootView The root view of the app.
-     * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
-     * @param snackbarManager Manages the snackbar.
-     * @param modalDialogManager Manages modal dialogs.
-     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
-     * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *     to detect pending re-auth when tab switcher is shown.
-     * @param backPressManager {@link BackPressManager} to handle back press gesture.
-     * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
-     *     the layout state changes.
-     * @return The {@link TabSwitcher}.
-     */
-    TabSwitcher createGridTabSwitcher(
-            @NonNull Activity activity,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull TabModelSelector tabModelSelector,
-            @NonNull TabContentManager tabContentManager,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @NonNull ViewGroup containerView,
-            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ScrimCoordinator scrimCoordinator,
-            @NonNull ViewGroup rootView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
-            @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @Nullable BackPressManager backPressManager,
-            @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier);
-
     /**
      * Create the {@link TabGroupUi}.
      *

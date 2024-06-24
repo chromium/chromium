@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface;
@@ -96,12 +95,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     @Mock private StartSurface mStartSurface;
 
-    @Mock private TabSwitcher mTabSwitcher;
-
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
 
-    @Mock private TabSwitcher.TabListDelegate mTabListDelegate;
-    @Mock private TabSwitcher.Controller mTabSwitcherController;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private TabModelSelector mTabModelSelector;
@@ -188,9 +183,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
-            when(mTabSwitcher.getController()).thenReturn(mTabSwitcherController);
-            when(mTabSwitcher.getTabListDelegate()).thenReturn(mTabListDelegate);
-            when(mTabSwitcher.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
         when(mStartSurface.getTabGridDialogVisibilitySupplier()).thenReturn(() -> false);
 
         mTabModelSelector =
@@ -233,10 +225,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mBrowserControlsStateProvider,
                         tabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider,
-                        () -> {
-                            mTabSwitcherSupplier.set(mTabSwitcher);
-                            return container;
-                        },
                         mHubLayoutDependencyHolder);
 
         tabContentManagerSupplier.set(tabContentManager);
@@ -655,25 +643,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @After
     public void tearDown() {
         setAccessibilityEnabledForTesting(null);
-    }
-
-    private void verifyTabSwitcherLayoutEnable(
-            @TabListCoordinator.TabListMode int expectedTabListMode) {
-        launchedChromeAndEnterTabSwitcher();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Layout activeLayout = getActiveLayout();
-                    Assert.assertEquals(LayoutType.TAB_SWITCHER, activeLayout.getLayoutType());
-                    int tabListMode;
-                    tabListMode =
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getTabSwitcherSupplierForTesting()
-                                    .get()
-                                    .getTabListDelegate()
-                                    .getListModeForTesting();
-                    Assert.assertEquals(expectedTabListMode, tabListMode);
-                });
     }
 
     private void launchedChromeAndEnterTabSwitcher() {

@@ -470,9 +470,6 @@ class StartSurfaceMediator
                 mController
                         .getHandleBackPressChangedSupplier()
                         .addObserver((v) -> notifyBackPressStateChanged());
-                mController
-                        .isDialogVisibleSupplier()
-                        .addObserver((v) -> notifyBackPressStateChanged());
             }
             notifyBackPressStateChanged();
         }
@@ -754,15 +751,6 @@ class StartSurfaceMediator
     private boolean onBackPressedInternal() {
         boolean isOnHomepage = isHomepageShown();
 
-        if (mController != null && mController.isDialogVisible()) {
-            boolean ret = mController.onBackPressed();
-            assert !BackPressManager.isEnabled() || ret
-                    : String.format(
-                            "Wrong back press state: %s, is start surface shown : %s",
-                            mController.getClass().getName(), mIsHomepageShown);
-            return ret;
-        }
-
         if (isOnHomepage) {
             FeedReliabilityLogger feedReliabilityLogger = getFeedReliabilityLogger();
             if (feedReliabilityLogger != null) {
@@ -770,24 +758,7 @@ class StartSurfaceMediator
             }
         }
 
-        if (mController != null) {
-            // crbug.com/1420410: secondary task surface might be doing animations when transiting
-            // to/from tab switcher and then intercept back press to wait for animation to be
-            // finished.
-            boolean ret = mController.onBackPressed();
-            assert !BackPressManager.isEnabled() || ret
-                    : String.format(
-                            "Wrong back press state: %s, is start surface shown : %s",
-                            mController.getClass().getName(), mIsHomepageShown);
-            return ret;
-        }
         return false;
-    }
-
-    void onHide() {
-        if (mTabSwitcherModule != null) {
-            mTabSwitcherModule.getTabListDelegate().postHiding();
-        }
     }
 
     @Override
@@ -961,9 +932,6 @@ class StartSurfaceMediator
         // StartSurface is being supplied with OneShotSupplier, notification sends after
         // StartSurface is available to avoid missing events. More detail see:
         // https://crrev.com/c/2427428.
-        if (mController != null) {
-            mController.onHomepageChanged();
-        }
         notifyBackPressStateChanged();
     }
 
@@ -1107,10 +1075,6 @@ class StartSurfaceMediator
 
     @VisibleForTesting
     boolean shouldInterceptBackPress() {
-        if (mController != null && mController.isDialogVisible()) {
-            return true;
-        }
-
         if (ReturnToChromeUtil.isStartSurfaceEnabled(mContext)) {
             return false;
         }

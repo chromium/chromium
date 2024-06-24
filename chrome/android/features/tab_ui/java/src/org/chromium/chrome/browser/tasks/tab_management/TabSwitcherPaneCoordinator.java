@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.BROWSER_CONTROLS_STATE_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PANE_KEYS;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -58,7 +58,7 @@ import java.util.List;
 
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
-    private static final String COMPONENT_NAME = "GridTabSwitcher";
+    static final String COMPONENT_NAME = "GridTabSwitcher";
 
     private final TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
             mLongPressItemEventListener = this::onLongPressOnTabCard;
@@ -139,7 +139,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             ViewGroup coordinatorView = activity.findViewById(R.id.coordinator);
 
             PropertyModel containerViewModel =
-                    new PropertyModel.Builder(PANE_KEYS)
+                    new PropertyModel.Builder(ALL_KEYS)
                             .with(BROWSER_CONTROLS_STATE_PROVIDER, browserControlsStateProvider)
                             .with(MODE, mode)
                             .build();

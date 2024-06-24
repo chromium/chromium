@@ -337,7 +337,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mIsMVTilesInitialized = false;
             }
         }
-        mStartSurfaceMediator.onHide();
     }
 
     @Override

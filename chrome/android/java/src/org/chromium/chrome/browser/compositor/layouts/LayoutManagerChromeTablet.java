@@ -40,8 +40,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
-import java.util.concurrent.Callable;
-
 /**
  * {@link LayoutManagerChromeTablet} is the specialization of {@link LayoutManagerChrome} for the
  * tablet.
@@ -79,7 +77,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
      * @param lifecycleDispatcher @{@link ActivityLifecycleDispatcher} to be passed to TabStrip
      *     helper.
-     * @param delayedTabSwitcherOrStartSurfaceCallable Callable to create StartSurface/GTS views.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      * @param multiInstanceManager @{link MultiInstanceManager} passed to @{link StripLayoutHelper}
      *     to support tab drag and drop.
@@ -104,7 +101,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             ViewGroup tabSwitcherViewHolder,
             ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Callable<ViewGroup> delayedTabSwitcherOrStartSurfaceCallable,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
@@ -125,7 +121,6 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 topUiThemeColorProvider,
                 tabSwitcherViewHolder,
                 scrimCoordinator,
-                delayedTabSwitcherOrStartSurfaceCallable,
                 hubLayoutDependencyHolder);
         mTabStripLayoutHelperManager =
                 new StripLayoutHelperManager(
