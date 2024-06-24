@@ -323,6 +323,9 @@ crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphi
 crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Skip ]
 crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_BackdropFilter [ Skip ]
 
+# Nexus 5x consistently fail for View transition capture on webview.
+crbug.com/349071740 [ android-webview-instrumentation android-nexus-5x ] Pixel_ViewTransitionsCapture [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
