@@ -275,6 +275,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/FakeRecentlyClosedTabManager.java",
   "javatests/src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageTest.java",
+  "javatests/src/org/chromium/chrome/browser/ntp/MostVisitedTilesPTTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageLoadTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageNavigationTest.java",
   "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageTest.java",

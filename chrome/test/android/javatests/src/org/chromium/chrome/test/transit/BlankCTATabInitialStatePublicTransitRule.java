@@ -14,6 +14,7 @@ import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Wraps BlankCTATabInitialStateRule to be used in Public Transit batched tests. */
 public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
@@ -57,5 +58,16 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
 
         // Wait for the Conditions to be met to return an active PageStation.
         return homeStation.travelToSync(entryPageStation, /* trigger= */ null);
+    }
+
+    /**
+     * Start the batched test in an NTP.
+     *
+     * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
+     */
+    public NewTabPageStation startOnNtp() {
+        WebPageStation blankPage = startOnBlankPage();
+        return blankPage.loadPageProgramatically(
+                NewTabPageStation.newBuilder(), UrlConstants.NTP_URL);
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import androidx.test.espresso.Espresso;
+
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
 
@@ -201,5 +203,14 @@ public abstract class Station extends ConditionalState {
     public void addInitialFacility(Facility facility) {
         assertInPhase(Phase.NEW);
         registerFacility(facility);
+    }
+
+    /**
+     * Press back expecting to get to the given destination.
+     *
+     * <p>Left vague because back behavior is too case-by-case to determine in the Transit Layer.
+     */
+    public <T extends Station> T pressBack(T destination) {
+        return travelToSync(destination, Espresso::pressBack);
     }
 }

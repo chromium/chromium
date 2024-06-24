@@ -43,7 +43,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
      *
      * @return the active entry {@link NewTabPageStation}
      */
-    public NewTabPageStation startOnNTP() {
+    public NewTabPageStation startOnNtpNonBatched() {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
         NewTabPageStation entryPageStation =
@@ -60,6 +60,15 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
      */
     public PageStation startOnBlankPage(BatchedPublicTransitRule<PageStation> batchedRule) {
         return startBatched(batchedRule, this::startOnBlankPageNonBatched);
+    }
+
+    /**
+     * Start the batched test in the New Tab Page.
+     *
+     * @return the active entry {@link NewTabPageStation}
+     */
+    public NewTabPageStation startOnNtp(BatchedPublicTransitRule<NewTabPageStation> batchedRule) {
+        return startBatched(batchedRule, this::startOnNtpNonBatched);
     }
 
     private <T extends Station> T startBatched(

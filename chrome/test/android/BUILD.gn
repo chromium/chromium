@@ -232,6 +232,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/hub/HubNewTabGroupDialogFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/HubTabListEditorAppMenu.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/HubTabSwitcherGroupCardFacility.java",
+    "javatests/src/org/chromium/chrome/test/transit/ntp/MvtsFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/tab_groups/TabGroupExistsCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/tab_groups/TabGroupUtil.java",
     "javatests/src/org/chromium/chrome/test/transit/testhtmls/NavigatePageStations.java",

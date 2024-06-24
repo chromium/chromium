@@ -8,8 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
-import androidx.test.espresso.Espresso;
-
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
@@ -28,10 +26,5 @@ public class SettingsStation extends Station {
     public void declareElements(Elements.Builder elements) {
         elements.declareActivity(SettingsActivity.class);
         elements.declareView(SEARCH_ENGINE);
-    }
-
-    /** Press back to leave the SettingsActivity back to the previous state. */
-    public <T extends Station> T pressBack(T station) {
-        return travelToSync(station, () -> Espresso.pressBack());
     }
 }
