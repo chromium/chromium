@@ -1241,7 +1241,6 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
             cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
     ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
               scrolling_contents_op.GetType());
-    EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op.main_scroll_offset);
     EXPECT_THAT(
         scrolling_contents_op.display_item_list->GetPaintOpBufferForTesting(),
         ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
@@ -1307,7 +1306,6 @@ TEST_P(PaintChunksToCcLayerTest,
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op.GetType());
-  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op.main_scroll_offset);
   EXPECT_THAT(
       scrolling_contents_op.display_item_list->GetPaintOpBufferForTesting(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
@@ -1387,7 +1385,6 @@ TEST_P(PaintChunksToCcLayerTest,
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(4));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op1.GetType());
-  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op1.main_scroll_offset);
   EXPECT_THAT(
       scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
@@ -1405,7 +1402,6 @@ TEST_P(PaintChunksToCcLayerTest,
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(9));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op2.GetType());
-  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op2.main_scroll_offset);
   EXPECT_THAT(
       scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
       ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
@@ -1449,7 +1445,6 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
             cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
     ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
               scrolling_contents_op1.GetType());
-    EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op1.main_scroll_offset);
     EXPECT_THAT(
         scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
         ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 1
@@ -1466,7 +1461,6 @@ TEST_P(PaintChunksToCcLayerTest, NestedScrollingContentsIntoDisplayItemList) {
                 .GetOpAtForTesting(3));
     ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
               scrolling_contents_op2.GetType());
-    EXPECT_EQ(gfx::PointF(70, 80), scrolling_contents_op2.main_scroll_offset);
     EXPECT_THAT(
         scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
         ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
@@ -1542,7 +1536,6 @@ TEST_P(PaintChunksToCcLayerTest,
           cc_list->GetPaintOpBufferForTesting().GetOpAtForTesting(3));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op1.GetType());
-  EXPECT_EQ(gfx::PointF(50, 60), scrolling_contents_op1.main_scroll_offset);
   EXPECT_THAT(
       scrolling_contents_op1.display_item_list->GetPaintOpBufferForTesting(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),
@@ -1558,7 +1551,6 @@ TEST_P(PaintChunksToCcLayerTest,
               .GetOpAtForTesting(2));
   ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
             scrolling_contents_op2.GetType());
-  EXPECT_EQ(gfx::PointF(70, 80), scrolling_contents_op2.main_scroll_offset);
   EXPECT_THAT(
       scrolling_contents_op2.display_item_list->GetPaintOpBufferForTesting(),
       ElementsAre(PaintOpIs<cc::SaveOp>(),

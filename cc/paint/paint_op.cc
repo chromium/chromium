@@ -1888,8 +1888,7 @@ bool DrawRRectOp::EqualsForTesting(const DrawRRectOp& other) const {
 bool DrawScrollingContentsOp::EqualsForTesting(
     const DrawScrollingContentsOp& other) const {
   return scroll_element_id == other.scroll_element_id &&
-         display_item_list == other.display_item_list &&
-         main_scroll_offset == other.main_scroll_offset;
+         display_item_list == other.display_item_list;
 }
 
 bool DrawVerticesOp::EqualsForTesting(const DrawVerticesOp& other) const {
@@ -2413,14 +2412,8 @@ bool DrawScrollingContentsOp::HasEffectsPreventingLCDTextForSaveLayerAlpha()
 
 gfx::PointF DrawScrollingContentsOp::GetScrollOffset(
     const PlaybackParams& params) const {
-  gfx::PointF scroll_offset = main_scroll_offset;
-  if (params.raster_inducing_scroll_offsets) {
-    auto it = params.raster_inducing_scroll_offsets->find(scroll_element_id);
-    if (it != params.raster_inducing_scroll_offsets->end()) {
-      scroll_offset = it->second;
-    }
-  }
-  return scroll_offset;
+  CHECK(params.raster_inducing_scroll_offsets);
+  return params.raster_inducing_scroll_offsets->at(scroll_element_id);
 }
 
 AnnotateOp::AnnotateOp() : PaintOp(kType) {}
@@ -2506,12 +2499,10 @@ size_t DrawRecordOp::AdditionalOpCount() const {
 
 DrawScrollingContentsOp::DrawScrollingContentsOp(
     ElementId scroll_element_id,
-    scoped_refptr<DisplayItemList> display_item_list,
-    gfx::PointF main_scroll_offset)
+    scoped_refptr<DisplayItemList> display_item_list)
     : PaintOp(kType),
       scroll_element_id(scroll_element_id),
-      display_item_list(std::move(display_item_list)),
-      main_scroll_offset(main_scroll_offset) {}
+      display_item_list(std::move(display_item_list)) {}
 
 DrawScrollingContentsOp::~DrawScrollingContentsOp() = default;
 

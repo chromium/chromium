@@ -446,11 +446,9 @@ DisplayItemList::GetDirectlyCompositedImageInfo() const {
 void DisplayItemList::PushDrawScrollingContentsOp(
     ElementId scroll_element_id,
     scoped_refptr<DisplayItemList> display_item_list,
-    gfx::PointF main_scroll_offset,
     const gfx::Rect& visual_rect) {
   StartPaint();
-  push<DrawScrollingContentsOp>(scroll_element_id, display_item_list,
-                                main_scroll_offset);
+  push<DrawScrollingContentsOp>(scroll_element_id, display_item_list);
   for (auto& [nested_scroll_element_id, _] :
        std::move(display_item_list->raster_inducing_scrolls_)) {
     // For a nested scroller, we use the parent scroller's visual rect (which

@@ -94,7 +94,6 @@ class CC_PAINT_EXPORT DisplayItemList
   void PushDrawScrollingContentsOp(
       ElementId scroll_element_id,
       scoped_refptr<DisplayItemList> display_item_list,
-      gfx::PointF main_scroll_offset,
       const gfx::Rect& visual_rect);
 
   // Called by blink::PaintChunksToCcLayer when an effect ends, to update the

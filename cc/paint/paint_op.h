@@ -860,8 +860,7 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final : public PaintOp {
   static constexpr PaintOpType kType = PaintOpType::kDrawScrollingContents;
   static constexpr bool kIsDrawOp = true;
   DrawScrollingContentsOp(ElementId scroll_element_id,
-                          scoped_refptr<DisplayItemList> display_item_list,
-                          gfx::PointF main_scroll_offset);
+                          scoped_refptr<DisplayItemList> display_item_list);
   ~DrawScrollingContentsOp();
   static void Raster(const DrawScrollingContentsOp* op,
                      SkCanvas* canvas,
@@ -883,8 +882,6 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final : public PaintOp {
 
   ElementId scroll_element_id;
   scoped_refptr<DisplayItemList> display_item_list;
-  // The scroll offset from the main thread.
-  gfx::PointF main_scroll_offset;
 };
 
 class CC_PAINT_EXPORT DrawVerticesOp final : public PaintOpWithFlags {

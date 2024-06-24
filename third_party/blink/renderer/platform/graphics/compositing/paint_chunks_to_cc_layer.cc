@@ -900,7 +900,6 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   result_.PushDrawScrollingContentsOp(
       scroll_translation.ScrollNode()->GetCompositorElementId(),
       std::move(scrolling_contents_list),
-      gfx::PointAtOffsetFromOrigin(-scroll_translation.Get2dTranslation()),
       chunk_to_layer_mapper_.MapVisualRect(InfiniteIntRect()));
 }
 
