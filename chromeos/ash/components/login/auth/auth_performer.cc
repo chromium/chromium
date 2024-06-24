@@ -54,8 +54,6 @@ user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
       return user_data_auth::AUTH_INTENT_VERIFY_ONLY;
     case AuthSessionIntent::kWebAuthn:
       return user_data_auth::AUTH_INTENT_WEBAUTHN;
-    case AuthSessionIntent::kRestoreKey:
-      return user_data_auth::AUTH_INTENT_RESTORE_KEY;
   }
 }
 
@@ -68,8 +66,6 @@ std::optional<AuthSessionIntent> DeserializeIntent(
       return AuthSessionIntent::kVerifyOnly;
     case user_data_auth::AUTH_INTENT_WEBAUTHN:
       return AuthSessionIntent::kWebAuthn;
-    case user_data_auth::AUTH_INTENT_RESTORE_KEY:
-      return AuthSessionIntent::kRestoreKey;
     default:
       NOTIMPLEMENTED() << "Other intents not implemented yet, intent: "
                        << intent;

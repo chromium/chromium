@@ -29,16 +29,11 @@ enum class AuthSessionIntent {
   // Specific for the WebAuthN use case. Additionally to `kVerifyOnly`,
   // instructs Cryptohome that is should release the WebAuthN secret.
   kWebAuthn,
-  // Intent to decrypt the user's data protection keys without athorizing to
-  // change the authentication configuration. Authentication with this intent
-  // only makes user data protection keys available, to be restored on the
-  // filesystem drivers.
-  kRestoreKey,
 };
 
 using AuthSessionIntents = base::EnumSet<AuthSessionIntent,
                                          AuthSessionIntent::kDecrypt,
-                                         AuthSessionIntent::kRestoreKey>;
+                                         AuthSessionIntent::kWebAuthn>;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_SESSION_INTENT_H_

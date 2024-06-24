@@ -113,8 +113,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       ::user_data_auth::PrepareEphemeralVaultReply>;
   using CreatePersistentUserCallback =
       chromeos::DBusMethodCallback<::user_data_auth::CreatePersistentUserReply>;
-  using RestoreDeviceKeyCallback =
-      chromeos::DBusMethodCallback<::user_data_auth::RestoreDeviceKeyReply>;
   using PreparePersistentVaultCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::PreparePersistentVaultReply>;
   using PrepareVaultForMigrationCallback = chromeos::DBusMethodCallback<
@@ -247,13 +245,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void CreatePersistentUser(
       const ::user_data_auth::CreatePersistentUserRequest& request,
       CreatePersistentUserCallback callback) = 0;
-
-  // This will restore the filesystem keyset user directories needed to store
-  // keys and download policies. This will be called during lock screen if the
-  // device key is evicted.
-  virtual void RestoreDeviceKey(
-      const ::user_data_auth::RestoreDeviceKeyRequest& request,
-      RestoreDeviceKeyCallback callback) = 0;
 
   // This makes available user directories for them to use.
   virtual void PreparePersistentVault(

@@ -447,15 +447,6 @@ void AuthSessionAuthenticator::AuthenticateToUnlock(
 
   AuthSessionIntent intent = AuthSessionIntent::kVerifyOnly;
 
-  // Full authentication is needed to restore keyset. It is only for
-  // non-ephemeral user sessions.
-  if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
-    LOGIN_LOG(EVENT)
-        << "AuthenticateToUnlock starts AuthSession for restore_key to "
-           "restore filesystem keyset.";
-    intent = AuthSessionIntent::kRestoreKey;
-  }
-
   StartAuthSessionForLoggedIn(
       ephemeral, std::move(user_context), intent,
       base::BindOnce(&AuthSessionAuthenticator::DoUnlock,
@@ -570,10 +561,6 @@ void AuthSessionAuthenticator::DoUnlock(
     steps.push_back(
         base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
                        auth_performer_->AsWeakPtr()));
-  }
-  if (switches::ShouldRestoreKeyOnLockScreen() && !ephemeral) {
-    steps.push_back(base::BindOnce(&MountPerformer::RestoreEvictedVaultKey,
-                                   mount_performer_->AsWeakPtr()));
   }
 
   RunOperationChain(std::move(context), std::move(steps),

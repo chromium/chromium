@@ -52,7 +52,6 @@ using user_data_auth::AddAuthFactorReply;
 using user_data_auth::AUTH_FACTOR_TYPE_KIOSK;
 using user_data_auth::AUTH_FACTOR_TYPE_PASSWORD;
 using user_data_auth::AUTH_INTENT_DECRYPT;
-using user_data_auth::AUTH_INTENT_RESTORE_KEY;
 using user_data_auth::AUTH_INTENT_VERIFY_ONLY;
 using user_data_auth::AuthenticateAuthFactorReply;
 using user_data_auth::AuthFactor;
@@ -62,7 +61,6 @@ using user_data_auth::PrepareEphemeralVaultReply;
 using user_data_auth::PrepareGuestVaultReply;
 using user_data_auth::PreparePersistentVaultReply;
 using user_data_auth::RemoveReply;
-using user_data_auth::RestoreDeviceKeyReply;
 using user_data_auth::StartAuthSessionReply;
 
 namespace ash {
@@ -390,43 +388,6 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginRegularNew) {
 
   // Act.
   authenticator().CompleteLogin(/*ephemeral=*/false, std::move(user_context));
-  const UserContext got_user_context = on_auth_success_future().Get();
-
-  // Assert.
-  EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
-  EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
-}
-
-// Test the `RestoreDeviceKey()` method for the key eviction on the user
-// session.
-TEST_P(AuthSessionAuthenticatorTest, RestoreDeviceKeyOnLockScreen) {
-  // Arrange.
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kRestoreKeyOnLockScreen);
-
-  CreateAuthenticator();
-  auto user_context = std::make_unique<UserContext>(
-      user_manager::UserType::kRegular, kAccountId);
-  user_context->SetKey(Key(kPassword));
-  EXPECT_CALL(
-      userdataauth(),
-      StartAuthSession(WithPersistentAccountId(AUTH_INTENT_RESTORE_KEY), _))
-      .WillOnce(ReplyWith(BuildStartReply(
-          kFirstAuthSessionId, /*user_exists=*/true,
-          /*factors=*/{PasswordFactor(kCryptohomeGaiaKeyLabel)})));
-  EXPECT_CALL(userdataauth(),
-              AuthenticateAuthFactor(
-                  AllOf(WithFirstAuthSessionId(),
-                        WithPasswordFactorAuth(kCryptohomeGaiaKeyLabel)),
-                  _))
-      .WillOnce(ReplyWith(BuildAuthenticateFactorSuccessReply()));
-  EXPECT_CALL(userdataauth(), RestoreDeviceKey(WithFirstAuthSessionId(), _))
-      .WillOnce(ReplyWith(RestoreDeviceKeyReply()));
-
-  // Act.
-  authenticator().AuthenticateToUnlock(/*ephemeral=*/false,
-                                       std::move(user_context));
   const UserContext got_user_context = on_auth_success_future().Get();
 
   // Assert.

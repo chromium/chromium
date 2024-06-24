@@ -36,7 +36,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kAuthenticateAuthFactor,
     kPrepareGuestVault,
     kPrepareEphemeralVault,
-    kRestoreDeviceKey,
     kCreatePersistentUser,
     kPreparePersistentVault,
     kPrepareVaultForMigration,
@@ -254,9 +253,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void CreatePersistentUser(
       const ::user_data_auth::CreatePersistentUserRequest& request,
       CreatePersistentUserCallback callback) override;
-  void RestoreDeviceKey(
-      const ::user_data_auth::RestoreDeviceKeyRequest& request,
-      RestoreDeviceKeyCallback callback) override;
   void PreparePersistentVault(
       const ::user_data_auth::PreparePersistentVaultRequest& request,
       PreparePersistentVaultCallback callback) override;
@@ -325,7 +321,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   FUDAC_OPERATION_TYPES(kPrepareGuestVault, PrepareGuestVaultRequest);
   FUDAC_OPERATION_TYPES(kPrepareEphemeralVault, PrepareEphemeralVaultRequest);
   FUDAC_OPERATION_TYPES(kCreatePersistentUser, CreatePersistentUserRequest);
-  FUDAC_OPERATION_TYPES(kRestoreDeviceKey, RestoreDeviceKeyRequest);
   FUDAC_OPERATION_TYPES(kPreparePersistentVault, PreparePersistentVaultRequest);
   FUDAC_OPERATION_TYPES(kPrepareVaultForMigration,
                         PrepareVaultForMigrationRequest);

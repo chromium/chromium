@@ -649,10 +649,6 @@ const char kFakeDriveFsLauncherChrootPath[] =
 const char kFakeDriveFsLauncherSocketPath[] =
     "fake-drivefs-launcher-socket-path";
 
-// Indicates that the cryptohome keys are evicted and lock screen should message
-// cryptohomed to run full authentication and restore filesystem keys.
-const char kRestoreKeyOnLockScreen[] = "restore-key-on-lock-screen";
-
 // Fingerprint sensor location indicates the physical sensor's location. The
 // value is a string with possible values: "power-button-top-left",
 // "keyboard-bottom-left", keyboard-bottom-right", "keyboard-top-right".
@@ -1199,11 +1195,6 @@ const char kForceRefreshRateThrottle[] = "force-refresh-rate-throttle";
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);
-}
-
-bool ShouldRestoreKeyOnLockScreen() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kRestoreKeyOnLockScreen);
 }
 
 bool IsCellularFirstDevice() {

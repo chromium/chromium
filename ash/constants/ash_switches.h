@@ -205,7 +205,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFakeDriveFsLauncherChrootPath[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kFakeDriveFsLauncherSocketPath[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRestoreKeyOnLockScreen[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFingerprintSensorLocation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kFirstExecAfterBoot[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kForceBirchFetch[];
@@ -387,10 +386,6 @@ extern const char kForceRefreshRateThrottle[];
 // Returns true if flag if AuthSession should be used to communicate with
 // cryptohomed instead of explicitly authorizing each operation.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAuthSessionCryptohomeEnabled();
-
-// Returns true if the cryptohome filesystem keyset is evicted and needs to be
-// restored on lock screen.
-COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldRestoreKeyOnLockScreen();
 
 // Returns true if this is a Cellular First device.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularFirstDevice();
