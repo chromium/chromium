@@ -716,6 +716,12 @@ TEST(CheckDeathTest, NotReachedNotFatalUntil) {
 }
 
 TEST(CheckDeathTest, CorrectSystemErrorUsed) {
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+  // DCHECKs are enabled, and LOGGING_DCHECK is mutable, but defaults to
+  // non-fatal. Set it to LOGGING_FATAL to get the expected behavior from the
+  // rest of this test.
+  ScopedDcheckSeverity dcheck_severity(logging::LOGGING_FATAL);
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   const logging::SystemErrorCode kTestError = 28;
   const std::string kExpectedCheckMessageRegex = base::StrCat(
       {" Check failed: false. ", base::NumberToString(kTestError)});
