@@ -142,6 +142,11 @@ FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
 
   CHECK(observation_->scope().Contains(AsHandleBase(handle_).url()));
 
+  // Observe `read_grant` changes in case we lose read permission.
+  const FileSystemAccessManagerImpl::SharedHandleState& handle_state =
+      AsHandleBase(handle_).handle_state();
+  handle_state.read_grant->AddObserver(this);
+
   observation_->SetCallback(
       base::BindRepeating(&FileSystemAccessObserverObservation::OnChanges,
                           weak_factory_.GetWeakPtr()));
@@ -153,8 +158,11 @@ FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
                      base::Unretained(this)));
 }
 
-FileSystemAccessObserverObservation::~FileSystemAccessObserverObservation() =
-    default;
+FileSystemAccessObserverObservation::~FileSystemAccessObserverObservation() {
+  const FileSystemAccessManagerImpl::SharedHandleState& handle_state =
+      AsHandleBase(handle_).handle_state();
+  handle_state.read_grant->RemoveObserver(this);
+}
 
 const storage::FileSystemURL& FileSystemAccessObserverObservation::handle_url()
     const {
@@ -188,8 +196,6 @@ void FileSystemAccessObserverObservation::OnChanges(
   // TODO(crbug.com/321980366): Add tests for this.
   if (handle_state.read_grant->GetStatus() !=
       blink::mojom::PermissionStatus::GRANTED) {
-    // TODO(crbug.com/321980366): Proactively listen for permission
-    // changes, rather than (or perhaps in addition to) checking on each change.
     return;
   }
 
@@ -343,6 +349,41 @@ void FileSystemAccessObserverObservation::RenderFrameHostStateChanged(
 
 void FileSystemAccessObserverObservation::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Destroys `this`.
+  host_->RemoveObservation(this);
+}
+
+void FileSystemAccessObserverObservation::OnPermissionStatusChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  FileSystemAccessHandleBase& handle_base = AsHandleBase(handle_);
+  const FileSystemAccessManagerImpl::SharedHandleState& handle_state =
+      AsHandleBase(handle_).handle_state();
+  if (handle_state.read_grant->GetStatus() ==
+      blink::mojom::PermissionStatus::GRANTED) {
+    return;
+  }
+
+  // The read permission has been revoked. Send an "errored" event and destroy
+  // this observation.
+
+  std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
+  FileSystemAccessManagerImpl* manager = handle_base.manager();
+  const FileSystemAccessManagerImpl::BindingContext& binding_context =
+      handle_base.context();
+  const storage::FileSystemURL& handle_url = handle_base.url();
+
+  mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
+      blink::mojom::FileSystemAccessChangeMetadata::New(
+          CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,
+                            GetHandleType(handle_)),
+          CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,
+                            GetHandleType(handle_)),
+          std::vector<std::string>()),
+      blink::mojom::FileSystemAccessChangeType::NewErrored(
+          blink::mojom::FileSystemAccessChangeTypeErrored::New())));
+  remote_->OnFileChanges(std::move(mojo_changes));
 
   // Destroys `this`.
   host_->RemoveObservation(this);

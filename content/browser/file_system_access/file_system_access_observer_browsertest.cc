@@ -431,7 +431,7 @@ class FileSystemAccessObserverBrowserTest
 
   bool SupportsChangeInfo() const {
     // TODO(crbug.com/321980270): Reporting change info and the modified path
-    // are both only supported on inotify, for now.
+    // are both only supported on inotify and Windows, for now.
     return SupportsReportingModifiedPath();
   }
 };
