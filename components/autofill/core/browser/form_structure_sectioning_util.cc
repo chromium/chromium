@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 
 #include <iterator>
@@ -208,7 +203,9 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
     begin = FindBeginOfNextSection(begin, fields.end());
     auto end = FindEndOfNextSection(begin, fields.end());
     DCHECK(begin != end || end == fields.end());
-    AssignFieldIdentifierSections({begin, end}, frame_token_ids);
+    // SAFETY: The iterators are from the same container.
+    AssignFieldIdentifierSections(UNSAFE_BUFFERS({begin, end}),
+                                  frame_token_ids);
     begin = end;
   }
 }
