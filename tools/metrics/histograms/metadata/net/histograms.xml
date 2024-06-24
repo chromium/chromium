@@ -3225,7 +3225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.EcnMarksObserved" enum="EcnPermutations"
-    expires_after="2024-07-01">
+    expires_after="2024-10-01">
   <owner>martinduke@google.com</owner>
   <owner>rch@chromium.org</owner>
   <summary>
@@ -3777,7 +3777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketsBeforeEcnTransition" units="packets"
-    expires_after="2024-07-01">
+    expires_after="2024-10-01">
   <owner>martinduke@google.com</owner>
   <owner>rch@chromium.org</owner>
   <summary>
