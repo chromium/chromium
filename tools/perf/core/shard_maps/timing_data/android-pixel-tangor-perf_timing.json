@@ -1633,7 +1633,7 @@
     },
     {
         "duration": "126.0",
-        "name": "jetstream2-nominorms/JetStream2"
+        "name": "jetstream2-minorms/JetStream2"
     },
     {
         "duration": "123.0",
@@ -3461,7 +3461,7 @@
     },
     {
         "duration": "48.0",
-        "name": "speedometer2-nominorms/Speedometer2"
+        "name": "speedometer2-minorms/Speedometer2"
     },
     {
         "duration": "48.0",
@@ -3473,7 +3473,7 @@
     },
     {
         "duration": "63.0",
-        "name": "speedometer3-nominorms/Speedometer3"
+        "name": "speedometer3-minorms/Speedometer3"
     },
     {
         "duration": "62.0",

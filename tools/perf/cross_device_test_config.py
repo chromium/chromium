@@ -114,7 +114,7 @@ TARGET_DEVICES = {
         'jetstream2': {
             'JetStream2': 5,
         },
-        'jetstream2-nominorms': {
+        'jetstream2-minorms': {
             'JetStream2': 5,
         },
         'system_health.common_desktop': {
@@ -128,7 +128,7 @@ TARGET_DEVICES = {
         'speedometer': {
             'http://browserbench.org/Speedometer/': 20,
         },
-        'speedometer2-nominorms': {
+        'speedometer2-minorms': {
             'Speedometer2': 20,
         },
         'speedometer2': {
@@ -140,7 +140,7 @@ TARGET_DEVICES = {
         'speedometer3': {
             'Speedometer3': 20,
         },
-        'speedometer3-nominorms': {
+        'speedometer3-minorms': {
             'Speedometer3': 20,
         },
         'speedometer3-predictable': {
@@ -150,7 +150,7 @@ TARGET_DEVICES = {
     },
     'linux-perf-fyi': {
         'speedometer2': 4,
-        'speedometer2-nominorms': 4,
+        'speedometer2-minorms': 4,
         'speedometer3': 4,
         'speedometer3.crossbench': 4,
         'jetstream2.crossbench': 4,
@@ -223,19 +223,19 @@ TARGET_DEVICES = {
         'jetstream2': {
             'JetStream2': 5,
         },
-        'jetstream2-nominorms': {
+        'jetstream2-minorms': {
             'JetStream2': 5,
         },
         'speedometer2': {
             'Speedometer2': 20,
         },
-        'speedometer2-nominorms': {
+        'speedometer2-minorms': {
             'Speedometer2': 20,
         },
         'speedometer3': {
             'Speedometer3': 20,
         },
-        'speedometer3-nominorms': {
+        'speedometer3-minorms': {
             'Speedometer3': 20,
         },
         'rendering.desktop.notracing': 20,

@@ -264,11 +264,11 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'blink_perf.sanitizer-api',
     'blink_perf.svg',
     'blink_perf.paint',
-    'jetstream2-nominorms',
-    'octane-nominorms',
-    'speedometer2-nominorms',
+    'jetstream2-minorms',
+    'octane-minorms',
+    'speedometer2-minorms',
     'speedometer2-predictable',
-    'speedometer3-nominorms',
+    'speedometer3-minorms',
     'speedometer3-predictable',
 ])
 # TODO(crbug.com/40628256): Remove OFFICIAL_BENCHMARK_NAMES once sharding
@@ -453,13 +453,13 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.svg',
     'blink_perf.paint',
 ])
-_LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE = PerfSuite(
+_LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE = PerfSuite(
     _LINUX_BENCHMARK_CONFIGS).Add([
-        'jetstream2-nominorms',
-        'octane-nominorms',
-        'speedometer2-nominorms',
+        'jetstream2-minorms',
+        'octane-minorms',
+        'speedometer2-minorms',
         'speedometer2-predictable',
-        'speedometer3-nominorms',
+        'speedometer3-minorms',
         'speedometer3-predictable',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
@@ -489,9 +489,9 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
     ]).Add([
-        'jetstream2-nominorms',
-        'speedometer2-nominorms',
-        'speedometer3-nominorms',
+        'jetstream2-minorms',
+        'speedometer2-minorms',
+        'speedometer3-minorms',
     ])
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
@@ -519,9 +519,9 @@ _MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
     'v8.runtime_stats.top_25',
 ]).Add([
-    'jetstream2-nominorms',
-    'speedometer2-nominorms',
-    'speedometer3-nominorms',
+    'jetstream2-minorms',
+    'speedometer2-minorms',
+    'speedometer3-minorms',
 ])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -608,9 +608,9 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
 ])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
-        _GetBenchmarkConfig('jetstream2-nominorms'),
-        _GetBenchmarkConfig('speedometer2-nominorms'),
-        _GetBenchmarkConfig('speedometer3-nominorms'),
+        _GetBenchmarkConfig('jetstream2-minorms'),
+        _GetBenchmarkConfig('speedometer2-minorms'),
+        _GetBenchmarkConfig('speedometer3-minorms'),
     ])
 _ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
@@ -621,9 +621,9 @@ _ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
 # Pixel fold
 _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
-        _GetBenchmarkConfig('jetstream2-nominorms'),
-        _GetBenchmarkConfig('speedometer2-nominorms'),
-        _GetBenchmarkConfig('speedometer3-nominorms'),
+        _GetBenchmarkConfig('jetstream2-minorms'),
+        _GetBenchmarkConfig('speedometer2-minorms'),
+        _GetBenchmarkConfig('speedometer3-minorms'),
     ])
 _ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
@@ -631,11 +631,12 @@ _ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS = frozenset([
 # Pixel Tangor
 _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
-        _GetBenchmarkConfig('jetstream2-nominorms'),
-        _GetBenchmarkConfig('speedometer2-nominorms'),
-        _GetBenchmarkConfig('speedometer3-nominorms')])
-_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset([
-    _components_perftests(60)])
+        _GetBenchmarkConfig('jetstream2-minorms'),
+        _GetBenchmarkConfig('speedometer2-minorms'),
+        _GetBenchmarkConfig('speedometer3-minorms')
+    ])
+_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset(
+    [_components_perftests(60)])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('v8.browsing_mobile'),
     _GetBenchmarkConfig('system_health.memory_mobile'),
@@ -662,7 +663,7 @@ _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = \
     _FUCHSIA_PERF_NELSON_BENCHMARK_CONFIGS
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer2-nominorms'),
+    _GetBenchmarkConfig('speedometer2-minorms'),
     _GetBenchmarkConfig('speedometer3'),
 ])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
@@ -680,7 +681,7 @@ _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
 # Linux
 LINUX = PerfPlatform('linux-perf',
                      'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-                     _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE,
+                     _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE,
                      26,
                      'linux',
                      executables=_LINUX_EXECUTABLE_CONFIGS,
@@ -696,9 +697,12 @@ LINUX_REL = PerfPlatform(
     'linux-perf-rel', 'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
     _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP, 2,
     'linux', executables=_LINUX_EXECUTABLE_CONFIGS)
-LINUX_R350 = PerfPlatform('linux-r350-perf', 'Ubuntu-22.04, 16 core',
-  _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE, 30,
-  'linux', executables=_LINUX_EXECUTABLE_CONFIGS)
+LINUX_R350 = PerfPlatform('linux-r350-perf',
+                          'Ubuntu-22.04, 16 core',
+                          _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE,
+                          30,
+                          'linux',
+                          executables=_LINUX_EXECUTABLE_CONFIGS)
 
 # Mac
 MAC_HIGH_END_LAPTOP = PerfPlatform(

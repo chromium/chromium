@@ -46,13 +46,13 @@ desktop_ui,"yuhengh@chromium.org, tluk@chromium.org",UI>Browser,https://chromium
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 jetstream2,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
-jetstream2-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream2.0/in-depth.html,all
+jetstream2-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream2.0/in-depth.html,all
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,
 media.desktop,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,av1,background,beginning_to_end,busyjs,cns,h264,is_2min,is_4k,is_50fps,mp3,mse,opus,seek,src,video_only,vorbis,vp8,vp9"
 media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md,"aac,audio_only,audio_video,background,beginning_to_end,busyjs,cns,h264,is_2min,mp3,mse,opus,seek,src,video_only,vorbis,vp9"
 memory.desktop,lizeb@chromium.org,,,
 octane,"vahl@chromium.org, mlippautz@chromium.org",Blink>JavaScript,,all
-octane-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
+octane-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
 power.desktop,brucedawson@chromium.org,,https://bit.ly/power-benchmarks,
 rasterize_and_record_micro.top_25,"pdr@chromium.org, wangxianzhu@chromium.org",Internals>Compositing>Rasterization,https://bit.ly/rasterize-and-record-benchmark,
 rendering.desktop,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,gpu_rasterization,image_decoding,key_desktop_move,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,repaint_desktop,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,throughput_test,top_real_world_desktop,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"
@@ -68,11 +68,11 @@ speedometer,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://br
 speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer,all
 speedometer2,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer2-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
-speedometer2-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/Speedometer2.1,all
+speedometer2-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/Speedometer2.1,all
 speedometer2-predictable,"agarwaltushar@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer3,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 speedometer3-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
-speedometer3-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
+speedometer3-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
 speedometer3-predictable,"agarwaltushar@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"

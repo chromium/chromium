@@ -85,7 +85,7 @@
     },
     "3": {
         "benchmarks": {
-            "jetstream2-nominorms": {
+            "jetstream2-minorms": {
                 "abridged": false
             },
             "media.mobile": {
@@ -169,7 +169,7 @@
             "speedometer2-future": {
                 "abridged": false
             },
-            "speedometer2-nominorms": {
+            "speedometer2-minorms": {
                 "abridged": false
             },
             "speedometer3": {
@@ -178,7 +178,7 @@
             "speedometer3-future": {
                 "abridged": false
             },
-            "speedometer3-nominorms": {
+            "speedometer3-minorms": {
                 "abridged": false
             },
             "startup.mobile": {

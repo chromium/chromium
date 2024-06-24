@@ -12,7 +12,7 @@ UNDOCUMENTED_BENCHMARKS = {
     'load_library_perf_tests',
     'memory.desktop',
     'octane',
-    'octane-nominorms',
+    'octane-minorms',
     'startup.mobile',
     'system_health.webview_startup',
     'tracing_perftests',
