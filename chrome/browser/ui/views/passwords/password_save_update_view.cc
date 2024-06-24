@@ -249,6 +249,12 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   GetBubbleFrameView()->SetFootnoteView(nullptr);
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD);
 
+  // Add the accessibility alert view first so that it does not overlap with
+  // any other child view. Also make the view invisible.
+  auto accessibility_view = std::make_unique<views::View>();
+  accessibility_view->SetVisible(false);
+  accessibility_alert_ = AddChildView(std::move(accessibility_view));
+
   // Show the sign in promo.
   auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
       controller_.GetWebContents(),
@@ -257,7 +263,6 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   AddChildView(std::move(sign_in_promo));
 
   // Notify the screen reader that the bubble changed.
-  accessibility_alert_ = AddChildView(std::make_unique<views::View>());
   AnnounceBubbleChange();
 
   is_signin_promo_bubble_ = true;
