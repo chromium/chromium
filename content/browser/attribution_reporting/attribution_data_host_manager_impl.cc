@@ -1240,8 +1240,9 @@ void AttributionDataHostManagerImpl::OnInfoHeaderParsed(
 
     base::expected<attribution_reporting::RegistrationInfo,
                    attribution_reporting::RegistrationInfoError>
-        registration_info(base::unexpect,
-                          attribution_reporting::RegistrationInfoError());
+        registration_info(
+            base::unexpect,
+            attribution_reporting::RegistrationInfoError::kRootInvalid);
     if (result.has_value()) {
       registration_info = attribution_reporting::RegistrationInfo::ParseInfo(
           *result, pending_registration_data.headers.cross_app_web_enabled);
@@ -1251,6 +1252,7 @@ void AttributionDataHostManagerImpl::OnInfoHeaderParsed(
       HandleRegistrationInfo(it, std::move(pending_registration_data),
                              *registration_info);
     } else {
+      RecordRegistrationInfoError(registration_info.error());
       LogInvalidInfoHeader(it->render_frame_id(),
                            pending_registration_data.reporting_url,
                            it->devtools_request_id(),

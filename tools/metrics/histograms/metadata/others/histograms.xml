@@ -3795,6 +3795,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RegistrationInfoError"
+    enum="ConversionRegistrationInfoError" expires_after="2024-12-19">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often registration info parsing failed and why. Recorded only
+    when parsing failed; not recorded when parsing succeeded.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.RegistrationMethod2"
     enum="ConversionsRegistrationMethod" expires_after="2024-11-17">
   <owner>anthonygarant@chromium.org</owner>

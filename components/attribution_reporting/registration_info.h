@@ -16,10 +16,17 @@ namespace attribution_reporting {
 
 enum class Registrar;
 
-struct RegistrationInfoError {
-  friend bool operator==(const RegistrationInfoError&,
-                         const RegistrationInfoError&) = default;
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(RegistrationInfoError)
+enum class RegistrationInfoError {
+  kRootInvalid = 0,
+  kInvalidPreferredPlatform = 1,
+  kInvalidReportHeaderErrors = 2,
+  kMaxValue = kInvalidReportHeaderErrors,
 };
+// LINT.ThenChange(tools/metrics/histograms/enums.xml:ConversionRegistrationInfoError)
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
   std::optional<Registrar> preferred_platform;
@@ -50,6 +57,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationInfo {
   friend bool operator==(const RegistrationInfo&,
                          const RegistrationInfo&) = default;
 };
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void RecordRegistrationInfoError(RegistrationInfoError);
 
 }  // namespace attribution_reporting
 

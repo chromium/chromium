@@ -44,6 +44,7 @@
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -95,6 +96,7 @@ using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::OsSourceRegistrationError;
 using ::attribution_reporting::OsTriggerRegistrationError;
+using ::attribution_reporting::RegistrationInfoError;
 using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::TriggerRegistration;
@@ -5190,6 +5192,66 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
     data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
     // Wait for parsing to finish.
     task_environment_.FastForwardBy(base::TimeDelta());
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest, RegistrationInfoErrorMetric) {
+  const GURL reporting_url("https://report.test");
+  const auto page_origin = *SuitableOrigin::Deserialize("https://source.test");
+
+  const struct {
+    const char* header;
+    std::optional<RegistrationInfoError> expected;
+  } kTestCases[] = {
+      {
+          "!",
+          RegistrationInfoError::kRootInvalid,
+      },
+      {
+          "preferred-platform=1",
+          RegistrationInfoError::kInvalidPreferredPlatform,
+      },
+      {
+          "report-header-errors=abc",
+          RegistrationInfoError::kInvalidReportHeaderErrors,
+      },
+      {
+          "preferred-platform=web,report-header-errors",
+          std::nullopt,
+      },
+  };
+
+  static constexpr char kRegistrationInfoErrorMetric[] =
+      "Conversions.RegistrationInfoError";
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterSourceHeader, R"(!!!)");
+    headers->SetHeader(kAttributionReportingInfoHeader, test_case.header);
+
+    const blink::AttributionSrcToken attribution_src_token;
+    data_host_manager_.NotifyNavigationRegistrationStarted(
+        AttributionSuitableContext::CreateForTesting(
+            page_origin,
+            /*is_nested_within_fenced_frame=*/false, kFrameId,
+            kLastNavigationId),
+        attribution_src_token, kNavigationId, kDevtoolsRequestId);
+    data_host_manager_.NotifyNavigationRegistrationData(
+        attribution_src_token, headers.get(), reporting_url,
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb});
+    data_host_manager_.NotifyNavigationRegistrationCompleted(
+        attribution_src_token);
+    // Wait for parsing to finish.
+    task_environment_.FastForwardBy(base::TimeDelta());
+
+    if (test_case.expected.has_value()) {
+      histograms.ExpectUniqueSample(kRegistrationInfoErrorMetric,
+                                    test_case.expected.value(), 1);
+    } else {
+      histograms.ExpectTotalCount(kRegistrationInfoErrorMetric, 0);
+    }
   }
 }
 

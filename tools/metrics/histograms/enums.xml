@@ -3456,6 +3456,12 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Dropped"/>
 </enum>
 
+<enum name="ConversionRegistrationInfoError">
+  <int value="0" label="Root value has wrong type"/>
+  <int value="1" label="preferred-platform invalid"/>
+  <int value="2" label="report-header-errors invalid"/>
+</enum>
+
 <enum name="ConversionReportSendOutcome">
   <int value="0" label="Sent"/>
   <int value="1" label="Failed due to error"/>
