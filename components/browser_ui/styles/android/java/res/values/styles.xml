@@ -32,6 +32,11 @@ found in the LICENSE file.
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
     </style>
 
+    <style name="Widget.BrowserUI.SpinnerDropDownItemStyle" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+    </style>
+
+
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
     <style name="Base.OverflowMenuThemeOverlay" parent="">
         <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>

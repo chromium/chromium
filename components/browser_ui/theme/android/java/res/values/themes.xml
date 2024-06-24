@@ -103,7 +103,9 @@ found in the LICENSE file.
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
         <item name="android:textAppearanceListItemSmall">@style/TextAppearance.TextSmall.Primary</item>
         <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
+        <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
 
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
         <!-- This is for keeping the current TextInputLayout style.
              TODO(crbug.com/40764906): Remove or update once the design for the app is updated. -->
         <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
@@ -175,6 +177,9 @@ found in the LICENSE file.
         <item name="android:elegantTextHeight">false</item>
         <item name="defaultFontFamily">sans-serif</item>
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
+
+        <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
     </style>
     <style name="Theme.BrowserUI.DialogWhenLarge.V35" parent="Theme.BrowserUI.DialogWhenLarge" />
     <!-- Overridden by night mode. -->
@@ -258,6 +263,9 @@ found in the LICENSE file.
         <item name="android:elegantTextHeight">false</item>
         <item name="defaultFontFamily">sans-serif</item>
         <item name="defaultMediumFontFamily">sans-serif-medium</item>
+
+        <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
     </style>
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.V35" parent="Theme.BrowserUI.AlertDialog.NoActionBar" />
     <!-- Overridden by night mode. -->
