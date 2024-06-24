@@ -9,11 +9,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/attribute_map_parser.h"
 #include "components/web_package/signed_web_bundles/types.h"
 
 namespace web_package {
-
-class AttributeMapParser;
 
 // This class is responsible for parsing a single signature entry from the
 // signature stack of the integrity block of a signed web bundle.
@@ -36,8 +35,7 @@ class SignatureStackEntryParser {
 
  private:
   void ReadSignatureStructure(const std::optional<BinaryData>& data);
-  void GetAttributesMap(
-      base::expected<std::pair<AttributesMap, uint64_t>, std::string> result);
+  void GetAttributesMap(AttributeMapParser::ParsingResult result);
   void ReadAttributesMapBytes(uint64_t num_bytes,
                               const std::optional<BinaryData>& data);
   void ReadSignatureHeader(const std::optional<BinaryData>& data);

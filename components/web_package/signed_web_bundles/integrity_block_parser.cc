@@ -5,12 +5,27 @@
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/signature_entry_parser.h"
 
 namespace web_package {
+
+namespace {
+
+std::optional<base::span<const uint8_t>> ReadByteStringWithHeader(
+    InputReader& input) {
+  if (std::optional<uint64_t> size =
+          input.ReadCBORHeader(CBORType::kByteString)) {
+    return input.ReadBytes(*size);
+  }
+  return std::nullopt;
+}
+
+}  // namespace
 
 IntegrityBlockParser::IntegrityBlockParser(
     mojom::BundleDataSource& data_source,
@@ -28,10 +43,14 @@ void IntegrityBlockParser::StartParsing(
     WebBundleParser::WebBundleSectionParser::ParsingCompleteCallback callback) {
   complete_callback_ = std::move(callback);
   // First, we will parse the `magic` and `version` bytes.
-  const uint64_t length = sizeof(kIntegrityBlockMagicBytes) +
-                          sizeof(kIntegrityBlockVersionMagicBytes);
+  constexpr static uint64_t kMagicBytesAndVersionHeaderLength =
+      /*array_header=*/kMaxCBORItemHeaderSize +
+      /*magic_bytes_header=*/kMaxCBORItemHeaderSize +
+      /*magic_bytes=*/kIntegrityBlockMagicBytes.size() +
+      /*version_bytes_header=*/kMaxCBORItemHeaderSize +
+      /*version_bytes=*/kIntegrityBlockV1VersionBytes.size();
   data_source_->Read(
-      0, length,
+      0, kMagicBytesAndVersionHeaderLength,
       base::BindOnce(&IntegrityBlockParser::ParseMagicBytesAndVersion,
                      weak_factory_.GetWeakPtr()));
 }
@@ -39,40 +58,46 @@ void IntegrityBlockParser::StartParsing(
 void IntegrityBlockParser::ParseMagicBytesAndVersion(
     const std::optional<BinaryData>& data) {
   if (!data) {
-    RunErrorCallback("Error reading integrity block magic bytes.",
-                     mojom::BundleParseErrorType::kParserInternalError);
+    RunErrorCallback("Error reading the integrity block array structure.");
     return;
   }
 
   InputReader input(*data);
-
-  // Check the magic bytes.
-  const auto magic = input.ReadBytes(sizeof(kIntegrityBlockMagicBytes));
-  if (!magic || !base::ranges::equal(*magic, kIntegrityBlockMagicBytes)) {
-    RunErrorCallback("Wrong array size or magic bytes.");
+  std::optional<uint64_t> array_length = input.ReadCBORHeader(CBORType::kArray);
+  if (!array_length) {
+    RunErrorCallback("Error reading the integrity block array structure.");
     return;
   }
 
-  // Let version be the result of reading 5 bytes from stream.
-  const auto version =
-      input.ReadBytes(sizeof(kIntegrityBlockVersionMagicBytes));
-  if (!version) {
-    RunErrorCallback("Cannot read version bytes.");
-    return;
-  }
-
-  if (base::ranges::equal(*version, kIntegrityBlockVersionMagicBytes)) {
-    signature_stack_ =
-        std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>();
-  } else {
+  if (*array_length < 2) {
     RunErrorCallback(
-        "Unexpected integrity block version. Currently supported versions are: "
-        "'1b\\0\\0'",
-        mojom::BundleParseErrorType::kVersionError);
+        "The array size is too short -- expected at least two elements (magic "
+        "bytes and version).");
     return;
   }
 
-  offset_in_stream_ = input.CurrentOffset();
+  if (ReadByteStringWithHeader(input) != kIntegrityBlockMagicBytes) {
+    RunErrorCallback("Unexpected magic bytes.");
+    return;
+  }
+
+  std::optional<base::span<const uint8_t>> version_bytes =
+      ReadByteStringWithHeader(input);
+  if (version_bytes == kIntegrityBlockV1VersionBytes) {
+    if (array_length != kIntegrityBlockV1TopLevelArrayLength) {
+      RunErrorCallback("Unexpected array structure for v1 version.");
+      return;
+    }
+    offset_in_stream_ = input.CurrentOffset();
+    ReadSignatureStack();
+  } else {
+    RunErrorCallback("Unexpected version bytes: expected `1b\\0\\0` (for v1).",
+                     mojom::BundleParseErrorType::kVersionError);
+    return;
+  }
+}
+
+void IntegrityBlockParser::ReadSignatureStack() {
   data_source_->Read(offset_in_stream_, kMaxCBORItemHeaderSize,
                      base::BindOnce(&IntegrityBlockParser::ParseSignatureStack,
                                     weak_factory_.GetWeakPtr()));

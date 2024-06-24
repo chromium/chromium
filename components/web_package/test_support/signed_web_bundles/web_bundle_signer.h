@@ -114,23 +114,29 @@ class WebBundleSigner {
 
   using KeyPair = absl::variant<Ed25519KeyPair, EcdsaP256KeyPair>;
 
+  struct IntegrityBlockAttributes {
+    std::string web_bundle_id;
+  };
+
   // Creates an integrity block with the given signature stack entries.
   static cbor::Value CreateIntegrityBlock(
       const cbor::Value::ArrayValue& signature_stack,
+      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
       IntegrityBlockErrorsForTesting errors_for_testing = {});
 
   static cbor::Value CreateIntegrityBlockForBundle(
       base::span<const uint8_t> unsigned_bundle,
       const std::vector<KeyPair>& key_pairs,
+      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
       ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
                                              /*signatures_errors=*/{}});
 
-  // Signs an unsigned bundle with the given key pairs, in order. I.e. the first
-  // key pair will sign the unsigned bundle, the second key pair will sign the
-  // bundle signed with the first key pair, and so on.
+  // Signs an unsigned bundle with the given key pairs.
+  // Signatures do not depend on each other and co-exist in parallel.
   static std::vector<uint8_t> SignBundle(
       base::span<const uint8_t> unsigned_bundle,
       const std::vector<KeyPair>& key_pairs,
+      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
       ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
                                              /*signatures_errors=*/{}});
 };

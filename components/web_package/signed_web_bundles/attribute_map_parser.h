@@ -19,8 +19,9 @@ class AttributeMapParser {
  public:
   // In case of success the callback returns the attributes map and the offset
   // in the stream corresponding to the end of the attributes map.
-  using AttributeMapParsedCallback = base::OnceCallback<void(
-      base::expected<std::pair<AttributesMap, uint64_t>, std::string>)>;
+  using ParsingResult =
+      base::expected<std::pair<AttributesMap, uint64_t>, std::string>;
+  using AttributeMapParsedCallback = base::OnceCallback<void(ParsingResult)>;
 
   explicit AttributeMapParser(mojom::BundleDataSource& data_source,
                               AttributeMapParsedCallback callback);

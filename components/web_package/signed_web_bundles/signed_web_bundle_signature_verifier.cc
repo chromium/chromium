@@ -18,6 +18,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
+#include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
@@ -30,17 +33,20 @@ namespace web_package {
 
 namespace {
 
-// Creates a CBOR-encoded integrity block with an empty signature stack.
-std::vector<uint8_t> CreateIntegrityBlockCBOR() {
-  std::vector<uint8_t> integrity_block;
-  base::Extend(integrity_block,
-               base::span(IntegrityBlockParser::kIntegrityBlockMagicBytes));
-  base::Extend(
-      integrity_block,
-      base::span(IntegrityBlockParser::kIntegrityBlockVersionMagicBytes));
-  // Encode the length of the signature stack array, which is an empty array.
-  integrity_block.push_back(static_cast<uint8_t>(0x80));
-  return integrity_block;
+// Creates a CBOR-encoded integrity block with an empty signature array.
+std::vector<uint8_t> CreateIntegrityBlockV1Cbor() {
+  cbor::Value::ArrayValue ib_cbor;
+
+  ib_cbor.emplace_back(kIntegrityBlockMagicBytes);
+  ib_cbor.emplace_back(kIntegrityBlockV1VersionBytes);
+  // Encode an empty signature array.
+  ib_cbor.emplace_back(cbor::Value::ArrayValue());
+
+  CHECK_EQ(ib_cbor.size(), kIntegrityBlockV1TopLevelArrayLength);
+
+  // This call can only fail in case the nesting depth is more than 16 (which is
+  // not the case here).
+  return *cbor::Writer::Write(cbor::Value(std::move(ib_cbor)));
 }
 
 }  // namespace
@@ -159,7 +165,7 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   // https://github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md
   std::vector<uint8_t> payload_to_verify = CreateSignaturePayload({
       .unsigned_web_bundle_hash = *unsigned_web_bundle_hash,
-      .integrity_block_cbor = CreateIntegrityBlockCBOR(),
+      .integrity_block_cbor = CreateIntegrityBlockV1Cbor(),
       .attributes_cbor = signature_stack_entry.attributes_cbor(),
   });
 

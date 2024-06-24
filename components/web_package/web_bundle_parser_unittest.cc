@@ -217,7 +217,7 @@ SignedWebBundleAndKeys SignBundle(
 
   return {
       WebBundleSigner::SignBundle(unsigned_bundle, key_pairs,
-                                  errors_for_testing),
+                                  /*ib_attributes=*/{}, errors_for_testing),
       key_pairs,
   };
 }
@@ -889,7 +889,7 @@ TEST_F(WebBundleParserTest, SignedBundleWrongMagic) {
                   AllOf(Field(&mojom::BundleIntegrityBlockParseError::type,
                               Eq(mojom::BundleParseErrorType::kFormatError)),
                         Field(&mojom::BundleIntegrityBlockParseError::message,
-                              Eq("Wrong array size or magic bytes."))))));
+                              Eq("Unexpected magic bytes."))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleUnknownVersion) {

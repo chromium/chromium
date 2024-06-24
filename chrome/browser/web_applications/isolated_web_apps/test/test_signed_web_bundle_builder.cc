@@ -150,7 +150,8 @@ void TestSignedWebBundleBuilder::AddPrimaryUrl(GURL url) {
 TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
   return TestSignedWebBundle(
       web_package::WebBundleSigner::SignBundle(
-          builder_.CreateBundle(), {key_pair_}, errors_for_testing_),
+          builder_.CreateBundle(), {key_pair_}, /*ib_attributes=*/{},
+          errors_for_testing_),
       web_package::SignedWebBundleId::CreateForEd25519PublicKey(
           key_pair_.public_key));
 }

@@ -66,8 +66,7 @@ cbor::Value CreateSignatureStackEntryAttributes(
 
       attributes.emplace(
           kEcdsaP256PublicKeyAttributeName,
-          base::ToVector(WebBundleSigner::EcdsaP256KeyPair::CreateRandom()
-                             .public_key.bytes()));
+          WebBundleSigner::EcdsaP256KeyPair::CreateRandom().public_key.bytes());
     } else if (errors_for_testing.Has(
                    IntegritySignatureErrorForTesting::
                        kWrongSignatureStackEntryAttributeName)) {
@@ -219,20 +218,31 @@ WebBundleSigner::ErrorsForTesting::~ErrorsForTesting() = default;
 
 cbor::Value WebBundleSigner::CreateIntegrityBlock(
     const cbor::Value::ArrayValue& signature_stack,
+    const std::optional<IntegrityBlockAttributes>& ib_attributes,
     IntegrityBlockErrorsForTesting errors_for_testing) {
   cbor::Value::ArrayValue integrity_block;
   // magic bytes
-  integrity_block.emplace_back(cbor::Value::BinaryValue(
-      {0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6}));
+  integrity_block.emplace_back(kIntegrityBlockMagicBytes);
   // version
-  integrity_block.emplace_back(
-      errors_for_testing.Has(IntegrityBlockErrorForTesting::kInvalidVersion)
-          ? cbor::Value::BinaryValue({'1', 'p', '\0', '\0'})  // Invalid.
-          : cbor::Value::BinaryValue({'1', 'b', '\0', '\0'}));
+  if (errors_for_testing.Has(IntegrityBlockErrorForTesting::kInvalidVersion)) {
+    integrity_block.emplace_back(
+        cbor::Value::BinaryValue({'1', 'p', '\0', '\0'}));  // Invalid.
+  } else if (ib_attributes) {
+    // Presence of `ib_attributes` indicates integrity block v2.
+    integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
+    cbor::Value::MapValue attributes;
+    attributes.emplace(web_package::kWebBundleIdAttributeName,
+                       ib_attributes->web_bundle_id);
+    integrity_block.emplace_back(std::move(attributes));
+  } else {
+    // Absence of `ib_attributes` indicates integrity block v1.
+    integrity_block.emplace_back(kIntegrityBlockV1VersionBytes);
+  }
   // signature stack
   integrity_block.emplace_back(signature_stack);
   if (errors_for_testing.Has(
           IntegrityBlockErrorForTesting::kInvalidIntegrityBlockStructure)) {
+    integrity_block.emplace_back(signature_stack);
     integrity_block.emplace_back(signature_stack);
   }
 
@@ -242,6 +252,7 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
 cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
+    const std::optional<IntegrityBlockAttributes>& ib_attributes,
     ErrorsForTesting errors_for_testing) {
   CHECK(errors_for_testing.signatures_errors.empty() ||
         errors_for_testing.signatures_errors.size() == key_pairs.size());
@@ -256,10 +267,11 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
   std::vector<cbor::Value> signature_stack;
   for (size_t i = 0; i < key_pairs.size(); ++i) {
     const auto& key_pair = key_pairs[i];
-    // Create an integrity block with all previous signature stack entries.
-    std::optional<std::vector<uint8_t>> integrity_block =
-        cbor::Writer::Write(CreateIntegrityBlock(
-            signature_stack, errors_for_testing.integrity_block_errors));
+    // Create an integrity block with an empty signature stack -- we don't need
+    // signatures that depend on each other for now.
+    std::optional<std::vector<uint8_t>> integrity_block = cbor::Writer::Write(
+        CreateIntegrityBlock(/*signature_stack=*/{}, ib_attributes,
+                             errors_for_testing.integrity_block_errors));
 
     absl::visit(
         base::Overloaded{[&](const auto& key_pair) {
@@ -285,20 +297,21 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
         key_pair);
   }
 
-  return CreateIntegrityBlock(signature_stack,
+  return CreateIntegrityBlock(signature_stack, ib_attributes,
                               errors_for_testing.integrity_block_errors);
 }
 
 std::vector<uint8_t> WebBundleSigner::SignBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
+    const std::optional<IntegrityBlockAttributes>& ib_attributes,
     ErrorsForTesting errors_for_testing) {
   std::optional<std::vector<uint8_t>> integrity_block =
       cbor::Writer::Write(CreateIntegrityBlockForBundle(
-          unsigned_bundle, key_pairs, errors_for_testing));
+          unsigned_bundle, key_pairs, ib_attributes, errors_for_testing));
 
   std::vector<uint8_t> signed_web_bundle;
-  base::Extend(signed_web_bundle, base::span(*integrity_block));
+  base::Extend(signed_web_bundle, std::move(*integrity_block));
   base::Extend(signed_web_bundle, unsigned_bundle);
 
   return signed_web_bundle;

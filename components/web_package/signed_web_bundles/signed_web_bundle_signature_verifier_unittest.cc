@@ -253,8 +253,8 @@ class SignedWebBundleSignatureVerifierTest
         WebBundleSigner::CreateIntegrityBlockForBundle(web_bundle, key_pairs);
     auto integrity_block_cbor = *cbor::Writer::Write(integrity_block);
     std::vector<uint8_t> signed_web_bundle;
-    base::Extend(signed_web_bundle, base::span(integrity_block_cbor));
-    base::Extend(signed_web_bundle, base::span(web_bundle));
+    base::Extend(signed_web_bundle, integrity_block_cbor);
+    base::Extend(signed_web_bundle, web_bundle);
     return std::make_tuple(signed_web_bundle, std::move(integrity_block),
                            integrity_block_cbor.size());
   }

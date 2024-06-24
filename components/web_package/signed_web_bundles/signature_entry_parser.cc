@@ -104,7 +104,7 @@ void SignatureStackEntryParser::ReadSignatureStructure(
 }
 
 void SignatureStackEntryParser::GetAttributesMap(
-    base::expected<std::pair<AttributesMap, uint64_t>, std::string> result) {
+    AttributeMapParser::ParsingResult result) {
   if (!result.has_value()) {
     RunErrorCallback(std::move(result.error()));
     return;

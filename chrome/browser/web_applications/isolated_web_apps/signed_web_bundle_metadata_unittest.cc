@@ -173,7 +173,8 @@ TEST_F(SignedWebBundleMetadataTest, FailsWhenBundleInvalid) {
   base::expected<SignedWebBundleMetadata, std::string> metadata =
       metadata_future.Get();
 
-  EXPECT_THAT(metadata, ErrorIs(HasSubstr("Wrong array size or magic bytes")));
+  EXPECT_THAT(metadata,
+              ErrorIs(HasSubstr("Unexpected array structure for v1 version.")));
 }
 
 }  // namespace

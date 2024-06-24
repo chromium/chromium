@@ -5,9 +5,34 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_CONSTANTS_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_CONSTANTS_H_
 
+#include <array>
+#include <cstdint>
 #include <string_view>
 
 namespace web_package {
+
+enum class IntegrityBlockVersion { kV1 };
+
+// The V1 integrity block is a CBOR array with three entries:
+//  * Magic Bytes
+//  * Version
+//  * Signature Stack
+inline constexpr uint32_t kIntegrityBlockV1TopLevelArrayLength = 3;
+
+inline constexpr std::array<uint8_t, 8> kIntegrityBlockMagicBytes = {
+    // "🖋📦" magic bytes (in UTF-8)
+    0xF0, 0x9F, 0x96, 0x8B, 0xF0, 0x9F, 0x93, 0xA6};
+
+// Version V1: "1b\0\0".
+inline constexpr std::array<uint8_t, 4> kIntegrityBlockV1VersionBytes = {
+    '1', 'b', 0x00, 0x00};
+
+// Version V2: "2b\0\0".
+inline constexpr std::array<uint8_t, 4> kIntegrityBlockV2VersionBytes = {
+    '2', 'b', 0x00, 0x00};
+
+// CBOR attribute name for web bundle ID.
+inline constexpr std::string_view kWebBundleIdAttributeName = "webBundleId";
 
 // CBOR attribute name for Ed25519 public keys.
 inline constexpr std::string_view kEd25519PublicKeyAttributeName =
