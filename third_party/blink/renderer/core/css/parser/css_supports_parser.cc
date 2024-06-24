@@ -185,8 +185,8 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsSelectorFn(
     const CSSParserToken& first_token,
     CSSParserTokenStream& stream) {
   DCHECK(IsSupportsSelectorFn(first_token, stream.Peek()));
-  auto block = stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
-  if (CSSSelectorParser::SupportsComplexSelector(block, parser_.GetContext())) {
+  if (CSSSelectorParser::SupportsComplexSelector(stream,
+                                                 parser_.GetContext())) {
     return Result::kSupported;
   }
   return Result::kUnsupported;

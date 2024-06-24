@@ -60,8 +60,11 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   // <scope-start>
   if (prelude.Peek().GetType() == kLeftParenthesisToken) {
     auto block = prelude.ConsumeBlock();
+    String text = block.Serialize();
+    CSSTokenizer tokenizer(text);
+    CSSParserTokenStream stream(tokenizer);
     from = CSSSelectorParser::ParseScopeBoundary(
-        block, context, nesting_type, parent_rule_for_nesting, is_within_scope,
+        stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
         style_sheet, arena);
     if (!from.has_value()) {
       return nullptr;
@@ -91,8 +94,11 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
     //
     // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
     auto block = prelude.ConsumeBlock();
+    String text = block.Serialize();
+    CSSTokenizer tokenizer(text);
+    CSSParserTokenStream stream(tokenizer);
     to = CSSSelectorParser::ParseScopeBoundary(
-        block, context, CSSNestingType::kScope,
+        stream, context, CSSNestingType::kScope,
         /* parent_rule_for_nesting */ from_rule,
         /* is_within_scope */ true, style_sheet, arena);
     if (!to.has_value()) {

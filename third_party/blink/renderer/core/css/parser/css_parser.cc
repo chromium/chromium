@@ -52,10 +52,9 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     const String& selector,
     HeapVector<CSSSelector>& arena) {
   CSSTokenizer tokenizer(selector);
-  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenStream stream(tokenizer);
   return CSSSelectorParser::ParseSelector(
-      CSSParserTokenRange(tokens), context, nesting_type,
-      parent_rule_for_nesting, is_within_scope,
+      stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
       /* semicolon_aborts_nested_selector */ false, style_sheet_contents,
       arena);
 }

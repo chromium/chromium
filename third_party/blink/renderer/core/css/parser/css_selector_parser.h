@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 
 namespace blink {
@@ -59,7 +59,7 @@ class CORE_EXPORT CSSSelectorParser {
   // appended to its end). In other words, if you add new elements
   // to the vector or similar, the span may be invalidated.
   static base::span<CSSSelector> ParseSelector(
-      CSSParserTokenRange,
+      CSSParserTokenStream&,
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
@@ -78,10 +78,10 @@ class CORE_EXPORT CSSSelectorParser {
       CSSParserObserver*,
       HeapVector<CSSSelector>&);
 
-  static bool ConsumeANPlusB(CSSParserTokenRange&, std::pair<int, int>&);
-  CSSSelectorList* ConsumeNthChildOfSelectors(CSSParserTokenRange&);
+  static bool ConsumeANPlusB(CSSParserTokenStream&, std::pair<int, int>&);
+  CSSSelectorList* ConsumeNthChildOfSelectors(CSSParserTokenStream&);
 
-  static bool SupportsComplexSelector(CSSParserTokenRange,
+  static bool SupportsComplexSelector(CSSParserTokenStream&,
                                       const CSSParserContext*);
 
   static CSSSelector::PseudoType ParsePseudoType(const AtomicString&,
@@ -99,7 +99,7 @@ class CORE_EXPORT CSSSelectorParser {
   // normal and expected, since <scope-start> / <scope-end> are forgiving
   // selector lists.
   static std::optional<base::span<CSSSelector>> ParseScopeBoundary(
-      CSSParserTokenRange,
+      CSSParserTokenStream&,
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
@@ -129,33 +129,34 @@ class CORE_EXPORT CSSSelectorParser {
   //
   // CSSNestingType::kScope is similar, but will prepend relative selectors with
   // :scope instead of &.
-  base::span<CSSSelector> ConsumeComplexSelectorList(CSSParserTokenRange& range,
-                                                     CSSNestingType);
   base::span<CSSSelector> ConsumeComplexSelectorList(
-      CSSParserTokenStream& range,
+      CSSParserTokenStream& stream,
+      CSSNestingType);
+  base::span<CSSSelector> ConsumeComplexSelectorList(
+      CSSParserTokenStream& stream,
       CSSParserObserver* observer,
       CSSNestingType);
-  CSSSelectorList* ConsumeCompoundSelectorList(CSSParserTokenRange&);
+  CSSSelectorList* ConsumeCompoundSelectorList(CSSParserTokenStream&);
   // Consumes a complex selector list if inside_compound_pseudo_ is false,
   // otherwise consumes a compound selector list.
-  CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenRange&);
-  CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenRange&);
+  CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenStream&);
+  CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenStream&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
   std::optional<base::span<CSSSelector>> ConsumeForgivingComplexSelectorList(
-      CSSParserTokenRange&,
+      CSSParserTokenStream&,
       CSSNestingType);
-  CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenRange&);
+  CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenStream&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
-  CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenRange&);
-  CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenRange&);
-  void AddPlaceholderSelectorIfNeeded(const CSSParserTokenRange& argument);
+  CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenStream&);
+  CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenStream&);
+  void AddPlaceholderSelectorIfNeeded(CSSParserTokenStream& stream);
 
   base::span<CSSSelector> ConsumeNestedRelativeSelector(
-      CSSParserTokenRange& range,
+      CSSParserTokenStream& stream,
       CSSNestingType);
-  base::span<CSSSelector> ConsumeRelativeSelector(CSSParserTokenRange&);
+  base::span<CSSSelector> ConsumeRelativeSelector(CSSParserTokenStream&);
   base::span<CSSSelector> ConsumeComplexSelector(
-      CSSParserTokenRange& range,
+      CSSParserTokenStream& stream,
       CSSNestingType,
       bool first_in_complex_selector_list);
 
@@ -174,33 +175,33 @@ class CORE_EXPORT CSSSelectorParser {
   //
   // Returns false if parse error.
   bool ConsumePartialComplexSelector(
-      CSSParserTokenRange&,
+      CSSParserTokenStream&,
       CSSSelector::RelationType& /* current combinator */,
       unsigned /* previous compound flags */,
       CSSNestingType);
 
-  bool ConsumeName(CSSParserTokenRange&,
+  bool ConsumeName(CSSParserTokenStream&,
                    AtomicString& name,
                    AtomicString& namespace_prefix);
 
   // These will return true iff the selector is valid;
   // otherwise, the vector will be pushed onto output_.
-  bool ConsumeId(CSSParserTokenRange&);
-  bool ConsumeClass(CSSParserTokenRange&);
-  bool ConsumeAttribute(CSSParserTokenRange&);
-  bool ConsumePseudo(CSSParserTokenRange&);
-  bool ConsumeNestingParent(CSSParserTokenRange& range);
+  bool ConsumeId(CSSParserTokenStream&);
+  bool ConsumeClass(CSSParserTokenStream&);
+  bool ConsumeAttribute(CSSParserTokenStream&);
+  bool ConsumePseudo(CSSParserTokenStream&);
+  bool ConsumeNestingParent(CSSParserTokenStream& stream);
   // This doesn't include element names, since they're handled specially
-  bool ConsumeSimpleSelector(CSSParserTokenRange&);
+  bool ConsumeSimpleSelector(CSSParserTokenStream&);
 
-  // Returns an empty range on error.
-  base::span<CSSSelector> ConsumeCompoundSelector(CSSParserTokenRange&,
+  // Returns an empty stream on error.
+  base::span<CSSSelector> ConsumeCompoundSelector(CSSParserTokenStream&,
                                                   CSSNestingType);
 
-  bool PeekIsCombinator(CSSParserTokenRange& range);
-  CSSSelector::RelationType ConsumeCombinator(CSSParserTokenRange&);
-  CSSSelector::MatchType ConsumeAttributeMatch(CSSParserTokenRange&);
-  CSSSelector::AttributeMatchType ConsumeAttributeFlags(CSSParserTokenRange&);
+  bool PeekIsCombinator(CSSParserTokenStream& stream);
+  CSSSelector::RelationType ConsumeCombinator(CSSParserTokenStream&);
+  CSSSelector::MatchType ConsumeAttributeMatch(CSSParserTokenStream&);
+  CSSSelector::AttributeMatchType ConsumeAttributeFlags(CSSParserTokenStream&);
 
   const AtomicString& DefaultNamespace() const;
   const AtomicString& DetermineNamespace(const AtomicString& prefix);

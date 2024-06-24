@@ -1506,8 +1506,7 @@ bool StyleCascade::ResolveFunctionInto(StringView function_name,
     first_parameter = false;
 
     wtf_size_t value_start_offset = stream.LookAheadOffset();
-    const CSSParserTokenRange argument_range [[maybe_unused]] =
-        stream.ConsumeUntilPeekedTypeIs<kCommaToken, kRightParenthesisToken>();
+    stream.SkipUntilPeekedTypeIs<kCommaToken, kRightParenthesisToken>();
     wtf_size_t value_end_offset = stream.LookAheadOffset();
     StringView argument_string = stream.StringRangeAt(
         value_start_offset, value_end_offset - value_start_offset);
