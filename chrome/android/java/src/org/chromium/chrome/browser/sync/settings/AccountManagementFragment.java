@@ -191,10 +191,14 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                 .getCoreAccountInfos()
                 .then(this::updateAccountsList);
 
-        // TODO(crbug.com/40944114): Figure out the behaviour for child accounts.
-        mIdentityErrorCardPreference =
-                (IdentityErrorCardPreference) findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
-        mIdentityErrorCardPreference.initialize(getProfile(), this);
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            // TODO(crbug.com/40944114): Figure out the behaviour for child accounts.
+            mIdentityErrorCardPreference =
+                    (IdentityErrorCardPreference)
+                            findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
+            mIdentityErrorCardPreference.initialize(getProfile(), this);
+        }
     }
 
     /**

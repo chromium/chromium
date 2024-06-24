@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -12,9 +18,13 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -30,12 +40,16 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.SyncErrorMessage.MessageType;
@@ -423,6 +437,38 @@ public class SyncErrorMessageTest {
         // Wait until the message ui is shown.
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
         mRenderTestRule.render(view, "identity_error_message_client_out_of_date");
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testActionForPassphraseRequiredForSignedInUsers() throws Exception {
+        SyncErrorMessage.setMessageDispatcherForTesting(null);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Sync.IdentityErrorMessage.PassphraseRequired",
+                                SyncSettingsUtils.ErrorUiAction.SHOWN)
+                        .expectIntRecord(
+                                "Sync.IdentityErrorMessage.PassphraseRequired",
+                                SyncSettingsUtils.ErrorUiAction.BUTTON_CLICKED)
+                        .build();
+
+        // Sign in.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
+
+        Intents.init();
+        onViewWaiting(allOf(withText("Enter"), isDisplayed())).perform(click());
+        intended(
+                IntentMatchers.hasExtra(
+                        SettingsActivity.EXTRA_SHOW_FRAGMENT, ManageSyncSettings.class.getName()));
+        Intents.release();
+
+        histogramWatcher.assertExpected();
     }
 
     private void verifyHasShownMessage() {

@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -48,9 +48,10 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Test suite for IdentityErrorCardPreference */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class IdentityErrorCardPreferenceTest {
-    public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AccountManagementFragment.class);
+    public final SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
