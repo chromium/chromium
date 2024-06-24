@@ -1638,6 +1638,11 @@ class MetaBuildWrapper:
       if java_coverage:
         cmdline += ['--coverage-dir', '${ISOLATED_OUTDIR}/coverage']
 
+      if is_cros_device:
+        # CrOS tests can capture DUT logs to a dir. But the dir can't be known
+        # at GN-gen time. So pass in a swarming-specific location here.
+        cmdline += ['--logs-dir=${ISOLATED_OUTDIR}']
+
       return cmdline, []
 
 

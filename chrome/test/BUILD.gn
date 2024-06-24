@@ -1086,9 +1086,21 @@ static_library("test_support") {
 if (is_android) {
   template("telemetry_gpu_integration_test_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
-    group(target_name) {
+
+    # For Android tests, prepend the logdog_wrapper.py tool to the command,
+    # which will automatically stream the device's logcats to logdog.
+    generate_wrapper(target_name) {
+      executable = "../../build/android/test_wrapper/logdog_wrapper.py"
+      wrapper_script = "$root_out_dir/bin/run_${target_name}"
+      executable_args = [
+        "../../testing/scripts/run_gpu_integration_test_as_googletest.py",
+        "../../content/test/gpu/run_gpu_integration_test.py",
+        "--chromium-output-directory=@WrappedPath(.)",
+      ]
+
       testonly = true
       data_deps = [
+        "//build/android:logdog_wrapper_py",
         "//content/test:telemetry_gpu_integration_test_support",
         "//tools/perf/chrome_telemetry_build:telemetry_chrome_test${telemetry_target_suffix}",
       ]
@@ -1102,12 +1114,33 @@ if (is_android) {
     }
   }
 } else {
-  group("telemetry_gpu_integration_test") {
-    testonly = true
-    data_deps = [
-      "//content/test:telemetry_gpu_integration_test_support",
-      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-    ]
+  _telemetry_args = [
+    "../../content/test/gpu/run_gpu_integration_test.py",
+    "--chromium-output-directory=@WrappedPath(.)",
+  ]
+  _telemetry_data_deps = [
+    "//content/test:telemetry_gpu_integration_test_support",
+    "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+  ]
+  if (is_chromeos_ash && is_chromeos_device) {
+    # For native CrOS VM/DUT tests, prepend the cros_test_wrapper to the test
+    # command, which will automatically handle spinning up a VM and/or deploying
+    # the browser to the DUT prior to test execution.
+    generate_wrapper("telemetry_gpu_integration_test") {
+      executable = "$root_out_dir/bin/cros_test_wrapper"
+      wrapper_script = "$root_out_dir/bin/run_${target_name}"
+      executable_args = [ "../../testing/scripts/run_gpu_integration_test_as_googletest.py" ] + _telemetry_args
+
+      testonly = true
+      data_deps = _telemetry_data_deps + [ "//chromeos:cros_test_wrapper" ]
+    }
+  } else {
+    script_test("telemetry_gpu_integration_test") {
+      script = "//testing/scripts/run_gpu_integration_test_as_googletest.py"
+      args = _telemetry_args
+
+      data_deps = _telemetry_data_deps
+    }
   }
 }
 

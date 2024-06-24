@@ -1695,22 +1695,14 @@ targets.binaries.generated_script(
     ),
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_gpu_integration_test",
     label = "//chrome/test:telemetry_gpu_integration_test",
-    script = "//testing/scripts/run_gpu_integration_test_as_googletest.py",
-    args = [
-        "../../content/test/gpu/run_gpu_integration_test.py",
-    ],
 )
 
-targets.binaries.script(
+targets.binaries.generated_script(
     name = "telemetry_gpu_integration_test_android_chrome",
     label = "//chrome/test:telemetry_gpu_integration_test_android_chrome",
-    script = "//testing/scripts/run_gpu_integration_test_as_googletest.py",
-    args = [
-        "../../content/test/gpu/run_gpu_integration_test.py",
-    ],
 )
 
 targets.binaries.script(
