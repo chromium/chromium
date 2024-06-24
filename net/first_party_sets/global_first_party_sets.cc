@@ -24,6 +24,7 @@
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
+#include "net/first_party_sets/first_party_sets_validator.h"
 #include "net/first_party_sets/local_set_declaration.h"
 
 namespace net {
@@ -90,7 +91,7 @@ GlobalFirstPartySets::GlobalFirstPartySets(
   CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
     return entries_.contains(pair.second);
   }));
-  CHECK(!ContainsSingletonOrOrphan(), base::NotFatalUntil::M130)
+  CHECK(IsValid(), base::NotFatalUntil::M130)
       << "Sets must not contain singleton or orphan";
 }
 
@@ -201,7 +202,7 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
       /*addition_sets=*/{}));
   manual_aliases_ = std::move(manual_aliases);
 
-  CHECK(!ContainsSingletonOrOrphan(), base::NotFatalUntil::M130)
+  CHECK(IsValid(), base::NotFatalUntil::M130)
       << "Sets must not contain singleton or orphan";
 }
 
@@ -394,7 +395,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   });
 
   FirstPartySetsContextConfig config(std::move(site_to_override));
-  CHECK(!ContainsSingletonOrOrphan(&config), base::NotFatalUntil::M130)
+  CHECK(IsValid(&config), base::NotFatalUntil::M130)
       << "Sets must not contain singleton or orphan";
   return config;
 }
@@ -531,43 +532,17 @@ void GlobalFirstPartySets::ForEachAlias(
   }
 }
 
-bool GlobalFirstPartySets::ContainsSingletonOrOrphan(
+bool GlobalFirstPartySets::IsValid(
     const FirstPartySetsContextConfig* config) const {
-  // A singleton: some primary site that names a set with no non-primary sites.
-  //
-  // An orphan: some non-primary site whose primary has no entry in any set.
-
-  struct PrimarySiteState {
-    // A primary site is a singleton iff it is never used as the primary in some
-    // other site's entry.
-    bool has_nonself_entry = false;
-    // A primary site induces orphaned non-primary sites iff it is used as the
-    // primary site in some other site's entry, but it has no entry itself.
-    bool has_self_entry = false;
-  };
-
-  std::map<SchemefulSite, PrimarySiteState> primary_states;
-
+  FirstPartySetsValidator validator;
   ForEachEffectiveSetEntry(
       config,
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) -> bool {
-        if (site == entry.primary()) {
-          primary_states[entry.primary()].has_self_entry = true;
-        } else {
-          primary_states[entry.primary()].has_nonself_entry = true;
-        }
-
+        validator.Update(site, entry.primary());
         return true;
       });
 
-  // We should have seen the self-entry and non-self-entry-mentions for every
-  // entry's primary site, assuming there are no singletons and no orphans. If
-  // we didn't, then there's at least one singleton or orphan.
-  return base::ranges::any_of(
-      primary_states,
-      [](const std::pair<SchemefulSite, PrimarySiteState>& pair) -> bool {
-        return !pair.second.has_nonself_entry || !pair.second.has_self_entry;
-      });
+  return validator.IsValid();
 }
 
 std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {

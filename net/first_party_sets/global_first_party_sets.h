@@ -194,10 +194,9 @@ class NET_EXPORT GlobalFirstPartySets {
   void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
                                            const SchemefulSite&)> f) const;
 
-  // Returns true iff this instance contains a singleton set (a set with only
-  // one site) or any oprhaned sets (sets whose primary is not included).
-  bool ContainsSingletonOrOrphan(
-      const FirstPartySetsContextConfig* config = nullptr) const;
+  // Synchronously iterate over all the effective entries. Returns true iff all
+  // the entries are valid.
+  bool IsValid(const FirstPartySetsContextConfig* config = nullptr) const;
 
   // The version associated with the component_updater-provided public sets.
   // This may be invalid if the "First-Party Sets" component has not been

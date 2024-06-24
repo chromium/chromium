@@ -25,6 +25,7 @@
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
+#include "net/first_party_sets/first_party_sets_validator.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -409,7 +410,6 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
   CHECK(!browser_context_id.empty());
 
   // Query public sets entries.
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
   static constexpr char kVersionSql[] =
       "SELECT public_sets_version FROM browser_context_sets_version "
       "WHERE browser_context_id=?";
@@ -417,6 +417,7 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
       db_->GetCachedStatement(SQL_FROM_HERE, kVersionSql));
   version_statement.BindString(0, browser_context_id);
 
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> sets;
   std::string version;
   if (version_statement.Step()) {
     version = version_statement.ColumnString(0);
@@ -426,6 +427,9 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
     sql::Statement statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
     statement.BindString(0, version);
+
+    std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
+    net::FirstPartySetsValidator validator;
 
     while (statement.Step()) {
       std::optional<net::SchemefulSite> site =
@@ -443,11 +447,25 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
       // possible. Consider deleting them from DB.
       if (site.has_value() && primary.has_value() && site_type.has_value()) {
         entries.emplace_back(
-            std::move(site).value(),
+            site.value(),
             net::FirstPartySetEntry(primary.value(), site_type.value(),
                                     /*site_index=*/std::nullopt));
+        validator.Update(site.value(), primary.value());
       }
     }
+
+    sets = base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>(
+        std::move(entries));
+    // Make sure the global sets read from DB does not have any singleton or
+    // orphan.
+    if (!validator.IsValid()) {
+      base::EraseIf(
+          sets, [&validator](const std::pair<net::SchemefulSite,
+                                             net::FirstPartySetEntry>& pair) {
+            return !validator.IsSitePrimaryValid(pair.second.primary());
+          });
+    }
+
     if (!statement.Succeeded())
       return std::nullopt;
   }
@@ -457,7 +475,7 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
 
   // Aliases are merged with entries inside of the public sets table so it is
   // sufficient to declare the global sets object with only the entries field.
-  net::GlobalFirstPartySets global_sets(base::Version(version), entries,
+  net::GlobalFirstPartySets global_sets(base::Version(version), sets,
                                         /*aliases=*/{});
 
   // Query & apply manual configuration. Safe because this config and this

@@ -5,6 +5,7 @@
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -1014,6 +1015,72 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
                net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
                                        std::nullopt))));
   EXPECT_TRUE(res->second.empty());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveSingleton) {
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
+      db_path(), GetSqlFilePath("v5.public_sets_singleton.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(db_path()));
+    EXPECT_EQ(4u, CountPublicSetsEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
+    EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
+  }
+  const net::SchemefulSite aaa(GURL("https://aaa.test"));
+  const net::SchemefulSite bbb(GURL("https://bbb.test"));
+  const net::SchemefulSite ccc(GURL("https://ccc.test"));
+  const net::SchemefulSite ddd(GURL("https://ddd.test"));
+  OpenDatabase();
+
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig("b0");
+  EXPECT_TRUE(res.has_value());
+  // The singleton set should be deleted.
+  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
+                                     net::FirstPartySetsContextConfig()),
+              UnorderedElementsAre(
+                  Pair(ccc, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kAssociated, std::nullopt)),
+                  Pair(ddd, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
+}
+
+TEST_F(FirstPartySetsDatabaseTest, GetSets_PublicSetsHaveOrphan) {
+  ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
+      db_path(), GetSqlFilePath("v5.public_sets_orphan.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(db_path()));
+    EXPECT_EQ(4u, CountPublicSetsEntries(&db));
+    EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
+    EXPECT_EQ(0u, CountPolicyConfigurationsEntries(&db));
+  }
+  const net::SchemefulSite aaa(GURL("https://aaa.test"));
+  const net::SchemefulSite bbb(GURL("https://bbb.test"));
+  const net::SchemefulSite ccc(GURL("https://ccc.test"));
+  const net::SchemefulSite ddd(GURL("https://ddd.test"));
+  OpenDatabase();
+
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
+      res = db()->GetGlobalSetsAndConfig("b0");
+  EXPECT_TRUE(res.has_value());
+  // The singleton set should be deleted.
+  EXPECT_THAT(res->first.FindEntries({aaa, bbb, ccc, ddd},
+                                     net::FirstPartySetsContextConfig()),
+              UnorderedElementsAre(
+                  Pair(ccc, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kAssociated, std::nullopt)),
+                  Pair(ddd, net::FirstPartySetEntry(
+                                ddd, net::SiteType::kPrimary, std::nullopt))));
+  EXPECT_EQ(res->second, net::FirstPartySetsContextConfig());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetSets) {
