@@ -77,11 +77,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest, MoveTabsToNewWindow) {
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   delegate->MoveTabsToNewWindow({0});
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  Browser* active_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now there are two browsers, each with one tab and the new browser is
   // active.
-  Browser* active_browser = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2u);
   EXPECT_NE(active_browser, browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -135,11 +135,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
   ui_test_utils::BrowserChangeObserver new_browser_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   delegate->MoveTabsToNewWindow({0, 2});
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
+  Browser* active_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now there are two browsers, with one or two tabs and the new browser is
   // active.
-  Browser* active_browser = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2u);
   EXPECT_NE(active_browser, browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);

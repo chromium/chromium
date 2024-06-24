@@ -1696,13 +1696,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftLeft) {
   SimulateMouseClickAt(
       extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
-  Browser* browser = ui_test_utils::WaitForBrowserToOpen();
-  ui_test_utils::WaitForBrowserSetLastActive(browser);
+  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
   ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 
   WebContents* active_web_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+      new_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
   const GURL& url = active_web_contents->GetVisibleURL();
@@ -1893,13 +1893,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   SimulateMouseClickAt(
       extension_host, GetEmbedderWebContents(), blink::WebInputEvent::kShiftKey,
       blink::WebMouseEvent::Button::kLeft, GetLinkPosition(extension_host));
-  Browser* browser = ui_test_utils::WaitForBrowserToOpen();
-  ui_test_utils::WaitForBrowserSetLastActive(browser);
+  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
   ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 
   WebContents* active_web_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+      new_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(web_contents, active_web_contents);
 
   const GURL& url = active_web_contents->GetVisibleURL();

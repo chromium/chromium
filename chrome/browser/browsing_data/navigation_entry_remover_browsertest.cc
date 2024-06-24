@@ -60,15 +60,16 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
     AddNavigations(browser, {urls.begin() + 1, urls.end()});
   }
 
-  void AddBrowser(Browser* browser, const std::vector<GURL>& urls) {
+  Browser* AddBrowser(Browser* browser, const std::vector<GURL>& urls) {
     ui_test_utils::BrowserChangeObserver new_browser_observer(
         nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     ui_test_utils::NavigateToURLWithDisposition(
         browser, urls[0], WindowOpenDisposition::NEW_WINDOW,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-    ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
-    AddNavigations(BrowserList::GetInstance()->GetLastActive(),
-                   {urls.begin() + 1, urls.end()});
+    Browser* new_browser = new_browser_observer.Wait();
+    ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+    AddNavigations(new_browser, {urls.begin() + 1, urls.end()});
+    return new_browser;
   }
 
   void GoBack(content::WebContents* web_contents) {
@@ -318,12 +319,16 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest, RecentTabDeletion) {
   ExpectDeleteLastSessionCalled(2);
 }
 
-// TODO(crbug.com/40283363): flaky.
+// TODO(crbug.com/40283363): flaky on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RecentTabWindowDeletion DISABLED_RecentTabWindowDeletion
+#else
+#define MAYBE_RecentTabWindowDeletion RecentTabWindowDeletion
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
-                       DISABLED_RecentTabWindowDeletion) {
+                       MAYBE_RecentTabWindowDeletion) {
   // Create a new browser with three tabs and close it.
-  AddBrowser(browser(), {url_a_});
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* new_browser = AddBrowser(browser(), {url_a_});
   AddTab(new_browser, {url_b_, url_c_});
   AddTab(new_browser, {url_d_});
   chrome::CloseWindow(new_browser);
