@@ -82,7 +82,6 @@ class AuthenticatorMechanismSelectorSheetModel
       AuthenticatorRequestDialogModel* dialog_model);
 
   // AuthenticatorSheetModelBase:
-  bool IsActivityIndicatorVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
 };
@@ -147,7 +146,6 @@ class AuthenticatorNotRegisteredErrorModel
   // AuthenticatorSheetModelBase:
   std::u16string GetCancelButtonLabel() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
@@ -164,7 +162,6 @@ class AuthenticatorAlreadyRegisteredErrorModel
   // AuthenticatorSheetModelBase:
   std::u16string GetCancelButtonLabel() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
@@ -180,7 +177,6 @@ class AuthenticatorInternalUnrecognizedErrorSheetModel
  private:
   // AuthenticatorSheetModelBase:
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
@@ -238,7 +234,6 @@ class AuthenticatorBlePermissionMacSheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -257,7 +252,6 @@ class AuthenticatorTouchIdSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -277,7 +271,6 @@ class AuthenticatorOffTheRecordInterstitialSheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
   void OnAccept() override;
@@ -336,7 +329,6 @@ class AuthenticatorClientPinEntrySheetModel
   std::u16string GetStepDescription() const override;
   std::u16string GetError() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
 
@@ -378,7 +370,6 @@ class AuthenticatorBioEnrollmentSheetModel
   bool IsActivityIndicatorVisible() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   bool IsCancelButtonVisible() const override;
@@ -426,7 +417,6 @@ class AuthenticatorGenericErrorSheetModel : public AuthenticatorSheetModelBase {
 
   // AuthenticatorSheetModelBase:
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetStepTitle() const override;
@@ -447,7 +437,6 @@ class AuthenticatorResidentCredentialConfirmationSheetView
  private:
   // AuthenticatorSheetModelBase:
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
@@ -498,7 +487,6 @@ class AuthenticatorSelectAccountSheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
 
   const UserVerificationMode user_verification_mode_;
@@ -522,7 +510,6 @@ class AttestationPermissionRequestSheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   std::u16string GetAcceptButtonLabel() const override;
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
@@ -615,7 +602,6 @@ class AuthenticatorCreatePasskeySheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   void OnAccept() override;
   std::u16string GetAcceptButtonLabel() const override;
 };
@@ -659,7 +645,6 @@ class AuthenticatorPhoneConfirmationSheet : public AuthenticatorSheetModelBase {
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;
-  bool IsAcceptButtonEnabled() const override;
   void OnAccept() override;
   std::u16string GetAcceptButtonLabel() const override;
 };
@@ -717,7 +702,6 @@ class AuthenticatorPriorityMechanismSheetModel
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -754,7 +738,6 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   bool IsAcceptButtonVisible() const override;
   bool IsForgotGPMPinButtonVisible() const override;
   bool IsGPMPinOptionsButtonVisible() const override;
-  bool IsActivityIndicatorVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
   void OnGPMPinOptionChosen(bool is_arbitrary) const override;
@@ -794,7 +777,6 @@ class AuthenticatorGPMArbitraryPinSheetModel
   bool IsAcceptButtonVisible() const override;
   bool IsForgotGPMPinButtonVisible() const override;
   bool IsGPMPinOptionsButtonVisible() const override;
-  bool IsActivityIndicatorVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
   void OnGPMPinOptionChosen(bool is_arbitrary) const override;
@@ -821,7 +803,6 @@ class AuthenticatorTrustThisComputerAssertionSheetModel
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
   void OnCancel() override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -843,7 +824,6 @@ class AuthenticatorCreateGpmPasskeySheetModel
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
   void OnCancel() override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -866,7 +846,6 @@ class AuthenticatorGpmIncognitoCreateSheetModel
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
   void OnCancel() override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
@@ -889,7 +868,6 @@ class AuthenticatorTrustThisComputerCreationSheetModel
   bool IsCancelButtonVisible() const override;
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetOtherMechanismButtonLabel() const override;
-  bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;

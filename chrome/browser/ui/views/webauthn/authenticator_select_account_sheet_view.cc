@@ -24,7 +24,7 @@ AuthenticatorSelectAccountSheetView::BuildStepSpecificContent() {
     case AuthenticatorSelectAccountSheetModel::kMultipleAccounts:
       return std::make_pair(std::make_unique<HoverListView>(
                                 std::make_unique<AccountHoverListModel>(
-                                    model()->dialog_model()->creds, this)),
+                                    model()->dialog_model(), this)),
                             AutoFocus::kYes);
     case AuthenticatorSelectAccountSheetModel::kSingleAccount:
       return std::make_pair(
