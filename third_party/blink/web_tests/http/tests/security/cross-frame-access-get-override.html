@@ -16,15 +16,15 @@
 
             // Overriden using window.focus = function() { return "new focus" }
             shouldBeTrue("canGet('targetWindow.focus')");
-            shouldBe("targetWindow.focus.name", "''");
+            shouldBe("toString('targetWindow.focus')", "toString('window.focus')");
 
             // Overriden using window.__proto__.blur = function() { return "new blur;" }
             shouldBeTrue("canGet('targetWindow.blur')");
-            shouldBe("targetWindow.blur.name", "''");
+            shouldBe("toString('targetWindow.blur')", "toString('window.blur')");
 
             // Overriden using window.history.close = "new close"
             shouldBeTrue("canGet('targetWindow.close')");
-            shouldBe("targetWindow.close.name", "''");
+            shouldBe("toString('targetWindow.close')", "toString('window.close')");
 
             if (window.testRunner)
                 testRunner.notifyDone();

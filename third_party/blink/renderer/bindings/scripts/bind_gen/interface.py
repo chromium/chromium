@@ -3964,7 +3964,7 @@ def make_cross_origin_named_getter_callback(cg_context, function_name):
                 TextNode("v8::Local<v8::Function> function;"),
                 CxxLikelyIfNode(
                     cond="bindings::GetCrossOriginFunction("
-                    "${isolate}, operation.callback, "
+                    "${isolate}, operation.name, operation.callback, "
                     "operation.func_length,"
                     "${class_name}::GetWrapperTypeInfo())"
                     ".ToLocal(&function)",
@@ -4059,12 +4059,12 @@ for (const auto& attribute : kCrossOriginAttributeTable) {
     continue;
   v8::Local<v8::Value> get;
   v8::Local<v8::Value> set;
-  if (!bindings::GetCrossOriginFunctionOrUndefined(
-           ${info}.GetIsolate(), attribute.get_callback, 0,
+  if (!bindings::GetCrossOriginGetterSetter(
+           ${info}.GetIsolate(), attribute.name, attribute.get_callback, 0,
            ${class_name}::GetWrapperTypeInfo())
            .ToLocal(&get) ||
-      !bindings::GetCrossOriginFunctionOrUndefined(
-           ${info}.GetIsolate(), attribute.set_callback, 1,
+      !bindings::GetCrossOriginGetterSetter(
+           ${info}.GetIsolate(), attribute.name, attribute.set_callback, 1,
            ${class_name}::GetWrapperTypeInfo())
            .ToLocal(&set)) {
     // Exception was thrown which means that the request was intercepted.
@@ -4081,8 +4081,8 @@ for (const auto& operation : kCrossOriginOperationTable) {
     continue;
   v8::Local<v8::Function> function;
   if (!bindings::GetCrossOriginFunction(
-           ${info}.GetIsolate(), operation.callback, operation.func_length,
-           ${class_name}::GetWrapperTypeInfo())
+           ${info}.GetIsolate(), operation.name, operation.callback,
+           operation.func_length, ${class_name}::GetWrapperTypeInfo())
            .ToLocal(&function)) {
     // Exception was thrown which means that the request was intercepted.
     return v8::Intercepted::kYes;

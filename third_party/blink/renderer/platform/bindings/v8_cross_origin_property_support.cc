@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -14,6 +15,7 @@ namespace bindings {
 
 v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
     v8::Isolate* isolate,
+    const StringView& func_name,
     v8::FunctionCallback callback,
     int func_length,
     const WrapperTypeInfo* wrapper_type_info) {
@@ -35,22 +37,29 @@ v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
     function_template = v8::FunctionTemplate::New(
         isolate, callback, v8::Local<v8::Value>(), signature, func_length,
         v8::ConstructorBehavior::kThrow, v8::SideEffectType::kHasSideEffect);
+    v8::Local<v8::String> class_string = V8AtomicString(isolate, func_name);
+    function_template->SetClassName(class_string);
     per_isolate_data->AddV8Template(script_state->World(), callback_key,
                                     function_template);
   }
   return function_template->GetFunction(current_context);
 }
 
-v8::MaybeLocal<v8::Value> GetCrossOriginFunctionOrUndefined(
+v8::MaybeLocal<v8::Value> GetCrossOriginGetterSetter(
     v8::Isolate* isolate,
+    const StringView& func_name,
     v8::FunctionCallback callback,
     int func_length,
     const WrapperTypeInfo* wrapper_type_info) {
   if (!callback) {
     return v8::Undefined(isolate);
   }
+  WTF::StringBuilder builder;
+  builder.Append(func_length > 0 ? "set " : "get ");
+  builder.Append(func_name);
   v8::Local<v8::Function> function;
-  if (GetCrossOriginFunction(isolate, callback, func_length, wrapper_type_info)
+  if (GetCrossOriginFunction(isolate, builder, callback, func_length,
+                             wrapper_type_info)
           .ToLocal(&function)) {
     return function;
   }

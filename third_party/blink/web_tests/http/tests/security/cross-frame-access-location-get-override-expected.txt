@@ -1,7 +1,0 @@
------ tests for getting a targetWindow's location object's functions which have custom overrides.  The desired behavior is for the targetWindow to return the builtin function, not the override -----
-
-PASS: canGet('targetWindow.location.assign') should be 'false' and is.
-PASS: canGet('targetWindow.location.reload') should be 'false' and is.
-PASS: canGet('targetWindow.location.replace') should be 'true' and is.
-PASS: targetWindow.location.replace.name should be '' and is.
-
