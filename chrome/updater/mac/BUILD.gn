@@ -537,7 +537,8 @@ if (!is_component_build && enable_dsyms) {
   action_foreach("syms") {
     script = "//build/redirect_stdout.py"
     sources = _symbols_sources
-    dump_syms = "//third_party/breakpad:dump_syms($host_toolchain)"
+    dump_syms =
+        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
     public_deps = [
       ":updater_bundle",
       dump_syms,

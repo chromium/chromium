@@ -589,36 +589,71 @@ template("msvc_toolchain") {
   }
 }
 
+# Make an additional toolchain which is used for making tools that are run
+# on the host machine as part of the build process (such as proc macros
+# and Cargo build scripts). This toolchain uses the prebuilt stdlib that
+# comes with the compiler, so it doesn't have to wait for the stdlib to be
+# built before building other stuff. And this ensures its proc macro
+# outputs have the right ABI to be loaded by the compiler, and it can be
+# used to compile build scripts that are part of the stdlib that is built
+# for the default toolchain.
 template("msvc_rust_host_build_tools_toolchain") {
-  assert(defined(invoker.toolchain_args))
-  if (enable_rust) {
-    msvc_toolchain("${target_name}_for_rust_host_build_tools") {
-      forward_variables_from(invoker,
-                             "*",
-                             [
-                               "toolchain_args",
-                               "visibility",
-                               "testonly",
-                             ])
-      toolchain_args = {
-        # Populate toolchain args from the invoker.
-        forward_variables_from(invoker.toolchain_args, "*")
-        toolchain_for_rust_host_build_tools = true
+  msvc_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args))
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "toolchain_args",
+                             "visibility",
+                             "testonly",
+                           ])
+    toolchain_args = {
+      # Populate toolchain args from the invoker.
+      forward_variables_from(invoker.toolchain_args, "*")
+      toolchain_for_rust_host_build_tools = true
 
-        # The host build tools are static release builds to make the Chromium
-        # build faster. They do not need PGO etc, so no official builds.
-        is_debug = false
-        is_component_build = false
-        is_official_build = false
-        use_clang_coverage = false
-        use_sanitizer_coverage = false
-        generate_linker_map = false
-        use_thin_lto = false
-      }
+      # The host build tools are static release builds to make the Chromium
+      # build faster. They do not need PGO etc, so no official builds.
+      is_debug = false
+      is_component_build = false
+      is_official_build = false
+      use_clang_coverage = false
+      use_sanitizer_coverage = false
+      generate_linker_map = false
+      use_thin_lto = false
     }
-  } else {
-    not_needed(invoker, "*")
-    not_needed([ "target_name" ])
+  }
+}
+
+# If PartitionAlloc is part of the build (even as a transitive dependency), then
+# it replaces the system allocator. If this toolchain is used, that will be
+# overridden and the system allocator will be used regardless. This is important
+# in some third-party binaries outside of Chrome.
+template("msvc_system_allocator_toolchain") {
+  msvc_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args))
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "toolchain_args",
+                             "visibility",
+                             "testonly",
+                           ])
+    toolchain_args = {
+      # Populate toolchain args from the invoker.
+      forward_variables_from(invoker.toolchain_args, "*")
+      toolchain_allows_use_partition_alloc_as_malloc = false
+
+      # Disable component build so that we can copy the exes to the
+      # root_build_dir and support the default_toolchain redirection on Windows.
+      # See also the comment in //build/symlink.gni.
+      is_component_build = false
+
+      # Only one toolchain can be configured with MSAN support with our current
+      # GN setup, or they all try to make the instrumented libraries and
+      # collide.
+      is_msan = false
+    }
   }
 }
 
@@ -628,12 +663,12 @@ template("win_toolchains") {
   # //build/config/BUILDCONFIG.gn). But the prebuilt stdlib does not
   # exist for Windows x86 and it's exceedingly difficult to get it
   # built from a single build_rust.py invocation. So we just don't follow
-  # along in the `msvc_rust_host_build_tools_toolchain` toolchains, and
-  # always use the host cpu type (which will be x64 in that case). Things
-  # built with these toolchains are never built for the target_cpu anyhow,
-  # so the optimization there does not benefit them.
+  # along in the `build_tools_toolchain` toolchains, and always use the host
+  # cpu type (which will be x64 in that case). Things built with these
+  # toolchains are never built for the target_cpu anyhow, so the optimization
+  # there does not benefit them.
   #
-  # Thus, in msvc_rust_host_build_tools_toolchain:
+  # Thus, in build_tools_toolchain, for the host machine:
   # * Use `rust_host_toolchain_arch` instead of `toolchain_arch`.
   # * Use `rust_host_win_toolchain_data` instead of `win_toolchain_data`.
 
@@ -652,7 +687,7 @@ template("win_toolchains") {
     error("Unsupported toolchain_arch, add it to win_toolchain_data.gni")
   }
 
-  # The toolchain data for `msvc_rust_host_build_tools_toolchain()`.
+  # The toolchain data for `build_tools_toolchain` for the host machine.
   if (rust_host_toolchain_arch == "x86") {
     rust_host_win_toolchain_data = win_toolchain_data_x86
   } else if (rust_host_toolchain_arch == "x64") {
@@ -687,7 +722,38 @@ template("win_toolchains") {
         current_cpu = toolchain_arch
       }
     }
-    msvc_rust_host_build_tools_toolchain(cl_toolchain_prefix + target_name) {
+    msvc_system_allocator_toolchain(
+        cl_toolchain_prefix + target_name + "_host_with_system_allocator") {
+      environment = "environment." + toolchain_arch
+      cl = "\"${win_toolchain_data.vc_bin_dir}/cl.exe\""
+
+      toolchain_args = {
+        if (defined(invoker.toolchain_args)) {
+          forward_variables_from(invoker.toolchain_args, "*")
+        }
+        is_clang = false
+        use_clang_coverage = false
+        current_os = "win"
+        current_cpu = toolchain_arch
+      }
+    }
+    msvc_system_allocator_toolchain(
+        cl_toolchain_prefix + target_name + "_with_system_allocator") {
+      environment = "environment." + toolchain_arch
+      cl = "\"${win_toolchain_data.vc_bin_dir}/cl.exe\""
+
+      toolchain_args = {
+        if (defined(invoker.toolchain_args)) {
+          forward_variables_from(invoker.toolchain_args, "*")
+        }
+        is_clang = false
+        use_clang_coverage = false
+        current_os = "win"
+        current_cpu = toolchain_arch
+      }
+    }
+    msvc_rust_host_build_tools_toolchain(
+        cl_toolchain_prefix + target_name + "_for_rust_host_build_tools") {
       environment = "environment." + rust_host_toolchain_arch
       cl = "\"${rust_host_win_toolchain_data.vc_bin_dir}/cl.exe\""
 
@@ -736,7 +802,48 @@ template("win_toolchains") {
       current_cpu = toolchain_arch
     }
   }
-  msvc_rust_host_build_tools_toolchain(clang_toolchain_prefix + target_name) {
+  msvc_system_allocator_toolchain(
+      clang_toolchain_prefix + target_name + "_host_with_system_allocator") {
+    environment = "environment." + toolchain_arch
+    cl = "${_clang_bin_path}/clang-cl${_exe}"
+
+    sys_include_flags = "${win_toolchain_data.include_flags_imsvc}"
+    if (use_lld) {
+      sys_lib_flags = "-libpath:$_clang_lib_dir " +
+                      "${win_toolchain_data.libpath_lldlink_flags}"
+    }
+
+    toolchain_args = {
+      if (defined(invoker.toolchain_args)) {
+        forward_variables_from(invoker.toolchain_args, "*")
+      }
+      is_clang = true
+      current_os = "win"
+      current_cpu = toolchain_arch
+    }
+  }
+  msvc_system_allocator_toolchain(
+      clang_toolchain_prefix + target_name + "_with_system_allocator") {
+    environment = "environment." + toolchain_arch
+    cl = "${_clang_bin_path}/clang-cl${_exe}"
+
+    sys_include_flags = "${win_toolchain_data.include_flags_imsvc}"
+    if (use_lld) {
+      sys_lib_flags = "-libpath:$_clang_lib_dir " +
+                      "${win_toolchain_data.libpath_lldlink_flags}"
+    }
+
+    toolchain_args = {
+      if (defined(invoker.toolchain_args)) {
+        forward_variables_from(invoker.toolchain_args, "*")
+      }
+      is_clang = true
+      current_os = "win"
+      current_cpu = toolchain_arch
+    }
+  }
+  msvc_rust_host_build_tools_toolchain(
+      clang_toolchain_prefix + target_name + "_for_rust_host_build_tools") {
     environment = "environment." + rust_host_toolchain_arch
     cl = "${_clang_bin_path}/clang-cl${_exe}"
 
