@@ -113,7 +113,6 @@ import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.DefaultPaneOrderController;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.HubProvider;
@@ -767,8 +766,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private HubLayoutDependencyHolder createHubLayoutDependencyHolder() {
-        if (!HubFieldTrial.isHubEnabled()) return null;
-
         // The tab_switcher_view_holder can be used on both tablet and phone because Hub's
         // animations don't depend on the compositor. This differs from the current tab switcher
         // behavior on phones.
@@ -903,8 +900,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void initHub() {
-        if (!HubFieldTrial.isHubEnabled()) return;
-
         mHubProvider =
                 new HubProvider(
                         this,
@@ -932,8 +927,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private @Nullable ObservableSupplier<Integer> getHubOverviewColorSupplier() {
-        if (!HubFieldTrial.isHubEnabled()) return null;
-
         // Prior to Hub creation we don't know what color to use. Default to the background color
         // since this shouldn't be visible.
         ObservableSupplierImpl<Integer> overviewColorSupplier =
@@ -1184,15 +1177,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
             }
 
-            if (HubFieldTrial.isHubEnabled()) {
-                TabSwitcher switcher = mTabSwitcherSupplier.get();
-                if (switcher != null) {
-                    switcher.initWithNative();
-                }
-                TabSwitcher incognitoSwitcher = mIncognitoTabSwitcherSupplier.get();
-                if (incognitoSwitcher != null) {
-                    incognitoSwitcher.initWithNative();
-                }
+            TabSwitcher switcher = mTabSwitcherSupplier.get();
+            if (switcher != null) {
+                switcher.initWithNative();
+            }
+            TabSwitcher incognitoSwitcher = mIncognitoTabSwitcherSupplier.get();
+            if (incognitoSwitcher != null) {
+                incognitoSwitcher.initWithNative();
             }
 
             mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
@@ -1513,9 +1504,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         getCurrentTabModel(),
                         getTabCreator(false),
                         mHomeSurfaceTracker);
-        if (showedNtp
-                && HubFieldTrial.isHubEnabled()
-                && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+        if (showedNtp && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
             mLayoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
         }
     }
