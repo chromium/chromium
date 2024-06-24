@@ -145,10 +145,17 @@ public class AccountBookmarkTest {
         // folder doesn't show up without a restart. This should be updated once that folder is
         // available.
         checkToolbarTitleMatches("Bookmarks");
-        onView(withText("In your Google Account")).check(matches(isDisplayed()));
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)) {
+            onView(withText("In your Google Account")).check(matches(isDisplayed()));
+        }
         BookmarkTestUtil.getRecyclerRowViewInteraction("Mobile bookmarks", true)
                 .check(matches(isDisplayed()));
-        BookmarkTestUtil.getRecyclerRowViewInteraction("Reading list", false)
+        BookmarkTestUtil.getRecyclerRowViewInteraction(
+                        "Reading list",
+                        ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN))
                 .check(matches(isDisplayed()));
     }
 
