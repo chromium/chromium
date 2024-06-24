@@ -416,10 +416,6 @@
       status: "stable",
     },
     {
-      name: "AvoidCaretVisibleSelectionAdjuster",
-      status: "stable",
-    },
-    {
       name: "BackdropInheritOriginating",
       status: "stable",
     },
@@ -2017,10 +2013,6 @@
       status: "experimental",
     },
     {
-      name: "GetNextSiblingPositionWhenLastChild",
-      status: "stable",
-    },
-    {
       name: "GroupEffect",
       status: "test",
     },
@@ -2687,10 +2679,6 @@
       // on delegatesFocus shadow hosts. This flag can be removed in M127 if
       // things are stable.
       name: "NewGetFocusableAreaBehavior",
-      status: "stable",
-    },
-    {
-      name: "NextSiblingPositionUseNextCandidate",
       status: "stable",
     },
     {
@@ -3855,10 +3843,6 @@
       base_feature: "none",
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
-      status: "stable",
-    },
-    {
-      name: "SpellCheckerReplaceRangeUseInsertText",
       status: "stable",
     },
     {

@@ -237,16 +237,9 @@ SelectionInFlatTree AdjustSelectionByUserSelect(
     }
   }
 
-  if (RuntimeEnabledFeatures::AvoidCaretVisibleSelectionAdjusterEnabled()) {
-    return SelectionInFlatTree::Builder()
-        .SetBaseAndExtent(new_start_pos, new_end_pos)
-        .Build();
-  } else {
-    return SelectionInFlatTree::Builder()
-        .SetBaseAndExtent(MostBackwardCaretPosition(new_start_pos),
-                          MostForwardCaretPosition(new_end_pos))
-        .Build();
-  }
+  return SelectionInFlatTree::Builder()
+      .SetBaseAndExtent(new_start_pos, new_end_pos)
+      .Build();
 }
 
 SelectionController::~SelectionController() = default;
