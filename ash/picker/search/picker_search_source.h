@@ -8,7 +8,7 @@
 namespace ash {
 
 enum class PickerSearchSource {
-  kOmnibox,
+  kOmnibox = 0,
   kTenor,  // Used for GIF search.
   kEmoji,
   kDate,
@@ -19,6 +19,7 @@ enum class PickerSearchSource {
   kClipboard,
   kEditorWrite,
   kEditorRewrite,
+  kMaxValue = kEditorRewrite,
 };
 }
 
