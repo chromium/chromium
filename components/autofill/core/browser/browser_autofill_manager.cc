@@ -1175,8 +1175,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     return context;
   }
 
-  // Need to refresh models before using the form_event_loggers.
-  RefreshDataModels();
+  UpdateLoggersReadinessData();
 
   const bool got_autofillable_form =
       GetCachedFormAndField(form, field, &context.form_structure,
@@ -2361,22 +2360,17 @@ void BrowserAutofillManager::Reset() {
   four_digit_combinations_in_dom_.clear();
 }
 
-bool BrowserAutofillManager::RefreshDataModels() {
+void BrowserAutofillManager::UpdateLoggersReadinessData() {
   if (!IsAutofillEnabled()) {
-    return false;
+    return;
   }
-
   GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();
-
-  const std::vector<const AutofillProfile*>& profiles =
-      client().GetPersonalDataManager()->address_data_manager().GetProfiles();
-  address_form_event_logger_->set_record_type_count(profiles.size());
-
-  return !profiles.empty() || !client()
-                                   .GetPersonalDataManager()
-                                   ->payments_data_manager()
-                                   .GetCreditCards()
-                                   .empty();
+  address_form_event_logger_->set_record_type_count(
+      client()
+          .GetPersonalDataManager()
+          ->address_data_manager()
+          .GetProfiles()
+          .size());
 }
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(

@@ -459,8 +459,8 @@ class BrowserAutofillManager : public AutofillManager {
   void OnCreditCardFetched(CreditCardFetchResult result,
                            const CreditCard* credit_card);
 
-  // Returns false if Autofill is disabled or if no Autofill data is available.
-  bool RefreshDataModels();
+  // Updates event loggers with information about data stored for Autofill.
+  void UpdateLoggersReadinessData();
 
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
