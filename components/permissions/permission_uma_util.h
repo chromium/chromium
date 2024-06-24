@@ -615,6 +615,7 @@ class PermissionUmaUtil {
   static const char kPermissionsPromptDenied[];
   static const char kPermissionsPromptDeniedGesture[];
   static const char kPermissionsPromptDeniedNoGesture[];
+  static const char kPermissionsPromptDismissed[];
 
   static const char kPermissionsExperimentalUsagePrefix[];
   static const char kPermissionsActionPrefix[];
