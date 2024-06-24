@@ -43,11 +43,6 @@
 # crbug.com/1429718
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoDismissTest.testPromoImpressionCountIncrementAfterDisplayingSigninPromo
 
-# crbug.com/1429741
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverForced
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverNoCutout
-
 # crbug.com/1429757
 -org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.testIncognitoReauthView_TabSwitcherRenderTest
 -org.chromium.chrome.browser.incognito.reauth.TabSwitcherIncognitoReauthViewTest.testIncognitoReauthViewIsRestored_WhenActivityIsKilled

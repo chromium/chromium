@@ -12,11 +12,6 @@
 -org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
 -org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
 
-# crbug.com/1429741
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverForced
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverNoCutout
-
 # crbug.com/1225754
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
 
@@ -58,9 +53,6 @@
 
 # crbug.com/337932321
 -org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingInfoBar
-
-# crbug.com/338086460
--org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitSubframe
 
 # crbug.com/339034032
 -org.chromium.chrome.browser.toolbar.top.ToolbarPhoneTest.testToolbarBackgroundChangedWhenSearchEngineHasNoLogo
