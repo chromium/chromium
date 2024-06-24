@@ -578,11 +578,11 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
-void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
+void StyleRuleBase::Reparent(StyleRule* new_parent) {
   switch (GetType()) {
     case kStyle:
       CSSSelectorList::Reparent(To<StyleRule>(this)->SelectorArray(),
-                                old_parent, new_parent);
+                                new_parent);
       break;
     case kScope:
     case kLayerBlock:
@@ -592,13 +592,13 @@ void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
     case kStartingStyle:
       for (StyleRuleBase* child :
            DynamicTo<StyleRuleGroup>(this)->ChildRules()) {
-        child->Reparent(old_parent, new_parent);
+        child->Reparent(new_parent);
       }
       break;
     case kPage:
       for (StyleRuleBase* child :
            DynamicTo<StyleRulePage>(this)->ChildRules()) {
-        child->Reparent(old_parent, new_parent);
+        child->Reparent(new_parent);
       }
       break;
     case kPageMargin:
@@ -711,13 +711,12 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
   CSSTokenizer tokenizer(value);
   Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
 
-  StyleRule* old_parent = style_scope_->RuleForNesting();
   style_scope_ =
       StyleScope::Parse(tokens, parser_context, nesting_type,
                         parent_rule_for_nesting, is_within_scope, style_sheet);
 
   // Reparent rules within the @scope's body.
-  Reparent(old_parent, style_scope_->RuleForNesting());
+  Reparent(style_scope_->RuleForNesting());
 }
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,

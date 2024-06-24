@@ -127,12 +127,10 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   unsigned MaximumSpecificity() const;
 
   // See CSSSelector::Reparent.
-  static void Reparent(CSSSelector* selector_list,
-                       StyleRule* old_parent,
-                       StyleRule* new_parent);
+  static void Reparent(CSSSelector* selector_list, StyleRule* new_parent);
 
-  void Reparent(StyleRule* old_parent, StyleRule* new_parent) {
-    CSSSelectorList::Reparent(first_selector_, old_parent, new_parent);
+  void Reparent(StyleRule* new_parent) {
+    CSSSelectorList::Reparent(first_selector_, new_parent);
   }
 
   CSSSelectorList(const CSSSelectorList&) = delete;

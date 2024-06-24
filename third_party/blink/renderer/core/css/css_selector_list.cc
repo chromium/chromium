@@ -101,12 +101,11 @@ unsigned CSSSelectorList::MaximumSpecificity() const {
 }
 
 void CSSSelectorList::Reparent(CSSSelector* selector_list,
-                               StyleRule* old_parent,
                                StyleRule* new_parent) {
   DCHECK(selector_list);
   CSSSelector* current = selector_list;
   do {
-    current->Reparent(old_parent, new_parent);
+    current->Reparent(new_parent);
   } while (!(current++)->IsLastInSelectorList());
 }
 

@@ -129,11 +129,10 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
                               CSSRule* parent_rule,
                               bool trigger_use_counters = false) const;
 
-  // Move this rule from being a child of old_parent (which is only given for
-  // sake of DCHECK) to being a child of new_parent, updating parent pointers
-  // in the selector. This happens only when we need to reallocate a StyleRule
-  // because its selector changed.
-  void Reparent(StyleRule* old_parent, StyleRule* new_parent);
+  // Move this rule to being a child of new_parent, updating parent
+  // pointers in the selector. This happens only when we need to reallocate a
+  // StyleRule because its selector changed.
+  void Reparent(StyleRule* new_parent);
 
   void Trace(Visitor*) const;
   void TraceAfterDispatch(blink::Visitor* visitor) const {}

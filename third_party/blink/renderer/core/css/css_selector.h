@@ -421,7 +421,7 @@ class CORE_EXPORT CSSSelector {
   // within this simple selector (including inner selector lists).
   //
   // See also StyleRule::Reparent().
-  void Reparent(StyleRule* old_parent, StyleRule* new_parent);
+  void Reparent(StyleRule* new_parent);
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.

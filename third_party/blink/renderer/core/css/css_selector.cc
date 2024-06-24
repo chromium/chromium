@@ -442,12 +442,11 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
   return kPseudoIdNone;
 }
 
-void CSSSelector::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
+void CSSSelector::Reparent(StyleRule* new_parent) {
   if (GetPseudoType() == CSSSelector::kPseudoParent) {
-    DCHECK_EQ(old_parent, ParentRule());
     data_.parent_rule_ = new_parent;
   } else if (HasRareData() && data_.rare_data_->selector_list_) {
-    data_.rare_data_->selector_list_->Reparent(old_parent, new_parent);
+    data_.rare_data_->selector_list_->Reparent(new_parent);
   }
 }
 
