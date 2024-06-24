@@ -1,20 +1,6 @@
 # crbug.com/1515446
 -org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
 
-# crbug.com/1297370
--org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testAreMultipleChromeInstancesRunningFirstInstanceKilledFirst
--org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testAreMultipleChromeInstancesRunningSecondInstanceKilledFirst
--org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testTabbedActivityForIntentLastResumedActivity
--org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testTabbedActivityForIntentOnlyActivity2IsRunning
--org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testTabbedActivityForIntentWithExtraWindowId
--org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.testMoveTabTwice
--org.chromium.chrome.browser.tabmodel.TabModelMergingTest.testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed
--org.chromium.chrome.browser.tabmodel.TabModelMergingTest.testMergeOnMultiDisplay_OnDisplayChanged
--org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
--org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.testMoveLastIncognitoTab
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.testMoveTabsAcrossWindow_GTS_WithoutGroup
-
 # crbug.com/1193745
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult

@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 
+import android.os.Build.VERSION_CODES;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -52,6 +53,7 @@ import java.util.concurrent.TimeoutException;
 /** Class for testing MultiWindowUtils. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
 public class MultiWindowUtilsTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

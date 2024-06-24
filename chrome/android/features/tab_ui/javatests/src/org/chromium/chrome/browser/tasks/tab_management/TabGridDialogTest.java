@@ -171,6 +171,7 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({TAB_GROUP_PARITY_ANDROID})
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug.com/1435573")
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";

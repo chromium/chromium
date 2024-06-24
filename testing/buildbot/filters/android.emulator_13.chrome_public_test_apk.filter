@@ -1,14 +1,3 @@
-# crbug.com/1435573
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.*
-
-# crbug.com/1297370
--org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.*
--org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.*
--org.chromium.chrome.browser.tabmodel.TabModelMergingTest.*
--org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
--org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
--org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.*
-
 # crbug.com/1225709
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage

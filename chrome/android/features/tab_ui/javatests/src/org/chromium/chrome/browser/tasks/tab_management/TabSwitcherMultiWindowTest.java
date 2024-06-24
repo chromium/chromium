@@ -22,10 +22,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 
 import android.os.Build;
 
+import android.os.Build.VERSION_CODES;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.test.util.DisableIf;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -57,6 +59,7 @@ import org.chromium.ui.test.util.UiRestriction;
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
 // TODO(crbug.com/344669867): Failing when batched, batch this again.
 public class TabSwitcherMultiWindowTest {
     @ClassRule
