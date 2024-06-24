@@ -720,4 +720,13 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyZeroSizeRejects) {
   EXPECT_EQ(nullptr, provider_->GetNewTexture(kZeroHeight));
 }
 
+// Verifies that GetLastWebGPUMailboxTextureAndSize() returns empty information
+// if no swapbuffer has been created.
+TEST_F(WebGPUSwapBufferProviderTest,
+       GetLastWebGPUMailboxTextureAndSizeReturnsEmptyWithoutSwapBuffer) {
+  auto mailbox_texture_size = provider_->GetLastWebGPUMailboxTextureAndSize();
+  CHECK_EQ(mailbox_texture_size.mailbox_texture, nullptr);
+  CHECK_EQ(mailbox_texture_size.size, gfx::Size());
+}
+
 }  // namespace blink
