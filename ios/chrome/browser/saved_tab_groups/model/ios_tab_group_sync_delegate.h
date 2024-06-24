@@ -11,7 +11,17 @@
 
 class Browser;
 class ChromeBrowserState;
+class TabGroup;
 class TabInsertionBrowserAgent;
+
+namespace tab_groups {
+class TabGroupSyncService;
+
+namespace utils {
+struct LocalTabGroupInfo;
+}  // namespace utils
+
+}  // namespace tab_groups
 
 namespace web {
 class WebState;
@@ -27,13 +37,16 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   IOSTabGroupSyncDelegate(const IOSTabGroupSyncDelegate&) = delete;
   IOSTabGroupSyncDelegate& operator=(const IOSTabGroupSyncDelegate&) = delete;
 
+  // Sets the `sync_service_`.
+  void SetTabGroupSyncService(TabGroupSyncService* sync_service);
+
   // TabGroupSyncDelegate.
   void HandleOpenTabGroupRequest(
       const base::Uuid& sync_tab_group_id,
       std::unique_ptr<TabGroupActionContext> context) override;
-  void CreateLocalTabGroup(const SavedTabGroup& synced_tab_group) override;
+  void CreateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
   void CloseLocalTabGroup(const LocalTabGroupID& local_tab_group_id) override;
-  void UpdateLocalTabGroup(const SavedTabGroup& synced_tab_group) override;
+  void UpdateLocalTabGroup(const SavedTabGroup& saved_tab_group) override;
 
  private:
   // Retrieves the browser associated with the scene with the highest level of
@@ -45,9 +58,27 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   web::WebState* InsertDistantTab(
       const SavedTabGroupTab& tab,
       TabInsertionBrowserAgent* tab_insertion_browser_agent,
-      int web_state_index);
+      int web_state_index,
+      const TabGroup* tab_group);
 
-  ChromeBrowserState* browser_state_;
+  // Updates the given `web_state` to match the distant `synced_tab`.
+  void UpdateLocalWebState(int web_state_index,
+                           web::WebState* web_state,
+                           tab_groups::utils::LocalTabGroupInfo tab_group_info,
+                           const SavedTabGroupTab& synced_tab);
+
+  // Updates the association of the local tab id on the server.
+  void UpdateLocalTabId(web::WebState* web_state,
+                        const TabGroup* tab_group,
+                        const SavedTabGroupTab& saved_tab);
+
+  // Updates the visual data of the local tab group to match the
+  // `SavedTabGroup`.
+  void UpdateLocalGroupVisualData(utils::LocalTabGroupInfo tab_group_info,
+                                  const SavedTabGroup& saved_tab_group);
+
+  ChromeBrowserState* browser_state_ = nil;
+  TabGroupSyncService* sync_service_ = nil;
 };
 
 }  // namespace tab_groups

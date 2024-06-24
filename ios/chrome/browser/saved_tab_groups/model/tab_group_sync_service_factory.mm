@@ -90,6 +90,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate =
       std::make_unique<IOSTabGroupSyncDelegate>(browser_state);
+  delegate->SetTabGroupSyncService(service.get());
 
   service->SetCoordinator(std::make_unique<TabGroupSyncCoordinator>(
       std::move(delegate), service.get()));

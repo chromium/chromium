@@ -51,6 +51,14 @@ std::unique_ptr<KeyedService> CreateMockSyncService(
   return std::make_unique<MockTabGroupSyncService>();
 }
 
+// Updates the association of the local tab id.
+void FakeUpdateLocalTabId(web::WebState* web_state,
+                          SavedTabGroupTab& saved_tab,
+                          SavedTabGroup& saved_group) {
+  saved_tab.SetLocalTabID(web_state->GetUniqueIdentifier().identifier());
+  saved_group.UpdateTab(saved_tab);
+}
+
 }  // namespace
 
 class IOSTabGroupSyncDelegateTest : public PlatformTest {
@@ -96,14 +104,14 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     browser_list_->AddBrowser(browser_same_browser_state_);
 
     delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(browser_state_.get());
+    delegate_->SetTabGroupSyncService(mock_service_);
   }
 
   // Returns a vector containing the 3 local tabs.
   std::vector<SavedTabGroupTab> CreateLocalTabs(base::Uuid saved_tab_group_id) {
-    // Push the second tab first to check the order.
     std::vector<SavedTabGroupTab> tabs;
-    tabs.push_back(SecondTab(saved_tab_group_id));
     tabs.push_back(FirstTab(saved_tab_group_id));
+    tabs.push_back(SecondTab(saved_tab_group_id));
     tabs.push_back(ThirdTab(saved_tab_group_id));
     return tabs;
   }
@@ -309,16 +317,22 @@ TEST_F(IOSTabGroupSyncDelegateTest, CloseTabGroup) {
   ASSERT_TRUE(builder_same_browser_state.BuildWebStateListFromDescription(
       "| [1 e* f ] g h ", browser_->GetBrowserState()));
 
-  // TODO(crbug.com/329631494): Use the two group IDs to close them.
-  LocalTabGroupID local_id_group_0 = TabGroupId::CreateEmpty();
+  LocalTabGroupID local_id_group_0 =
+      builder.GetTabGroupForIdentifier('0')->tab_group_id();
   delegate_->CloseLocalTabGroup(local_id_group_0);
+  EXPECT_EQ("| a d*", builder.GetWebStateListDescription());
+
+  LocalTabGroupID local_id_group_1 =
+      builder_same_browser_state.GetTabGroupForIdentifier('1')->tab_group_id();
+  delegate_->CloseLocalTabGroup(local_id_group_1);
+  EXPECT_EQ("| g* h", builder_same_browser_state.GetWebStateListDescription());
 }
 
 TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a [0 b* c ] d", browser_->GetBrowserState()));
+      "| a* [0 b c ] d", browser_->GetBrowserState()));
 
   WebStateList* web_state_list_same_browser_state =
       browser_same_browser_state_->GetWebStateList();
@@ -327,13 +341,91 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateTabGroup) {
   ASSERT_TRUE(builder_same_browser_state.BuildWebStateListFromDescription(
       "| [1 e* f ] g h ", browser_->GetBrowserState()));
 
-  // TODO(crbug.com/329631494): Update the groups (adding/removing tabs,
-  // updating URLs of existing tabs...) and check that the tabs are not
-  // realized.
+  const TabGroup* tab_group = builder.GetTabGroupForIdentifier('0');
+  base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
   std::vector<SavedTabGroupTab> tabs;
-  SavedTabGroup saved_group(u"my group", TabGroupColorId::kBlue, tabs,
-                            std::make_optional(1));
+  SavedTabGroupTab first_tab = FirstTab(saved_tab_group_id);
+  SavedTabGroupTab second_tab = SecondTab(saved_tab_group_id);
+  SavedTabGroupTab third_tab = ThirdTab(saved_tab_group_id);
+
+  SavedTabGroup saved_group(u"my group", TabGroupColorId::kPink, tabs,
+                            std::make_optional(0), saved_tab_group_id);
+  saved_group.SetLocalGroupId(tab_group->tab_group_id());
+
+  EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kFirstTabId, _)).Times(1);
+  EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kSecondTabId, _)).Times(2);
+  EXPECT_CALL(*mock_service_, UpdateLocalTabId(_, kThirdTabId, _)).Times(2);
+
+  // Update the local group with only one tab.
+  saved_group.AddTabFromSync(first_tab);
   delegate_->UpdateLocalTabGroup(saved_group);
+  web::WebState* first_web_state = web_state_list->GetWebStateAt(1);
+  FakeUpdateLocalTabId(first_web_state, first_tab, saved_group);
+  ASSERT_EQ(3, web_state_list->count());
+  EXPECT_FALSE(first_web_state->IsRealized());
+  EXPECT_EQ(kFirstTabURL, first_web_state->GetVisibleURL());
+  EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
+  EXPECT_EQ(1, tab_group->range().count());
+  EXPECT_TRUE([tab_group->GetTitle() isEqual:@"my group"]);
+  EXPECT_TRUE([tab_group->GetColor()
+      isEqual:TabGroup::ColorForTabGroupColorId(TabGroupColorId::kPink)]);
+
+  // Update the local group by adding 2 new tabs.
+  saved_group.AddTabFromSync(second_tab);
+  saved_group.AddTabFromSync(third_tab);
+  delegate_->UpdateLocalTabGroup(saved_group);
+  first_web_state = web_state_list->GetWebStateAt(1);
+  web::WebState* second_web_state = web_state_list->GetWebStateAt(2);
+  web::WebState* third_web_state = web_state_list->GetWebStateAt(3);
+  FakeUpdateLocalTabId(second_web_state, second_tab, saved_group);
+  FakeUpdateLocalTabId(third_web_state, third_tab, saved_group);
+  ASSERT_EQ(5, web_state_list->count());
+  EXPECT_FALSE(first_web_state->IsRealized());
+  EXPECT_FALSE(second_web_state->IsRealized());
+  EXPECT_FALSE(third_web_state->IsRealized());
+  EXPECT_EQ(kFirstTabURL, first_web_state->GetVisibleURL());
+  EXPECT_EQ(kFirstTabTitle, first_web_state->GetTitle());
+  EXPECT_EQ(kSecondTabURL, second_web_state->GetVisibleURL());
+  EXPECT_EQ(kSecondTabTitle, second_web_state->GetTitle());
+  EXPECT_EQ(kThirdTabURL, third_web_state->GetVisibleURL());
+  EXPECT_EQ(kThirdTabTitle, third_web_state->GetTitle());
+  EXPECT_EQ(3, tab_group->range().count());
+
+  // Move the second tab at the end and remove the first tab.
+  saved_group.MoveTabLocally(kSecondTabId, 2);
+  saved_group.RemoveTabFromSync(kFirstTabId);
+  delegate_->UpdateLocalTabGroup(saved_group);
+  second_web_state = web_state_list->GetWebStateAt(2);
+  third_web_state = web_state_list->GetWebStateAt(1);
+  ASSERT_EQ(4, web_state_list->count());
+  EXPECT_FALSE(second_web_state->IsRealized());
+  EXPECT_FALSE(third_web_state->IsRealized());
+  EXPECT_EQ(kSecondTabURL, second_web_state->GetVisibleURL());
+  EXPECT_EQ(kSecondTabTitle, second_web_state->GetTitle());
+  EXPECT_EQ(kThirdTabURL, third_web_state->GetVisibleURL());
+  EXPECT_EQ(kThirdTabTitle, third_web_state->GetTitle());
+  EXPECT_EQ(2, tab_group->range().count());
+
+  // Update the URL of both tabs.
+  GURL second_tab_updated_url = GURL("https://second_tab_updated.com");
+  GURL third_tab_updated_url = GURL("https://third_tab_updated.com");
+  second_tab.SetURL(second_tab_updated_url);
+  third_tab.SetURL(third_tab_updated_url);
+  saved_group.UpdateTab(second_tab);
+  saved_group.UpdateTab(third_tab);
+  delegate_->UpdateLocalTabGroup(saved_group);
+  second_web_state = web_state_list->GetWebStateAt(2);
+  third_web_state = web_state_list->GetWebStateAt(1);
+  FakeUpdateLocalTabId(second_web_state, second_tab, saved_group);
+  FakeUpdateLocalTabId(third_web_state, third_tab, saved_group);
+  ASSERT_EQ(4, web_state_list->count());
+  EXPECT_FALSE(second_web_state->IsRealized());
+  EXPECT_FALSE(third_web_state->IsRealized());
+  EXPECT_EQ(second_tab_updated_url, second_web_state->GetVisibleURL());
+  EXPECT_EQ(kSecondTabTitle, second_web_state->GetTitle());
+  EXPECT_EQ(third_tab_updated_url, third_web_state->GetVisibleURL());
+  EXPECT_EQ(kThirdTabTitle, third_web_state->GetTitle());
+  EXPECT_EQ(2, tab_group->range().count());
 }
 
 }  // namespace tab_groups

@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "ios_tab_group_sync_delegate.h",
     "ios_tab_group_sync_delegate.mm",
+    "ios_tab_group_sync_util.h",
+    "ios_tab_group_sync_util.mm",
     "tab_group_sync_service_factory.h",
     "tab_group_sync_service_factory.mm",
   ]
@@ -23,6 +25,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/sync/model:model_type_store_service_factory",
     "//ios/chrome/browser/tab_insertion/model",
