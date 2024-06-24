@@ -53,10 +53,9 @@ class ChromeBrowserStateManagerImpl : public ios::ChromeBrowserStateManager,
   using BrowserStateLoadedCallback =
       base::OnceCallback<void(ChromeBrowserState*)>;
 
-  // Get the path of the last used browser state, or if that's undefined, the
+  // Get the name of the last used browser state, or if that's undefined, the
   // default browser state.
-  base::FilePath GetLastUsedBrowserStateDir(
-      const base::FilePath& user_data_dir);
+  std::string GetLastUsedBrowserStateName() const;
 
   // Load ChromeBrowserState at `path` and invoke `callback` when the load
   // is complete.

@@ -194,11 +194,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "chrome_browser_state_manager_impl_unittest.mm" ]
   deps = [
+    ":constants",
     ":ios_thread",
     ":model",
     "//base",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/thread",
