@@ -48,8 +48,7 @@ void SimplifiedOofLayoutAlgorithm::ResumeColumnLayout(
 }
 
 const LayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
-  FinishFragmentationForFragmentainer(GetConstraintSpace(),
-                                      &container_builder_);
+  FinishFragmentationForFragmentainer(&container_builder_);
   return container_builder_.ToBoxFragment();
 }
 

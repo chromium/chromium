@@ -1128,9 +1128,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   }
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    BreakStatus break_status = FinishFragmentation(
-        Node(), GetConstraintSpace(), BorderPadding().block_end,
-        FragmentainerSpaceLeft(GetConstraintSpace()), &container_builder_);
+    BreakStatus break_status =
+        FinishFragmentation(BorderPadding().block_end, &container_builder_);
     if (break_status != BreakStatus::kContinue) {
       if (break_status == BreakStatus::kNeedsEarlierBreak) {
         return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);

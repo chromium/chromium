@@ -468,11 +468,11 @@ bool ShouldIncludeBlockEndBorderPadding(const BoxFragmentBuilder& builder) {
   return !builder.HasInflowChildBreakInside();
 }
 
-BreakStatus FinishFragmentation(BlockNode node,
-                                const ConstraintSpace& space,
-                                LayoutUnit trailing_border_padding,
-                                LayoutUnit space_left,
+BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
                                 BoxFragmentBuilder* builder) {
+  const BlockNode& node = builder->Node();
+  const ConstraintSpace& space = builder->GetConstraintSpace();
+  LayoutUnit space_left = FragmentainerSpaceLeft(space);
   const BlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit previously_consumed_block_size;
   if (previous_break_token && !previous_break_token->IsBreakBefore())
@@ -727,8 +727,8 @@ BreakStatus FinishFragmentation(BlockNode node,
   return BreakStatus::kContinue;
 }
 
-BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace& space,
-                                                BoxFragmentBuilder* builder) {
+BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder* builder) {
+  const ConstraintSpace& space = builder->GetConstraintSpace();
   DCHECK(builder->IsFragmentainerBoxType());
   const BlockBreakToken* previous_break_token = builder->PreviousBreakToken();
   LayoutUnit consumed_block_size =

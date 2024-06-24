@@ -1622,8 +1622,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     BreakStatus status =
-        FinishFragmentation(Node(), constraint_space, border_padding.block_end,
-                            fragmentainer_space_at_start, &container_builder_);
+        FinishFragmentation(border_padding.block_end, &container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {
       return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
     }

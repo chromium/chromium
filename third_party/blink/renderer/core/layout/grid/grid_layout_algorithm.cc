@@ -311,9 +311,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    auto status = FinishFragmentation(
-        node, constraint_space, border_padding.block_end,
-        FragmentainerSpaceLeft(constraint_space), &container_builder_);
+    auto status =
+        FinishFragmentation(border_padding.block_end, &container_builder_);
     if (status == BreakStatus::kDisableFragmentation) {
       return container_builder_.Abort(LayoutResult::kDisableFragmentation);
     }

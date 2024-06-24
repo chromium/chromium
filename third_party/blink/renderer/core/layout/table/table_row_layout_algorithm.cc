@@ -262,9 +262,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
 
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     BreakStatus status = FinishFragmentation(
-        Node(), GetConstraintSpace(),
-        /* trailing_border_padding */ LayoutUnit(),
-        FragmentainerSpaceLeft(GetConstraintSpace()), &container_builder_);
+        /*trailing_border_padding=*/LayoutUnit(), &container_builder_);
 
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, BreakStatus::kContinue);

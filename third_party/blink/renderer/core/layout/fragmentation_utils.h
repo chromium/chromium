@@ -291,15 +291,11 @@ enum class BreakStatus {
 // fragmentation (kDisableFragmentation). kBrokeBefore is never returned here
 // (if we need a break before the node, that's something that will be determined
 // by the parent algorithm).
-BreakStatus FinishFragmentation(BlockNode node,
-                                const ConstraintSpace&,
-                                LayoutUnit trailing_border_padding,
-                                LayoutUnit space_left,
+BreakStatus FinishFragmentation(LayoutUnit trailing_border_padding,
                                 BoxFragmentBuilder*);
 
 // Special rules apply for finishing fragmentation when building fragmentainers.
-BreakStatus FinishFragmentationForFragmentainer(const ConstraintSpace&,
-                                                BoxFragmentBuilder*);
+BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder*);
 
 // Return true if there's a valid class A/B breakpoint between the child
 // fragment that was just added to the builder, and the next sibling, if one is

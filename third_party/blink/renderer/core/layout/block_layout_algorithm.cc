@@ -2733,17 +2733,10 @@ BreakStatus BlockLayoutAlgorithm::FinalizeForFragmentation(
   }
 
   if (container_builder_.IsFragmentainerBoxType()) {
-    return FinishFragmentationForFragmentainer(GetConstraintSpace(),
-                                               &container_builder_);
+    return FinishFragmentationForFragmentainer(&container_builder_);
   }
 
-  LayoutUnit space_left = kIndefiniteSize;
-  if (GetConstraintSpace().HasKnownFragmentainerBlockSize()) {
-    space_left = FragmentainerSpaceLeft(GetConstraintSpace());
-  }
-
-  return FinishFragmentation(Node(), GetConstraintSpace(),
-                             block_end_border_padding_added, space_left,
+  return FinishFragmentation(block_end_border_padding_added,
                              &container_builder_);
 }
 
