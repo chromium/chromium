@@ -1300,7 +1300,9 @@ void LineBreaker::HandleText(const InlineItem& item,
   }
 
   if (auto_wrap_) {
-    if (mode_ == LineBreakerMode::kMinContent &&
+    // Check `parent_breaker_` because sub-LineInfo instances for <ruby>
+    // require non-null InlineItemResult::shape_result.
+    if (mode_ == LineBreakerMode::kMinContent && !parent_breaker_ &&
         HandleTextForFastMinContent(item_result, item, shape_result,
                                     line_info)) {
       return;
