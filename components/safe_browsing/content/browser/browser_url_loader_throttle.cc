@@ -465,8 +465,6 @@ void BrowserURLLoaderThrottle::OnCompleteSyncCheck(
       deferred_ = false;
       TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
                                       TRACE_ID_LOCAL(this));
-      base::UmaHistogramTimes("SafeBrowsing.BrowserThrottle.TotalDelay",
-                              total_delay_);
       delegate_->Resume();
       MaybeTransferAsyncChecker();
     }

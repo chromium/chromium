@@ -108,10 +108,6 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Checked", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Skipped", 1);
 }
 
 TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsScriptUrl) {
@@ -127,10 +123,6 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsScriptUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Checked", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Skipped", 1);
 }
 
 TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferChromeUrl) {
@@ -144,121 +136,20 @@ TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferChromeUrl) {
   auto response_head = network::mojom::URLResponseHead::New();
   throttle_->WillProcessResponse(url, response_head.get(), &defer);
   EXPECT_FALSE(defer);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Checked", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Skipped", 0);
 }
 
-TEST_F(SBRendererUrlLoaderThrottleTest,
-       VerifyTotalDelayHistograms_DoesNotDefer) {
-  base::HistogramTester histograms;
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  message_loop_.FastForwardBy(base::Milliseconds(200));
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
-                                    base::Milliseconds(0), 1);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest,
-       VerifyTotalDelayHistograms_DoesNotDeferFromCache) {
-  base::HistogramTester histograms;
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  message_loop_.FastForwardBy(base::Milliseconds(200));
-  auto response_head = network::mojom::URLResponseHead::New();
-  // Set up a "cache" response.
-  response_head->was_fetched_via_cache = true;
-  response_head->network_accessed = false;
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
-                                    base::Milliseconds(0), 1);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest,
-       VerifyTotalDelayHistograms_SkipChromeUrl) {
-  base::HistogramTester histograms;
-  GURL url("chrome://settings/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
-                                    base::Milliseconds(0), 1);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest,
-       VerifyTotalDelayHistograms_SkipImageUrl) {
-  base::HistogramTester histograms;
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kImage);
-  throttle_->WillStartRequest(&request, &defer);
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
-                                    base::Milliseconds(0), 1);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest,
-       VerifyTotalDelayHistograms_SkipScriptUrl) {
-  base::HistogramTester histograms;
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
-                                    base::Milliseconds(0), 1);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest,
-       VerifyTotalDelayHistograms_SkipIframeUrl) {
+TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferIframeUrl) {
   base::HistogramTester histograms;
   GURL url("https://example.com/");
   bool defer = false;
   network::ResourceRequest request =
       GetResourceRequest(url, network::mojom::RequestDestination::kIframe);
   throttle_->WillStartRequest(&request, &defer);
-  histograms.ExpectUniqueTimeSample("SafeBrowsing.RendererThrottle.TotalDelay3",
-                                    base::Milliseconds(0), 1);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromNetwork", 0);
-  histograms.ExpectTotalCount(
-      "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
+  message_loop_.RunUntilIdle();
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  throttle_->WillProcessResponse(url, response_head.get(), &defer);
+  EXPECT_FALSE(defer);
 }
 
 }  // namespace safe_browsing

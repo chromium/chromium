@@ -74,17 +74,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Enterprise" summary="Applies only to enterprise checks."/>
 </variants>
 
-<variants name="RequestedSkippedOrChecked">
-  <variant name="" summary="requested"/>
-  <variant name=".Checked" summary="checked"/>
-  <variant name=".Skipped" summary="skipped"/>
-</variants>
-
-<variants name="ThrottleProcess">
-  <variant name="Browser" summary="Browser"/>
-  <variant name="Renderer" summary="Renderer"/>
-</variants>
-
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
     enum="AdvancedProtectionEnabledStatus" expires_after="2024-02-04">
   <owner>meacer@chromium.org</owner>
@@ -275,6 +264,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess{ResponseType}"
+    units="ms" expires_after="2024-11-03">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the interval between when the browser URL loader starts a request and
+    when the browser URL loader is ready to process the response {ResponseType}.
+    Logs each time the URL loader is ready to process the response and the start
+    request function is previously called. During this interval, Safe Browsing
+    checks are performed in parallel.
+  </summary>
+  <token key="ResponseType">
+    <variant name="" summary="from local cache or network"/>
+    <variant name=".FromCache" summary="from local cache (e.g. HTTP cache)"/>
+    <variant name=".FromNetwork" summary="from network"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.BrowserThrottle.IsAsyncCheckerTransferred"
     enum="BooleanTransferred" expires_after="2024-12-08">
   <owner>xinghuilu@chromium.org</owner>
@@ -314,16 +322,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.BrowserThrottle.TotalDelay" units="ms"
-    expires_after="2024-12-01">
+<histogram
+    name="SafeBrowsing.BrowserThrottle.RequestDestination{RequestedSkippedOrChecked}"
+    enum="RequestDestination" expires_after="2024-10-20">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs the latency between when the URL loader was deferred by Safe Browsing
-    check and when the check is completed. Logs each time the URL loader was
-    deferred by Safe Browsing check and the Safe Browsing check doesn't block
-    the URL.
+    Logs the request destination of the URL that is checked by the browser URL
+    loader throttle, and whether the URL check was {RequestedSkippedOrChecked}.
+    Logged each time WillStartRequest is called.
   </summary>
+  <token key="RequestedSkippedOrChecked">
+    <variant name="" summary="requested"/>
+    <variant name=".Checked" summary="checked"/>
+    <variant name=".Skipped" summary="skipped"/>
+  </token>
+</histogram>
+
+<histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{ResponseType}"
+    units="ms" expires_after="2024-10-20">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the latency between when the browser URL loader was deferred by Safe
+    Browsing check and when the check is completed, for URL loaded
+    {ResponseType}. This metric logs for each request, recording zero delay when
+    the request is not deferred.
+  </summary>
+  <token key="ResponseType">
+    <variant name=".FromCache" summary="from local cache (e.g. HTTP cache)"/>
+    <variant name=".FromNetwork" summary="from network"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay2{UserCategory}"
@@ -333,9 +362,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the latency between when the browser URL loader was deferred by Safe
     Browsing check and when the check is completed, for {UserCategory} URL check
-    request. This metric is different from
-    SafeBrowsing.BrowserThrottle.TotalDelay as it logs for each request,
-    recording zero delay when the request is not deferred.
+    request. This metric logs for each request, recording zero delay when the
+    request is not deferred.
   </summary>
   <token key="UserCategory">
     <variant name=".ConsumerFullUrlLookup" summary="consumer real time"/>
@@ -2158,29 +2186,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RendererThrottle.TotalDelay" units="ms"
-    expires_after="2024-11-24">
+<histogram name="SafeBrowsing.RendererThrottle.RequestDestination"
+    enum="RequestDestination" expires_after="2024-10-20">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs the latency between when the renderer URL loader was deferred by Safe
-    Browsing check and when the check is completed. Logs each time the renderer
-    URL loader was deferred by Safe Browsing check and the Safe Browsing check
-    doesn't block the URL.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.RendererThrottle.TotalDelay3" units="ms"
-    expires_after="2024-12-08">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the latency between when the renderer URL loader was deferred by Safe
-    Browsing check and when the check is completed. This metric is different
-    from SafeBrowsing.RendererThrottle.TotalDelay as it logs for each request,
-    recording zero delay when the request is not deferred. This metric is
-    different from SafeBrowsing.RendererThrottle.TotalDelay2 as it logs zero
-    delay when the check is skipped.
+    Logs the request destination of the URL that is checked by the renderer URL
+    loader throttle, and whether the URL check was requested. Logged each time
+    WillStartRequest is called.
   </summary>
 </histogram>
 
@@ -3388,58 +3401,6 @@ failing to fetch the updates which puts users' security at risk. -->
     <variant name=".TooManyRequests" summary="a TooManyRequests"/>
     <variant name=".Unknown" summary="an Unknown"/>
     <variant name=".UnsupportedFileType" summary="an UnsupportedFileType"/>
-  </token>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.{Process}Throttle.IntervalBetweenStartAndProcess{ResponseType}"
-    units="ms" expires_after="2024-11-03">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the interval between when the {Process} URL loader starts a request and
-    when the {Process} URL loader is ready to process the response
-    {ResponseType}. Logs each time the URL loader is ready to process the
-    response and the start request function is previously called. During this
-    interval, Safe Browsing checks are performed in parallel.
-  </summary>
-  <token key="Process" variants="ThrottleProcess"/>
-  <token key="ResponseType">
-    <variant name="" summary="from local cache or network"/>
-    <variant name=".FromCache" summary="from local cache (e.g. HTTP cache)"/>
-    <variant name=".FromNetwork" summary="from network"/>
-  </token>
-</histogram>
-
-<histogram
-    name="SafeBrowsing.{Process}Throttle.RequestDestination{RequestedSkippedOrChecked}"
-    enum="RequestDestination" expires_after="2024-10-20">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the request destination of the URL that is checked by the {Process} URL
-    loader throttle, and whether the URL check was {RequestedSkippedOrChecked}.
-    Logged each time WillStartRequest is called.
-  </summary>
-  <token key="Process" variants="ThrottleProcess"/>
-  <token key="RequestedSkippedOrChecked" variants="RequestedSkippedOrChecked"/>
-</histogram>
-
-<histogram name="SafeBrowsing.{Process}Throttle.TotalDelay2{ResponseType}"
-    units="ms" expires_after="2024-10-20">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the latency between when the {Process} URL loader was deferred by Safe
-    Browsing check and when the check is completed, for URL loaded
-    {ResponseType}. This metric is different from
-    SafeBrowsing.{Process}Throttle.TotalDelay as it logs for each request,
-    recording zero delay when the request is not deferred.
-  </summary>
-  <token key="Process" variants="ThrottleProcess"/>
-  <token key="ResponseType">
-    <variant name=".FromCache" summary="from local cache (e.g. HTTP cache)"/>
-    <variant name=".FromNetwork" summary="from network"/>
   </token>
 </histogram>
 
