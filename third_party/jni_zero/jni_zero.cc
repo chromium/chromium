@@ -131,6 +131,43 @@ void JavaRef<jobject>::ResetGlobalRef() {
   }
 }
 
+ScopedJavaGlobalWeakRef::ScopedJavaGlobalWeakRef(
+    const ScopedJavaGlobalWeakRef& orig) {
+  Assign(orig);
+}
+
+ScopedJavaGlobalWeakRef::ScopedJavaGlobalWeakRef(JNIEnv* env, jobject obj)
+    : obj_(env->NewWeakGlobalRef(obj)) {}
+
+ScopedJavaGlobalWeakRef::ScopedJavaGlobalWeakRef(JNIEnv* env,
+                                                 const JavaRef<jobject>& obj)
+    : obj_(env->NewWeakGlobalRef(obj.obj())) {}
+
+void ScopedJavaGlobalWeakRef::reset() {
+  if (obj_) {
+    AttachCurrentThread()->DeleteWeakGlobalRef(obj_);
+    obj_ = nullptr;
+  }
+}
+
+ScopedJavaLocalRef<jobject> ScopedJavaGlobalWeakRef::get(JNIEnv* env) const {
+  jobject real = obj_ ? real = env->NewLocalRef(obj_) : nullptr;
+  return ScopedJavaLocalRef<jobject>(env, real);
+}
+
+void ScopedJavaGlobalWeakRef::Assign(const ScopedJavaGlobalWeakRef& other) {
+  if (&other == this) {
+    return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  if (obj_) {
+    env->DeleteWeakGlobalRef(obj_);
+  }
+
+  obj_ = other.obj_ ? env->NewWeakGlobalRef(other.obj_) : nullptr;
+}
+
 JNIEnv* AttachCurrentThread() {
   JNI_ZERO_DCHECK(g_jvm);
   JNIEnv* env = nullptr;

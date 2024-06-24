@@ -501,6 +501,37 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   }
 };
 
+// Wrapper for working with weak references.
+class JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaGlobalWeakRef {
+ public:
+  ScopedJavaGlobalWeakRef() = default;
+  ScopedJavaGlobalWeakRef(const ScopedJavaGlobalWeakRef& orig);
+  ScopedJavaGlobalWeakRef(ScopedJavaGlobalWeakRef&& orig) : obj_(orig.obj_) {
+    orig.obj_ = nullptr;
+  }
+  ScopedJavaGlobalWeakRef(JNIEnv* env, jobject obj);
+  ScopedJavaGlobalWeakRef(JNIEnv* env, const JavaRef<jobject>& obj);
+  ~ScopedJavaGlobalWeakRef() { reset(); }
+
+  void operator=(const ScopedJavaGlobalWeakRef& rhs) { Assign(rhs); }
+  void operator=(ScopedJavaGlobalWeakRef&& rhs) { std::swap(obj_, rhs.obj_); }
+
+  ScopedJavaLocalRef<jobject> get(JNIEnv* env) const;
+
+  // Returns true if the weak reference has not been initialized to point at
+  // an object (or ḣas had reset() called).
+  // Do not call this to test if the object referred to still exists! The weak
+  // reference remains initialized even if the target object has been collected.
+  bool is_uninitialized() const { return obj_ == nullptr; }
+
+  void reset();
+
+ private:
+  void Assign(const ScopedJavaGlobalWeakRef& rhs);
+
+  jweak obj_ = nullptr;
+};
+
 // Wrapper for a jobjectArray which supports input iteration, allowing Java
 // arrays to be iterated over with a range-based for loop, or used with
 // <algorithm> functions that accept input iterators.
