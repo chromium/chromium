@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/page_info/core/about_this_site_service.h"
 #import "components/page_info/core/features.h"
@@ -40,8 +41,14 @@ AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
 std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!page_info::IsAboutThisSiteFeatureEnabled(
-          GetApplicationContext()->GetApplicationLocale())) {
+  const bool is_about_this_site_language_supported =
+      page_info::IsAboutThisSiteFeatureEnabled(
+          GetApplicationContext()->GetApplicationLocale());
+
+  base::UmaHistogramBoolean("Security.PageInfo.AboutThisSiteLanguageSupported",
+                            is_about_this_site_language_supported);
+
+  if (!is_about_this_site_language_supported) {
     return nullptr;
   }
 
