@@ -91,10 +91,9 @@ class FileSystemReaderDataPipeProducer {
     while (remaining_bytes_ > 0) {
       if (!producer_handle_.is_valid())
         CompleteWithResult(net::ERR_FAILED);
-      void* pipe_buffer;
-      size_t buffer_size = kDefaultPipeSize;
+      base::span<uint8_t> pipe_buffer;
       MojoResult result = producer_handle_->BeginWriteData(
-          &pipe_buffer, &buffer_size, MOJO_WRITE_DATA_FLAG_NONE);
+          kDefaultPipeSize, MOJO_BEGIN_WRITE_DATA_FLAG_NONE, pipe_buffer);
       // If we can't synchronously get the buffer to write to, stop for now and
       // wait for the SimpleWatcher to notify us that the pipe is writable.
       if (result == MOJO_RESULT_SHOULD_WAIT) {
@@ -106,11 +105,13 @@ class FileSystemReaderDataPipeProducer {
         return;
       }
 
-      DCHECK(base::IsValueInRangeForNumericType<int>(buffer_size));
+      DCHECK(base::IsValueInRangeForNumericType<int>(pipe_buffer.size()));
       scoped_refptr<MojoPipeIOBuffer> io_buffer =
-          base::MakeRefCounted<MojoPipeIOBuffer>(pipe_buffer, buffer_size);
+          base::MakeRefCounted<MojoPipeIOBuffer>(pipe_buffer.data(),
+                                                 pipe_buffer.size());
       const int read_size = stream_reader_->Read(
-          io_buffer.get(), std::min<int64_t>(buffer_size, remaining_bytes_),
+          io_buffer.get(),
+          std::min<int64_t>(pipe_buffer.size(), remaining_bytes_),
           base::BindOnce(
               &FileSystemReaderDataPipeProducer::OnPendingReadComplete,
               weak_ptr_factory_.GetWeakPtr()));

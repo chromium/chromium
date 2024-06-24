@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -68,22 +69,24 @@ class BidirectionalStreamTest : public ::testing::Test {
 
 TEST_F(BidirectionalStreamTest, Read) {
   std::string message = "ReceivedMessage";
-  size_t message_size = message.size();
-  EXPECT_EQ(MOJO_RESULT_OK,
-            receive_stream_->WriteData(message.data(), &message_size,
-                                       MOJO_WRITE_DATA_FLAG_NONE));
-  EXPECT_EQ(
-      Exception::kSuccess,
-      bidirectional_stream_->GetInputStream()->Read(message_size).exception());
+  size_t bytes_written = 0;
+  EXPECT_EQ(MOJO_RESULT_OK, receive_stream_->WriteData(
+                                base::as_byte_span(message),
+                                MOJO_WRITE_DATA_FLAG_NONE, bytes_written));
+  EXPECT_EQ(bytes_written, message.size());
+  EXPECT_EQ(Exception::kSuccess, bidirectional_stream_->GetInputStream()
+                                     ->Read(message.size())
+                                     .exception());
 
   // Can't read after streams are closed
-  EXPECT_EQ(MOJO_RESULT_OK,
-            receive_stream_->WriteData(message.data(), &message_size,
-                                       MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(MOJO_RESULT_OK, receive_stream_->WriteData(
+                                base::as_byte_span(message),
+                                MOJO_WRITE_DATA_FLAG_NONE, bytes_written));
+  EXPECT_EQ(bytes_written, message.size());
   EXPECT_EQ(Exception::kSuccess, bidirectional_stream_->Close().value);
-  EXPECT_EQ(
-      Exception::kIo,
-      bidirectional_stream_->GetInputStream()->Read(message_size).exception());
+  EXPECT_EQ(Exception::kIo, bidirectional_stream_->GetInputStream()
+                                ->Read(message.size())
+                                .exception());
 }
 
 TEST_F(BidirectionalStreamTest, Write) {
@@ -91,11 +94,12 @@ TEST_F(BidirectionalStreamTest, Write) {
   EXPECT_EQ(Exception::kSuccess, bidirectional_stream_->GetOutputStream()
                                      ->Write(ByteArray{message})
                                      .value);
-  const size_t max_buffer_size = 1024;
-  size_t buffer_size = max_buffer_size;
-  std::vector<char> buffer(max_buffer_size);
-  EXPECT_EQ(MOJO_RESULT_OK, send_stream_->ReadData(buffer.data(), &buffer_size,
-                                                   MOJO_READ_DATA_FLAG_NONE));
+  std::vector<char> buffer(1024);
+  size_t bytes_read = 0;
+  EXPECT_EQ(
+      MOJO_RESULT_OK,
+      send_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                             base::as_writable_byte_span(buffer), bytes_read));
 
   // Can't write after streams are closed
   EXPECT_EQ(Exception::kSuccess, bidirectional_stream_->Close().value);

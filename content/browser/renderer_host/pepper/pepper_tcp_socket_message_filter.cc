@@ -815,10 +815,10 @@ void PepperTCPSocketMessageFilter::TryWrite() {
 
     auto view = base::cstring_view(pending_write_data_);
     view.remove_prefix(pending_write_bytes_written_);
-    size_t num_bytes = view.size();
-    DCHECK_GT(num_bytes, 0u);
-    int mojo_result = send_stream_->WriteData(view.c_str(), &num_bytes,
-                                              MOJO_WRITE_DATA_FLAG_NONE);
+    DCHECK_GT(view.size(), 0u);
+    size_t bytes_written = 0;
+    int mojo_result = send_stream_->WriteData(
+        base::as_byte_span(view), MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
       write_watcher_->ArmOrNotify();
       break;
@@ -833,9 +833,9 @@ void PepperTCPSocketMessageFilter::TryWrite() {
     }
 
     // This is guaranteed by Mojo.
-    DCHECK_GT(num_bytes, 0u);
+    DCHECK_GT(bytes_written, 0u);
 
-    pending_write_bytes_written_ += num_bytes;
+    pending_write_bytes_written_ += bytes_written;
     // If all bytes were written, nothing left to do.
     if (pending_write_bytes_written_ == pending_write_data_.size()) {
       SendWriteReply(pending_write_bytes_written_);

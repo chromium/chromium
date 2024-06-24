@@ -4,6 +4,7 @@
 
 #include "mojo/public/tools/fuzzers/mojolpm.h"
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -353,8 +354,9 @@ void HandleDataPipeRead(const ::mojolpm::DataPipeRead& input) {
     if (size > kPipeActionMaxSize) {
       size = kPipeActionMaxSize;
     }
-    std::vector<char> data(size);
-    consumer_ptr->get().ReadData(data.data(), &size, 0);
+    std::vector<uint8_t> data(size);
+    size_t bytes_read = 0;
+    consumer_ptr->get().ReadData(MOJO_READ_DATA_FLAG_NONE, data, bytes_read);
   }
 }
 
@@ -391,7 +393,9 @@ void HandleDataPipeWrite(const ::mojolpm::DataPipeWrite& input) {
     if (size > kPipeActionMaxSize) {
       size = kPipeActionMaxSize;
     }
-    producer_ptr->get().WriteData(input.data().data(), &size, 0);
+    size_t bytes_written = 0;
+    producer_ptr->get().WriteData(base::as_byte_span(input.data()),
+                                  MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   }
 }
 

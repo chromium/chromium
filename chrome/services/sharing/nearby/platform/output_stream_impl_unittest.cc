@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -32,21 +33,20 @@ namespace {
 void ReadDataBlocking(const std::string& expected_message,
                       mojo::ScopedDataPipeConsumerHandle* send_stream) {
   mojo::ScopedDataPipeConsumerHandle& stream = *send_stream;
-  std::vector<char> message(expected_message.size());
-  size_t message_pos = 0;
-  while (message_pos < message.size()) {
-    size_t read_size = message.size() - message_pos;
-    MojoResult result = stream->ReadData(message.data() + message_pos,
-                                         &read_size, MOJO_READ_DATA_FLAG_NONE);
+  std::string message(expected_message.size(), '\0');
+  base::span<uint8_t> buffer = base::as_writable_byte_span(message);
+  while (!buffer.empty()) {
+    size_t bytes_read = 0;
+    MojoResult result =
+        stream->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer, bytes_read);
     // |result| might be MOJO_RESULT_SHOULD_WAIT in which
     // case we need to retry until the writer has filled
     // the mojo pipe again.
     if (result == MOJO_RESULT_OK) {
-      message_pos += read_size;
+      buffer = buffer.subspan(bytes_read);
     }
   }
-  EXPECT_EQ(message.size(), message_pos);
-  EXPECT_EQ(expected_message, std::string(message.data(), message.size()));
+  EXPECT_EQ(expected_message, message.data());
 }
 
 }  // namespace
@@ -104,13 +104,15 @@ TEST_F(OutputStreamImplTest, Write) {
   ByteArray byte_array(message);
   EXPECT_EQ(Exception::kSuccess, output_stream_->Write(byte_array).value);
 
-  const size_t max_buffer_size = 1024;
-  size_t buffer_size = max_buffer_size;
-  std::vector<char> buffer(max_buffer_size);
-  EXPECT_EQ(MOJO_RESULT_OK, send_stream_->ReadData(buffer.data(), &buffer_size,
-                                                   MOJO_READ_DATA_FLAG_NONE));
+  size_t bytes_read = 0;
+  std::vector<char> buffer(1024);
+  EXPECT_EQ(
+      MOJO_RESULT_OK,
+      send_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                             base::as_writable_byte_span(buffer), bytes_read));
 
-  std::string sent_string(buffer.data(), buffer_size);
+  std::string_view sent_string =
+      base::as_string_view(buffer).substr(0, bytes_read);
   EXPECT_EQ(message, sent_string);
 
   EXPECT_EQ(Exception::kSuccess, output_stream_->Flush().value);

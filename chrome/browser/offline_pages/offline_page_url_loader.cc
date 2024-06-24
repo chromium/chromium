@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/offline_page_url_loader.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -167,17 +168,18 @@ void OfflinePageURLLoader::NotifyReadRawDataComplete(int bytes_read) {
 
 void OfflinePageURLLoader::TransferRawData() {
   while (true) {
-    DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
-    size_t write_size = bytes_of_raw_data_to_transfer_ - write_position_;
+    base::span<const uint8_t> bytes = base::as_bytes(buffer_->span())
+                                          .first(bytes_of_raw_data_to_transfer_)
+                                          .subspan(write_position_);
     // If all the read data have been transferred, read more.
-    if (write_size == 0) {
+    if (bytes.empty()) {
       ReadRawData();
       return;
     }
 
-    MojoResult result =
-        producer_handle_->WriteData(buffer_->data() + write_position_,
-                                    &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+    size_t bytes_written = 0;
+    MojoResult result = producer_handle_->WriteData(
+        bytes, MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_->ArmOrNotify();
       return;
@@ -188,7 +190,7 @@ void OfflinePageURLLoader::TransferRawData() {
       return;
     }
 
-    write_position_ += write_size;
+    write_position_ += bytes_written;
   }
 }
 

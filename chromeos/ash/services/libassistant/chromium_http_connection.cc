@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -323,12 +324,14 @@ void ChromiumHttpConnection::OnRetry(base::OnceClosure start_retry) {
 // Attempts to send more of the upload body, if more data is available, and
 // |upload_pipe_| is valid.
 void ChromiumHttpConnection::SendData() {
-  if (!upload_pipe_.is_valid() || upload_body_.empty())
+  if (!upload_pipe_.is_valid() || upload_body_.empty()) {
     return;
+  }
 
-  size_t write_bytes = upload_body_.size();
-  MojoResult result = upload_pipe_->WriteData(upload_body_.data(), &write_bytes,
-                                              MOJO_WRITE_DATA_FLAG_NONE);
+  size_t bytes_written = 0;
+  MojoResult result =
+      upload_pipe_->WriteData(base::as_byte_span(upload_body_),
+                              MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
 
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     // Wait for the pipe to have more capacity available.
@@ -340,13 +343,14 @@ void ChromiumHttpConnection::SendData() {
   if (result != MOJO_RESULT_OK)
     return;
 
-  upload_body_.erase(0, write_bytes);
+  upload_body_.erase(0, bytes_written);
 
   // If more data is available, arm the watcher again. Don't write again in a
   // loop, even if WriteData would allow it, to avoid blocking the current
   // thread.
-  if (!upload_body_.empty())
+  if (!upload_body_.empty()) {
     upload_pipe_watcher_->ArmOrNotify();
+  }
 }
 
 void ChromiumHttpConnection::OnUploadPipeWriteable(MojoResult unused) {

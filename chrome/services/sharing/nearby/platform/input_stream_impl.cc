@@ -4,8 +4,10 @@
 
 #include "chrome/services/sharing/nearby/platform/input_stream_impl.h"
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/c/system/data_pipe.h"
 
 namespace nearby {
 namespace chrome {
@@ -135,12 +137,15 @@ void InputStreamImpl::ReceiveMore(MojoResult result,
   }
 
   if (result == MOJO_RESULT_OK) {
-    size_t num_bytes = pending_read_buffer_->size() - pending_read_buffer_pos_;
-    result = receive_stream_->ReadData(
-        pending_read_buffer_->data() + pending_read_buffer_pos_, &num_bytes,
-        MOJO_READ_DATA_FLAG_NONE);
-    if (result == MOJO_RESULT_OK)
-      pending_read_buffer_pos_ += num_bytes;
+    base::span<uint8_t> buffer =
+        base::as_writable_byte_span(*pending_read_buffer_)
+            .subspan(pending_read_buffer_pos_);
+    size_t bytes_read = 0;
+    result =
+        receive_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE, buffer, bytes_read);
+    if (result == MOJO_RESULT_OK) {
+      pending_read_buffer_pos_ += bytes_read;
+    }
   }
 
   if (result == MOJO_RESULT_SHOULD_WAIT ||
