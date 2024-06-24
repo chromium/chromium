@@ -3792,6 +3792,11 @@
     "expiry_milestone": 128
   },
   {
+    "name": "enable-save-to-photos-improvements",
+    "owners": [ "erahmaoui@google.com", "olivierrobin@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-seamless-refresh-rate-switching",
     "owners": [ "ddavenport@chromium.org", "chromeos-gfx-display@google.com" ],
     "expiry_milestone": 120

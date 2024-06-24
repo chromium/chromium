@@ -833,3 +833,35 @@ BOOL UseIPadTailoredStringForDefaultBrowserPromo() {
 BASE_FEATURE(kSpotlightNeverRetainIndex,
              "SpotlightNeverRetainIndex",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSSaveToPhotosImprovements,
+             "enable-save-to-photos-improvements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kSaveToPhotosContextMenuImprovementParam[] =
+    "save-to-photos-context-menu-improvement";
+const char kSaveToPhotosTitleImprovementParam[] =
+    "save-to-photos-title-improvement";
+const char kSaveToPhotosAccountDefaultChoiceImprovementParam[] =
+    "save-to-photos-account-default-choice-improvement";
+
+bool IsSaveToPhotosActionImprovementEnabled() {
+  return base::FeatureList::IsEnabled(kIOSSaveToPhotosImprovements) &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kIOSSaveToPhotosImprovements,
+             kSaveToPhotosContextMenuImprovementParam, true);
+}
+
+bool IsSaveToPhotosTitleImprovementEnabled() {
+  return base::FeatureList::IsEnabled(kIOSSaveToPhotosImprovements) &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kIOSSaveToPhotosImprovements, kSaveToPhotosTitleImprovementParam,
+             true);
+}
+
+bool IsSaveToPhotosAccountPickerImprovementEnabled() {
+  return base::FeatureList::IsEnabled(kIOSSaveToPhotosImprovements) &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             kIOSSaveToPhotosImprovements,
+             kSaveToPhotosAccountDefaultChoiceImprovementParam, true);
+}

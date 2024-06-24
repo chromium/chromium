@@ -865,6 +865,33 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
 
+const FeatureEntry::FeatureParam kSaveToPhotosContextMenuImprovement[] = {
+    {kSaveToPhotosContextMenuImprovementParam, "true"},
+    {kSaveToPhotosTitleImprovementParam, "false"},
+    {kSaveToPhotosAccountDefaultChoiceImprovementParam, "false"},
+};
+const FeatureEntry::FeatureParam kSaveToPhotosTitleImprovement[] = {
+    {kSaveToPhotosContextMenuImprovementParam, "false"},
+    {kSaveToPhotosTitleImprovementParam, "true"},
+    {kSaveToPhotosAccountDefaultChoiceImprovementParam, "false"},
+};
+const FeatureEntry::FeatureParam
+    kSaveToPhotosAccountDefaultChoiceImprovement[] = {
+        {kSaveToPhotosContextMenuImprovementParam, "false"},
+        {kSaveToPhotosTitleImprovementParam, "false"},
+        {kSaveToPhotosAccountDefaultChoiceImprovementParam, "true"},
+};
+
+const FeatureEntry::FeatureVariation kSaveToPhotosImprovementsVariations[] = {
+    {"With Context Menu improvement Only", kSaveToPhotosContextMenuImprovement,
+     std::size(kSaveToPhotosContextMenuImprovement), nullptr},
+    {"With Title improvement Only", kSaveToPhotosTitleImprovement,
+     std::size(kSaveToPhotosTitleImprovement), nullptr},
+    {"With Account Default choice improvement Only",
+     kSaveToPhotosAccountDefaultChoiceImprovement,
+     std::size(kSaveToPhotosAccountDefaultChoiceImprovement), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1491,6 +1518,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-save-to-photos", flag_descriptions::kIOSSaveToPhotosName,
      flag_descriptions::kIOSSaveToPhotosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSSaveToPhotos)},
+    {"enable-save-to-photos-improvements",
+     flag_descriptions::kIOSSaveToPhotosImprovementsName,
+     flag_descriptions::kIOSSaveToPhotosImprovementsDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSSaveToPhotosImprovements,
+                                    kSaveToPhotosImprovementsVariations,
+                                    "IOSSaveToPhotosImprovements")},
     {"parcel-tracking-test-data",
      commerce::flag_descriptions::kParcelTrackingTestDataName,
      commerce::flag_descriptions::kParcelTrackingTestDataDescription,

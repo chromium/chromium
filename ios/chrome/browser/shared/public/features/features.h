@@ -658,4 +658,22 @@ BOOL UseIPadTailoredStringForDefaultBrowserPromo();
 // memory improvement measure.
 BASE_DECLARE_FEATURE(kSpotlightNeverRetainIndex);
 
+// Feature that enables improvements for Save to Photos feature.
+BASE_DECLARE_FEATURE(kIOSSaveToPhotosImprovements);
+
+// A set of parameters to indicate which improvement to apply to the Save to
+// Photos feature.
+extern const char kSaveToPhotosContextMenuImprovementParam[];
+extern const char kSaveToPhotosTitleImprovementParam[];
+extern const char kSaveToPhotosAccountDefaultChoiceImprovementParam[];
+
+// Returns true if the Save to Photos action improvement is enabled.
+bool IsSaveToPhotosActionImprovementEnabled();
+
+// Returns true if the Save to Photos title improvement is enabled.
+bool IsSaveToPhotosTitleImprovementEnabled();
+
+// Returns true if the Save to Photos account picker improvement is enabled.
+bool IsSaveToPhotosAccountPickerImprovementEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
