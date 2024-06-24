@@ -519,11 +519,15 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
 
   // With runtime host permissions, we separate out API permission messages
   // from host permissions.
-  const PermissionSet& active_permissions =
-      extension.permissions_data()->active_permissions();
+  // Use granted permissions here to ensure that the info is populated with all
+  // the permissions which, although not active, would be implicitly granted to
+  // the extension if ever requested.
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
+  std::unique_ptr<const PermissionSet> granted_permissions =
+      extension_prefs->GetGrantedPermissions(extension.id());
   PermissionSet non_host_permissions(
-      active_permissions.apis().Clone(),
-      active_permissions.manifest_permissions().Clone(), URLPatternSet(),
+      granted_permissions->apis().Clone(),
+      granted_permissions->manifest_permissions().Clone(), URLPatternSet(),
       URLPatternSet());
   const PermissionMessageProvider* message_provider =
       PermissionMessageProvider::Get();

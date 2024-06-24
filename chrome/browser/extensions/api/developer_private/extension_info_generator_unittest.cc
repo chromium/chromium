@@ -62,6 +62,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -406,6 +407,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
           .SetID(id)
           .Build();
   service()->AddExtension(extension.get());
+  PermissionsUpdater updater(profile());
+  updater.InitializePermissions(extension.get());
+  updater.GrantActivePermissions(extension.get());
   ErrorConsole* error_console = ErrorConsole::Get(profile());
   const GURL kContextUrl("http://example.com");
   error_console->ReportError(std::make_unique<RuntimeError>(
@@ -1352,6 +1356,97 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 
   EXPECT_TRUE(active_tab_info->permissions.can_access_site_data);
   EXPECT_TRUE(debugger_info->permissions.can_access_site_data);
+}
+
+TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalPermissionsInfoTest) {
+  // Load the test extension.
+  base::Value::Dict manifest =
+      base::Value::Dict()
+          .Set("name", "revoked_optional_permissions")
+          .Set("version", "1.2")
+          .Set("manifest_version", 3)
+          .Set("permissions", base::Value::List().Append("management"))
+          .Set("host_permissions", base::Value::List().Append("http://a.com/*"))
+          .Set("optional_permissions",
+               base::Value::List().Append("notifications"))
+          .Set("optional_host_permissions",
+               base::Value::List().Append("http://*.c.com/*"));
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder().SetManifest(std::move(manifest)).Build();
+  service()->AddExtension(extension.get());
+  PermissionsUpdater updater(profile());
+  updater.InitializePermissions(extension.get());
+  updater.GrantActivePermissions(extension.get());
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  // Grant the optional permissions.
+  APIPermissionSet apis;
+  apis.insert(extensions::mojom::APIPermissionID::kNotifications);
+  std::unique_ptr<const PermissionSet> active_permissions;
+  std::unique_ptr<const PermissionSet> granted_permissions;
+  URLPattern host(Extension::kValidHostPermissionSchemes, "http://*.c.com/*");
+  {
+    PermissionSet delta(apis.Clone(), ManifestPermissionSet(),
+                        URLPatternSet({host}), URLPatternSet());
+
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    updater.GrantOptionalPermissions(*extension, delta, base::DoNothing());
+    waiter.WaitForExtensionPermissionsUpdate();
+
+    // Make sure the extension's active permissions reflect the change.
+    active_permissions = PermissionSet::CreateUnion(
+        extension->permissions_data()->active_permissions(), delta);
+    ASSERT_EQ(*active_permissions,
+              extension->permissions_data()->active_permissions());
+
+    // The granted permissions should be the same as the active permissions.
+    granted_permissions = prefs->GetGrantedPermissions(extension->id());
+    EXPECT_EQ(*granted_permissions, *active_permissions);
+  }
+
+  {
+    PermissionSet delta(apis.Clone(), ManifestPermissionSet(),
+                        URLPatternSet({host}), URLPatternSet());
+
+    PermissionsManagerWaiter waiter(PermissionsManager::Get(profile_.get()));
+    updater.RevokeOptionalPermissions(
+        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
+    waiter.WaitForExtensionPermissionsUpdate();
+
+    // Make sure the extension's active permissions reflect the change.
+    active_permissions =
+        PermissionSet::CreateDifference(*active_permissions, delta);
+    ASSERT_EQ(*active_permissions,
+              extension->permissions_data()->active_permissions());
+
+    // The granted permissions now differ from the set of active permissions as
+    // the optional permissions have been revoked.
+    granted_permissions = prefs->GetGrantedPermissions(extension->id());
+    ASSERT_NE(*granted_permissions, *active_permissions);
+
+    std::unique_ptr<api::developer_private::ExtensionInfo> info =
+        GenerateExtensionInfo(extension->id());
+    PermissionMessages messages;
+    for (const PermissionMessage& message :
+         extension->permissions_data()->GetPermissionMessages()) {
+      if (!message.permissions().ContainsID(
+              extensions::mojom::APIPermissionID::kHostReadWrite)) {
+        messages.push_back(message);
+      }
+    }
+
+    // The permissions info should still show the set of granted permissions
+    // which includes the set of revoked optional permissions.
+    EXPECT_EQ(messages.size(), info->permissions.simple_permissions.size() - 1);
+    ASSERT_TRUE(info->permissions.runtime_host_permissions);
+    const developer::RuntimeHostPermissions* runtime_hosts =
+        base::OptionalToPtr(info->permissions.runtime_host_permissions);
+    EXPECT_EQ(developer::HostAccess::kOnAllSites, runtime_hosts->host_access);
+    EXPECT_EQ(R"([{"granted":true,"host":"http://*.c.com/*"},)"
+              R"({"granted":true,"host":"http://a.com/*"}])",
+              SiteControlsToString(runtime_hosts->hosts));
+  }
 }
 
 // Tests that blocklisted extensions are returned by the ExtensionInfoGenerator.
