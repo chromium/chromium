@@ -635,6 +635,10 @@
                           completionAction:nil];
 }
 
+- (void)customizeCardsWasTapped {
+  [self didTapMagicStackEditButton];
+}
+
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate
 
 - (void)dismissMagicStackHalfSheet {

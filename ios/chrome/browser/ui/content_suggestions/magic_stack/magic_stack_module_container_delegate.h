@@ -28,6 +28,10 @@ enum class ContentSuggestionsModuleType;
 // notifications.
 - (void)disableNotifications:(ContentSuggestionsModuleType)type;
 
+// Indicates that the user has tapped the context menu item to edit the Magic
+// Stack modules.
+- (void)customizeCardsWasTapped;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_MODULE_CONTAINER_DELEGATE_H_

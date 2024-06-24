@@ -327,6 +327,10 @@ NSString* HostnameFromGURL(GURL URL) {
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSString(
+                     IDS_IOS_MAGIC_STACK_CONTEXT_MENU_CUSTOMIZE_CARDS_TITLE))]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
                      IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION))]
       performAction:grey_tap()];
 

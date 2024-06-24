@@ -2334,6 +2334,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LOCKDOWN_MODE_TITLE" desc="Title for Lockdown Mode.">
         Lockdown Mode
       </message>
+            <message name="IDS_IOS_MAGIC_STACK_CONTEXT_MENU_CUSTOMIZE_CARDS_TITLE" desc="The title of the context menu entry to edit the cards.">
+        Customize Cards
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE" desc="The title of the edit modal for the Magic Stack. [Length: 10em]">
         Edit Carousel
       </message>
