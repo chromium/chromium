@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [ "bluetooth_interactive_uitest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":test_support",
+    "//ash",
+    "//ash/strings:strings_grit",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ui",
+    "//chrome/test/base/ash/interactive:test_support",
+    "//chrome/test/base/ash/interactive/webui:test_support",
+    "//device/bluetooth",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "bluetooth_power_state_observer.cc",
+    "bluetooth_power_state_observer.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//ui/base:test_support",
+  ]
+}

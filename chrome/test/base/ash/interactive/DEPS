@@ -21,5 +21,8 @@ include_rules = [
   "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/test",
+  "+chrome/test/base/chromeos/crosier/aura_window_title_observer.h",
+  "+chrome/test/base/mixin_based_in_process_browser_test.h",
+  "+chrome/test/interaction/interactive_browser_test.h",
+  "+chrome/test/interaction/webcontents_interaction_test_util.h",
 ]

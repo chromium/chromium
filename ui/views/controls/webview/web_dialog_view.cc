@@ -13,6 +13,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -20,6 +21,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -90,6 +92,11 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
 
   if (web_contents) {
     web_view_->SetWebContents(web_contents);
+  }
+  const ui::ElementIdentifier element_id =
+      delegate_ ? delegate_->web_view_element_id() : ui::ElementIdentifier();
+  if (element_id) {
+    web_view_->SetProperty(views::kElementIdentifierKey, element_id);
   }
 }
 

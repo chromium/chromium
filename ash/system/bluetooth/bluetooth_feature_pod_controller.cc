@@ -25,6 +25,7 @@
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -74,6 +75,8 @@ std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
   tile_->icon_button()->SetProperty(views::kElementIdentifierKey,
                                     kBluetoothFeatureTileToggleElementId);
   tile_->CreateDecorativeDrillInArrow();
+  tile_->drill_in_arrow()->SetProperty(
+      views::kElementIdentifierKey, kBluetoothFeatureTileDrillInArrowElementId);
   // UpdateTileStateIfExists() will update visibility.
   tile_->SetVisible(false);
   UpdateTileStateIfExists();

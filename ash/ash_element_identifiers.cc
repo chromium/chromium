@@ -11,7 +11,11 @@ namespace ash {
 // Please keep this list alphabetized.
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kAppListBubbleViewElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kAssistantDialogPlateElementId);
+DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    kBluetoothDetailedViewPairNewDeviceElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kBluetoothFeatureTileToggleElementId);
+DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    kBluetoothFeatureTileDrillInArrowElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kCalendarViewElementId);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kEnterpriseManagedView);
 DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(kExploreAppElementId);

@@ -1259,6 +1259,7 @@ if (is_chromeos && is_chromeos_device) {
       deps += [
         "//chrome/browser/ash:test_support",
         "//chrome/test/base/ash/interactive:test_support",
+        "//chrome/test/base/ash/interactive/bluetooth:test_support",
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/dbus/printscanmgr:printscanmgr",
