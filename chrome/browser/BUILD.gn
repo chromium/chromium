@@ -3631,7 +3631,6 @@ static_library("browser") {
       "//components/messages/android",
       "//components/messages/android:feature_flags",
       "//components/module_installer/android:native",
-      "//components/ntp_snippets:ntp_snippets",
       "//components/offline_pages/task",
       "//components/omnibox/browser",
       "//components/page_info/android",

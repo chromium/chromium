@@ -233,7 +233,6 @@ include_rules = [
   "+components/network_time",
   "+components/no_state_prefetch/browser",
   "+components/no_state_prefetch/common",
-  "+components/ntp_snippets",
   "+components/ntp_tiles",
   "+components/offline_items_collection/core",
   "+components/offline_pages/buildflags",

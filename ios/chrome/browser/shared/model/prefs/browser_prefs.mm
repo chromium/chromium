@@ -34,7 +34,6 @@
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/network_time/network_time_tracker.h"
-#import "components/ntp_snippets/register_prefs.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/popular_sites_impl.h"
 #import "components/omnibox/browser/zero_suggest_provider.h"
@@ -732,8 +731,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to determine if OS Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kOSLockdownModeEnabled, false);
 
-  ntp_snippets::prefs::RegisterProfilePrefsForMigrationApril2023(registry);
-
   registry->RegisterBooleanPref(kDeprecatedReadingListHasUnseenEntries, false);
 
   // Deprecated 07/2023.
@@ -940,9 +937,6 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 12/2022.
   prefs->ClearPref(kDeprecatedReadingListHasUnseenEntries);
-
-  // Added 04/2023.
-  ntp_snippets::prefs::MigrateObsoleteProfilePrefsApril2023(prefs);
 
   // Added 07/2023.
   prefs->ClearPref(kUnifiedConsentMigrationState);
