@@ -88,6 +88,8 @@ class AttributionObserver : public base::CheckedObserver {
       attribution_reporting::mojom::RegistrationType,
       bool is_debug_key_allowed,
       attribution_reporting::mojom::OsRegistrationResult) {}
+
+  virtual void OnDebugModeChanged(bool debug_mode) {}
 };
 
 }  // namespace content

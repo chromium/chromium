@@ -140,6 +140,7 @@ class MockAttributionManager : public AttributionManager {
   void NotifyOsRegistration(const OsRegistration&,
                             bool is_debug_key_allowed,
                             attribution_reporting::mojom::OsRegistrationResult);
+  void NotifyDebugModeChanged(bool debug_mode);
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager>);
 

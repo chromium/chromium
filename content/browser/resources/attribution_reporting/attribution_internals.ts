@@ -997,23 +997,25 @@ class AttributionInternals implements ObserverInterface {
     this.handler.clearStorage();
   }
 
+  onDebugModeChanged(debugMode: boolean): void {
+    const reportDelaysContent =
+        document.querySelector<HTMLElement>('#report-delays')!;
+    const noiseContent = document.querySelector<HTMLElement>('#noise')!;
+
+    if (debugMode) {
+      reportDelaysContent.innerText = 'disabled';
+      noiseContent.innerText = 'disabled';
+    } else {
+      reportDelaysContent.innerText = 'enabled';
+      noiseContent.innerText = 'enabled';
+    }
+  }
+
   refresh(): void {
     this.handler.isAttributionReportingEnabled().then((response) => {
       const featureStatus =
           document.querySelector<HTMLElement>('#feature-status')!;
       featureStatus.innerText = response.enabled ? 'enabled' : 'disabled';
-
-      const reportDelaysContent =
-          document.querySelector<HTMLElement>('#report-delays')!;
-      const noiseContent = document.querySelector<HTMLElement>('#noise')!;
-
-      if (response.debugMode) {
-        reportDelaysContent.innerText = 'disabled';
-        noiseContent.innerText = 'disabled';
-      } else {
-        reportDelaysContent.innerText = 'enabled';
-        noiseContent.innerText = 'enabled';
-      }
 
       const attributionSupport = document.querySelector<HTMLElement>('#attribution-support')!;
       attributionSupport.innerText =

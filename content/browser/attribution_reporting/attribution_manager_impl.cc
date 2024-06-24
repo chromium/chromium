@@ -525,7 +525,8 @@ AttributionManagerImpl::CreateForTesting(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(resolver_delegate),
       std::move(cookie_checker), std::move(report_sender),
-      std::move(os_level_manager), std::move(resolver_task_runner)));
+      std::move(os_level_manager), std::move(resolver_task_runner),
+      /*debug_mode=*/false));
 }
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -539,9 +540,7 @@ AttributionManagerImpl::AttributionManagerImpl(
           // os registrations will include multiple items.
           /*max_pending_events=*/1000,
           std::move(special_storage_policy),
-          MakeResolverDelegate(
-              base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kAttributionReportingDebugMode)),
+          /*resolver_delegate=*/nullptr,
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
           std::make_unique<AttributionReportNetworkSender>(
               storage_partition->GetURLLoaderFactoryForBrowserProcess()),
@@ -555,7 +554,10 @@ AttributionManagerImpl::AttributionManagerImpl(
               base::TaskTraits(base::TaskPriority::BEST_EFFORT,
                                base::MayBlock(),
                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-                               base::ThreadPolicy::MUST_USE_FOREGROUND))) {}
+                               base::ThreadPolicy::MUST_USE_FOREGROUND)),
+          /*debug_mode=*/
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kAttributionReportingDebugMode)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
@@ -566,7 +568,8 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionOsLevelManager> os_level_manager,
-    scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner)
+    scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner,
+    bool debug_mode)
     : storage_partition_(
           raw_ref<StoragePartitionImpl>::from_ptr(storage_partition)),
       max_pending_events_(max_pending_events),
@@ -574,13 +577,15 @@ AttributionManagerImpl::AttributionManagerImpl(
       attribution_resolver_(base::SequenceBound<AttributionResolverImpl>(
           resolver_task_runner_,
           g_run_in_memory ? base::FilePath() : user_data_directory,
-          std::move(resolver_delegate))),
+          resolver_delegate ? std::move(resolver_delegate)
+                            : MakeResolverDelegate(debug_mode))),
       data_host_manager_(
           std::make_unique<AttributionDataHostManagerImpl>(this)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
       report_sender_(std::move(report_sender)),
-      os_level_manager_(std::move(os_level_manager)) {
+      os_level_manager_(std::move(os_level_manager)),
+      debug_mode_(debug_mode) {
   DCHECK_GT(max_pending_events_, 0u);
   DCHECK(resolver_task_runner_);
   DCHECK(cookie_checker_);
@@ -622,6 +627,7 @@ AttributionManagerImpl::~AttributionManagerImpl() {
 
 void AttributionManagerImpl::AddObserver(AttributionObserver* observer) {
   observers_.AddObserver(observer);
+  observer->OnDebugModeChanged(debug_mode_);
 }
 
 void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
@@ -1773,11 +1779,19 @@ void AttributionManagerImpl::SetDebugMode(std::optional<bool> enabled,
       enabled.value_or(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAttributionReportingDebugMode));
 
-  // TODO(apaseltiner): Observers should be notified when the debug mode changes
-  // so they can re-query its value.
   attribution_resolver_.AsyncCall(&AttributionResolver::SetDelegate)
       .WithArgs(MakeResolverDelegate(debug_mode))
-      .Then(std::move(done));
+      .Then(std::move(done).Then(base::BindOnce(
+          [](base::WeakPtr<AttributionManagerImpl> manager,
+             const bool debug_mode) {
+            if (manager) {
+              manager->debug_mode_ = debug_mode;
+              for (auto& observer : manager->observers_) {
+                observer.OnDebugModeChanged(debug_mode);
+              }
+            }
+          },
+          weak_factory_.GetWeakPtr(), debug_mode)));
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReports(

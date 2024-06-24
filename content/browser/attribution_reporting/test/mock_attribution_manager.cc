@@ -33,6 +33,7 @@ void MockAttributionManager::AddObserver(AttributionObserver* observer) {
   if (on_observer_registered_) {
     std::move(on_observer_registered_).Run();
   }
+  observer->OnDebugModeChanged(/*debug_mode=*/false);
 }
 
 void MockAttributionManager::RemoveObserver(AttributionObserver* observer) {
@@ -115,6 +116,12 @@ void MockAttributionManager::NotifyOsRegistration(
                                 registration.GetType(), is_debug_key_allowed,
                                 result);
     }
+  }
+}
+
+void MockAttributionManager::NotifyDebugModeChanged(bool debug_mode) {
+  for (auto& observer : observers_) {
+    observer.OnDebugModeChanged(debug_mode);
   }
 }
 

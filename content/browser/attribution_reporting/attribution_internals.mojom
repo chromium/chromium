@@ -219,13 +219,18 @@ interface Observer {
   // Called when an OS source or trigger is registered, regardless of success
   // or failure.
   OnOsRegistration(WebUIOsRegistration registration);
+
+  // Called when debug mode is enabled or disabled in the WebUI's browsing
+  // context.
+  OnDebugModeChanged(bool debug_mode);
 };
 
 // Mojo interface for the attribution internals WebUI to communicate with the
 // storage layer.
 interface Handler {
   // Returns the state of the Attribution Reporting API in the WebUI's browsing context.
-  IsAttributionReportingEnabled() => (bool enabled, bool debug_mode,
+  // TODO(apaseltiner): Replace this polling-based interface with notifications.
+  IsAttributionReportingEnabled() => (bool enabled,
                                       network.mojom.AttributionSupport attribution_support);
 
   // Returns all active sources that are persisted in storage. This does

@@ -3854,4 +3854,37 @@ TEST_F(AttributionManagerImplTest,
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AttributionManagerImplTest, SetDebugMode_NotifiesObservers) {
+  MockAttributionObserver observer;
+
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    // Called with the initial value upon observation.
+    EXPECT_CALL(observer, OnDebugModeChanged(false));
+    EXPECT_CALL(checkpoint, Call(1));
+    // Called with the new value via `SetDebugMode()`.
+    EXPECT_CALL(observer, OnDebugModeChanged(true));
+    EXPECT_CALL(checkpoint, Call(2));
+    // Called with the new value upon observation.
+    EXPECT_CALL(observer, OnDebugModeChanged(true));
+  }
+
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  checkpoint.Call(1);
+
+  base::RunLoop run_loop;
+  attribution_manager_->SetDebugMode(true, run_loop.QuitClosure());
+  run_loop.Run();
+
+  checkpoint.Call(2);
+
+  observation.Reset();
+  observation.Observe(attribution_manager_.get());
+}
+
 }  // namespace content

@@ -94,6 +94,7 @@ class AttributionInternalsHandlerImpl
       attribution_reporting::mojom::RegistrationType,
       bool is_debug_key_allowed,
       attribution_reporting::mojom::OsRegistrationResult) override;
+  void OnDebugModeChanged(bool debug_mode) override;
 
   void OnObserverDisconnected();
 

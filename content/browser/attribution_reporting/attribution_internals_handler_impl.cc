@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -54,7 +53,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_switches.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -265,16 +263,13 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
           /*destination_origin=*/nullptr, /*reporting_origin=*/nullptr,
           /*can_bypass=*/nullptr);
 
-  // TODO(apaseltiner): This is a layering violation: The internals handler
-  // should query the manager for its configuration, not the command line,
-  // especially since `AttributionManager::SetDebugMode()` can cause its value
-  // to change after initialization.
-  bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kAttributionReportingDebugMode);
-
   std::move(callback).Run(
-      attribution_reporting_enabled, debug_mode,
+      attribution_reporting_enabled,
       static_cast<WebContentsImpl*>(contents)->GetAttributionSupport());
+}
+
+void AttributionInternalsHandlerImpl::OnDebugModeChanged(bool debug_mode) {
+  observer_->OnDebugModeChanged(debug_mode);
 }
 
 void AttributionInternalsHandlerImpl::GetActiveSources(

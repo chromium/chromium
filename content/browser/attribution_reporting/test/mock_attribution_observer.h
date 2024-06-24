@@ -70,6 +70,8 @@ class MockAttributionObserver : public AttributionObserver {
               (std::optional<uint64_t> cleared_debug_key,
                const CreateReportResult&),
               (override));
+
+  MOCK_METHOD(void, OnDebugModeChanged, (bool debug_mode), (override));
 };
 
 }  // namespace content

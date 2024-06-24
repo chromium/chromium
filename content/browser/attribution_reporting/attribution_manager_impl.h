@@ -184,7 +184,8 @@ class CONTENT_EXPORT AttributionManagerImpl
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionOsLevelManager> os_level_manager,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner);
+      scoped_refptr<base::UpdateableSequencedTaskRunner> resolver_task_runner,
+      bool debug_mode);
 
   void MaybeEnqueueEvent(SourceOrTriggerRFH);
   void PrepareNextEvent();
@@ -347,6 +348,10 @@ class CONTENT_EXPORT AttributionManagerImpl
   // Timer to record the time elapsed since the construction. Used to measure
   // the delay due to privacy sandbox attestations loading.
   base::ElapsedTimer time_since_construction_;
+
+  // Technically redundant with fields in the `AttributionResolverDelegate` but
+  // duplicated here to avoid an async call to retrieve them.
+  bool debug_mode_ = false;
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };

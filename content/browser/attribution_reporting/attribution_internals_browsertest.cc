@@ -551,74 +551,70 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithManager_DebugModeDisabled) {
+                       WebUIShownWithManager_DebugModeChanged) {
   NavigateAndWaitForObserver();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
-  static constexpr char kScript[] = R"(
-    const reportDelays = document.getElementById('report-delays');
-    const noise = document.getElementById('noise');
-    const setTitleIfDone = (_, obs) => {
-      if (reportDelays.innerText === 'enabled' &&
-          noise.innerText === 'enabled') {
-        if (obs) {
-          obs.disconnect();
+  {
+    static constexpr char kScript[] = R"(
+      const reportDelays = document.getElementById('report-delays');
+      const noise = document.getElementById('noise');
+      const setTitleIfDone = (_, obs) => {
+        if (reportDelays.innerText === 'enabled' &&
+            noise.innerText === 'enabled') {
+          if (obs) {
+            obs.disconnect();
+          }
+          document.title = $1;
+          return true;
         }
-        document.title = $1;
-        return true;
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
+        obs.observe(noise, {childList: true, subtree: true, characterData: true});
       }
-      return false;
-    };
-    if (!setTitleIfDone()) {
-      const obs = new MutationObserver(setTitleIfDone);
-      obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
-      obs.observe(noise, {childList: true, subtree: true, characterData: true});
-    }
-  )";
-  ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
+    )";
+    ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
-  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
-}
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+    ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  }
 
-IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
-                       WebUIShownWithManager_DebugModeEnabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kAttributionReportingDebugMode);
-
-  NavigateAndWaitForObserver();
+  manager()->NotifyDebugModeChanged(/*debug_mode=*/true);
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
-  static constexpr char kScript[] = R"(
-    const reportDelays = document.getElementById('report-delays');
-    const noise = document.getElementById('noise');
-    const setTitleIfDone = (_, obs) => {
-      if (reportDelays.innerText === 'disabled' &&
-          noise.innerText === 'disabled') {
-        if (obs) {
-          obs.disconnect();
+  {
+    static constexpr char kScript[] = R"(
+      const reportDelays = document.getElementById('report-delays');
+      const noise = document.getElementById('noise');
+      const setTitleIfDone = (_, obs) => {
+        if (reportDelays.innerText === 'disabled' &&
+            noise.innerText === 'disabled') {
+          if (obs) {
+            obs.disconnect();
+          }
+          document.title = $1;
+          return true;
         }
-        document.title = $1;
-        return true;
+        return false;
+      };
+      if (!setTitleIfDone()) {
+        const obs = new MutationObserver(setTitleIfDone);
+        obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
+        obs.observe(noise, {childList: true, subtree: true, characterData: true});
       }
-      return false;
-    };
-    if (!setTitleIfDone()) {
-      const obs = new MutationObserver(setTitleIfDone);
-      obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
-      obs.observe(noise, {childList: true, subtree: true, characterData: true});
-    }
-  )";
-  ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
+    )";
+    ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
-  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
-  ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+    TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+    EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
