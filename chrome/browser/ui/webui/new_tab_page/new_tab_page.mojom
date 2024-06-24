@@ -170,6 +170,7 @@ enum CustomizeChromeSection {
   kShortcuts,
   kModules,
   kWallpaperSearch,
+  kToolbar,
 };
 
 struct PromoImagePart {

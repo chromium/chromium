@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
@@ -19,7 +20,8 @@ class Browser;
 class PinnedToolbarActionsContainer;
 
 class PinnedActionToolbarButton : public ToolbarButton,
-                                  public ui::SimpleMenuModel::Delegate {
+                                  public ui::SimpleMenuModel::Delegate,
+                                  public content::WebContentsObserver {
   METADATA_HEADER(PinnedActionToolbarButton, ToolbarButton)
 
  public:
@@ -62,6 +64,10 @@ class PinnedActionToolbarButton : public ToolbarButton,
   std::u16string GetLabelForCommandId(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
+
+  // WebContentsObserver:
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
  private:
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();

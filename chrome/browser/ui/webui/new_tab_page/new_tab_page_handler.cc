@@ -933,6 +933,9 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
     case new_tab_page::mojom::CustomizeChromeSection::kWallpaperSearch:
       section_enum = CustomizeChromeSection::kWallpaperSearch;
       break;
+    case new_tab_page::mojom::CustomizeChromeSection::kToolbar:
+      section_enum = CustomizeChromeSection::kToolbar;
+      break;
   }
   customize_chrome_side_panel_controller_->SetCustomizeChromeSidePanelVisible(
       visible, section_enum);

@@ -122,6 +122,9 @@ void CustomizeChromePageHandler::ScrollToSection(
       mojo_section =
           side_panel::mojom::CustomizeChromeSection::kWallpaperSearch;
       break;
+    case CustomizeChromeSection::kToolbar:
+      mojo_section = side_panel::mojom::CustomizeChromeSection::kToolbar;
+      break;
   }
   page_->ScrollToSection(mojo_section);
 }

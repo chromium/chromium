@@ -272,6 +272,7 @@
 #define IDC_SAFETY_HUB_MANAGE_EXTENSIONS  40281
 #define IDC_SHOW_GOOGLE_LENS_SHORTCUT   40282
 #define IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL 40283
+#define IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR 40284
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

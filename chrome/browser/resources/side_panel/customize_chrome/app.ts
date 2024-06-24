@@ -113,6 +113,9 @@ export class AppElement extends AppElementBase {
                   if (section === CustomizeChromeSection.kWallpaperSearch) {
                     this.onWallpaperSearchSelect_();
                     return;
+                  } else if (section === CustomizeChromeSection.kToolbar) {
+                    this.onToolbarCustomizationButtonClick_();
+                    return;
                   }
                   const selector = SECTION_TO_SELECTOR[section];
                   const element = this.shadowRoot!.querySelector(selector);
