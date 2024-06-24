@@ -54,7 +54,8 @@ class Environment {
   Environment()
       : temp_dir_(MakeTempDir()), db_path_(GetTempFilePath("db.sqlite")) {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    should_dump_input_ = command_line.HasSwitch("dump_input");
+    should_dump_input_ = command_line.HasSwitch("dump_input") ||
+                         std::getenv("LPM_DUMP_NATIVE_INPUT") != nullptr;
     // Logging must be initialized before `ScopedLoggingSettings`. See
     // <https://crbug.com/331909454>.
     logging::InitLogging(logging::LoggingSettings{
