@@ -228,6 +228,8 @@ void KioskBrowserSession::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kNewWindowsInKioskAllowed, false);
   registry->RegisterBooleanPref(prefs::kKioskTroubleshootingToolsEnabled,
                                 false);
+  registry->RegisterListPref(prefs::kKioskBrowserPermissionsAllowedForOrigins,
+                             PrefRegistrySimple::NO_REGISTRATION_FLAGS);
 }
 
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {

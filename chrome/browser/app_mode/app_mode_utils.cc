@@ -14,10 +14,13 @@
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/features.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace chrome {
@@ -114,10 +117,15 @@ bool IsRunningInForcedAppModeForApp(const std::string& app_id) {
   return app_id == forced_app_mode_app.value();
 }
 
-bool IsWebKioskOriginAllowed(const GURL& origin) {
+bool IsWebKioskOriginAllowed(const PrefService* prefs, const GURL& origin) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!chromeos::IsWebKioskSession()) {
     return false;
+  }
+
+  if (policy::IsOriginInAllowlist(
+          origin, prefs, prefs::kKioskBrowserPermissionsAllowedForOrigins)) {
+    return true;
   }
 
   // TODO(b/341057883): Add KioskBrowserPermissionsAllowedForOrigins check.

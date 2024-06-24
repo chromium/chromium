@@ -43,13 +43,6 @@ namespace {
 // Check whether the target origin is the same as the main application running
 // in the Kiosk session.
 bool IsEqualToKioskOrigin(const url::Origin& origin) {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kAllowMultipleOriginsForWebKioskPermissions)) {
-    if (chrome::IsWebKioskOriginAllowed(origin.GetURL())) {
-      return true;
-    }
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const AccountId& account_id =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
@@ -138,6 +131,13 @@ bool IsTrustedContext(content::RenderFrameHost& host,
   }
 
   if (chrome::IsRunningInAppMode()) {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::
+                kAllowMultipleOriginsForWebKioskPermissions)) {
+      return IsEqualToKioskOrigin(origin) ||
+             chrome::IsWebKioskOriginAllowed(GetPrefs(host), origin.GetURL());
+    }
+
     return IsEqualToKioskOrigin(origin);
   }
 
@@ -165,6 +165,10 @@ DeviceServiceImpl::DeviceServiceImpl(
 #if BUILDFLAG(IS_CHROMEOS)
   pref_change_registrar_.Add(
       prefs::kIsolatedWebAppInstallForceList,
+      base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kKioskBrowserPermissionsAllowedForOrigins,
       base::BindRepeating(&DeviceServiceImpl::OnDisposingIfNeeded,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)

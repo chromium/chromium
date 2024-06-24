@@ -126,6 +126,12 @@ class ChromePermissionRequestManagerTest
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
+    profile()->GetPrefs()->SetList(
+        prefs::kKioskBrowserPermissionsAllowedForOrigins,
+        base::Value::List().Append(std::move(origin)));
+  }
+
   std::unique_ptr<permissions::MockPermissionRequest> MakeRequestInWebKioskMode(
       const GURL& url,
       const GURL& app_url) {
@@ -696,6 +702,24 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   EXPECT_TRUE(request->finished());
 }
 
+TEST_F(ChromePermissionRequestManagerTest,
+       TestWebKioskModeDifferentOriginWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
+  SetKioskBrowserPermissionsAllowedForOrigins("https://example.com/page");
+
+  auto request =
+      MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
+                                /*app_url*/ GURL("https://google.com/launch"));
+
+  WaitForBubbleToBeShown();
+
+  // It should not be granted as the origin is allowlisted.
+  EXPECT_EQ(request->granted(), false);
+  EXPECT_TRUE(request->finished());
+}
+
 TEST_P(ChromePermissionRequestManagerTest,
        TestWebKioskModeDifferentOriginWhenAllowedByFeature) {
   base::test::ScopedFeatureList feature_list;
@@ -706,6 +730,24 @@ TEST_P(ChromePermissionRequestManagerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
       feature_params);
+
+  auto request =
+      MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
+                                /*app_url*/ GURL("https://google.com/launch"));
+
+  WaitForBubbleToBeShown();
+
+  // It should be granted as the origin is allowlisted.
+  EXPECT_EQ(request->granted(), GetParam().second);
+  EXPECT_TRUE(request->finished());
+}
+
+TEST_P(ChromePermissionRequestManagerTest,
+       TestWebKioskModeDifferentOriginAllowedByKioskBrowserPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
+  SetKioskBrowserPermissionsAllowedForOrigins(GetParam().first);
 
   auto request =
       MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),

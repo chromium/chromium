@@ -493,7 +493,8 @@ ChromePermissionsClient::GetAutoApprovalStatus(
     const GURL& origin) {
   if (base::FeatureList::IsEnabled(
           permissions::features::kAllowMultipleOriginsForWebKioskPermissions)) {
-    if (chrome::IsWebKioskOriginAllowed(origin)) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    if (chrome::IsWebKioskOriginAllowed(profile->GetPrefs(), origin)) {
       return permissions::PermissionAction::GRANTED;
     }
   }

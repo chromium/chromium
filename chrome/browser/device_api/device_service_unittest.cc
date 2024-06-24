@@ -349,6 +349,16 @@ class DeviceAPIServiceParamTest
     feature_list_.InitAndEnableFeatureWithParameters(param, feature_params);
   }
 
+  void EnableFeature(const base::Feature& param) {
+    feature_list_.InitAndEnableFeature(param);
+  }
+
+  void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
+    profile()->GetPrefs()->SetList(
+        prefs::kKioskBrowserPermissionsAllowedForOrigins,
+        base::Value::List().Append(std::move(origin)));
+  }
+
   const std::string& GetParamOrigin() { return GetParam().first; }
   bool ExpectApiAvailable() { return GetParam().second; }
 
@@ -546,6 +556,53 @@ TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
   remote()->FlushForTesting();
 
   // Check whether the service connects for a different allowed origin.
+  ASSERT_FALSE(remote()->is_connected());
+}
+
+TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
+       TestTrustedKioskOriginWhenMultipleOriginPrefIsSet) {
+  EnableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
+  SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
+  SetAllowedOrigin(kTrustedUrl);
+
+  LoginKioskUser();
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<FakeDeviceAttributeApi>());
+  remote()->FlushForTesting();
+
+  // Check whether the service connects for a different allowed origin.
+  ASSERT_TRUE(remote()->is_connected());
+  VerifyCanAccessForAllDeviceAttributesAPIs();
+}
+
+TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
+       TestKioskInstallOriginWhenMultipleOriginPrefIsNotSet) {
+  EnableFeature(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions);
+  SetAllowedOrigin(kKioskAppInstallUrl);
+
+  LoginKioskUser();
+  TryCreatingService(GURL(kKioskAppInstallUrl),
+                     std::make_unique<FakeDeviceAttributeApi>());
+  remote()->FlushForTesting();
+
+  // Check whether the service connects for install origin.
+  ASSERT_TRUE(remote()->is_connected());
+  VerifyCanAccessForAllDeviceAttributesAPIs();
+}
+
+TEST_F(DeviceAPIServiceWithKioskUserTestForOrigins,
+       TestMultipleOriginPolicyWhenFeatureIsDisabled) {
+  SetKioskBrowserPermissionsAllowedForOrigins(kTrustedUrl);
+  SetAllowedOrigin(kTrustedUrl);
+
+  LoginKioskUser();
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<FakeDeviceAttributeApi>());
+  remote()->FlushForTesting();
+
+  // Check that the service is not able to connect when the feature is disabled.
   ASSERT_FALSE(remote()->is_connected());
 }
 
