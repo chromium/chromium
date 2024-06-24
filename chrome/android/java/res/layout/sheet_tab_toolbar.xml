@@ -95,27 +95,32 @@ found in the LICENSE file.
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
-            <org.chromium.ui.widget.ChromeImageView
-                android:id="@+id/security_icon"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_alignStart="@id/title"
-                android:layout_below="@id/title"
-                android:layout_marginTop="3dp"
-                android:importantForAccessibility="no"
-                app:tint="@macro/default_icon_color" />
-
-            <TextView
-                android:id="@+id/origin"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/security_icon"
-                android:layout_below="@id/title"
-                android:layout_marginStart="4dp"
-                android:textAlignment="viewStart"
-                android:ellipsize="start"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+                android:layout_alignStart="@id/title"
+                android:layout_below="@id/title">
+                <org.chromium.ui.widget.ChromeImageView
+                    android:id="@+id/security_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:minHeight="16dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:importantForAccessibility="no"
+                    app:tint="@macro/default_icon_color" />
+                <TextView
+                    android:id="@+id/origin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textAlignment="viewStart"
+                    android:ellipsize="start"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+            </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
 
