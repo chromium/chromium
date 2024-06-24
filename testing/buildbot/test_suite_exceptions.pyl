@@ -3349,6 +3349,12 @@
           'shards': 6,
         }
       },
+      # Shadow Win10 Tests x64
+      'linux-win-cross-rel':{
+        'swarming': {
+          'shards': 9,
+        },
+      },
       'mac-code-coverage': {
         'args': [
           '--coverage-continuous-mode=1',
