@@ -52,6 +52,9 @@ namespace hotspot {
 // The hotspot "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery HotspotSummaryItem();
 
+// The link under the hotspot "row".
+WebContentsInteractionTestUtil::DeepQuery HotspotSummarySubtitleLink();
+
 // The hotspot toggle in the hotspot "row" of the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery HotspotToggle();
 

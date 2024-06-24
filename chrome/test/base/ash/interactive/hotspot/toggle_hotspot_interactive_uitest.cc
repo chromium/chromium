@@ -14,6 +14,17 @@
 namespace ash {
 namespace {
 
+// This string should match the prefix of
+// IDS_SETTINGS_INTERNET_HOTSPOT_NO_MOBILE_DATA_SUBLABEL_WITH_LEARN_MORE_LINK
+// without the "Learn more" link.
+constexpr char kNoMobileDataLink[] = "Connect to mobile data to use hotspot.";
+
+// This string should match the prefix of
+// IDS_SETTINGS_INTERNET_HOTSPOT_MOBILE_DATA_NOT_SUPPORTED_SUBLABEL_WITH_LEARN_MORE_LINK
+// without the "Learn more" link.
+constexpr char kMobileDataNotSupportedLink[] =
+    "Your mobile data may not support hotspot.";
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(HotspotStateObserver, kHotspotStateService);
@@ -29,35 +40,96 @@ class ToggleHotspotInteractiveUITest : public InteractiveAshTest {
 
     // Ensure the OS Settings app is installed.
     InstallSystemApps();
+  }
 
-    ShillManagerClient::Get()
-        ->GetTestInterface()
-        ->SetSimulateCheckTetheringReadinessResult(
-            FakeShillSimulatedResult::kSuccess,
-            shill::kTetheringReadinessReady);
-
+  void AddCellularService() {
     ShillServiceClient::Get()->GetTestInterface()->AddService(
-        shill_service_info().service_path(),
-        shill_service_info().service_guid(),
-        shill_service_info().service_name(), shill::kTypeCellular,
+        shill_service_info_.service_path(), shill_service_info_.service_guid(),
+        shill_service_info_.service_name(), shill::kTypeCellular,
         shill::kStateOnline, /*visible=*/true);
   }
 
-  const ShillServiceInfo& shill_service_info() { return shill_service_info_; }
+  void SetTetheringReadinessCheckSuccessResult(const std::string& result) {
+    ShillManagerClient::Get()
+        ->GetTestInterface()
+        ->SetSimulateCheckTetheringReadinessResult(
+            FakeShillSimulatedResult::kSuccess, result);
+  }
 
  private:
   const ShillServiceInfo shill_service_info_ = ShillServiceInfo(/*id=*/0);
 };
 
 IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
-                       EnableHotspotFromSettingsAndQuickSettings) {
+                       HotspotToggleDisabledWhenNoCellularConnection) {
   ui::ElementContext context =
       LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
+      Log("Waiting for hotspot summary item and toggle to exist and disabled"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::hotspot::HotspotSummaryItem()),
+      WaitForElementDisabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Waiting for localized link appeared"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::hotspot::HotspotSummarySubtitleLink(),
+          /*text=*/kNoMobileDataLink),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
+                       HotspotToggleDisabledWhenCarrierNotSupported) {
+  SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessNotAllowed);
+  AddCellularService();
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
+
+  // Run the following steps with the OS Settings context set as the default.
+  RunTestSequenceInContext(
+      context,
+
+      Log("Navigating to the internet page"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
+      Log("Waiting for hotspot summary item and toggle to exist and disabled"),
+
+      WaitForElementExists(kOSSettingsId,
+                           settings::hotspot::HotspotSummaryItem()),
+      WaitForElementDisabled(kOSSettingsId, settings::hotspot::HotspotToggle()),
+
+      Log("Waiting for localized link appeared"),
+
+      WaitForElementTextContains(
+          kOSSettingsId, settings::hotspot::HotspotSummarySubtitleLink(),
+          /*text=*/kMobileDataNotSupportedLink),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToggleHotspotInteractiveUITest,
+                       EnableHotspotFromSettings) {
+  SetTetheringReadinessCheckSuccessResult(shill::kTetheringReadinessReady);
+  AddCellularService();
   ShillManagerClient::Get()
       ->GetTestInterface()
       ->SetSimulateTetheringEnableResult(FakeShillSimulatedResult::kSuccess,
                                          shill::kTetheringEnableResultSuccess);
+
+  ui::ElementContext context =
+      LaunchSystemWebApp(SystemWebAppType::SETTINGS, kOSSettingsId);
 
   // Run the following steps with the OS Settings context set as the default.
   RunTestSequenceInContext(
