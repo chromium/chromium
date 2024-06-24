@@ -15,18 +15,13 @@ gpu::Mailbox MailboxFrameRegistry::RegisterFrame(
     scoped_refptr<const FrameResource> frame) {
   gpu::Mailbox mailbox;
   gpu::Mailbox::Name name{};
-  // |unique_frame_id| is used to name |mailbox|. Using Mailbox::Generate()
-  // creates a crytographically secure ID, but MailboxFrameRegistry just uses
-  // the mailbox as an identifier. Furthermore, VideoDecoderPipeline generates a
-  // Mailbox for each frame that is output. Instead of using
-  // gpu::Mailbox::Generate(), this sets |mailbox|'s name from a simple counter.
-  // |unique_frame_id| is unique within a process % overflows (which should be
-  // impossible in practice with a 64-bit unsigned integer).
-  static uint64_t unique_frame_id = 1;
   base::AutoLock auto_lock(lock_);
-  ++unique_frame_id;
-  memcpy(name, &unique_frame_id, sizeof(unique_frame_id));
+  CHECK_LT(mailbox_id_counter_, std::numeric_limits<uint64_t>::max());
+  ++mailbox_id_counter_;
+  static_assert(sizeof(mailbox_id_counter_) <= sizeof(name));
+  memcpy(name, &mailbox_id_counter_, sizeof(mailbox_id_counter_));
   mailbox.SetName(name);
+  CHECK(!mailbox.IsZero());
   map_.emplace(mailbox, std::move(frame));
   return mailbox;
 }

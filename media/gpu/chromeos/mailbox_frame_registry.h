@@ -66,6 +66,13 @@ class MailboxFrameRegistry final
   // until the frame is unregistered with UnregisterFrame().
   base::small_map<std::map<gpu::Mailbox, scoped_refptr<const FrameResource>>>
       map_ GUARDED_BY(lock_);
+
+  // |mailbox_id_counter_| is used to name generated mailboxes. Using
+  // Mailbox::Generate() creates a crytographically secure ID, but
+  // MailboxFrameRegistry just uses the mailbox as an identifier. It is cheaper
+  // to use a simple counter, especially since RegisteredMailboxFrameConverter
+  // generates a gpu::Mailbox for each frame that is output.
+  uint64_t mailbox_id_counter_ GUARDED_BY(lock_) = 0;
 };
 
 }  // namespace media
