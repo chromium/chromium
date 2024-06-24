@@ -18,6 +18,12 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "ui/gfx/buffer_format_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/ref_counted_lock.h"
+#include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
+#include "gpu/command_buffer/service/stream_texture_shared_image_interface.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -58,6 +64,53 @@ const SharedImageCapabilities&
 GpuChannelSharedImageInterface::GetCapabilities() {
   return shared_image_capabilities_;
 }
+
+// Public functions specific to GpuChannelSharedImageInterface:
+#if BUILDFLAG(IS_ANDROID)
+scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForAndroidVideo(
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    scoped_refptr<StreamTextureSharedImageInterface> image,
+    scoped_refptr<RefCountedLock> drdc_lock) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+
+  if (!shared_image_stub_) {
+    return nullptr;
+  }
+
+  auto mailbox = Mailbox::Generate();
+
+  scoped_refptr<SharedContextState> shared_context =
+      shared_image_stub_->shared_context_state();
+
+  if (shared_context->context_lost()) {
+    return nullptr;
+  }
+
+  auto shared_image_backing = AndroidVideoImageBacking::Create(
+      mailbox, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      std::move(image), std::move(shared_context), std::move(drdc_lock));
+  SharedImageMetadata metadata{shared_image_backing->format(),
+                               shared_image_backing->size(),
+                               shared_image_backing->color_space(),
+                               shared_image_backing->surface_origin(),
+                               shared_image_backing->alpha_type(),
+                               shared_image_backing->usage()};
+
+  // Register it with shared image mailbox. This keeps |shared_image_backing|
+  // around until its destruction cb is called.
+  DCHECK(shared_image_stub_->channel()
+             ->gpu_channel_manager()
+             ->shared_image_manager());
+  shared_image_stub_->factory()->RegisterBacking(
+      std::move(shared_image_backing));
+
+  return base::WrapRefCounted<ClientSharedImage>(
+      new ClientSharedImage(mailbox, metadata, GenVerifiedSyncToken(), holder_,
+                            GL_TEXTURE_EXTERNAL_OES));
+}
+#endif
 
 bool GpuChannelSharedImageInterface::MakeContextCurrent(bool needs_gl) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

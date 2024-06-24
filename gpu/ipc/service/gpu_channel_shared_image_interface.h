@@ -23,6 +23,10 @@ class WaitableEvent;
 
 namespace gpu {
 class Scheduler;
+#if BUILDFLAG(IS_ANDROID)
+class StreamTextureSharedImageInterface;
+class RefCountedLock;
+#endif
 
 class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
     : public SharedImageInterface {
@@ -99,6 +103,13 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   const SharedImageCapabilities& GetCapabilities() override;
 
   // Public functions specific to GpuChannelSharedImageInterface:
+#if BUILDFLAG(IS_ANDROID)
+  scoped_refptr<ClientSharedImage> CreateSharedImageForAndroidVideo(
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      scoped_refptr<StreamTextureSharedImageInterface> image,
+      scoped_refptr<RefCountedLock> drdc_lock);
+#endif
   SequenceId sequence() { return sequence_; }
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state() {
     return sync_point_client_state_;

@@ -25,6 +25,7 @@ class VideoFrame;
 namespace gpu {
 
 class ClientSharedImageInterface;
+class GpuChannelSharedImageInterface;
 class TestSharedImageInterface;
 
 // Controls whether SharedImageInterface::DestroySharedImage() should be called
@@ -208,6 +209,7 @@ class GPU_EXPORT ClientSharedImage
   // SharedImageInterface::ImportSharedImage().
   // `sii_holder` must not be null.
   friend class ClientSharedImageInterface;
+  friend class GpuChannelSharedImageInterface;
   friend class TestSharedImageInterface;
   friend class media::VideoFrame;
   ClientSharedImage(const Mailbox& mailbox,
