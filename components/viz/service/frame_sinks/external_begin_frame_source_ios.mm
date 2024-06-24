@@ -223,13 +223,6 @@ base::TimeDelta ExternalBeginFrameSourceIOS::GetMaximumRefreshFrameInterval() {
   return base::Hertz(max_refresh_rate);
 }
 
-void ExternalBeginFrameSourceIOS::SetDynamicBeginFrameDeadlineOffsetSource(
-    DynamicBeginFrameDeadlineOffsetSource*
-        dynamic_begin_frame_deadline_offset_source) {
-  begin_frame_args_generator_.set_dynamic_begin_frame_deadline_offset_source(
-      dynamic_begin_frame_deadline_offset_source);
-}
-
 void ExternalBeginFrameSourceIOS::OnVSync(base::TimeTicks vsync_time,
                                           base::TimeTicks next_vsync_time,
                                           base::TimeDelta vsync_interval) {

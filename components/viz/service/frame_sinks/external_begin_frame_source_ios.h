@@ -32,11 +32,6 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceIOS
   void SetPreferredInterval(base::TimeDelta interval) override;
   base::TimeDelta GetMaximumRefreshFrameInterval() override;
 
-  // BeginFrameSource override:
-  void SetDynamicBeginFrameDeadlineOffsetSource(
-      DynamicBeginFrameDeadlineOffsetSource*
-          dynamic_begin_frame_deadline_offset_source) override;
-
   // ExternalBeginFrameSourceClient override.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
