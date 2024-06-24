@@ -215,6 +215,10 @@ void GoogleCalendarPageHandler::OnRequestComplete(
   std::vector<ntp::calendar::mojom::CalendarEventPtr> result;
   if (response_code == google_apis::ApiErrorCode::HTTP_SUCCESS) {
     for (const auto& event : events->items()) {
+      // Do not include all day events in response.
+      if (event->all_day_event()) {
+        continue;
+      }
       ntp::calendar::mojom::CalendarEventPtr formatted_event =
           ntp::calendar::mojom::CalendarEvent::New();
       formatted_event->title = event->summary();

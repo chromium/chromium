@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -18,7 +20,6 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -30,12 +31,71 @@ namespace {
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 
-// Handles an HTTP request by returning a response from a json file in
-// google_apis/test/data/.
-std::unique_ptr<net::test_server::BasicHttpResponse> HandleRequest(
-    const std::string& json_path) {
-  return google_apis::test_util::CreateHttpResponseFromFile(
-      google_apis::test_util::GetTestFilePath(json_path));
+base::Value::List CreateAttachments() {
+  base::Value::List attachments = base::Value::List();
+  for (int i = 0; i < 2; i++) {
+    base::Value::Dict attachment =
+        base::Value::Dict()
+            .Set("fileUrl", "https://foo-file.com/" + base::NumberToString(i))
+            .Set("title", "Test File " + base::NumberToString(i))
+            .Set("iconLink", "https://foo-icon.com/" + base::NumberToString(i));
+    attachments.Append(std::move(attachment));
+  }
+  return attachments;
+}
+
+base::Value::Dict CreateConferenceData() {
+  base::Value::Dict entryPoint =
+      base::Value::Dict()
+          .Set("entryPointType", "video")
+          .Set("uri", "https://meet.google.com/jbe-test")
+          .Set("label", "meet.google.com/jbe-test");
+  return base::Value::Dict().Set(
+      "entryPoints", base::Value::List().Append(std::move(entryPoint)));
+}
+
+base::Value::Dict CreateEventTime(bool is_all_day_event) {
+  base::Value::Dict eventTime =
+      base::Value::Dict()
+          .Set("dateTime", "2020-11-02T10:00:00-08:00")
+          .Set("timeZone", "America/Los_Angeles");
+  if (is_all_day_event) {
+    eventTime.Set("date", "2020-11-02");
+  }
+  return eventTime;
+}
+
+base::Value::Dict CreateEvent(int index) {
+  return base::Value::Dict()
+      .Set("kind", "calendar#event")
+      .Set("status", "confirmed")
+      .Set("htmlLink", "https://foo.com/" + base::NumberToString(index))
+      .Set("created", "2018-05-14T18:55:59.000Z")
+      .Set("updated", "2021-03-17T10:42:53.637Z")
+      .Set("summary", "Test Event " + base::NumberToString(index))
+      // Make 2nd event an all day event.
+      .Set("start", CreateEventTime(/*is_all_day_event*/ index == 0))
+      .Set("end", CreateEventTime(/*is_all_day_event*/ index == 0))
+      .Set("conferenceData", CreateConferenceData())
+      .Set("attachments", CreateAttachments());
+}
+
+bool CreateEventsJson(std::string* json) {
+  base::Value::List events = base::Value::List();
+  for (int i = 0; i < 3; i++) {
+    events.Append(CreateEvent(i));
+  }
+  base::Value::Dict result_dict =
+      base::Value::Dict()
+          .Set("kind", "calendar#events")
+          .Set("etag", "\"p32ofplf5q6gf20g\"")
+          .Set("summary", "test1@google.com")
+          .Set("updated", "2021-06-18T07:17:10.718Z")
+          .Set("timeZone", "America/Los_Angeles")
+          .Set("accessRole", "owner")
+          .Set("items", std::move(events));
+  JSONStringValueSerializer serializer(json);
+  return serializer.Serialize(result_dict);
 }
 
 std::unique_ptr<TestingProfile> MakeTestingProfile(
@@ -64,8 +124,8 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
         &profile());
   }
 
-  std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithInterceptor(
-      std::string json_path) {
+  std::unique_ptr<GoogleCalendarPageHandler> CreateHandlerWithTestData(
+      const std::string& test_data) {
     google_apis::calendar::CalendarApiUrlGenerator url_generator;
     url_generator.SetBaseUrlForTesting("https://foo.com/");
     std::vector<google_apis::calendar::EventType> event_types = {
@@ -74,14 +134,14 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
         url_generator.GetCalendarEventListUrl(
             "primary", base::Time::Now(), base::Time::Now() + base::Hours(12),
             true, 1, 2500, event_types, "ntp-calendar", "startTime"),
-        json_path);
+        test_data);
     return std::make_unique<GoogleCalendarPageHandler>(
         mojo::PendingReceiver<
             ntp::calendar::mojom::GoogleCalendarPageHandler>(),
         profile_.get(), MakeRequestSender(), std::move(url_generator));
   }
 
-  void SetUpEventsResponse(GURL request_url, std::string json_path) {
+  void SetUpEventsResponse(GURL request_url, const std::string& response) {
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {}));
     test_url_loader_factory_.AddResponse(
@@ -92,7 +152,7 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
             "attendeesOmitted%2CconferenceData(conferenceId%2C"
             "entryPoints(entryPointType%2Curi))%2Ccreator(self)%2Clocation%2C"
             "attachments(title%2CfileUrl%2CiconLink%2CfileId))",
-        HandleRequest(json_path)->content());
+        response);
   }
 
   PrefService& pref_service() { return *pref_service_; }
@@ -217,8 +277,6 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
 }
 
 TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
-  std::unique_ptr<GoogleCalendarPageHandler> handler =
-      CreateHandlerWithInterceptor("calendar/events.json");
   std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
   base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
@@ -228,51 +286,43 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
             response = std::move(events);
           }));
 
-  base::RunLoop run_loop;
-  handler->GetEvents(
-      google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
-  run_loop.Run();
-
-  EXPECT_EQ(response.size(), 3u);
-  EXPECT_EQ(response[0]->title, "Mobile weekly team meeting ");
-  base::Time start_time;
-  bool success =
-      base::Time::FromString("2020-11-02T10:00:00-08:00", &start_time);
-  ASSERT_TRUE(success);
-  EXPECT_EQ(response[0]->start_time, start_time);
-  EXPECT_EQ(
-      response[0]->url.spec(),
-      "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest");
-  ASSERT_TRUE(response[0]->conference_url);
-  EXPECT_EQ(response[0]->conference_url->spec(),
-            "https://meet.google.com/jbe-test");
-}
-
-TEST_F(GoogleCalendarPageHandlerTest, GetEventWithAttachments) {
+  std::string json;
+  bool data_success = CreateEventsJson(&json);
+  ASSERT_TRUE(data_success);
   std::unique_ptr<GoogleCalendarPageHandler> handler =
-      CreateHandlerWithInterceptor("calendar/event_with_attachments.json");
-  std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
-  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
-  EXPECT_CALL(callback, Run(testing::_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
-            response = std::move(events);
-          }));
+      CreateHandlerWithTestData(std::move(json));
 
   base::RunLoop run_loop;
   handler->GetEvents(
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
 
-  EXPECT_EQ(response.size(), 1u);
-  EXPECT_EQ(response[0]->attachments.size(), 2u);
-  EXPECT_EQ(response[0]->attachments[0]->title, "Google Docs Attachment");
-  EXPECT_EQ(response[0]->attachments[0]->icon_url,
-            "https://www.gstatic.com/images/branding/product/1x/"
-            "docs_2020q4_48dp.png");
-  EXPECT_EQ(response[0]->attachments[0]->resource_url,
-            "https://docs.google.com/document/d/"
-            "1yeRZ9Je4i9XvbnnOygitkXgJQpLvR98_TrfWRec84Bw/"
-            "edit?tab=t.0&resourcekey=0-yNQRr67lHMYKNFyrXmvwBw");
+  // The test data has 3 events, but we should only have 2, since the all day
+  // event is filtered out.
+  ASSERT_EQ(response.size(), 2u);
+  // The first event was the all day event that was filtered out, so the rest
+  // of the events should have one number higher in their fields.
+  for (int i = 0; i < 2; i++) {
+    EXPECT_EQ(response[i]->title, "Test Event " + base::NumberToString(i + 1));
+    base::Time start_time;
+    bool success =
+        base::Time::FromString("2020-11-02T10:00:00-08:00", &start_time);
+    ASSERT_TRUE(success);
+    EXPECT_EQ(response[i]->start_time, start_time);
+    EXPECT_EQ(response[i]->url.spec(),
+              "https://foo.com/" + base::NumberToString(i + 1));
+    ASSERT_TRUE(response[i]->conference_url);
+    EXPECT_EQ(response[i]->conference_url->spec(),
+              "https://meet.google.com/jbe-test");
+
+    for (int j = 0; j < 2; j++) {
+      ASSERT_EQ(response[i]->attachments.size(), 2u);
+      EXPECT_EQ(response[i]->attachments[j]->resource_url,
+                "https://foo-file.com/" + base::NumberToString(j));
+      EXPECT_EQ(response[i]->attachments[j]->title,
+                "Test File " + base::NumberToString(j));
+      EXPECT_EQ(response[i]->attachments[j]->icon_url,
+                "https://foo-icon.com/" + base::NumberToString(j));
+    }
+  }
 }
