@@ -132,6 +132,7 @@ source_set("model") {
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model/tailored_security",
     "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/screen_time/model:buildflags",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/segmentation_platform/model",

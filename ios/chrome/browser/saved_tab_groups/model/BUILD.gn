@@ -8,6 +8,10 @@ source_set("model") {
     "ios_tab_group_sync_delegate.mm",
     "ios_tab_group_sync_util.h",
     "ios_tab_group_sync_util.mm",
+    "tab_group_local_update_service.h",
+    "tab_group_local_update_service.mm",
+    "tab_group_local_update_service_factory.h",
+    "tab_group_local_update_service_factory.mm",
     "tab_group_sync_service_factory.h",
     "tab_group_sync_service_factory.mm",
   ]
@@ -38,6 +42,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_tab_group_sync_delegate_unittest.mm",
+    "tab_group_local_update_service_factory_unittest.mm",
+    "tab_group_local_update_service_unittest.mm",
     "tab_group_sync_service_factory_unittest.mm",
   ]
   deps = [
