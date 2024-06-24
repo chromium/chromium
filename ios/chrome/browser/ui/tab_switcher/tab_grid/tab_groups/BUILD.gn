@@ -9,6 +9,10 @@ source_set("tab_groups") {
     "tab_group_mediator.h",
     "tab_group_mediator.mm",
     "tab_group_positioner.h",
+    "tab_groups_panel_coordinator.h",
+    "tab_groups_panel_coordinator.mm",
+    "tab_groups_panel_mediator.h",
+    "tab_groups_panel_mediator.mm",
   ]
   deps = [
     ":tab_group_consumer",
@@ -30,13 +34,18 @@ source_set("tab_groups") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_activity_observer",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_idle_status_handler",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:tab_group_grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",
   ]
@@ -78,6 +87,8 @@ source_set("tab_groups_ui") {
     "create_or_edit_tab_group_view_controller_delegate.h",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
+    "tab_groups_panel_view_controller.h",
+    "tab_groups_panel_view_controller.mm",
   ]
   deps = [
     ":tab_group_consumer",
@@ -190,6 +201,8 @@ source_set("unit_tests") {
   sources = [
     "tab_group_coordinator_unittest.mm",
     "tab_group_mediator_unittest.mm",
+    "tab_groups_panel_coordinator_unittest.mm",
+    "tab_groups_panel_mediator_unittest.mm",
   ]
   deps = [
     ":tab_group_consumer",
@@ -197,9 +210,13 @@ source_set("unit_tests") {
     ":tab_groups_commands",
     ":tab_groups_ui",
     "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//components/tab_groups",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
@@ -209,7 +226,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
@@ -220,7 +242,10 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "tab_groups_egtest.mm" ]
+  sources = [
+    "tab_group_sync_egtest.mm",
+    "tab_groups_egtest.mm",
+  ]
   deps = [
     ":tab_groups_constant",
     "//base/test:test_support",

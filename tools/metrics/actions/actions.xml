@@ -24767,7 +24767,8 @@ should be able to be added at any place in this file.
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
-    User selected the iOS Tab Grid incognito panel by tapping the page control.
+    User selected the iOS Tab Grid incognito panel by tapping the page control
+    or swiping to it.
   </description>
 </action>
 
@@ -24866,7 +24867,7 @@ should be able to be added at any place in this file.
   <owner>marq@chromium.org</owner>
   <description>
     User selected the iOS Tab Grid regular tabs panel by tapping the page
-    control.
+    control or swiping to it.
   </description>
 </action>
 
@@ -24874,8 +24875,17 @@ should be able to be added at any place in this file.
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
-    User selected the iOS Tab Grid remote tabs panel by tapping the page
-    control.
+    User selected the iOS Tab Grid remote tabs panel by tapping the page control
+    or swiping to it.
+  </description>
+</action>
+
+<action name="MobileTabGridSelectTabGroups">
+  <owner>lpromero@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User selected the iOS Tab Grid Tab Groups panel by tapping the page control
+    or swiping to it.
   </description>
 </action>
 

@@ -106,6 +106,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_positioner.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
@@ -194,6 +196,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Regular grid coordinator.
   RegularGridCoordinator* _regularGridCoordinator;
 
+  // Tab Groups panel coordinator.
+  TabGroupsPanelCoordinator* _tabGroupsPanelCoordinator;
+
   // Remote grid container.
   // TODO(crbug.com/40273478): To remove when remote coordinator handles it.
   GridContainerViewController* _remoteGridContainerViewController;
@@ -225,6 +230,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
+// TODO(crbug.com/346302283): Some tests depend on a
+// RecentTabsTableViewController to have been loaded and kept in memory.
+// Investigate and remove this dependency.
+@property(nonatomic, strong)
+    RecentTabsTableViewController* hackRecentTabsTableViewController;
 // Mediator for the inactive tabs button.
 @property(nonatomic, strong)
     InactiveTabsButtonMediator* inactiveTabsButtonMediator;
@@ -856,53 +866,82 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.baseViewController.remoteTabsViewController.menuProvider =
       self.recentTabsContextMenuHelper;
 
-  // TODO(crbug.com/41390276) : Remove RecentTabsTableViewController dependency
-  // on ChromeBrowserState so that we don't need to expose the view controller.
-  baseViewController.remoteTabsViewController.browser = self.regularBrowser;
-  sync_sessions::SessionSyncService* syncService =
-      SessionSyncServiceFactory::GetForBrowserState(regularBrowserState);
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(regularBrowserState);
-  sessions::TabRestoreService* restoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          regularBrowserState);
-  FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(regularBrowserState);
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(regularBrowserState);
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(regularBrowserState);
-  SceneState* currentSceneState = self.regularBrowser->GetSceneState();
-  // TODO(crbug.com/40273478): Rename in recentTabsMediator.
-  self.remoteTabsMediator = [[RecentTabsMediator alloc]
-      initWithSessionSyncService:syncService
-                 identityManager:identityManager
-                  restoreService:restoreService
-                   faviconLoader:faviconLoader
-                     syncService:service
-                     browserList:browserList
-                      sceneState:currentSceneState
-                disabledByPolicy:_pageConfiguration ==
-                                 TabGridPageConfiguration::kIncognitoPageOnly
-               engagementTracker:feature_engagement::TrackerFactory::
-                                     GetForBrowserState(regularBrowserState)];
-  self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
-  self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
-  baseViewController.remoteTabsViewController.imageDataSource =
-      self.remoteTabsMediator;
-  baseViewController.remoteTabsViewController.delegate =
-      self.remoteTabsMediator;
-  baseViewController.remoteTabsViewController.applicationHandler =
-      applicationCommandsHandler;
-  baseViewController.remoteTabsViewController.loadStrategy =
-      UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
-  baseViewController.remoteTabsViewController.presentationDelegate = self;
-  baseViewController.activityObserver = self.remoteTabsMediator;
+  if (IsTabGroupSyncEnabled()) {
+    _tabGroupsPanelCoordinator = [[TabGroupsPanelCoordinator alloc]
+            initWithBaseViewController:_baseViewController
+                        regularBrowser:_regularBrowser
+                       toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
+                toolbarTabGridDelegate:_baseViewController
+        disabledViewControllerDelegate:_baseViewController];
 
-  _remoteGridContainerViewController =
-      [[GridContainerViewController alloc] init];
-  self.baseViewController.remoteGridContainerViewController =
-      _remoteGridContainerViewController;
+    [_tabGroupsPanelCoordinator start];
+
+    baseViewController.tabGroupsPanelViewController =
+        _tabGroupsPanelCoordinator.gridViewController;
+    baseViewController.tabGroupsDisabledGridViewController =
+        _tabGroupsPanelCoordinator.disabledViewController;
+    baseViewController.tabGroupsGridContainerViewController =
+        _tabGroupsPanelCoordinator.gridContainerViewController;
+
+    // TODO(crbug.com/346302283): Some tests depend on a
+    // RecentTabsTableViewController to have been loaded and kept in memory.
+    // Investigate and remove this dependency.
+    RecentTabsTableViewController* remoteTabsViewController =
+        [[RecentTabsTableViewController alloc] init];
+    remoteTabsViewController.browser = self.regularBrowser;
+    [remoteTabsViewController loadModel];
+    [remoteTabsViewController.tableView reloadData];
+    _hackRecentTabsTableViewController = remoteTabsViewController;
+  } else {
+    // TODO(crbug.com/41390276) : Remove RecentTabsTableViewController
+    // dependency on ChromeBrowserState so that we don't need to expose the view
+    // controller.
+    baseViewController.remoteTabsViewController.browser = self.regularBrowser;
+    sync_sessions::SessionSyncService* syncService =
+        SessionSyncServiceFactory::GetForBrowserState(regularBrowserState);
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForBrowserState(regularBrowserState);
+    sessions::TabRestoreService* restoreService =
+        IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+            regularBrowserState);
+    FaviconLoader* faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(regularBrowserState);
+    syncer::SyncService* service =
+        SyncServiceFactory::GetForBrowserState(regularBrowserState);
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(regularBrowserState);
+    SceneState* currentSceneState = self.regularBrowser->GetSceneState();
+    // TODO(crbug.com/40273478): Rename in recentTabsMediator.
+    self.remoteTabsMediator = [[RecentTabsMediator alloc]
+        initWithSessionSyncService:syncService
+                   identityManager:identityManager
+                    restoreService:restoreService
+                     faviconLoader:faviconLoader
+                       syncService:service
+                       browserList:browserList
+                        sceneState:currentSceneState
+                  disabledByPolicy:_pageConfiguration ==
+                                   TabGridPageConfiguration::kIncognitoPageOnly
+                 engagementTracker:feature_engagement::TrackerFactory::
+                                       GetForBrowserState(regularBrowserState)];
+    self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
+    self.remoteTabsMediator.toolbarTabGridDelegate = self.baseViewController;
+    baseViewController.remoteTabsViewController.imageDataSource =
+        self.remoteTabsMediator;
+    baseViewController.remoteTabsViewController.delegate =
+        self.remoteTabsMediator;
+    baseViewController.remoteTabsViewController.applicationHandler =
+        applicationCommandsHandler;
+    baseViewController.remoteTabsViewController.loadStrategy =
+        UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
+    baseViewController.remoteTabsViewController.presentationDelegate = self;
+    baseViewController.activityObserver = self.remoteTabsMediator;
+
+    _remoteGridContainerViewController =
+        [[GridContainerViewController alloc] init];
+    self.baseViewController.remoteGridContainerViewController =
+        _remoteGridContainerViewController;
+  }
 
   if (IsInactiveTabsAvailable()) {
     self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
@@ -936,7 +975,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   _mediator.regularPageMutator = _regularGridCoordinator.regularGridMediator;
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
-  _mediator.remotePageMutator = self.remoteTabsMediator;
+  if (IsTabGroupSyncEnabled()) {
+    _mediator.tabGroupsPageMutator = _tabGroupsPanelCoordinator.mediator;
+  } else {
+    _mediator.remotePageMutator = self.remoteTabsMediator;
+  }
   _mediator.toolbarsMutator = _toolbarsCoordinator.toolbarsMutator;
 
   self.remoteTabsMediator.toolbarsMutator =
@@ -1002,6 +1045,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_regularGridCoordinator stop];
   _regularGridCoordinator = nil;
+
+  [_tabGroupsPanelCoordinator stop];
+  _tabGroupsPanelCoordinator = nil;
+
+  if (IsTabGroupSyncEnabled()) {
+    // This disconnects the Recent Tabs' SigninPromoViewMediator.
+    [_hackRecentTabsTableViewController dismissModals];
+  }
 
   // TODO(crbug.com/41390276) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.

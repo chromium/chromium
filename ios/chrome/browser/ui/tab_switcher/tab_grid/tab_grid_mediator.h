@@ -32,6 +32,8 @@ class PrefService;
 @property(nonatomic, weak) id<TabGridPageMutator> regularPageMutator;
 // Mutator for incognito Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> incognitoPageMutator;
+// Mutator for Tab Groups.
+@property(nonatomic, weak) id<TabGridPageMutator> tabGroupsPageMutator;
 // Mutator for remote Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> remotePageMutator;
 

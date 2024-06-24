@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator_provider_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
@@ -81,15 +82,27 @@ TabGridPage GetPageFromScrollView(UIScrollView* scrollView) {
   // possible, as are large int values if `pageWidth` is somehow very small.
   page = page < TabGridPageIncognitoTabs ? TabGridPageIncognitoTabs : page;
   page = page > TabGridPageRemoteTabs ? TabGridPageRemoteTabs : page;
+  TabGridPage tabGridPage;
   if (UseRTLLayout()) {
     // In RTL, page indexes are inverted, so subtract `page` from the highest-
     // index TabGridPage value.
-    return static_cast<TabGridPage>(TabGridPageRemoteTabs - page);
+    tabGridPage = static_cast<TabGridPage>(TabGridPageRemoteTabs - page);
   }
-  return static_cast<TabGridPage>(page);
+  tabGridPage = static_cast<TabGridPage>(page);
+  // With Tab Group Sync, the last page is actually Tab Groups, not Remote Tabs.
+  if (IsTabGroupSyncEnabled() && tabGridPage == TabGridPageRemoteTabs) {
+    tabGridPage = TabGridPageTabGroups;
+  }
+  return tabGridPage;
 }
 
 NSUInteger GetPageIndexFromPage(TabGridPage page) {
+  // With Tab Group Sync, the last page is actually Tab Groups, not Remote Tabs.
+  // But this method computes the page index out of the enum value, so simulate
+  // being Remote Tabs…
+  if (IsTabGroupSyncEnabled() && page == TabGridPageTabGroups) {
+    page = TabGridPageRemoteTabs;
+  }
   if (UseRTLLayout()) {
     // In RTL, page indexes are inverted, so subtract `page` from the highest-
     // index TabGridPage value.
@@ -182,14 +195,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     _pageConfiguration = tabGridPageConfiguration;
     _dragSessionInProgress = NO;
 
-    // TODO(crbug.com/41390276): This should move to a proper Recent Tabs in
-    // Grid coordinator.
-    if (_pageConfiguration == TabGridPageConfiguration::kIncognitoPageOnly) {
-      _remoteDisabledViewController = [[DisabledGridViewController alloc]
-          initWithPage:TabGridPageRemoteTabs];
-      _remoteDisabledViewController.delegate = self;
-    } else {
-      _remoteTabsViewController = [[RecentTabsTableViewController alloc] init];
+    if (!IsTabGroupSyncEnabled()) {
+      // TODO(crbug.com/41390276): This should move to a proper Recent Tabs in
+      // Grid coordinator.
+      if (_pageConfiguration == TabGridPageConfiguration::kIncognitoPageOnly) {
+        _remoteDisabledViewController = [[DisabledGridViewController alloc]
+            initWithPage:TabGridPageRemoteTabs];
+        _remoteDisabledViewController.delegate = self;
+      } else {
+        _remoteTabsViewController =
+            [[RecentTabsTableViewController alloc] init];
+      }
     }
   }
   return self;
@@ -202,10 +218,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.view.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   [self setupScrollView];
 
-  if (_pageConfiguration == TabGridPageConfiguration::kIncognitoPageOnly) {
-    [self setupDisabledRemoteTabsViewController];
-  } else {
-    [self setupRemoteTabsViewController];
+  if (!IsTabGroupSyncEnabled()) {
+    if (_pageConfiguration == TabGridPageConfiguration::kIncognitoPageOnly) {
+      [self setupDisabledRemoteTabsViewController];
+    } else {
+      [self setupRemoteTabsViewController];
+    }
   }
 
   [self setupSearchUI];
@@ -505,7 +523,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setIncognitoDisabledGridViewController:
-    (DisabledGridViewController*)incognitoDisabledGridViewController {
+    (UIViewController*)incognitoDisabledGridViewController {
   _incognitoDisabledGridViewController = incognitoDisabledGridViewController;
   _incognitoDisabledGridViewController.view.accessibilityElementsHidden =
       self.currentPage != TabGridPageIncognitoTabs;
@@ -522,10 +540,24 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setRegularDisabledGridViewController:
-    (DisabledGridViewController*)regularDisabledGridViewController {
+    (UIViewController*)regularDisabledGridViewController {
   _regularDisabledGridViewController = regularDisabledGridViewController;
   _regularDisabledGridViewController.view.accessibilityElementsHidden =
       self.currentPage != TabGridPageRegularTabs;
+}
+
+- (void)setTabGroupsPanelViewController:
+    (TabGroupsPanelViewController*)tabGroupsPanelViewController {
+  _tabGroupsPanelViewController = tabGroupsPanelViewController;
+  _tabGroupsPanelViewController.view.accessibilityElementsHidden =
+      self.currentPage != TabGridPageTabGroups;
+}
+
+- (void)setTabGroupsDisabledGridViewController:
+    (UIViewController*)tabGroupsDisabledGridViewController {
+  _tabGroupsDisabledGridViewController = tabGroupsDisabledGridViewController;
+  _tabGroupsDisabledGridViewController.view.accessibilityElementsHidden =
+      self.currentPage != TabGridPageTabGroups;
 }
 
 - (void)setRemoteDisabledViewController:
@@ -698,7 +730,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setCurrentPage:(TabGridPage)currentPage {
-  // Record the idle metric if the previous page was `TabGridPageRemoteTabs`.
+  // Record the idle metric if the previous page was the third panel.
   if (_currentPage != currentPage) {
     [self tabGridDidPerformAction:TabGridActionType::kChangePage];
     if (_currentPage == TabGridPageRemoteTabs ||
@@ -835,9 +867,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       return self.remoteTabsViewController ? self.remoteTabsViewController
                                            : self.remoteDisabledViewController;
     case TabGridPage::TabGridPageTabGroups:
-      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
-      NOTIMPLEMENTED();
-      return nil;
+      return self.tabGroupsPanelViewController
+                 ? self.tabGroupsPanelViewController
+                 : self.tabGroupsDisabledGridViewController;
   }
 }
 
@@ -861,11 +893,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self addChildViewController:self.incognitoGridContainerViewController];
   [self addChildViewController:self.regularGridContainerViewController];
-  [self addChildViewController:self.remoteGridContainerViewController];
+  UIViewController* thirdPanelGridContainerViewController =
+      IsTabGroupSyncEnabled() ? self.tabGroupsGridContainerViewController
+                              : self.remoteGridContainerViewController;
+  [self addChildViewController:thirdPanelGridContainerViewController];
   UIStackView* gridsStack = [[UIStackView alloc] initWithArrangedSubviews:@[
     self.incognitoGridContainerViewController.view,
     self.regularGridContainerViewController.view,
-    self.remoteGridContainerViewController.view
+    thirdPanelGridContainerViewController.view
   ]];
   gridsStack.translatesAutoresizingMaskIntoConstraints = NO;
   gridsStack.distribution = UIStackViewDistributionEqualSpacing;
@@ -875,7 +910,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.incognitoGridContainerViewController
       didMoveToParentViewController:self];
   [self.regularGridContainerViewController didMoveToParentViewController:self];
-  [self.remoteGridContainerViewController didMoveToParentViewController:self];
+  [thirdPanelGridContainerViewController didMoveToParentViewController:self];
 
   self.scrollView = scrollView;
   self.scrollView.scrollEnabled = YES;
@@ -885,7 +920,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.view.widthAnchor],
     [self.regularGridContainerViewController.view.widthAnchor
         constraintEqualToAnchor:self.view.widthAnchor],
-    [self.remoteGridContainerViewController.view.widthAnchor
+    [thirdPanelGridContainerViewController.view.widthAnchor
         constraintEqualToAnchor:self.view.widthAnchor],
 
     [scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
@@ -908,6 +943,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // TODO(crbug.com/40273478): Move this to the grid itself when specific grid
 // file will be created.
 - (void)setupRemoteTabsViewController {
+  CHECK(!IsTabGroupSyncEnabled());
   self.remoteTabsViewController.UIDelegate = self;
   // TODO(crbug.com/41366321) : Dark style on remote tabs.
   // The styler must be set before the view controller is loaded.
@@ -925,6 +961,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Adds a DisabledGridViewController as a contained view controller for the
 // remote tabs.
 - (void)setupDisabledRemoteTabsViewController {
+  CHECK(!IsTabGroupSyncEnabled());
   self.remoteGridContainerViewController.containedViewController =
       self.remoteDisabledViewController;
   self.remoteDisabledViewController.delegate = self;

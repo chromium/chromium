@@ -474,7 +474,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
       performAction:grey_tap()];
 
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
-  if (IsTabGroupSyncEnabled()) {
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
     ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 1);
     ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleTabGroupsHistogram, 1,
                                    YES);
@@ -492,7 +492,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 1);
   ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleRegularTabGridPageHistogram,
                                  1, YES);
-  if (IsTabGroupSyncEnabled()) {
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
     ExpectIdleHistogramCount(kUMATabSwitcherIdleTabGroupsHistogram, 1);
     ExpectIdleHistogramBucketCount(kUMATabSwitcherIdleTabGroupsHistogram, 1,
                                    YES);

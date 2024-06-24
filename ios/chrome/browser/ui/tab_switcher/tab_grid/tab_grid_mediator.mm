@@ -165,8 +165,7 @@
       _currentPageMutator = self.remotePageMutator;
       break;
     case TabGridPage::TabGridPageTabGroups:
-      // TODO(crbug.com/329626033): Handle displaying Tab Groups.
-      NOTIMPLEMENTED();
+      _currentPageMutator = self.tabGroupsPageMutator;
       break;
   }
 }

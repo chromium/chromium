@@ -73,6 +73,7 @@ using chrome_test_util::TabGridSearchCancelButton;
 using chrome_test_util::TabGridSearchModeToolbar;
 using chrome_test_util::TabGridSearchTabsButton;
 using chrome_test_util::TabGridSelectTabsMenuButton;
+using chrome_test_util::TabGridTabGroupsPanelButton;
 using chrome_test_util::TabGridThirdPanelButton;
 using chrome_test_util::TapAtOffsetOf;
 using chrome_test_util::WindowWithNumber;
@@ -802,7 +803,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // (incognito if the last opened tab was incognito and regular if the last
 // active page was regular), so the Done button opens a tab in the correct page.
 // (Do not open a regular tab if the active page is an incognito one).
-- (void)testThirdPanelDoneButtonAndLastActivePage {
+- (void)testRecentTabDoneButtonAndLastActivePage {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   // Load 1 regular tab.
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
@@ -824,9 +833,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
       performAction:grey_tap()];
 
-  // Go to the third panel and tap the Done button.
+  // Go to the Recent Tabs panel and tap the Done button.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
@@ -843,9 +852,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle2, 0)]
       performAction:grey_tap()];
 
-  // Go to the third panel and tap the Done button.
+  // Go to the Recent Tabs panel and tap the Done button.
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];
@@ -864,8 +873,58 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGrey waitForMainTabCount:1];
   [ChromeEarlGrey waitForIncognitoTabCount:0];
 
-  // Go to the third panel.
-  [[EarlGrey selectElementWithMatcher:TabGridThirdPanelButton()]
+  // Go to the Recent Tabs panel.
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  // Ensure the Done button is disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_accessibilityTrait(
+                            UIAccessibilityTraitNotEnabled)];
+}
+
+- (void)testTabGroupsDoneButtonAndRegularTabs {
+  // When Tab Group Sync is disabled, Tab Groups is not present in Tab Grid.
+  if (![ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Tab Groups panel is not available in Tab Grid when"
+                           @"Tab Group Sync is disabled.");
+  }
+
+  // Load 1 regular tab.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+
+  // Go to regular and open the previously created tab.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+  [self verifyVisibleTabsCount:1];
+  [[EarlGrey selectElementWithMatcher:TabWithTitleAndIndex(kTitle1, 0)]
+      performAction:grey_tap()];
+
+  // Go to the Tab Groups panel and tap the Done button.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Ensure that we opened a regular tab.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:RegularTabGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the only regular tab.
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridEditMenuCloseAllButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForMainTabCount:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:0];
+
+  // Go to the Tab Groups panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
   // Ensure the Done button is disabled.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]

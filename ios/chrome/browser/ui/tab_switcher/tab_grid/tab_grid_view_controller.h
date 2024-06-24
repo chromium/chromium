@@ -41,6 +41,7 @@ enum class IPHDismissalReasonType;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
+@class TabGroupsPanelViewController;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -95,7 +96,8 @@ enum class TabGridPageConfiguration {
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
-// incognito tab grid, regular tab grid, and remote tabs.
+// incognito tab grid, regular tab grid, and a third panel (either Tab Groups or
+// Recent Tabs).
 @interface TabGridViewController
     : UIViewController <DisabledGridViewControllerDelegate,
                         GridConsumer,
@@ -147,7 +149,9 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, strong) PinnedTabsViewController* pinnedTabsViewController;
 @property(nonatomic, strong)
     IncognitoGridViewController* incognitoTabsViewController;
-// The view controller for remote tabs.
+@property(nonatomic, strong)
+    TabGroupsPanelViewController* tabGroupsPanelViewController;
+// The view controller for Recent Tabs.
 // TODO(crbug.com/41390276) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
 // model objects used in this view controller should be factored out.
@@ -169,11 +173,15 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) UIViewController* regularDisabledGridViewController;
 @property(nonatomic, weak)
     UIViewController* incognitoDisabledGridViewController;
+@property(nonatomic, weak)
+    UIViewController* tabGroupsDisabledGridViewController;
 
 // Contains grids (available or disabled one).
 @property(nonatomic, weak) UIViewController* regularGridContainerViewController;
 @property(nonatomic, weak)
     UIViewController* incognitoGridContainerViewController;
+@property(nonatomic, weak)
+    UIViewController* tabGroupsGridContainerViewController;
 @property(nonatomic, weak)
     GridContainerViewController* remoteGridContainerViewController;
 
