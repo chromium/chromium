@@ -21,8 +21,6 @@ const char kLineSpacingHistogramName[] =
 const char kColorHistogramName[] = "Accessibility.ReadAnything.Color";
 const char kFontNameHistogramName[] = "Accessibility.ReadAnything.FontName";
 const char kFontScaleHistogramName[] = "Accessibility.ReadAnything.FontScale";
-const char kSettingsChangeHistogramName[] =
-    "Accessibility.ReadAnything.SettingsChange";
 const char kScrollEventHistogramName[] =
     "Accessibility.ReadAnything.ScrollEvent";
 const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";

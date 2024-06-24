@@ -17,30 +17,13 @@ extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];
 extern const char kFontNameHistogramName[];
 extern const char kFontScaleHistogramName[];
-extern const char kSettingsChangeHistogramName[];
 extern const char kScrollEventHistogramName[];
 extern const char kEmptyStateHistogramName[];
 extern const char kLanguageHistogramName[];
-extern const char kReadAnythingSpeechErrorHistogramName[];
 
 }  // namespace string_constants
 
 namespace {
-
-// Group id for the toolbar
-inline constexpr int kToolbarGroupId = 0;
-
-// Visual constants for Read Anything feature.
-inline constexpr int kInternalInsets = 8;
-inline constexpr int kSeparatorTopBottomPadding = 4;
-inline constexpr int kMinimumComboboxWidth = 110;
-
-inline constexpr int kButtonPadding = 2;
-inline constexpr int kIconSize = 16;
-inline constexpr int kFontSizeIconSize = kIconSize + kInternalInsets;
-inline constexpr int kColorsIconSize = 24;
-inline constexpr int kLinkToggleIconSize = 26;
-inline constexpr int kSpacingIconSize = 20;
 
 // Used for text formatting correction in PDFs. This value should match the line
 // width limit in app.html.
@@ -103,19 +86,6 @@ const char* kLanguagesSupportedByAtkinsonHyperlegible[] = {
     "af", "ca", "cs", "da", "de", "en", "es", "et", "eu", "fi", "fil", "fr",
     "gl", "hr", "hu", "id", "is", "it", "kk", "lt", "ms", "nl", "no",  "pl",
     "pt", "pt", "ro", "sl", "sq", "sr", "sr", "sv", "sw", "zu"};
-
-// Enum for logging when a text style setting is changed.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// TODO(crbug.com/40275871): Remove this enum once the views toolbar is removed.
-enum class ReadAnythingSettingsChange {
-  kFontChange = 0,
-  kFontSizeChange = 1,
-  kThemeChange = 2,
-  kLineHeightChange = 3,
-  kLetterSpacingChange = 4,
-  kMaxValue = kLetterSpacingChange,
-};
 
 // Enum for logging the user-chosen font.
 // These values are persisted to logs. Entries should not be renumbered and
