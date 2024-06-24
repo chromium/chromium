@@ -31,6 +31,7 @@ import org.chromium.net.CookieSwitches;
 import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.base.UiAndroidFeatures;
 import org.chromium.ui.gfx.GfxSwitches;
 
@@ -1028,14 +1029,18 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 CcFeatures.WAIT_FOR_LATE_SCROLL_EVENTS,
                 "While scrolling, attempts to wait for late arriving input events before"
-                    + " rendering."),
+                        + " rendering."),
         Flag.baseFeature(
                 CcFeatures.EVICTION_THROTTLES_DRAW,
                 "Enables Renderers to not draw and submit frames when they've been evicted by the"
-                    + " GPU process."),
+                        + " GPU process."),
         Flag.baseFeature(
                 CcFeatures.DONT_ALWAYS_PUSH_PICTURE_LAYER_IMPLS,
                 "Stop always pushing PictureLayerImpl properties on tree Activation."),
+        Flag.baseFeature(
+                AccessibilityFeatures.ACCESSIBILITY_PRUNE_REDUNDANT_INLINE_TEXT,
+                "Prune redundant text for AX inline text boxes during serialization"),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
