@@ -75,11 +75,6 @@
 -org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testOnClose
 -org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testSendAndOnMessage
 
-# crbug.com/339501283
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testEnterPip
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitOnCloseTab
--org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testExitOnLeaveFullscreen
-
 # crbug.com/339502391
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 
