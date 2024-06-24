@@ -35,11 +35,7 @@ config("component_config") {
 # this rather than :component_config.
 config("internal_config") {
   visibility = [ ":*" ]  # Only targets in this file can depend on this.
-  defines = [
-    "BORINGSSL_ALLOW_CXX_RUNTIME",
-    "BORINGSSL_NO_STATIC_INITIALIZER",
-    "OPENSSL_SMALL",
-  ]
+  defines = [ "OPENSSL_SMALL" ]
 }
 
 config("no_asm_config") {

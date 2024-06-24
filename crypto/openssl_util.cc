@@ -33,10 +33,7 @@ int OpenSSLErrorCallback(const char* str, size_t len, void* context) {
 
 }  // namespace
 
-void EnsureOpenSSLInit() {
-  // CRYPTO_library_init may be safely called concurrently.
-  CRYPTO_library_init();
-}
+void EnsureOpenSSLInit() {}
 
 void ClearOpenSSLERRStack(const base::Location& location) {
   if (DCHECK_IS_ON() && VLOG_IS_ON(1)) {

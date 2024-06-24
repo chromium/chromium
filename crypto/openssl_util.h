@@ -56,11 +56,10 @@ class ScopedOpenSSLSafeSizeBuffer {
   unsigned char min_sized_buffer_[MIN_SIZE];
 };
 
-// Initialize OpenSSL if it isn't already initialized. This must be called
-// before any other OpenSSL functions though it is safe and cheap to call this
-// multiple times.
-// This function is thread-safe, and OpenSSL will only ever be initialized once.
-// OpenSSL will be properly shut down on program exit.
+// Deprecated. This function was historically needed to initialize BoringSSL,
+// but BoringSSL now initializes itself internally.
+//
+// TODO(crbug.com/348923058): Remove calls to this function.
 CRYPTO_EXPORT void EnsureOpenSSLInit();
 
 // Drains the OpenSSL ERR_get_error stack. On a debug build the error codes
