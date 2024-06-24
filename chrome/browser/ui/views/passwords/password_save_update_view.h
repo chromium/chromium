@@ -104,8 +104,8 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   void CloseIPHBubbleIfOpen();
 
   // Announces to the screen readers a change in the bubble between Save and
-  // Update states.
-  void AnnounceSaveUpdateChange();
+  // Update states, or the Sign-in promo.
+  void AnnounceBubbleChange();
 
   // Used for both the username and password editable comboboxes.
   void OnContentChanged();
