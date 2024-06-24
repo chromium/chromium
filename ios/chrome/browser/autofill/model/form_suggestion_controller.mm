@@ -98,11 +98,8 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
           CustomSymbolWithPointSize(kPasswordManagerSymbol, kSymbolPointSize));
     case autofill::SuggestionType::kCreateNewPlusAddress:
     case autofill::SuggestionType::kFillExistingPlusAddress: {
-      BOOL isPlusAddressFeaturesEnabled =
-          base::FeatureList::IsEnabled(
-              plus_addresses::features::kPlusAddressesEnabled) &&
-          base::FeatureList::IsEnabled(
-              plus_addresses::features::kPlusAddressUIRedesign);
+      BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled);
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
       return isPlusAddressFeaturesEnabled
                  ? CustomSymbolWithPointSize(kGooglePlusAddressSymbol,
@@ -390,11 +387,8 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 // Copies the incoming suggestions, making adjustments if necessary.
 - (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
     (NSArray<FormSuggestion*>*)suggestions {
-  BOOL isPlusAddressFeaturesEnabled =
-      base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressUIRedesign);
+  BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
+      plus_addresses::features::kPlusAddressesEnabled);
 
   if (!IsKeyboardAccessoryUpgradeEnabled() && !isPlusAddressFeaturesEnabled) {
     return [suggestions copy];

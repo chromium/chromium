@@ -537,13 +537,8 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
 // Tests that plus address suggestions always have an icon when the features are
 // enabled.
 TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
-  base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features;
-  enabled_features.push_back(plus_addresses::features::kPlusAddressesEnabled);
-  enabled_features.push_back(plus_addresses::features::kPlusAddressUIRedesign);
-
-  feature_list.InitWithFeatures(enabled_features, {});
+  base::test::ScopedFeatureList feature_list{
+      plus_addresses::features::kPlusAddressesEnabled};
 
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
 

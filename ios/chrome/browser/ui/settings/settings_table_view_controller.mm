@@ -515,9 +515,7 @@ struct EnhancedSafeBrowsingActivePromoData
   [model addItem:[self autoFillProfileDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierBasics];
   if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressUIRedesign)) {
+          plus_addresses::features::kPlusAddressesEnabled)) {
     _plusAddressesItem = [self plusAddressesItem];
     [model addItem:_plusAddressesItem
         toSectionWithIdentifier:SettingsSectionIdentifierBasics];
@@ -537,15 +535,6 @@ struct EnhancedSafeBrowsingActivePromoData
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      !base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressUIRedesign)) {
-    _plusAddressesItem = [self plusAddressesItem];
-    [model addItem:_plusAddressesItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  }
 
   // Feed is disabled in safe mode.
   SceneState* sceneState = _browser->GetSceneState();
@@ -1005,25 +994,18 @@ struct EnhancedSafeBrowsingActivePromoData
 
 - (TableViewDetailIconItem*)plusAddressesItem {
   NSString* title = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
-  BOOL isPlusAddressUIRedesignEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressUIRedesign);
 
-  return [self detailItemWithType:SettingsItemTypePlusAddresses
-                             text:title
-                       detailText:nil
+  return [self
+           detailItemWithType:SettingsItemTypePlusAddresses
+                         text:title
+                   detailText:nil
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-                           symbol:isPlusAddressUIRedesignEnabled
-                                      ? CustomSettingsRootSymbol(
-                                            kGooglePlusAddressSymbol)
-                                      : nil
+                       symbol:CustomSettingsRootSymbol(kGooglePlusAddressSymbol)
 #else
-                           symbol:nil
+                       symbol:nil
 #endif
-            symbolBackgroundColor:[UIColor
-                                      colorNamed:(isPlusAddressUIRedesignEnabled
-                                                      ? kYellow500Color
-                                                      : kPink500Color)]
-          accessibilityIdentifier:kSettingsPlusAddressesId];
+        symbolBackgroundColor:[UIColor colorNamed:kYellow500Color]
+      accessibilityIdentifier:kSettingsPlusAddressesId];
 }
 
 - (TableViewItem*)privacyDetailItem {

@@ -259,11 +259,9 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
     if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
-        create_plus_address_suggestion.labels = {
-            {Suggestion::Text(l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-      }
+      create_plus_address_suggestion.labels = {
+          {Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
     }
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddressSmall;
     std::move(callback).Run({std::move(create_plus_address_suggestion)});
@@ -277,10 +275,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
         Suggestion(base::UTF8ToUTF16(profile.plus_address),
                    SuggestionType::kFillExistingPlusAddress);
     if constexpr (!BUILDFLAG(IS_ANDROID)) {
-      if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
-        suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
-      }
+      suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
     }
     suggestion.icon = Suggestion::Icon::kPlusAddressSmall;
 

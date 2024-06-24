@@ -612,7 +612,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                    autofill::SuggestionType::kCreateNewPlusAddress) {
       // Show any plus_address suggestions.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-      icon = [self plusAddressIcon:popup_suggestion];
       if (!popup_suggestion.labels.empty() &&
           !popup_suggestion.labels.front().empty() &&
           IsKeyboardAccessoryUpgradeEnabled()) {
@@ -1117,47 +1116,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         .ToUIImage();
   }
   return nil;
-}
-
-// Helper method to create icons for plus_address icons. Intended to be called
-// only with `autofill::Suggestion`s whose `type` is
-// `kFillExistingPlusAddress` or `kCreateNewPlusAddress`.
-- (UIImage*)plusAddressIcon:(autofill::Suggestion)plus_address_suggestion {
-  // Ensure the suggestion is of the correct type.
-  if (plus_address_suggestion.type !=
-          autofill::SuggestionType::kFillExistingPlusAddress &&
-      plus_address_suggestion.type !=
-          autofill::SuggestionType::kCreateNewPlusAddress) {
-    return nil;
-  }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressUIRedesign)) {
-    return nil;
-  }
-
-  if (plus_address_suggestion.icon !=
-      autofill::Suggestion::Icon::kPlusAddress) {
-    return nil;
-  }
-  UIImage* icon = ui::ResourceBundle::GetSharedInstance()
-                      .GetNativeImageNamed(IDR_PLUS_ADDRESS_LOGO)
-                      .ToUIImage();
-  // Ensure the image is sized appropriately for the width of the suggestion UI
-  // element.
-  if (icon && (icon.size.width > kSuggestionIconWidth)) {
-    // For a simple image resize, we can keep the same underlying image
-    // and only adjust the ratio.
-    CGFloat ratio = icon.size.width / kSuggestionIconWidth;
-    return [UIImage imageWithCGImage:[icon CGImage]
-                               scale:icon.scale * ratio
-                         orientation:icon.imageOrientation];
-  }
-  return icon;
-#else
-  return nil;
-#endif
 }
 
 // Returns the autofill manager associated with a web::WebState instance.

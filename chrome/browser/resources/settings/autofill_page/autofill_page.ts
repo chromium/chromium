@@ -79,9 +79,7 @@ export class SettingsAutofillPageElement extends
         type: String,
         value() {
           // <if expr="_google_chrome">
-          return loadTimeData.getBoolean('plusAddressUiRedesign') ?
-              'settings-internal:plus-address-logo-medium' :
-              'settings-internal:plus-addresses-logo';
+          return 'settings-internal:plus-address-logo-medium';
           // </if>
           // <if expr="not _google_chrome">
           return 'settings:email';
