@@ -157,7 +157,7 @@ packager_builder(
                 "tools/android/avd/proto/creation/android_32_google_apis_x64_foldable.textpb",
                 "tools/android/avd/proto/creation/android_33_google_apis_x64.textpb",
                 "tools/android/avd/proto/creation/android_34_google_apis_x64.textpb",
-                "tools/android/avd/proto/creation/android_v_google_apis_x64.textpb",
+                "tools/android/avd/proto/creation/android_35_google_apis_x64.textpb",
 
                 # google_atd system images
                 "tools/android/avd/proto/creation/android_30_google_atd_x86.textpb",
