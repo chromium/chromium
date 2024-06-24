@@ -31,7 +31,7 @@ async def test_network_before_request_sent_event_emitted(
         websocket, context_id, base_url):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
@@ -67,6 +67,17 @@ async def test_network_before_request_sent_event_emitted(
             "timestamp": ANY_TIMESTAMP
         }
     }
+    navigation_id = resp["params"]["navigation"]
+
+    resp = await read_JSON_message(websocket)
+    # Assert the navigation from the event is the same as in the command result.
+    assert resp == AnyExtending({
+        'id': command_id,
+        'result': {
+            'navigation': navigation_id
+        },
+        'type': 'success'
+    })
 
 
 @pytest.mark.asyncio

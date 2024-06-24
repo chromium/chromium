@@ -25,6 +25,7 @@ import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
 import type {EventManager} from '../session/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
@@ -39,8 +40,9 @@ type NetworkInterception = Omit<
 
 /** Stores network and intercept maps. */
 export class NetworkStorage {
-  #eventManager: EventManager;
-  #logger?: LoggerFn;
+  readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #eventManager: EventManager;
+  readonly #logger?: LoggerFn;
 
   /**
    * A map from network request ID to Network Request objects.
@@ -53,9 +55,11 @@ export class NetworkStorage {
 
   constructor(
     eventManager: EventManager,
+    browsingContextStorage: BrowsingContextStorage,
     browserClient: CdpClient,
     logger?: LoggerFn
   ) {
+    this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
 
     browserClient.on('Target.detachedFromTarget', ({sessionId}) => {
@@ -311,5 +315,18 @@ export class NetworkStorage {
 
   deleteRequest(id: Network.Request) {
     this.#requests.delete(id);
+  }
+
+  /**
+   * Gets the virtual navigation ID for the given navigable ID.
+   */
+  getVirtualNavigationId(contextId: string | undefined): string | null {
+    if (contextId === undefined) {
+      return null;
+    }
+    return (
+      this.#browsingContextStorage.findContext(contextId)
+        ?.virtualNavigationId ?? null
+    );
   }
 }

@@ -94,6 +94,7 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
     this.#eventManager = new EventManager(this.#browsingContextStorage);
     const networkStorage = new NetworkStorage(
       this.#eventManager,
+      this.#browsingContextStorage,
       browserCdpClient,
       logger
     );

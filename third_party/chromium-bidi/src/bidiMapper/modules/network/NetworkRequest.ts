@@ -611,6 +611,7 @@ export class NetworkRequest {
   }
 
   #getNavigationId(): BrowsingContext.Navigation | null {
+    // Heuristic to determine if this is a navigation request, and if not return null.
     if (
       !this.#request.info ||
       !this.#request.info.loaderId ||
@@ -621,7 +622,11 @@ export class NetworkRequest {
     ) {
       return null;
     }
-    return this.#request.info.loaderId;
+
+    // Get virtual navigation ID from the browsing context.
+    return this.#networkStorage.getVirtualNavigationId(
+      this.#request?.info?.frameId
+    );
   }
 
   #getRequestData(): Network.RequestData {

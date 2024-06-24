@@ -14,9 +14,9 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          get_tree, goto_url, read_JSON_message,
-                          send_JSON_command, subscribe)
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
+                          execute_command, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -207,10 +207,13 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated
     await goto_url(websocket, context_id, url, "complete")
 
     resp = await goto_url(websocket, context_id, url_with_hash_1, "none")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_UUID, 'url': url_with_hash_1}
+    navigation_id = resp["navigation"]
 
     resp = await goto_url(websocket, context_id, url_with_hash_2, "none")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_UUID, 'url': url_with_hash_2}
+    # Navigation should be different.
+    assert resp["navigation"] != navigation_id
 
 
 @pytest.mark.asyncio
@@ -225,7 +228,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
 
     resp = await goto_url(websocket, context_id, url_with_hash_1,
                           "interactive")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_UUID, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, context_id)
 
@@ -242,7 +245,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
 
     resp = await goto_url(websocket, context_id, url_with_hash_2,
                           "interactive")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_UUID, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, context_id)
 
@@ -269,7 +272,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
     await goto_url(websocket, context_id, url, "complete")
 
     resp = await goto_url(websocket, context_id, url_with_hash_1, "complete")
-    assert resp == {'navigation': None, 'url': url_with_hash_1}
+    assert resp == {'navigation': ANY_UUID, 'url': url_with_hash_1}
 
     result = await get_tree(websocket, context_id)
 
@@ -285,7 +288,7 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
     } == result
 
     resp = await goto_url(websocket, context_id, url_with_hash_2, "complete")
-    assert resp == {'navigation': None, 'url': url_with_hash_2}
+    assert resp == {'navigation': ANY_UUID, 'url': url_with_hash_2}
 
     result = await get_tree(websocket, context_id)
 
@@ -352,7 +355,7 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
         "method": "browsingContext.navigationStarted",
         "params": {
             "context": context_id,
-            "navigation": None,
+            "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
             # TODO: Should report correct string
             "url": ANY_STR,
@@ -383,7 +386,7 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
         "method": "browsingContext.navigationStarted",
         "params": {
             "context": context_id,
-            "navigation": None,
+            "navigation": ANY_UUID,
             "timestamp": ANY_TIMESTAMP,
             # TODO: Should report correct string
             "url": ANY_STR,
@@ -426,6 +429,88 @@ async def test_browsingContext_navigationStarted_browsingContextClosedBeforeNavi
         'id': close_command_id,
         'type': 'success',
     })
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_navigationStarted_sameDocumentNavigation(
+        websocket, context_id, base_url):
+    await subscribe(
+        websocket,
+        ["browsingContext.navigationStarted", "browsingContext.load"])
+
+    # Make an initial navigation.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": base_url,
+                "context": context_id,
+                "wait": "none"
+            }
+        })
+    # Assert that the navigation started event was received.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "browsingContext.navigationStarted",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_UUID,
+            "timestamp": ANY_TIMESTAMP,
+            "url": base_url,
+        }
+    }
+    navigation_id = response["params"]["navigation"]
+
+    # Assert that the navigation command was finished with the correct
+    # navigation id.
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'id': command_id,
+        'result': {
+            'navigation': navigation_id,
+            'url': base_url
+        }
+    })
+
+    # Assert that the page is loaded.
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'method': 'browsingContext.load',
+        'params': {
+            'context': context_id,
+            'navigation': navigation_id,
+        },
+        'type': 'event',
+    })
+
+    # Make same-document navigation.
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "location.href = '#test';",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": False
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'type': 'event',
+        "method": "browsingContext.navigationStarted",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_UUID,
+            "timestamp": ANY_TIMESTAMP,
+            "url": base_url + "#test",
+        }
+    })
+
+    new_navigation_id = response["params"]["navigation"]
+    assert new_navigation_id != navigation_id
 
 
 @pytest.mark.asyncio

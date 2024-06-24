@@ -14,7 +14,7 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, goto_url,
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending, goto_url,
                           read_JSON_message, send_JSON_command, subscribe,
                           wait_for_event)
 
@@ -28,6 +28,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
     initial_navigation = await goto_url(websocket, context_id, url, "complete")
+    initial_navigation_id = initial_navigation["navigation"]
 
     await send_JSON_command(
         websocket, {
@@ -41,9 +42,12 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
     # Assert command done.
     response = await read_JSON_message(websocket)
     assert response["result"] == {
-        "navigation": None,
+        # Should be no navigation id yet.
+        "navigation": ANY_UUID,
         "url": url,
     }
+    reload_navigation_id = response["result"]["navigation"]
+    assert initial_navigation_id != reload_navigation_id
 
     # Wait for `browsingContext.domContentLoaded` event.
     dom_content_load_event = await read_JSON_message(websocket)
@@ -52,7 +56,7 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
         "method": "browsingContext.domContentLoaded",
         "params": {
             "context": context_id,
-            "navigation": ANY_STR,
+            "navigation": reload_navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
         }
@@ -65,16 +69,11 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
         "method": "browsingContext.load",
         "params": {
             "context": context_id,
-            "navigation": ANY_STR,
+            "navigation": reload_navigation_id,
             "timestamp": ANY_TIMESTAMP,
             "url": url,
         }
     }
-
-    assert load_event["params"]["navigation"] == dom_content_load_event[
-        "params"]["navigation"]
-    assert initial_navigation["navigation"] != load_event["params"][
-        "navigation"]
 
 
 @pytest.mark.asyncio

@@ -97,7 +97,7 @@ describe('NetworkStorage', () => {
     eventManager.on(EventManagerEvents.Event, ({message, event}) => {
       processingQueue.add(message, event);
     });
-    networkStorage = new NetworkStorage(eventManager, {
+    networkStorage = new NetworkStorage(eventManager, browsingContextStorage, {
       on(): void {
         // Used for clearing on target disconnect
       },

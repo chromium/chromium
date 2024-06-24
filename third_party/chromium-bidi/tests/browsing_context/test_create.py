@@ -396,4 +396,7 @@ async def test_browsingContext_create_background(websocket, background,
         else:
             assert visible == "visible", "New tab should be visible when created in foreground"
 
+    if test_headless_mode != "false" and type == "window":
+        pytest.xfail("Window is not always selected in headless mode")
+
     assert has_focus is not background, "New context should not have focus" if background else "New context should have focus"
