@@ -91,6 +91,31 @@ JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
     jint switch_num, jint jint_param1) {
         return Java_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder(env, jcaller, jint_param1);
 }
+JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num, jobject jobject_param1, jobject jobject_param2) {
+        return Java_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(env, jcaller, jobject_param1, jobject_param2);
+}
+JNI_BOUNDARY_EXPORT void Java_J_N__1V(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num) {
+
+        switch (switch_num) {
+          case 0:
+             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest(env, jcaller);
+          case 1:
+             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting(env, jcaller);
+          case 2:
+             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests(env, jcaller);
+          case 3:
+             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(env, jcaller);
+          default:
+            JNI_ZERO_DCHECK(false);
+            return;
+        }
+}
 JNI_BOUNDARY_EXPORT void Java_J_N__1V_1OO(
     JNIEnv* env,
     jclass jcaller,
@@ -103,51 +128,20 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     jint switch_num, jobject jobject_param1) {
         return Java_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(env, jcaller, jobject_param1);
 }
-JNI_BOUNDARY_EXPORT void Java_J_N__1V(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-
-        switch (switch_num) {
-          
-          case 0:
-             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest(env, jcaller);
-
-          case 1:
-             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting(env, jcaller);
-
-          case 2:
-             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests(env, jcaller);
-
-          case 3:
-             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(env, jcaller);
-          default:
-            JNI_ZERO_DCHECK(false);
-            return;
-        }
-}
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num, jobject jobject_param1, jobject jobject_param2) {
 
         switch (switch_num) {
-          
           case 0:
              return Java_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1(env, jcaller, jobject_param1, jobject_param2);
-
           case 1:
              return Java_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2(env, jcaller, jobject_param1, jobject_param2);
           default:
             JNI_ZERO_DCHECK(false);
             return {};
         }
-}
-JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jobject jobject_param1, jobject jobject_param2) {
-        return Java_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(env, jcaller, jobject_param1, jobject_param2);
 }
 
 

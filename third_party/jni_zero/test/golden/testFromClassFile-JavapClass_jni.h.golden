@@ -98,6 +98,22 @@ enum Java_JavapClass_constant_fields {
   return _ret;
 }
 
+[[maybe_unused]] static void Java_JavapClass_needsMangling__int(
+    JNIEnv* env,
+    JniIntWrapper p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = org_jni_1zero_JavapClass_clazz(env);
+  CHECK_CLAZZ(env, clazz, clazz);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "needsMangling",
+      "(I)V",
+      &cached_method_id);
+  env->CallStaticVoidMethod(clazz, call_context.method_id(), as_jint(p0));
+}
+
 [[maybe_unused]] static void Java_JavapClass_needsMangling__String(
     JNIEnv* env,
     const jni_zero::JavaRef<jstring>& p0) {
@@ -128,22 +144,6 @@ enum Java_JavapClass_constant_fields {
       "(Ljava/util/ArrayList;)V",
       &cached_method_id);
   env->CallStaticVoidMethod(clazz, call_context.method_id(), p0.obj());
-}
-
-[[maybe_unused]] static void Java_JavapClass_needsMangling__int(
-    JNIEnv* env,
-    JniIntWrapper p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = org_jni_1zero_JavapClass_clazz(env);
-  CHECK_CLAZZ(env, clazz, clazz);
-  jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
-      env,
-      clazz,
-      "needsMangling",
-      "(I)V",
-      &cached_method_id);
-  env->CallStaticVoidMethod(clazz, call_context.method_id(), as_jint(p0));
 }
 
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(

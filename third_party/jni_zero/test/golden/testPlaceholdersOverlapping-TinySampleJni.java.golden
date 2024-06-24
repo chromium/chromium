@@ -25,13 +25,13 @@ class TinySampleJni implements TinySample.Natives {
   };
 
   @Override
-  public boolean bar(int a) {
-    return (boolean) GEN_JNI.org_jni_1zero_TinySample_bar(a);
+  public boolean bar(int a, Object b) {
+    return (boolean) GEN_JNI.org_jni_1zero_TinySample_bar(a, b);
   }
 
   @Override
-  public void foo() {
-    GEN_JNI.org_jni_1zero_TinySample_foo();
+  public void foo(Object a, int b) {
+    GEN_JNI.org_jni_1zero_TinySample_foo(a, b);
   }
 
   public static TinySample.Natives get() {

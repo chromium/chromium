@@ -169,9 +169,9 @@ class JavaType:
   # Cannot use dataclass(order=True) because some fields are None.
   def __lt__(self, other):
     if self.primitive_name and not other.primitive_name:
-      return -1
+      return True
     if other.primitive_name and not self.primitive_name:
-      return 1
+      return False
     lhs = (self.array_dimensions, self.primitive_name or self.java_class)
     rhs = (other.array_dimensions, other.primitive_name or other.java_class)
     return lhs < rhs
@@ -325,6 +325,13 @@ class JavaSignature:
     return_type = self.return_type.to_proxy()
     param_list = self.param_list.to_proxy()
     return JavaSignature.from_params(return_type, param_list)
+
+  def with_params_reordered(self):
+    return JavaSignature.from_params(
+        self.return_type,
+        JavaParamList(
+            tuple(sorted(self.param_list,
+                         key=lambda x: x.java_type.to_proxy()))))
 
 
 class TypeResolver:

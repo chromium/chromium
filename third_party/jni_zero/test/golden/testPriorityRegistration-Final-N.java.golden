@@ -13,10 +13,11 @@ public class N {
 
     public static native Object _O_O(int switch_num, Object object_param1);
     public static native Object _O_OO(int switch_num, Object object_param1, Object object_param2);
-    public static native boolean _Z_I(int switch_num, int int_param1);
+    public static native boolean _Z_IO(int switch_num, int int_param1, Object object_param1);
     public static native boolean _Z_O(int switch_num, Object object_param1);
     public static native int _I_I(int switch_num, int int_param1);
     public static native int _I_OO(int switch_num, Object object_param1, Object object_param2);
     public static native void _V(int switch_num);
+    public static native void _V_IO(int switch_num, int int_param1, Object object_param1);
     public static native void _V_OO(int switch_num, Object object_param1, Object object_param2);
 }

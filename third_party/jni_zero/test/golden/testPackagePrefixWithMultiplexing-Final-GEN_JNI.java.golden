@@ -94,7 +94,7 @@ public class GEN_JNI {
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools) {
-        return this.is.a.package.prefix.J.N._O_IOJOSOCOBODOFOZO(0, zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
+        return this.is.a.package.prefix.J.N._O_ZBCDFIJSOOOOOOOO(0, zbool, zbyte, zchar, zdouble, zfloat, zint, zlong, zshort, ints, longs, shorts, chars, bytes, doubles, floats, bools);
     }
 
     public static void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects) {

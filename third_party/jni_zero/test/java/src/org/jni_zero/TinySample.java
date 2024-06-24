@@ -4,12 +4,11 @@
 
 package org.jni_zero;
 
-import org.jni_zero.NativeMethods;
-
 class TinySample {
     @NativeMethods()
     interface Natives {
-        void foo();
-        boolean bar(int a);
+        void foo(Object a, int b);
+
+        boolean bar(int a, Object b);
     }
 }

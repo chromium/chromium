@@ -4,11 +4,11 @@
 
 package org.jni_zero;
 
-import org.jni_zero.NativeMethods;
-
 class TinySample2 {
     @NativeMethods()
     interface Natives {
-        void test();
+        void test(Object a, int b);
+
+        void test2(int a, Object b);
     }
 }

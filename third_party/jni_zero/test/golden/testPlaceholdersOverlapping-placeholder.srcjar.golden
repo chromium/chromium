@@ -10,8 +10,8 @@ package org.jni_zero;
 
 public interface TinySample {
   public interface Natives {
-    public boolean bar(int a);
-    public void foo();
+    public boolean bar(int a, Object b);
+    public void foo(Object a, int b);
   }
 }
 

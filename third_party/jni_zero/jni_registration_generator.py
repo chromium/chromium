@@ -265,8 +265,7 @@ def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
       method_name = switch_case_method_name_re.search(case).group(1)
       method_to_switch_num[method_name] = i
       if len(cases) > 1:
-        cases[i] = f'''
-          case {i}:
+        cases[i] = f'''          case {i}:
              {case}'''
 
   swaps = {}
@@ -300,7 +299,7 @@ ${FN_BODY}
 }""")
   switch_body_template = string.Template("""
         switch (switch_num) {
-          ${CASES}
+${CASES}
           default:
             JNI_ZERO_DCHECK(false);
             return${DEFAULT_RETURN};
@@ -658,10 +657,10 @@ ${KMETHODS}
       if self.options.enable_jni_multiplexing:
         class_name = common.escape_class_name(
             self.gen_jni_class.full_name_with_slashes)
-        name = _GetMultiplexProxyName(native.proxy_signature)
+        sorted_signature = native.proxy_signature.with_params_reordered()
+        name = _GetMultiplexProxyName(sorted_signature)
         stub_name = f'Java_{class_name}_' + common.escape_class_name(name)
-        multipliexed_signature = _CreateMultiplexedSignature(
-            native.proxy_signature)
+        multipliexed_signature = _CreateMultiplexedSignature(sorted_signature)
         jni_descriptor = multipliexed_signature.to_descriptor()
       elif self.options.use_proxy_hash:
         name = native.hashed_proxy_name
@@ -752,7 +751,6 @@ ${NATIVES}\
 
     signature_to_cpp_calls = collections.defaultdict(list)
     for native in self.proxy_natives:
-      signature = native.proxy_signature
       _, param_names = _GetMultiplexingParamsList(native.proxy_param_types)
       param_string = ', '.join(param_names[1:])
       if param_string:
@@ -763,6 +761,7 @@ ${NATIVES}\
           'STUB_NAME': self.jni_obj.GetStubName(native),
           'PARAMS': param_string,
       }
+      signature = native.proxy_signature.with_params_reordered()
       signature_to_cpp_calls[signature].append(template.substitute(values))
 
     self.registration_dict['SIGNATURE_TO_CPP_CALLS'] = signature_to_cpp_calls
@@ -815,16 +814,18 @@ def _MakeForwardingProxy(options, gen_jni_class, proxy_native):
         ${MAYBE_RETURN}${PROXY_CLASS}.${PROXY_METHOD_NAME}(${PARAM_NAMES});
     }""")
 
-  param_names = proxy_native.proxy_params.to_call_str()
 
   if options.enable_jni_multiplexing:
+    sorted_signature = proxy_native.proxy_signature.with_params_reordered()
+    param_names = sorted_signature.param_list.to_call_str()
     if not param_names:
       param_names = _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN
     else:
       param_names = _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN + ', ' + param_names
-    proxy_method_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
+    proxy_method_name = _GetMultiplexProxyName(sorted_signature)
   else:
     proxy_method_name = proxy_native.hashed_proxy_name
+    param_names = proxy_native.proxy_params.to_call_str()
 
   return template.substitute({
       'RETURN_TYPE':
@@ -856,9 +857,10 @@ def _MakeProxySignature(options, proxy_native):
     signature_template = string.Template(native_method_line)
 
     alt_name = None
-    proxy_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
+    sorted_signature = proxy_native.proxy_signature.with_params_reordered()
+    proxy_name = _GetMultiplexProxyName(sorted_signature)
     params_with_types_list, _ = _GetMultiplexingParamsList(
-        proxy_native.proxy_params, java_types=True)
+        sorted_signature.param_list, java_types=True)
     params_with_types = ', '.join(params_with_types_list)
   elif options.use_proxy_hash:
     signature_template = string.Template("""
