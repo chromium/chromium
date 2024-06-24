@@ -97,14 +97,6 @@ PickerZeroStateView::PickerZeroStateView(
       base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
-    GetOrCreateSectionView(PickerCategory::kEditorRewrite)->SetVisible(false);
-
-    delegate_->GetSuggestedZeroStateEditorResults(base::BindOnce(
-        &PickerZeroStateView::OnFetchZeroStateEditorResults,
-        weak_ptr_factory_.GetWeakPtr(), PickerCategory::kEditorRewrite));
-  }
-
   // Case transformation results are shown in a submenu.
   auto case_transform_submenu =
       views::Builder<PickerItemWithSubmenuView>()
@@ -259,40 +251,6 @@ void PickerZeroStateView::OnFetchSuggestedResults(
               kSystemMenuPlusIcon, cros_tokens::kCrosSysOnSurface))
           .Build();
 
-  for (const PickerSearchResult& result : results) {
-    if (std::holds_alternative<PickerSearchResult::NewWindowData>(
-            result.data())) {
-      new_window_submenu->AddEntry(
-          result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                                      weak_ptr_factory_.GetWeakPtr(), result));
-    } else {
-      PickerItemView* view = primary_section_view_->AddResult(
-          result, &preview_controller_,
-          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                              weak_ptr_factory_.GetWeakPtr(), result));
-
-      if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
-        list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
-      }
-    }
-  }
-
-  if (!new_window_submenu->IsEmpty()) {
-    primary_section_view_->AddItemWithSubmenu(std::move(new_window_submenu));
-  }
-
-  delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
-}
-
-void PickerZeroStateView::OnFetchZeroStateEditorResults(
-    PickerCategory category,
-    std::vector<PickerSearchResult> results) {
-  if (results.empty()) {
-    return;
-  }
-
-  PickerSectionView* section_view = GetOrCreateSectionView(category);
-
   // Some Editor results are shown directly in the section, some shown behind
   // submenus. Iterate through the results and put them into the right View.
   auto length_submenu =
@@ -313,35 +271,55 @@ void PickerZeroStateView::OnFetchZeroStateEditorResults(
           .Build();
 
   for (const PickerSearchResult& result : results) {
-    const auto* editor_data =
-        std::get_if<PickerSearchResult::EditorData>(&result.data());
-    CHECK(editor_data);
+    if (std::holds_alternative<PickerSearchResult::NewWindowData>(
+            result.data())) {
+      new_window_submenu->AddEntry(
+          result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                                      weak_ptr_factory_.GetWeakPtr(), result));
+    } else if (const auto* editor_data =
+                   std::get_if<PickerSearchResult::EditorData>(
+                       &result.data())) {
+      auto callback =
+          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result);
+      switch (GetEditorSubmenu(editor_data->category)) {
+        case EditorSubmenu::kNone:
+          GetOrCreateSectionView(PickerCategory::kEditorRewrite)
+              ->AddResult(result, &preview_controller_, std::move(callback));
+          break;
+        case EditorSubmenu::kLength:
+          length_submenu->AddEntry(result, std::move(callback));
+          break;
+        case EditorSubmenu::kTone:
+          tone_submenu->AddEntry(result, std::move(callback));
+          break;
+      }
+    } else {
+      PickerItemView* view = primary_section_view_->AddResult(
+          result, &preview_controller_,
+          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result));
 
-    auto callback = base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                                        weak_ptr_factory_.GetWeakPtr(), result);
-    switch (GetEditorSubmenu(editor_data->category)) {
-      case EditorSubmenu::kNone:
-        section_view->AddResult(result, &preview_controller_,
-                                std::move(callback));
-        break;
-      case EditorSubmenu::kLength:
-        length_submenu->AddEntry(result, std::move(callback));
-        break;
-      case EditorSubmenu::kTone:
-        tone_submenu->AddEntry(result, std::move(callback));
-        break;
+      if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+        list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+      }
     }
   }
 
+  if (!new_window_submenu->IsEmpty()) {
+    primary_section_view_->AddItemWithSubmenu(std::move(new_window_submenu));
+  }
+
   if (!length_submenu->IsEmpty()) {
-    section_view->AddItemWithSubmenu(std::move(length_submenu));
+    GetOrCreateSectionView(PickerCategory::kEditorRewrite)
+        ->AddItemWithSubmenu(std::move(length_submenu));
   }
 
   if (!tone_submenu->IsEmpty()) {
-    section_view->AddItemWithSubmenu(std::move(tone_submenu));
+    GetOrCreateSectionView(PickerCategory::kEditorRewrite)
+        ->AddItemWithSubmenu(std::move(tone_submenu));
   }
 
-  section_view->SetVisible(true);
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
 }
 

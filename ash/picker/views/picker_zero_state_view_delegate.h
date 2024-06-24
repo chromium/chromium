@@ -36,9 +36,6 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
   virtual void GetZeroStateSuggestedResults(
       SuggestedResultsCallback callback) = 0;
 
-  virtual void GetSuggestedZeroStateEditorResults(
-      SuggestedEditorResultsCallback callback) = 0;
-
   // Requests for `view` to become the pseudo focused view.
   virtual void RequestPseudoFocus(views::View* view) = 0;
 

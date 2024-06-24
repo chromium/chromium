@@ -232,11 +232,6 @@ void PickerView::GetZeroStateSuggestedResults(
   delegate_->GetZeroStateSuggestedResults(std::move(callback));
 }
 
-void PickerView::GetSuggestedZeroStateEditorResults(
-    SuggestedEditorResultsCallback callback) {
-  delegate_->GetSuggestedEditorResults(std::move(callback));
-}
-
 void PickerView::RequestPseudoFocus(views::View* view) {
   if (active_item_container_ == nullptr ||
       !active_item_container_->ContainsItem(view)) {

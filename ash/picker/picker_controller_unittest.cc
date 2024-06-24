@@ -54,6 +54,7 @@ using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
@@ -710,6 +711,43 @@ TEST_F(PickerControllerTest,
       AllOf(Not(IsEmpty()),
             Each(Property("data", &PickerSearchResult::data,
                           VariantWith<PickerSearchResult::NewWindowData>(_)))));
+}
+
+TEST_F(
+    PickerControllerTest,
+    GetZeroStateSuggestedResultsWhenSelectedTextReturnsEditorRewriteResults) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.Focus();
+  input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  EXPECT_CALL(client, CacheEditorContext).WillOnce(Return(base::DoNothing()));
+  EXPECT_CALL(client, GetSuggestedEditorResults)
+      .WillRepeatedly(
+          [](PickerClient::SuggestedEditorResultsCallback callback) {
+            std::move(callback).Run({
+                PickerSearchResult::Editor(
+                    PickerSearchResult::EditorData::Mode::kRewrite, u"", {}, {},
+                    {}),
+            });
+          });
+  controller.ToggleWidget();
+
+  base::test::TestFuture<std::vector<PickerSearchResult>> results_future;
+  controller.GetZeroStateSuggestedResults(
+      results_future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      results_future.Get(),
+      AllOf(Not(IsEmpty()),
+            Each(Property(
+                "data", &PickerSearchResult::data,
+                VariantWith<PickerSearchResult::EditorData>(
+                    Field(&PickerSearchResult::EditorData::mode,
+                          PickerSearchResult::EditorData::Mode::kRewrite))))));
 }
 
 TEST_F(PickerControllerTest,

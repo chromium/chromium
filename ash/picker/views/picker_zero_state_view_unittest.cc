@@ -84,10 +84,6 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               (const PickerSearchResult&),
               (override));
   MOCK_METHOD(void,
-              GetSuggestedZeroStateEditorResults,
-              (SuggestedEditorResultsCallback),
-              (override));
-  MOCK_METHOD(void,
               GetZeroStateSuggestedResults,
               (SuggestedResultsCallback),
               (override));
@@ -113,7 +109,6 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
 
   EXPECT_THAT(view.category_section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditorWrite),
-                          Key(PickerCategoryType::kEditorRewrite),
                           Key(PickerCategoryType::kGeneral),
                           Key(PickerCategoryType::kCalculations)));
 }
@@ -182,23 +177,22 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
 TEST_F(PickerZeroStateViewTest,
        DoesntShowEditorRewriteCategoryForEmptySuggestions) {
   MockZeroStateViewDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
-      .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
-                       callback) { std::move(callback).Run({}); });
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({});
+          });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
                            kPickerWidth, &asset_fetcher_);
 
-  EXPECT_THAT(
-      view.category_section_views_for_testing(),
-      ElementsAre(Pair(
-          PickerCategoryType::kEditorRewrite,
-          Pointee(Property("GetVisible", &views::View::GetVisible, false)))));
+  EXPECT_THAT(view.category_section_views_for_testing(),
+              Not(Contains(Key(PickerCategoryType::kEditorRewrite))));
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
-      .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
                        callback) {
         std::move(callback).Run({
             PickerSearchResult::Editor(
@@ -237,8 +231,8 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
 
 TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
-      .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedResultsCallback
                        callback) {
         std::move(callback).Run({
             PickerSearchResult::Editor(

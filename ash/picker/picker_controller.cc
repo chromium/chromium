@@ -415,6 +415,11 @@ void PickerController::GetZeroStateSuggestedResults(
     callback.Run(std::move(new_window_results));
   }
 
+  if (base::Contains(model_->GetAvailableCategories(),
+                     PickerCategory::kEditorRewrite)) {
+    client_->GetSuggestedEditorResults(callback);
+  }
+
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
   for (PickerCategory category : model_->GetRecentResultsCategories()) {
     GetResultsForCategory(
@@ -617,11 +622,6 @@ void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
 
 void PickerController::SetCapsLockEnabled(bool enabled) {
   GetImeKeyboard().SetCapsLockEnabled(enabled);
-}
-
-void PickerController::GetSuggestedEditorResults(
-    SuggestedEditorResultsCallback callback) {
-  client_->GetSuggestedEditorResults(std::move(callback));
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

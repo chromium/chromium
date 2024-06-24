@@ -81,9 +81,6 @@ class ASH_EXPORT PickerViewDelegate {
   // Sets the current caps lock state.
   virtual void SetCapsLockEnabled(bool enabled) = 0;
 
-  virtual void GetSuggestedEditorResults(
-      SuggestedEditorResultsCallback callback) = 0;
-
   // Returns the current action for `result`.
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;
