@@ -148,6 +148,7 @@ std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
       title_text, style::CONTEXT_DIALOG_TITLE, style::STYLE_PRIMARY);
   if (base::FeatureList::IsEnabled(features::kBubbleFrameViewTitleIsHeading)) {
     label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+    label->GetViewAccessibility().SetHierarchicalLevel(1);
   }
   return label;
 }

@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
@@ -1370,6 +1371,32 @@ TEST_F(BubbleFrameViewTest, NoElideTitle) {
   EXPECT_LE(title_label->GetPreferredSize({title_label->width(), {}}).width(),
             title_label->width());
   EXPECT_EQ(title, title_label->GetDisplayTextForTesting());
+}
+
+TEST_F(BubbleFrameViewTest, LabelWithHeadingLevel) {
+  auto delegate_unique = std::make_unique<TestBubbleDialogDelegateView>();
+  TestBubbleDialogDelegateView* const delegate = delegate_unique.get();
+  TestAnchor anchor(CreateParams(Widget::InitParams::TYPE_WINDOW));
+  delegate->SetAnchorView(anchor.widget().GetContentsView());
+  delegate->SetSubtitleAllowCharacterBreak(true);
+
+  Widget* bubble =
+      BubbleDialogDelegateView::CreateBubble(std::move(delegate_unique));
+  bubble->Show();
+
+  std::u16string title = u"This is a title string";
+  delegate->ChangeTitle(title);
+  Label* title_label =
+      static_cast<Label*>(delegate->GetBubbleFrameView()->title());
+  EXPECT_EQ(title, title_label->GetDisplayTextForTesting());
+
+  ui::AXNodeData node_data;
+  title_label->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(
+      node_data.HasIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel));
+  EXPECT_EQ(
+      node_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel),
+      1);
 }
 
 // Ensures that clicks are ignored for short time after view has been shown.
