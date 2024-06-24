@@ -180,13 +180,6 @@ WindowStateType GetStateTypeFromSnapPosition(SnapPosition snap_position) {
   }
 }
 
-// Returns true if |window| is currently snapped.
-bool IsSnapped(aura::Window* window) {
-  if (!window)
-    return false;
-  return WindowState::Get(window)->IsSnapped();
-}
-
 void RemoveSnappingWindowFromOverviewIfApplicable(
     OverviewSession* overview_session,
     aura::Window* window) {

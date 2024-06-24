@@ -15,13 +15,14 @@
 namespace ash {
 
 GameDashboardTestBase::GameDashboardTestBase()
-    : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-void GameDashboardTestBase::SetUp() {
+    : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   scoped_feature_list_.InitWithFeatures(
       {features::kGameDashboard,
        features::kFeatureManagementGameDashboardRecordGame},
       {});
+}
+
+void GameDashboardTestBase::SetUp() {
   AshTestBase::SetUp();
   UpdateDisplay(base::StringPrintf("%d+%d-%dx%d", kScreenBounds.x(),
                                    kScreenBounds.y(), kScreenBounds.width(),

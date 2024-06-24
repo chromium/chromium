@@ -127,6 +127,9 @@ void DoSplitviewClipRectAnimation(
     const gfx::Rect& target_clip_rect,
     std::unique_ptr<ui::ImplicitAnimationObserver> animation_observer);
 
+// Returns true if `window` is currently snapped.
+bool IsSnapped(aura::Window* window);
+
 // Returns whether `window`'s snap position is actually in the left or top
 // position based on whether the display is in primary screen orientation.
 // TODO(sophiewen): Consolidate with `IsPhysicallyLeftOrTop(SnapPostiion)`.

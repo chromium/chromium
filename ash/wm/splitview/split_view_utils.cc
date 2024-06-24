@@ -389,6 +389,10 @@ int GetWindowLength(aura::Window* window, bool horizontal) {
   return horizontal ? bounds.width() : bounds.height();
 }
 
+bool IsSnapped(aura::Window* window) {
+  return window && WindowState::Get(window)->IsSnapped();
+}
+
 bool IsPhysicallyLeftOrTop(aura::Window* window) {
   chromeos::WindowStateType state_type =
       WindowState::Get(window)->GetStateType();
