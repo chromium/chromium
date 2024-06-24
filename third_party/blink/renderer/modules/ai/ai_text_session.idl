@@ -14,11 +14,13 @@ interface AITextSession {
     RaisesException
   ]
   Promise<DOMString> prompt(DOMString input);
+  // TODO(crbug.com/341851444): Remove after confirming there is no usage.
   [
     Measure,
     ImplementedAs=prompt,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    DeprecateAs=DeprecatedAITextSessionExecute
   ]
   Promise<DOMString> execute(DOMString input);
   [
@@ -27,11 +29,13 @@ interface AITextSession {
     RaisesException
   ]
   ReadableStream promptStreaming(DOMString input);
+  // TODO(crbug.com/341851444): Remove after confirming there is no usage.
   [
     Measure,
     ImplementedAs=promptStreaming,
     CallWith=ScriptState,
-    RaisesException
+    RaisesException,
+    DeprecateAs=DeprecatedAITextSessionExecuteStreaming
   ]
   Promise<DOMString> executeStreaming(DOMString input);
   [

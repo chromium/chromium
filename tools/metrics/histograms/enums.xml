@@ -11083,6 +11083,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5006" label="DisableReduceAcceptLanguage"/>
   <int value="5007"
       label="SharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin"/>
+  <int value="5008" label="DeprecatedAIModel"/>
+  <int value="5009" label="DeprecatedAICanCreateGenericSession"/>
+  <int value="5010" label="DeprecatedAICreateGenericSession"/>
+  <int value="5011" label="DeprecatedAIDefaultGenericSessionOptions"/>
+  <int value="5012" label="DeprecatedAITextSessionExecute"/>
+  <int value="5013" label="DeprecatedAITextSessionExecuteStreaming"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
