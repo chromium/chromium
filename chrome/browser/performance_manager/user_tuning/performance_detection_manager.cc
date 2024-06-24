@@ -92,6 +92,12 @@ void PerformanceDetectionManager::DiscardTabs(
                                    std::move(post_discard_cb))));
 }
 
+void PerformanceDetectionManager::NotifyActionableTabObserversForTesting(
+    ResourceType resource_type,
+    const ActionableTabsResult& tabs) {
+  NotifyActionableTabObservers(resource_type, tabs);
+}
+
 // static
 bool PerformanceDetectionManager::HasInstance() {
   return g_performance_detection_manager;

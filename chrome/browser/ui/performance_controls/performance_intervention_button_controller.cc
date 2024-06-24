@@ -14,6 +14,7 @@
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -55,9 +56,14 @@ PerformanceInterventionButtonController::
 void PerformanceInterventionButtonController::OnActionableTabListChanged(
     PerformanceDetectionManager::ResourceType type,
     PerformanceDetectionManager::ActionableTabsResult result) {
-  Profile* const profile = browser_->profile();
   actionable_cpu_tabs_ = result;
+
   if (!result.empty()) {
+    // Only trigger performance detection UI for the active window.
+    if (browser_ != chrome::FindLastActive()) {
+      return;
+    }
+    Profile* const profile = browser_->profile();
     auto* const tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(profile);
     CHECK(tracker);

@@ -73,6 +73,9 @@ class PerformanceDetectionManager {
                    base::OnceCallback<void(bool)> post_discard_cb =
                        base::OnceCallback<void(bool)>());
 
+  void NotifyActionableTabObserversForTesting(ResourceType resource_type,
+                                              const ActionableTabsResult& tabs);
+
   // Returns whether a PerformanceDetectionManager was created and installed.
   // Should only return false in unit tests.
   static bool HasInstance();
