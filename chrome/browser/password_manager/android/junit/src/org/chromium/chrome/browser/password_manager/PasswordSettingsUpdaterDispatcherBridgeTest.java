@@ -314,8 +314,7 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
                 sTestAccountEmail, PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
         ArgumentCaptor<Callback<Optional<Boolean>>> successCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mAccessorMock)
-                .getUseBiometricsForCredentials(eq(sTestAccount), successCallback.capture(), any());
+        verify(mAccessorMock).getUseBiometricReauthBeforeFilling(successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().onResult(Optional.of(true));
@@ -340,8 +339,7 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
                 sTestAccountEmail, PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
         ArgumentCaptor<Callback<Optional<Boolean>>> successCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mAccessorMock)
-                .getUseBiometricsForCredentials(eq(sTestAccount), successCallback.capture(), any());
+        verify(mAccessorMock).getUseBiometricReauthBeforeFilling(successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().onResult(Optional.empty());
@@ -366,8 +364,7 @@ public class PasswordSettingsUpdaterDispatcherBridgeTest {
                 sTestAccountEmail, PasswordManagerSetting.BIOMETRIC_REAUTH_BEFORE_PWD_FILLING);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mAccessorMock)
-                .getUseBiometricsForCredentials(eq(sTestAccount), any(), failureCallback.capture());
+        verify(mAccessorMock).getUseBiometricReauthBeforeFilling(any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception expectedException = new Exception("Sample failure");

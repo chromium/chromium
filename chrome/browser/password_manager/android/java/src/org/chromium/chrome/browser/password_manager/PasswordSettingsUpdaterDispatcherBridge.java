@@ -81,8 +81,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                                         AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             case BIOMETRIC_REAUTH_BEFORE_PWD_FILLING:
-                mSettingsAccessor.getUseBiometricsForCredentials(
-                        getAccount(account),
+                mSettingsAccessor.getUseBiometricReauthBeforeFilling(
                         value ->
                                 handleSettingValueFetchedOnUiThread(
                                         BIOMETRIC_REAUTH_BEFORE_PWD_FILLING,
