@@ -8,6 +8,7 @@ source_set("public") {
     "magic_stack_consumer.h",
     "magic_stack_module.h",
     "magic_stack_module.mm",
+    "magic_stack_module_container_delegate.h",
   ]
   deps = [
     "//ios/chrome/browser/shared/ui/util",
@@ -65,7 +66,6 @@ source_set("cells") {
     "magic_stack_edit_button_cell.mm",
     "magic_stack_module_container.h",
     "magic_stack_module_container.mm",
-    "magic_stack_module_container_delegate.h",
     "magic_stack_module_contents_factory.h",
     "magic_stack_module_contents_factory.mm",
   ]

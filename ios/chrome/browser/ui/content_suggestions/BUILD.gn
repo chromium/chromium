@@ -156,7 +156,10 @@ source_set("public") {
     "content_suggestions_menu_provider.h",
     "content_suggestions_view_controller_audience.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+  ]
 }
 
 source_set("content_suggestions_ui") {
