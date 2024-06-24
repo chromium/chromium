@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 
 #include <algorithm>
@@ -696,8 +691,9 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
                        return field->renderer_form_id() !=
                               (*subform_begin)->renderer_form_id();
                      });
-    EncodeFormFieldsForUpload(form, {subform_begin, subform_end},
-                              &uploads.back());
+    // SAFETY: The iterators are from the same container.
+    EncodeFormFieldsForUpload(
+        form, UNSAFE_BUFFERS({subform_begin, subform_end}), &uploads.back());
     subform_begin = subform_end;
   }
   return uploads;
