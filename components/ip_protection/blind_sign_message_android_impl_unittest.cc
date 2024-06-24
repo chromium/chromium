@@ -72,6 +72,9 @@ class BlindSignMessageAndroidImplTest : public testing::Test {
   privacy::ppn::AuthAndSignRequest auth_and_sign_request;
   privacy::ppn::GetInitialDataResponse get_initial_data_response;
   privacy::ppn::AuthAndSignResponse auth_and_sign_response;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(BlindSignMessageAndroidImplTest,

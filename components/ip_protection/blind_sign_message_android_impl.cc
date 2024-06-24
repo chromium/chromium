@@ -97,9 +97,10 @@ void BlindSignMessageAndroidImpl::SendRequest(
       get_initial_data_request_proto.ParseFromString(body);
       ip_protection_auth_client_->GetInitialData(
           get_initial_data_request_proto,
-          base::BindOnce(&BlindSignMessageAndroidImpl::OnSendRequestComplete<
-                             privacy::ppn::GetInitialDataResponse>,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &BlindSignMessageAndroidImpl::OnSendRequestComplete<
+                  privacy::ppn::GetInitialDataResponse>,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
       break;
     }
     case quiche::BlindSignMessageRequestType::kAuthAndSign: {
@@ -107,9 +108,10 @@ void BlindSignMessageAndroidImpl::SendRequest(
       auth_and_sign_request_proto.ParseFromString(body);
       ip_protection_auth_client_->AuthAndSign(
           auth_and_sign_request_proto,
-          base::BindOnce(&BlindSignMessageAndroidImpl::OnSendRequestComplete<
-                             privacy::ppn::AuthAndSignResponse>,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &BlindSignMessageAndroidImpl::OnSendRequestComplete<
+                  privacy::ppn::AuthAndSignResponse>,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
       break;
     }
     case quiche::BlindSignMessageRequestType::kUnknown:
