@@ -131,30 +131,22 @@ def run_executable(cmd,
   # It might seem counterintuitive to support a --no-xvfb flag in a script
   # whose only job is to start xvfb, but doing so allows us to consolidate
   # the logic in the layers of buildbot scripts so that we *always* use
-  # this script by default and don't have to worry about the distinction, it
+  # xvfb by default and don't have to worry about the distinction, it
   # can remain solely under the control of the test invocation itself.
-  # Historically, this flag turned off xvfb, but now turns off both X11 backings
-  # (xvfb/Xorg). As of crrev.com/c/5631242, Xorg became the default backing when
-  # no flags are supplied. Xorg is mostly a drop in replacement to Xvfb but has
-  # better support for dummy drivers and multi-screen testing (See:
-  # crbug.com/40257169 and http://tinyurl.com/4phsuupf). Requires Xorg binaries
-  # (package: xserver-xorg-core)
-  use_xvfb = False
-  use_xorg = True
-
+  use_xvfb = True
   if '--no-xvfb' in cmd:
     use_xvfb = False
-    use_xorg = False  # Backwards compatibly turns off all X11 backings.
     cmd.remove('--no-xvfb')
 
-  # Support forcing legacy xvfb backing.
-  if '--use-xvfb' in cmd:
-    if not use_xorg and not use_xvfb:
-      print('Conflicting flags --use-xvfb and --no-xvfb\n', file=sys.stderr)
-      return 1
-    use_xvfb = True
-    use_xorg = False
-    cmd.remove('--use-xvfb')
+  # Xorg is mostly a drop in replacement to Xvfb but has better support for
+  # dummy drivers and multi-screen testing (See: crbug.com/40257169 and
+  # http://tinyurl.com/4phsuupf). Requires Xorg binaries
+  # (package: xserver-xorg-core)
+  use_xorg = False
+  if '--use-xorg' in cmd:
+    use_xvfb = False
+    use_xorg = True
+    cmd.remove('--use-xorg')
 
   # Tests that run on Linux platforms with Ozone/Wayland backend require
   # a Weston instance. However, it is also required to disable xvfb so
@@ -657,10 +649,8 @@ def _set_xdg_runtime_dir(env):
 
 
 def main():
-  usage = ('[command [--no-xvfb or --use-xvfb or --use-weston] args...]\n'
-           '\t --no-xvfb\t\tTurns off all X11 backings (Xvfb and Xorg).\n'
-           '\t --use-xvfb\t\tForces legacy Xvfb backing instead of Xorg.\n'
-           '\t --use-weston\t\tEnable Wayland server.')
+  usage = ('Usage: xvfb.py '
+           '[command [--no-xvfb or --use_xorg or --use-weston] args...]')
   # TODO(crbug.com/326283384): Argparse-ify this.
   if len(sys.argv) < 2:
     print(usage + '\n', file=sys.stderr)
