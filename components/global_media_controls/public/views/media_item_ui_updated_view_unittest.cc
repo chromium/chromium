@@ -84,6 +84,11 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     return button && button->GetVisible();
   }
 
+  bool IsMediaActionButtonDisabled(MediaSessionAction action) const {
+    auto* button = view_->GetMediaActionButtonForTesting(action);
+    return button && button->GetVisible() && !button->GetEnabled();
+  }
+
   void SimulateButtonClick(MediaSessionAction action) {
     auto* button = view_->GetMediaActionButtonForTesting(action);
     EXPECT_TRUE(button && button->GetVisible());
@@ -113,7 +118,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(MediaItemUIUpdatedViewTest, ProgressViewCheck) {
+TEST_F(MediaItemUIUpdatedViewTest, ProgressRowCheck) {
   // Check that progress position can be updated.
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(10),
@@ -128,6 +133,13 @@ TEST_F(MediaItemUIUpdatedViewTest, ProgressViewCheck) {
                          ui::DomKey::ARROW_RIGHT,  ui::EventTimeForNow()};
   EXPECT_CALL(item(), SeekTo(testing::_));
   view()->OnKeyPressed(key_event);
+
+  // The progress row media action buttons should be disabled instead of
+  // invisible if the actions are not supported.
+  EXPECT_TRUE(IsMediaActionButtonDisabled(MediaSessionAction::kPreviousTrack));
+  EXPECT_TRUE(IsMediaActionButtonDisabled(MediaSessionAction::kNextTrack));
+  EXPECT_TRUE(IsMediaActionButtonDisabled(MediaSessionAction::kSeekForward));
+  EXPECT_TRUE(IsMediaActionButtonDisabled(MediaSessionAction::kSeekBackward));
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, OnMousePressed) {
@@ -450,7 +462,7 @@ TEST_F(MediaItemUIUpdatedViewTest, TimestampLabelsCheck) {
   EXPECT_FALSE(view()->GetDurationTimestampLabelForTesting()->GetVisible());
 }
 
-TEST_F(MediaItemUIUpdatedViewTest, LiveStatusViewCheck) {
+TEST_F(MediaItemUIUpdatedViewTest, LiveMediaViewCheck) {
   EXPECT_TRUE(view()->GetProgressViewForTesting()->GetVisible());
   EXPECT_FALSE(view()->GetLiveStatusViewForTesting()->GetVisible());
 
@@ -459,6 +471,31 @@ TEST_F(MediaItemUIUpdatedViewTest, LiveStatusViewCheck) {
       /*position=*/base::Seconds(5), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position);
   EXPECT_FALSE(view()->GetProgressViewForTesting()->GetVisible());
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+  EXPECT_TRUE(view()->GetLiveStatusViewForTesting()->GetVisible());
+}
+
+TEST_F(MediaItemUIUpdatedViewTest, LiveMediaViewWithMediaActionButtons) {
+  EnableAllMediaActions();
+  EXPECT_TRUE(view()->GetProgressViewForTesting()->GetVisible());
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+  EXPECT_FALSE(view()->GetLiveStatusViewForTesting()->GetVisible());
+
+  media_session::MediaPosition media_position(
+      /*playback_rate=*/1, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position);
+  EXPECT_FALSE(view()->GetProgressViewForTesting()->GetVisible());
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kPreviousTrack));
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
   EXPECT_TRUE(view()->GetLiveStatusViewForTesting()->GetVisible());
 }
 

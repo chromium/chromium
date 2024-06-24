@@ -178,6 +178,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // Whether the media is currently in picture-in-picture.
   bool in_picture_in_picture_ = false;
 
+  // Whether the media is broadcast via livestream.
+  bool is_live_ = false;
+
   // Whether the user is currently dragging the progress view.
   DragState drag_state_ = DragState::kDragEnded;
 

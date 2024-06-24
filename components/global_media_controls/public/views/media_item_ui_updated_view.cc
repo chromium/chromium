@@ -53,10 +53,14 @@ constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr gfx::Size kMediaActionButtonSize = gfx::Size(20, 20);
 
-// Buttons with the following media actions should be hidden when the user is
-// dragging the progress view.
-const MediaSessionAction kHiddenMediaActionsWhileDragging[] = {
+// Buttons with the following media actions are in the progress row, on the two
+// sides of the progress view.
+const MediaSessionAction kProgressRowMediaActions[] = {
     MediaSessionAction::kPreviousTrack, MediaSessionAction::kNextTrack,
+    MediaSessionAction::kSeekForward, MediaSessionAction::kSeekBackward};
+
+// Media actions for the replay and forward 10 seconds buttons.
+const MediaSessionAction kProgressRowSeekMediaActions[] = {
     MediaSessionAction::kSeekForward, MediaSessionAction::kSeekBackward};
 
 }  // namespace
@@ -229,6 +233,15 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
               base::Unretained(this))));
   progress_row->SetFlexForView(progress_view_, 1);
 
+  // Create the live status view besides the progress view while only either
+  // |progress_view_| or |live_status_view_| will show.
+  live_status_view_ =
+      progress_row->AddChildView(std::make_unique<MediaLiveStatusView>(
+          media_color_theme_.playing_progress_foreground_color_id,
+          media_color_theme_.playing_progress_background_color_id));
+  progress_row->SetFlexForView(live_status_view_, 1);
+  live_status_view_->SetVisible(false);
+
   // Create the forward 10 button.
   CreateMediaActionButton(
       progress_row, static_cast<int>(MediaSessionAction::kSeekForward),
@@ -247,13 +260,6 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_CAPTION_MEDIUM));
 
-  // Create the live status view below |progress_row| while only either
-  // |progress_row| or |live_status_view_| will show.
-  live_status_view_ = AddChildView(std::make_unique<MediaLiveStatusView>(
-      media_color_theme_.playing_progress_foreground_color_id,
-      media_color_theme_.playing_progress_background_color_id));
-  live_status_view_->SetVisible(false);
-
   // Add the device selector view below the |progress_row| if there is one.
   UpdateDeviceSelectorView(std::move(device_selector_view));
 
@@ -261,6 +267,15 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   // It will only show up when this media item is being casted to another
   // device.
   UpdateFooterView(std::move(footer_view));
+
+  // Set the timestamp labels to use fixed width so that they can replace the
+  // media action buttons without changing the progress view's position.
+  int timestamp_label_width =
+      kMediaActionButtonSize.width() * 2 + kProgressRowSeparator;
+  current_timestamp_label_->SetMultiLine(true);
+  current_timestamp_label_->SizeToFit(timestamp_label_width);
+  duration_timestamp_label_->SetMultiLine(true);
+  duration_timestamp_label_->SizeToFit(timestamp_label_width);
 
   // Set the timestamp labels to be hidden initially.
   UpdateTimestampLabelsVisibility();
@@ -400,11 +415,13 @@ void MediaItemUIUpdatedView::UpdateWithMediaPosition(
   progress_view_->UpdateProgress(position);
   duration_timestamp_label_->SetText(GetFormattedDuration(position.duration()));
 
-  // Show either the progress view or the live status view based on whether the
-  // media is live.
-  bool media_is_live = position.duration().is_max();
-  progress_view_->SetVisible(!media_is_live);
-  live_status_view_->SetVisible(media_is_live);
+  // Show either the live status view or the progress view based on whether the
+  // media is live. The media action buttons in the progress row may also change
+  // their visibility.
+  is_live_ = position.duration().is_max();
+  live_status_view_->SetVisible(is_live_);
+  progress_view_->SetVisible(!is_live_);
+  UpdateMediaActionButtonsVisibility();
 }
 
 void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
@@ -494,7 +511,7 @@ MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
            ? kPlayPauseButtonSize
            : kMediaActionButtonSize),
       media_color_theme_.secondary_foreground_color_id,
-      media_color_theme_.secondary_foreground_color_id,
+      media_color_theme_.paused_progress_foreground_color_id,
       media_color_theme_.focus_ring_color_id);
   auto* button_ptr = parent->AddChildView(std::move(button));
 
@@ -557,11 +574,25 @@ void MediaItemUIUpdatedView::UpdateMediaActionButtonsVisibility() {
     if (button == picture_in_picture_button_ && footer_view_) {
       should_show = false;
     }
-    if (drag_state_ == DragState::kDragStarted &&
-        base::Contains(kHiddenMediaActionsWhileDragging,
+
+    if (base::Contains(kProgressRowMediaActions,
                        static_cast<MediaSessionAction>(button->GetID()))) {
-      should_show = false;
+      if (is_live_) {
+        // For live media, the seek progress buttons are always hidden and the
+        // other buttons are visible if their media actions are supported.
+        if (base::Contains(kProgressRowSeekMediaActions,
+                           static_cast<MediaSessionAction>(button->GetID()))) {
+          should_show = false;
+        }
+      } else {
+        // For non-live media, the progress row buttons should always be visible
+        // when the user is not dragging the progress view. They should be
+        // disabled if their media actions are not supported.
+        button->SetEnabled(should_show);
+        should_show = (drag_state_ == DragState::kDragEnded);
+      }
     }
+
     if (should_show != button->GetVisible()) {
       button->SetVisible(should_show);
       should_invalidate_layout = true;
