@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
@@ -52,6 +53,18 @@ class SparkyUtilTest : public testing::Test {
       }
     }
     return false;  // Did not find the setting.
+  }
+
+  bool ContainsApp(
+      const google::protobuf::RepeatedPtrField<proto::App>& repeated_field,
+      std::string_view name,
+      std::string_view id) {
+    for (const proto::App& proto_app : repeated_field) {
+      if (proto_app.id() == id && proto_app.name() == name) {
+        return true;
+      }
+    }
+    return false;
   }
 };
 
@@ -111,6 +124,24 @@ TEST_F(SparkyUtilTest, AddDiagnosticsProto) {
   ASSERT_EQ(diagnostics_proto->battery().cycle_count(), 158);
   ASSERT_EQ(diagnostics_proto->battery().battery_time(),
             "36 minutes until full");
+}
+
+TEST_F(SparkyUtilTest, AddAppsData) {
+  std::vector<manta::AppsData> apps_data;
+  manta::AppsData app1 = AppsData("name1", "id1");
+  apps_data.emplace_back(std::move(app1));
+  manta::AppsData app2 = AppsData("name2", "id2");
+  app2.AddSearchableText("search_term1");
+  app2.AddSearchableText("search_term2");
+  apps_data.emplace_back(std::move(app2));
+
+  proto::SparkyContextData sparky_context_data;
+  manta::proto::AppsData* apps_proto = sparky_context_data.mutable_apps_data();
+  AddAppsData(std::move(apps_data), apps_proto);
+  auto apps = apps_proto->app();
+  ASSERT_EQ(apps_proto->app_size(), 2);
+  ASSERT_TRUE(ContainsApp(apps, "name2", "id2"));
+  ASSERT_TRUE(ContainsApp(apps, "name1", "id1"));
 }
 
 }  // namespace manta

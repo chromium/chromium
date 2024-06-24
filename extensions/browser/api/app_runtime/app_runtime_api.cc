@@ -152,6 +152,7 @@ app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
     // three to remain in sync with LaunchSource.
     case AppLaunchSource::kSourceAppHomePage:
     case AppLaunchSource::kSourceFocusMode:
+    case AppLaunchSource::kSourceSparky:
       return static_cast<app_runtime::LaunchSource>(
           base::to_underlying(source) - 3);
   }

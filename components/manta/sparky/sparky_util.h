@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_MANTA_SPARKY_SPARKY_UTIL_H_
 #define COMPONENTS_MANTA_SPARKY_SPARKY_UTIL_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/system_info_delegate.h"
@@ -23,6 +27,9 @@ std::vector<Diagnostics> COMPONENT_EXPORT(MANTA)
 void COMPONENT_EXPORT(MANTA)
     AddDiagnosticsProto(std::unique_ptr<DiagnosticsData> diagnostics_data,
                         proto::DiagnosticsData* diagnostics_proto);
+
+void COMPONENT_EXPORT(MANTA) AddAppsData(base::span<const AppsData> apps_data,
+                                         proto::AppsData* apps_proto);
 
 }  // namespace manta
 

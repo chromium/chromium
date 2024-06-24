@@ -84,8 +84,19 @@ message SettingsData {
   repeated Setting setting = 1;
 }
 
+message App {
+  string id = 1;
+  string name = 2;
+  repeated string searchable_term = 3;
+}
+
+message AppsData {
+  repeated App app = 1;
+}
+
 message Action {
   optional SettingsData settings = 1;
+  optional string launch_app_id = 2;
 }
 
 message FinalResponse {
@@ -104,6 +115,7 @@ message ContextRequest {
 
   optional DiagnosticsRequest diagnostics = 1;
   optional SettingsDataRequest settings = 3;
+  optional Action action = 4;
 }
 
 message SparkyResponse {
@@ -127,4 +139,5 @@ message SparkyContextData {
   optional SettingsData settings_data = 4;
   repeated InputText q_and_a = 8;
   optional Image screenshot = 9;
+  optional AppsData apps_data = 10;
 }

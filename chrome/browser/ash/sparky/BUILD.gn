@@ -15,11 +15,15 @@ source_set("sparky_ash") {
     "//ash",
     "//ash/constants",
     "//base",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/sparky",
     "//components/manta",
     "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//ui/display/types",
+    "//ui/events:event_constants",
   ]
 }
 

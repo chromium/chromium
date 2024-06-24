@@ -103,6 +103,8 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_WELCOME_TOUR;
     case LaunchSource::kFromFocusMode:
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_FOCUS_MODE;
+    case LaunchSource::kFromSparky:
+      return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_CHROME_INTERNAL;
   }
 }
 

@@ -10,9 +10,15 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
+#include "ui/display/types/display_constants.h"
+#include "ui/events/event_constants.h"
 
 namespace ash {
 
@@ -120,6 +126,37 @@ std::optional<base::Value> SparkyDelegateImpl::GetSettingValue(
 
 void SparkyDelegateImpl::GetScreenshot(manta::ScreenshotDataCallback callback) {
   screenshot_handler_->TakeScreenshot(std::move(callback));
+}
+
+std::vector<manta::AppsData> SparkyDelegateImpl::GetAppsList() {
+  std::vector<manta::AppsData> apps;
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForEachApp([&apps](const apps::AppUpdate& update) {
+        if (!apps_util::IsInstalled(update.Readiness())) {
+          return;
+        }
+
+        if (!update.ShowInSearch().value_or(false) &&
+            !(update.Recommendable().value_or(false) &&
+              update.AppType() == apps::AppType::kBuiltIn)) {
+          return;
+        }
+
+        manta::AppsData& app = apps.emplace_back(update.AppId(), update.Name());
+
+        for (const std::string& term : update.AdditionalSearchTerms()) {
+          app.AddSearchableText(term);
+        }
+      });
+  return apps;
+}
+
+void SparkyDelegateImpl::LaunchApp(const std::string& app_id) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->Launch(app_id, ui::EF_IS_SYNTHESIZED, apps::LaunchSource::kFromSparky,
+                std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 }
 
 }  // namespace ash

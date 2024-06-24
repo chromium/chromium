@@ -329,6 +329,8 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
       return extensions::AppLaunchSource::kSourceAppHomePage;
     case LaunchSource::kFromFocusMode:
       return extensions::AppLaunchSource::kSourceFocusMode;
+    case LaunchSource::kFromSparky:
+      return extensions::AppLaunchSource::kSourceSparky;
     // No equivalent extensions launch source or not needed in extensions:
     case LaunchSource::kFromReparenting:
     case LaunchSource::kFromProfileMenu:

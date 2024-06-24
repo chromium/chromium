@@ -150,6 +150,8 @@ void SparkyProvider::OnScreenshotObtained(
     image_proto->set_serialized_bytes(std::string(
         data_ptr, data_ptr + data_size));  // Construct string from data
   }
+  auto* apps_data = sparky_context_data->mutable_apps_data();
+  AddAppsData(sparky_delegate_->GetAppsList(), apps_data);
 
   if (task == proto::Task::TASK_SETTINGS) {
     auto* settings_list = sparky_delegate_->GetSettingsList();
@@ -192,7 +194,8 @@ void SparkyProvider::OnResponseReceived(
                                  original_content, QAHistory, question,
                                  std::move(done_callback), status);
     return;
-  } else if (sparky_response->has_final_response()) {
+  }
+  if (sparky_response->has_final_response()) {
     OnActionResponse(sparky_response->final_response(),
                      std::move(done_callback), status);
     return;
@@ -219,7 +222,8 @@ void SparkyProvider::RequestAdditionalInformation(
     }
     std::move(done_callback).Run("Unable to find settings list", status);
     return;
-  } else if (context_request.has_diagnostics()) {
+  }
+  if (context_request.has_diagnostics()) {
     auto diagnostics_vector =
         ObtainDiagnosticsVectorFromProto(context_request.diagnostics());
     if (!diagnostics_vector.empty()) {
@@ -232,6 +236,15 @@ void SparkyProvider::RequestAdditionalInformation(
       return;
     }
     std::move(done_callback).Run("No diagnostics were requested", status);
+    return;
+  }
+  if (context_request.has_action() &&
+      context_request.action().has_launch_app_id()) {
+    sparky_delegate_->LaunchApp(context_request.action().launch_app_id());
+    // TODO (b:347618307) Update task to new type.
+    QuestionAndAnswer(original_content, QAHistory, question,
+                      proto::TASK_GENERIC, nullptr, std::move(done_callback));
+    return;
   }
 
   // Occurs if no valid request can be found.

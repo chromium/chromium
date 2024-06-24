@@ -22,6 +22,18 @@ void SettingsData::UpdateValue(std::optional<base::Value> new_value) {
   value = std::move(new_value);
 }
 
+AppsData::AppsData(const std::string& name, const std::string& id)
+    : name(name), id(id) {}
+
+AppsData::~AppsData() = default;
+
+AppsData::AppsData(AppsData&& other) = default;
+AppsData& AppsData::operator=(AppsData&& other) = default;
+
+void AppsData::AddSearchableText(const std::string& new_searchable_text) {
+  searchable_text.push_back(new_searchable_text);
+}
+
 SparkyDelegate::SparkyDelegate() = default;
 SparkyDelegate::~SparkyDelegate() = default;
 

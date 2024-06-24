@@ -32,6 +32,8 @@ class SparkyDelegateImpl : public manta::SparkyDelegate {
   std::optional<base::Value> GetSettingValue(
       const std::string& setting_id) override;
   void GetScreenshot(manta::ScreenshotDataCallback callback) override;
+  std::vector<manta::AppsData> GetAppsList() override;
+  void LaunchApp(const std::string& app_id) override;
 
  private:
   friend class SparkyDelegateImplTest;

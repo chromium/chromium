@@ -205,10 +205,11 @@ enum class AppLaunchSource {
   kSourceReparenting = 26,      // APP launch via reparenting.
   kSourceAppHomePage = 27,      // App launch from chrome://apps (App Home).
   kSourceFocusMode = 28,        // App launch from Focus Mode panel.
+  kSourceSparky = 29,           // App launch from Sparky.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kSourceFocusMode,
+  kMaxValue = kSourceSparky,
 };
 
 // This enum is used for the launch type the user wants to use for an

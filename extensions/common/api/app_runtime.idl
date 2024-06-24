@@ -47,7 +47,8 @@ namespace app.runtime {
     arc,
     intent_url,
     app_home_page,
-    focus_mode
+    focus_mode,
+    sparky
   };
 
   // An app can be launched with a specific action in mind, for example, to

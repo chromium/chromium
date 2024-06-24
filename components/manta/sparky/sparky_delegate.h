@@ -31,10 +31,6 @@ enum class PrefType {
 
 // Stores the setting data for the current or wanted state of a Pref.
 struct COMPONENT_EXPORT(MANTA) SettingsData {
-  std::string pref_name;
-  PrefType pref_type;
-  std::optional<base::Value> value;
-
   SettingsData(const std::string& pref_name,
                const PrefType& pref_type,
                std::optional<base::Value> value);
@@ -45,10 +41,29 @@ struct COMPONENT_EXPORT(MANTA) SettingsData {
   SettingsData& operator=(const SettingsData&) = delete;
 
   void UpdateValue(std::optional<base::Value> new_value);
+
+  std::string pref_name;
+  PrefType pref_type;
+  std::optional<base::Value> value;
 };
 
 using ScreenshotDataCallback =
     base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
+
+struct COMPONENT_EXPORT(MANTA) AppsData {
+  AppsData(const std::string& name, const std::string& id);
+
+  ~AppsData();
+
+  AppsData(AppsData&& other);
+  AppsData& operator=(AppsData&& other);
+
+  void AddSearchableText(const std::string& new_searchable_text);
+
+  std::string name;
+  std::string id;
+  std::vector<std::string> searchable_text;
+};
 
 // Virtual class to handle the information requests and actions taken within
 // Sparky Provider which have a Chrome dependency.
@@ -66,6 +81,8 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual std::optional<base::Value> GetSettingValue(
       const std::string& setting_id) = 0;
   virtual void GetScreenshot(ScreenshotDataCallback callback) = 0;
+  virtual std::vector<AppsData> GetAppsList() = 0;
+  virtual void LaunchApp(const std::string& app_id) = 0;
 };
 
 }  // namespace manta

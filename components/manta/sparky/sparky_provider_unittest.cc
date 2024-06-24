@@ -20,6 +20,7 @@
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/proto/sparky.pb.h"
+#include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/system_info_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -65,7 +66,6 @@ class FakeSparkyDelegate : public SparkyDelegate {
         std::move(settings_data->value));
     return true;
   }
-
   SettingsDataList* GetSettingsList() override {
     if (current_prefs_.empty()) {
       return nullptr;
@@ -73,7 +73,6 @@ class FakeSparkyDelegate : public SparkyDelegate {
       return &current_prefs_;
     }
   }
-
   std::optional<base::Value> GetSettingValue(
       const std::string& setting_id) override {
     if (current_prefs_.contains(setting_id)) {
@@ -82,10 +81,11 @@ class FakeSparkyDelegate : public SparkyDelegate {
       return std::nullopt;
     }
   }
-
   void GetScreenshot(ScreenshotDataCallback callback) override {
     std::move(callback).Run(nullptr);
   }
+  std::vector<AppsData> GetAppsList() override { return {}; }
+  void LaunchApp(const std::string& app_id) override {}
 
  private:
   SettingsDataList current_prefs_;

@@ -142,4 +142,15 @@ void COMPONENT_EXPORT(MANTA)
   }
 }
 
+void AddAppsData(base::span<const AppsData> apps_data,
+                 proto::AppsData* apps_proto) {
+  for (const manta::AppsData& app : apps_data) {
+    proto::App* app_proto = apps_proto->add_app();
+    app_proto->set_id(app.id);
+    app_proto->set_name(app.name);
+    app_proto->mutable_searchable_term()->Add(app.searchable_text.begin(),
+                                              app.searchable_text.end());
+  }
+}
+
 }  // namespace manta

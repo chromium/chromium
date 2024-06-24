@@ -249,6 +249,7 @@ std::optional<arc::UserInteractionType> GetUserInterationType(
     case apps::LaunchSource::kFromFirstRun:
     case apps::LaunchSource::kFromWelcomeTour:
     case apps::LaunchSource::kFromFocusMode:
+    case apps::LaunchSource::kFromSparky:
       // These LaunchSources do not launch ARC apps. When adding a new
       // LaunchSource, if it is expected to launch ARC apps, add a new
       // UserInteractionType above. Otherwise, add it here.

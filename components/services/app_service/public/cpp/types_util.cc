@@ -87,6 +87,7 @@ bool IsHumanLaunch(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromProtocolHandler:
     case apps::LaunchSource::kFromUrlHandler:
     case apps::LaunchSource::kFromFirstRun:
+    case apps::LaunchSource::kFromSparky:
       return false;
   }
   NOTREACHED_IN_MIGRATION();
