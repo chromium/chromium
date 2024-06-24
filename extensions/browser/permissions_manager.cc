@@ -796,17 +796,17 @@ void PermissionsManager::AddSiteAccessRequest(
   }
 }
 
-void PermissionsManager::RemoveSiteAccessRequest(
+bool PermissionsManager::RemoveSiteAccessRequest(
     int tab_id,
     const ExtensionId& extension_id) {
   SiteAccessRequestsHelper* helper = GetSiteAccessRequestsHelperFor(tab_id);
   if (!helper) {
-    return;
+    return false;
   }
 
   bool request_removed = helper->RemoveRequest(extension_id);
   if (!request_removed) {
-    return;
+    return false;
   }
 
   if (!helper->HasRequests()) {
@@ -816,6 +816,7 @@ void PermissionsManager::RemoveSiteAccessRequest(
   for (auto& observer : observers_) {
     observer.OnSiteAccessRequestRemoved(extension_id, tab_id);
   }
+  return true;
 }
 
 void PermissionsManager::UserDismissedSiteAccessRequest(

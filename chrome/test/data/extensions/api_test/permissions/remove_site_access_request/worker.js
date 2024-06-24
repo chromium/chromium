@@ -2,6 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {openTab} from '/_test_resources/test_util/tabs_util.js';
+
+// Navigates to a url with `origin`.
+async function navigateTo(origin) {
+  const config = await chrome.test.getConfig();
+  const url = `http://${origin}:${config.testServer.port}/simple.html`;
+  const tab = await openTab(url);
+  return tab;
+}
+
 chrome.test.runTests([
   // Tests that an error is returned when request does not include neither
   // documentId or tabId.
@@ -43,6 +53,19 @@ chrome.test.runTests([
     await chrome.test.assertPromiseRejects(
         chrome.permissions.removeSiteAccessRequest(request),
         `Error: No document with ID '${documentId}'.`);
+
+    chrome.test.succeed();
+  },
+
+  // Tests that an error is returned when the request cannot be removed since
+  // the request doesn't exist.
+  async function nonExistentRequest() {
+    const tab = await navigateTo('example.com');
+    const request = {tabId: tab.id};
+    await chrome.test.assertPromiseRejects(
+        chrome.permissions.removeSiteAccessRequest(request),
+        `Error: Extension cannot remove a site access request that doesn't ` +
+            `exist.`);
 
     chrome.test.succeed();
   }

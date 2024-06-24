@@ -60,6 +60,8 @@ constexpr char kExtensionCantRequestSiteAccessError[] =
 constexpr char kExtensionHasSiteAccessError[] =
     "Extension cannot add a site access request for a site it already has "
     "access to.";
+constexpr char kExtensionRequestCannotBeRemovedError[] =
+    "Extension cannot remove a site access request that doesn't exist.";
 
 PermissionsRequestFunction::DialogAction g_dialog_action =
     PermissionsRequestFunction::DialogAction::kDefault;
@@ -639,11 +641,12 @@ PermissionsRemoveSiteAccessRequestFunction::Run() {
   DCHECK(web_contents);
   DCHECK_NE(tab_id, -1);
 
-  // TODO(crbug.com/330588494): Return an error if the request wasn't removed.
-  // For this we need to change the return value of
-  // PermissionsManager::RemoveSiteAccessRequest.
-  PermissionsManager::Get(browser_context())
-      ->RemoveSiteAccessRequest(tab_id, extension()->id());
+  bool is_removed = PermissionsManager::Get(browser_context())
+                        ->RemoveSiteAccessRequest(tab_id, extension()->id());
+  if (!is_removed) {
+    return RespondNow(Error(kExtensionRequestCannotBeRemovedError));
+  }
+
   return RespondNow(NoArguments());
 }
 

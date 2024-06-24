@@ -153,6 +153,14 @@ TEST_F(SiteAccessRequestsHelperUnittest, AddAndRemoveRequests) {
   content::WebContents* web_contents = AddTab(GURL("http://www.example.com/"));
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
+  // Try to remove a non-existent site access request. Verify nothing happens.
+  EXPECT_FALSE(permissions_manager()->RemoveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_A->id()));
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension_B->id()));
+
   // Add site access request for extension A. Verify only extension A has an
   // active request.
   permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
@@ -173,7 +181,8 @@ TEST_F(SiteAccessRequestsHelperUnittest, AddAndRemoveRequests) {
 
   // Remove site access request for extension A. Verify only extension B has an
   // active request.
-  permissions_manager()->RemoveSiteAccessRequest(tab_id, extension_A->id());
+  EXPECT_TRUE(permissions_manager()->RemoveSiteAccessRequest(
+      tab_id, extension_A->id()));
   EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
       tab_id, extension_A->id()));
   EXPECT_TRUE(permissions_manager()->HasActiveSiteAccessRequest(

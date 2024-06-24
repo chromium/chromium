@@ -290,7 +290,8 @@ class PermissionsManager : public KeyedService {
                             const Extension& extension);
 
   // Removes site access request for `extension` in `tab_id`, if existent.
-  void RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
+  // Returns whether the request was removed.
+  bool RemoveSiteAccessRequest(int tab_id, const ExtensionId& extension);
 
   // Dismisses site access request for `extension` in `tab_id`. Request must be
   // existent for user to be able to dismiss it.

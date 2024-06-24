@@ -1191,9 +1191,12 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
     function->set_extension(extension.get());
 
-    EXPECT_TRUE(api_test_utils::RunFunction(
+    std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), function_params(tab_id), profile(),
-        api_test_utils::FunctionMode::kNone));
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot remove a site access request that doesn't exist.",
+        error);
 
     // Verify there is no request.
     EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
@@ -1262,9 +1265,12 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
         base::MakeRefCounted<PermissionsRemoveSiteAccessRequestFunction>();
     function->set_extension(extension.get());
 
-    EXPECT_TRUE(api_test_utils::RunFunction(
+    std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), function_params(document_id), profile(),
-        api_test_utils::FunctionMode::kNone));
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot remove a site access request that doesn't exist.",
+        error);
 
     // Verify there is no request.
     EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
