@@ -10,26 +10,26 @@ This layer should be composited.
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='box1' class='box'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='box1' class='box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='box2' class='box'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='box2' class='box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='layer3' class='preserve3d'",
+      "name": "LayoutBlockFlow DIV id='layer3' class='preserve3d'",
       "bounds": [342, 180],
       "transform": 7
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='box3' class='box'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='box3' class='box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",

@@ -2,8 +2,8 @@ EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotificatio
 layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow (children-inline) {BODY} at (8,8) size 784x584
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow (children-inline) {BODY} at (8,8) size 784x584
       LayoutText {#text} at (0,0) size 65x19
         text run at (0,0) width 65: "This is an "
       LayoutInline {A} at (65,0) size 77x19 [color=#0000EE]

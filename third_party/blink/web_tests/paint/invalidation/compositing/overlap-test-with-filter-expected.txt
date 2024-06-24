@@ -13,13 +13,13 @@
       "backgroundColor": "#FFFF00"
     },
     {
-      "name": "LayoutNGBlockFlow BODY",
+      "name": "LayoutBlockFlow BODY",
       "bounds": [284, 84],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutBlockFlow (positioned) DIV",
       "position": [151, 0],
       "bounds": [300, 100]
     }

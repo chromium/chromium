@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='squashing'",
+      "name": "LayoutBlockFlow (positioned) DIV id='squashing'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='squashed'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='squashed'",
       "position": [-100, 0],
       "bounds": [200, 200],
       "transform": 2

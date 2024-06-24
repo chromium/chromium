@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "bounds": [784, 502],
       "invalidations": [
         [1, 317, 782, 54],

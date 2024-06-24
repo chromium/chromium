@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='composited'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FA8072",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='squashed'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='squashed'",
       "position": [8, 58],
       "bounds": [100, 50],
       "contentsOpaque": true,

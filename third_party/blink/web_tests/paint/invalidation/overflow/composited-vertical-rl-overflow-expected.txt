@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='div'",
+      "name": "LayoutBlockFlow (positioned) DIV id='div'",
       "position": [-50, 0],
       "bounds": [150, 100],
       "backgroundColor": "#0000FF",

@@ -8,7 +8,7 @@ TEST
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='fixed'",
       "position": [10, 10],
       "bounds": [39, 20]
     }

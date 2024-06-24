@@ -35,7 +35,7 @@ constexpr base::TimeDelta kAnimationDuration = kAnimationInterval * 20;
 }  // namespace
 
 LayoutProgress::LayoutProgress(HTMLProgressElement& node)
-    : LayoutNGBlockFlow(&node),
+    : LayoutBlockFlow(&node),
       position_(HTMLProgressElement::kInvalidPosition),
       animating_(false),
       animation_timer_(

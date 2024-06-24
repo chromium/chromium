@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='target'",
+      "name": "LayoutBlockFlow DIV id='target'",
       "bounds": [630, 180],
       "backfaceVisibility": "hidden",
       "invalidations": [

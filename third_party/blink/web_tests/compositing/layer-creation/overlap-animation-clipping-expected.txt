@@ -7,42 +7,42 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
       "position": [58, 230],
       "bounds": [122, 462],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box gray force-layer'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate2' class='box animating2'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate2' class='box animating2'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 6
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box yellow'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
       "position": [69, 571],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box yellow'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
       "position": [18, 702],
       "bounds": [100, 100],
       "contentsOpaque": true,

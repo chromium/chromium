@@ -4,13 +4,13 @@ EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotificatio
 layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow (children-inline) {P} at (0,0) size 784x36
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x584
+      LayoutBlockFlow (children-inline) {P} at (0,0) size 784x36
         LayoutText {#text} at (0,0) size 781x36
           text run at (0,0) width 781: "This tests to see if Find will get stuck when searching for a word that is currently selected, and was selected with a double"
           text run at (0,18) width 36: "click."
-      LayoutNGBlockFlow (children-inline) {DIV} at (0,52) size 784x18
+      LayoutBlockFlow (children-inline) {DIV} at (0,52) size 784x18
         LayoutText {#text} at (0,0) size 26x18
           text run at (0,0) width 26: "foo "
         LayoutInline {SPAN} at (25,0) size 21x18

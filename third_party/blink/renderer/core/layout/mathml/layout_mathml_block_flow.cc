@@ -7,7 +7,7 @@
 namespace blink {
 
 LayoutMathMLBlockFlow::LayoutMathMLBlockFlow(Element* element)
-    : LayoutNGBlockFlow(element) {
+    : LayoutBlockFlow(element) {
   DCHECK(element);
 }
 

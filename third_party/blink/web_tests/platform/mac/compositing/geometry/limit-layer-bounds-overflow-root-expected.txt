@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='compositing'",
+      "name": "LayoutBlockFlow (positioned) DIV class='compositing'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator'",
+      "name": "LayoutBlockFlow (positioned) DIV class='indicator'",
       "bounds": [212, 142]
     }
   ],

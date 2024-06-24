@@ -1,24 +1,24 @@
 layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow {BODY} at (8,8) size 784x576
-      LayoutNGBlockFlow (children-inline) {P} at (0,0) size 784x18
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x576
+      LayoutBlockFlow (children-inline) {P} at (0,0) size 784x18
         LayoutText {#text} at (0,0) size 342x18
           text run at (0,0) width 342: "This tests Range.selectNode() of a text node and a br."
-      LayoutNGBlockFlow (children-inline) {DIV} at (0,34) size 784x18
+      LayoutBlockFlow (children-inline) {DIV} at (0,34) size 784x18
         LayoutText {#text} at (0,0) size 24x18
           text run at (0,0) width 24: "one"
-      LayoutNGBlockFlow (children-inline) {DIV} at (0,52) size 784x36
+      LayoutBlockFlow (children-inline) {DIV} at (0,52) size 784x36
         LayoutText {#text} at (0,0) size 24x18
           text run at (0,0) width 24: "two"
         LayoutBR {BR} at (24,0) size 0x18
         LayoutText {#text} at (0,18) size 32x18
           text run at (0,18) width 32: "three"
-      LayoutNGBlockFlow (children-inline) {DIV} at (0,88) size 784x18
+      LayoutBlockFlow (children-inline) {DIV} at (0,88) size 784x18
         LayoutText {#text} at (0,0) size 27x18
           text run at (0,0) width 27: "four"
-      LayoutNGBlockFlow {UL} at (0,122) size 784x18
+      LayoutBlockFlow {UL} at (0,122) size 784x18
         LayoutListItem (children-inline) {LI} at (40,0) size 744x18
           LayoutOutsideListMarker (inline, children-inline) {::marker} at (-17,0) size 7x18
             LayoutTextFragment (anonymous) at (0,0) size 7x18

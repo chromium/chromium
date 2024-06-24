@@ -8,13 +8,13 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
+#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
-#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
@@ -887,9 +887,9 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
     <div id="inflow"></div>
   )HTML");
 
-  const LayoutNGBlockFlow* zero;
-  const LayoutNGBlockFlow* abs;
-  const LayoutNGBlockFlow* inflow;
+  const LayoutBlockFlow* zero;
+  const LayoutBlockFlow* abs;
+  const LayoutBlockFlow* inflow;
   auto run_test = [&](const Length& zero_top_margin_bottom,
                       const Length& zero_inner_margin_top,
                       const Length& zero_inner_margin_bottom,
@@ -915,16 +915,16 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
                           });
     UpdateAllLifecyclePhasesForTest();
 
-    LayoutNGBlockFlow* child;
+    LayoutBlockFlow* child;
     // #float
-    child = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("float"));
+    child = To<LayoutBlockFlow>(GetLayoutObjectByElementId("float"));
     EXPECT_EQ(PhysicalSize(LayoutUnit(50), LayoutUnit(50)), child->Size());
     EXPECT_EQ(PhysicalOffset(0, 0), child->PhysicalLocation());
 
     // We need to manually test the position of #zero, #abs, #inflow.
-    zero = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("zero"));
-    inflow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("inflow"));
-    abs = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("abs"));
+    zero = To<LayoutBlockFlow>(GetLayoutObjectByElementId("zero"));
+    inflow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("inflow"));
+    abs = To<LayoutBlockFlow>(GetLayoutObjectByElementId("abs"));
   };
 
   // Base case of no margins.
@@ -2389,7 +2389,7 @@ TEST_F(BlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
 
   ASSERT_TRUE(innerNGRoot->IsLayoutNGObject());
   const PhysicalBoxFragment* fragment =
-      CurrentFragmentFor(To<LayoutNGBlockFlow>(innerNGRoot));
+      CurrentFragmentFor(To<LayoutBlockFlow>(innerNGRoot));
 
   ASSERT_TRUE(fragment);
   // TODO(crbug.com/781241: Re-enable when we calculate inline offset at

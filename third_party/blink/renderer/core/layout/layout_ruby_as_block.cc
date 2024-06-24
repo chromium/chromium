@@ -13,7 +13,7 @@
 namespace blink {
 
 LayoutRubyAsBlock::LayoutRubyAsBlock(Element* element)
-    : LayoutNGBlockFlow(element) {
+    : LayoutBlockFlow(element) {
   UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
 }
 
@@ -35,7 +35,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), EDisplay::kRuby);
     inline_ruby->SetStyle(new_style_builder.TakeStyle());
-    LayoutNGBlockFlow::AddChild(inline_ruby);
+    LayoutBlockFlow::AddChild(inline_ruby);
   } else if (before_child == inline_ruby) {
     inline_ruby->AddChild(child, inline_ruby->SlowFirstChild());
     return;
@@ -46,7 +46,7 @@ void LayoutRubyAsBlock::AddChild(LayoutObject* child,
 void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
                                        const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutNGBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style);
   PropagateStyleToAnonymousChildren();
 
   // Because LayoutInline::AnonymousHasStylePropagationOverride() returns

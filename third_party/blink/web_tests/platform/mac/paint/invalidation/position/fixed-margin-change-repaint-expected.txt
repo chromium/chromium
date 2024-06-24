@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='test'",
+      "name": "LayoutBlockFlow (positioned) DIV id='test'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

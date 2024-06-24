@@ -7,12 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='filtered box'",
+      "name": "LayoutBlockFlow DIV class='filtered box'",
       "position": [16, 16],
       "bounds": [288, 288]
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='compositing box'",
+      "name": "LayoutBlockFlow DIV class='compositing box'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",

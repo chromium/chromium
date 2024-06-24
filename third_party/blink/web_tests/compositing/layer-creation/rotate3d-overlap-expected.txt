@@ -9,34 +9,34 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box translateZ'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box translateZ'",
       "position": [-5, -5],
       "bounds": [110, 110],
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited box rotate15'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='composited box rotate15'",
       "position": [-5, -5],
       "bounds": [110, 110],
       "backgroundColor": "#0000FF",
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
       "position": [167, 143],
       "bounds": [110, 110],
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited box rotate45'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='composited box rotate45'",
       "position": [-5, -5],
       "bounds": [110, 110],
       "backgroundColor": "#0000FF",
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
       "position": [311, 143],
       "bounds": [110, 110],
       "backgroundColor": "#0000FF"

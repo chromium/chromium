@@ -14,7 +14,7 @@
       "backgroundColor": "#000000"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='inner'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='inner'",
       "position": [500, 120],
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -29,7 +29,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited inner'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='composited inner'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

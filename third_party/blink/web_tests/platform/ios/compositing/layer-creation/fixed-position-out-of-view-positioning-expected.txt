@@ -14,7 +14,7 @@ BEFORE:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
       "position": [0, 100],
       "bounds": [50, 50],
       "contentsOpaque": true,
@@ -56,7 +56,7 @@ AFTER:
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='positionedAndTransformed fixed'",
       "position": [0, 100],
       "bounds": [50, 50],
       "contentsOpaque": true,

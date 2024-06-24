@@ -7,12 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='blur'",
+      "name": "LayoutBlockFlow DIV class='blur'",
       "position": [8, 8],
       "bounds": [200, 200]
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='resize' class='accelerated'",
+      "name": "LayoutBlockFlow DIV id='resize' class='accelerated'",
       "bounds": [100, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

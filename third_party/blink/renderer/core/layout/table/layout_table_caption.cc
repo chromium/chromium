@@ -7,6 +7,6 @@
 namespace blink {
 
 LayoutTableCaption::LayoutTableCaption(Element* element)
-    : LayoutNGBlockFlow(element) {}
+    : LayoutBlockFlow(element) {}
 
 }  // namespace blink

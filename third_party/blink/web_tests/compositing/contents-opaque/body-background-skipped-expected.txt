@@ -7,14 +7,14 @@
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='underbody'",
+      "name": "LayoutBlockFlow (positioned) DIV id='underbody'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "position": [8, 8],
       "bounds": [100, 100],
       "drawsContent": false

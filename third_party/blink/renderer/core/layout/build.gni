@@ -18,8 +18,6 @@
 blink_core_hot_sources_layout = [
   "layout_block_flow_hot.cc",
   "layout_box_hot.cc",
-  "layout_ng_block_flow.cc",
-  "layout_ng_block_flow.h",
   "layout_object_hot.cc",
   "layout_object_inl.h",
   "text_autosizer.cc",

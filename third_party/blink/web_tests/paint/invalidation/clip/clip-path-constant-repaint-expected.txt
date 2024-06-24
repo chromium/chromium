@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='clip'",
+      "name": "LayoutBlockFlow (positioned) DIV id='clip'",
       "bounds": [800, 300],
       "backgroundColor": "#FF0000E6",
       "transform": 2

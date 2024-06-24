@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='background'",
+      "name": "LayoutBlockFlow DIV id='background'",
       "position": [8, 426],
       "bounds": [784, 300],
       "drawsContent": false

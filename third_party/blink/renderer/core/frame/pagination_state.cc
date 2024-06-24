@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/pagination_state.h"
 
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -26,8 +26,7 @@ void PaginationState::Trace(Visitor* visitor) const {
 LayoutBlockFlow* PaginationState::CreateAnonymousPageLayoutObject(
     Document& document,
     const ComputedStyle& style) {
-  LayoutBlockFlow* block =
-      LayoutNGBlockFlow::CreateAnonymous(&document, &style);
+  LayoutBlockFlow* block = LayoutBlockFlow::CreateAnonymous(&document, &style);
   block->SetIsDetachedNonDomRoot(true);
   anonymous_page_objects_.push_back(block);
   return block;

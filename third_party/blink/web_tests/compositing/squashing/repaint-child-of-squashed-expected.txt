@@ -8,14 +8,14 @@ CASE 1, original layer tree
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='box top'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='box top'",
       "position": [130, 130],
       "bounds": [100, 100],
       "contentsOpaque": true,
@@ -45,14 +45,14 @@ CASE 2, change color of "inner" to red
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='box top'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='box top'",
       "position": [130, 130],
       "bounds": [100, 100],
       "contentsOpaque": true,

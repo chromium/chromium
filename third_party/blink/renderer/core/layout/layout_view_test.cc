@@ -252,7 +252,7 @@ TEST_P(LayoutViewHitTestTest, BlockInInlineWithListItem) {
   // Note: span@0 comes from |LayoutObject::FindPosition()| via
   // |LayoutObject::CreatePositionWithAffinity()| for anonymous block
   // containing list marker.
-  // LayoutNGBlockFlow (anonymous)
+  // LayoutBlockFlow (anonymous)
   //    LayoutInsideListMarker {::marker}
   //      LayoutText (anonymous)
   //      LayoutInline {SPAN}
@@ -1332,9 +1332,9 @@ TEST_P(LayoutViewHitTestTest, TextCombineOneTextNode) {
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div>a<c id=target>01234</c>b</div>");
-  //  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-  //    LayoutNGBlockFlow {BODY} at (0,0) size 800x600
-  //      LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //  LayoutBlockFlow {HTML} at (0,0) size 800x600
+  //    LayoutBlockFlow {BODY} at (0,0) size 800x600
+  //      LayoutBlockFlow {DIV} at (0,0) size 110x300
   //        LayoutText {#text} at (5,0) size 100x100
   //          text run at (5,0) width 100: "a"
   //        LayoutInline {C} at (5,100) size 100x100
@@ -1378,9 +1378,9 @@ TEST_P(LayoutViewHitTestTest, TextCombineTwoTextNodes) {
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div>a<c id=target>012<wbr>34</c>b</div>");
-  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-  //     LayoutNGBlockFlow {BODY} at (0,0) size 800x600
-  //       LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //   LayoutBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutBlockFlow {BODY} at (0,0) size 800x600
+  //       LayoutBlockFlow {DIV} at (0,0) size 110x300
   //         LayoutText {#text} at (5,0) size 100x100
   //           text run at (5,0) width 100: "a"
   //         LayoutInline {C} at (5,100) size 100x100

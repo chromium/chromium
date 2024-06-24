@@ -8,7 +8,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='wrapper box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='wrapper box'",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#008000"

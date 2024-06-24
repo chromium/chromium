@@ -10,14 +10,14 @@ CASE 1, original layer tree:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='forceComposited' class='composited underneath'",
+      "name": "LayoutBlockFlow (positioned) DIV id='forceComposited' class='composited underneath'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "name": "LayoutBlockFlow (positioned) DIV id='A' class='overlap1'",
       "position": [140, 140],
       "bounds": [140, 140],
       "backgroundColor": "#FF00FF"

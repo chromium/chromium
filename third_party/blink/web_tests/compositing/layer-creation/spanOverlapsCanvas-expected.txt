@@ -12,7 +12,7 @@
       "bounds": [100, 50]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='output'",
+      "name": "LayoutBlockFlow (positioned) DIV id='output'",
       "position": [8, 8],
       "bounds": [100, 50],
       "contentsOpaque": true,

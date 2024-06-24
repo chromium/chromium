@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -94,7 +94,7 @@ class InlineNodeTest : public RenderingTest {
  protected:
   void SetupHtml(const char* id, String html) {
     SetBodyInnerHTML(html);
-    layout_block_flow_ = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId(id));
+    layout_block_flow_ = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
     layout_object_ = layout_block_flow_->FirstChild();
   }
 
@@ -106,7 +106,7 @@ class InlineNodeTest : public RenderingTest {
   }
 
   InlineNodeForTest CreateInlineNode(
-      LayoutNGBlockFlow* layout_block_flow = nullptr) {
+      LayoutBlockFlow* layout_block_flow = nullptr) {
     if (layout_block_flow)
       layout_block_flow_ = layout_block_flow;
     if (!layout_block_flow_)
@@ -176,7 +176,7 @@ class InlineNodeTest : public RenderingTest {
                      AtomicString("Google Sans"));
   }
 
-  Persistent<LayoutNGBlockFlow> layout_block_flow_;
+  Persistent<LayoutBlockFlow> layout_block_flow_;
   Persistent<LayoutObject> layout_object_;
   FontCachePurgePreventer purge_preventer_;
 };
@@ -347,7 +347,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineBR) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<br>z</div>");
   InlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+      CreateInlineNode(To<LayoutBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
   HeapVector<InlineItem>& items = node.Items();
@@ -383,7 +383,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineNewline) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<pre id=t>a\nz</pre>");
   InlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+      CreateInlineNode(To<LayoutBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a z", node.Text());
   HeapVector<InlineItem>& items = node.Items();
@@ -398,7 +398,7 @@ TEST_F(InlineNodeTest, CollectInlinesTextCombineWBR) {
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<div id=t>a<wbr>z</div>");
   InlineNodeForTest node =
-      CreateInlineNode(To<LayoutNGBlockFlow>(layout_object_.Get()));
+      CreateInlineNode(To<LayoutBlockFlow>(layout_object_.Get()));
   node.CollectInlines();
   EXPECT_EQ("a\u200Bz", node.Text());
   HeapVector<InlineItem>& items = node.Items();
@@ -1228,7 +1228,7 @@ TEST_F(InlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   // but there are some clients (e.g., Scroll Anchor) who try to read
   // associated fragments.
   //
-  // NGPaintFragment is owned by LayoutNGBlockFlow. Because the original owner
+  // NGPaintFragment is owned by LayoutBlockFlow. Because the original owner
   // no longer has an inline formatting context, the NGPaintFragment subtree is
   // destroyed, and should not be accessible.
   GetDocument().UpdateStyleAndLayoutTree();
@@ -1527,7 +1527,7 @@ TEST_F(InlineNodeTest, ReuseFirstNonSafe) {
       <span>A</span>V
     </p>
   )HTML");
-  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("p"));
   const InlineNodeData* data = block_flow->GetInlineNodeData();
   ASSERT_TRUE(data);
   const auto& items = data->items;
@@ -1556,7 +1556,7 @@ TEST_F(InlineNodeTest, ReuseFirstNonSafeRtl) {
       <span>A</span>V
     </p>
   )HTML");
-  auto* block_flow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("p"));
+  auto* block_flow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("p"));
   const InlineNodeData* data = block_flow->GetInlineNodeData();
   ASSERT_TRUE(data);
   const auto& items = data->items;

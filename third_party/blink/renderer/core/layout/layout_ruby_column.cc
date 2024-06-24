@@ -23,7 +23,7 @@ void UpdateRubyBaseStyle(const LayoutObject* child,
 
 }  // namespace
 
-LayoutRubyColumn::LayoutRubyColumn() : LayoutNGBlockFlow(nullptr) {
+LayoutRubyColumn::LayoutRubyColumn() : LayoutBlockFlow(nullptr) {
   DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   SetInline(true);
   SetIsAtomicInlineLevel(true);

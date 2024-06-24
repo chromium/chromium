@@ -9,28 +9,28 @@ Not scaled:
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
@@ -93,28 +93,28 @@ Scale=0.5:
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
@@ -177,28 +177,28 @@ Scale=1.5:
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",

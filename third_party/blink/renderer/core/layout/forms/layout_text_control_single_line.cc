@@ -13,7 +13,7 @@
 namespace blink {
 
 LayoutTextControlSingleLine::LayoutTextControlSingleLine(Element* element)
-    : LayoutNGBlockFlow(element) {}
+    : LayoutBlockFlow(element) {}
 
 HTMLElement* LayoutTextControlSingleLine::InnerEditorElement() const {
   return To<TextControlElement>(GetNode())->InnerEditorElement();
@@ -28,7 +28,7 @@ Element* LayoutTextControlSingleLine::ContainerElement() const {
 void LayoutTextControlSingleLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {
-  LayoutNGBlockFlow::StyleDidChange(style_diff, old_style);
+  LayoutBlockFlow::StyleDidChange(style_diff, old_style);
   layout_text_control::StyleDidChange(InnerEditorElement(), old_style,
                                       StyleRef());
 }
@@ -39,7 +39,7 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
     const PhysicalOffset& accumulated_offset,
     HitTestPhase phase) {
   NOT_DESTROYED();
-  bool stop_hit_testing = LayoutNGBlockFlow::NodeAtPoint(
+  bool stop_hit_testing = LayoutBlockFlow::NodeAtPoint(
       result, hit_test_location, accumulated_offset, phase);
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();

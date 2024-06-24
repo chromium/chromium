@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_VIEW_TRANSITION_ROOT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
@@ -19,7 +19,7 @@ class ViewTransitionStyleTracker;
 // https://drafts.csswg.org/css-view-transitions-1/#snapshot-containing-block
 // This is similar to the "Initial Containing Block" for regular
 // layout.
-class CORE_EXPORT LayoutViewTransitionRoot : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutViewTransitionRoot : public LayoutBlockFlow {
  public:
   explicit LayoutViewTransitionRoot(Document&);
   ~LayoutViewTransitionRoot() override;

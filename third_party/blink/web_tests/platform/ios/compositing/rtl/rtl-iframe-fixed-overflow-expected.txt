@@ -14,14 +14,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned indicator'",
+      "name": "LayoutBlockFlow (positioned) DIV class='positioned indicator'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned layer'",
+      "name": "LayoutBlockFlow (positioned) DIV class='positioned layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

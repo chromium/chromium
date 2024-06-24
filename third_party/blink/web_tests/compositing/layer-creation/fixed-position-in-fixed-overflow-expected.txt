@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [800, 600],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [785, 600],
       "drawsContent": false,
       "transform": 1
@@ -26,12 +26,12 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='overflow fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='overflow fixed'",
       "bounds": [785, 1000],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='yellow fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='yellow fixed'",
       "position": [200, 13],
       "bounds": [100, 100],
       "contentsOpaque": true,

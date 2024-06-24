@@ -10,7 +10,7 @@ namespace blink {
 
 LayoutScrollContainerWithMarkers::LayoutScrollContainerWithMarkers(
     Element* element)
-    : LayoutNGBlockFlow(element) {
+    : LayoutBlockFlow(element) {
   SetChildrenInline(false);
 }
 
@@ -19,7 +19,7 @@ void LayoutScrollContainerWithMarkers::AddChild(LayoutObject* new_child,
   LayoutObject* scroller = FindAnonymousContentBox();
   if (new_child->IsScrollMarkerGroup()) {
     CHECK(!FindScrollMarkerGroup());
-    LayoutNGBlockFlow::AddChild(
+    LayoutBlockFlow::AddChild(
         new_child, new_child->IsScrollMarkerGroupBefore() ? scroller : nullptr);
     return;
   }
@@ -28,7 +28,7 @@ void LayoutScrollContainerWithMarkers::AddChild(LayoutObject* new_child,
 }
 
 void LayoutScrollContainerWithMarkers::InsertedIntoTree() {
-  LayoutNGBlockFlow::InsertedIntoTree();
+  LayoutBlockFlow::InsertedIntoTree();
 
   if (FindAnonymousContentBox()) {
     return;
@@ -74,14 +74,14 @@ LayoutUnit LayoutScrollContainerWithMarkers::ScrollWidth() const {
   if (const auto* content = FindAnonymousContentBox()) {
     return content->ScrollWidth();
   }
-  return LayoutNGBlockFlow::ScrollWidth();
+  return LayoutBlockFlow::ScrollWidth();
 }
 
 LayoutUnit LayoutScrollContainerWithMarkers::ScrollHeight() const {
   if (const auto* content = FindAnonymousContentBox()) {
     return content->ScrollHeight();
   }
-  return LayoutNGBlockFlow::ScrollHeight();
+  return LayoutBlockFlow::ScrollHeight();
 }
 
 LayoutBox* LayoutScrollContainerWithMarkers::FindScrollMarkerGroup() const {

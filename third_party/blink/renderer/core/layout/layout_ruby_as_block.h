@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_AS_BLOCK_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
@@ -16,7 +16,7 @@ namespace blink {
 // > If an element has an inner display type of ruby and an outer display type
 // > other than inline, then it generates two boxes: a principal box of the
 // > required outer display type, and an inline-level ruby container.
-class CORE_EXPORT LayoutRubyAsBlock : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyAsBlock : public LayoutBlockFlow {
  public:
   explicit LayoutRubyAsBlock(Element*);
   ~LayoutRubyAsBlock() override;

@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='parent'",
+      "name": "LayoutBlockFlow DIV id='parent'",
       "position": [-10, -10],
       "bounds": [754, 210],
       "invalidations": [

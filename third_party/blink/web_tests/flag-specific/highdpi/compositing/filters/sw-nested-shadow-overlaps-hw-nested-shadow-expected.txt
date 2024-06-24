@@ -7,26 +7,26 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='composited-parent'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='composited-parent'",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#000000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-child'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-child'",
       "position": [-150, -150],
       "bounds": [150, 150],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='software-parent'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='software-parent'",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#008000"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='software-child'",
+      "name": "LayoutBlockFlow (positioned) DIV id='software-child'",
       "position": [150, 150],
       "bounds": [150, 150]
     }

@@ -9,7 +9,7 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
+      "name": "LayoutBlockFlow DIV class='scrollable bigBox'",
       "position": [1, 1],
       "bounds": [285, 285],
       "drawsContent": false,
@@ -29,13 +29,13 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
+      "name": "LayoutBlockFlow DIV class='scrollable bigBox'",
       "position": [1, 1],
       "bounds": [285, 800],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed lime box'",
       "position": [10, 100],
       "bounds": [100, 100],
       "contentsOpaque": true,

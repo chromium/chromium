@@ -11,7 +11,7 @@
 namespace blink {
 
 LayoutTextControlMultiLine::LayoutTextControlMultiLine(Element* element)
-    : LayoutNGBlockFlow(element) {}
+    : LayoutBlockFlow(element) {}
 
 HTMLElement* LayoutTextControlMultiLine::InnerEditorElement() const {
   return To<TextControlElement>(GetNode())->InnerEditorElement();
@@ -20,7 +20,7 @@ HTMLElement* LayoutTextControlMultiLine::InnerEditorElement() const {
 void LayoutTextControlMultiLine::StyleDidChange(
     StyleDifference style_diff,
     const ComputedStyle* old_style) {
-  LayoutNGBlockFlow::StyleDidChange(style_diff, old_style);
+  LayoutBlockFlow::StyleDidChange(style_diff, old_style);
   layout_text_control::StyleDidChange(InnerEditorElement(), old_style,
                                       StyleRef());
 }
@@ -30,7 +30,7 @@ bool LayoutTextControlMultiLine::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestPhase phase) {
-  bool stop_hit_testing = LayoutNGBlockFlow::NodeAtPoint(
+  bool stop_hit_testing = LayoutBlockFlow::NodeAtPoint(
       result, hit_test_location, accumulated_offset, phase);
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();

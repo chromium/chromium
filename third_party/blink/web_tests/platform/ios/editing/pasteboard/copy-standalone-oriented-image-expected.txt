@@ -4,18 +4,18 @@ EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
 layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-      LayoutNGBlockFlow {P} at (0,0) size 784x18
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x584
+      LayoutBlockFlow {P} at (0,0) size 784x18
         LayoutText {#text} at (0,0) size 362x17
           text run at (0,0) width 362: "This is an automatic test of copying an image document."
-      LayoutNGBlockFlow {P} at (0,34) size 784x36
+      LayoutBlockFlow {P} at (0,34) size 784x36
         LayoutText {#text} at (0,0) size 773x35
           text run at (0,0) width 773: "To perform this test manually, click once in the image frame, choose Edit -> Copy then click in the red box and paste the"
           text run at (0,18) width 365: "image. If the image pastes successfully the test is passed."
-      LayoutNGBlockFlow (anonymous) at (0,86) size 784x154
+      LayoutBlockFlow (anonymous) at (0,86) size 784x154
         LayoutText {#text} at (0,0) size 0x0
-      LayoutNGBlockFlow {DIV} at (0,240) size 784x128 [border: (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000)]
+      LayoutBlockFlow {DIV} at (0,240) size 784x128 [border: (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000) (2px solid #FF0000)]
         LayoutImage {IMG} at (14,14) size 50x100
         LayoutText {#text} at (0,0) size 0x0
 layer at (8,94)
@@ -23,7 +23,7 @@ layer at (8,94)
     layer at (0,0)
       LayoutView at (0,0) size 300x150
     layer at (0,0)
-      LayoutNGBlockFlow {HTML} at (0,0) size 300x150
-        LayoutNGBlockFlow {BODY} at (0,0) size 300x150
+      LayoutBlockFlow {HTML} at (0,0) size 300x150
+        LayoutBlockFlow {BODY} at (0,0) size 300x150
           LayoutImage {IMG} at (0,0) size 50x100
 caret: position 1 of child 0 {IMG} of child 7 {DIV} of body

@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='outer'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='outer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",

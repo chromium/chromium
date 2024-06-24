@@ -13,7 +13,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "position": [6, 42],
       "bounds": [788, 64],
       "invalidations": [

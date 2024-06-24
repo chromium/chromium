@@ -8,7 +8,7 @@ Hi!
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='abs'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='abs'",
       "position": [-360, -90],
       "bounds": [360, 90],
       "contentsOpaque": true,

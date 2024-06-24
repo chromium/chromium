@@ -36,7 +36,7 @@
 namespace blink {
 
 LayoutSVGBlock::LayoutSVGBlock(ContainerNode* node)
-    : LayoutNGBlockFlow(node),
+    : LayoutBlockFlow(node),
       needs_transform_update_(true),
       transform_uses_reference_box_(false) {
   DCHECK(IsA<SVGElement>(node));
@@ -50,12 +50,12 @@ SVGElement* LayoutSVGBlock::GetElement() const {
 void LayoutSVGBlock::WillBeDestroyed() {
   NOT_DESTROYED();
   SVGResources::ClearEffects(*this);
-  LayoutNGBlockFlow::WillBeDestroyed();
+  LayoutBlockFlow::WillBeDestroyed();
 }
 
 void LayoutSVGBlock::InsertedIntoTree() {
   NOT_DESTROYED();
-  LayoutNGBlockFlow::InsertedIntoTree();
+  LayoutBlockFlow::InsertedIntoTree();
   // Ensure that the viewport dependency flag gets set on the ancestor chain.
   if (SVGSelfOrDescendantHasViewportDependency()) {
     ClearSVGSelfOrDescendantHasViewportDependency();
@@ -73,12 +73,12 @@ void LayoutSVGBlock::WillBeRemovedFromTree() {
                                                                          false);
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
-  LayoutNGBlockFlow::WillBeRemovedFromTree();
+  LayoutBlockFlow::WillBeRemovedFromTree();
 }
 
 void LayoutSVGBlock::UpdateFromStyle() {
   NOT_DESTROYED();
-  LayoutNGBlockFlow::UpdateFromStyle();
+  LayoutBlockFlow::UpdateFromStyle();
   SetFloating(false);
 }
 
@@ -133,7 +133,7 @@ bool LayoutSVGBlock::UpdateTransformAfterLayout(
 void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
                                     const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutNGBlockFlow::StyleDidChange(diff, old_style);
+  LayoutBlockFlow::StyleDidChange(diff, old_style);
 
   // |HasTransformRelatedProperty| is used for compositing so ensure it was
   // correctly set by the call to |StyleDidChange|.

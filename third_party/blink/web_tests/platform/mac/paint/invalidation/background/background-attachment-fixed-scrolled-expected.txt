@@ -8,11 +8,11 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-background-attachment-fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-background-attachment-fixed'",
       "bounds": [785, 600]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-background-attachment-fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-background-attachment-fixed'",
       "bounds": [500, 1000],
       "drawsContent": false,
       "transform": 2

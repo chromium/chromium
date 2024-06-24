@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
       "bounds": [600, 250],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
@@ -26,7 +26,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
       "bounds": [400, 250],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3"
@@ -42,7 +42,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
@@ -62,7 +62,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",

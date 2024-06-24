@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='compositedAndRotated box behind'",
+      "name": "LayoutBlockFlow (positioned) DIV class='compositedAndRotated box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "position": [20, 20],
       "bounds": [130, 130],
       "backgroundColor": "#00FFFF"

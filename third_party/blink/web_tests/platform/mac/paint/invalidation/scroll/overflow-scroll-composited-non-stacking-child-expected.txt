@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='back'",
+      "name": "LayoutBlockFlow (positioned) DIV class='back'",
       "position": [75, 65],
       "bounds": [180, 100],
       "contentsOpaque": true,
@@ -15,12 +15,12 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "position": [8, 60],
       "bounds": [784, 200]
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "name": "LayoutBlockFlow DIV class='scroller'",
       "position": [5, 5],
       "bounds": [285, 175],
       "drawsContent": false,
@@ -40,14 +40,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "name": "LayoutBlockFlow DIV class='scroller'",
       "position": [5, 5],
       "bounds": [285, 290],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='icon'",
+      "name": "LayoutBlockFlow (positioned) DIV class='icon'",
       "bounds": [40, 40],
       "contentsOpaque": true,
       "backgroundColor": "#FFDDBB",

@@ -23,7 +23,7 @@ class AXLayoutObjectTest : public AccessibilityTest {
 TEST_F(AXLayoutObjectTest, IsNotEditableInsideListmarker) {
   SetBodyInnerHTML("<div contenteditable><li id=t>ab");
   // The layout tree is:
-  //    LayoutNGBlockFlow {DIV} at (0,0) size 784x20
+  //    LayoutBlockFlow {DIV} at (0,0) size 784x20
   //      LayoutListItem {LI} at (0,0) size 784x20
   //        LayoutInsideListMarker {::marker} at (-1,0) size 7x19
   //          LayoutText (anonymous) at (-1,0) size 7x19
@@ -49,7 +49,7 @@ TEST_F(AXLayoutObjectTest, IsNotEditableInsideListmarker) {
 TEST_F(AXLayoutObjectTest, IsNotEditableOutsideListmarker) {
   SetBodyInnerHTML("<ol contenteditable><li id=t>ab");
   // THe layout tree is:
-  //    LayoutNGBlockFlow {OL} at (0,0) size 784x20
+  //    LayoutBlockFlow {OL} at (0,0) size 784x20
   //      LayoutListItem {LI} at (40,0) size 744x20
   //        LayoutOutsideListMarker {::marker} at (-16,0) size 16x20
   //          LayoutText (anonymous) at (0,0) size 16x19

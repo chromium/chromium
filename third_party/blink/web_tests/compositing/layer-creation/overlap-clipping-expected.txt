@@ -7,21 +7,21 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='child'",
+      "name": "LayoutBlockFlow DIV id='child'",
       "bounds": [500, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='child'",
+      "name": "LayoutBlockFlow DIV id='child'",
       "bounds": [500, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='overlap'",
+      "name": "LayoutBlockFlow (positioned) DIV id='overlap'",
       "position": [450, 200],
       "bounds": [100, 100],
       "contentsOpaque": true,

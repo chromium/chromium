@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
@@ -38,7 +38,7 @@ TEST_P(HighlightPainterTest, FastSpellingGrammarPaintCase) {
 
   auto expect = [&](HighlightPainter::Case expected, unsigned line) {
     LayoutObject& body = *GetDocument().body()->GetLayoutObject();
-    const auto& block_flow = To<LayoutNGBlockFlow>(body);
+    const auto& block_flow = To<LayoutBlockFlow>(body);
     InlinePaintContext inline_context{};
     InlineCursor cursor{block_flow};
     cursor.MoveToFirstLine();

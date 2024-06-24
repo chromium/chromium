@@ -11,7 +11,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='scrollpanel'",
+      "name": "LayoutBlockFlow (positioned) DIV id='scrollpanel'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",

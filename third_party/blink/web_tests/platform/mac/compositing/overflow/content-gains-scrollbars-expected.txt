@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [85, 100],
       "drawsContent": false,
       "transform": 1
@@ -26,25 +26,25 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [85, 200],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='vertical' class='content tall'",
+      "name": "LayoutBlockFlow (positioned) DIV id='vertical' class='content tall'",
       "bounds": [10, 200],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 85],
       "drawsContent": false,
       "transform": 2
@@ -57,25 +57,25 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [200, 85],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='horizontal' class='content wide'",
+      "name": "LayoutBlockFlow (positioned) DIV id='horizontal' class='content wide'",
       "bounds": [200, 10],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [85, 85],
       "drawsContent": false,
       "transform": 3
@@ -95,30 +95,30 @@
       "transform": 3
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "Scroll corner of LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "position": [85, 85],
       "bounds": [15, 15],
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='container'",
       "bounds": [200, 200],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='both' class='content wide tall'",
+      "name": "LayoutBlockFlow (positioned) DIV id='both' class='content wide tall'",
       "bounds": [200, 200],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='corner' class='container resizeWidget'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='corner' class='container resizeWidget'",
       "bounds": [100, 100],
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='content'",
+      "name": "LayoutBlockFlow (positioned) DIV class='content'",
       "bounds": [10, 10],
       "drawsContent": false,
       "transform": 4

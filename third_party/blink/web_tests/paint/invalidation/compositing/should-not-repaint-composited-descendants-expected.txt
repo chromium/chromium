@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-box'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-box'",
       "position": [30, 30],
       "bounds": [20, 70],
       "contentsOpaque": true,
@@ -18,7 +18,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited child'",
+      "name": "LayoutBlockFlow DIV class='composited child'",
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

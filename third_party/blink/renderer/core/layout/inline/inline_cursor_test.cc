@@ -500,9 +500,9 @@ TEST_P(InlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
   InlineCursor cursor = SetupCursor("<p id=root><b><img id=target></b></p>");
 
   // Note: The first child of block-in-inline can be |LayoutImage|.
-  // LayoutNGBlockFlow P id="root"
+  // LayoutBlockFlow P id="root"
   //   +--LayoutInline SPAN
-  //   |  +--LayoutNGBlockFlow (anonymous)  # block-in-inline
+  //   |  +--LayoutBlockFlow (anonymous)  # block-in-inline
   //   |  |  +--LayoutImage IMG id="target" # first child of block-in-inline
   //   +--LayoutText #text ""
   const auto& target =

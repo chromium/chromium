@@ -47,11 +47,11 @@
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
+#include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -75,6 +76,7 @@ namespace blink {
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
   Member<void*> member;
+  Member<void*> inline_node_data;
 };
 
 ASSERT_SIZE(LayoutBlockFlow, SameSizeAsLayoutBlockFlow);
@@ -87,7 +89,7 @@ LayoutBlockFlow::~LayoutBlockFlow() = default;
 
 LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document* document,
                                                   const ComputedStyle* style) {
-  auto* layout_block_flow = MakeGarbageCollected<LayoutNGBlockFlow>(nullptr);
+  auto* layout_block_flow = MakeGarbageCollected<LayoutBlockFlow>(nullptr);
   layout_block_flow->SetDocumentForAnonymous(document);
   layout_block_flow->SetStyle(style);
   return layout_block_flow;
@@ -632,6 +634,39 @@ bool LayoutBlockFlow::HitTestChildren(HitTestResult& result,
   return false;
 }
 
+void LayoutBlockFlow::AddOutlineRects(
+    OutlineRectCollector& collector,
+    LayoutObject::OutlineInfo* info,
+    const PhysicalOffset& additional_offset,
+    OutlineType include_block_overflows) const {
+  NOT_DESTROYED();
+
+  // TODO(crbug.com/40155711): Currently |PhysicalBoxFragment| does not support
+  // NG block fragmentation. Fallback to the legacy code path.
+  if (PhysicalFragmentCount() == 1) {
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    if (fragment->HasItems()) {
+      fragment->AddSelfOutlineRects(additional_offset, include_block_overflows,
+                                    collector, info);
+      return;
+    }
+  }
+
+  LayoutBlock::AddOutlineRects(collector, info, additional_offset,
+                               include_block_overflows);
+}
+
+void LayoutBlockFlow::DirtyLinesFromChangedChild(LayoutObject* child) {
+  NOT_DESTROYED();
+
+  // We need to dirty line box fragments only if the child is once laid out in
+  // LayoutNG inline formatting context. New objects are handled in
+  // InlineNode::MarkLineBoxesDirty().
+  if (child->IsInLayoutNGInlineFormattingContext()) {
+    FragmentItems::DirtyLinesFromChangedChild(*child, *this);
+  }
+}
+
 bool LayoutBlockFlow::AllowsColumns() const {
   // Ruby elements manage child insertion in a special way, and would mess up
   // insertion of the flow thread. The flow thread needs to be a direct child of
@@ -756,13 +791,46 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   }
 }
 
+bool LayoutBlockFlow::NodeAtPoint(HitTestResult& result,
+                                  const HitTestLocation& hit_test_location,
+                                  const PhysicalOffset& accumulated_offset,
+                                  HitTestPhase phase) {
+  NOT_DESTROYED();
+
+  // Please see |LayoutBlock::Paint()| for these DCHECKs.
+  DCHECK(IsMonolithic() || !CanTraversePhysicalFragments() ||
+         !Parent()->CanTraversePhysicalFragments());
+  // We may get here in multiple-fragment cases if the object is repeated
+  // (inside table headers and footers, for instance).
+  DCHECK(PhysicalFragmentCount() <= 1u ||
+         GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
+
+  if (!MayIntersect(result, hit_test_location, accumulated_offset)) {
+    return false;
+  }
+
+  if (PhysicalFragmentCount()) {
+    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
+    DCHECK(fragment);
+    if (fragment->HasItems() ||
+        // Check descendants of this fragment because floats may be in the
+        // |FragmentItems| of the descendants.
+        (phase == HitTestPhase::kFloat &&
+         fragment->HasFloatingDescendantsForPaint())) {
+      return BoxFragmentPainter(*fragment).NodeAtPoint(
+          result, hit_test_location, accumulated_offset, phase);
+    }
+  }
+
+  return LayoutBlock::NodeAtPoint(result, hit_test_location, accumulated_offset,
+                                  phase);
+}
+
 PositionWithAffinity LayoutBlockFlow::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
-  // NG codepath requires |kPrePaintClean|.
-  // |SelectionModifier| calls this only in legacy codepath.
-  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
-                                    DocumentLifecycle::kPrePaintClean);
+  DCHECK_GE(GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
 
   if (IsAtomicInlineLevel()) {
     PositionWithAffinity position =
@@ -772,6 +840,10 @@ PositionWithAffinity LayoutBlockFlow::PositionForPoint(
   }
   if (!ChildrenInline())
     return LayoutBlock::PositionForPoint(point);
+
+  if (PhysicalFragmentCount()) {
+    return PositionForPointInFragments(point);
+  }
 
   return CreatePositionWithAffinity(0);
 }

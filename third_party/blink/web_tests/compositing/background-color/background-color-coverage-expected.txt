@@ -7,46 +7,46 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green1'",
+      "name": "LayoutBlockFlow (positioned) DIV id='green1'",
       "bounds": [170, 170],
       "contentsOpaque": true,
       "backgroundColor": "#008000"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green2'",
+      "name": "LayoutBlockFlow (positioned) DIV id='green2'",
       "bounds": [170, 170],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='green3'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='green3'",
       "bounds": [110, 110],
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown1'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown1'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#664D00",
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown2'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown2'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#664D00",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown3'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown3'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
       "bounds": [85, 85],
       "drawsContent": false,
       "transform": 5
@@ -65,20 +65,20 @@
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown3'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown3'",
       "bounds": [85, 10000],
       "contentsOpaque": true,
       "backgroundColor": "#664D00",
       "transform": 5
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown4'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 6
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown4'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
       "bounds": [85, 85],
       "drawsContent": false,
       "transform": 6
@@ -97,7 +97,7 @@
       "transform": 6
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='brown4'",
+      "name": "LayoutBlockFlow (positioned) DIV id='brown4'",
       "bounds": [85, 10000],
       "contentsOpaque": true,
       "backgroundColor": "#664D00",

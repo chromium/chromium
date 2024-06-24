@@ -201,7 +201,7 @@ TEST_F(TextOffsetMappingTest, RangeOfBlockWithRubyAsBlock) {
   // We should not make <ruby> as |InlineContent| container because "XYZ" comes
   // before "abc" but in DOM tree, order is "abc" then "XYZ".
   // Layout tree:
-  //  LayoutNGBlockFlow {BODY} at (8,8) size 784x27
+  //  LayoutBlockFlow {BODY} at (8,8) size 784x27
   //   LayoutRubyAsBlock {RUBY} at (0,0) size 784x27
   //     LayoutRubyColumn (anonymous) at (0,7) size 22x20
   //       LayoutRubyText {RT} at (0,-10) size 22x12

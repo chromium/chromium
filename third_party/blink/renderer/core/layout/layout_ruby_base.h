@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_RUBY_BASE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
 // Represents a ruby base box.
 // https://drafts.csswg.org/css-ruby-1/#ruby-base-box.
-class CORE_EXPORT LayoutRubyBase final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyBase final : public LayoutBlockFlow {
  public:
   explicit LayoutRubyBase();
   ~LayoutRubyBase() override;

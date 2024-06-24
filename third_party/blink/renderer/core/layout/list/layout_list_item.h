@@ -7,12 +7,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
 // A LayoutObject subclass for 'display: list-item' in LayoutNG.
-class CORE_EXPORT LayoutListItem final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutListItem final : public LayoutBlockFlow {
  public:
   explicit LayoutListItem(Element*);
 

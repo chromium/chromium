@@ -8,7 +8,7 @@ Before:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [30, 30],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
@@ -48,14 +48,14 @@ After scroll:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [30, 30],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='overlapped'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='overlapped'",
       "position": [8, 1008],
       "bounds": [40, 40],
       "contentsOpaque": true,

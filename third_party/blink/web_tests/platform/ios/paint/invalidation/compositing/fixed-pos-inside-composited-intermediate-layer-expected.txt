@@ -8,14 +8,14 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='compositedBehind'",
+      "name": "LayoutBlockFlow DIV class='compositedBehind'",
       "bounds": [500, 500],
       "contentsOpaque": true,
       "backgroundColor": "#00FFFF",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='containerOverlapsComposited'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='containerOverlapsComposited'",
       "position": [20, 20],
       "bounds": [100, 30000],
       "contentsOpaque": true,
@@ -23,7 +23,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",

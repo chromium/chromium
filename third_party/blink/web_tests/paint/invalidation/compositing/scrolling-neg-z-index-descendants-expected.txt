@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='neg-z'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='neg-z'",
       "position": [1, 11],
       "bounds": [100, 410],
       "contentsOpaqueForText": true,
@@ -15,19 +15,19 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "position": [8, 8],
       "bounds": [784, 302],
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='container'",
       "bounds": [102, 302],
       "backfaceVisibility": "hidden",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='container'",
       "position": [1, 1],
       "bounds": [100, 300],
       "drawsContent": false,
@@ -35,7 +35,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='container'",
       "position": [1, 1],
       "bounds": [100, 430],
       "drawsContent": false,

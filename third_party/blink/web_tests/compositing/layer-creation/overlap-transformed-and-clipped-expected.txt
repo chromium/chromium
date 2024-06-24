@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='under composited'",
+      "name": "LayoutBlockFlow (positioned) DIV class='under composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='over'",
+      "name": "LayoutBlockFlow (positioned) DIV class='over'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

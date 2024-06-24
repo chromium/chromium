@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='container'",
+      "name": "LayoutBlockFlow DIV class='container'",
       "position": [1, 1],
       "bounds": [285, 185],
       "drawsContent": false,
@@ -27,7 +27,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='container'",
+      "name": "LayoutBlockFlow DIV class='container'",
       "position": [1, 1],
       "bounds": [2100, 185],
       "invalidations": [

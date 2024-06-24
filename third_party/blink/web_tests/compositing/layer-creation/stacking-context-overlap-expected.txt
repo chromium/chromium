@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='trigger'",
+      "name": "LayoutBlockFlow DIV class='trigger'",
       "bounds": [20, 20],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
       "position": [8, 18],
       "bounds": [142, 142]
     }

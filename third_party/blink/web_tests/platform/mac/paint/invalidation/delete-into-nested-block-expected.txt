@@ -16,7 +16,7 @@
       "contentsOpaque": true
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "position": [6, 117],
       "bounds": [788, 104],
       "invalidations": [

@@ -11,6 +11,7 @@ namespace blink {
 
 void LayoutBlockFlow::Trace(Visitor* visitor) const {
   visitor->Trace(multi_column_flow_thread_);
+  visitor->Trace(inline_node_data_);
   LayoutBlock::Trace(visitor);
 }
 
@@ -61,6 +62,20 @@ void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
         // Column rules are painted by anonymous column set children of the
         // multicol container. We need to notify them.
         flow_thread->ColumnRuleStyleDidChange();
+      }
+    }
+  }
+
+  if (diff.NeedsReshape()) {
+    SetNeedsCollectInlines();
+
+    // The `initial-letter` creates a special `InlineItem`. When it's turned
+    // on/off, its parent IFC should run `CollectInlines()`.
+    const ComputedStyle& new_style = StyleRef();
+    if (UNLIKELY(old_style->InitialLetter().IsNormal() !=
+                 new_style.InitialLetter().IsNormal())) {
+      if (LayoutObject* parent = Parent()) {
+        parent->SetNeedsCollectInlines();
       }
     }
   }

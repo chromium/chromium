@@ -7,12 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited box'",
+      "name": "LayoutBlockFlow DIV class='composited box'",
       "bounds": [10, 10],
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) PRE id='layer-tree'",
+      "name": "LayoutBlockFlow (children-inline) PRE id='layer-tree'",
       "bounds": [800, 16],
       "drawsContent": false
     }

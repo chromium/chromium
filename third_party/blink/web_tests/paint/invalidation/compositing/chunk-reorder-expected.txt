@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [784, 1],
       "invalidations": [
         [0, 0, 1, 1]
@@ -15,7 +15,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='chunk5'",
+      "name": "LayoutBlockFlow (positioned) DIV id='chunk5'",
       "position": [400, 400],
       "bounds": [150, 150],
       "invalidations": [

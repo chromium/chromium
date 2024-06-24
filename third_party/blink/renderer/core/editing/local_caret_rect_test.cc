@@ -1372,9 +1372,9 @@ TEST_F(LocalCaretRectTest, TextCombineOneTextNode) {
       "}"
       "tcy { text-combine-upright: all; }");
   SetBodyInnerHTML("<div>a<tcy id=target>01234</tcy>b</div>");
-  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-  //     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-  //       LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //   LayoutBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutBlockFlow {BODY} at (8,8) size 784x584
+  //       LayoutBlockFlow {DIV} at (0,0) size 110x300
   //         LayoutText {#text} at (5,0) size 100x100
   //           text run at (5,0) width 100: "a"
   //         LayoutInline {TCY} at (5,100) size 100x100
@@ -1434,9 +1434,9 @@ TEST_F(LocalCaretRectTest, TextCombineTwoTextNodes) {
       "}"
       "tcy { text-combine-upright: all; }");
   SetBodyInnerHTML("<div>a<tcy id=target>012<!-- -->34</tcy>b</div>");
-  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-  //     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
-  //       LayoutNGBlockFlow {DIV} at (0,0) size 110x300
+  //   LayoutBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutBlockFlow {BODY} at (8,8) size 784x584
+  //       LayoutBlockFlow {DIV} at (0,0) size 110x300
   //         LayoutText {#text} at (5,0) size 100x100
   //           text run at (5,0) width 100: "a"
   //         LayoutInline {TCY} at (5,100) size 100x100

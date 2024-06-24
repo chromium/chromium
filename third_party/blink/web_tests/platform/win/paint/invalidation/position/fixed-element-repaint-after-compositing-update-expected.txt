@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixedOverlapping'",
+      "name": "LayoutBlockFlow (positioned) DIV id='fixedOverlapping'",
       "position": [8, 88],
       "bounds": [792, 512],
       "invalidations": [

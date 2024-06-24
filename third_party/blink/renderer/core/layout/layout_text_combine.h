@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
 
 namespace blink {
@@ -22,7 +22,7 @@ class LayoutText;
 // vertical writing mode, e.g. <i style="text-upright:all"><b>12</b>34<i>.
 // Note: When the element is in horizontal writing mode, we don't use this.
 // Note: Children of this class must be |LayoutText| associated to |Text| node.
-class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
  public:
   // Note: Mark constructor public for |MakeGarbageCollected|. We should not
   // call this directly.
@@ -31,7 +31,7 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(compressed_font_);
-    LayoutNGBlockFlow::Trace(visitor);
+    LayoutBlockFlow::Trace(visitor);
   }
 
   float DesiredWidth() const;

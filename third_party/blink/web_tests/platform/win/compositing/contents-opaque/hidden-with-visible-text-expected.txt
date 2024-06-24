@@ -8,7 +8,7 @@ Caption
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='caption'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='caption'",
       "bounds": [48, 19],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FORMS_LAYOUT_FIELDSET_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
-class CORE_EXPORT LayoutFieldset final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutFieldset final : public LayoutBlockFlow {
  public:
   explicit LayoutFieldset(Element*);
 

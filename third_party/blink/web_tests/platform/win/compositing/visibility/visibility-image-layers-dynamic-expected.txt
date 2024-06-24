@@ -8,7 +8,7 @@ Initial
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited container'",
+      "name": "LayoutBlockFlow (children-inline) DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
       "transform": 1
@@ -67,7 +67,7 @@ After step 1
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited container'",
+      "name": "LayoutBlockFlow (children-inline) DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
       "transform": 1
@@ -141,7 +141,7 @@ After step 2
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited container'",
+      "name": "LayoutBlockFlow (children-inline) DIV class='composited container'",
       "bounds": [749, 145],
       "drawsContent": false,
       "transform": 1
@@ -152,7 +152,7 @@ After step 2
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV class='composited hidden container'",
+      "name": "LayoutBlockFlow (children-inline) DIV class='composited hidden container'",
       "position": [-4, -4],
       "bounds": [757, 153],
       "transform": 3

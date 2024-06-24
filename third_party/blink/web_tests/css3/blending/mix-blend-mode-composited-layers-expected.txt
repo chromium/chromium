@@ -11,14 +11,14 @@
       "bounds": [800, 600]
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "position": [8, 18],
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",

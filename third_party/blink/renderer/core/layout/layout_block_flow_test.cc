@@ -23,7 +23,7 @@ var { column-count: 17179869184; }
 )HTML");
   LayoutBlockFlow* kbd = To<LayoutBlockFlow>(GetLayoutObjectByElementId("kbd"));
   // The parent should be NG.
-  ASSERT_TRUE(kbd->Parent()->IsLayoutNGBlockFlow());
+  ASSERT_TRUE(kbd->Parent()->IsLayoutBlockFlow());
   ASSERT_TRUE(kbd->CreatesNewFormattingContext());
   UpdateAllLifecyclePhasesForTest();
   GetElementById("text")->setAttribute(AtomicString("font-size"),

@@ -26,14 +26,14 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed1'",
+      "name": "LayoutBlockFlow (positioned) DIV id='fixed1'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed2'",
+      "name": "LayoutBlockFlow (positioned) DIV id='fixed2'",
       "bounds": [10, 10],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",

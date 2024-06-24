@@ -14,7 +14,7 @@
 namespace blink {
 
 LayoutViewTransitionRoot::LayoutViewTransitionRoot(Document& document)
-    : LayoutNGBlockFlow(nullptr) {
+    : LayoutBlockFlow(nullptr) {
   SetDocumentForAnonymous(&document);
   SetChildrenInline(false);
 

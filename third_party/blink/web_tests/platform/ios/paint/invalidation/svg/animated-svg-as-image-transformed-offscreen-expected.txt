@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV id='targetDiv'",
+      "name": "LayoutBlockFlow (children-inline) DIV id='targetDiv'",
       "bounds": [2000, 2000],
       "transform": 2
     },

@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "bounds": [600, 8],
       "drawsContent": false
     }
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "bounds": [400, 8],
       "drawsContent": false
     }
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "bounds": [400, 8],
       "drawsContent": false
     }
@@ -64,7 +64,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "LayoutBlockFlow HTML",
       "bounds": [800, 8],
       "drawsContent": false
     }

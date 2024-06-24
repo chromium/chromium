@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [85, 85],
       "drawsContent": false,
       "transform": 1
@@ -27,13 +27,13 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow DIV",
+      "name": "Scroll corner of LayoutBlockFlow DIV",
       "position": [85, 85],
       "bounds": [15, 15],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutBlockFlow DIV",
       "bounds": [150, 300],
       "drawsContent": false,
       "transform": 1

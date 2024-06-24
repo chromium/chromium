@@ -8,14 +8,14 @@ In all iframes, the green fixed-position element should not be composited.
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='composited box'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='composited box'",
       "bounds": [300, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FFFF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed lime box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",
@@ -27,7 +27,7 @@ In all iframes, the green fixed-position element should not be composited.
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed lime box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",
@@ -39,7 +39,7 @@ In all iframes, the green fixed-position element should not be composited.
       "bounds": [154, 154]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed lime box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",

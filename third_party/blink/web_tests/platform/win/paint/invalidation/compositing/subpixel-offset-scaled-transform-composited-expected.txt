@@ -7,42 +7,42 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child1' class='child composited'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='child1' class='child composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child2' class='child scale composited'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='child2' class='child scale composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child3' class='child'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='child3' class='child'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 6
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child4' class='child scale'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='child4' class='child scale'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 9
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child5' class='child composited'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='child5' class='child composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 11
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child6' class='child scale composited'",
+      "name": "LayoutBlockFlow (relative positioned) DIV id='child6' class='child scale composited'",
       "bounds": [1, 1],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",

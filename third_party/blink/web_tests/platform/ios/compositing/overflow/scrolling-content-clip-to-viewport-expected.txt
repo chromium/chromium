@@ -7,12 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "name": "LayoutBlockFlow DIV class='scroller'",
       "bounds": [320, 340],
       "drawsContent": false
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='column'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='column'",
       "position": [10, 10],
       "bounds": [284, 1204],
       "contentsOpaque": true,

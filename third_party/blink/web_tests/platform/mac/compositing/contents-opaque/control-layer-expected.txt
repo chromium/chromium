@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (inline, children-inline) INPUT id='control' class='composited'",
+      "name": "LayoutBlockFlow (inline, children-inline) INPUT id='control' class='composited'",
       "bounds": [130, 21],
       "contentsOpaqueForText": true,
       "backgroundColor": "#EFEFEF",

@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "name": "LayoutBlockFlow DIV id='scroller'",
       "position": [15, 15],
       "bounds": [278, 278],
       "drawsContent": false,
@@ -30,7 +30,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "name": "LayoutBlockFlow DIV id='scroller'",
       "position": [15, 15],
       "bounds": [278, 450],
       "contentsOpaque": true,

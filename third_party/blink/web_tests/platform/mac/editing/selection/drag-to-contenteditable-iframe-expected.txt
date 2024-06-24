@@ -4,14 +4,14 @@ EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
 layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
-    LayoutNGBlockFlow {BODY} at (0,0) size 800x584
-      LayoutNGBlockFlow (anonymous, children-inline) at (0,0) size 800x212
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (0,0) size 800x584
+      LayoutBlockFlow (anonymous, children-inline) at (0,0) size 800x212
         LayoutText {#text} at (208,194) size 4x18
           text run at (208,194) width 4: " "
         LayoutImage {IMG} at (212,105) size 76x103
         LayoutText {#text} at (0,0) size 0x0
-      LayoutNGBlockFlow {UL} at (0,228) size 800x18
+      LayoutBlockFlow {UL} at (0,228) size 800x18
         LayoutListItem (children-inline) {LI} at (40,0) size 760x18
           LayoutOutsideListMarker (inline, children-inline) {::marker} at (-17,0) size 7x18
             LayoutTextFragment (anonymous) at (0,0) size 7x18
@@ -23,7 +23,7 @@ layer at (0,0)
     layer at (0,0)
       LayoutView at (0,0) size 200x200
     layer at (0,0)
-      LayoutNGBlockFlow {HTML} at (0,0) size 200x200
-        LayoutNGBlockFlow (children-inline) {BODY} at (8,8) size 184x184 [bgcolor=#FFFFE0]
+      LayoutBlockFlow {HTML} at (0,0) size 200x200
+        LayoutBlockFlow (children-inline) {BODY} at (8,8) size 184x184 [bgcolor=#FFFFE0]
           LayoutImage {IMG} at (0,0) size 76x103
           LayoutText {#text} at (0,0) size 0x0

@@ -8,7 +8,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='t' class='green translated'",
+      "name": "LayoutBlockFlow (positioned) DIV id='t' class='green translated'",
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

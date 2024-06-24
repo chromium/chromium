@@ -6,14 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_SCROLL_CONTAINER_WITH_MARKERS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
 // Layout wrapper for scroll container and ::scroll-marker-group.
 // Largely inspired by LayoutFieldset.
 class CORE_EXPORT LayoutScrollContainerWithMarkers final
-    : public LayoutNGBlockFlow {
+    : public LayoutBlockFlow {
  public:
   explicit LayoutScrollContainerWithMarkers(Element*);
 

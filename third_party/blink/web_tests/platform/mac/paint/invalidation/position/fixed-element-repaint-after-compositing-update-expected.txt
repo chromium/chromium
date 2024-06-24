@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixedOverlapping'",
+      "name": "LayoutBlockFlow (positioned) DIV id='fixedOverlapping'",
       "bounds": [800, 600],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='moveMe'",
+      "name": "LayoutBlockFlow (positioned) DIV id='moveMe'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

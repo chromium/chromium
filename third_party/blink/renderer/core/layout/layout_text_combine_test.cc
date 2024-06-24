@@ -55,11 +55,10 @@ TEST_F(LayoutTextCombineTest, AppendChild) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -71,7 +70,7 @@ LayoutNGBlockFlow DIV id="root"
   GetElementById("combine")->appendChild(Text::Create(GetDocument(), "Z"));
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -88,11 +87,10 @@ TEST_F(LayoutTextCombineTest, BoxBoundary) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>X<b>Y</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -111,11 +109,10 @@ TEST_F(LayoutTextCombineTest, DeleteDataToEmpty) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -128,7 +125,7 @@ LayoutNGBlockFlow DIV id="root"
       ->deleteData(0, 2, ASSERT_NO_EXCEPTION);
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   +--LayoutText #text "de"
@@ -142,11 +139,10 @@ TEST_F(LayoutTextCombineTest, ElementRecalcOwnStyle) {
       "#root { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root><br id=target></div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutTextCombine (anonymous)
   |  +--LayoutBR BR id="target"
 )DUMP",
@@ -159,7 +155,7 @@ LayoutNGBlockFlow DIV id="root"
   RunDocumentLifecycle();
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutTextCombine (anonymous)
   |  +--LayoutBR BR id="target" style="color: red;"
 )DUMP",
@@ -183,9 +179,9 @@ TEST_F(LayoutTextCombineTest, HtmlElement) {
 
   EXPECT_EQ(
       R"DUMP(
-LayoutNGBlockFlow HTML
-  +--LayoutNGBlockFlow BODY
-  +--LayoutNGBlockFlow (anonymous)
+LayoutBlockFlow HTML
+  +--LayoutBlockFlow BODY
+  +--LayoutBlockFlow (anonymous)
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
 )DUMP",
@@ -495,11 +491,10 @@ TEST_F(LayoutTextCombineTest, InsertBefore) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -512,7 +507,7 @@ LayoutNGBlockFlow DIV id="root"
   combine.insertBefore(Text::Create(GetDocument(), "Z"), combine.firstChild());
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -535,7 +530,7 @@ TEST_F(LayoutTextCombineTest, InsertBR) {
   RunDocumentLifecycle();
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutBR BR
   +--LayoutText #text "x"
 )DUMP",
@@ -555,14 +550,14 @@ TEST_F(LayoutTextCombineTest, ScrollableOverflow) {
       "<div id=t2>aX</div>");
 
   // Layout tree is
-  //    LayoutNGBlockFlow {DIV} at (0,0) size 100x200
+  //    LayoutBlockFlow {DIV} at (0,0) size 100x200
   //      LayoutInline {TCY} at (0,0) size 100x100
   //        LayoutTextCombine (anonymous) at (0,0) size 100x100
   //          LayoutText {#text} at (0,0) size 110x100
   //            text run at (0,0) width 700: "abcefgh"
   //      LayoutText {#text} at (0,100) size 100x100
   //        text run at (0,100) width 100: "X"
-  //   LayoutNGBlockFlow {DIV} at (0,200) size 100x200
+  //   LayoutBlockFlow {DIV} at (0,200) size 100x200
   //     LayoutText {#text} at (0,0) size 100x200
   //       text run at (0,0) width 200: "aX"
 
@@ -590,11 +585,10 @@ TEST_F(LayoutTextCombineTest, ListItemStyleToImage) {
       "ol { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<ol id=root><li></li></ol>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow OL id="root"
+LayoutBlockFlow OL id="root"
   +--LayoutListItem LI
   |  +--LayoutOutsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
@@ -615,7 +609,7 @@ LayoutNGBlockFlow OL id="root"
   RunDocumentLifecycle();
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow OL id="root" style="list-style-image: url(\"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7\");"
+LayoutBlockFlow OL id="root" style="list-style-image: url(\"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7\");"
   +--LayoutListItem LI
   |  +--LayoutOutsideListMarker ::marker
   |  |  +--LayoutImage (anonymous)
@@ -633,8 +627,7 @@ TEST_F(LayoutTextCombineTest, ListMarkerWidthOfSymbol) {
       "}");
   SetBodyInnerHTML("<li id=root>ab</li>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
 LayoutListItem LI id="root"
@@ -653,11 +646,10 @@ TEST_F(LayoutTextCombineTest, MultipleTextNode) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>X<!-- -->Y</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -674,11 +666,10 @@ TEST_F(LayoutTextCombineTest, Nested) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -703,14 +694,14 @@ TEST_F(LayoutTextCombineTest, Outline) {
       "<div id=t2>aX</div>");
 
   // Layout tree is
-  //    LayoutNGBlockFlow {DIV} at (0,0) size 100x200
+  //    LayoutBlockFlow {DIV} at (0,0) size 100x200
   //      LayoutInline {TCY} at (0,0) size 100x100
   //        LayoutTextCombine (anonymous) at (0,0) size 100x100
   //          LayoutText {#text} at (0,0) size 110x100
   //            text run at (0,0) width 700: "abcefgh"
   //      LayoutText {#text} at (0,100) size 100x100
   //        text run at (0,100) width 100: "X"
-  //   LayoutNGBlockFlow {DIV} at (0,200) size 100x200
+  //   LayoutBlockFlow {DIV} at (0,200) size 100x200
   //     LayoutText {#text} at (0,0) size 100x200
   //       text run at (0,0) width 200: "aX"
 
@@ -780,10 +771,10 @@ TEST_F(LayoutTextCombineTest, PropageWritingModeFromBodyToHorizontal) {
 
   EXPECT_EQ(
       R"DUMP(
-LayoutNGBlockFlow HTML
-  +--LayoutNGBlockFlow (anonymous)
+LayoutBlockFlow HTML
+  +--LayoutBlockFlow (anonymous)
   |  +--LayoutText #text "X"
-  +--LayoutNGBlockFlow BODY
+  +--LayoutBlockFlow BODY
 )DUMP",
       ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
 }
@@ -805,11 +796,11 @@ TEST_F(LayoutTextCombineTest, PropageWritingModeFromBodyToVertical) {
 
   EXPECT_EQ(
       R"DUMP(
-LayoutNGBlockFlow HTML
-  +--LayoutNGBlockFlow (anonymous)
+LayoutBlockFlow HTML
+  +--LayoutBlockFlow (anonymous)
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
-  +--LayoutNGBlockFlow BODY
+  +--LayoutBlockFlow BODY
 )DUMP",
       ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
 }
@@ -820,18 +811,17 @@ TEST_F(LayoutTextCombineTest, RebuildLayoutTreeForDetails) {
       "details { text-combine-upright: all; writing-mode: vertical-rl;  }");
   SetBodyInnerHTML("<details id=root open>ab<summary>XY</summary>cd</details>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DETAILS id="root"
+LayoutBlockFlow DETAILS id="root"
   +--LayoutListItem SUMMARY
   |  +--LayoutInsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
-  +--LayoutNGBlockFlow SLOT ::details-content id="details-content" style="display: block;"
+  +--LayoutBlockFlow SLOT ::details-content id="details-content" style="display: block;"
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  |  +--LayoutText #text "cd"
@@ -844,14 +834,14 @@ LayoutNGBlockFlow DETAILS id="root"
   RunDocumentLifecycle();
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
+LayoutBlockFlow DETAILS id="root" style="color: red !important;"
   +--LayoutListItem SUMMARY
   |  +--LayoutInsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
-  +--LayoutNGBlockFlow SLOT ::details-content id="details-content" style="display: block;"
+  +--LayoutBlockFlow SLOT ::details-content id="details-content" style="display: block;"
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  |  +--LayoutText #text "cd"
@@ -868,14 +858,14 @@ TEST_F(LayoutTextCombineTest, RemoveBlockChild) {
   auto& root = *GetElementById("root");
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
-  +--LayoutNGBlockFlow (anonymous)
+LayoutBlockFlow DIV id="root"
+  +--LayoutBlockFlow (anonymous)
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
-  +--LayoutNGBlockFlow P id="block"
+  +--LayoutBlockFlow P id="block"
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
-  +--LayoutNGBlockFlow (anonymous)
+  +--LayoutBlockFlow (anonymous)
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "de"
 )DUMP",
@@ -884,7 +874,7 @@ LayoutNGBlockFlow DIV id="root"
   GetElementById("block")->remove();
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutTextCombine (anonymous)
   |  +--LayoutText #text "ab"
   |  +--LayoutText #text "de"
@@ -898,11 +888,10 @@ TEST_F(LayoutTextCombineTest, RemoveChildCombine) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -914,7 +903,7 @@ LayoutNGBlockFlow DIV id="root"
   GetElementById("combine")->remove();
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutText #text "de"
 )DUMP",
@@ -927,11 +916,10 @@ TEST_F(LayoutTextCombineTest, RemoveChildToEmpty) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -943,7 +931,7 @@ LayoutNGBlockFlow DIV id="root"
   GetElementById("combine")->firstChild()->remove();
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   +--LayoutText #text "de"
@@ -958,11 +946,10 @@ TEST_F(LayoutTextCombineTest, RemoveChildToOneCombinedText) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root><c>a<b id=t>x</b>z</c></div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutInline C
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
@@ -978,7 +965,7 @@ LayoutNGBlockFlow DIV id="root"
   RunDocumentLifecycle();
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutInline C
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
@@ -994,11 +981,10 @@ TEST_F(LayoutTextCombineTest, ReplaceChildToOneCombinedText) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root><c>a<b id=t>x</b>z</c></div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutInline C
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
@@ -1016,7 +1002,7 @@ LayoutNGBlockFlow DIV id="root"
   RunDocumentLifecycle();
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutInline C
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
@@ -1032,11 +1018,10 @@ TEST_F(LayoutTextCombineTest, SetDataToEmpty) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1048,7 +1033,7 @@ LayoutNGBlockFlow DIV id="root"
   To<Text>(GetElementById("combine")->firstChild())->setData("");
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   +--LayoutText #text "de"
@@ -1065,11 +1050,10 @@ TEST_F(LayoutTextCombineTest, SplitText) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1082,7 +1066,7 @@ LayoutNGBlockFlow DIV id="root"
       ->splitText(1, ASSERT_NO_EXCEPTION);
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1101,11 +1085,10 @@ TEST_F(LayoutTextCombineTest, SplitTextAtZero) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1118,7 +1101,7 @@ LayoutNGBlockFlow DIV id="root"
       ->splitText(0, ASSERT_NO_EXCEPTION);
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1137,11 +1120,10 @@ TEST_F(LayoutTextCombineTest, SplitTextBeforeBox) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY<b>Z</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1157,7 +1139,7 @@ LayoutNGBlockFlow DIV id="root"
       ->splitText(1, ASSERT_NO_EXCEPTION);
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1175,11 +1157,10 @@ TEST_F(LayoutTextCombineTest, StyleToTextCombineUprightAll) {
   InsertStyleElement("div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -1193,7 +1174,7 @@ LayoutNGBlockFlow DIV id="root"
       html_names::kStyleAttr, AtomicString("text-combine-upright: all"));
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine" style="text-combine-upright: all"
   |  +--LayoutInline B
@@ -1211,11 +1192,10 @@ TEST_F(LayoutTextCombineTest, StyleToTextCombineUprightNone) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -1229,7 +1209,7 @@ LayoutNGBlockFlow DIV id="root"
       html_names::kStyleAttr, AtomicString("text-combine-upright: none"));
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine" style="text-combine-upright: none"
   |  +--LayoutInline B
@@ -1246,11 +1226,10 @@ TEST_F(LayoutTextCombineTest, StyleToHorizontalWritingMode) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -1264,7 +1243,7 @@ LayoutNGBlockFlow DIV id="root"
                     AtomicString("writing-mode: horizontal-tb"));
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
+LayoutBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -1283,7 +1262,7 @@ TEST_F(LayoutTextCombineTest, StyleToHorizontalWritingModeWithWordBreak) {
   auto& root = *GetElementById("root");
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutTextCombine (anonymous)
   |  +--LayoutWordBreak WBR
 )DUMP",
@@ -1293,7 +1272,7 @@ LayoutNGBlockFlow DIV id="root"
                     AtomicString("writing-mode: horizontal-tb"));
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
+LayoutBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
   +--LayoutWordBreak WBR
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()));
@@ -1303,11 +1282,10 @@ TEST_F(LayoutTextCombineTest, StyleToVerticalWritingMode) {
   InsertStyleElement("c { text-combine-upright: all; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
-  const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+  const auto& root_layout_object = *To<LayoutBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -1320,7 +1298,7 @@ LayoutNGBlockFlow DIV id="root"
                     AtomicString("writing-mode: vertical-rl"));
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root" style="writing-mode: vertical-rl"
+LayoutBlockFlow DIV id="root" style="writing-mode: vertical-rl"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
@@ -1337,10 +1315,10 @@ TEST_F(LayoutTextCombineTest, VerticalWritingModeByBR) {
       "#sample {  text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<br id=sample>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetDocument().body()->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetDocument().body()->GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow BODY
+LayoutBlockFlow BODY
   +--LayoutBR BR id="sample"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -1352,10 +1330,10 @@ TEST_F(LayoutTextCombineTest, VerticalWritingModeByWBR) {
       "#sample {  text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<wbr id=sample>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetDocument().body()->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetDocument().body()->GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow BODY
+LayoutBlockFlow BODY
   +--LayoutWordBreak WBR id="sample"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -1368,10 +1346,10 @@ TEST_F(LayoutTextCombineTest, WithBidiControl) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY</c>de</div>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1387,10 +1365,10 @@ TEST_F(LayoutTextCombineTest, WithBR) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY<br>Z</c>de</div>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1417,7 +1395,7 @@ TEST_F(LayoutTextCombineTest, WithMarker) {
       "}");
   SetBodyInnerHTML("<p id=root>ab</p>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
   EXPECT_EQ(R"DUMP(
 LayoutListItem P id="root"
   +--LayoutOutsideListMarker ::marker
@@ -1436,9 +1414,9 @@ TEST_F(LayoutTextCombineTest, WithOrderedList) {
       "ol { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<ol id=root><li>ab</li></ol>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow OL id="root"
+LayoutBlockFlow OL id="root"
   +--LayoutListItem LI
   |  +--LayoutOutsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
@@ -1455,9 +1433,9 @@ TEST_F(LayoutTextCombineTest, WithQuote) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root><q>XY</q></div>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutInline Q
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
@@ -1480,10 +1458,10 @@ TEST_F(LayoutTextCombineTest, WithTab) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>X\tY</c>de</div>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1517,10 +1495,10 @@ TEST_F(LayoutTextCombineTest, WithWordBreak) {
       "div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XY<wbr>Z</c>de</div>");
   const auto& root_layout_object =
-      *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
+      *To<LayoutBlockFlow>(GetElementById("root")->GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root"
+LayoutBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutTextCombine (anonymous)
@@ -1541,7 +1519,7 @@ TEST_F(LayoutTextCombineTest, ShouldBeParentOfSvg) {
 
   // Should have no LayoutTextCombine.
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="root" style="text-combine-upright: all;"
+LayoutBlockFlow DIV id="root" style="text-combine-upright: all;"
   +--LayoutSVGRoot svg
   |  +--LayoutSVGText text style="writing-mode: vertical-rl;"
   |  |  +--LayoutSVGInlineText #text "Text"

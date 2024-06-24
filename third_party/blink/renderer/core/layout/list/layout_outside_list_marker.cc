@@ -12,7 +12,7 @@
 namespace blink {
 
 LayoutOutsideListMarker::LayoutOutsideListMarker(Element* element)
-    : LayoutNGBlockFlow(element) {}
+    : LayoutBlockFlow(element) {}
 
 void LayoutOutsideListMarker::WillCollectInlines() {
   list_marker_.UpdateMarkerTextIfNeeded(*this);

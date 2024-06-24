@@ -11,7 +11,7 @@
       "bounds": [1000, 600]
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "position": [1, 1],
       "bounds": [185, 185],
       "drawsContent": false,
@@ -32,7 +32,7 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutNGBlockFlow DIV id='container'",
+      "name": "Scroll corner of LayoutBlockFlow DIV id='container'",
       "position": [186, 186],
       "bounds": [15, 15],
       "invalidations": [
@@ -41,7 +41,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
+      "name": "LayoutBlockFlow DIV id='container'",
       "position": [1, 1],
       "bounds": [2000, 2000],
       "drawsContent": false,

@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='composited'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#000000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='software'",
+      "name": "LayoutBlockFlow (positioned) DIV id='software'",
       "bounds": [125, 125]
     }
   ],

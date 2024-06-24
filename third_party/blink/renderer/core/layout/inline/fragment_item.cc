@@ -370,7 +370,7 @@ bool FragmentItem::IsListMarker() const {
 
 LayoutObject& FragmentItem::BlockInInline() const {
   DCHECK(IsBlockInInline());
-  auto* const block = To<LayoutNGBlockFlow>(GetLayoutObject())->FirstChild();
+  auto* const block = To<LayoutBlockFlow>(GetLayoutObject())->FirstChild();
   DCHECK(block) << this;
   return *block;
 }

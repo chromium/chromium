@@ -7,28 +7,28 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='clipping-container'",
+      "name": "LayoutBlockFlow (positioned) DIV class='clipping-container'",
       "position": [100, 100],
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='clipped-composited-child'",
+      "name": "LayoutBlockFlow DIV class='clipped-composited-child'",
       "bounds": [252, 252],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='clipping-container with-initial-clipping'",
+      "name": "LayoutBlockFlow (positioned) DIV class='clipping-container with-initial-clipping'",
       "position": [100, 100],
       "bounds": [100, 100],
       "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='clipped-composited-child'",
+      "name": "LayoutBlockFlow DIV class='clipped-composited-child'",
       "bounds": [252, 252],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",

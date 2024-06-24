@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow MAT id='scroller'",
+      "name": "LayoutBlockFlow MAT id='scroller'",
       "bounds": [345, 640],
       "drawsContent": false,
       "transform": 2
@@ -20,13 +20,13 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow MAT id='scroller'",
+      "name": "LayoutBlockFlow MAT id='scroller'",
       "bounds": [345, 2018],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (sticky positioned, children-inline) DIV id='sticky'",
+      "name": "LayoutBlockFlow (sticky positioned, children-inline) DIV id='sticky'",
       "bounds": [345, 18],
       "transform": 4
     },
