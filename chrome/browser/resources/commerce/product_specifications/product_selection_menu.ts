@@ -70,9 +70,12 @@ export class ProductSelectionMenuElement extends PolymerElement {
   sections: MenuSection[];
 
   async showAt(element: HTMLElement) {
-    const openUrlInfos = await this.shoppingApi_.getUrlInfosForOpenTabs();
-    const filteredOpenUrlInfos = this.filterUrlInfos_(openUrlInfos.urlInfos);
-    const openTabs = this.urlInfosToListEntries_(filteredOpenUrlInfos);
+    const suggestedUrlInfos =
+        await this.shoppingApi_.getUrlInfosForProductTabs();
+    const filteredSuggestedUrlInfos =
+        this.filterUrlInfos_(suggestedUrlInfos.urlInfos);
+    const suggestedTabs =
+        this.urlInfosToListEntries_(filteredSuggestedUrlInfos);
 
     const recentlyViewedUrlInfos =
         await this.shoppingApi_.getUrlInfosForRecentlyViewedTabs();
@@ -82,10 +85,10 @@ export class ProductSelectionMenuElement extends PolymerElement {
         this.urlInfosToListEntries_(filteredRecentlyViewedUrlInfos);
 
     const updatedSections: MenuSection[] = [];
-    if (openTabs.length > 0) {
+    if (suggestedTabs.length > 0) {
       updatedSections.push({
-        title: loadTimeData.getString('openTabs'),
-        entries: openTabs,
+        title: loadTimeData.getString('suggestedTabs'),
+        entries: suggestedTabs,
         expanded: true,
       });
     }

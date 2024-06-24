@@ -22,7 +22,7 @@ export interface BrowserProxy {
   getPriceInsightsInfoForCurrentUrl():
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   showInsightsSidePanelUi(): void;
-  getUrlInfosForOpenTabs(): Promise<{urlInfos: UrlInfo[]}>;
+  getUrlInfosForProductTabs(): Promise<{urlInfos: UrlInfo[]}>;
   getUrlInfosForRecentlyViewedTabs(): Promise<{urlInfos: UrlInfo[]}>;
   isShoppingListEligible(): Promise<{eligible: boolean}>;
   getShoppingCollectionBookmarkFolderId(): Promise<{collectionId: bigint}>;
@@ -98,8 +98,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     return this.handler.getProductSpecificationsForUrls(urls);
   }
 
-  getUrlInfosForOpenTabs() {
-    return this.handler.getUrlInfosForOpenTabs();
+  getUrlInfosForProductTabs() {
+    return this.handler.getUrlInfosForProductTabs();
   }
 
   getUrlInfosForRecentlyViewedTabs() {

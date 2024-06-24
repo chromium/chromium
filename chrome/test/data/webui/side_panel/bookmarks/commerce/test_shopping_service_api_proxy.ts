@@ -50,7 +50,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'untrackPriceForBookmark',
       'getProductInfoForCurrentUrl',
       'getPriceInsightsInfoForCurrentUrl',
-      'getUrlInfosForOpenTabs',
+      'getUrlInfosForProductTabs',
       'getUrlInfosForRecentlyViewedTabs',
       'showInsightsSidePanelUi',
       'openUrlInNewTab',
@@ -125,8 +125,8 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     return Promise.resolve({priceInsightsInfo: this.priceInsights_});
   }
 
-  getUrlInfosForOpenTabs() {
-    this.methodCalled('getUrlInfosForOpenTabs');
+  getUrlInfosForProductTabs() {
+    this.methodCalled('getUrlInfosForProductTabs');
     return Promise.resolve({urlInfos: []});
   }
 

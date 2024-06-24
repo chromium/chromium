@@ -571,7 +571,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetPriceInsightsInfoForCurrentUrl) {
   run_loop.Run();
 }
 
-TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForOpenTabs) {
+TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForProductTabs) {
   base::RunLoop run_loop;
 
   commerce::UrlInfo url_info;
@@ -580,17 +580,18 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForOpenTabs) {
   std::vector<commerce::UrlInfo> url_info_list;
   url_info_list.push_back(url_info);
 
-  ON_CALL(*shopping_service_, GetUrlInfosForActiveWebWrappers)
-      .WillByDefault(testing::Return(url_info_list));
+  ON_CALL(*shopping_service_, GetUrlInfosForWebWrappersWithProducts)
+      .WillByDefault(
+          [url_info_list](
+              base::OnceCallback<void(std::vector<commerce::UrlInfo>)>
+                  callback) { std::move(callback).Run(url_info_list); });
 
-  handler_->GetUrlInfosForOpenTabs(base::BindOnce(
-      [](base::RunLoop* run_loop,
-         std::vector<shopping_service::mojom::UrlInfoPtr> url_infos) {
+  handler_->GetUrlInfosForProductTabs(
+      base::BindOnce([](std::vector<shopping_service::mojom::UrlInfoPtr>
+                            url_infos) {
         ASSERT_EQ("example_title", url_infos[0]->title);
         ASSERT_EQ("https://example1.com/", url_infos[0]->url.spec());
-        run_loop->Quit();
-      },
-      &run_loop));
+      }).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
 }

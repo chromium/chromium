@@ -522,8 +522,8 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_MENU_ITEM" translateable="false" desc="The title of the link in the history UI that navigates the user to a page showing the lists being maintained by the product specifications feature.">
     Product specifications lists
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of open tabs.">
-    Open Tabs
+  <message name="IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of tabs suggested by the browser to be put into the table.">
+    Suggestions
   </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION" translateable="false" desc="The title of the section in the product selection drop-down in the product specifications UI that shows a list of recently viewed tabs.">
     Recently Viewed

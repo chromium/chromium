@@ -101,7 +101,8 @@ class ShoppingServiceHandler
   void GetProductSpecificationsForUrls(
       const std::vector<::GURL>& urls,
       GetProductSpecificationsForUrlsCallback callback) override;
-  void GetUrlInfosForOpenTabs(GetUrlInfosForOpenTabsCallback callback) override;
+  void GetUrlInfosForProductTabs(
+      GetUrlInfosForProductTabsCallback callback) override;
   void GetUrlInfosForRecentlyViewedTabs(
       GetUrlInfosForRecentlyViewedTabsCallback callback) override;
   void ShowInsightsSidePanelUI() override;

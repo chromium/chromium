@@ -17,6 +17,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
@@ -699,15 +700,19 @@ void ShoppingServiceHandler::GetProductSpecificationsForUrls(
                 weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ShoppingServiceHandler::GetUrlInfosForOpenTabs(
-    GetUrlInfosForOpenTabsCallback callback) {
+void ShoppingServiceHandler::GetUrlInfosForProductTabs(
+    GetUrlInfosForProductTabsCallback callback) {
   if (!shopping_service_) {
     std::move(callback).Run({});
     return;
   }
 
-  std::move(callback).Run(
-      UrlInfoToMojo(shopping_service_->GetUrlInfosForActiveWebWrappers()));
+  shopping_service_->GetUrlInfosForWebWrappersWithProducts(base::BindOnce(
+      [](GetUrlInfosForProductTabsCallback callback,
+         const std::vector<UrlInfo> infos) {
+        std::move(callback).Run(UrlInfoToMojo(infos));
+      },
+      std::move(callback)));
 }
 
 void ShoppingServiceHandler::GetUrlInfosForRecentlyViewedTabs(

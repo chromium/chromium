@@ -149,7 +149,7 @@ using BookmarkProductInfoUpdatedCallback = base::RepeatingCallback<
     void(const int64_t, const GURL&, std::optional<ProductInfo>)>;
 
 using UrlProductIdentifierTuple =
-    std::tuple<const GURL&, const std::optional<const uint64_t>>;
+    std::tuple<const GURL, const std::optional<const uint64_t>>;
 
 using UrlProductIdentifierTupleCallback =
     base::OnceCallback<void(const UrlProductIdentifierTuple&)>;
@@ -399,6 +399,11 @@ class ShoppingService : public KeyedService,
   // service is keeping track of. This does not map to open tabs across all
   // platforms. Excludes non-HTTP/HTTPS URLs.
   virtual const std::vector<UrlInfo> GetUrlInfosForActiveWebWrappers();
+
+  // Returns a list of URL info provided by |GetUrlInfosForActiveWebWrappers|
+  // but filtered by URLs that are associated with products.
+  virtual void GetUrlInfosForWebWrappersWithProducts(
+      base::OnceCallback<void(const std::vector<UrlInfo>)> callback);
 
   // Gets a list of URLs from web wrappers that were recently viewed by the
   // user (ordered by most recent first). This generally aligns with recently

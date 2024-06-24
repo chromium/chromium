@@ -60,6 +60,8 @@ DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
 DiscountInfo::~DiscountInfo() = default;
 
 UrlInfo::UrlInfo() = default;
+UrlInfo::UrlInfo(const GURL& url, const std::u16string& title)
+    : url(url), title(title) {}
 UrlInfo::UrlInfo(const UrlInfo&) = default;
 UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
 UrlInfo::~UrlInfo() = default;

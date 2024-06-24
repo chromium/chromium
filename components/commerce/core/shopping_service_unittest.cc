@@ -433,6 +433,56 @@ TEST_P(ShoppingServiceTest, TestWebWrapperSet) {
   ASSERT_TRUE(shopping_service_->GetUrlInfosForActiveWebWrappers().empty());
 }
 
+// Ensure we correctly identify open tabs with products.
+TEST_P(ShoppingServiceTest, TestWebWrapperSetWithProducts) {
+  test_features_.InitWithFeatures({kShoppingList}, {});
+
+  std::string url1 = "http://example.com/product";
+  std::u16string title1 = u"Product";
+  MockWebWrapper web1(GURL(url1), false, nullptr, title1);
+
+  UrlInfo url_info1;
+  url_info1.url = GURL(url1);
+  url_info1.title = title1;
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode);
+  opt_guide_->SetResponse(GURL(url1), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+  opt_guide_->AddOnDemandShoppingResponse(
+      GURL(url1), OptimizationGuideDecision::kTrue, meta);
+
+  std::string url2 = "http://example.com/non_product";
+  std::u16string title2 = u"Non-product";
+  MockWebWrapper web2(GURL(url2), false, nullptr, title2);
+
+  UrlInfo url_info2;
+  url_info2.url = GURL(url2);
+  url_info2.title = title2;
+
+  WebWrapperCreated(&web1);
+  WebWrapperCreated(&web2);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetUrlInfosForWebWrappersWithProducts(
+      base::BindOnce([](const std::vector<UrlInfo> product_tabs) {
+        ASSERT_EQ(1u, product_tabs.size());
+        ASSERT_EQ("http://example.com/product", product_tabs[0].url.spec());
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  WebWrapperDestroyed(&web1);
+  WebWrapperDestroyed(&web2);
+
+  base::RunLoop final_run_loop;
+  shopping_service_->GetUrlInfosForWebWrappersWithProducts(
+      base::BindOnce([](const std::vector<UrlInfo> product_tabs) {
+        ASSERT_TRUE(product_tabs.empty());
+      }).Then(final_run_loop.QuitClosure()));
+  final_run_loop.Run();
+}
+
 // Make sure recent URLs doesn't contain duplicates.
 TEST_P(ShoppingServiceTest, TestRecentUrls_NoDuplicates) {
   std::string url1 = "http://example.com/foo";

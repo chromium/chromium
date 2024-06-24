@@ -226,6 +226,7 @@ struct ParcelTrackingStatus {
 // Details about a particular URL.
 struct UrlInfo {
   UrlInfo();
+  UrlInfo(const GURL& url, const std::u16string& title);
   UrlInfo(const UrlInfo&);
   UrlInfo& operator=(const UrlInfo&);
   bool operator==(const UrlInfo& other) const {

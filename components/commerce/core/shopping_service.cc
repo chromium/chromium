@@ -970,6 +970,44 @@ const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
   return urls;
 }
 
+void ShoppingService::GetUrlInfosForWebWrappersWithProducts(
+    base::OnceCallback<void(const std::vector<UrlInfo>)> callback) {
+  const std::vector<UrlInfo> active_infos = GetUrlInfosForActiveWebWrappers();
+
+  std::unordered_map<std::string, std::u16string> url_to_title_map;
+  for (const auto& info : active_infos) {
+    url_to_title_map[info.url.spec()] = info.title;
+  }
+
+  auto barrier_callback =
+      base::BarrierCallback<const UrlProductIdentifierTuple&>(
+          active_infos.size(),
+          base::BindOnce(
+              [](base::OnceCallback<void(const std::vector<UrlInfo>)> callback,
+                 std::unordered_map<std::string, std::u16string>
+                     url_to_title_map,
+                 const std::vector<UrlProductIdentifierTuple>& id_info_list) {
+                std::vector<UrlInfo> product_url_infos;
+                for (const auto& info : id_info_list) {
+                  const GURL url = std::get<0>(info);
+                  // If there's no ID, it's not a product.
+                  if (!std::get<1>(info).has_value()) {
+                    continue;
+                  }
+                  product_url_infos.push_back(
+                      UrlInfo(std::get<0>(info),
+                              url_to_title_map[std::get<0>(info).spec()]));
+                }
+
+                std::move(callback).Run(std::move(product_url_infos));
+              },
+              std::move(callback), std::move(url_to_title_map)));
+
+  for (const auto& info : active_infos) {
+    GetProductIdentifierForUrl(info.url, barrier_callback);
+  }
+}
+
 const std::vector<UrlInfo>
 ShoppingService::GetUrlInfosForRecentlyViewedWebWrappers() {
   std::vector<UrlInfo> info_list;

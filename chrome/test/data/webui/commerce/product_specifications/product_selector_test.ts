@@ -28,7 +28,7 @@ suite('ProductSelectorTest', () => {
   }
 
   function initUrlInfos() {
-    const openTabs = [{
+    const productTabs = [{
       title: 'title',
       url: stringToMojoUrl('http://example.com'),
     }];
@@ -37,7 +37,7 @@ suite('ProductSelectorTest', () => {
       url: stringToMojoUrl('http://example2.com'),
     }];
     shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+        'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs',
         Promise.resolve({urlInfos: recentlyViewedTabs}));

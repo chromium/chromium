@@ -802,12 +802,12 @@ suite('AppTest', () => {
   });
 
   test('add url for new set creates set', async () => {
-    const openTabs = [{
+    const productTabs = [{
       title: 'title',
       url: stringToMojoUrl('https://example.com/'),
     }];
     shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+        'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
 
@@ -876,12 +876,12 @@ suite('AppTest', () => {
     shoppingServiceApi.setResultFor(
         'getProductSpecificationsSetByUuid', Promise.resolve({set: specsSet}));
 
-    const openTabs = [{
+    const productTabs = [{
       title: 'title 2',
       url: stringToMojoUrl('https://example.com/2'),
     }];
     shoppingServiceApi.setResultFor(
-        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+        'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
     shoppingServiceApi.setResultFor(
         'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
 
@@ -1164,12 +1164,13 @@ suite('AppTest', () => {
 
     test('hides empty state after product selection', async () => {
       const url = 'https://example.com/';
-      const openTabs = [{
+      const productTabs = [{
         title: 'title',
         url: stringToMojoUrl(url),
       }];
       shoppingServiceApi.setResultFor(
-          'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+          'getUrlInfosForProductTabs',
+          Promise.resolve({urlInfos: productTabs}));
       shoppingServiceApi.setResultFor(
           'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
       const promiseValues = createAppPromiseValues({

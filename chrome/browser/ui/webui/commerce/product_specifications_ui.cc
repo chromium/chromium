@@ -65,7 +65,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"emptyStateDescription",
        IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},
       {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
-      {"openTabs", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
+      {"suggestedTabs", IDS_PRODUCT_SPECIFICATIONS_SUGGESTIONS_SECTION},
       {"recentlyViewedTabs",
        IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
       {"removeColumn", IDS_PRODUCT_SPECIFICATIONS_REMOVE_COLUMN},
