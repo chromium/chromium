@@ -71,24 +71,6 @@ public interface PasswordSettingsAccessor {
 
     /**
      * Asynchronously retrieves the value of the "Use biometric re-auth before credential filling"
-     * setting.
-     *
-     * @param account the account where to store the value the value or no account if it should be
-     *     stored in the local storage.
-     * @param successCallback called if the retrieval succeeds with the value of the setting or no
-     *     value if none was set.
-     * @param failureCallback called with an error if the retrieval did not succeed.
-     */
-    default void getUseBiometricsForCredentials(
-            Optional<Account> account,
-            Callback<Optional<Boolean>> successCallback,
-            Callback<Exception> failureCallback) {
-        // TODO(crbug.com/343879727) : Remove this method in favor of
-        // `getUseBiometricReauthBeforeFilling`.
-    }
-
-    /**
-     * Asynchronously retrieves the value of the "Use biometric re-auth before credential filling"
      * setting. The settings per-device, not per-account (meaning that it will be applied to all
      * accounts on the device).
      *
@@ -96,11 +78,6 @@ public interface PasswordSettingsAccessor {
      *     value if none was set.
      * @param failureCallback called with an error if the retrieval did not succeed.
      */
-    default void getUseBiometricReauthBeforeFilling(
-            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback) {
-        // TODO(crbug.com/343879727) : Implement fetching the setting from the GMSCore after it's
-        // available on their side.
-        // For now just always return true for testing purposes.
-        successCallback.onResult(Optional.of(true));
-    }
+    void getUseBiometricReauthBeforeFilling(
+            Callback<Optional<Boolean>> successCallback, Callback<Exception> failureCallback);
 }
