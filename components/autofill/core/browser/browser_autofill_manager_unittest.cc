@@ -2290,10 +2290,10 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Mock returning some autocomplete `suggestions`.
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
-      .WillOnce([&](const FormFieldData& field, const AutofillClient& client,
+      .WillOnce([&](const FormStructure*, const FormFieldData& field,
+                    const AutofillField*, const AutofillClient&,
                     SingleFieldFormFiller::OnSuggestionsReturnedCallback
-                        on_suggestions_returned,
-                    const SuggestionsContext& context) {
+                        on_suggestions_returned) {
         std::move(on_suggestions_returned).Run(field.global_id(), suggestions);
         return true;
       });
@@ -2327,9 +2327,9 @@ TEST_F(BrowserAutofillManagerTest,
 
   ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillByDefault(
-          [&](const FormFieldData& field, const AutofillClient&,
-              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
-              const SuggestionsContext&) {
+          [&](const FormStructure*, const FormFieldData& field,
+              const AutofillField*, const AutofillClient&,
+              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback) {
             std::move(callback).Run(field.global_id(),
                                     {Suggestion(u"one"), Suggestion(u"test@")});
             return true;
@@ -2375,9 +2375,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
   ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillByDefault(
-          [&](const FormFieldData& field, const AutofillClient&,
-              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
-              const SuggestionsContext&) {
+          [&](const FormStructure*, const FormFieldData& field,
+              const AutofillField*, const AutofillClient&,
+              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback) {
             std::move(callback).Run(
                 field.global_id(),
                 {Suggestion(u"one"), Suggestion(u"test@foo.com")});
@@ -2433,9 +2433,9 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteSuppressionFieldDisappears) {
   FormsSeen({form});
   ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .WillByDefault(
-          [&](const FormFieldData& field, const AutofillClient&,
-              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback,
-              const SuggestionsContext&) {
+          [&](const FormStructure*, const FormFieldData& field,
+              const AutofillField*, const AutofillClient&,
+              SingleFieldFormFiller::OnSuggestionsReturnedCallback callback) {
             browser_autofill_manager_->OnFormsSeen(
                 /*updated_forms=*/{}, /*removed_forms=*/{form.global_id()});
             std::move(callback).Run(

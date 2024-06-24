@@ -13,7 +13,8 @@
 namespace autofill {
 
 class AutofillClient;
-struct SuggestionsContext;
+class AutofillField;
+class FormStructure;
 
 // Interface for form-filling implementations that fill a single field at a
 // time, such as autocomplete or merchant promo codes.
@@ -55,10 +56,11 @@ class SingleFieldFormFiller {
   // SingleFieldFormFillers to offer filling the field. The callback can happen
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      const SuggestionsContext& context) = 0;
+      OnSuggestionsReturnedCallback on_suggestions_returned) = 0;
 
   // Runs when a form is going to be submitted. In the case of Autocomplete, it
   // saves the given |fields| that are eligible to be saved as new or updated

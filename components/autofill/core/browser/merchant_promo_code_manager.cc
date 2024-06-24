@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
@@ -21,16 +20,16 @@ MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
+    const FormStructure* form_structure,
     const FormFieldData& field,
+    const AutofillField* autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned,
-    const SuggestionsContext& context) {
+    OnSuggestionsReturnedCallback on_suggestions_returned) {
   // The field is eligible only if it's focused on a merchant promo code.
-  bool field_is_eligible =
-      context.focused_field &&
-      context.focused_field->Type().GetStorableType() == MERCHANT_PROMO_CODE;
-  if (!field_is_eligible)
+  if (!autofill_field ||
+      autofill_field->Type().GetStorableType() != MERCHANT_PROMO_CODE) {
     return false;
+  }
 
   // If merchant promo code offers are available for the given site, and the
   // profile is not OTR, show the promo code offers.
@@ -38,7 +37,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     const std::vector<const AutofillOfferData*> promo_code_offers =
         personal_data_manager_->payments_data_manager()
             .GetActiveAutofillPromoCodeOffersForOrigin(
-                context.form_structure->main_frame_origin().GetURL());
+                form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(std::move(promo_code_offers), field,
                                std::move(on_suggestions_returned));

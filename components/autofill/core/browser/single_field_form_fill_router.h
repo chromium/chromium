@@ -16,9 +16,9 @@
 namespace autofill {
 
 class AutofillClient;
+class AutofillField;
 class FormStructure;
 class MerchantPromoCodeManager;
-struct SuggestionsContext;
 
 // Owned by AutofillClient, and is one per tab. Routes single field form filling
 // requests, such as choosing whether to direct them to Autocomplete, merchant
@@ -47,10 +47,11 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      const SuggestionsContext& context) override;
+      OnSuggestionsReturnedCallback on_suggestions_returned) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
   void CancelPendingQueries() override;

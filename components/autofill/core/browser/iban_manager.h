@@ -19,7 +19,6 @@ namespace autofill {
 
 class AutofillClient;
 class PersonalDataManager;
-struct SuggestionsContext;
 
 // Per-profile IBAN Manager. This class handles IBAN-related functionality
 // such as retrieving IBAN data from PersonalDataManager, managing IBAN
@@ -39,10 +38,11 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      const SuggestionsContext& context) override;
+      OnSuggestionsReturnedCallback on_suggestions_returned) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override {}
   void CancelPendingQueries() override {}

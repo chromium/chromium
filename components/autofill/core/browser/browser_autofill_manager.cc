@@ -1163,7 +1163,9 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
 
 SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     const FormData& form,
+    const FormStructure* form_structure,
     const FormFieldData& field,
+    const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source) {
   SuggestionsContext context;
 
@@ -1177,15 +1179,13 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
 
   UpdateLoggersReadinessData();
 
+  // Don't send suggestions or track forms that should not be parsed.
   const bool got_autofillable_form =
-      GetCachedFormAndField(form, field, &context.form_structure,
-                            &context.focused_field) &&
-      // Don't send suggestions or track forms that should not be parsed.
-      context.form_structure->ShouldBeParsed();
+      form_structure && form_structure->ShouldBeParsed();
 
   if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
       got_autofillable_form &&
-      context.focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+      autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     // Pre-`AutofillPredictionsForAutocompleteUnrecognized`, autocomplete
     // suggestions were shown if all types of the form were suppressed or
     // unknown. If at least a single field had predictions (and the form was
@@ -1195,7 +1195,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     // contains a field that triggers (non-fallback) suggestions.
     // By not setting it, the autocomplete suggestion logic downstream is
     // triggered, since no Autofill `suggestions` are available.
-    if (!base::ranges::all_of(*context.form_structure, [](const auto& field) {
+    if (!base::ranges::all_of(*form_structure, [](const auto& field) {
           return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
                  field->Type().GetStorableType() == UNKNOWN_TYPE;
         })) {
@@ -1205,15 +1205,15 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     return context;
   }
   if (got_autofillable_form) {
-    auto* logger = GetEventFormLogger(*context.focused_field);
+    auto* logger = GetEventFormLogger(*autofill_field);
     if (logger) {
-      logger->OnDidInteractWithAutofillableForm(*context.form_structure,
+      logger->OnDidInteractWithAutofillableForm(*form_structure,
                                                 signin_state_for_metrics_);
     }
   }
 
   context.filling_product = GetPreferredSuggestionFillingProduct(
-      got_autofillable_form ? context.focused_field->Type().GetStorableType()
+      got_autofillable_form ? autofill_field->Type().GetStorableType()
                             : UNKNOWN_TYPE,
       trigger_source);
 
@@ -1252,7 +1252,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
-  if (FormStructure* form_structure = FindCachedFormById(form.global_id())) {
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  if (form_structure) {
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
         base::TimeTicks::Now() - form_structure->form_parsed_timestamp());
   }
@@ -1264,15 +1268,14 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     client().NotifyAutofillManualFallbackUsed();
   }
 
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->SetCurrentDataListValues(field.datalist_options());
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
 
-  SuggestionsContext context =
-      BuildSuggestionsContext(form, field, trigger_source);
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, form_structure, field, autofill_field, trigger_source);
 
   GenerateSuggestionsAndMaybeShowUI(
-      form, field, trigger_source, context,
+      form, form_structure, field, autofill_field, trigger_source, context,
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
                      weak_ptr_factory_.GetWeakPtr(), form, field,
                      trigger_source, context));
@@ -1280,13 +1283,15 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     const FormData& form,
+    const FormStructure* form_structure,
     const FormFieldData& field,
+    const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback) {
   std::vector<Suggestion> suggestions =
-      GetAvailableAddressAndCreditCardSuggestions(form, field, trigger_source,
-                                                  context);
+      GetAvailableAddressAndCreditCardSuggestions(
+          form, form_structure, field, autofill_field, trigger_source, context);
 
   auto ShouldSuppressSuggestions = [&] {
     switch (context.suppress_reason) {
@@ -1363,9 +1368,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
       (!context.should_show_mixed_content_warning &&
        context.is_autofill_available &&
        !context.do_not_generate_autofill_suggestions &&
-       context.filling_product == FillingProduct::kAddress &&
-       context.focused_field &&
-       context.focused_field->Type().group() == FieldTypeGroup::kEmail &&
+       context.filling_product == FillingProduct::kAddress && autofill_field &&
+       autofill_field->Type().group() == FieldTypeGroup::kEmail &&
        client().GetPlusAddressDelegate());
 
   if (should_offer_plus_addresses) {
@@ -1429,9 +1433,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     // re-authenticate the use of a credit card the website has on file) will be
     // handled separately because those have the field type
     // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
-    FieldType server_type =
-        context.focused_field ? context.focused_field->Type().GetStorableType()
-                              : UNKNOWN_TYPE;
+    FieldType server_type = autofill_field
+                                ? autofill_field->Type().GetStorableType()
+                                : UNKNOWN_TYPE;
     if (data_util::IsCreditCardExpirationType(server_type) ||
         server_type == CREDIT_CARD_VERIFICATION_CODE ||
         server_type == CREDIT_CARD_NUMBER) {
@@ -1445,12 +1449,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     // TODO(crbug.com/40853053): Revisit here to see whether we should offer
     // IBAN filling for fields with unrecognized autocomplete attribute
     if (context.suppress_reason == SuppressReason::kAutocompleteUnrecognized) {
-      FormStructure* form_structure = nullptr;
-      AutofillField* autofill_field = nullptr;
       // Display the IPH only if the form can be autofilled and the user has
       // profiles which can fill the current field.
-      if (GetCachedFormAndField(form, field, &form_structure,
-                                &autofill_field) &&
+      if (autofill_field &&
           FieldTypeGroupToFormType(autofill_field->Type().group()) ==
               FormType::kAddressForm &&
           base::ranges::any_of(
@@ -1470,8 +1471,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     }
 
     // Therefore, we check the attribute explicitly.
-    if (context.focused_field && context.focused_field->Type().html_type() ==
-                                     HtmlFieldType::kUnrecognized) {
+    if (autofill_field &&
+        autofill_field->Type().html_type() == HtmlFieldType::kUnrecognized) {
       return false;
     }
 
@@ -1485,13 +1486,12 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   if (ShouldOfferSingleFieldFormFill()) {
     bool handled_by_single_field_form_filler =
         single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-            field, client(),
+            form_structure, field, autofill_field, client(),
             base::BindRepeating(
                 &BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback,
                 weak_ptr_factory_.GetWeakPtr(), form_element_was_clicked, form,
-                context.focused_field ? context.focused_field->Type().group()
-                                      : FieldTypeGroup::kNoGroup),
-            context);
+                autofill_field ? autofill_field->Type().group()
+                               : FieldTypeGroup::kNoGroup));
     if (handled_by_single_field_form_filler) {
       // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
       // will handle sending the results back to the renderer.
@@ -1765,9 +1765,12 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 #endif
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  // TODO(crbug.com/41392130): Add metrics for performance impact.
-  SuggestionsContext context = BuildSuggestionsContext(
-      form, field, AutofillSuggestionTriggerSource::kUnspecified);
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
+  SuggestionsContext context =
+      BuildSuggestionsContext(form, form_structure, field, autofill_field,
+                              AutofillSuggestionTriggerSource::kUnspecified);
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -1778,7 +1781,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // be done with the `kUnspecified` suggestion trigger source.
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
-          form, field, AutofillSuggestionTriggerSource::kUnspecified, context);
+          form, form_structure, field, autofill_field,
+          AutofillSuggestionTriggerSource::kUnspecified, context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2849,7 +2853,9 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
 std::vector<Suggestion>
 BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     const FormData& form,
+    const FormStructure* form_structure,
     const FormFieldData& field,
+    const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext& context) {
   if (IsPlusAddressesManuallyTriggered(trigger_source)) {
@@ -2873,16 +2879,16 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
           context.filling_product,
           {FillingProduct::kCreditCard, FillingProduct::kStandaloneCvc})) {
     FieldType trigger_field_type =
-        context.focused_field ? context.focused_field->Type().GetStorableType()
-                              : UNKNOWN_TYPE;
+        autofill_field ? autofill_field->Type().GetStorableType()
+                       : UNKNOWN_TYPE;
     suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
                                            trigger_source);
   } else if (context.filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on
     // the `trigger_source`.
-    suggestions = GetProfileSuggestions(form, context.form_structure, field,
-                                        context.focused_field, trigger_source);
+    suggestions = GetProfileSuggestions(form, form_structure, field,
+                                        autofill_field, trigger_source);
   }
 
   // Ablation experiment

@@ -29,7 +29,7 @@ class MockAutofillOptimizationGuide : public AutofillOptimizationGuide {
               (const override));
   MOCK_METHOD(bool,
               ShouldBlockSingleFieldSuggestions,
-              (const GURL&, AutofillField*),
+              (const GURL&, const AutofillField*),
               (const override));
   MOCK_METHOD(bool,
               ShouldBlockFormFieldSuggestion,

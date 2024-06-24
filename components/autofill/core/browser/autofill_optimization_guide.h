@@ -55,8 +55,9 @@ class AutofillOptimizationGuide : public KeyedService {
   // displaying suggestions for `field` by querying the optimization guide
   // decider corresponding to `field`'s storable type. If the function returns
   // true, no suggestions should be displayed for `field`.
-  virtual bool ShouldBlockSingleFieldSuggestions(const GURL& url,
-                                                 AutofillField* field) const;
+  virtual bool ShouldBlockSingleFieldSuggestions(
+      const GURL& url,
+      const AutofillField* field) const;
 
   optimization_guide::OptimizationGuideDecider*
   GetOptimizationGuideKeyedServiceForTesting() const {

@@ -10,7 +10,6 @@
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill {
@@ -27,15 +26,14 @@ IbanManager::IbanManager(PersonalDataManager* personal_data_manager)
 IbanManager::~IbanManager() = default;
 
 bool IbanManager::OnGetSingleFieldSuggestions(
+    const FormStructure* form_structure,
     const FormFieldData& field,
+    const AutofillField* autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned,
-    const SuggestionsContext& context) {
+    OnSuggestionsReturnedCallback on_suggestions_returned) {
   // The field is eligible only if it's focused on an IBAN field.
-  AutofillField* focused_field = context.focused_field;
-  bool field_is_eligible =
-      focused_field && focused_field->Type().GetStorableType() == IBAN_VALUE;
-  if (!field_is_eligible) {
+  if (!autofill_field ||
+      autofill_field->Type().GetStorableType() != IBAN_VALUE) {
     return false;
   }
 
@@ -56,7 +54,7 @@ bool IbanManager::OnGetSingleFieldSuggestions(
           client.GetAutofillOptimizationGuide()) {
     if (autofill_optimization_guide->ShouldBlockSingleFieldSuggestions(
             client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-            focused_field)) {
+            autofill_field)) {
       autofill_metrics::LogIbanSuggestionBlockListStatusMetric(
           autofill_metrics::IbanSuggestionBlockListStatus::kBlocked);
       return false;

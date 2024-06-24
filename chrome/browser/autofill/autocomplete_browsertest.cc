@@ -166,9 +166,10 @@ class AutocompleteTest : public InProcessBrowserTest {
     std::vector<Suggestion> suggestions;
     EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
+        /*form_structure=*/nullptr,
         test::CreateTestFormField(/*label=*/"", input_name, prefix,
                                   FormControlType::kInputText),
-        manager().client(), callback.Get(), SuggestionsContext()));
+        /*autofill_field=*/nullptr, manager().client(), callback.Get()));
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());

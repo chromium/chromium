@@ -220,7 +220,7 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
 
 bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
     const GURL& url,
-    AutofillField* field) const {
+    const AutofillField* field) const {
   // If the field's storable type is `IBAN_VALUE`, check whether IBAN
   // suggestions should be blocked based on `url`.
   if (field->Type().GetStorableType() == IBAN_VALUE) {

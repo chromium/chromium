@@ -538,7 +538,9 @@ class BrowserAutofillManager : public AutofillManager {
   // `SuggestionsContext` based on the given params.
   SuggestionsContext BuildSuggestionsContext(
       const FormData& form,
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Returns a list with the suggestions available for `field`. Which fields of
@@ -549,7 +551,9 @@ class BrowserAutofillManager : public AutofillManager {
   // and make the context a const ref.
   std::vector<Suggestion> GetAvailableAddressAndCreditCardSuggestions(
       const FormData& form,
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext& context);
 
@@ -566,7 +570,9 @@ class BrowserAutofillManager : public AutofillManager {
   // `ShouldSuppressSuggestions`).
   void GenerateSuggestionsAndMaybeShowUI(
       const FormData& form,
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext context,
       OnGenerateSuggestionsCallback callback);
