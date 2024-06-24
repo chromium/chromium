@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.LoadingView;
@@ -112,6 +113,13 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                         }
                     });
         }
+
+        // Apply RTL layout changes.
+        int layoutDirection =
+                LocalizationUtils.isLayoutRtl()
+                        ? View.LAYOUT_DIRECTION_RTL
+                        : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
     }
 
     public void setProposedPlusAddress(String proposedPlusAddress) {

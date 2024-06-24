@@ -2990,6 +2990,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android:javatests",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:javatests",
       "//chrome/browser/ui/android/fast_checkout/internal:javatests",
+      "//chrome/browser/ui/android/plus_addresses:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
       "//components/ip_protection/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
