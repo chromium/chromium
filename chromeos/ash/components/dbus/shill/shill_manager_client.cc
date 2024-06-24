@@ -243,6 +243,25 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
+  void EnableTethering(const shill::WiFiInterfacePriority& priority,
+                       StringCallback callback,
+                       ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kEnableTetheringFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(static_cast<uint32_t>(priority));
+    helper_->CallStringMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
+  }
+
+  void DisableTethering(StringCallback callback,
+                        ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kDisableTetheringFunction);
+    helper_->CallStringMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
+  }
+
   void CheckTetheringReadiness(StringCallback callback,
                                ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,

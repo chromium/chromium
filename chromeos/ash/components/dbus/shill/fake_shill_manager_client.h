@@ -80,6 +80,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void SetTetheringEnabled(bool enabled,
                            StringCallback callback,
                            ErrorCallback error_callback) override;
+  void EnableTethering(const shill::WiFiInterfacePriority& priority,
+                       StringCallback callback,
+                       ErrorCallback error_callback) override;
+  void DisableTethering(StringCallback callback,
+                        ErrorCallback error_callback) override;
   void CheckTetheringReadiness(StringCallback callback,
                                ErrorCallback error_callback) override;
   void SetLOHSEnabled(bool enabled,

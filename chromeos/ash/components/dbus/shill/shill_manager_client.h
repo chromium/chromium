@@ -339,10 +339,23 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                                           ErrorCallback error_callback) = 0;
 
   // Enables or disables tethering hotspot. Only supports cellular as the
-  // upstream technologies and WiFi as the downstream technology.
+  // upstream technology and WiFi as the downstream technology. This API
+  // will be deprecated once ChromeOS migrate to WiFi concurrency APIs.
   virtual void SetTetheringEnabled(bool enabled,
                                    StringCallback callback,
                                    ErrorCallback error_callback) = 0;
+
+  // Enables tethering hotspot. Only supports cellular as the upstream
+  // technology and WiFi as the downstream technology. `priority` specifies
+  // the tethering interface priority and may bring down other WiFi interface
+  // automatically if necessary.
+  virtual void EnableTethering(const shill::WiFiInterfacePriority& priority,
+                               StringCallback callback,
+                               ErrorCallback error_callback) = 0;
+
+  // Disable tethering hotspot.
+  virtual void DisableTethering(StringCallback callback,
+                                ErrorCallback error_callback) = 0;
 
   // Checks whether the upstream technology is ready to tether. Returns a status
   // string indicating the readiness. Returns "allowed" if the readiness check

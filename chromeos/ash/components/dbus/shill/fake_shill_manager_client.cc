@@ -548,6 +548,20 @@ void FakeShillManagerClient::SetTetheringEnabled(bool enabled,
   }
 }
 
+void FakeShillManagerClient::EnableTethering(
+    const shill::WiFiInterfacePriority& priority,
+    StringCallback callback,
+    ErrorCallback error_callback) {
+  SetTetheringEnabled(/*enabled=*/true, std::move(callback),
+                      std::move(error_callback));
+}
+
+void FakeShillManagerClient::DisableTethering(StringCallback callback,
+                                              ErrorCallback error_callback) {
+  SetTetheringEnabled(/*enabled=*/false, std::move(callback),
+                      std::move(error_callback));
+}
+
 void FakeShillManagerClient::CheckTetheringReadiness(
     StringCallback callback,
     ErrorCallback error_callback) {
