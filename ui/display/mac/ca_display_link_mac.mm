@@ -92,7 +92,7 @@ std::unique_ptr<CADisplayLinkWrapper> CADisplayLinkWrapper::Create(
                                                     .maximum = refresh_rate,
                                                     .preferred = refresh_rate}];
 
-    [objc_state->display_link addToRunLoop:NSRunLoop.mainRunLoop
+    [objc_state->display_link addToRunLoop:NSRunLoop.currentRunLoop
                                    forMode:NSDefaultRunLoopMode];
 
     std::unique_ptr<CADisplayLinkWrapper> wrapper(

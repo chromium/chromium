@@ -65,6 +65,11 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
 #if BUILDFLAG(IS_FUCHSIA)
   // An IO message pump is needed to use FIDL.
   thread_options.message_pump_type = base::MessagePumpType::IO;
+#elif BUILDFLAG(IS_MAC)
+  // The feature kCADisplayLink needs the thread type NS_RUNLOOP to run on the
+  // current thread' runloop.
+  // See [ca_display_link addToRunLoop:NSRunLoop.currentRunLoop].
+  thread_options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
 #endif
 
   thread_options.thread_type = thread_type;
