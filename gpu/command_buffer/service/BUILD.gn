@@ -490,6 +490,12 @@ target(link_target_type, "gles2_sources") {
         "shared_image/dawn_ozone_image_representation.cc",
         "shared_image/dawn_ozone_image_representation.h",
       ]
+
+      # Required for buffer format conversions.
+      deps += [
+        "//ui/gfx/linux:drm",
+        "//ui/gfx/linux:gbm",
+      ]
     }
   }
 
