@@ -22,7 +22,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
-#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/mock_model_type_worker.h"
 #include "components/sync/test/model_type_store_test_util.h"
@@ -548,7 +548,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor;
 
-  in_memory_store[kClientTagHash] = sync_pb::EntitySpecifics();
+  in_memory_store[kClientTagHash] = sync_pb::PersistedEntityData();
 
   std::unique_ptr<SyncChangeProcessor> sync_change_processor =
       SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
@@ -583,7 +583,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor;
 
-  in_memory_store[kClientTagHash] = sync_pb::EntitySpecifics();
+  in_memory_store[kClientTagHash] = sync_pb::PersistedEntityData();
 
   std::unique_ptr<SyncChangeProcessor> sync_change_processor =
       SyncableServiceBasedBridge::CreateLocalChangeProcessorForTesting(
