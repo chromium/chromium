@@ -1118,6 +1118,14 @@ void GpuServiceImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
       // Remove the prefix from the key before load.
       no_prefix_key = key.substr(prefix.length() + 1);
     } else {
+      // If the prefix is not ok, its likely that all the other entries in the
+      // cache will have prefix that does not matches. Clear the whole disk
+      // cache in that case to remove all stale entries and make room for newer
+      // entries.
+      if (base::FeatureList::IsEnabled(
+              features::kClearGrShaderDiskCacheOnInvalidPrefix)) {
+        gpu_host_->ClearGrShaderDiskCache();
+      }
       return;
     }
   }

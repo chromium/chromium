@@ -229,6 +229,13 @@ BASE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService,
              "GenGpuDiskCacheKeyPrefixInGpuService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Grshader disk cache will be cleared on startup if any cache
+// entry prefix does not match with the current prefix. prefix is made up of
+// various parameters like chrome version, driver version etc.
+BASE_FEATURE(kClearGrShaderDiskCacheOnInvalidPrefix,
+             "ClearGrShaderDiskCacheOnInvalidPrefix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the decode acceleration of JPEG images (as opposed to camera
 // captures) in Chrome OS using the VA-API.
 // TODO(andrescj): remove or enable by default in Chrome OS once

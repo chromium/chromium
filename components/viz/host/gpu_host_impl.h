@@ -277,6 +277,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   void RecordLogMessage(int32_t severity,
                         const std::string& header,
                         const std::string& message) override;
+  void ClearGrShaderDiskCache() override;
 
   // Implements mojom::VizDebugOutput and is called by VizDebugger.
 #if BUILDFLAG(USE_VIZ_DEBUGGER)

@@ -705,6 +705,22 @@ void GpuHostImpl::RecordLogMessage(int32_t severity,
   delegate_->RecordLogMessage(severity, header, message);
 }
 
+void GpuHostImpl::ClearGrShaderDiskCache() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
+  for (auto& [client_id, cache] : client_id_to_caches_) {
+    // This call will temporarily extend the lifetime of the cache (kept
+    // alive in the factory), and may drop loads of cached shader binaries if
+    // it takes a while to complete. As we are intentionally dropping all
+    // binaries, this behavior is fine.
+    if (client_id == gpu::kGrShaderCacheClientId) {
+      gpu_disk_cache_factory->ClearByCache(
+          cache, base::Time(), base::Time::Max(), base::DoNothing());
+    }
+  }
+}
+
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 void GpuHostImpl::LogFrame(base::Value frame_data) {
   if (!viz_debug_output_callback_.is_null())

@@ -74,4 +74,7 @@ interface GpuHost {
                   mojo_base.mojom.ByteString blob);
 
   RecordLogMessage(int32 severity, string header, string message);
+
+  // Tells the GPU host to clear the shader disk cache.
+  ClearGrShaderDiskCache();
 };
