@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
@@ -366,25 +360,25 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
   DCHECK(!instance_);
   instance_ = this;
   SetTargetHandler(this);
-  // Install a fake "edit" menu. This is normally provided by Chrome's
-  // MainMenu.xib, but src/ui shouldn't depend on that.
+  // Install a fake "edit" menu.
   fake_menu_ = [[NSMenu alloc] initWithTitle:@"Edit"];
-  struct {
+  struct FakeMenuItem {
     NSString* title;
     SEL action;
     NSString* key_equivalent;
-  } fake_menu_item[] = {
+  };
+  const auto kFakeMenuItems = std::to_array<FakeMenuItem>({
       {@"Undo", @selector(undo:), @"z"},
       {@"Redo", @selector(redo:), @"Z"},
       {@"Copy", @selector(copy:), @"c"},
       {@"Cut", @selector(cut:), @"x"},
       {@"Paste", @selector(paste:), @"v"},
       {@"Select All", @selector(selectAll:), @"a"},
-  };
-  for (size_t i = 0; i < std::size(fake_menu_item); ++i) {
-    [fake_menu_ insertItemWithTitle:fake_menu_item[i].title
-                             action:fake_menu_item[i].action
-                      keyEquivalent:fake_menu_item[i].key_equivalent
+  });
+  for (size_t i = 0; i < kFakeMenuItems.size(); ++i) {
+    [fake_menu_ insertItemWithTitle:kFakeMenuItems[i].title
+                             action:kFakeMenuItems[i].action
+                      keyEquivalent:kFakeMenuItems[i].key_equivalent
                             atIndex:i];
   }
 

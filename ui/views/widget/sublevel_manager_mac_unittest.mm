@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/widget/sublevel_manager.h"
 
 #include <AppKit/AppKit.h>
@@ -89,11 +83,11 @@ TEST_P(SublevelManagerMacTest, ExplicitUntrack) {
       CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<Widget> root2 =
       CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  std::unique_ptr<Widget> children[3];
+  std::array<std::unique_ptr<Widget>, 3> children;
 
   ShowWidget(root);
   ShowWidget(root2);
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < children.size(); i++) {
     children[i] = CreateChildWidget(
         root.get(), ui::ZOrderLevel::kNormal, i,
         std::get<Widget::InitParams::Activatable>(GetParam()));
