@@ -2889,22 +2889,4 @@
   </event>
 </project>
 
-<project name="TestProject.With.Name.Not.Legal.CPP">
-  <owner>iby@google.com</owner>
-  <id>none</id>
-  <summary>
-    Project for unit testing, do not use.
-  </summary>
-  <event name="TestEvent.With.Name.Not.Legal.CPP">
-    <summary>
-      Event for unit testing, do not use.
-    </summary>
-    <metric name="TestMetric.With.Name.Not.Legal.CPP" type="raw-string">
-      <summary>
-        Metric for unit testing, do not use.
-      </summary>
-    </metric>
-  </event>
-</project>
-
 </structured-metrics>
