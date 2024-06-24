@@ -91,17 +91,17 @@ def main():
         runner_args.device = True
 
     with ExitStack() as stack:
-        # See http://crbug.com/343611361#comment5, the ffx daemon may still
-        # write logs after being shut down and causes the unnecessary test
-        # failures. So this AbstractContextManager would check the modification
-        # time of the output folder to ensure no writes happening before
-        # exiting.
-        # This may belong to IsolateDaemon, but let's keep it here to test its
-        # functionality and reliability.
-        stack.enter_context(ModificationWaiter(runner_args.out_dir))
-        # TODO(crbug.com/343242386): Find a way to upload metric output when
-        # logs_dir is not defined.
         if runner_args.logs_dir:
+            # See http://crbug.com/343611361#comment5, the ffx daemon may still
+            # write logs after being shut down and causes the unnecessary test
+            # failures. So this AbstractContextManager would check the
+            # modification time of the output folder to ensure no writes
+            # happening before exiting.
+            # This may belong to IsolateDaemon, but let's keep it here to test
+            # its functionality and reliability.
+            stack.enter_context(ModificationWaiter(runner_args.logs_dir))
+            # TODO(crbug.com/343242386): Find a way to upload metric output when
+            # logs_dir is not defined.
             stack.push(lambda *_: monitors.dump(
                 os.path.join(runner_args.logs_dir, 'invocations')))
         log_manager = LogManager(runner_args.logs_dir)
