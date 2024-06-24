@@ -30,7 +30,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
@@ -2573,11 +2573,15 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   //
   // The former modes trump latter modes, so if we find a matching header we
   // can stop iterating kSpecialHeaders.
-  //
   static const struct {
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
-    RAW_PTR_EXCLUSION const HeaderNameAndValue* search;
+    // Despite the macro being named STACK_ALLOCATED, this is not actually
+    // stack-allocated, as it is a function-local static. The macro just
+    // enforces that this struct is never heap-allocated, which means there is
+    // no benefit to making its members raw_ptr.
+    STACK_ALLOCATED();
+
+   public:
+    const HeaderNameAndValue* search;
     int load_flag;
   } kSpecialHeaders[] = {
       {kPassThroughHeaders, LOAD_DISABLE_CACHE},
