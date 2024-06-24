@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, GetFocusOnChildTree) {
   EXPECT_EQ(cache.GetOrCreate(widget->GetRootView()), cache.GetFocus());
 
   // Now, there's a tree id.
-  child->GetViewAccessibility().OverrideChildTreeID(
+  child->GetViewAccessibility().SetChildTreeID(
       ui::AXTreeID::CreateNewAXTreeID());
   EXPECT_EQ(cache.GetOrCreate(child), cache.GetFocus());
 

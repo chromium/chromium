@@ -161,7 +161,7 @@ TEST_F(AXTreeSourceViewsTest, IgnoredView) {
 
 TEST_F(AXTreeSourceViewsTest, ViewWithChildTreeHasNoChildren) {
   View* contents_view = widget_->GetContentsView();
-  contents_view->GetViewAccessibility().OverrideChildTreeID(
+  contents_view->GetViewAccessibility().SetChildTreeID(
       ui::AXTreeID::CreateNewAXTreeID());
 
   AXAuraObjCache cache;

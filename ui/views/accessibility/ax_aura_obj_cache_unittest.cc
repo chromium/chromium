@@ -249,7 +249,7 @@ TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   View* client_child = client->children().front();
   ASSERT_NE(nullptr, client_child);
   client_child->GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  client_child->GetViewAccessibility().OverrideChildTreeID(
+  client_child->GetViewAccessibility().SetChildTreeID(
       ui::AXTreeID::CreateNewAXTreeID());
 
   auto* parent = widget->GetRootView()->AddChildView(std::make_unique<View>());

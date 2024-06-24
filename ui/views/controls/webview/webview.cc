@@ -488,7 +488,7 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
   if (!lock_child_ax_tree_id_override_) {
     content::RenderFrameHost* rfh =
         web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
-    GetViewAccessibility().OverrideChildTreeID(rfh ? rfh->GetAXTreeID()
+    GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
                                                    : ui::AXTreeIDUnknown());
   }
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);

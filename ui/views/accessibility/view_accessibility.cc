@@ -172,7 +172,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   view_->GetAccessibleNodeData(data);
 
   DCHECK(!data->HasChildTreeID()) << "Please annotate child tree ids using "
-                                     "ViewAccessibility::OverrideChildTreeID.";
+                                     "ViewAccessibility::SetChildTreeID.";
 
   // Copy the attributes that are in the cache (`data_`) into the computed
   // `data` object. This is done after the `data` object was initialized with
@@ -742,7 +742,7 @@ void ViewAccessibility::UpdateInvisibleState() {
   SetState(ax::mojom::State::kInvisible, is_invisible);
 }
 
-void ViewAccessibility::OverrideChildTreeID(ui::AXTreeID tree_id) {
+void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
   if (tree_id != ui::AXTreeIDUnknown()) {
     data_.AddChildTreeId(tree_id);
 

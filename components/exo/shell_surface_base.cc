@@ -817,7 +817,7 @@ void ShellSurfaceBase::UpdateTopInset() {
 }
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
-  GetViewAccessibility().OverrideChildTreeID(child_ax_tree_id);
+  GetViewAccessibility().SetChildTreeID(child_ax_tree_id);
   this->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 }
 
