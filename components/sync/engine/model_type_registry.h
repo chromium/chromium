@@ -32,6 +32,7 @@ using UpdateHandlerMap = std::map<ModelType, UpdateHandler*>;
 using CommitContributorMap = std::map<ModelType, CommitContributor*>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
+// Lives on the sync sequence.
 class ModelTypeRegistry : public ModelTypeConnector,
                           public SyncEncryptionHandler::Observer {
  public:

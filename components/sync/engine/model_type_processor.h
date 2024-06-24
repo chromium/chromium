@@ -18,6 +18,8 @@ namespace syncer {
 class CommitQueue;
 
 // Interface used by sync backend to issue requests to a synced data type.
+// Actual implementations live on the model sequence, but there's typically a
+// proxy object on the sync sequence for use by the ModelTypeWorker.
 class ModelTypeProcessor {
  public:
   ModelTypeProcessor() = default;
@@ -53,8 +55,7 @@ class ModelTypeProcessor {
   // server issues. The commit may not include all pending entities.
   virtual void OnCommitFailed(SyncCommitError commit_error) {}
 
-  // Informs this object that there are some incoming updates it should
-  // handle.
+  // Informs this object that there are some incoming updates it should handle.
   virtual void OnUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
       UpdateResponseDataList updates,

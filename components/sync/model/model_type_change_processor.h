@@ -26,6 +26,7 @@ class ModelTypeSyncBridge;
 struct EntityData;
 
 // Interface used by the ModelTypeSyncBridge to inform sync of local changes.
+// Lives on the model sequence.
 class ModelTypeChangeProcessor {
  public:
   ModelTypeChangeProcessor() = default;

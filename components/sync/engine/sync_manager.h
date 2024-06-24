@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"
@@ -40,14 +39,12 @@ class ProtocolEvent;
 class SyncCycleSnapshot;
 struct SyncStatus;
 
-// Unless stated otherwise, all methods of SyncManager should be called on the
-// same thread.
+// Lives on the sync sequence.
 class SyncManager {
  public:
-  // An interface the embedding application implements to receive
-  // notifications from the SyncManager.  Register an observer via
-  // SyncManager::AddObserver.  All methods are called only on the
-  // sync thread.
+  // An interface the embedding application implements to receive notifications
+  // from the SyncManager. Register an observer via SyncManager::AddObserver.
+  // All methods are called only on the sync sequence.
   class Observer {
    public:
     // A round-trip sync-cycle took place and the syncer has resolved any
@@ -97,7 +94,7 @@ class SyncManager {
     // Must outlive SyncManager.
     raw_ptr<SyncEncryptionHandler> encryption_handler = nullptr;
 
-    // Carries shutdown requests across threads and will be used to cut short
+    // Carries shutdown requests across sequences and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
@@ -177,7 +174,7 @@ class SyncManager {
 
   // Returns non-owning pointer to ModelTypeConnector. In contrast with
   // ModelTypeConnectorProxy all calls are executed synchronously, thus the
-  // pointer should be used on sync thread.
+  // pointer should be used on sync sequence.
   virtual ModelTypeConnector* GetModelTypeConnector() = 0;
 
   // Returns an instance of the main interface for registering sync types with

@@ -36,12 +36,12 @@ class SyncTransportDataPrefs;
 
 // The only real implementation of the SyncEngine. See that interface's
 // definition for documentation of public methods.
+// Lives on the UI thread, and handles task-posting to SyncEngineBackend on
+// the sync sequence as necessary.
 class SyncEngineImpl : public SyncEngine,
                        public InvalidationsListener,
                        public FCMRegistrationTokenObserver {
  public:
-  using Status = SyncStatus;
-
   // |sync_invalidations_service| must not be null.
   SyncEngineImpl(const std::string& name,
                  SyncInvalidationsService* sync_invalidations_service,
@@ -80,7 +80,7 @@ class SyncEngineImpl : public SyncEngine,
   void ConnectDataType(ModelType type,
                        std::unique_ptr<DataTypeActivationResponse>) override;
   void DisconnectDataType(ModelType type) override;
-  const Status& GetDetailedStatus() const override;
+  const SyncStatus& GetDetailedStatus() const override;
   void GetTypesWithUnsyncedData(
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
   void HasUnsyncedItemsForTest(
@@ -131,7 +131,7 @@ class SyncEngineImpl : public SyncEngine,
   void HandleInitializationFailureOnFrontendLoop();
 
   // Called from SyncEngineBackend::OnSyncCycleCompleted to handle updating
-  // frontend thread components.
+  // frontend sequence components.
   void HandleSyncCycleCompletedOnFrontendLoop(
       const SyncCycleSnapshot& snapshot);
 
@@ -181,8 +181,8 @@ class SyncEngineImpl : public SyncEngine,
   raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 
   // Our backend, which communicates directly to the syncapi. Use refptr instead
-  // of WeakHandle because |backend_| is created on UI loop but released on
-  // sync loop.
+  // of WeakHandle because |backend_| is created on the UI thread but released
+  // on the sync sequence.
   scoped_refptr<SyncEngineBackend> backend_;
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
@@ -210,7 +210,8 @@ class SyncEngineImpl : public SyncEngine,
   // re-enabling.
   bool invalidations_enabled_reported_ = false;
 
-  // Checks that we're on the same thread this was constructed on (UI thread).
+  // Checks that we're on the same sequence this was constructed on (UI
+  // sequence).
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncEngineImpl> weak_ptr_factory_{this};

@@ -32,9 +32,10 @@ namespace syncer {
 class BackoffDelayProvider;
 struct ModelNeutralState;
 
+// Lives on the sync sequence.
 class SyncSchedulerImpl : public SyncScheduler {
  public:
-  // |name| is a display string to identify the syncer thread.
+  // |name| is a display string to identify the sync sequence.
   SyncSchedulerImpl(const std::string& name,
                     std::unique_ptr<BackoffDelayProvider> delay_provider,
                     SyncCycleContext* context,
@@ -176,7 +177,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   void NotifyBlockedTypesChanged();
 
   // Looks for pending work and, if it finds any, runs it. TrySyncCycleJob just
-  // posts a call to TrySyncCycleJobImpl on the current thread.
+  // posts a call to TrySyncCycleJobImpl on the current sequence.
   void TrySyncCycleJob(RespectGlobalBackoff respect_backoff);
   void TrySyncCycleJobImpl(RespectGlobalBackoff respect_backoff);
 

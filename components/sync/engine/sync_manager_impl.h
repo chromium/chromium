@@ -33,8 +33,7 @@ class Cryptographer;
 class ModelTypeRegistry;
 class SyncCycleContext;
 
-// Unless stated otherwise, all methods of SyncManager should be called on the
-// same thread.
+// Lives on the sync sequence.
 class SyncManagerImpl
     : public SyncManager,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,

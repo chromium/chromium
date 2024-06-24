@@ -17,6 +17,9 @@ namespace syncer {
 // further to |other|, which lives in a difference thread/sequence. This means
 // all methods are implemented via posting tasks to the destination sequence, as
 // provided in the constructor via |task_runner|.
+// Instantiations of this typically live on the UI thread, for use by the
+// ModelTypeController, and forward calls to the real implementation on the
+// model sequence.
 class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
  public:
   using DelegateProvider =

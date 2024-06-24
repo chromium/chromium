@@ -22,6 +22,7 @@ class ModelTypeConfigurer;
 
 // This interface is for managing the start up and shut down life cycle
 // of many different syncable data types.
+// Lives on the UI thread.
 class DataTypeManager {
  public:
   enum State {

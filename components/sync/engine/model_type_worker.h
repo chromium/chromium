@@ -78,24 +78,26 @@ enum class PendingInvalidationStatus {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:PendingInvalidationStatus)
 
-// A smart cache for sync types to communicate with the sync thread.
+// A smart cache for sync types to communicate with the sync sequence.
 //
 // When the sync data type wants to talk to the sync server, it will
-// send a message from its thread to this object on the sync thread. This
+// send a message from its sequence to this object on the sync sequence. This
 // object ensures the appropriate sync server communication gets scheduled and
-// executed. The response, if any, will be returned to the data types's thread
+// executed. The response, if any, will be returned to the data types's sequence
 // eventually.
 //
 // This object also has a role to play in communications in the opposite
-// direction. Sometimes the sync thread will receive changes from the sync
+// direction. Sometimes the sync sequence will receive changes from the sync
 // server and deliver them here. This object will post this information back to
-// the appropriate component on the model type's thread.
+// the appropriate component on the model type's sequence.
 //
 // This object does more than just pass along messages. It understands the sync
 // protocol, and it can make decisions when it sees conflicting messages. For
 // example, if the sync server sends down an update for a sync entity that is
 // currently pending for commit, this object will detect this condition and
 // cancel the pending commit.
+//
+// Lives on the sync sequence.
 class ModelTypeWorker : public UpdateHandler,
                         public CommitContributor,
                         public CommitQueue {
@@ -343,6 +345,8 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Pointer to the ModelTypeProcessor associated with this worker. Initialized
   // with ConnectSync().
+  // Note that in practice, this is typically a proxy object to the actual
+  // processor (which lives on the model sequence).
   std::unique_ptr<ModelTypeProcessor> model_type_processor_;
 
   // State that applies to the entire model type.
@@ -390,7 +394,7 @@ class ModelTypeWorker : public UpdateHandler,
 };
 
 // GetLocalChangesRequest is a container for GetLocalChanges call response. It
-// allows sync thread to block waiting for model thread to call SetResponse.
+// allows sync sequence to block waiting for model sequence to call SetResponse.
 // This class supports canceling blocking call through CancelationSignal during
 // sync engine shutdown.
 //
@@ -416,7 +420,7 @@ class GetLocalChangesRequest
   // CancelationSignal::Observer implementation.
   void OnCancelationSignalReceived() override;
 
-  // Blocks current thread until either SetResponse is called or
+  // Blocks current sequence until either SetResponse is called or
   // cancelation_signal_ is signaled.
   void WaitForResponseOrCancelation(CancelationSignal* cancelation_signal);
 

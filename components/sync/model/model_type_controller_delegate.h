@@ -20,8 +20,10 @@ struct DataTypeActivationResponse;
 struct TypeEntitiesCount;
 
 // The ModelTypeControllerDelegate handles communication of ModelTypeController
-// with the data type. Unlike the controller which lives on the UI thread, the
-// delegate can assume all its functions are run on the model thread.
+// with the data type.
+// Actual implementations live on the model sequence, but there is often a
+// "proxy" implementation on the UI thread for use by the ModelTypeController
+// (which lives on the UI thread).
 class ModelTypeControllerDelegate {
  public:
   using AllNodesCallback =

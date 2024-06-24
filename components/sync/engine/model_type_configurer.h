@@ -15,9 +15,9 @@ namespace syncer {
 
 struct DataTypeActivationResponse;
 
-// The DataTypeConfigurer interface abstracts out the action of
-// configuring a set of new data types and cleaning up after a set of
-// removed data types.
+// The ModelTypeConfigurer interface abstracts out the action of configuring a
+// set of new data types and cleaning up after a set of removed data types.
+// Lives on the UI thread.
 class ModelTypeConfigurer {
  public:
   // Utility struct for holding ConfigureDataTypes options.

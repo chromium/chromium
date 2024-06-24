@@ -336,7 +336,7 @@ void SyncEngineImpl::DisconnectDataType(ModelType type) {
   model_type_connector_->DisconnectDataType(type);
 }
 
-const SyncEngineImpl::Status& SyncEngineImpl::GetDetailedStatus() const {
+const SyncStatus& SyncEngineImpl::GetDetailedStatus() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsInitialized());
   return cached_status_;

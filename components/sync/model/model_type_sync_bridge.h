@@ -32,6 +32,7 @@ class ModelError;
 // immediately begin locally tracking changes and can start syncing with the
 // server soon afterward. If an error occurs during startup, the processor's
 // ReportError() method should be called instead of ModelReadyToSync().
+// Lives on the model sequence.
 class ModelTypeSyncBridge {
  public:
   using DataCallback = base::OnceCallback<void(std::unique_ptr<DataBatch>)>;

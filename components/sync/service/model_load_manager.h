@@ -52,7 +52,7 @@ class ModelLoadManagerDelegate {
 // (DataTypeManager is responsible for activating/deactivating data types).
 // Since the operations are async it uses an interface to inform DataTypeManager
 // of the results of the operations.
-// This class is owned by DataTypeManager.
+// This class is owned by DataTypeManager, and lives on the UI thread.
 class ModelLoadManager {
  public:
   ModelLoadManager(const ModelTypeController::TypeMap* controllers,

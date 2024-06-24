@@ -35,9 +35,8 @@ class SyncEngineHost;
 struct SyncStatus;
 
 // The interface into the sync engine, which is the part of sync that performs
-// communication between model types and the sync server. In prod the engine
-// will always live on the sync thread and the object implementing this
-// interface will handle crossing threads if necessary.
+// communication between model types and the sync server.
+// Lives on the UI thread.
 class SyncEngine : public ModelTypeConfigurer {
  public:
   using AllNodesCallback =

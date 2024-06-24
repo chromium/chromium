@@ -38,10 +38,11 @@ namespace syncer {
 
 class CommitQueue;
 
-// A sync component embedded on the model type's thread that tracks entity
+// A sync component embedded on the model type's sequence that tracks entity
 // metadata in the model store and coordinates communication between sync and
-// model type threads. All changes in flight (either incoming from the server
+// model type sequences. All changes in flight (either incoming from the server
 // or local changes reported by the bridge) must specify a client tag.
+// Lives on the model sequence.
 //
 // See
 // //docs/website/site/developers/design-documents/sync/client-tag-based-model-type-processor/index.md
@@ -60,7 +61,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   ~ClientTagBasedModelTypeProcessor() override;
 
-  // Returns true if the handshake with sync thread is complete.
+  // Returns true if the handshake with sync sequence is complete.
   bool IsConnected() const;
 
   // ModelTypeChangeProcessor implementation.
@@ -298,11 +299,9 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // The request context passed in as part of OnSyncStarting().
   DataTypeActivationRequest activation_request_;
 
-  // Reference to the CommitQueue.
-  //
-  // The interface hides the posting of tasks across threads as well as the
-  // CommitQueue's implementation.  Both of these features are
-  // useful in tests.
+  // Reference to the CommitQueue. Note that in practice, this is typically a
+  // proxy object to the actual CommitQueue implementation (aka the worker),
+  // which lives on the sync sequence.
   std::unique_ptr<CommitQueue> worker_;
 
   //////////////////
@@ -318,7 +317,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
       weak_ptr_factory_for_controller_{this};
 
-  // WeakPtrFactory for this processor which will be sent to sync thread.
+  // WeakPtrFactory for this processor which will be sent to sync sequence.
   base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
       weak_ptr_factory_for_worker_{this};
 };
