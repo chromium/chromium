@@ -12,7 +12,8 @@
   }
 
   .row:first-child,
-  .row[expanded] + .row {
+  .row[expanded] + .row,
+  .row[expanded] + dom-repeat + .row {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     margin-top: 8px;
