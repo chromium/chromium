@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
 
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   base::RunLoop().RunUntilIdle();
 
   WallpaperInfo new_info =
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
 
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   base::RunLoop().RunUntilIdle();
 
   WallpaperInfo new_info =
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   WallpaperChangedWaiter waiter(loop.QuitClosure());
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   loop.Run();
 
   WallpaperInfo new_info =
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
 
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   base::RunLoop().RunUntilIdle();
 
   WallpaperInfo new_info =
@@ -256,13 +256,15 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   WallpaperChangedWaiter waiter(loop.QuitClosure());
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   loop.Run();
 
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   // Expects asset_id, unit_id, and variants to be set.
-  EXPECT_TRUE(new_info.asset_id.has_value());
+  if (!features::IsVersionWallpaperInfoEnabled()) {
+    EXPECT_TRUE(new_info.asset_id.has_value());
+  }
   EXPECT_TRUE(new_info.unit_id.has_value());
   EXPECT_EQ(new_info.variants.size(), 1u);
   EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
@@ -282,13 +284,15 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   WallpaperChangedWaiter waiter(loop.QuitClosure());
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, info, browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   loop.Run();
 
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   // Expects asset_id, unit_id, and variants to be set.
-  EXPECT_TRUE(new_info.asset_id.has_value());
+  if (!features::IsVersionWallpaperInfoEnabled()) {
+    EXPECT_TRUE(new_info.asset_id.has_value());
+  }
   EXPECT_TRUE(new_info.unit_id.has_value());
   EXPECT_EQ(new_info.variants.size(), 1u);
   EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
@@ -306,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, synced_info,
                           browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   loop.Run();
 
   WallpaperInfo new_info =
@@ -326,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, synced_info,
                           browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   loop.Run();
 
   WallpaperInfo new_info =
@@ -346,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   const AccountId account_id = GetAccountId(browser()->profile());
   PutWallpaperInfoInPrefs(account_id, synced_info,
                           browser()->profile()->GetPrefs(),
-                          prefs::kSyncableWallpaperInfo);
+                          WallpaperPrefManager::GetSyncPrefName());
   loop.Run();
 
   WallpaperInfo new_info =
