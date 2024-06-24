@@ -88,9 +88,6 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
       // LAContext when signing, macOS will prompt the user for biometrics and
       // the thread will block until that resolves.
       kUserPresence,
-
-      // Like `kUserPresence` but also allows authorization via an Apple Watch.
-      kUserPresenceOrWatch,
     };
 
     // The keychain access group the key is shared with. The binary must be

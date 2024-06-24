@@ -218,11 +218,19 @@ UnexportableKeyProviderMac::GenerateSigningKeySlowly(
   SecAccessControlCreateFlags control_flags = kSecAccessControlPrivateKeyUsage;
   switch (access_control_) {
     case UnexportableKeyProvider::Config::AccessControl::kUserPresence:
+      // kSecAccessControlUserPresence is documented[1] (at the time of
+      // writing) to be "equivalent to specifying kSecAccessControlBiometryAny,
+      // kSecAccessControlOr, and kSecAccessControlDevicePasscode". This is
+      // incorrect because includingkSecAccessControlBiometryAny causes key
+      // creation to fail if biometrics are supported but not enrolled. It also
+      // appears to support Apple Watch confirmation, but this isn't documented
+      // (and kSecAccessControlWatch is deprecated as of macOS 15).
+      //
+      // Reported as FB14040169.
+      //
+      // [1] https://developer.apple.com/documentation/security/
+      //     secaccesscontrolcreateflags/ksecaccesscontroluserpresence
       control_flags |= kSecAccessControlUserPresence;
-      break;
-    case UnexportableKeyProvider::Config::AccessControl::kUserPresenceOrWatch:
-      control_flags |= kSecAccessControlOr | kSecAccessControlBiometryAny |
-                       kSecAccessControlDevicePasscode | kSecAccessControlWatch;
       break;
     case UnexportableKeyProvider::Config::AccessControl::kNone:
       // No additional flag.
