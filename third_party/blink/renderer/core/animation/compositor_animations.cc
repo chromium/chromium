@@ -1148,30 +1148,18 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
   if (!target) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::ScrollTimelineOnCompositorEnabled()) {
-    return false;
-  }
   DCHECK_GE(target->GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
   auto* layout_box = target->GetLayoutBox();
   if (!layout_box) {
     return false;
   }
-  if (RuntimeEnabledFeatures::ScrollTimelineAlwaysOnCompositorEnabled()) {
-    if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
-      return properties->Scroll() &&
-             (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
-              properties->Scroll()->UserScrollable());
-    }
+  if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
+    return properties->Scroll() &&
+           (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
+            properties->Scroll()->UserScrollable());
   }
-  if (NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled() &&
-      target->GetDocument().Lifecycle().GetState() <
-          DocumentLifecycle::kPaintClean) {
-    // TODO(crbug.com/1434728): This happens when we paint a scroll-driven
-    // animating background.
-    return false;
-  }
-  return layout_box->UsesCompositedScrolling();
+  return false;
 }
 
 CompositorAnimations::FailureReasons
