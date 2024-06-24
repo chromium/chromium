@@ -56,13 +56,20 @@ using webnn::mojom::WebNNContextProvider;
 constexpr DML_FEATURE_LEVEL kMinDMLFeatureLevelForWebNN = DML_FEATURE_LEVEL_4_0;
 
 base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
-    gpu::SharedContextState* shared_context_state) {
+    gpu::SharedContextState* shared_context_state,
+    const gpu::GpuFeatureInfo& gpu_feature_info) {
   if (!shared_context_state) {
     // Unit tests do not pass in a SharedContextState, since a reference to
     // a GpuServiceImpl must be initialized to obtain a SharedContextState.
     // Instead, we just enumerate the first DXGI adapter.
     CHECK_IS_TEST();
     return dml::Adapter::GetInstanceForTesting(kMinDMLFeatureLevelForWebNN);
+  }
+
+  if (gpu_feature_info.IsWorkaroundEnabled(DISABLE_WEBNN_FOR_GPU)) {
+    return base::unexpected(
+        dml::CreateError(mojom::Error::Code::kNotSupportedError,
+                         "WebNN is blocklisted for GPU."));
   }
 
   // At the current stage, all `ContextImplDml` share this instance.
@@ -214,7 +221,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       case mojom::CreateContextOptions::Device::kCpu:
         NOTREACHED_NORETURN();
       case mojom::CreateContextOptions::Device::kGpu:
-        adapter_creation_result = GetDmlGpuAdapter(shared_context_state_.get());
+        adapter_creation_result =
+            GetDmlGpuAdapter(shared_context_state_.get(), gpu_feature_info_);
         break;
       case mojom::CreateContextOptions::Device::kNpu:
         adapter_creation_result = dml::Adapter::GetNpuInstance(

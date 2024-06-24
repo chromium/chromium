@@ -64,6 +64,7 @@ disable_vp_scaling
 disable_vp_super_resolution
 disable_webgl_rgb_multisampling_usage
 disable_webgpu_shared_images
+disable_webnn_for_gpu
 disable_webnn_for_npu
 disallow_large_instanced_draw
 dml_execution_disable_meta_commands
