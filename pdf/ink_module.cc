@@ -136,7 +136,7 @@ InkModule::GetInkStrokesInputPositionsForTesting() const {
 
   for (const auto& [page_index, strokes] : ink_strokes_) {
     for (const auto& stroke : strokes) {
-      const InkStrokeInputBatchView& input_batch = stroke->GetInputs();
+      const InkStrokeInputBatchView& input_batch = stroke.stroke->GetInputs();
       InkModule::InkStrokeInputPoints stroke_points;
       stroke_points.reserve(input_batch.Size());
       for (size_t i = 0; i < input_batch.Size(); ++i) {
@@ -293,7 +293,7 @@ bool InkModule::FinishInkStroke() {
   if (in_progress_stroke) {
     CHECK_GE(state.ink_page_index, 0);
     ink_strokes_[state.ink_page_index].push_back(
-        in_progress_stroke->CopyToStroke());
+        FinishedStrokeState(in_progress_stroke->CopyToStroke()));
   }
 
   // Reset input fields.
@@ -414,5 +414,17 @@ InkModule::CreateInProgressStrokeFromInputs() const {
 InkModule::DrawingStrokeState::DrawingStrokeState() = default;
 
 InkModule::DrawingStrokeState::~DrawingStrokeState() = default;
+
+InkModule::FinishedStrokeState::FinishedStrokeState(
+    std::unique_ptr<InkStroke> stroke)
+    : stroke(std::move(stroke)) {}
+
+InkModule::FinishedStrokeState::FinishedStrokeState(
+    InkModule::FinishedStrokeState&&) noexcept = default;
+
+InkModule::FinishedStrokeState& InkModule::FinishedStrokeState::operator=(
+    InkModule::FinishedStrokeState&&) noexcept = default;
+
+InkModule::FinishedStrokeState::~FinishedStrokeState() = default;
 
 }  // namespace chrome_pdf

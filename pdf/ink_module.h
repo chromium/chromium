@@ -142,9 +142,24 @@ class InkModule {
     std::vector<InkStrokeInput> ink_inputs;
   };
 
+  // A stroke that has been completed and whether it should be drawn or not.
+  struct FinishedStrokeState {
+    explicit FinishedStrokeState(std::unique_ptr<InkStroke> stroke);
+    FinishedStrokeState(const FinishedStrokeState&) = delete;
+    FinishedStrokeState& operator=(const FinishedStrokeState&) = delete;
+    FinishedStrokeState(FinishedStrokeState&&) noexcept;
+    FinishedStrokeState& operator=(FinishedStrokeState&&) noexcept;
+    ~FinishedStrokeState();
+
+    // Coordinates for each stroke are stored in a canonical format specified in
+    // pdf_ink_transform.h.
+    std::unique_ptr<InkStroke> stroke;
+    bool should_draw = true;
+  };
+
   // Each page of a document can have many strokes.  Each stroke is restricted
   // to just one page.
-  using PageInkStrokes = std::vector<std::unique_ptr<InkStroke>>;
+  using PageInkStrokes = std::vector<FinishedStrokeState>;
 
   // Mapping of a 0-based page index to the ink strokes for that page.
   using DocumentInkStrokesMap = std::map<int, PageInkStrokes>;
@@ -198,8 +213,7 @@ class InkModule {
   // The state of the current tool that is in use.
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;
 
-  // The strokes that have been completed.  Coordinates for each stroke are
-  // stored in a canonical format specified in pdf_ink_transform.h.
+  // The state of the strokes that have been completed.
   DocumentInkStrokesMap ink_strokes_;
 
   RenderTransformCallback draw_render_transform_callback_for_testing_;
