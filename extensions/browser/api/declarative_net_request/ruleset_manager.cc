@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -31,6 +32,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/switches.h"
 #include "url/origin.h"
 
 namespace extensions::declarative_net_request {
@@ -493,6 +495,23 @@ bool RulesetManager::ShouldEvaluateRulesetForRequest(
     const WebRequestInfo& request,
     bool is_incognito_context,
     PageAccess& host_permission_access) const {
+  // Extensions should not generally have access to requests initiated by other
+  // extensions, though the --extensions-on-chrome-urls switch overrides that
+  // restriction.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kExtensionsOnChromeURLs) &&
+      request.initiator) {
+    // Checking the precursor is necessary here since requests initiated by
+    // manifest sandbox pages have an opaque initiator origin, but still
+    // originate from an extension.
+    auto initator_precursor =
+        request.initiator->GetTupleOrPrecursorTupleIfOpaque();
+    if (initator_precursor.scheme() == kExtensionScheme &&
+        initator_precursor.host() != ruleset.extension_id) {
+      return false;
+    }
+  }
+
   // Only extensions enabled in incognito should have access to requests in an
   // incognito context.
   if (is_incognito_context &&

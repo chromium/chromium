@@ -16,6 +16,8 @@
 
 namespace extensions::declarative_net_request {
 
+inline constexpr char kManifestSandboxPageFilepath[] = "manifest_sandbox.html";
+
 struct DictionarySource {
   DictionarySource() = default;
   virtual ~DictionarySource() = default;
@@ -205,6 +207,9 @@ enum ConfigFlag {
   // needed for an extension with a background script to receive delayed
   // updates.
   kConfig_ListenForOnUpdateAvailable = 1 << 6,
+
+  // Whether the extension has an manifest sandbox page entry.
+  kConfig_HasManifestSandbox = 1 << 7,
 };
 
 // Describes a single extension ruleset.

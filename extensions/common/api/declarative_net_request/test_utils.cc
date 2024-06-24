@@ -323,6 +323,12 @@ base::Value::Dict CreateManifest(
                                 ToValue(ruleset_info)));
   }
 
+  if (flags & kConfig_HasManifestSandbox) {
+    manifest_builder.SetByDottedPath(
+        keys::kSandboxedPages,
+        base::Value::List().Append(kManifestSandboxPageFilepath));
+  }
+
   // std::move() to trigger rvalue overloads.
   return std::move(manifest_builder)
       .Set(keys::kName, extension_name)
@@ -364,6 +370,15 @@ void WriteManifestAndRulesets(const base::FilePath& extension_dir,
                               : "chrome.test.sendMessage('ready');";
     CHECK(base::WriteFile(extension_dir.Append(kBackgroundScriptFilepath),
                           content));
+  }
+
+  // Persist a manifest sandbox page if needed.
+  if (flags & ConfigFlag::kConfig_HasManifestSandbox) {
+    static constexpr char kManifestSandboxPage[] = "<html></html>";
+
+    CHECK(
+        base::WriteFile(extension_dir.AppendASCII(kManifestSandboxPageFilepath),
+                        kManifestSandboxPage));
   }
 
   // Persist manifest file.
