@@ -47,6 +47,7 @@
 #include "components/viz/service/display_embedder/skia_render_copy_results.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
@@ -821,10 +822,10 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   // that issued that request. Thus, the usage here needs to capture the variety
   // of clients' eventual allowed usages. Note that CopyOutputRequests are not
   // writable via raster or GLES2 (by contract).
-  constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                              gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  constexpr gpu::SharedImageUsageSet kUsage =
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   bool result = shared_image_factory_->CreateSharedImage(

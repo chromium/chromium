@@ -180,10 +180,11 @@ void BufferQueue::AllocateBuffers(size_t n) {
   const SharedImageFormat format =
       GetSinglePlaneSharedImageFormat(format_.value());
 
-  const uint32_t usage =
+  const gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      (is_protected_ ? gpu::SHARED_IMAGE_USAGE_PROTECTED_VIDEO : 0);
+      (is_protected_ ? gpu::SHARED_IMAGE_USAGE_PROTECTED_VIDEO
+                     : gpu::SharedImageUsageSet());
 
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {

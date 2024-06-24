@@ -192,9 +192,9 @@ std::vector<std::unique_ptr<OutputPresenter::Image>>
 OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
                                   gfx::Size image_size,
                                   size_t num_images) {
-  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  const gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   std::vector<std::unique_ptr<Image>> images;
   for (size_t i = 0; i < num_images; ++i) {
