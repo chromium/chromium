@@ -49,11 +49,16 @@ enum class ComputeEmbeddingsStatus {
 };
 
 struct EmbedderMetadata {
-  EmbedderMetadata(int64_t model_version, size_t output_size)
-      : model_version(model_version), output_size(output_size) {}
+  EmbedderMetadata(int64_t model_version,
+                   size_t output_size,
+                   std::optional<double> search_score_threshold = std::nullopt)
+      : model_version(model_version),
+        output_size(output_size),
+        search_score_threshold(search_score_threshold) {}
 
   int64_t model_version;
   size_t output_size;
+  std::optional<double> search_score_threshold;
 };
 
 using ComputePassagesEmbeddingsCallback =

@@ -114,6 +114,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         std::move(passages_embeddings), status);
   }
 
+  void SetMetadataScoreThreshold(double threshold) {
+    service_->embedder_metadata_->search_score_threshold = threshold;
+  }
+
   Answerer* GetAnswerer() { return service_->answerer_.get(); }
 
  protected:
@@ -202,6 +206,48 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchReportsHistograms) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Search.EmbeddingCount", 0, 1);
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
+  AddTestHistoryPage("http://test1.com");
+  AddTestHistoryPage("http://test2.com");
+  OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
+                               {"test passage 1"},
+                               {Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(UrlPassages(2, 2, base::Time::Now()),
+                               {"test passage 2"},
+                               {Embedding(std::vector<float>(768, 0.01f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
+  OverrideVisibilityScoresForTesting({
+      {"test query 1", 0.99},
+      {"test query 2", 0.99},
+      {"test passage 1", 0.99},
+      {"test passage 2", 0.99},
+  });
+
+  base::test::TestFuture<SearchResult> future;
+  // Search using default threshold from feature param.
+  service_->Search("test query 1", {}, 2, future.GetCallback());
+  SearchResult result = future.Take();
+
+  EXPECT_EQ(result.query, "test query 1");
+  EXPECT_EQ(result.time_range_start, std::nullopt);
+  EXPECT_EQ(result.count, 2u);
+  EXPECT_EQ(result.scored_url_rows.size(), 1u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
+
+  // Search again using threshold from metadata.
+  SetMetadataScoreThreshold(0.01);
+  service_->Search("test query 2", {}, 2, future.GetCallback());
+  result = future.Take();
+
+  EXPECT_EQ(result.query, "test query 2");
+  EXPECT_EQ(result.time_range_start, std::nullopt);
+  EXPECT_EQ(result.count, 2u);
+  EXPECT_EQ(result.scored_url_rows.size(), 2u);
+  EXPECT_EQ(result.scored_url_rows[0].scored_url.url_id, 1);
+  EXPECT_EQ(result.scored_url_rows[1].scored_url.url_id, 2);
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {

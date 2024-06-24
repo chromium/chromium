@@ -520,7 +520,9 @@ void HistoryEmbeddingsService::OnSearchCompleted(
     std::vector<ScoredUrl> scored_urls) {
   std::vector<ScoredUrl> filtered;
   filtered.reserve(scored_urls.size());
-  float threshold = kSearchScoreThreshold.Get();
+  float threshold = embedder_metadata_->search_score_threshold.has_value()
+                        ? *(embedder_metadata_->search_score_threshold)
+                        : kSearchScoreThreshold.Get();
   std::copy_if(std::make_move_iterator(scored_urls.begin()),
                std::make_move_iterator(scored_urls.end()),
                std::back_inserter(filtered), [=](const ScoredUrl& scored_url) {

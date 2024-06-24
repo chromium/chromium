@@ -14,4 +14,9 @@ message PassageEmbeddingsModelMetadata {
 
   // The size (length) of the output embeddings.
   uint32 output_size = 2;
+
+  // The similarity score threshold that two embeddings must exceed to be
+  // considered a match. Must be within [0.0, 1.0] since that is the range of
+  // all passage embeddings similarity scores.
+  double score_threshold = 3;
 }
