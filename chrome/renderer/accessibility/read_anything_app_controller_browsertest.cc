@@ -445,6 +445,63 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetAccessibleBoundary(text, max_text_length);
   }
 
+  void ResetReadAloudState() {
+    controller_->read_aloud_model_.ResetReadAloudState();
+  }
+
+  ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
+    a11y::ReadAloudCurrentGranularity granularity =
+        a11y::ReadAloudCurrentGranularity();
+    return GetNextNodePosition(granularity);
+  }
+
+  ui::AXNodePosition::AXPositionInstance GetNextNodePosition(
+      a11y::ReadAloudCurrentGranularity granularity) {
+    return controller_->read_aloud_model_
+        .GetNextValidPositionFromCurrentPosition(
+            granularity, controller_->model_.is_pdf(),
+            controller_->model_.IsDocs(),
+            &controller_->model_.display_node_ids());
+  }
+
+  a11y::ReadAloudCurrentGranularity GetNextNodes() {
+    return controller_->read_aloud_model_.GetNextNodes(
+        controller_->model_.is_pdf(), controller_->model_.IsDocs(),
+        &controller_->model_.display_node_ids());
+  }
+
+  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) {
+    ui::AXNodeID id =
+        controller_->read_aloud_model_.GetNodeIdForCurrentSegmentIndex(index);
+    return id;
+  }
+
+  ui::AXNodeID GetHighlightStartIndex(ui::AXNodeID& node_id, int index) {
+    return controller_->read_aloud_model_.GetHighlightStartIndex(node_id,
+                                                                 index);
+  }
+
+  int GetWordLength(int index) {
+    return controller_->read_aloud_model_.GetNextWordHighlightLength(index);
+  }
+
+  std::vector<ui::AXNodeID> GetCurrentText(
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes) {
+    return controller_->read_aloud_model_.GetCurrentText(is_pdf, is_docs,
+                                                         current_nodes);
+  }
+
+  void MovePositionToPreviousGranularity() {
+    return controller_->read_aloud_model_.MovePositionToPreviousGranularity();
+  }
+
+  void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
+    controller_->model_.Reset(content_node_ids);
+    controller_->model_.ComputeDisplayNodeIdsForDistilledTree();
+  }
+
   ui::AXTreeID tree_id_;
   raw_ptr<MockAXTreeDistiller, DanglingUntriaged> distiller_ = nullptr;
   testing::StrictMock<MockReadAnythingUntrustedPageHandler> page_handler_;
@@ -3962,4 +4019,750 @@ TEST_F(
   size_t index = GetAccessibleBoundary(sentence, 12);
   EXPECT_TRUE(index < sentence.length());
   EXPECT_EQ(sentence.substr(0, index), u"Hello, ");
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+
+  // Getting the next node position shouldn't update the current AXPosition.
+  new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetNextValidPosition_SkipsNonTextNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData empty_node;
+  empty_node.id = 3;
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 4;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+  update.nodes = {static_text1, empty_node, static_text2};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, empty_node.id, static_text2.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_SkipsNonDistilledNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetName(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  // Don't distill the node with id 3.
+  ProcessDisplayNodes({static_text1.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text3.id);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_SkipsNodeWithHTMLTag) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text3.id);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
+  std::u16string sentence1 = u"This is a sentence.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text;
+  static_text.id = 2;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetNameChecked(sentence1);
+  ui::AXNodeData empty_node1;
+  empty_node1.id = 3;
+  ui::AXNodeData empty_node2;
+  empty_node2.id = 4;
+  update.nodes = {static_text, empty_node1, empty_node2};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text.id, empty_node1.id, empty_node2.id});
+  InitAXPosition(update.nodes[0].id);
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_TRUE(new_position->IsNullPosition());
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    GetNextValidPosition_AfterGetNextNodesButBeforeGetCurrentText_UsesCurrentGranularity) {
+  std::u16string sentence1 = u"But from up here. The ";
+  std::u16string sentence2 = u"world ";
+  std::u16string sentence3 =
+      u"looks so small. And suddenly life seems so clear. And from up here. "
+      u"You coast past it all. The obstacles just disappear.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  a11y::ReadAloudCurrentGranularity current_granularity = GetNextNodes();
+  // Expect that current_granularity contains static_text1
+  // Expect that the indices aren't returned correctly
+  // Expect that GetNextValidPosition fails without inserted the granularity.
+  // The first segment was returned correctly.
+  EXPECT_EQ((int)current_granularity.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(current_granularity.node_ids, static_text1.id));
+  EXPECT_EQ(GetCurrentTextStartIndex(static_text1.id), -1);
+  EXPECT_EQ(GetCurrentTextEndIndex(static_text1.id), -1);
+
+  // Get the next position without using the current granularity. This
+  // simulates getting the next node position from within GetNextNode if
+  // the current granularity hasn't yet been added to the list processed
+  // granularities. This should return the ID for static_text1, even though
+  // it's already been used because the current granularity isn't being used.
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), static_text1.id);
+
+  // Now get the next position using the correct current granularity. Thi
+  // simulates calling GetNextNodePosition from within GetNextNodes before
+  // the nodes have been added to the list of processed granularities. This
+  // should correctly return the next node in the tree.
+  new_position = GetNextNodePosition(current_granularity);
+  EXPECT_EQ(new_position->anchor_id(), static_text2.id);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextNodes_AfterResetReadAloudState_StartsOver) {
+  std::u16string sentence1 = u"Where the north wind meets the sea. ";
+  std::u16string sentence2 = u"There's a river full of memory. ";
+  std::u16string sentence3 = u"Sleep my darling safe and sound. ";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Get first and second granularity.
+  a11y::ReadAloudCurrentGranularity first_granularity = GetNextNodes();
+  EXPECT_EQ((int)first_granularity.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(first_granularity.node_ids, static_text1.id));
+  EXPECT_EQ(first_granularity.text, sentence1);
+  a11y::ReadAloudCurrentGranularity next_granularity = GetNextNodes();
+  EXPECT_EQ((int)next_granularity.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(next_granularity.node_ids, static_text2.id));
+  EXPECT_EQ(next_granularity.text, sentence2);
+
+  // If we init without resetting we should just go to the next sentence
+  InitAXPosition(update.nodes[0].id);
+  a11y::ReadAloudCurrentGranularity last_granularity = GetNextNodes();
+  EXPECT_EQ((int)last_granularity.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(last_granularity.node_ids, static_text3.id));
+  EXPECT_EQ(last_granularity.text, sentence3);
+
+  // After reset and then init, we should get the first sentence again.
+  ResetReadAloudState();
+  InitAXPosition(update.nodes[0].id);
+  a11y::ReadAloudCurrentGranularity after_reset = GetNextNodes();
+  EXPECT_EQ((int)after_reset.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(after_reset.node_ids, static_text1.id));
+  EXPECT_EQ(first_granularity.text, sentence1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetHighlightStartIndex_ReturnsCorrectIndex) {
+  std::u16string sentence = u"I\'m crossing the line!";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text;
+  static_text.id = 2;
+  static_text.role = ax::mojom::Role::kStaticText;
+  static_text.SetNameChecked(sentence);
+
+  update.nodes = {static_text};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 1), -1);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Storing as a separate variable so we don't need to cast every time.
+  int sentence_length = (int)sentence.length();
+
+  // Since we just have one node with one text segment, the returned index
+  // should equal the passed parameter.
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 0), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 3), 3);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, 7), 7);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, sentence_length - 1),
+            sentence_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text.id, sentence_length), -1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetHighlightStartIndex_SegmentSpansMultipleNodes_ReturnsCorrectIndex) {
+  std::u16string sentence1 = u"And I\'m done holding back,";
+  std::u16string sentence2 = u"so lookout, clear the track- it\'s my";
+  std::u16string sentence3 = u"turn.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 1), -1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, 1), -1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text3.id, 1), -1);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 3);
+
+  // Storing as a separate variable so we don't need to cast every time.
+  int sentence1_length = (int)sentence1.length();
+  int sentence2_length = (int)sentence2.length();
+  int sentence3_length = (int)sentence3.length();
+
+  // For the first node in the first segment, the returned index should equal
+  // the passed parameter.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 3), 3);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 7), 7);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, sentence1_length - 1),
+            sentence1_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, sentence1_length), -1);
+
+  // For the second node, the correct index is the index that the boundary
+  // index corresponds to within the second node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, sentence1_length), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, sentence1_length + 3), 3);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, sentence1_length + 7), 7);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id,
+                                   sentence1_length + sentence2_length - 1),
+            sentence2_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id,
+                                   sentence1_length + sentence2_length),
+            -1);
+
+  // For the third node, the correct index is the index that the boundary
+  // index corresponds to within the third node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text3.id,
+                                   sentence1_length + sentence2_length),
+            0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text3.id,
+                                   sentence1_length + sentence2_length + 1),
+            1);
+  EXPECT_EQ(GetHighlightStartIndex(
+                static_text3.id,
+                sentence1_length + sentence2_length + sentence3_length - 1),
+            sentence3_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(
+                static_text3.id,
+                sentence1_length + sentence2_length + sentence3_length),
+            -1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetHighlightStartIndex_NodeSpansMultipleSegments_ReturnsCorrectIndex) {
+  std::u16string segment1 = u"I\'m taking what\'s mine! ";
+  std::u16string segment2 = u"Every drop, every smidge. ";
+  std::u16string segment3 = u"If I\'m burning a bridge, let it burn. ";
+  std::u16string segment4 = u"But I\'m crossing the ";
+
+  std::u16string node1_text = segment1 + segment2 + segment3 + segment4;
+  std::u16string node2_text = u"line.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(node1_text);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(node2_text);
+
+  update.nodes = {static_text1, static_text2};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 1), -1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, 1), -1);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Storing as a separate variable so we don't need to cast every time.
+  int segment1_length = (int)segment1.length();
+  int segment2_length = (int)segment2.length();
+  int segment3_length = (int)segment3.length();
+  int segment4_partial_length = (int)segment4.length();
+  int segment4_full_length = (int)segment4.length() + (int)node2_text.length();
+
+  // For the first node in the first segment, the returned index should equal
+  // the passed parameter.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0), 0);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 6), 6);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 15), 15);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment1_length - 1),
+            segment1_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment1_length), -1);
+
+  // Move to segment 2.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // For the second segment, the boundary index will have reset for the new
+  // speech segment. The correct highlight start index is the index that the
+  // boundary index within the segment corresponds to within the node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0), segment1_length);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 10), segment1_length + 10);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 13), segment1_length + 13);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment2_length - 1),
+            segment1_length + segment2_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id,
+                                   segment1_length + segment2_length),
+            -1);
+
+  // Move to segment 3.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // For the third segment, the boundary index will have reset for the new
+  // speech segment. The correct highlight start index is the index that the
+  // boundary index within the segment corresponds to within the node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0),
+            segment1_length + segment2_length);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 9),
+            segment1_length + segment2_length + 9);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 13),
+            segment1_length + +segment2_length + 13);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, segment3_length - 1),
+            segment1_length + segment2_length + segment3_length - 1);
+  EXPECT_EQ(
+      GetHighlightStartIndex(
+          static_text1.id, segment1_length + segment2_length + segment3_length),
+      -1);
+
+  // Move to segment 4.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+  EXPECT_EQ((int)node_ids[0], static_text1.id);
+  EXPECT_EQ((int)node_ids[1], static_text2.id);
+
+  // For the fourth segment, there are two nodes. For the first node,
+  // the correct highlight start corresponds to the index within the first node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 0),
+            segment1_length + segment2_length + segment3_length);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 2),
+            segment1_length + segment2_length + segment3_length + 2);
+  EXPECT_EQ(GetHighlightStartIndex(static_text1.id, 8),
+            segment1_length + segment2_length + segment3_length + 8);
+  EXPECT_EQ(
+      GetHighlightStartIndex(static_text1.id, segment4_partial_length - 1),
+      segment1_length + segment2_length + segment3_length +
+          segment4_partial_length - 1);
+  EXPECT_EQ(GetHighlightStartIndex(
+                static_text1.id, segment1_length + segment2_length +
+                                     segment3_length + segment4_partial_length),
+            -1);
+
+  // For the second node, the highlight index corresponds to the position within
+  // the second node.
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, segment4_partial_length),
+            0);
+  EXPECT_EQ(
+      GetHighlightStartIndex(static_text2.id, segment4_partial_length + 2), 2);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, segment4_full_length - 1),
+            (int)node2_text.length() - 1);
+  EXPECT_EQ(GetHighlightStartIndex(static_text2.id, segment4_full_length), -1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNodeIdForCurrentSegmentIndex_ReturnsCorrectNodes) {
+  std::u16string sentence1 = u"Never feel heavy ";
+  std::u16string sentence2 = u"or earthbound, ";
+  std::u16string sentence3 = u"no worries or doubts interfere.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 3);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() - 1),
+            static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+            static_text2.id);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
+            static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(26), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() - 1),
+            static_text2.id);
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length()),
+      static_text3.id);
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() + 1),
+            static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(40), static_text3.id);
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length() +
+                                      sentence3.length() - 1),
+      static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(
+                sentence1.length() + sentence2.length() + sentence3.length()),
+            ui::kInvalidAXNodeID);
+
+  // Out-of-bounds nodes return invalid.
+  EXPECT_EQ(
+      GetNodeIdForCurrentSegmentIndex(sentence1.length() + sentence2.length() +
+                                      sentence3.length() + 1),
+      ui::kInvalidAXNodeID);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(535), ui::kInvalidAXNodeID);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(-10), ui::kInvalidAXNodeID);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNodeIdForCurrentSegmentIndex_AfterNext_ReturnsCorrectNodes) {
+  std::u16string sentence1 = u"Never feel heavy or earthbound. ";
+  std::u16string sentence2 = u"No worries or doubts ";
+  std::u16string sentence3 = u"interfere.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() - 1),
+            static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length()),
+            ui::kInvalidAXNodeID);
+
+  // Move to the next granularity.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() - 1),
+            static_text2.id);
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() + 1),
+            static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(27), static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() +
+                                            sentence3.length() - 1),
+            static_text3.id);
+
+  // Out-of-bounds nodes return invalid.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence2.length() +
+                                            sentence3.length() + 1),
+            ui::kInvalidAXNodeID);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNodeIdForCurrentSegmentIndex_AfterPrevious_ReturnsCorrectNodes) {
+  std::u16string sentence1 = u"There's nothing but you ";
+  std::u16string sentence2 = u"looking down on the view from up here. ";
+  std::u16string sentence3 = u"Stretch out with the wind behind you.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence1);
+
+  ui::AXNodeData static_text2;
+  static_text2.id = 3;
+  static_text2.role = ax::mojom::Role::kStaticText;
+  static_text2.SetNameChecked(sentence2);
+
+  ui::AXNodeData static_text3;
+  static_text3.id = 4;
+  static_text3.role = ax::mojom::Role::kStaticText;
+  static_text3.SetNameChecked(sentence3);
+  update.nodes = {static_text1, static_text2, static_text3};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+
+  // Move forward.
+  MovePositionToNextGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Spot check that indices 0->sentence3.length() map to the third node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(7), static_text3.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence3.length() - 1),
+            static_text3.id);
+
+  // Move backwards.
+  MovePositionToPreviousGranularity();
+  node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 2);
+
+  // Spot check that indices in sentence 1 map to the first node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(0), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(6), static_text1.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() - 1),
+            static_text1.id);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() + 1),
+            static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(27), static_text2.id);
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() - 1),
+            static_text2.id);
+
+  // Out-of-bounds nodes return invalid.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(sentence1.length() +
+                                            sentence2.length() + 1),
+            ui::kInvalidAXNodeID);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       GetNextWordHighlightLength_ReturnsCorrectLength) {
+  std::u16string word1 = u"Stretch ";
+  std::u16string word2 = u"out ";
+  std::u16string word3 = u"with ";
+  std::u16string word4 = u"the ";
+  std::u16string word5 = u"wind ";
+  std::u16string word6 = u"behind ";
+  std::u16string word7 = u"you.";
+  std::u16string sentence =
+      word1 + word2 + word3 + word4 + word5 + word6 + word7;
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData static_text1;
+  static_text1.id = 2;
+  static_text1.role = ax::mojom::Role::kStaticText;
+  static_text1.SetNameChecked(sentence);
+
+  update.nodes = {static_text1};
+  AccessibilityEventReceived({update});
+  ProcessDisplayNodes({static_text1.id});
+  InitAXPosition(update.nodes[0].id);
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  EXPECT_EQ(GetNodeIdForCurrentSegmentIndex(1), ui::kInvalidAXNodeID);
+
+  std::vector<ui::AXNodeID> node_ids = GetCurrentText();
+  EXPECT_EQ((int)node_ids.size(), 1);
+
+  // Throughout first word.
+  EXPECT_EQ(GetWordLength(0), (int)word1.length());
+  EXPECT_EQ(GetWordLength(2), (int)word1.length() - 2);
+  EXPECT_EQ(GetWordLength((int)word1.length()) - 2, 2);
+
+  // Throughout third word.
+  int third_word_index = sentence.find(word3);
+  EXPECT_EQ(GetWordLength(third_word_index), (int)word3.length());
+  EXPECT_EQ(GetWordLength(third_word_index + 2), (int)word3.length() - 2);
+
+  int last_word_index = sentence.find(word7);
+  EXPECT_EQ(GetWordLength(last_word_index), (int)word7.length());
+  EXPECT_EQ(GetWordLength(last_word_index + 2), (int)word7.length() - 2);
+
+  // Boundary testing.
+  EXPECT_EQ(GetWordLength(-5), 0);
+  EXPECT_EQ(GetWordLength(sentence.length()), 0);
+  EXPECT_EQ(GetWordLength(sentence.length() + 1), 0);
 }

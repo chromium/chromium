@@ -546,7 +546,7 @@ void ReadAnythingAppController::RecordNumSelections() {
 }
 
 void ReadAnythingAppController::OnRestartReadAloud() {
-  model_.ResetReadAloudState();
+  read_aloud_model_.ResetReadAloudState();
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
@@ -606,8 +606,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   }
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
-  // This also includes Read Aloud state.
   model_.Reset(content_node_ids);
+  read_aloud_model_.ResetReadAloudState();
 
   // Return early if any of the following scenarios occurred while waiting for
   // distillation to complete:
@@ -1567,32 +1567,37 @@ void ReadAnythingAppController::OnCollapseSelection() const {
 }
 void ReadAnythingAppController::InitAXPositionWithNode(
     const ui::AXNodeID& starting_node_id) {
-  model_.InitAXPositionWithNode(starting_node_id);
+  ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
+  read_aloud_model_.InitAXPositionWithNode(ax_node);
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetCurrentText() {
-  return model_.GetCurrentText();
+  const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
+                                               ? &model_.display_node_ids()
+                                               : &model_.selection_node_ids();
+  return read_aloud_model_.GetCurrentText(model_.is_pdf(), model_.IsDocs(),
+                                          node_ids);
 }
 
 void ReadAnythingAppController::MovePositionToNextGranularity() {
-  model_.MovePositionToNextGranularity();
+  read_aloud_model_.MovePositionToNextGranularity();
 }
 
 void ReadAnythingAppController::MovePositionToPreviousGranularity() {
-  model_.MovePositionToPreviousGranularity();
+  read_aloud_model_.MovePositionToPreviousGranularity();
 }
 
 int ReadAnythingAppController::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
-  return model_.GetCurrentTextStartIndex(node_id);
+  return read_aloud_model_.GetCurrentTextStartIndex(node_id);
 }
 
 int ReadAnythingAppController::GetHighlightStartIndex(ui::AXNodeID node_id,
                                                       int boundary_index) {
-  return model_.GetHighlightStartIndex(node_id, boundary_index);
+  return read_aloud_model_.GetHighlightStartIndex(node_id, boundary_index);
 }
 
 int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
-  return model_.GetCurrentTextEndIndex(node_id);
+  return read_aloud_model_.GetCurrentTextEndIndex(node_id);
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(
@@ -1699,11 +1704,11 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
 
 ui::AXNodeID ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex(
     int index) {
-  return model_.GetNodeIdForCurrentSegmentIndex(index);
+  return read_aloud_model_.GetNodeIdForCurrentSegmentIndex(index);
 }
 
 int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
-  return model_.GetNextWordHighlightLength(index);
+  return read_aloud_model_.GetNextWordHighlightLength(index);
 }
 
 void ReadAnythingAppController::IncrementMetricCount(

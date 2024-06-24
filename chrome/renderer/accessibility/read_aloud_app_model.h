@@ -8,6 +8,8 @@
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
+#include "ui/accessibility/ax_node_position.h"
 
 // A class that holds state related to Read Aloud for the
 // ReadAnythingAppController for the Read Anything WebUI app.
@@ -48,7 +50,113 @@ class ReadAloudAppModel {
       base::Value::Dict* voices,
       read_anything::mojom::HighlightGranularity granularity);
 
+  // Returns the next valid AXNodePosition.
+  ui::AXNodePosition::AXPositionInstance
+  GetNextValidPositionFromCurrentPosition(
+      const a11y::ReadAloudCurrentGranularity& current_granularity,
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes);
+
+  // Inits the AXPosition with a starting node.
+  // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
+  // where this isn't needed.
+  void InitAXPositionWithNode(ui::AXNode* ax_node);
+
+  // Returns a list of AXNodeIds representing the next nodes that should be
+  // spoken and highlighted with Read Aloud.
+  // This defaults to returning the first granularity until
+  // MovePositionTo<Next,Previous>Granularity() moves the position.
+  // If the the current processed_granularity_index_ has not been calculated
+  // yet, GetNextNodes() is called which updates the AXPosition.
+  // GetCurrentTextStartIndex and GetCurrentTextEndIndex called with an AXNodeID
+  // return by GetCurrentText will return the starting text and ending text
+  // indices for specific text that should be referenced within the node.
+  std::vector<ui::AXNodeID> GetCurrentText(
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes);
+
+  // Increments the processed_granularity_index_, updating ReadAloud's state of
+  // the current granularity to refer to the next granularity. The current
+  // behavior allows the client to increment past the end of the page's content.
+  void MovePositionToNextGranularity();
+
+  // Decrements the processed_granularity_index_,updating ReadAloud's state of
+  // the current granularity to refer to the previous granularity. Cannot be
+  // decremented less than 0.
+  void MovePositionToPreviousGranularity();
+
+  // Helper method for GetCurrentText.
+  a11y::ReadAloudCurrentGranularity GetNextNodes(
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes);
+
+  // Returns the Read Aloud starting text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return 0. Returns -1 if the node isn't in the current
+  // segment.
+  int GetCurrentTextStartIndex(const ui::AXNodeID& node_id);
+
+  int GetHighlightStartIndex(const ui::AXNodeID& node_id, int index);
+
+  // Returns the Read Aloud ending text index for a node. For example,
+  // if the entire text of the node should be read by Read Aloud at a particular
+  // moment, this will return the length of the node's text. Returns -1 if the
+  // node isn't in the current segment.
+  int GetCurrentTextEndIndex(const ui::AXNodeID& node_id);
+
+  void ResetReadAloudState();
+
+  // Given a text index for the current granularity, return the AXNodeID for
+  // that part of the text.
+  // For example, if a current granularity segment has text:
+  // "Hello darkness, my old friend."
+  // Composed of nodes:
+  // Node: {id: 113, text: "Hello darkness, "}
+  // Node: {id: 207, text: "my old friend."}
+  // Then GetNodeIdForCurrentSegmentIndex for index=0-16 will return "113"
+  // and for index=17-29 will return "207"
+  ui::AXNodeID GetNodeIdForCurrentSegmentIndex(int index) const;
+
+  // Starting at the given index, return the length of the next word in the
+  // current granularity.
+  // e.g. if the current granularity is "I've come to talk with you again."...
+  // A start index of "0" will return "3" to correspond to "I've"
+  // And a start index of "10" will return "2" to correspond to "to."
+  // This method is only forward-looking, so if an index is in the middle of a
+  // current word, the remaining length for that word will be returned.
+  // e.g. "1" will return "2" to "'ve"
+  int GetNextWordHighlightLength(int start_index);
+
  private:
+  // Returns true if the node was previously spoken or we expect to speak it
+  // to be spoken once the current run of #GetCurrentText which called
+  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
+  // sometimes returns leaf nodes, we sometimes need to use the parent of a
+  // node returned by AXPosition instead of the node itself. Because of this,
+  // we need to double-check that the node has not been used or currently
+  // in use.
+  // Example:
+  // parent node: id=5
+  //    child node: id=6
+  //    child node: id =7
+  // node: id = 10
+  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
+  // process them as 5, 10. Without checking for previously spoken nodes,
+  // id 5 will be spoken twice.
+  bool NodeBeenOrWillBeSpoken(
+      const a11y::ReadAloudCurrentGranularity& current_granularity,
+      const ui::AXNodeID& id) const;
+
+  bool IsValidAXPosition(
+      const ui::AXNodePosition::AXPositionInstance& positin,
+      const a11y::ReadAloudCurrentGranularity& current_granularity,
+      bool is_pdf,
+      bool is_docs,
+      const std::set<ui::AXNodeID>* current_nodes) const;
+
   // Whether Read Aloud speech is currently playing or not.
   bool speech_playing_ = false;
 
@@ -71,6 +179,23 @@ class ReadAloudAppModel {
   // be valid, but as it is tied to the browser language, it is likely more
   // stable.
   std::string default_language_code_ = "en";
+
+  // Traversal state
+
+  ui::AXNodePosition::AXPositionInstance ax_position_;
+
+  // Our current index within processed_granularities_on_current_page_.
+  size_t processed_granularity_index_ = 0;
+
+  // The current text index within the given node.
+  int current_text_index_ = 0;
+
+  // TODO(crbug.com/40927698): Clear this when granularity changes.
+  // TODO(crbug.com/40927698): Use this to assist in navigating forwards /
+  // backwards.
+  // Previously processed granularities on the current page.
+  std::vector<a11y::ReadAloudCurrentGranularity>
+      processed_granularities_on_current_page_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_
