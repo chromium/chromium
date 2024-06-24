@@ -518,6 +518,12 @@ void RTCRtpReceiver::SetVideoUnderlyingSource(
     base::AutoLock locker(video_underlying_source_lock_);
     video_from_depacketizer_underlying_source_->OnSourceTransferStarted();
     video_from_depacketizer_underlying_source_ = new_underlying_source;
+    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
+      encoded_video_transformer_->SetTransformerCallback(
+          WTF::CrossThreadBindRepeating(
+              &RTCEncodedVideoUnderlyingSource::OnFrameFromSource,
+              video_from_depacketizer_underlying_source_));
+    }
   }
 
   encoded_video_transformer_->SetSourceTaskRunner(
