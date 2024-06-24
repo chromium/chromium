@@ -481,8 +481,16 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // won't work before that event has fired?
     return;
   }
+
+  if (!ExtensionsRendererClient::Get()
+           ->ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
+                                                       script_url)) {
+    return;
+  }
+
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
+
   // Only the script specific in the manifest's background data gets bindings.
   //
   // TODO(crbug.com/40626913): We may want to give other service workers
@@ -502,49 +510,39 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       RendererExtensionRegistry::Get()->GetWorkerActivationToken(
           extension->id());
 
-  if (ExtensionsRendererClient::Get()
-          ->ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
-                                                      script_url)) {
-    std::unique_ptr<IPCMessageSender> ipc_sender =
-        IPCMessageSender::CreateWorkerThreadIPCMessageSender(
-            worker_dispatcher, context_proxy, service_worker_version_id);
-    CHECK(worker_activation_token.has_value());
-    worker_dispatcher->AddWorkerData(
-        context_proxy, service_worker_version_id, worker_activation_token,
-        context,
-        CreateBindingsSystem(worker_dispatcher, std::move(ipc_sender)));
+  std::unique_ptr<IPCMessageSender> ipc_sender =
+      IPCMessageSender::CreateWorkerThreadIPCMessageSender(
+          worker_dispatcher, context_proxy, service_worker_version_id);
+  CHECK(worker_activation_token.has_value());
+  worker_dispatcher->AddWorkerData(
+      context_proxy, service_worker_version_id, worker_activation_token,
+      context, CreateBindingsSystem(worker_dispatcher, std::move(ipc_sender)));
 
-    // TODO(lazyboy): Make sure accessing |source_map_| in worker thread is
-    // safe.
-    context->SetModuleSystem(
-        std::make_unique<ModuleSystem>(context, &source_map_));
+  // TODO(lazyboy): Make sure accessing |source_map_| in worker thread is
+  // safe.
+  context->SetModuleSystem(
+      std::make_unique<ModuleSystem>(context, &source_map_));
 
-    ModuleSystem* module_system = context->module_system();
-    // Enable natives in startup.
-    ModuleSystem::NativesEnabledScope natives_enabled_scope(module_system);
-    NativeExtensionBindingsSystem* worker_bindings_system =
-        WorkerThreadDispatcher::GetBindingsSystem();
-    RegisterNativeHandlers(module_system, context, worker_bindings_system,
-                           WorkerThreadDispatcher::GetV8SchemaRegistry());
+  ModuleSystem* module_system = context->module_system();
+  // Enable natives in startup.
+  ModuleSystem::NativesEnabledScope natives_enabled_scope(module_system);
+  NativeExtensionBindingsSystem* worker_bindings_system =
+      WorkerThreadDispatcher::GetBindingsSystem();
+  RegisterNativeHandlers(module_system, context, worker_bindings_system,
+                         WorkerThreadDispatcher::GetV8SchemaRegistry());
 
-    worker_bindings_system->DidCreateScriptContext(context);
+  worker_bindings_system->DidCreateScriptContext(context);
 
-    // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
-    // necessary for Extension SW.
-    RequireGuestViewModules(context);
-  } else {
-    // For ServiceWorkers that do not have native bindings API attached we
-    // still create the WorkerData as native logging and wake event page
-    // will still be bound below.
-    worker_dispatcher->AddWorkerData(context_proxy, service_worker_version_id,
-                                     worker_activation_token, context, nullptr);
-  }
+  // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
+  // necessary for Extension SW.
+  RequireGuestViewModules(context);
+
   WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
 
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   UMA_HISTOGRAM_TIMES(
-      "Extensions.DidInitializeServiceWorkerContextOnWorkerThread", elapsed);
+      "Extensions.DidInitializeServiceWorkerContextOnWorkerThread2", elapsed);
 }
 
 void Dispatcher::WillReleaseScriptContext(

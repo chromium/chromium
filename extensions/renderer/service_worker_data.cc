@@ -29,18 +29,10 @@ ServiceWorkerData::ServiceWorkerData(
       context_(context),
       v8_schema_registry_(new V8SchemaRegistry),
       bindings_system_(std::move(bindings_system)) {
-  // `bindings_system_` is null if `ExtensionAPIEnabledForServiceWorkerScript`
-  // returns false. That means we aren't exposing any bindings to the service
-  // worker, but we will have ServiceWorkerData for it so that the
-  // WakeEventPage and logging can communicate back to the browser via the
-  // `mojom::RendererHost`.
-  // TODO(https://crbug.com/332366095): WakeEventPage() is dead; only populate
-  // ServiceWorkerData if `bindings_system_` is non-null.
-  if (bindings_system_) {
-    proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
-        base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  CHECK(bindings_system_);
+  proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
+      base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ServiceWorkerData::~ServiceWorkerData() = default;

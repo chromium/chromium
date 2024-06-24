@@ -1408,13 +1408,14 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<histogram name="Extensions.DidInitializeServiceWorkerContextOnWorkerThread"
-    units="ms" expires_after="2024-12-15">
+<histogram name="Extensions.DidInitializeServiceWorkerContextOnWorkerThread2"
+    units="ms" expires_after="2025-06-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Records the time taken to install Extension JavaScript bindings per service
-    worker context.
+    worker context. This is only emitted for the primary extension service
+    worker, as all other service workers do not receive extension bindings.
   </summary>
 </histogram>
 
