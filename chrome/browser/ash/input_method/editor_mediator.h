@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/ash/input_method/editor_panel_manager.h"
+#include "chrome/browser/ash/input_method/editor_query_context.h"
 #include "chrome/browser/ash/input_method/editor_service_connector.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
@@ -158,6 +159,8 @@ class EditorMediator : public EditorContext::Observer,
   SurroundingText surrounding_text_;
 
   std::optional<EditorMode> editor_mode_override_for_testing_;
+
+  std::optional<EditorQueryContext> query_context_;
 
   display::ScopedDisplayObserver display_observer_{this};
 

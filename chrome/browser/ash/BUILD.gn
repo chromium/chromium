@@ -1428,6 +1428,8 @@ source_set("ash") {
     "input_method/editor_metrics_recorder.h",
     "input_method/editor_panel_manager.cc",
     "input_method/editor_panel_manager.h",
+    "input_method/editor_query_context.cc",
+    "input_method/editor_query_context.h",
     "input_method/editor_service_connector.cc",
     "input_method/editor_service_connector.h",
     "input_method/editor_switch.cc",

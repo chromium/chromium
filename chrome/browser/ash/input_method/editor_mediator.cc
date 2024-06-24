@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chrome/browser/ash/input_method/editor_query_context.h"
 #include "chrome/browser/ash/input_method/editor_text_query_from_manta.h"
 #include "chrome/browser/ash/input_method/editor_text_query_from_memory.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
@@ -207,18 +208,33 @@ void EditorMediator::HandleTrigger(
     std::optional<std::string_view> preset_query_id,
     std::optional<std::string_view> freeform_text) {
   metrics_recorder_->SetTone(preset_query_id, freeform_text);
+
+  EditorQueryContext active_query_context =
+      query_context_.has_value()
+          ? EditorQueryContext{query_context_->preset_query_id,
+                               query_context_->freeform_text}
+          : EditorQueryContext{preset_query_id, freeform_text};
+
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
-      mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kRewrite,
-                                            preset_query_id, freeform_text);
+      mako_bubble_coordinator_.LoadEditorUI(
+          profile_, MakoEditorMode::kRewrite,
+          active_query_context.preset_query_id,
+          active_query_context.freeform_text);
+      query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
     case EditorMode::kWrite:
-      mako_bubble_coordinator_.LoadEditorUI(profile_, MakoEditorMode::kWrite,
-                                            preset_query_id, freeform_text);
+      mako_bubble_coordinator_.LoadEditorUI(
+          profile_, MakoEditorMode::kWrite,
+          active_query_context.preset_query_id,
+          active_query_context.freeform_text);
+      query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
     case EditorMode::kConsentNeeded:
+      query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
+                                          /*freeform_text=*/freeform_text);
       mako_bubble_coordinator_.LoadConsentUI(profile_);
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
