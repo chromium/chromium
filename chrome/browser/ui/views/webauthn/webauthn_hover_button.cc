@@ -108,7 +108,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   title_ = AddChildView(
       std::make_unique<views::Label>(title_text, views::style::CONTEXT_LABEL,
-                                     views::style::STYLE_BODY_3_BOLD));
+                                     views::style::STYLE_BODY_3_EMPHASIS));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
                       gfx::Size(/*width=*/1, /*height=*/1));
@@ -127,7 +127,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   if (is_two_line && !subtitle_text.empty()) {
     subtitle_ = AddChildView(std::make_unique<views::Label>(
         subtitle_text, views::style::CONTEXT_LABEL,
-        views::style::STYLE_BODY_3_EMPHASIS));
+        views::style::STYLE_BODY_3));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!GetEnabled()) {
       // TODO(crbug.com/348445885): use a custom color.
