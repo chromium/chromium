@@ -108,3 +108,6 @@ BrowserRootViewBrowserTest.*
 -WebRtcDesktopCaptureBrowserTest.CloseAndReopenNonSharedTab
 -WebRtcDesktopCaptureBrowserTest.SwitchSharedTabBackAndForth
 -WebRtcDesktopCaptureBrowserTest.TabCaptureProvides0HzWith0MinFpsConstraintAndStaticContent
+
+# Disable flaky tests.
+-ViewTransitionBrowserTest.NavigationCancelledBeforeScreenshot
