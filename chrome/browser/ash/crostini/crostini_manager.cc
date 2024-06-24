@@ -297,6 +297,8 @@ class CrostiniManager::CrostiniRestarter
 
   void LogRestarterResult(const RestartRequest& request, CrostiniResult result);
 
+  void OnConciergeAvailable(bool service_available);
+
   base::OneShotTimer stage_timeout_timer_;
   base::TimeTicks stage_start_;
 
@@ -687,6 +689,20 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
   }
   // Set the pref here, after we first successfully install something
   profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
+
+  // Ensure concierge is ready to serve requests
+  GetConciergeClient()->WaitForServiceToBeAvailable(
+      base::BindOnce(&CrostiniManager::CrostiniRestarter::OnConciergeAvailable,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::OnConciergeAvailable(
+    bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR) << "vm_concierge service is not available";
+    FinishRestart(CrostiniResult::CONCIERGE_START_FAILED);
+    return;
+  }
 
   // Allow concierge to choose an appropriate disk image size.
   int64_t disk_size_bytes = requests_[0].options.disk_size_bytes.value_or(0);
