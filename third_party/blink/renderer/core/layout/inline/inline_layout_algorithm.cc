@@ -181,9 +181,6 @@ class LineBreakStrategy {
         return;
       }
     }
-
-    UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapBalance.Fail",
-                        timer.Elapsed());
   }
 
   void Optimize(const InlineNode& node,
@@ -202,8 +199,6 @@ class LineBreakStrategy {
     if (UNLIKELY(!line_widths.Set(node, opportunities, break_token))) {
       // The next line may have less opportunities that keep running, without
       // suspending the context.
-      UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty.Fail",
-                          timer.Elapsed());
       return;
     }
     ScoreLineBreaker optimizer(node, space, line_widths, break_token,
@@ -215,9 +210,6 @@ class LineBreakStrategy {
     }
     if (!score_line_break_context_->GetLineBreakPoints().empty()) {
       UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty", timer.Elapsed());
-    } else {
-      UMA_HISTOGRAM_TIMES("Renderer.Layout.TextWrapPretty.Fail",
-                          timer.Elapsed());
     }
   }
 
