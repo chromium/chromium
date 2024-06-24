@@ -242,12 +242,26 @@ class BucketElement extends HTMLElement {
 function onStorageKeysReady(partitions: IdbPartitionMetadata[]) {
   const template = jstGetTemplate('indexeddb-list-template');
   getRequiredElement('indexeddb-list').appendChild(template);
-  jstProcess(
+  const currentOriginFilter = () => window.location.hash.replace('#', '');
+  const processTemplate = () => jstProcess(
       new JsEvalContext({
         partitions,
         stringifyMojo,
+        originFilter: currentOriginFilter(),
       }),
       template);
+  processTemplate();
+
+  // Re process the template when the origin filter is updated.
+  const originFilterInput =
+      document
+      .querySelector<HTMLInputElement>('#origin-filter')!;
+      originFilterInput.value = currentOriginFilter();
+  originFilterInput.addEventListener('input', (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    window.location.hash = input.value;
+    processTemplate();
+  });
 }
 
 customElements.define('indexeddb-bucket', BucketElement);

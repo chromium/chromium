@@ -11,7 +11,7 @@
 <body>
   <!-- templates -->
   <div style="display:none">
-    <div id="indexeddb-list-template" jsvars="stringifymojo:$this.stringifyMojo">
+    <div id="indexeddb-list-template" jsvars="stringifymojo:$this.stringifyMojo;originfilter:$this.originFilter">
       <div id="indexeddb-partition" jsselect="$this.partitions">
         <div class="indexeddb-summary">
           <span jsdisplay="partitionPath.path">
@@ -23,8 +23,9 @@
           </span>
           <span jscontent="`(Bucket count = ${stringifymojo.partitionBucketCount($this)})`"></span>
         </div>
-        <div class="indexeddb-origin" jsselect="originList">
-          <span jsvalues="$url:stringifymojo.origin(origin)">
+        <div class="indexeddb-origin" jsselect="originList" jsvalues="$url:stringifymojo.origin(origin)"
+          jsdisplay="originfilter === '' || stringifymojo.origin(origin).includes(originfilter)">
+          <span>
             Origin:
             <a class="indexeddb-url" jscontent="$url" jsvalues="href:$url" target="_blank"></a>
           </span>
@@ -94,6 +95,7 @@
   </div>
   </div>
   <h1>IndexedDB</h1>
+  <input type="text" placeholder="Filter origins..." id="origin-filter">
   <div class="content">
     <div id="indexeddb-list"></div>
   </div>
