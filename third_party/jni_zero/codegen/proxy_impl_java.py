@@ -37,6 +37,9 @@ public {return_type_str} {native.name}({sig_params})""")
   with sb.block():
     if native.first_param_cpp_type:
       sb(f'assert {native.params[0].name} != 0;\n')
+    for p in native.params:
+      if not p.java_type.nullable:
+        sb(f'assert {p.name} != null;\n')
     with sb.statement():
       if not native.return_type.is_void():
         sb(f'return ({return_type_str}) ')

@@ -33,6 +33,20 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
   return _ret;
 }
 
+// Forward declaration. To be implemented by the including .cc file.
+static void JNI_SampleUniqueAnnotations_Baz(
+    JNIEnv* env,
+    const jni_zero::JavaParamRef<jobject>& handle);
+
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1baz(
+    JNIEnv* env,
+    jclass jcaller,
+    jobject handle) {
+  JNI_SampleUniqueAnnotations_Baz(
+      env,
+      jni_zero::JavaParamRef<jobject>(env, handle));
+}
+
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo(
     JNIEnv* env,
     jclass jcaller,

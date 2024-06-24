@@ -7,6 +7,7 @@ import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
+import org.jni_zero.SampleUniqueAnnotations;
 
 @CheckDiscard("crbug.com/993421")
 class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {
@@ -27,6 +28,12 @@ class SampleUniqueAnnotationsJni implements SampleUniqueAnnotations.Natives {
   @Override
   public int bar(int x, int y) {
     return (int) GEN_JNI.org_jni_1zero_SampleUniqueAnnotations_bar(x, y);
+  }
+
+  @Override
+  public void baz(SampleUniqueAnnotations.Handle handle) {
+    assert handle != null;
+    GEN_JNI.org_jni_1zero_SampleUniqueAnnotations_baz(handle);
   }
 
   @Override

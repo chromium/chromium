@@ -4,7 +4,11 @@
 
 package org.jni_zero;
 
+import androidx.annotation.NonNull;
+
 class SampleUniqueAnnotations {
+    public interface Handle {}
+
     // Poorly spaced intentionally
     private void do_not_match();
 
@@ -16,6 +20,8 @@ class SampleUniqueAnnotations {
         void foo(long nativePtr, @JniType("std::string") String arg);
 
         int bar(int x, int y);
+
+        void baz(@NonNull Handle handle);
     }
 
     @CalledByNative

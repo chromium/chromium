@@ -197,10 +197,13 @@ def _parse_type(type_resolver, value):
       raise ParseError('Found non-templatized @JniType("std::vector") on '
                        'non-array, non-List type: ' + value)
 
+  nullable = annotations.get('NonNull', True)
+
   return java_types.JavaType(array_dimensions=array_dimensions,
                              primitive_name=primitive_name,
                              java_class=java_class,
-                             converted_type=converted_type)
+                             converted_type=converted_type,
+                             nullable=nullable)
 
 
 _FINAL_REGEX = re.compile(r'\bfinal\s')

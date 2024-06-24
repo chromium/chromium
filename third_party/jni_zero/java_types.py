@@ -145,6 +145,7 @@ class JavaType:
   primitive_name: Optional[str] = None
   java_class: Optional[JavaClass] = None
   converted_type: Optional[str] = dataclasses.field(default=None, compare=False)
+  nullable: bool = True
 
   @staticmethod
   def from_descriptor(descriptor):
