@@ -11,6 +11,7 @@ source_set("interactive_ui_tests") {
 
   sources = [
     "hotspot_policy_interactive_uitest.cc",
+    "hotspot_update_configuration_interactive_uitest.cc",
     "toggle_hotspot_interactive_uitest.cc",
   ]
 

@@ -89,6 +89,28 @@ WebContentsInteractionTestUtil::DeepQuery HotspotPolicyIcon() {
          "div#hotspotSummaryItemRow" + "cr-policy-indicator#policyIndicator";
 }
 
+WebContentsInteractionTestUtil::DeepQuery HotspotConfigureButton() {
+  return InternetPage() + "settings-hotspot-subpage" +
+         "cr-button#configureButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery HotspotConfigDialog() {
+  return InternetPage() + "hotspot-config-dialog";
+}
+
+WebContentsInteractionTestUtil::DeepQuery HotspotDialogSaveButton() {
+  return HotspotConfigDialog() + "cr-button#saveButton";
+}
+
+WebContentsInteractionTestUtil::DeepQuery HotspotSSID() {
+  return InternetPage() + "settings-hotspot-subpage" + "div#hotspotSSID";
+}
+
+WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput() {
+  return HotspotConfigDialog() + "network-config-input#hotspotName" +
+         "cr-input" + "input#input";
+}
+
 }  // namespace hotspot
 
 namespace wifi {

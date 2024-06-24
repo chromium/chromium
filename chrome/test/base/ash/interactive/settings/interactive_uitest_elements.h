@@ -61,6 +61,21 @@ WebContentsInteractionTestUtil::DeepQuery HotspotToggle();
 // The hotspot row's policy icon in cases where usage is restricted.
 WebContentsInteractionTestUtil::DeepQuery HotspotPolicyIcon();
 
+// The hotspot config dialog root.
+WebContentsInteractionTestUtil::DeepQuery HotspotConfigDialog();
+
+// The configure button within the hotspot detail page.
+WebContentsInteractionTestUtil::DeepQuery HotspotConfigureButton();
+
+// The save button on hotspot config dialog.
+WebContentsInteractionTestUtil::DeepQuery HotspotDialogSaveButton();
+
+// Hotspot SSID in the hotspot detail page.
+WebContentsInteractionTestUtil::DeepQuery HotspotSSID();
+
+// Hotspot SSID input in the hotspot config dialog.
+WebContentsInteractionTestUtil::DeepQuery HotspotSSIDInput();
+
 }  // namespace hotspot
 
 namespace wifi {
