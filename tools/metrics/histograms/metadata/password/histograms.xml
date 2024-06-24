@@ -2593,17 +2593,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.PasswordStore.OnLoginsChanged" enum="Boolean"
-    expires_after="M125">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <summary>
-    Recorded whenever PasswordStore notifies consumers about changes to logins.
-    Changes can be made locally (in settings, in bubbles etc.) or remotely (via
-    sync). Records only true.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordStore.OnLoginsRetained"
     enum="LoginsChangedTrigger" expires_after="2024-12-08">
   <owner>vsemeniuk@google.com</owner>

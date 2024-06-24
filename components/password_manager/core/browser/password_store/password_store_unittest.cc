@@ -1231,9 +1231,6 @@ TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
 }
 
 TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
-  base::HistogramTester histogram_tester;
-  const char kOnLoginsChangedMetric[] =
-      "PasswordManager.PasswordStore.OnLoginsChanged";
   const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
   auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
@@ -1253,7 +1250,6 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
               OnLoginsChanged(store.get(), ElementsAre(EqRemoval(kTestForm))));
   store->RemoveLogin(FROM_HERE, kTestForm);
   WaitForPasswordStore();
-  histogram_tester.ExpectTotalCount(kOnLoginsChangedMetric, 1);
 
   store->RemoveObserver(&mock_observer);
   store->ShutdownOnUIThread();

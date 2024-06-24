@@ -440,9 +440,6 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   for (auto& observer : observers_) {
     observer.OnLoginsChanged(this, changes.value());
   }
-
-  base::UmaHistogramBoolean("PasswordManager.PasswordStore.OnLoginsChanged",
-                            true);
 }
 
 void PasswordStore::NotifyLoginsRetainedOnMainSequence(
