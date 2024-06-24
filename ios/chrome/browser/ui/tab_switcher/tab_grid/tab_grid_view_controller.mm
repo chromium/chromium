@@ -1337,7 +1337,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (BOOL)canPerformOpenNewTabActionForDestinationPage:
     (TabGridPage)destinationPage {
   return [self isPageEnabled:destinationPage] &&
-         self.currentPage != TabGridPageRemoteTabs;
+         self.currentPage != TabGridPageRemoteTabs &&
+         self.currentPage != TabGridPageTabGroups;
 }
 
 // Returns transition layout for the provided `page`.
