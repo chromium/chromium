@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.browser_controls;
 import androidx.annotation.ColorInt;
 
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.cc.input.BrowserControlsState;
 
 /** An interface for retrieving and monitoring browser controls state. */
 public interface BrowserControlsStateProvider {
@@ -17,14 +18,14 @@ public interface BrowserControlsStateProvider {
          *
          * @param topOffset The new value of the offset from the top of the top control in px.
          * @param topControlsMinHeightOffset The current top controls min-height in px. If the
-         * min-height is changing with an animation, this will be a value between the old and the
-         * new min-heights, which is the current visible min-height. Otherwise, this will be equal
-         * to {@link #getTopControlsMinHeight()}.
+         *     min-height is changing with an animation, this will be a value between the old and
+         *     the new min-heights, which is the current visible min-height. Otherwise, this will be
+         *     equal to {@link #getTopControlsMinHeight()}.
          * @param bottomOffset The new value of the offset from the top of the bottom control in px.
          * @param bottomControlsMinHeightOffset The current bottom controls min-height in px. If the
-         * min-height is changing with an animation, this will be a value between the old and the
-         * new min-heights, which is the current visible min-height. Otherwise, this will be equal
-         * to {@link #getBottomControlsMinHeight()}.
+         *     min-height is changing with an animation, this will be a value between the old and
+         *     the new min-heights, which is the current visible min-height. Otherwise, this will be
+         *     equal to {@link #getBottomControlsMinHeight()}.
          * @param needsAnimate Whether the caller is driving an animation with further updates.
          */
         default void onControlsOffsetChanged(
@@ -32,7 +33,8 @@ public interface BrowserControlsStateProvider {
                 int topControlsMinHeightOffset,
                 int bottomOffset,
                 int bottomControlsMinHeightOffset,
-                boolean needsAnimate) {}
+                boolean needsAnimate,
+                boolean isVisibilityForced) {}
 
         /** Called when the height of the bottom controls are changed. */
         default void onBottomControlsHeightChanged(
@@ -54,10 +56,12 @@ public interface BrowserControlsStateProvider {
          * @param offsetTagsInfo the new OffsetTags moving browser controls in viz. A null tag means
          *     the controls will no longer be moved by viz, which happens only when the browser is
          *     forcing the controls to be fully shown/hidden.
+         * @param constraints the visibility constraints of the browser controls.
          */
         default void onControlsConstraintsChanged(
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-                BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
+                BrowserControlsOffsetTagsInfo offsetTagsInfo,
+                @BrowserControlsState int constraints) {}
 
         /** Called when the background color of the controls container changes. */
         default void onBottomControlsBackgroundColorChanged(@ColorInt int color) {}

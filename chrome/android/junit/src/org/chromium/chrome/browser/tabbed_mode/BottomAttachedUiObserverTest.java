@@ -143,15 +143,16 @@ public class BottomAttachedUiObserverTest {
 
         // Scroll off bottom controls partway.
         mBottomAttachedUiObserver.onControlsOffsetChanged(
-                0, 0, BOTTOM_CONTROLS_HEIGHT / 2, 0, false);
+                0, 0, BOTTOM_CONTROLS_HEIGHT / 2, 0, false, false);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         // Scroll off bottom controls fully.
-        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, BOTTOM_CONTROLS_HEIGHT, 0, false);
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0, 0, BOTTOM_CONTROLS_HEIGHT, 0, false, false);
         mColorChangeObserver.assertState(null, false, false);
 
         // Scroll bottom controls back.
-        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, 0, 0, false);
+        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, 0, 0, false, false);
         mColorChangeObserver.assertState(BROWSER_CONTROLS_COLOR, false, false);
 
         // Hide bottom controls.

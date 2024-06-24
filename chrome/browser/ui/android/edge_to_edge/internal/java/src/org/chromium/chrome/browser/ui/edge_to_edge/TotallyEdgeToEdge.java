@@ -33,7 +33,8 @@ public class TotallyEdgeToEdge {
                             int topControlsMinHeightOffset,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate) {
+                            boolean needsAnimate,
+                            boolean isVisibilityForced) {
                         Log.v(TAG, "topOffset changed to %s", topOffset);
                         mShouldDrawEdgeToEdge = topOffset != 0;
                         mRunnable.run();

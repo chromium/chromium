@@ -124,7 +124,8 @@ public class FullscreenManagerTestUtils {
                                         int topControlsMinHeightOffset,
                                         int bottomOffset,
                                         int bottomControlsMinHeightOffset,
-                                        boolean needsAnimate) {
+                                        boolean needsAnimate,
+                                        boolean isVisibilityForced) {
                                     if (browserControlsStateProvider.getTopVisibleContentOffset()
                                             != initialVisibleContentOffset) {
                                         contentMovedCallback.notifyCalled();

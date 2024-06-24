@@ -291,7 +291,8 @@ public class RecentTabsPage
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         updateMargins();
     }
 

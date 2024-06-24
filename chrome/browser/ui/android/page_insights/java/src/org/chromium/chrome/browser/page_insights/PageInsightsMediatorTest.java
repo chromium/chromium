@@ -506,7 +506,9 @@ public class PageInsightsMediatorTest {
         verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
 
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
-        mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
+        mBrowserControlsStateProviderObserver
+                .getValue()
+                .onControlsOffsetChanged(0, 0, 0, 0, false, false);
 
         assertBottomSheetShownAfterAutoTrigger(feedView);
     }

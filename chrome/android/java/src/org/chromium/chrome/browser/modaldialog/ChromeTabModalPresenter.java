@@ -243,7 +243,8 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         if (getDialogModel() == null
                 || !mRunEnterAnimationOnCallback
                 || !BrowserControlsUtils.areBrowserControlsFullyVisible(

@@ -395,7 +395,8 @@ class StartSurfaceMediator
                                 int topControlsMinHeightOffset,
                                 int bottomOffset,
                                 int bottomControlsMinHeightOffset,
-                                boolean needsAnimate) {
+                                boolean needsAnimate,
+                                boolean isVisibilityForced) {
                             if (isHomepageShown()) {
                                 // Set the top margin to the top controls min height (indicator
                                 // height if it's shown) since the toolbar height as extra margin

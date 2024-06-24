@@ -442,7 +442,7 @@ public class InfoBarContainerTest {
                 () -> {
                     infoBarContainer
                             .getContainerViewForTesting()
-                            .onControlsOffsetChanged(-100, 100, 0, 0, false);
+                            .onControlsOffsetChanged(-100, 100, 0, 0, false, false);
                 });
         Assert.assertNotEquals(
                 0,

@@ -121,13 +121,15 @@ public class TopToolbarOverlayMediatorTest {
     @Test
     public void testShadowVisibility_browserControlsOffsets() {
         when(mBrowserControlsProvider.getBrowserControlHiddenRatio()).thenReturn(0.0f);
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(0, 0, 0, 0, false);
+        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(0, 0, 0, 0, false, false);
 
         Assert.assertFalse(
                 "Shadow should be invisible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
 
         when(mBrowserControlsProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(100, 0, 0, 0, false);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(100, 0, 0, 0, false, false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));
@@ -229,7 +231,9 @@ public class TopToolbarOverlayMediatorTest {
         Assert.assertTrue(
                 "View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
 
-        mBrowserControlsObserverCaptor.getValue().onControlsOffsetChanged(100, 0, 0, 0, false);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(100, 0, 0, 0, false, false);
 
         Assert.assertTrue(
                 "Shadow should be visible.", mModel.get(TopToolbarOverlayProperties.SHOW_SHADOW));

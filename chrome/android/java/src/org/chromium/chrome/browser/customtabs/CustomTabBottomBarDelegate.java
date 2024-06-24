@@ -486,7 +486,8 @@ public class CustomTabBottomBarDelegate
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         if (mBottomBarView != null) {
             int minHeight = mBrowserControlsSizer.getBottomControlsMinHeight();
             mBottomBarView.setTranslationY(bottomOffset - minHeight);

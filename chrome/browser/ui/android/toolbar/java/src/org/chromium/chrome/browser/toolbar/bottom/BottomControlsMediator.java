@@ -180,7 +180,8 @@ class BottomControlsMediator
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         int minHeight = getBrowserControls().getBottomControlsMinHeight();
         mModel.set(BottomControlsProperties.Y_OFFSET, bottomOffset - minHeight);
 

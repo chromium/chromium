@@ -423,6 +423,21 @@
             ]
         }
     ],
+    "AndroidBrowserControlsInViz": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240619",
+                    "enable_features": [
+                        "AndroidBrowserControlsInViz"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopWindowing": [
         {
             "platforms": [

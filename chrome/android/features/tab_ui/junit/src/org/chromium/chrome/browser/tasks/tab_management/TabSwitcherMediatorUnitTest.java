@@ -682,7 +682,7 @@ public class TabSwitcherMediatorUnitTest {
                 .onTopControlsHeightChanged(CONTROL_HEIGHT_INCREASED, 0);
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(0, 0, 0, 0, false);
+                .onControlsOffsetChanged(0, 0, 0, 0, false, false);
 
         assertEquals(
                 "Top margin should be equal to top controls height if controls are fully shown.",
@@ -701,7 +701,7 @@ public class TabSwitcherMediatorUnitTest {
                 .onTopControlsHeightChanged(CONTROL_HEIGHT_DEFAULT, 0);
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(0, 0, 0, 0, false);
+                .onControlsOffsetChanged(0, 0, 0, 0, false, false);
 
         assertEquals(
                 "Top margin should be equal to top controls height if controls are at rest.",
@@ -751,6 +751,7 @@ public class TabSwitcherMediatorUnitTest {
                             offset - CONTROL_HEIGHT_DEFAULT,
                             0,
                             0,
+                            false,
                             false);
 
             assertEquals(
@@ -767,7 +768,7 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(CONTROL_HEIGHT_INCREASED).when(mBrowserControlsStateProvider).getContentOffset();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(0, 20, 0, 0, false);
+                .onControlsOffsetChanged(0, 20, 0, 0, false, false);
 
         assertEquals(
                 "Top margin should be updated to the new height when the animation ends.",
@@ -803,6 +804,7 @@ public class TabSwitcherMediatorUnitTest {
                             CONTROL_HEIGHT_INCREASED - offset,
                             0,
                             0,
+                            false,
                             false);
 
             assertEquals(
@@ -819,7 +821,7 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(CONTROL_HEIGHT_DEFAULT).when(mBrowserControlsStateProvider).getContentOffset();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(0, 0, 0, 0, false);
+                .onControlsOffsetChanged(0, 0, 0, 0, false, false);
 
         assertEquals(
                 "Top margin should be updated to the new height at the end of the animation.",

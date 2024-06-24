@@ -301,7 +301,8 @@ public class BottomAttachedUiObserver
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         updateBrowserControlsVisibility(
                 // MiniPlayerMediator#shrinkBottomControls() sets the height to 1 and minHeight to 0
                 // when hiding, instead of setting the height to 0.

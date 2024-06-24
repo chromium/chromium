@@ -628,7 +628,7 @@ public class StartSurfaceMediatorUnitTest {
                 .getTopControlsMinHeightOffset();
         mBrowserControlsStateProviderCaptor
                 .getValue()
-                .onControlsOffsetChanged(topOffset, topControlsMinHeightOffset, 0, 0, false);
+                .onControlsOffsetChanged(topOffset, topControlsMinHeightOffset, 0, 0, false, false);
     }
 
     private void showHomepageAndVerify(StartSurfaceMediator mediator) {

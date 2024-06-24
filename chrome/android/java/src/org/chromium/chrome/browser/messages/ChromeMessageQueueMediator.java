@@ -370,7 +370,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 int topControlsMinHeightOffset,
                 int bottomOffset,
                 int bottomControlsMinHeightOffset,
-                boolean needsAnimate) {
+                boolean needsAnimate,
+                boolean isVisibilityForced) {
             if (mRunOnControlsFullyVisible != null
                     && BrowserControlsUtils.areBrowserControlsFullyVisible(
                             mBrowserControlsManager)) {

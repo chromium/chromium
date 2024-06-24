@@ -43,6 +43,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -132,6 +133,7 @@ public class CompositorViewHolderUnitTest {
     private ApplicationViewportInsetSupplier mViewportInsets;
     private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
     private ObservableSupplierImpl<Integer> mKeyboardAccessoryInsetSupplier;
+    private final UserDataHost mUserDataHost = new UserDataHost();
 
     @Before
     public void setUp() {
@@ -193,6 +195,7 @@ public class CompositorViewHolderUnitTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getContentView()).thenReturn(mContentView);
         when(mTab.getView()).thenReturn(mContentView);
+        when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
 
         when(mActivity.getWindow()).thenReturn(mWindow);
         when(mWindow.getDecorView()).thenReturn(mDecorView);

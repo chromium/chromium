@@ -200,7 +200,8 @@ public class CustomTabBottomBarDelegateUnitTest {
                 /* topControlsMinHeightOffset= */ 0,
                 /* bottomOffset= */ 0,
                 /* bottomControlsMinHeightOffset= */ 0,
-                /* needsAnimate= */ false);
+                /* needsAnimate= */ false,
+                /* isVisibilityForced= */ false);
         verify(mBottomBarView).setTranslationY(-100);
     }
 

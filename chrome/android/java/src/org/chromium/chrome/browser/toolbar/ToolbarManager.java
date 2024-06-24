@@ -1171,7 +1171,8 @@ public class ToolbarManager
                             int topControlsMinHeightOffset,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate) {
+                            boolean needsAnimate,
+                            boolean isVisibilityForced) {
                         // Controls need to be offset to match the composited layer, which is
                         // anchored below the minimum height. In other words, the top of the toolbar
                         // composited layer is anchored at the bottom of the minimum height.

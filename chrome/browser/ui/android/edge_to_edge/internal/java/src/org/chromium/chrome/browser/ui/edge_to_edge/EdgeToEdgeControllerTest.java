@@ -482,7 +482,7 @@ public class EdgeToEdgeControllerTest {
         // Sometimes, the controls offset can change even when browser controls aren't visible. This
         // should be a no-op.
         mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
-                unused, unused, /* bottomOffset= */ browserControlsHeight, unused, false);
+                unused, unused, /* bottomOffset= */ browserControlsHeight, unused, false, false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET, BOTTOM_INSET);
 
         // Show browser controls.
@@ -491,21 +491,36 @@ public class EdgeToEdgeControllerTest {
 
         // Scroll off browser controls gradually.
         mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
-                unused, unused, /* bottomOffset= */ browserControlsHeight / 4, unused, false);
+                unused,
+                unused,
+                /* bottomOffset= */ browserControlsHeight / 4,
+                unused,
+                false,
+                false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET, 0);
         mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
-                unused, unused, /* bottomOffset= */ browserControlsHeight / 2, unused, false);
+                unused,
+                unused,
+                /* bottomOffset= */ browserControlsHeight / 2,
+                unused,
+                false,
+                false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET, 0);
         mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
-                unused, unused, /* bottomOffset= */ browserControlsHeight, unused, false);
+                unused, unused, /* bottomOffset= */ browserControlsHeight, unused, false, false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET, BOTTOM_INSET);
 
         // Scroll the browser controls back up.
         mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
-                unused, unused, /* bottomOffset= */ browserControlsHeight / 2, unused, false);
+                unused,
+                unused,
+                /* bottomOffset= */ browserControlsHeight / 2,
+                unused,
+                false,
+                false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET, 0);
         mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
-                unused, unused, /* bottomOffset= */ 0, unused, false);
+                unused, unused, /* bottomOffset= */ 0, unused, false, false);
         mockPadAdjuster.checkInsets(BOTTOM_INSET, 0);
 
         // Hide browser controls.

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -158,7 +159,8 @@ public class EmptyTabObserver implements TabObserver {
     public void onBrowserControlsConstraintsChanged(
             Tab tab,
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-            BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
+            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+            @BrowserControlsState int constraints) {}
 
     @Override
     public void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {}

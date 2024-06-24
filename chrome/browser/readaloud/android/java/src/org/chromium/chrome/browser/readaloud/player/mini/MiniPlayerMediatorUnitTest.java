@@ -504,7 +504,8 @@ public class MiniPlayerMediatorUnitTest {
                         /* topControlsMinHeightOffset= */ 0,
                         bottomOffset,
                         bottomControlsMinHeightOffset,
-                        needsAnimate);
+                        needsAnimate,
+                        false);
     }
 
     private void onBottomControlsHeightChanged(

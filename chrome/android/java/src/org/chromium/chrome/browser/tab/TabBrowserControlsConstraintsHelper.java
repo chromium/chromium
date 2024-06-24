@@ -32,7 +32,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private long mNativeTabBrowserControlsConstraintsHelper; // Lazily initialized in |update|
     private BrowserControlsVisibilityDelegate mVisibilityDelegate;
 
-    private @BrowserControlsState int mPreviousState;
     private @BrowserControlsState int mPreviousConstraints;
 
     // This OffsetTag is used in:
@@ -109,6 +108,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         mConstraintsChangedCallback =
                 (constraints) -> {
                     updateEnabledState();
+                    mPreviousConstraints = constraints;
                 };
         mTab.addObserver(
                 new EmptyTabObserver() {
@@ -161,6 +161,14 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                     }
 
                     @Override
+                    public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
+                        @BrowserControlsState int constraints = getConstraints();
+                        if (isInteractable && !isStateForced(constraints)) {
+                            updateOffsetTags(OffsetTag.createRandom(), constraints);
+                        }
+                    }
+
+                    @Override
                     public void onWebContentsSwapped(
                             Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                         updateAfterRendererProcessSwitch(tab, true);
@@ -195,7 +203,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     }
 
     private boolean wasPreviousStateForced() {
-        return isStateForced(mPreviousState) || isStateForced(mPreviousConstraints);
+        return isStateForced(mPreviousConstraints);
     }
 
     private void updateEnabledState() {
@@ -205,10 +213,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
     /** Unregister all OffsetTags (for now, only the top controls have an OffsetTag.) */
     public void unregisterOffsetTags() {
-        updateOffsetTags(null);
+        updateOffsetTags(null, getConstraints());
     }
 
-    private void updateOffsetTags(OffsetTag newTopControlsOffsetTag) {
+    private void updateOffsetTags(
+            OffsetTag newTopControlsOffsetTag, @BrowserControlsState int constraints) {
         if (newTopControlsOffsetTag == mTopControlsOffsetTag) {
             return;
         }
@@ -220,7 +229,8 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                     .onBrowserControlsConstraintsChanged(
                             mTab,
                             new BrowserControlsOffsetTagsInfo(mTopControlsOffsetTag),
-                            new BrowserControlsOffsetTagsInfo(newTopControlsOffsetTag));
+                            new BrowserControlsOffsetTagsInfo(newTopControlsOffsetTag),
+                            constraints);
         }
 
         mTopControlsOffsetTag = newTopControlsOffsetTag;
@@ -229,21 +239,18 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     private void generateOffsetTags(
             @BrowserControlsState int current, @BrowserControlsState int constraints) {
         OffsetTag newTopControlsOffsetTag = mTopControlsOffsetTag;
-        if (mTab.isHidden()) {
+        if (!mTab.isUserInteractable()) {
             return;
         }
 
-        boolean isNewStateForced = isStateForced(current) || isStateForced(constraints);
+        boolean isNewStateForced = isStateForced(constraints);
         if (wasPreviousStateForced() && !isNewStateForced) {
             newTopControlsOffsetTag = OffsetTag.createRandom();
         } else if (!wasPreviousStateForced() && isNewStateForced) {
             newTopControlsOffsetTag = null;
         }
 
-        updateOffsetTags(newTopControlsOffsetTag);
-
-        mPreviousConstraints = constraints;
-        mPreviousState = current;
+        updateOffsetTags(newTopControlsOffsetTag, constraints);
     }
 
     /**
@@ -281,7 +288,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                             .init(TabBrowserControlsConstraintsHelper.this);
         }
 
-        // TODO(peilinwang) plumb new OffsetTag to renderer in next CL
         TabBrowserControlsConstraintsHelperJni.get()
                 .updateState(
                         mNativeTabBrowserControlsConstraintsHelper,

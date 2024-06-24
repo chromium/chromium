@@ -314,7 +314,7 @@ public class PageInsightsCoordinatorTest {
                 () ->
                         mBrowserControlsStateObserverCaptor
                                 .getValue()
-                                .onControlsOffsetChanged(0, 0, 0, 0, false));
+                                .onControlsOffsetChanged(0, 0, 0, 0, false, false));
     }
 
     private void waitForSheetState(@SheetState int state) throws Exception {

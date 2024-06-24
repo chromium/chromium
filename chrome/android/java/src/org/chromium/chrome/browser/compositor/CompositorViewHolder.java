@@ -1024,7 +1024,8 @@ public class CompositorViewHolder extends FrameLayout
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         onViewportChanged();
 
         // When scrolling browser controls in viz, don't produce new browser frames unless it's

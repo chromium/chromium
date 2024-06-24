@@ -50,7 +50,8 @@ public class MiniPlayerMediator implements BottomControlsLayer {
                         int topControlsMinHeightOffset,
                         int bottomOffset,
                         int bottomControlsMinHeightOffset,
-                        boolean needsAnimate) {
+                        boolean needsAnimate,
+                        boolean isVisibilityForced) {
                     if (!mIsAnimationStarted) {
                         mIsAnimationStarted = true;
                     }

@@ -291,7 +291,8 @@ class HeightTransitionHandler {
                             int topControlsMinHeightOffset,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate) {
+                            boolean needsAnimate,
+                            boolean isVisibilityForced) {
                         updateTabStripHeightImpl();
                     }
 
@@ -354,7 +355,8 @@ class HeightTransitionHandler {
                             int topControlsMinHeightOffset,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate) {
+                            boolean needsAnimate,
+                            boolean isVisibilityForced) {
                         if (isTopControlAtSteadyState()) {
                             notifyTransitionFinished(true);
                             recordTabStripTransitionFinished(true);

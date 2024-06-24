@@ -279,7 +279,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     public void onBrowserControlsConstraintsChanged(
                             Tab tab,
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-                            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+                            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+                            @BrowserControlsState int constraints) {
                         WebContents webContents = tab.getWebContents();
                         if (webContents == null) {
                             return;
@@ -292,7 +293,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         webContents.notifyControlsConstraintsChanged(
                                 oldOffsetTagsInfo, offsetTagsInfo);
 
-                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo);
+                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
                     }
 
                     @Override
@@ -689,22 +690,33 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             // Should be |false| when the browser controls are only moved through the page
             // scrolling.
             boolean needsAnimate = shouldShowAndroidControls();
+
+            // With BCIV enabled, renderer scrolling will not update the control offsets of the
+            // browser's compositor frame, but we still want this update to happen if the browser
+            // is controlling the controls.
+            @BrowserControlsState
+            int constraints = TabBrowserControlsConstraintsHelper.getConstraints(getTab());
+            boolean isVisibilityForced =
+                    constraints == BrowserControlsState.HIDDEN
+                            || constraints == BrowserControlsState.SHOWN;
             for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
                 obs.onControlsOffsetChanged(
                         getTopControlOffset(),
                         getTopControlsMinHeightOffset(),
                         getBottomControlOffset(),
                         getBottomControlsMinHeightOffset(),
-                        needsAnimate);
+                        needsAnimate,
+                        isVisibilityForced);
             }
         }
     }
 
     private void notifyConstraintsChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+            BrowserControlsOffsetTagsInfo offsetTagsInfo,
+            @BrowserControlsState int constraints) {
         for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-            obs.onControlsConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo);
+            obs.onControlsConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
         }
     }
 

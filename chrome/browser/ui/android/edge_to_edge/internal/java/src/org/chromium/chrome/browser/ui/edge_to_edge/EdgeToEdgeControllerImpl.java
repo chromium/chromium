@@ -189,7 +189,8 @@ public class EdgeToEdgeControllerImpl
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         updateBrowserControlsVisibility(
                 mBottomControlsHeight > 0 && bottomOffset < mBottomControlsHeight);
     }

@@ -282,7 +282,8 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                             int topControlsMinHeightOffset,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate) {
+                            boolean needsAnimate,
+                            boolean isVisibilityForced) {
                         bottomSheetController.setBrowserControlsHiddenRatio(
                                 controlsStateProvider.getBrowserControlHiddenRatio());
                         maybeAutoTrigger();

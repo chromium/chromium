@@ -224,7 +224,8 @@ public class InfoBarContainerView extends SwipableOverlayView
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         if (!isAllowedToAutoHide()) {
             return;
         }
