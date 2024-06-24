@@ -5524,7 +5524,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.Timing.ParseFormUntilInteraction" units="ms"
+<histogram name="Autofill.Timing.ParseFormUntilInteraction2" units="ms"
     expires_after="2024-12-12">
   <owner>schwering@chromium.org</owner>
   <owner>brunobraga@google.org</owner>
