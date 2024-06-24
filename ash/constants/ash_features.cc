@@ -2739,7 +2739,7 @@ BASE_FEATURE(kShimlessRMA3pDiagnosticsDevMode,
 // requesting permission at install time.
 BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
              "ShimlessRMA3pDiagnosticsAllowPermissionPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
