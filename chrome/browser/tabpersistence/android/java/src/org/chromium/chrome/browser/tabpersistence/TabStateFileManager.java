@@ -530,7 +530,8 @@ public class TabStateFileManager {
             }
 
             if (encrypted) dataOutputStream.writeLong(KEY_CHECKER);
-            if (file.getName().contains(FLATBUFFER_PREFIX)) {
+            boolean isFlatBuffer = file.getName().contains(FLATBUFFER_PREFIX);
+            if (isFlatBuffer) {
                 try {
                     FlatBufferTabStateSerializer serializer =
                             new FlatBufferTabStateSerializer(encrypted);
@@ -570,8 +571,13 @@ public class TabStateFileManager {
             }
             dataOutputStream.writeLong(tokenHigh);
             dataOutputStream.writeLong(tokenLow);
-            RecordHistogram.recordTimesHistogram(
-                    "Tabs.TabState.SaveTime", SystemClock.elapsedRealtime() - startTime);
+            long saveTime = SystemClock.elapsedRealtime() - startTime;
+            RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime", saveTime);
+            if (isFlatBuffer) {
+                RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.FlatBuffer", saveTime);
+            } else {
+                RecordHistogram.recordTimesHistogram("Tabs.TabState.SaveTime.Legacy", saveTime);
+            }
         } catch (FileNotFoundException e) {
             Log.w(TAG, "FileNotFoundException while attempting to save TabState.");
         } catch (IOException e) {

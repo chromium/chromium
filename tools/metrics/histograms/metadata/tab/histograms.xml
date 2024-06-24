@@ -2562,14 +2562,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2025-04-12">
-  <owner>yusufo@chromium.org</owner>
+<histogram name="Tabs.TabState.SaveTime{Schema}" units="ms"
+    expires_after="2025-04-12">
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
   <summary>
     Time taken to save a TabState file in the event of a successful save.
+    Includes differentiation between the original legacy based format and
+    FlatBuffer based format.
   </summary>
+  <token key="Schema">
+    <variant name="" summary="Original metric, kept for continuity."/>
+    <variant name=".FlatBuffer" summary="Using FlatBuffer based format."/>
+    <variant name=".Legacy" summary="Using legacy Pickle based format."/>
+  </token>
 </histogram>
 
 <histogram name="Tabs.Tasks.OrderValidOnStartup" enum="Boolean"
