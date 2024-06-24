@@ -300,10 +300,10 @@ template <ui::DomCode code,
           ui::KeyboardCode keycode,
           char shifted_key = key>
 using TestCharKey = TestKey<code,
-                            ui::DomKey::Constant<key>::Character,
+                            ui::DomKey::FromCharacter(key),
                             keycode,
                             ui::EF_NONE,
-                            ui::DomKey::Constant<shifted_key>::Character>;
+                            ui::DomKey::FromCharacter(shifted_key)>;
 
 using KeyUnknown =
     TestKey<ui::DomCode::NONE, ui::DomKey::UNIDENTIFIED, ui::VKEY_UNKNOWN>;
@@ -1224,21 +1224,20 @@ TEST_P(EventRewriterTest, TestRewriteModifiersNoRemapMultipleKeys) {
                               ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN));
 
     // Press Shift+Ctrl+Alt+Search+B. Confirm the event is not rewritten.
-    EXPECT_EQ(
-        KeyB::Typed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-                    ui::EF_COMMAND_DOWN),
-        RunRewriter(
-            // In this case, SHIFT modifier will be set on pressing B,
-            // thus we should use capital 'B' as DomKey, which the current
-            // factory does not support.
-            // Modifier flags will be annotated to TestKeyEvents inside
-            // RunRewriter.
-            {TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::US_B,
-                          ui::DomKey::Constant<'B'>::Character, ui::VKEY_B},
-             TestKeyEvent{ui::ET_KEY_RELEASED, ui::DomCode::US_B,
-                          ui::DomKey::Constant<'B'>::Character, ui::VKEY_B}},
-            ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
-                ui::EF_COMMAND_DOWN));
+    EXPECT_EQ(KeyB::Typed(ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                          ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN),
+              RunRewriter(
+                  // In this case, SHIFT modifier will be set on pressing B,
+                  // thus we should use capital 'B' as DomKey, which the current
+                  // factory does not support.
+                  // Modifier flags will be annotated to TestKeyEvents inside
+                  // RunRewriter.
+                  {TestKeyEvent{ui::ET_KEY_PRESSED, ui::DomCode::US_B,
+                                ui::DomKey::FromCharacter('B'), ui::VKEY_B},
+                   TestKeyEvent{ui::ET_KEY_RELEASED, ui::DomCode::US_B,
+                                ui::DomKey::FromCharacter('B'), ui::VKEY_B}},
+                  ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
+                      ui::EF_COMMAND_DOWN));
   }
 }
 

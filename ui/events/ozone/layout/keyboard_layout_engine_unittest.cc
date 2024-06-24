@@ -187,11 +187,9 @@ void TestLookup(const char* name, KeyboardLayoutEngine* engine) {
     KeyboardCode output_keycode;
     char16_t output_character;
   } kTestCases[] = {
-      {DomCode::US_A, EF_NONE, DomKey::Constant<'a'>::Character, VKEY_A, 'a'},
-      {DomCode::US_A, EF_SHIFT_DOWN, DomKey::Constant<'A'>::Character, VKEY_A,
-       'A'},
-      {DomCode::US_A, EF_CONTROL_DOWN, DomKey::Constant<'a'>::Character,
-       VKEY_A, 1},
+      {DomCode::US_A, EF_NONE, DomKey::FromCharacter('a'), VKEY_A, 'a'},
+      {DomCode::US_A, EF_SHIFT_DOWN, DomKey::FromCharacter('A'), VKEY_A, 'A'},
+      {DomCode::US_A, EF_CONTROL_DOWN, DomKey::FromCharacter('a'), VKEY_A, 1},
       {DomCode::LAUNCH_ASSISTANT, EF_NONE, DomKey::LAUNCH_ASSISTANT,
        VKEY_ASSISTANT, 0},
   };
