@@ -180,7 +180,7 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
 
   auto* app_button = static_cast<ReturnToAppButton*>(
       return_to_app_container->children().front());
-  EXPECT_FALSE(app_button->expand_indicator()->GetVisible());
+  EXPECT_FALSE(app_button->expand_indicator_for_testing()->GetVisible());
   VerifyReturnToAppButtonInfo(app_button, is_capturing_camera,
                               is_capturing_microphone, is_capturing_screen,
                               /*display_text=*/title);
@@ -248,7 +248,7 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   auto* return_to_app_container = GetReturnToAppContainer(panel.get());
   auto* summary_row = static_cast<ReturnToAppButton*>(
       return_to_app_container->children().front());
-  EXPECT_TRUE(summary_row->expand_indicator()->GetVisible());
+  EXPECT_TRUE(summary_row->expand_indicator_for_testing()->GetVisible());
 
   auto* first_app_row =
       static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
@@ -262,7 +262,7 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_TRUE(summary_row->icons_container()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP),
-            summary_row->expand_indicator()->GetTooltipText());
+            summary_row->expand_indicator_for_testing()->GetTooltipText());
   EXPECT_FALSE(first_app_row->GetVisible());
   EXPECT_FALSE(second_app_row->GetVisible());
 
@@ -276,7 +276,7 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   EXPECT_FALSE(summary_row->icons_container()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_HIDE_TOOLTIP),
-            summary_row->expand_indicator()->GetTooltipText());
+            summary_row->expand_indicator_for_testing()->GetTooltipText());
   EXPECT_TRUE(first_app_row->GetVisible());
   EXPECT_TRUE(second_app_row->GetVisible());
 

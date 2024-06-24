@@ -153,24 +153,22 @@ void FadeOutView(views::View* view,
       .SetOpacity(view, 0.0f);
 }
 
+}  // namespace
+
 // A customized toggle button for the return to app panel, which rotates
 // depending on the expand state.
-class ReturnToAppExpandButton : public views::ImageView,
-                                ReturnToAppButton::Observer {
+class ReturnToAppExpandButton : public views::ImageView {
   METADATA_HEADER(ReturnToAppExpandButton, views::ImageView)
 
  public:
   explicit ReturnToAppExpandButton(ReturnToAppButton* return_to_app_button)
       : return_to_app_button_(return_to_app_button) {
-    return_to_app_button_->AddObserver(this);
   }
 
   ReturnToAppExpandButton(const ReturnToAppExpandButton&) = delete;
   ReturnToAppExpandButton& operator=(const ReturnToAppExpandButton&) = delete;
 
-  ~ReturnToAppExpandButton() override {
-    return_to_app_button_->RemoveObserver(this);
-  }
+  ~ReturnToAppExpandButton() override = default;
 
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -185,9 +183,7 @@ class ReturnToAppExpandButton : public views::ImageView,
     canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
   }
 
- private:
-  // ReturnToAppButton::Observer:
-  void OnExpandedStateChanged(bool expanded) override {
+  void OnExpandedStateChanged(bool expanded) {
     if (expanded_ == expanded) {
       return;
     }
@@ -197,6 +193,7 @@ class ReturnToAppExpandButton : public views::ImageView,
     SchedulePaint();
   }
 
+ private:
   // Indicates if this button (and also the parent panel) is in the expanded
   // state.
   bool expanded_ = false;
@@ -208,8 +205,6 @@ class ReturnToAppExpandButton : public views::ImageView,
 
 BEGIN_METADATA(ReturnToAppExpandButton)
 END_METADATA
-
-}  // namespace
 
 // -----------------------------------------------------------------------------
 // ReturnToAppButton:
@@ -229,59 +224,42 @@ ReturnToAppButton::ReturnToAppButton(
                             is_capturing_screen,
                             display_text,
                             app_type),
-      is_top_row_(is_top_row),
-      panel_(panel) {
-  auto spacing = is_top_row_ ? kReturnToAppButtonTopRowSpacing / 2
-                             : kReturnToAppButtonSpacing / 2;
+      panel_(panel),
+      expand_indicator_(is_top_row ? CreateExpandIndicator() : nullptr) {
+  auto spacing = is_top_row ? kReturnToAppButtonTopRowSpacing / 2
+                            : kReturnToAppButtonSpacing / 2;
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(is_top_row_ ? views::LayoutAlignment::kCenter
-                                        : views::LayoutAlignment::kStart)
+      .SetMainAxisAlignment(is_top_row ? views::LayoutAlignment::kCenter
+                                       : views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey, gfx::Insets::TLBR(0, spacing, 0, spacing))
       .SetInteriorMargin(gfx::Insets::TLBR(0, kReturnToAppPanelSidePadding, 0,
                                            kReturnToAppPanelSidePadding));
 
-  if (!is_top_row_) {
+  if (!is_top_row) {
     icons_container()->SetPreferredSize(
         gfx::Size(/*width=*/kReturnToAppIconSize * panel->max_capturing_count(),
                   /*height=*/kReturnToAppIconSize));
   }
 
-  if (is_top_row_) {
-    auto expand_indicator = std::make_unique<ReturnToAppExpandButton>(this);
-    expand_indicator->SetImage(ui::ImageModel::FromVectorIcon(
-        kUnifiedMenuExpandIcon, cros_tokens::kCrosSysSecondary, 16));
-    expand_indicator->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP));
-    expand_indicator_ = AddChildView(std::move(expand_indicator));
+  UpdateAccessibleName();
 
+  // When we show the bubble for the first time, only the top row is visible.
+  SetVisible(is_top_row);
+
+  if (!is_top_row) {
+    // Add a layer to perform fade in animation.
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  } else {
     // Add a layer for icons container in the top row to perform animation.
     icons_container()->SetPaintToLayer();
     icons_container()->layer()->SetFillsBoundsOpaquely(false);
   }
-
-  UpdateAccessibleName();
-
-  // When we show the bubble for the first time, only the top row is visible.
-  SetVisible(is_top_row_);
-
-  if (!is_top_row_) {
-    // Add a layer to perform fade in animation.
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-  }
 }
 
 ReturnToAppButton::~ReturnToAppButton() = default;
-
-void ReturnToAppButton::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void ReturnToAppButton::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
 
 void ReturnToAppButton::OnButtonClicked(
     const base::UnguessableToken& id,
@@ -304,8 +282,9 @@ void ReturnToAppButton::OnButtonClicked(
 
   UpdateAccessibleName();
 
-  for (auto& observer : observer_list_) {
-    observer.OnExpandedStateChanged(expanded_);
+  panel_->OnExpandedStateChanged(expanded_);
+  if (expand_indicator_) {
+    expand_indicator_->OnExpandedStateChanged(expanded_);
   }
 
   icons_container()->SetVisible(!expanded_);
@@ -321,16 +300,34 @@ void ReturnToAppButton::OnButtonClicked(
   }
 }
 
+void ReturnToAppButton::HideExpandIndicator() {
+  expand_indicator_->SetVisible(false);
+}
+
+const views::ImageView* ReturnToAppButton::expand_indicator_for_testing()
+    const {
+  return expand_indicator_;
+}
+
 void ReturnToAppButton::UpdateAccessibleName() {
   auto accessible_name = GetPeripheralsAccessibleName() + GetLabelText();
 
-  if (is_top_row_) {
+  if (is_top_row()) {
     accessible_name += l10n_util::GetStringUTF16(
         expanded_ ? VIDEO_CONFERENCE_RETURN_TO_APP_EXPANDED_ACCESSIBLE_NAME
                   : VIDEO_CONFERENCE_RETURN_TO_APP_COLLAPSED_ACCESSIBLE_NAME);
   }
 
   GetViewAccessibility().SetName(accessible_name);
+}
+
+ReturnToAppExpandButton* ReturnToAppButton::CreateExpandIndicator() {
+  auto expand_indicator = std::make_unique<ReturnToAppExpandButton>(this);
+  expand_indicator->SetImage(ui::ImageModel::FromVectorIcon(
+      kUnifiedMenuExpandIcon, cros_tokens::kCrosSysSecondary, 16));
+  expand_indicator->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SHOW_TOOLTIP));
+  return AddChildView(std::move(expand_indicator));
 }
 
 BEGIN_METADATA(ReturnToAppButton)
@@ -458,7 +455,7 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
         /*is_top_row=*/true, app->id, app->is_capturing_camera,
         app->is_capturing_microphone, app->is_capturing_screen,
         video_conference_utils::GetMediaAppDisplayText(app), app->app_type);
-    app_button->expand_indicator()->SetVisible(false);
+    app_button->HideExpandIndicator();
     container_view_->AddChildView(std::move(app_button));
     return;
   }
@@ -490,7 +487,6 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
           any_apps_capturing_camera, any_apps_capturing_microphone,
           any_apps_capturing_screen, summary_text,
           /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue));
-  summary_row_view_->AddObserver(this);
 
   for (auto& app : apps) {
     container_view_->AddChildView(std::make_unique<ReturnToAppButton>(
@@ -501,13 +497,7 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
   }
 }
 
-ReturnToAppPanel::~ReturnToAppPanel() {
-  // We only need to remove observer in case that there's a summary row
-  // (multiple apps).
-  if (summary_row_view_) {
-    summary_row_view_->RemoveObserver(this);
-  }
-}
+ReturnToAppPanel::~ReturnToAppPanel() = default;
 
 bool ReturnToAppPanel::IsExpandCollapseAnimationRunning() {
   return container_view_->animation()->is_animating();
