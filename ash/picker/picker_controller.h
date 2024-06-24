@@ -32,12 +32,12 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerClient;
-class PickerClipboardProvider;
 class PickerInsertMediaRequest;
 class PickerModel;
 class PickerPasteRequest;
 class PickerSearchController;
 class PickerSearchResult;
+class PickerSuggestionsController;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
@@ -129,8 +129,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
+  std::unique_ptr<PickerSuggestionsController> suggestions_controller_;
   std::unique_ptr<PickerSearchController> search_controller_;
-  std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 
   base::OnceCallback<void(std::optional<std::string> preset_query_id,
                           std::optional<std::string> freeform_text)>

@@ -20,13 +20,11 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_asset_fetcher_impl.h"
-#include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_paste_request.h"
 #include "ash/picker/picker_rich_media.h"
-#include "ash/picker/search/picker_date_search.h"
-#include "ash/picker/search/picker_math_search.h"
+#include "ash/picker/picker_suggestions_controller.h"
 #include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_positioning.h"
@@ -87,7 +85,6 @@ constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(200);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
-constexpr int kMaxRecentFiles = 10;
 constexpr int kMaxRecentEmoji = 20;
 
 constexpr std::string_view kEmojiHistoryValueFieldName = "text";
@@ -295,18 +292,6 @@ std::string ConvertToString(ui::EmojiPickerCategory category) {
   }
 }
 
-std::vector<PickerSearchResult> GetMostRecentResult(
-    std::vector<PickerSearchResultsSection> results) {
-  if (results.empty() || results[0].type() != PickerSectionType::kNone) {
-    return {};
-  }
-  base::span<const PickerSearchResult> search_results = results[0].results();
-  if (search_results.empty()) {
-    return {};
-  }
-  return {search_results[0]};
-}
-
 GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
   switch (type) {
     case PickerSearchResult::NewWindowData::Type::kDoc:
@@ -324,7 +309,6 @@ GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
 
 PickerController::PickerController()
     : asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)) {
-  clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
 }
 
 PickerController::~PickerController() {
@@ -364,8 +348,11 @@ void PickerController::SetClient(PickerClient* client) {
   // The destructor of `PickerSearchRequest` inside `PickerSearchController` may
   // result in "stop search" calls to the PREVIOUS `PickerClient`.
   if (client_ == nullptr) {
+    suggestions_controller_ = nullptr;
     search_controller_ = nullptr;
   } else {
+    suggestions_controller_ =
+        std::make_unique<PickerSuggestionsController>(client_);
     search_controller_ =
         std::make_unique<PickerSearchController>(client_, kBurnInPeriod);
   }
@@ -403,82 +390,15 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
 
 void PickerController::GetZeroStateSuggestedResults(
     SuggestedResultsCallback callback) {
-  if (model_->GetMode() == PickerModeType::kUnfocused) {
-    std::vector<PickerSearchResult> new_window_results;
-    for (PickerSearchResult::NewWindowData::Type type : {
-             PickerSearchResult::NewWindowData::Type::kDoc,
-             PickerSearchResult::NewWindowData::Type::kSheet,
-             PickerSearchResult::NewWindowData::Type::kSlide,
-             PickerSearchResult::NewWindowData::Type::kChrome,
-         }) {
-      new_window_results.push_back(PickerSearchResult::NewWindow(type));
-    }
-    callback.Run(std::move(new_window_results));
-  }
-
-  if (model_->GetMode() == PickerModeType::kUnfocused ||
-      model_->GetMode() == PickerModeType::kNoSelection) {
-    callback.Run(
-        {PickerSearchResult::CapsLock(!model_->is_caps_lock_enabled())});
-  }
-
-  if (base::Contains(model_->GetAvailableCategories(),
-                     PickerCategory::kEditorRewrite)) {
-    client_->GetSuggestedEditorResults(callback);
-  }
-
-  // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
-  for (PickerCategory category : model_->GetRecentResultsCategories()) {
-    GetResultsForCategory(
-        category, base::BindRepeating(&GetMostRecentResult).Then(callback));
-  }
+  suggestions_controller_->GetSuggestions(*model_, std::move(callback));
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,
                                              SearchResultsCallback callback) {
-  // TODO: b/325977099 - Get actual results for each category.
-  std::vector<ash::PickerSearchResult> recent_results;
-  switch (category) {
-    case PickerCategory::kEditorWrite:
-    case PickerCategory::kEditorRewrite:
-    case PickerCategory::kUpperCase:
-    case PickerCategory::kLowerCase:
-    case PickerCategory::kSentenceCase:
-    case PickerCategory::kTitleCase:
-      NOTREACHED_NORETURN();
-    case PickerCategory::kLinks:
-      client_->GetSuggestedLinkResults(
-          base::BindRepeating(CreateSingleSectionForCategoryResults)
-              .Then(std::move(callback)));
-      return;
-    case PickerCategory::kExpressions:
-      NOTREACHED_NORETURN();
-    case PickerCategory::kDriveFiles:
-      client_->GetRecentDriveFileResults(
-          kMaxRecentFiles,
-          base::BindRepeating(CreateSingleSectionForCategoryResults)
-              .Then(std::move(callback)));
-      return;
-    case PickerCategory::kLocalFiles:
-      client_->GetRecentLocalFileResults(
-          kMaxRecentFiles,
-          base::BindRepeating(CreateSingleSectionForCategoryResults)
-              .Then(std::move(callback)));
-      return;
-    case PickerCategory::kDatesTimes:
-      std::move(callback).Run(
-          CreateSingleSectionForCategoryResults(PickerSuggestedDateResults()));
-      break;
-    case PickerCategory::kUnitsMaths:
-      std::move(callback).Run(
-          CreateSingleSectionForCategoryResults(PickerMathExamples()));
-      break;
-    case PickerCategory::kClipboard:
-      clipboard_provider_->FetchResults(
-          base::BindRepeating(CreateSingleSectionForCategoryResults)
-              .Then(std::move(callback)));
-      return;
-  }
+  suggestions_controller_->GetSuggestionsForCategory(
+      *model_, category,
+      base::BindRepeating(CreateSingleSectionForCategoryResults)
+          .Then(std::move(callback)));
 }
 
 void PickerController::TransformSelectedText(PickerCategory category) {
