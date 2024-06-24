@@ -98,6 +98,9 @@ syncer::UserSelectableType IntToUserSelectableTypeChecked(int type) {
 // static
 syncer::SyncService* SyncServiceAndroidBridge::FromJavaObject(
     const base::android::JavaRef<jobject>& j_sync_service) {
+  if (!j_sync_service) {
+    return nullptr;
+  }
   auto* bridge = reinterpret_cast<SyncServiceAndroidBridge*>(
       Java_SyncService_getNativeSyncServiceAndroidBridge(AttachCurrentThread(),
                                                          j_sync_service));

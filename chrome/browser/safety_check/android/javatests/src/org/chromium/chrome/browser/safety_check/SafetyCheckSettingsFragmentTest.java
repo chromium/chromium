@@ -31,6 +31,8 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -73,12 +75,13 @@ public class SafetyCheckSettingsFragmentTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private PasswordCheck mPasswordCheck;
-    @Mock protected SyncService mSyncService;
-    @Mock protected PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock private SyncService mSyncService;
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
 
-    protected PropertyModel mSafetyCheckModel;
+    private PropertyModel mSafetyCheckModel;
     private PropertyModel mPasswordCheckPreferenceLocalModel;
-    protected SafetyCheckSettingsFragment mFragment;
+    private SafetyCheckSettingsFragment mFragment;
 
     @Before
     public void setUp() {
@@ -87,6 +90,7 @@ public class SafetyCheckSettingsFragmentTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
     }
 
     @Test
@@ -125,7 +129,7 @@ public class SafetyCheckSettingsFragmentTest {
                 SafetyCheckViewBinder.getLastRunTimestampText(context, t0, t0 + 315 * DAY_TO_MS));
     }
 
-    protected void createFragmentAndModel() {
+    private void createFragmentAndModel() {
         mSettingsActivityTestRule.startSettingsActivity();
         mFragment = (SafetyCheckSettingsFragment) mSettingsActivityTestRule.getFragment();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -167,6 +171,8 @@ public class SafetyCheckSettingsFragmentTest {
         when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+        when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
+                .thenReturn(isPasswordSyncEnabled);
     }
 
     private void configurePasswordManagerUtilBridge(boolean usesSplitStores) {

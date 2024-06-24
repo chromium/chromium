@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -151,6 +152,7 @@ public class SafetyCheckMediatorTest {
     // TODO(crbug.com/40854050): Use fake instead of mocking
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private FakePasswordCheckControllerFactory mPasswordCheckControllerFactory;
 
@@ -217,6 +219,8 @@ public class SafetyCheckMediatorTest {
         when(mSyncService.hasSyncConsent()).thenReturn(true);
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+        when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
+                .thenReturn(true);
 
         // TODO(crbug.com/41483841): Parametrize the tests in SafetyCheckMediatorTest for local and
         // account storage.
@@ -265,6 +269,7 @@ public class SafetyCheckMediatorTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         configureMockSyncService();
 

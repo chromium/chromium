@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHel
 import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
 import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelperJni;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -73,6 +75,7 @@ public class SafetyHubFetchServiceTest {
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+    @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Mock private Callback<Boolean> mTaskFinishedCallback;
     @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
@@ -86,6 +89,7 @@ public class SafetyHubFetchServiceTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
+        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
@@ -107,6 +111,8 @@ public class SafetyHubFetchServiceTest {
                                 : new HashSet<>());
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+        when(mPasswordManagerHelperNativeMock.hasChosenToSyncPasswords(mSyncService))
+                .thenReturn(isSyncing);
     }
 
     private void setUPMStatus(boolean isUPMEnabled) {
