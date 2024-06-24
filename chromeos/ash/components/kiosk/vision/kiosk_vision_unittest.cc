@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
+#include <cstdint>
 #include <iterator>
 #include <string>
 #include <string_view>
@@ -90,11 +91,13 @@ bool IsKioskVisionDlcInstalled(FakeDlcserviceClient& service) {
 
 cros::mojom::KioskVisionDetectionPtr NewFakeDetectionOfPersons(
     std::vector<int> person_ids) {
+  constexpr int64_t kFakeTimestamp = 1718727537817601;
   std::vector<cros::mojom::KioskVisionAppearancePtr> appearances;
   for (int person_id : person_ids) {
     appearances.push_back(cros::mojom::KioskVisionAppearance::New(person_id));
   }
-  return cros::mojom::KioskVisionDetection::New(std::move(appearances));
+  return cros::mojom::KioskVisionDetection::New(kFakeTimestamp,
+                                                std::move(appearances));
 }
 
 media::VideoCaptureFormat CreateCaptureFormat(const gfx::Size& frame_size,

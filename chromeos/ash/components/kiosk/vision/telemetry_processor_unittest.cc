@@ -4,6 +4,11 @@
 
 #include "chromeos/ash/components/kiosk/vision/telemetry_processor.h"
 
+#include <cstdint>
+#include <utility>
+#include <vector>
+
+#include "chromeos/ash/components/kiosk/vision/internal/detection_observer.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,13 +21,16 @@ using ::testing::IsEmpty;
 
 namespace {
 
-cros::mojom::KioskVisionDetection NewFakeDetectionOfPersons(
+cros::mojom::KioskVisionDetectionPtr NewFakeDetectionOfPersons(
     std::vector<int> person_ids) {
+  constexpr int64_t kFakeTimestamp = 1718727537817601;
+
   std::vector<cros::mojom::KioskVisionAppearancePtr> appearances;
   for (int person_id : person_ids) {
     appearances.push_back(cros::mojom::KioskVisionAppearance::New(person_id));
   }
-  return cros::mojom::KioskVisionDetection(std::move(appearances));
+  return cros::mojom::KioskVisionDetection::New(kFakeTimestamp,
+                                                std::move(appearances));
 }
 
 }  // namespace
@@ -35,8 +43,8 @@ TEST(TelemetryProcessorTest, StartsWithoutDetections) {
 
 TEST(TelemetryProcessorTest, ReceivesDetections) {
   TelemetryProcessor processor;
-  DetectionProcessor& detection_processor = processor;
-  detection_processor.OnFrameProcessed(NewFakeDetectionOfPersons({123, 45}));
+  auto observer = DetectionObserver({&processor});
+  observer.OnFrameProcessed(NewFakeDetectionOfPersons({123, 45}));
 
   EXPECT_THAT(processor.TakeIdsProcessed(), ElementsAreArray({123, 45}));
   EXPECT_THAT(processor.TakeErrors(), IsEmpty());
@@ -44,10 +52,10 @@ TEST(TelemetryProcessorTest, ReceivesDetections) {
 
 TEST(TelemetryProcessorTest, ReceivesErrors) {
   TelemetryProcessor processor;
-  DetectionProcessor& detection_processor = processor;
+  auto observer = DetectionObserver({&processor});
 
   auto error = cros::mojom::KioskVisionError::MODEL_ERROR;
-  detection_processor.OnError(error);
+  observer.OnError(error);
 
   EXPECT_THAT(processor.TakeIdsProcessed(), IsEmpty());
   EXPECT_THAT(processor.TakeErrors(), ElementsAre(error));

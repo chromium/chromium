@@ -83,7 +83,8 @@ struct KioskVisionAppearance {
 
 // Output detection of the Kiosk Vision graph.
 struct KioskVisionDetection {
-  // TODO(b/336760251): This struct is not finalized, add remaining fields.
+  // The timestamp in microseconds of this detection.
+  int64 timestamp_in_us;
   // The persons detected.
   array<KioskVisionAppearance> appearances;
 };
