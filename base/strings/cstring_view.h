@@ -69,11 +69,19 @@ class basic_cstring_view final {
   // auto s2 = base::cstring_view("this works too");
   // CHECK(s == "this works too");
   // ```
+  //
+  // The string will end at the first NUL character in the given array.
+  //
+  // Example:
+  // ```
+  // auto s = base::cstring_view("hello\0world");
+  // CHECK(s == "hello");
+  // ```
   template <int&..., size_t M>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr basic_cstring_view(const Char (&lit LIFETIME_BOUND)[M]) noexcept
       ENABLE_IF_ATTR(lit[M - 1u] == Char{0}, "requires string literal as input")
-      : ptr_(lit), len_(M - 1u) {
+      : ptr_(lit), len_(std::char_traits<Char>::length(lit)) {
     // For non-clang compilers. On clang, the function is not even callable
     // without this being known to pass at compile time.
     //
