@@ -21,6 +21,7 @@
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_data_fetcher.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
@@ -75,12 +76,14 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   // Callback invoked when the various fetcher instances have completed.
   void MergeVisitsAndCallback(
       GetURLVisitAggregatesCallback callback,
+      const FetchOptions& options,
       const std::vector<URLVisitAggregatesTransformType>& ordered_transforms,
       std::vector<FetchResult> fetcher_visits);
 
   // Callback invoked when the various transformers have completed.
   void TransformVisitsAndCallback(
       GetURLVisitAggregatesCallback callback,
+      const FetchOptions& options,
       std::queue<URLVisitAggregatesTransformType> transform_type_queue,
       URLVisitAggregatesTransformer::Status status,
       std::vector<URLVisitAggregate> aggregates);

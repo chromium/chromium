@@ -10,7 +10,9 @@
 #include "base/time/time.h"
 #include "components/visited_url_ranking/internal/transformer/transformer_test_support.h"
 #include "components/visited_url_ranking/public/features.h"
+#include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/test_support.h"
+#include "components/visited_url_ranking/public/url_visit.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace visited_url_ranking {
@@ -61,15 +63,14 @@ class RecencyFilterTransformerTest : public URLVisitAggregatesTransformerTest {
     transformer_.reset();
     Test::TearDown();
   }
-};
 
-TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
-  base::Time now = base::Time::Now();
+  std::vector<URLVisitAggregate> GetSampleCandidates() {
+    base::Time now = base::Time::Now();
+    std::vector<URLVisitAggregate> candidates = {};
 
-  std::vector<URLVisitAggregate> candidates = {};
+    // Insert candidates not sorted by timestamp, in random order to test if
+    // most recent ones are retained.
 
-  // Insert candidates not sorted by timestamp:
-  {
     // Entries with only tabs:
     candidates.push_back(CreateSampleURLVisitAggregate(
         GURL(kTestUrl9), 1, now - kTimeSinceLoad9, {Fetcher::kTabModel}));
@@ -83,7 +84,11 @@ TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
     candidates.push_back(CreateSampleURLVisitAggregate(
         GURL(kTestUrl4), 1, now - kTimeSinceLoad4, {Fetcher::kHistory}));
 
-    // Entries with both:
+    // Entry with only remote tab.
+    candidates.push_back(CreateSampleURLVisitAggregate(
+        GURL(kTestUrl5), 1, now - kTimeSinceLoad5, {Fetcher::kSession}));
+
+    // Entries with all types:
     candidates.push_back(CreateSampleURLVisitAggregate(GURL(kTestUrl8), 1,
                                                        now - kTimeSinceLoad8));
     candidates.push_back(CreateSampleURLVisitAggregate(GURL(kTestUrl1), 1,
@@ -94,21 +99,74 @@ TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
                                                        now - kTimeSinceLoad6));
     candidates.push_back(CreateSampleURLVisitAggregate(GURL(kTestUrl7), 1,
                                                        now - kTimeSinceLoad7));
-    candidates.push_back(CreateSampleURLVisitAggregate(GURL(kTestUrl5), 1,
-                                                       now - kTimeSinceLoad5));
+    return candidates;
   }
+};
 
+TEST_F(RecencyFilterTransformerTest, SortAndFilter) {
+  auto candidates = GetSampleCandidates();
+  FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
+      FetchOptions::kAllResultTypes);
   URLVisitAggregatesTransformerTest::Result result =
-      TransformAndGetResult(std::move(candidates));
+      TransformAndGetResult(std::move(candidates), fetch_options);
 
   ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
   ASSERT_EQ(result.second.size(), kTestCountLimit);
 
+  // 4 is removed because it is only history and is older than history age 1
+  // day.
   EXPECT_EQ(*(*result.second[0].GetAssociatedURLs().begin()), GURL(kTestUrl1));
   EXPECT_EQ(*(*result.second[1].GetAssociatedURLs().begin()), GURL(kTestUrl2));
   EXPECT_EQ(*(*result.second[2].GetAssociatedURLs().begin()), GURL(kTestUrl3));
   EXPECT_EQ(*(*result.second[3].GetAssociatedURLs().begin()), GURL(kTestUrl5));
   EXPECT_EQ(*(*result.second[4].GetAssociatedURLs().begin()), GURL(kTestUrl6));
+}
+
+TEST_F(RecencyFilterTransformerTest, FilteringTabs) {
+  auto candidates = GetSampleCandidates();
+  FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
+      {FetchOptions::URLType::kActiveLocalTab});
+  URLVisitAggregatesTransformerTest::Result result =
+      TransformAndGetResult(std::move(candidates), fetch_options);
+  ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
+  ASSERT_EQ(result.second.size(), kTestCountLimit);
+
+  // 4 and 5 are removed because they do not have local tab.
+  EXPECT_EQ(*(*result.second[0].GetAssociatedURLs().begin()), GURL(kTestUrl1));
+  EXPECT_EQ(*(*result.second[1].GetAssociatedURLs().begin()), GURL(kTestUrl2));
+  EXPECT_EQ(*(*result.second[2].GetAssociatedURLs().begin()), GURL(kTestUrl3));
+  EXPECT_EQ(*(*result.second[3].GetAssociatedURLs().begin()), GURL(kTestUrl6));
+  EXPECT_EQ(*(*result.second[4].GetAssociatedURLs().begin()), GURL(kTestUrl7));
+}
+
+TEST_F(RecencyFilterTransformerTest, FilteringHistory) {
+  auto candidates = GetSampleCandidates();
+  FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
+      {FetchOptions::URLType::kRemoteVisit});
+  URLVisitAggregatesTransformerTest::Result result =
+      TransformAndGetResult(std::move(candidates), fetch_options);
+  ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
+  ASSERT_EQ(result.second.size(), 1u);
+
+  // Keeps only 1 since all other entries are over history age limit - 1 day.
+  EXPECT_EQ(*(*result.second[0].GetAssociatedURLs().begin()), GURL(kTestUrl1));
+}
+
+TEST_F(RecencyFilterTransformerTest, FilteringRemoteTab) {
+  auto candidates = GetSampleCandidates();
+  FetchOptions fetch_options = FetchOptions::CreateFetchOptionsForTabResumption(
+      {FetchOptions::URLType::kActiveRemoteTab});
+  URLVisitAggregatesTransformerTest::Result result =
+      TransformAndGetResult(std::move(candidates), fetch_options);
+  ASSERT_EQ(result.first, URLVisitAggregatesTransformer::Status::kSuccess);
+  ASSERT_EQ(result.second.size(), 5u);
+
+  // 3 and 4 are removed because they do not have remote tab.
+  EXPECT_EQ(*(*result.second[0].GetAssociatedURLs().begin()), GURL(kTestUrl1));
+  EXPECT_EQ(*(*result.second[1].GetAssociatedURLs().begin()), GURL(kTestUrl2));
+  EXPECT_EQ(*(*result.second[2].GetAssociatedURLs().begin()), GURL(kTestUrl5));
+  EXPECT_EQ(*(*result.second[3].GetAssociatedURLs().begin()), GURL(kTestUrl6));
+  EXPECT_EQ(*(*result.second[4].GetAssociatedURLs().begin()), GURL(kTestUrl7));
 }
 
 }  // namespace

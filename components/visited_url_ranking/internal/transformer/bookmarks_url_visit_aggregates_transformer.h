@@ -36,6 +36,7 @@ class BookmarksURLVisitAggregatesTransformer
   // Sets bookmark related fields for `URLVisitAggregate` objects (e.g.,
   // `is_bookmarked`).
   void Transform(std::vector<URLVisitAggregate> aggregates,
+                 const FetchOptions& options,
                  OnTransformCallback callback) override;
 
  private:

@@ -40,6 +40,7 @@ HistoryURLVisitAggregatesCategoriesTransformer::
 
 void HistoryURLVisitAggregatesCategoriesTransformer::Transform(
     std::vector<URLVisitAggregate> aggregates,
+    const FetchOptions& options,
     OnTransformCallback callback) {
   std::erase_if(aggregates, [&](auto& visit_aggregate) {
     const auto& it = visit_aggregate.fetcher_data_map.find(Fetcher::kHistory);

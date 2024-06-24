@@ -31,6 +31,7 @@ class HistoryURLVisitAggregatesVisibilityScoreTransformer
   // Removes `URLVisitAggregate` objects who visibility score does not satisfy
   // the `visibility_score_threshold_` value.
   void Transform(std::vector<URLVisitAggregate> aggregates,
+                 const FetchOptions& options,
                  OnTransformCallback callback) override;
 
  private:

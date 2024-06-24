@@ -8,26 +8,10 @@
 #include <map>
 #include <vector>
 
+#include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 
 namespace visited_url_ranking {
-
-// A series of supported data transforms that modify a collection of
-// `URLVisitAggregate` objects.
-enum class URLVisitAggregatesTransformType {
-  // Set bookmark related fields.
-  kBookmarkData = 0,
-  // Set shopping related fields.
-  kShoppingData = 1,
-  // Filter based on visibility score field.
-  kHistoryVisibilityScoreFilter = 2,
-  // Filter based on categories field.
-  kHistoryCategoriesFilter = 3,
-  // Filter based on whether the URL can be opened by default apps.
-  kDefaultAppUrlFilter = 4,
-  // Filter based on last active timestamp.
-  kRecencyFilter = 5,
-};
 
 // Derived classes implement logic responsible for modifying a collection of
 // `URLVisitAggregate` objects.
@@ -39,6 +23,7 @@ class URLVisitAggregatesTransformer {
   using OnTransformCallback =
       base::OnceCallback<void(Status status, std::vector<URLVisitAggregate>)>;
   virtual void Transform(std::vector<URLVisitAggregate> aggregates,
+                         const FetchOptions& options,
                          OnTransformCallback callback) = 0;
 };
 

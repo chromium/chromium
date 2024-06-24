@@ -22,6 +22,7 @@ BookmarksURLVisitAggregatesTransformer::BookmarksURLVisitAggregatesTransformer(
 
 void BookmarksURLVisitAggregatesTransformer::Transform(
     std::vector<URLVisitAggregate> aggregates,
+    const FetchOptions& options,
     OnTransformCallback callback) {
   for (auto& url_visit_aggregate : aggregates) {
     std::set<const GURL*> urls = url_visit_aggregate.GetAssociatedURLs();

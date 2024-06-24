@@ -38,6 +38,7 @@ DefaultAppURLVisitAggregatesTransformer::
 
 void DefaultAppURLVisitAggregatesTransformer::Transform(
     std::vector<URLVisitAggregate> aggregates,
+    const FetchOptions& options,
     OnTransformCallback callback) {
   std::erase_if(aggregates, [&](auto& visit_aggregate) {
     for (const auto& fetcher_entry : visit_aggregate.fetcher_data_map) {

@@ -33,6 +33,7 @@ class HistoryURLVisitAggregatesCategoriesTransformer
   // Removes `URLVisitAggregate` objects that have whose visit annotations
   // categories overlap with the `blocklisted_categories` set.
   void Transform(std::vector<URLVisitAggregate> aggregates,
+                 const FetchOptions& options,
                  OnTransformCallback callback) override;
 
  private:

@@ -23,9 +23,18 @@ URLVisitAggregatesTransformerTest::~URLVisitAggregatesTransformerTest() =
 URLVisitAggregatesTransformerTest::Result
 URLVisitAggregatesTransformerTest::TransformAndGetResult(
     std::vector<URLVisitAggregate> aggregates) {
+  return TransformAndGetResult(
+      std::move(aggregates),
+      FetchOptions::CreateDefaultFetchOptionsForTabResumption());
+}
+
+URLVisitAggregatesTransformerTest::Result
+URLVisitAggregatesTransformerTest::TransformAndGetResult(
+    std::vector<URLVisitAggregate> aggregates,
+    const FetchOptions& options) {
   base::RunLoop wait_loop;
   URLVisitAggregatesTransformerTest::Result result;
-  transformer_->Transform(std::move(aggregates),
+  transformer_->Transform(std::move(aggregates), options,
                           base::BindOnce(
                               [](base::OnceClosure stop_waiting, Result* result,
                                  URLVisitAggregatesTransformer::Status status,

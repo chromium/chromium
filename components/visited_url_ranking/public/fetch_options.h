@@ -9,22 +9,78 @@
 #include <vector>
 
 #include "base/containers/enum_set.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/visited_url_ranking/public/url_visit.h"
-#include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 
 namespace visited_url_ranking {
 
+// A series of supported data transforms that modify a collection of
+// `URLVisitAggregate` objects.
+enum class URLVisitAggregatesTransformType {
+  // Set bookmark related fields.
+  kBookmarkData = 0,
+  // Set shopping related fields.
+  kShoppingData = 1,
+  // Filter based on visibility score field.
+  kHistoryVisibilityScoreFilter = 2,
+  // Filter based on categories field.
+  kHistoryCategoriesFilter = 3,
+  // Filter based on whether the URL can be opened by default apps.
+  kDefaultAppUrlFilter = 4,
+  // Filter based on last active timestamp.
+  kRecencyFilter = 5,
+};
+
 // The options that may be specified when fetching URL visit data.
 struct FetchOptions {
+  // Type of result URLVisitAggregate, note that each visit can match multiple
+  // types. If any of the types match, then the URL will be returned.
+  enum class URLType {
+    kUnknown,
+    // The visit has an active local tab.
+    kActiveLocalTab,
+    // The visit has an active remote tab, based on the latest sync.
+    kActiveRemoteTab,
+    // The visit is recorded in history, is not from remote client.
+    kLocalVisit,
+    // The visit is recorded in history, is from a remote client.
+    kRemoteVisit,
+    // The visit is local and registered with app ID from an Android CCT
+    // (Android only).
+    kCCTVisit,
+    kMaxValue = kCCTVisit,
+  };
+  using URLTypeSet =
+      base::EnumSet<URLType, URLType::kUnknown, URLType::kMaxValue>;
+  static constexpr URLTypeSet kAllResultTypes = {
+      URLType::kActiveLocalTab, URLType::kActiveRemoteTab, URLType::kLocalVisit,
+      URLType::kRemoteVisit,
+#if BUILDFLAG(IS_ANDROID)
+      URLType::kCCTVisit
+#endif
+  };
+
+  // Options to specify the expected results.
+  struct ResultOption {
+    // Any visit within the `age_limit` will be retained.
+    base::TimeDelta age_limit;
+  };
+
   using Source = URLVisit::Source;
   using FetchSources =
       base::EnumSet<Source, Source::kNotApplicable, Source::kForeign>;
   FetchOptions(
+      std::map<URLType, ResultOption> result_sources_arg,
+      base::Time begin_time_arg,
+      std::vector<URLVisitAggregatesTransformType> transforms_arg = {});
+  // TODO(ssid): DEPRECATED, remove this and migrate the tests.
+  FetchOptions(
       std::map<Fetcher, FetchSources> fetcher_sources_arg,
       base::Time begin_time_arg,
       std::vector<URLVisitAggregatesTransformType> transforms_arg = {});
-  FetchOptions(const FetchOptions&) = delete;
+  FetchOptions(const FetchOptions&);
   FetchOptions(FetchOptions&& other);
   FetchOptions& operator=(FetchOptions&& other);
   ~FetchOptions();
@@ -36,8 +92,18 @@ struct FetchOptions {
   // Returns the default fetch options for tab resumption use cases.
   static FetchOptions CreateDefaultFetchOptionsForTabResumption();
 
+  // Returns the default fetch options for fetching the expected
+  // `result_sources`.
+  static FetchOptions CreateFetchOptionsForTabResumption(
+      const URLTypeSet& result_sources);
+
+  // The source of expected results. A visit can have multiple types, if any of
+  // the types match the `result_sources`, then the visit can be returned.
+  std::map<URLType, ResultOption> result_sources;
+
   // The set of data fetchers that should participate in the data fetching and
   // computation of URLVisit data, including their data source characteristics.
+  // Mainly useful for turning off a fetcher for performance or stability issue.
   std::map<Fetcher, FetchSources> fetcher_sources;
 
   // The earliest visit associated time to consider when fetching data. Each

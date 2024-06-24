@@ -46,9 +46,6 @@ using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::URLVisitAggregatesTransformType;
 using visited_url_ranking::VisitedURLRankingService;
 
-static constexpr FetchSources kForeignSources = {Source::kForeign};
-static constexpr base::TimeDelta kFreshSuggestionWindow = base::Days(1);
-
 // Must match Java Tab.INVALID_TAB_ID.
 static constexpr int kInvalidTabId = -1;
 
@@ -58,23 +55,17 @@ static constexpr int kInvalidTabId = -1;
 FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time,
                                                 bool fetch_local_tab,
                                                 bool fetch_history) {
-  FetchOptions fetch_options(
-      {
-          {Fetcher::kSession, kForeignSources},
-      },
-      current_time - kFreshSuggestionWindow,
-      {
-          URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
-      });
+  FetchOptions::URLTypeSet expected_types = {
+      FetchOptions::URLType::kActiveRemoteTab};
   if (fetch_local_tab) {
-    fetch_options.fetcher_sources[Fetcher::kTabModel] =
-        FetchOptions::kOriginSources;
+    expected_types.Put(FetchOptions::URLType::kLocalVisit);
   }
   if (fetch_history) {
-    fetch_options.fetcher_sources[Fetcher::kHistory] =
-        FetchOptions::kOriginSources;
+    expected_types.Put(FetchOptions::URLType::kLocalVisit);
+    expected_types.Put(FetchOptions::URLType::kRemoteVisit);
+    expected_types.Put(FetchOptions::URLType::kCCTVisit);
   }
-  return fetch_options;
+  return FetchOptions::CreateFetchOptionsForTabResumption(expected_types);
 }
 
 // Class to manage tab resumption fetch and rank flow, containing required

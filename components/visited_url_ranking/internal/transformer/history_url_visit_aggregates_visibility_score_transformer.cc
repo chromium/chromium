@@ -18,10 +18,13 @@ HistoryURLVisitAggregatesVisibilityScoreTransformer::
 
 void HistoryURLVisitAggregatesVisibilityScoreTransformer::Transform(
     std::vector<URLVisitAggregate> aggregates,
+    const FetchOptions& options,
     OnTransformCallback callback) {
   std::erase_if(aggregates, [&](auto& visit_aggregate) {
     const auto& it = visit_aggregate.fetcher_data_map.find(Fetcher::kHistory);
     if (it == visit_aggregate.fetcher_data_map.end()) {
+      VLOG(2) << "History visibility filter missing history visit "
+              << visit_aggregate.url_key;
       return true;
     }
 
@@ -31,8 +34,12 @@ void HistoryURLVisitAggregatesVisibilityScoreTransformer::Transform(
       return false;
     }
 
-    return history->last_visited.content_annotations.model_annotations
-               .visibility_score < visibility_score_threshold_;
+    bool below_threshold =
+        history->last_visited.content_annotations.model_annotations
+            .visibility_score < visibility_score_threshold_;
+    VLOG_IF(2, below_threshold) << "History visibility filter below threshold "
+                                << visit_aggregate.url_key;
+    return below_threshold;
   });
 
   std::move(callback).Run(Status::kSuccess, std::move(aggregates));
