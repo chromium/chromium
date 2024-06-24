@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/autofill_test_utils.h"
 
 #include <cstdint>
@@ -450,7 +445,7 @@ CreditCard GetVirtualCard() {
 }
 
 CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
-  static const char* const kNetworks[] = {
+  constexpr static std::array<std::string_view, 10> kNetworks = {
       kAmericanExpressCard,
       kDinersCard,
       kDiscoverCard,
@@ -462,7 +457,6 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
       kUnionPay,
       kVisaCard,
   };
-  constexpr size_t kNumNetworks = sizeof(kNetworks) / sizeof(kNetworks[0]);
   base::Time::Exploded now;
   AutofillClock::Now().LocalExplode(&now);
 
@@ -479,7 +473,7 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
       base::StringPrintf("%d", now.year + base::RandInt(1, 4)).c_str(), "1");
   if (record_type == CreditCard::RecordType::kMaskedServerCard) {
     credit_card.SetNetworkForMaskedCard(
-        kNetworks[base::RandInt(0, kNumNetworks - 1)]);
+        kNetworks[base::RandInt(0, kNetworks.size() - 1)]);
   }
 
   return credit_card;
