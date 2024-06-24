@@ -3695,6 +3695,10 @@
       status: "stable"
     },
     {
+      // crbug.com/40501131
+      name: "SidewaysWritingModes",
+    },
+    {
       name: "SignatureBasedIntegrity",
       origin_trial_feature_name: "SignatureBasedIntegrity",
       status: "experimental",

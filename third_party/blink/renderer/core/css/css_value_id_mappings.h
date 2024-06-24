@@ -125,24 +125,18 @@ inline EResize CssValueIDToPlatformEnum(CSSValueID v) {
 template <>
 inline WritingMode CssValueIDToPlatformEnum(CSSValueID v) {
   switch (v) {
-    case CSSValueID::kHorizontalTb:
     case CSSValueID::kLr:
     case CSSValueID::kLrTb:
     case CSSValueID::kRl:
     case CSSValueID::kRlTb:
       return WritingMode::kHorizontalTb;
-    case CSSValueID::kVerticalRl:
     case CSSValueID::kTb:
     case CSSValueID::kTbRl:
       return WritingMode::kVerticalRl;
-    case CSSValueID::kVerticalLr:
-      return WritingMode::kVerticalLr;
     default:
       break;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return WritingMode::kHorizontalTb;
+  return detail::cssValueIDToPlatformEnumGenerated<WritingMode>(v);
 }
 
 template <>

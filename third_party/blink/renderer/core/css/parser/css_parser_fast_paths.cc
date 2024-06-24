@@ -1632,6 +1632,12 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id >= CSSValueID::kHorizontalTb &&
              value_id <= CSSValueID::kVerticalLr;
     case CSSPropertyID::kWritingMode:
+      if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
+        if (value_id == CSSValueID::kSidewaysRl ||
+            value_id == CSSValueID::kSidewaysLr) {
+          return true;
+        }
+      }
       return value_id == CSSValueID::kHorizontalTb ||
              value_id == CSSValueID::kVerticalRl ||
              value_id == CSSValueID::kVerticalLr ||
