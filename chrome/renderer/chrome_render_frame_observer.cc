@@ -33,7 +33,6 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
-#include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
 #include "components/translate/content/renderer/translate_agent.h"
@@ -606,10 +605,6 @@ void ChromeRenderFrameObserver::SetSupportsDraggableRegions(
     bool supports_draggable_regions) {
   render_frame()->GetWebView()->SetSupportsDraggableRegions(
       supports_draggable_regions);
-}
-
-void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
-  prerender::SetShouldDeferMediaLoad(render_frame(), should_defer);
 }
 
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
