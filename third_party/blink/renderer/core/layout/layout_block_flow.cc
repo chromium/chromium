@@ -791,41 +791,6 @@ void LayoutBlockFlow::SetShouldDoFullPaintInvalidationForFirstLine() {
   }
 }
 
-bool LayoutBlockFlow::NodeAtPoint(HitTestResult& result,
-                                  const HitTestLocation& hit_test_location,
-                                  const PhysicalOffset& accumulated_offset,
-                                  HitTestPhase phase) {
-  NOT_DESTROYED();
-
-  // Please see |LayoutBlock::Paint()| for these DCHECKs.
-  DCHECK(IsMonolithic() || !CanTraversePhysicalFragments() ||
-         !Parent()->CanTraversePhysicalFragments());
-  // We may get here in multiple-fragment cases if the object is repeated
-  // (inside table headers and footers, for instance).
-  DCHECK(PhysicalFragmentCount() <= 1u ||
-         GetPhysicalFragment(0)->GetBreakToken()->IsRepeated());
-
-  if (!MayIntersect(result, hit_test_location, accumulated_offset)) {
-    return false;
-  }
-
-  if (PhysicalFragmentCount()) {
-    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
-    DCHECK(fragment);
-    if (fragment->HasItems() ||
-        // Check descendants of this fragment because floats may be in the
-        // |FragmentItems| of the descendants.
-        (phase == HitTestPhase::kFloat &&
-         fragment->HasFloatingDescendantsForPaint())) {
-      return BoxFragmentPainter(*fragment).NodeAtPoint(
-          result, hit_test_location, accumulated_offset, phase);
-    }
-  }
-
-  return LayoutBlock::NodeAtPoint(result, hit_test_location, accumulated_offset,
-                                  phase);
-}
-
 PositionWithAffinity LayoutBlockFlow::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();

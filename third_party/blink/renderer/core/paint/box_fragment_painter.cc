@@ -1973,11 +1973,11 @@ bool BoxFragmentPainter::NodeAtPoint(HitTestResult& result,
 bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
                                      const PhysicalOffset& physical_offset) {
   const PhysicalBoxFragment& fragment = GetPhysicalFragment();
-  // TODO(mstensho): Make sure that we never create an BoxFragmentPainter for
-  // a fragment that doesn't intersect, and turn this into a DCHECK.
-  if (!fragment.MayIntersect(*hit_test.result, hit_test.location,
-                             physical_offset))
-    return false;
+  // Creating a BoxFragmentPainter is a significant cost, especially in broad
+  // trees. Should check before getting here, whether the fragment might
+  // intersect or not.
+  DCHECK(fragment.MayIntersect(*hit_test.result, hit_test.location,
+                               physical_offset));
 
   if (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))
     return false;
@@ -2130,9 +2130,6 @@ bool BoxFragmentPainter::HitTestAllPhases(
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset) {
-  // TODO(mstensho): Make sure that we never create a BoxFragmentPainter for
-  // a fragment that doesn't intersect, and DCHECK for that here.
-
   // Logic taken from LayoutObject::HitTestAllPhases().
   if (NodeAtPoint(result, hit_test_location, accumulated_offset,
                   HitTestPhase::kForeground)) {

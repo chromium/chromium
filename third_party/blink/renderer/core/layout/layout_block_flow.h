@@ -120,11 +120,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void SetShouldDoFullPaintInvalidationForFirstLine();
 
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
-
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
