@@ -2,12 +2,12 @@ use crate::{Pod, Zeroable};
 
 /// Marker trait for "plain old data" types that are valid for any bit pattern.
 ///
-/// The requirements for this is very similar to [`Pod`],
-/// except that the type can allow uninit (or padding) bytes.
-/// This limits what you can do with a type of this kind, but also broadens the
-/// included types to `repr(C)` `struct`s that contain padding as well as
-/// `union`s. Notably, you can only cast *immutable* references and *owned*
-/// values into [`AnyBitPattern`] types, not *mutable* references.
+/// The requirements for this is very similar to [`Pod`], except that the type
+/// can allow uninit (or padding) bytes. This limits what you can do with a type
+/// of this kind, but also broadens the included types to `repr(C)` `struct`s
+/// that contain padding as well as `union`s. Notably, you can only cast
+/// *immutable* references and *owned* values into [`AnyBitPattern`] types, not
+/// *mutable* references.
 ///
 /// [`Pod`] is a subset of [`AnyBitPattern`], meaning that any `T: Pod` is also
 /// [`AnyBitPattern`] but any `T: AnyBitPattern` is not necessarily [`Pod`].
@@ -26,8 +26,8 @@ use crate::{Pod, Zeroable};
 /// below safety rules.
 ///
 /// * *NOTE: even `C-style`, fieldless enums are intentionally **excluded** from
-/// this trait, since it is **unsound** for an enum to have a discriminant value
-/// that is not one of its defined variants.
+///   this trait, since it is **unsound** for an enum to have a discriminant
+///   value that is not one of its defined variants.
 ///
 /// # Safety
 ///
@@ -56,6 +56,9 @@ pub unsafe trait AnyBitPattern:
 unsafe impl<T: Pod> AnyBitPattern for T {}
 
 #[cfg(feature = "zeroable_maybe_uninit")]
-#[cfg_attr(feature = "nightly_docs", doc(cfg(feature = "zeroable_maybe_uninit")))]
+#[cfg_attr(
+  feature = "nightly_docs",
+  doc(cfg(feature = "zeroable_maybe_uninit"))
+)]
 unsafe impl<T> AnyBitPattern for core::mem::MaybeUninit<T> where T: AnyBitPattern
 {}

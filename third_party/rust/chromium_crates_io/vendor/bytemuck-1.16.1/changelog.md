@@ -1,5 +1,11 @@
 # `bytemuck` changelog
 
+## 1.16.1
+
+* **NOT SEMVER SUPPORTED:** Adds the  `nightly_float` Cargo feature. This
+  activates the `f16` and `f128` nightly features, and then provides `Zeroable`
+  and `Pod` impls for those types.
+
 ## 1.16.0
 
 * Adds a `const_zeroed` feature (MSRV 1.75) which puts a `zeroed` fn at the crate root.

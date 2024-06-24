@@ -48,8 +48,12 @@ unsafe impl Zeroable for usize {}
 unsafe impl Zeroable for isize {}
 unsafe impl Zeroable for u128 {}
 unsafe impl Zeroable for i128 {}
+#[cfg(feature = "nightly_float")]
+unsafe impl Zeroable for f16 {}
 unsafe impl Zeroable for f32 {}
 unsafe impl Zeroable for f64 {}
+#[cfg(feature = "nightly_float")]
+unsafe impl Zeroable for f128 {}
 unsafe impl<T: Zeroable> Zeroable for Wrapping<T> {}
 unsafe impl<T: Zeroable> Zeroable for core::cmp::Reverse<T> {}
 

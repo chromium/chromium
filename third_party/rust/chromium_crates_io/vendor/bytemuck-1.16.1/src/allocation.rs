@@ -1,4 +1,5 @@
 #![cfg(feature = "extern_crate_alloc")]
+#![allow(clippy::duplicated_attributes)]
 
 //! Stuff to boost things in the `alloc` crate.
 //!

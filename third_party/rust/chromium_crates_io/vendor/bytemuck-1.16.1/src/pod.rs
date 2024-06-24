@@ -49,8 +49,12 @@ unsafe impl Pod for usize {}
 unsafe impl Pod for isize {}
 unsafe impl Pod for u128 {}
 unsafe impl Pod for i128 {}
+#[cfg(feature = "nightly_float")]
+unsafe impl Pod for f16 {}
 unsafe impl Pod for f32 {}
 unsafe impl Pod for f64 {}
+#[cfg(feature = "nightly_float")]
+unsafe impl Pod for f128 {}
 unsafe impl<T: Pod> Pod for Wrapping<T> {}
 
 #[cfg(feature = "unsound_ptr_pod_impl")]

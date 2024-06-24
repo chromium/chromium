@@ -589,7 +589,6 @@ third_party/mediapipe/src/mediapipe/util/tflite/operations 8 2
 third_party/mediapipe/src/third_party 1 1
 third_party/metrics_proto 2 1
 third_party/microsoft_webauthn 1 1
-third_party/ninja 1 1
 third_party/node/patches 2 1
 third_party/ocmock/OCMock 2 1
 third_party/opus/src/doc 1 1

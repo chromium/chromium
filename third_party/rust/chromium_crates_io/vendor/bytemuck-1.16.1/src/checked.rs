@@ -114,13 +114,13 @@ use crate::{
 ///
 /// # Safety
 ///
-/// * `Self` *must* have the same layout as the specified `Bits` except for
-/// the possible invalid bit patterns being checked during
-/// [`is_valid_bit_pattern`].
-///   * This almost certainly means your type must be `#[repr(C)]` or a similar
+/// * `Self` *must* have the same layout as the specified `Bits` except for the
+///   possible invalid bit patterns being checked during
+///   [`is_valid_bit_pattern`].
+/// * This almost certainly means your type must be `#[repr(C)]` or a similar
 ///   specified repr, but if you think you know better, you probably don't. If
-/// you   still think you know better, be careful and have fun. And don't mess
-/// it up   (I mean it).
+///   you still think you know better, be careful and have fun. And don't mess
+///   it up (I mean it).
 /// * If [`is_valid_bit_pattern`] returns true, then the bit pattern contained
 ///   in `bits` must also be valid for an instance of `Self`.
 /// * Probably more, don't mess it up (I mean it 2.0)
@@ -163,6 +163,7 @@ unsafe impl CheckedBitPattern for bool {
 
   #[inline]
   fn is_valid_bit_pattern(bits: &Self::Bits) -> bool {
+    // DO NOT use the `matches!` macro, it isn't 1.34 compatible.
     match *bits {
       0 | 1 => true,
       _ => false,
