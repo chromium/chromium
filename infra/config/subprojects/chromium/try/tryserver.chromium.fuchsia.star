@@ -121,6 +121,7 @@ try_.builder(
             "debug_builder",
             "remoteexec",
             "fuchsia_smart_display",
+            "x64",
         ],
     ),
     free_space = builders.free_space.high,

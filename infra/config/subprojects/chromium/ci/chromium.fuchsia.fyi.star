@@ -100,6 +100,7 @@ ci.builder(
             "fuchsia",
             "asan",
             "lsan",
+            "x64",
         ],
     ),
     console_view_entry = [
@@ -138,6 +139,7 @@ ci.builder(
             "debug_builder",
             "remoteexec",
             "fuchsia_smart_display",
+            "x64",
         ],
     ),
     free_space = free_space.high,

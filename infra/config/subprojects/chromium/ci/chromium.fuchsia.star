@@ -50,6 +50,7 @@ ci.builder(
             "debug_builder",
             "remoteexec",
             "fuchsia_smart_display",
+            "x64",
         ],
     ),
     # Runs two builds, which can cause the builder to run out of disk space
@@ -146,6 +147,7 @@ ci.builder(
             "remoteexec",
             "fuchsia",
             "cast_receiver_size_optimized",
+            "x64",
         ],
     ),
     free_space = free_space.high,
@@ -191,6 +193,7 @@ ci.builder(
             "remoteexec",
             "fuchsia",
             "cast_receiver_size_optimized",
+            "x64",
         ],
     ),
     console_view_entry = [
