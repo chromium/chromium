@@ -24,12 +24,15 @@ void PageColors::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kPageColors,
       /*default_value=*/ui::NativeTheme::PageColors::kOff);
-  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-                                /*default_value=*/false);
   registry->RegisterListPref(prefs::kPageColorsBlockList);
 #if BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
+                                /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kIsDefaultPageColorsOnHighContrast,
                                 /*default_value=*/true);
+#else
+  registry->RegisterBooleanPref(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
+                                /*default_value=*/false);
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -42,10 +45,6 @@ void PageColors::Init() {
       prefs::kApplyPageColorsOnlyOnIncreasedContrast,
       base::BindRepeating(&PageColors::OnPageColorsChanged,
                           weak_factory_.GetWeakPtr()));
-#if BUILDFLAG(IS_WIN)
-  profile_prefs_->SetBoolean(prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-                             true);
-#endif  // BUILDFLAG(IS_WIN)
   OnPreferredContrastChanged();
 }
 
