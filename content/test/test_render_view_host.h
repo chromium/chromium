@@ -131,7 +131,6 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   ui::Compositor* GetCompositor() override;
   CursorManager* GetCursorManager() override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override {}
-  bool IsTestRenderWidgetHostView() const override;
 
   bool is_showing() const { return is_showing_; }
   bool is_occluded() const { return is_occluded_; }
@@ -155,8 +154,6 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   bool take_fallback_content_from_called() const {
     return take_fallback_content_from_called_;
   }
-
-  void set_has_focus(bool has_focus) { has_focus_ = has_focus; }
 
  protected:
   // RenderWidgetHostViewBase:
@@ -198,12 +195,6 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   raw_ptr<ui::Compositor, DanglingUntriaged> compositor_ = nullptr;
 
   CursorManager cursor_manager_;
-
-  // What `HasFocus()` will return.  Note that this is entirely a lie; it
-  // defaults to true, will change to false with `Hide()`, and can be toggled
-  // manually via `set_has_focus()`.  It does not reflect any other type of
-  // focus tracking, and may be out of sync with other notions of focus.
-  bool has_focus_ = true;
 };
 
 // TestRenderWidgetHostViewChildFrame -----------------------------------------

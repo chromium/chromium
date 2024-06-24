@@ -86,7 +86,7 @@ TestWebContents::~TestWebContents() = default;
 
 const TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() const {
   const auto* const instance = WebContentsImpl::GetPrimaryMainFrame();
-  CHECK(instance->IsTestRenderFrameHost())
+  DCHECK(instance->IsTestRenderFrameHost())
       << "You may want to instantiate RenderViewHostTestEnabler.";
   return static_cast<const TestRenderFrameHost*>(instance);
 }
@@ -98,7 +98,7 @@ TestRenderFrameHost* TestWebContents::GetPrimaryMainFrame() {
 
 TestRenderViewHost* TestWebContents::GetRenderViewHost() {
   auto* instance = WebContentsImpl::GetRenderViewHost();
-  CHECK(instance->IsTestRenderViewHost())
+  DCHECK(instance->IsTestRenderViewHost())
       << "You may want to instantiate RenderViewHostTestEnabler.";
   return static_cast<TestRenderViewHost*>(instance);
 }
@@ -566,18 +566,6 @@ void TestWebContents::SetMediaCaptureRawDeviceIdsOpened(
     blink::mojom::MediaStreamType type,
     std::vector<std::string> ids) {
   media_capture_raw_device_ids_opened_[type] = std::move(ids);
-}
-
-void TestWebContents::SetHasPictureInPictureDocument(bool has_pip) {
-  WebContentsImpl::SetHasPictureInPictureDocument(has_pip);
-}
-
-void TestWebContents::SetRenderWidgetHostViewHasFocus(bool has_focus) {
-  auto* const instance = WebContentsImpl::GetRenderWidgetHostView();
-  CHECK(static_cast<content::RenderWidgetHostViewBase*>(instance)
-            ->IsTestRenderWidgetHostView())
-      << "You may want to instantiate RenderViewHostTestEnabler.";
-  static_cast<TestRenderWidgetHostView*>(instance)->set_has_focus(has_focus);
 }
 
 }  // namespace content

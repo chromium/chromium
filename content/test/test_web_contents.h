@@ -184,11 +184,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SetMediaCaptureRawDeviceIdsOpened(blink::mojom::MediaStreamType type,
                                          std::vector<std::string> ids) override;
 
-  void SetHasPictureInPictureDocument(
-      bool has_picture_in_picture_document) override;
-
-  void SetRenderWidgetHostViewHasFocus(bool has_focus) override;
-
  protected:
   // The deprecated WebContentsTester still needs to subclass this.
   explicit TestWebContents(BrowserContext* browser_context);
