@@ -916,8 +916,8 @@ Enterprise policies can control the updates of applications:
 * If no per-application setting specifies otherwise, the default update
   policy is used.
 * If the default update policy is unset, the application may be updated.
-* Updates are always enabled for the updater itself and can't be disabled by
-  policy..
+* Updates and qualification are always enabled for the updater itself and can't
+  be disabled by policy.
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 

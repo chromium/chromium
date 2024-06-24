@@ -2687,6 +2687,43 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
+  // Disable global update via CBCM.
+  DMPushEnrollmentToken(kEnrollmentToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
+  omaha_settings.set_cloud_policy_overrides_platform_policy(true);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(SetupFakeUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
+
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectUpdateSequence(test_server_.get(), kQualificationAppId, "",
+                           UpdateService::Priority::kBackground,
+                           base::Version("0.1"), base::Version("0.2")));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Verify the new instance is qualified and activated itself.
+  ExpectDeviceManagementPolicyFetchRequest(
+      test_server_.get(), kDMToken, omaha_settings, /*first_request=*/false);
+  test_server_->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
+                            request::GetContentMatcher(
+                                {base::StringPrintf(".*%s.*", kUpdaterAppId)})},
+                           ")]}'\n");
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 #if BUILDFLAG(IS_WIN)
 // RuntimeEnrollmentToken is supported on Windows only.
 TEST_F(IntegrationTestDeviceManagement, RuntimeEnrollmentToken) {

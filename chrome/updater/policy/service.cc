@@ -277,8 +277,8 @@ PolicyStatus<int> PolicyService::GetPolicyForAppInstalls(
 PolicyStatus<int> PolicyService::GetPolicyForAppUpdates(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (app_id == kUpdaterAppId) {
-    return {};  // Self-updates for the updater can't be disabled by policy.
+  if (app_id == kUpdaterAppId || app_id == kQualificationAppId) {
+    return {};  // Updater self-updates and qualification can't be disabled.
   }
   return QueryAppPolicy(
       &PolicyManagerInterface::GetEffectivePolicyForAppUpdates, app_id);
