@@ -469,13 +469,6 @@
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
         "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
-      },
-      {
-        "positive_pattern": "adresse",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL"],
-        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
       }
     ],
     "it": [
@@ -484,13 +477,6 @@
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
-      },
-      {
-        "positive_pattern": "indirizzo",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": ["LABEL"],
         "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
       }
     ],
@@ -1137,7 +1123,7 @@
     ],
     "it": [
       {
-        "positive_pattern": "citt[àa]\\b",
+        "positive_pattern": "citt[àa]\\b|localita",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
@@ -2192,7 +2178,7 @@
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER", "INPUT_SEARCH", "INPUT_PASSWORD"]
       }
     ]
   },
@@ -2203,7 +2189,7 @@
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER", "INPUT_SEARCH", "INPUT_PASSWORD"]
       }
     ]
   },
@@ -2214,7 +2200,7 @@
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
-        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER", "INPUT_SEARCH"]
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER", "INPUT_SEARCH", "INPUT_PASSWORD"]
       }
     ]
   },
