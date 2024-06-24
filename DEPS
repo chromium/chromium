@@ -4684,6 +4684,12 @@ deps = {
       'condition': 'checkout_chromeos and checkout_src_internal',
    },
 
+  'src/components/accessibility/internal': {
+      'url': Var('chrome_git') + '/chrome-accessibility.git' + '@' +
+        '095a1df960099b02d2b06f59a796f557ae6e4622',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/autofill/core/browser/form_parsing/internal_resources': {
       'url': Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
         '5201218396a23397b2c6ef57faee770d88df7293',

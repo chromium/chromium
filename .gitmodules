@@ -714,6 +714,10 @@
 	path = chrome/services/speech/internal
 	url = https://chrome-internal.googlesource.com/chromeos/speech
 	gclient-condition = checkout_chromeos and checkout_src_internal
+[submodule "components/accessibility/internal"]
+	path = components/accessibility/internal
+	url = https://chrome-internal.googlesource.com/chrome-accessibility
+	gclient-condition = checkout_src_internal
 [submodule "components/autofill/core/browser/form_parsing/internal_resources"]
 	path = components/autofill/core/browser/form_parsing/internal_resources
 	url = https://chrome-internal.googlesource.com/chrome/components/autofill_regex_patterns
