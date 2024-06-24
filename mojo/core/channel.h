@@ -132,7 +132,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     };
 
     // Header used for all messages when the Channel backs an ipcz transport.
-    struct ALIGNAS(8) IpczHeader {
+    struct IpczHeader {
       // The size of this header in bytes. Used for versioning.
       uint16_t size;
 

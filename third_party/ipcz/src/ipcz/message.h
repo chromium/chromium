@@ -29,7 +29,7 @@ namespace internal {
 
 // Header which begins all messages. The header layout is versioned for
 // extensibility and long-term support.
-struct IPCZ_ALIGN(8) MessageHeader {
+struct MessageHeader {
   // The size of the header in bytes.
   uint8_t size;
 
@@ -61,7 +61,7 @@ using MessageHeaderV0 = MessageHeader;
 using LatestMessageHeaderVersion = MessageHeaderV0;
 
 // Header encoding metadata about a structure within a message.
-struct IPCZ_ALIGN(8) StructHeader {
+struct StructHeader {
   // The size of the structure in bytes. Used for versioning.
   uint32_t size;
 
@@ -71,7 +71,7 @@ struct IPCZ_ALIGN(8) StructHeader {
 static_assert(sizeof(StructHeader) == 8, "Unexpected size");
 
 // Header encoding metadata about any array within a message.
-struct IPCZ_ALIGN(8) ArrayHeader {
+struct ArrayHeader {
   // The total number of bytes occupied by the array, including this header and
   // any padding for 8-byte alignment.
   uint32_t num_bytes;
@@ -85,7 +85,7 @@ struct IPCZ_ALIGN(8) ArrayHeader {
 // array of driver handles. This structure describes both arrays for a single
 // driver object. For every object attached to a message, there one of these
 // structs.
-struct IPCZ_ALIGN(8) DriverObjectData {
+struct DriverObjectData {
   // Array index of the byte array which contains serialized data for this
   // driver object. This is specifically the byte index into the enclosing
   // message where the array's ArrayHeader can be found.
@@ -104,7 +104,7 @@ struct IPCZ_ALIGN(8) DriverObjectData {
 
 // Encodes information about a range of driver objects. Used to encode
 // DriverObject array parameters.
-struct IPCZ_ALIGN(8) DriverObjectArrayData {
+struct DriverObjectArrayData {
   // Index into the message's unified DriverObject array which corresponds to
   // the first DriverObject belonging to the array described by this structure.
   uint32_t first_object_index;
