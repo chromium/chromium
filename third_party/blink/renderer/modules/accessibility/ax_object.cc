@@ -2182,6 +2182,20 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
       node_data->AddIntAttribute(
           ax::mojom::blink::IntAttribute::kAriaCellColumnIndex, aria_colindex);
     }
+
+    if (RuntimeEnabledFeatures::AriaRowColIndexTextEnabled()) {
+      const AtomicString& aria_cell_row_index_text =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRowIndexText);
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kAriaCellRowIndexText,
+          aria_cell_row_index_text);
+      const AtomicString& aria_cell_column_index_text =
+          GetAOMPropertyOrARIAAttribute(AOMStringProperty::kColIndexText);
+      TruncateAndAddStringAttribute(
+          node_data,
+          ax::mojom::blink::StringAttribute::kAriaCellColumnIndexText,
+          aria_cell_column_index_text);
+    }
   }
 
   if (ui::IsTableHeader(RoleValue()) &&

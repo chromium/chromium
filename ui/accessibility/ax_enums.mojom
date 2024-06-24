@@ -573,8 +573,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 6
-// Next value: 39
+// Next version: 7
+// Next value: 41
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -587,6 +587,8 @@ enum StringAttribute {
   kAutoComplete = 4,
   [MinVersion=2] kAriaBrailleLabel = 33,
   [MinVersion=2] kAriaBrailleRoleDescription = 34,
+  [MinVersion=6] kAriaCellColumnIndexText = 39,
+  [MinVersion=6] kAriaCellRowIndexText = 40,
   // Deprecated - Do not use.
   // These attributes are replaced by its `StringListAttribute` equivalents to
   // support multiple contiguous calls to `ariaNotify`.

@@ -1696,6 +1696,12 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kAccessKey:
         result += " access_key=" + value;
         break;
+      case ax::mojom::StringAttribute::kAriaCellColumnIndexText:
+        result += " aria_cell_column_index_text=" + value;
+        break;
+      case ax::mojom::StringAttribute::kAriaCellRowIndexText:
+        result += " aria_cell_row_index_text=" + value;
+        break;
       case ax::mojom::StringAttribute::kAriaInvalidValueDeprecated:
         result += " aria_invalid_value=" + value;
         break;

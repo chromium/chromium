@@ -63,6 +63,7 @@ interface AccessibleNode : EventTarget
     getter childNodes
     getter colCount
     getter colIndex
+    getter colIndexText
     getter colSpan
     getter controls
     getter current
@@ -101,6 +102,7 @@ interface AccessibleNode : EventTarget
     getter roleDescription
     getter rowCount
     getter rowIndex
+    getter rowIndexText
     getter rowSpan
     getter selected
     getter setSize
@@ -119,6 +121,7 @@ interface AccessibleNode : EventTarget
     setter checked
     setter colCount
     setter colIndex
+    setter colIndexText
     setter colSpan
     setter controls
     setter current
@@ -157,6 +160,7 @@ interface AccessibleNode : EventTarget
     setter roleDescription
     setter rowCount
     setter rowIndex
+    setter rowIndexText
     setter rowSpan
     setter selected
     setter setSize
@@ -2480,6 +2484,7 @@ interface Element : Node
     getter ariaChecked
     getter ariaColCount
     getter ariaColIndex
+    getter ariaColIndexText
     getter ariaColSpan
     getter ariaControlsElements
     getter ariaCurrent
@@ -2512,6 +2517,7 @@ interface Element : Node
     getter ariaRoleDescription
     getter ariaRowCount
     getter ariaRowIndex
+    getter ariaRowIndexText
     getter ariaRowSpan
     getter ariaSelected
     getter ariaSetSize
@@ -2630,6 +2636,7 @@ interface Element : Node
     setter ariaChecked
     setter ariaColCount
     setter ariaColIndex
+    setter ariaColIndexText
     setter ariaColSpan
     setter ariaControlsElements
     setter ariaCurrent
@@ -2662,6 +2669,7 @@ interface Element : Node
     setter ariaRoleDescription
     setter ariaRowCount
     setter ariaRowIndex
+    setter ariaRowIndexText
     setter ariaRowSpan
     setter ariaSelected
     setter ariaSetSize
@@ -2701,6 +2709,7 @@ interface ElementInternals
     getter ariaChecked
     getter ariaColCount
     getter ariaColIndex
+    getter ariaColIndexText
     getter ariaColSpan
     getter ariaControlsElements
     getter ariaCurrent
@@ -2733,6 +2742,7 @@ interface ElementInternals
     getter ariaRoleDescription
     getter ariaRowCount
     getter ariaRowIndex
+    getter ariaRowIndexText
     getter ariaRowSpan
     getter ariaSelected
     getter ariaSetSize
@@ -2764,6 +2774,7 @@ interface ElementInternals
     setter ariaChecked
     setter ariaColCount
     setter ariaColIndex
+    setter ariaColIndexText
     setter ariaColSpan
     setter ariaControlsElements
     setter ariaCurrent
@@ -2796,6 +2807,7 @@ interface ElementInternals
     setter ariaRoleDescription
     setter ariaRowCount
     setter ariaRowIndex
+    setter ariaRowIndexText
     setter ariaRowSpan
     setter ariaSelected
     setter ariaSetSize

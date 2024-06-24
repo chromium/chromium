@@ -4381,6 +4381,8 @@ enum WebFeature {
   kDeprecatedAIDefaultGenericSessionOptions = 5011,
   kDeprecatedAITextSessionExecute = 5012,
   kDeprecatedAITextSessionExecuteStreaming = 5013,
+  kARIAColIndexTextAttribute = 5014,
+  kARIARowIndexTextAttribute = 5015,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

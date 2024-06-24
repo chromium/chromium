@@ -11095,6 +11095,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5011" label="DeprecatedAIDefaultGenericSessionOptions"/>
   <int value="5012" label="DeprecatedAITextSessionExecute"/>
   <int value="5013" label="DeprecatedAITextSessionExecuteStreaming"/>
+  <int value="5014" label="ARIAColIndexTextAttribute"/>
+  <int value="5015" label="ARIARowIndexTextAttribute"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

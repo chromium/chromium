@@ -555,6 +555,8 @@ data/accessibility/aria/aria-col-row-index-expected-blink.txt
 data/accessibility/aria/aria-col-row-index-expected-mac.txt
 data/accessibility/aria/aria-col-row-index-expected-uia-win.txt
 data/accessibility/aria/aria-col-row-index-expected-win.txt
+data/accessibility/aria/aria-col-row-index-text-expected-blink.txt
+data/accessibility/aria/aria-col-row-index-text.html
 data/accessibility/aria/aria-col-row-index-undefined-expected-android-assist-data.txt
 data/accessibility/aria/aria-col-row-index-undefined-expected-android-external.txt
 data/accessibility/aria/aria-col-row-index-undefined-expected-android.txt

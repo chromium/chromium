@@ -103,6 +103,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // AccessibilitySelectListOpen.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "HTMLSelectListElement");
+  // Enable aria-colindextext and aria-rowindextext.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AriaRowColIndexText");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
@@ -658,6 +661,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaColRowIndexUndefined) {
   RunAriaTest(FILE_PATH_LITERAL("aria-col-row-index-undefined.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaColRowIndexText) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-col-row-index-text.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

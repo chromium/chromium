@@ -14,6 +14,7 @@ interface mixin AriaAttributes {
     [CEReactions, Reflect=aria_checked] attribute DOMString? ariaChecked;
     [CEReactions, Reflect=aria_colcount] attribute DOMString? ariaColCount;
     [CEReactions, Reflect=aria_colindex] attribute DOMString? ariaColIndex;
+    [RuntimeEnabled=AriaRowColIndexText, CEReactions, Reflect=aria_colindextext] attribute DOMString? ariaColIndexText;
     [CEReactions, Reflect=aria_colspan] attribute DOMString? ariaColSpan;
     [CEReactions, Reflect=aria_current] attribute DOMString? ariaCurrent;
     [CEReactions, Reflect=aria_description] attribute DOMString? ariaDescription;
@@ -39,6 +40,7 @@ interface mixin AriaAttributes {
     [CEReactions, Reflect=aria_roledescription] attribute DOMString? ariaRoleDescription;
     [CEReactions, Reflect=aria_rowcount] attribute DOMString? ariaRowCount;
     [CEReactions, Reflect=aria_rowindex] attribute DOMString? ariaRowIndex;
+    [RuntimeEnabled=AriaRowColIndexText, CEReactions, Reflect=aria_rowindextext] attribute DOMString? ariaRowIndexText;
     [CEReactions, Reflect=aria_rowspan] attribute DOMString? ariaRowSpan;
     [CEReactions, Reflect=aria_selected] attribute DOMString? ariaSelected;
     [CEReactions, Reflect=aria_setsize] attribute DOMString? ariaSetSize;

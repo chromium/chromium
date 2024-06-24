@@ -40,6 +40,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaChecked
     property ariaColCount
     property ariaColIndex
+    property ariaColIndexText
     property ariaColSpan
     property ariaControlsElements
     property ariaCurrent
@@ -73,6 +74,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaRoleDescription
     property ariaRowCount
     property ariaRowIndex
+    property ariaRowIndexText
     property ariaRowSpan
     property ariaSelected
     property ariaSetSize
@@ -1337,6 +1339,7 @@ namespace http://www.w3.org/2000/svg
     property ariaChecked
     property ariaColCount
     property ariaColIndex
+    property ariaColIndexText
     property ariaColSpan
     property ariaControlsElements
     property ariaCurrent
@@ -1370,6 +1373,7 @@ namespace http://www.w3.org/2000/svg
     property ariaRoleDescription
     property ariaRowCount
     property ariaRowIndex
+    property ariaRowIndexText
     property ariaRowSpan
     property ariaSelected
     property ariaSetSize

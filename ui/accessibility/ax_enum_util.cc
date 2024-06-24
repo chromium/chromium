@@ -1269,6 +1269,10 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "none";
     case ax::mojom::StringAttribute::kAccessKey:
       return "accessKey";
+    case ax::mojom::StringAttribute::kAriaCellColumnIndexText:
+      return "ariaCellColumnIndexText";
+    case ax::mojom::StringAttribute::kAriaCellRowIndexText:
+      return "ariaCellRowIndexText";
     case ax::mojom::StringAttribute::kAriaInvalidValueDeprecated:
       return "ariaInvalidValue";
     case ax::mojom::StringAttribute::kAutoComplete:

@@ -26,6 +26,7 @@
     },
     {name: "aria-colcount", type: "integer"},
     {name: "aria-colindex", type: "integer"},
+    {name: "aria-colindextext", type: "string"},
     {name: "aria-colspan", type: "integer"},
     {name: "aria-controls", type: "IDREF_list"},
     {
@@ -104,6 +105,7 @@
     {name: "aria-roledescription", type: "string"},
     {name: "aria-rowcount", type: "integer"},
     {name: "aria-rowindex", type: "integer"},
+    {name: "aria-rowindextext", type: "string"},
     {name: "aria-rowspan", type: "integer"},
     {
       name: "aria-selected",

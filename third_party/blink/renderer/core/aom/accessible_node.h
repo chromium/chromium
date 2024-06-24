@@ -29,6 +29,7 @@ enum class AOMStringProperty {
   kAriaBrailleLabel,
   kAriaBrailleRoleDescription,
   kChecked,
+  kColIndexText,
   kCurrent,
   kDescription,
   kHasPopup,
@@ -42,6 +43,7 @@ enum class AOMStringProperty {
   kRelevant,
   kRole,
   kRoleDescription,
+  kRowIndexText,
   kSort,
   kValueText,
   kVirtualContent
@@ -232,6 +234,9 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   std::optional<uint32_t> colIndex() const;
   void setColIndex(std::optional<uint32_t>);
 
+  AtomicString colIndexText() const;
+  void setColIndexText(const AtomicString&);
+
   std::optional<uint32_t> colSpan() const;
   void setColSpan(std::optional<uint32_t>);
 
@@ -330,6 +335,9 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
 
   std::optional<uint32_t> rowIndex() const;
   void setRowIndex(std::optional<uint32_t>);
+
+  AtomicString rowIndexText() const;
+  void setRowIndexText(const AtomicString&);
 
   std::optional<uint32_t> rowSpan() const;
   void setRowSpan(std::optional<uint32_t>);
