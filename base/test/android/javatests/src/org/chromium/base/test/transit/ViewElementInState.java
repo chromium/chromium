@@ -15,8 +15,6 @@ import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.transit.ViewElement.Scope;
 
-import java.util.Set;
-
 /**
  * Represents a ViewElement added to a ConditionState.
  *
@@ -31,13 +29,14 @@ public class ViewElementInState extends ElementInState<View> {
     private final ViewElement mViewElement;
     private final @Nullable Condition mGate;
 
-    private final ConditionWithResult<View> mEnterCondition;
-    private final @Nullable Condition mExitCondition;
-
     ViewElementInState(ViewElement viewElement, @Nullable Condition gate) {
+        super(viewElement.getId());
         mViewElement = viewElement;
         mGate = gate;
+    }
 
+    @Override
+    public ConditionWithResult<View> createEnterCondition() {
         Matcher<View> viewMatcher = mViewElement.getViewMatcher();
         ViewElement.Options elementOptions = mViewElement.getOptions();
         DisplayedCondition.Options conditionOptions =
@@ -49,41 +48,19 @@ public class ViewElementInState extends ElementInState<View> {
             GatedDisplayedCondition gatedDisplayedCondition =
                     new GatedDisplayedCondition(
                             mViewElement.getViewMatcher(), mGate, conditionOptions);
-            mEnterCondition = gatedDisplayedCondition;
+            return gatedDisplayedCondition;
         } else {
             DisplayedCondition displayedCondition =
                     new DisplayedCondition(viewMatcher, conditionOptions);
-            mEnterCondition = displayedCondition;
-        }
-
-        switch (mViewElement.getScope()) {
-            case Scope.SCOPED:
-                mExitCondition = new NotDisplayedAnymoreCondition(viewMatcher);
-                break;
-            case Scope.UNSCOPED:
-                mExitCondition = null;
-                break;
-            default:
-                mExitCondition = null;
-                assert false;
+            return displayedCondition;
         }
     }
 
     @Override
-    public String getId() {
-        return mViewElement.getId();
-    }
-
-    @Override
-    public ConditionWithResult<View> getEnterCondition() {
-        return mEnterCondition;
-    }
-
-    @Override
-    public @Nullable Condition getExitCondition(Set<String> destinationElementIds) {
+    public @Nullable Condition createExitCondition() {
         switch (mViewElement.getScope()) {
             case Scope.SCOPED:
-                return destinationElementIds.contains(getId()) ? null : mExitCondition;
+                return new NotDisplayedAnymoreCondition(mViewElement.getViewMatcher());
             case Scope.UNSCOPED:
                 return null;
             default:

@@ -9,7 +9,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
 
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -47,11 +46,8 @@ public class LogicalElement<ParamT> extends ElementInState<Void> {
             };
     private final boolean mIsRunOnUiThread;
     private final String mDescription;
-    private final String mId;
     private final Function<ParamT, ConditionStatus> mCheckFunction;
     private final Supplier<ParamT> mParamSupplier;
-    private final ConditionWithResult<Void> mEnterCondition;
-    private final Condition mExitCondition;
 
     /**
      * Create a LogicalElement that runs the check on the UI Thread.
@@ -151,33 +147,21 @@ public class LogicalElement<ParamT> extends ElementInState<Void> {
             Function<ParamT, ConditionStatus> checkFunction,
             Supplier<ParamT> paramSupplier,
             @Nullable String id) {
+        super("LE/" + (id != null ? id : description));
         mIsRunOnUiThread = isRunOnUiThread;
         mDescription = description;
-        mId = "LE/" + (id != null ? id : description);
         mCheckFunction = checkFunction;
         mParamSupplier = paramSupplier;
-
-        mEnterCondition = new EnterCondition(mIsRunOnUiThread);
-        mExitCondition = new ExitCondition(mIsRunOnUiThread);
     }
 
     @Override
-    public String getId() {
-        return mId;
+    public ConditionWithResult<Void> createEnterCondition() {
+        return new EnterCondition(mIsRunOnUiThread);
     }
 
     @Override
-    public ConditionWithResult<Void> getEnterCondition() {
-        return mEnterCondition;
-    }
-
-    @Override
-    public Condition getExitCondition(Set<String> destinationElementIds) {
-        if (!destinationElementIds.contains(mId)) {
-            return mExitCondition;
-        } else {
-            return null;
-        }
+    public Condition createExitCondition() {
+        return new ExitCondition(mIsRunOnUiThread);
     }
 
     private class EnterCondition extends ConditionWithResult<Void> {

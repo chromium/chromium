@@ -12,7 +12,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents an {@link Activity} that needs to exist to consider the Station active.
@@ -23,33 +22,20 @@ import java.util.Set;
  */
 public class ActivityElement<ActivityT extends Activity> extends ElementInState<ActivityT> {
     private final Class<ActivityT> mActivityClass;
-    private final String mId;
-    private final ActivityExistsCondition mEnterCondition;
 
     ActivityElement(Class<ActivityT> activityClass) {
+        super("AE/" + activityClass.getCanonicalName());
         mActivityClass = activityClass;
-        mId = "AE/" + activityClass.getCanonicalName();
-        mEnterCondition = new ActivityExistsCondition();
     }
 
     @Override
-    public String getId() {
-        return mId;
+    public ConditionWithResult<ActivityT> createEnterCondition() {
+        return new ActivityExistsCondition();
     }
 
     @Override
-    public ConditionWithResult<ActivityT> getEnterCondition() {
-        return mEnterCondition;
-    }
-
-    @Override
-    public @Nullable Condition getExitCondition(Set<String> destinationElementIds) {
+    public @Nullable Condition createExitCondition() {
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return mId;
     }
 
     private class ActivityExistsCondition extends ConditionWithResult<ActivityT> {
