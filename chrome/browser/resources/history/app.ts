@@ -629,7 +629,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.lastSelectedTab_ = this.selectedTab_;
     // Change in the currently selected tab requires change in the currently
     // selected page.
-    this.selectedPage_ = TABBED_PAGES[this.selectedTab_];
+    if (!this.selectedPage_ || TABBED_PAGES.includes(this.selectedPage_)) {
+      this.selectedPage_ = TABBED_PAGES[this.selectedTab_];
+    }
     this.browserService_!.setLastSelectedTab(this.selectedTab_);
   }
 
