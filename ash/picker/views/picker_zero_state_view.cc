@@ -284,8 +284,8 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                               weak_ptr_factory_.GetWeakPtr(), result);
       switch (GetEditorSubmenu(editor_data->category)) {
         case EditorSubmenu::kNone:
-          GetOrCreateSectionView(PickerCategory::kEditorRewrite)
-              ->AddResult(result, &preview_controller_, std::move(callback));
+          primary_section_view_->AddResult(result, &preview_controller_,
+                                           std::move(callback));
           break;
         case EditorSubmenu::kLength:
           length_submenu->AddEntry(result, std::move(callback));
@@ -311,13 +311,11 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   }
 
   if (!length_submenu->IsEmpty()) {
-    GetOrCreateSectionView(PickerCategory::kEditorRewrite)
-        ->AddItemWithSubmenu(std::move(length_submenu));
+    primary_section_view_->AddItemWithSubmenu(std::move(length_submenu));
   }
 
   if (!tone_submenu->IsEmpty()) {
-    GetOrCreateSectionView(PickerCategory::kEditorRewrite)
-        ->AddItemWithSubmenu(std::move(tone_submenu));
+    primary_section_view_->AddItemWithSubmenu(std::move(tone_submenu));
   }
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());

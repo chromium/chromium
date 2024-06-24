@@ -166,10 +166,11 @@ TEST_F(PickerZeroStateViewTest, ShowsSuggestedResults) {
                       u"test drive file")))))
       .Times(1);
 
-  ASSERT_THAT(view->PrimarySectionForTesting().item_views_for_testing(),
-              Not(IsEmpty()));
+  ASSERT_THAT(
+      view->primary_section_view_for_testing()->item_views_for_testing(),
+      Not(IsEmpty()));
   PickerItemView* item_view =
-      view->PrimarySectionForTesting().item_views_for_testing()[0];
+      view->primary_section_view_for_testing()->item_views_for_testing()[0];
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 }
@@ -185,8 +186,7 @@ TEST_F(PickerZeroStateViewTest,
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
                            kPickerWidth, &asset_fetcher_);
 
-  EXPECT_THAT(view.category_section_views_for_testing(),
-              Not(Contains(Key(PickerCategoryType::kEditorRewrite))));
+  EXPECT_THAT(view.primary_section_view_for_testing(), IsNull());
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
@@ -213,20 +213,18 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
                            kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
-      view.category_section_views_for_testing(),
-      ElementsAre(Pair(
-          PickerCategoryType::kEditorRewrite,
-          Pointee(AllOf(
-              Property("GetVisible", &views::View::GetVisible, true),
-              Property(
-                  "item_views_for_testing",
-                  &PickerSectionView::item_views_for_testing,
-                  ElementsAre(
-                      AsView<PickerListItemView>(Property(
-                          &PickerListItemView::GetPrimaryTextForTesting, u"a")),
-                      AsView<PickerListItemView>(Property(
-                          &PickerListItemView::GetPrimaryTextForTesting,
-                          u"b")))))))));
+      view.primary_section_view_for_testing(),
+      Pointee(AllOf(
+          Property("GetVisible", &views::View::GetVisible, true),
+          Property(
+              "item_views_for_testing",
+              &PickerSectionView::item_views_for_testing,
+              ElementsAre(
+                  AsView<PickerListItemView>(Property(
+                      &PickerListItemView::GetPrimaryTextForTesting, u"a")),
+                  AsView<PickerListItemView>(
+                      Property(&PickerListItemView::GetPrimaryTextForTesting,
+                               u"b")))))));
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
@@ -253,22 +251,20 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
                            kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
-      view.category_section_views_for_testing(),
-      ElementsAre(Pair(
-          PickerCategoryType::kEditorRewrite,
-          Pointee(AllOf(
-              Property("GetVisible", &views::View::GetVisible, true),
-              Property("item_views_for_testing",
-                       &PickerSectionView::item_views_for_testing,
-                       ElementsAre(
-                           AsView<PickerItemWithSubmenuView>(Property(
-                               &PickerItemWithSubmenuView::GetTextForTesting,
-                               l10n_util::GetStringUTF16(
-                                   IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))),
-                           AsView<PickerItemWithSubmenuView>(Property(
-                               &PickerItemWithSubmenuView::GetTextForTesting,
-                               l10n_util::GetStringUTF16(
-                                   IDS_PICKER_CHANGE_TONE_MENU_LABEL))))))))));
+      view.primary_section_view_for_testing(),
+      Pointee(AllOf(
+          Property("GetVisible", &views::View::GetVisible, true),
+          Property(
+              "item_views_for_testing",
+              &PickerSectionView::item_views_for_testing,
+              ElementsAre(AsView<PickerItemWithSubmenuView>(Property(
+                              &PickerItemWithSubmenuView::GetTextForTesting,
+                              l10n_util::GetStringUTF16(
+                                  IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))),
+                          AsView<PickerItemWithSubmenuView>(Property(
+                              &PickerItemWithSubmenuView::GetTextForTesting,
+                              l10n_util::GetStringUTF16(
+                                  IDS_PICKER_CHANGE_TONE_MENU_LABEL))))))));
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {

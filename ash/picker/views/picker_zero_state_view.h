@@ -63,8 +63,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
     return category_section_views_;
   }
 
-  PickerSectionView& PrimarySectionForTesting() const {
-    return *primary_section_view_;
+  PickerSectionView* primary_section_view_for_testing() {
+    return primary_section_view_;
   }
 
  private:
