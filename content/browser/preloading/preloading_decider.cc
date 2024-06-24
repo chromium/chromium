@@ -683,7 +683,12 @@ bool PreloadingDecider::HasCandidatesForTesting() const {
 
 void PreloadingDecider::OnPreloadDiscarded(SpeculationCandidateKey key) {
   auto it = processed_candidates_.find(key);
-  CHECK(it != processed_candidates_.end());
+  // If the preload is triggered outside of `PreloadingDecider`, ignore it.
+  // Currently, `PrerendererImpl` triggers prefetch ahead of prerender.
+  if (it == processed_candidates_.end()) {
+    return;
+  }
+
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates =
       std::move(it->second);
   processed_candidates_.erase(it);
