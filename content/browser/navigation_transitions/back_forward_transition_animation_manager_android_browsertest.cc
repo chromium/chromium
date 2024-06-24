@@ -13,6 +13,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
@@ -106,17 +107,6 @@ enum class GestureType {
   k90ViewportWidth,
   kCancel,
   kInvoke,
-};
-
-struct GestureAndScreenChanged {
-  GestureType gesture;
-  // This is set when the screen content doesn't change. This is used, for
-  // example, when we don't have a screenshot for a destination entry and we
-  // have not implemented the fallback UX.
-  //
-  // TODO(crbug.com/40260440): Remove this bit and this struct when we
-  // have a fallback UX.
-  bool screen_changed = true;
 };
 
 struct LayerTransforms {
@@ -278,16 +268,14 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
-      int destination_entry_id,
-      BackForwardTransitionAnimationManagerAndroid* animation_manager,
-      const NavigationTransitionData& transition_data)
+      NavigationEntryImpl* destination_entry,
+      BackForwardTransitionAnimationManagerAndroid* animation_manager)
       : BackForwardTransitionAnimator(web_contents_view_android,
                                       controller,
                                       gesture,
                                       nav_type,
-                                      destination_entry_id,
-                                      animation_manager,
-                                      transition_data),
+                                      destination_entry,
+                                      animation_manager),
         wcva_(web_contents_view_android) {}
 
   ~AnimatorForTesting() override {
@@ -577,12 +565,12 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
-      int destination_entry_id,
-      BackForwardTransitionAnimationManagerAndroid* animation_manager,
-      const NavigationTransitionData& transition_data) override {
+      NavigationEntryImpl* destination_entry,
+      BackForwardTransitionAnimationManagerAndroid* animation_manager)
+      override {
     return std::make_unique<AnimatorForTesting>(
         web_contents_view_android, controller, gesture, nav_type,
-        destination_entry_id, animation_manager, transition_data);
+        destination_entry, animation_manager);
   }
 };
 }  // namespace
@@ -707,14 +695,14 @@ class BackForwardTransitionAnimationManagerBrowserTest
   // Perform a history back navigation by sending the specified gesture events.
   // Checks that the content in the viewport matches the expectations.
   void HistoryBackNavAndAssertAnimatedTransition(
-      const std::vector<GestureAndScreenChanged>& gestures) {
+      const std::vector<GestureType>& gestures) {
     auto* animation_manager = GetAnimationManager(web_contents());
 
-    for (const auto& [gesture, screen_changed] : gestures) {
+    for (const auto& gesture : gestures) {
       switch (gesture) {
         case GestureType::kStart: {
           SCOPED_TRACE("kStart");
-          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
+          ProgressGestureAndExpectTransformAndScrim(gesture);
           ASSERT_FALSE(
               web_contents()->GetController().GetActiveEntry()->GetUserData(
                   NavigationEntryScreenshot::kUserDataKey));
@@ -722,17 +710,17 @@ class BackForwardTransitionAnimationManagerBrowserTest
         }
         case GestureType::k30ViewportWidth: {
           SCOPED_TRACE("k30ViewportWidth");
-          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
+          ProgressGestureAndExpectTransformAndScrim(gesture);
           break;
         }
         case GestureType::k60ViewportWidth: {
           SCOPED_TRACE("k60ViewportWidth");
-          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
+          ProgressGestureAndExpectTransformAndScrim(gesture);
           break;
         }
         case GestureType::k90ViewportWidth: {
           SCOPED_TRACE("k90ViewportWidth");
-          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
+          ProgressGestureAndExpectTransformAndScrim(gesture);
           break;
         }
         case GestureType::kCancel: {
@@ -740,14 +728,10 @@ class BackForwardTransitionAnimationManagerBrowserTest
           // Use a RunLoop because the animation runs asynchronously at the next
           // BeginFrame.
           base::RunLoop cancel_played;
-          if (screen_changed) {
-            GetAnimatorForTesting()->set_on_cancel_animation_displayed(
-                cancel_played.QuitClosure());
-          }
+          GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+              cancel_played.QuitClosure());
           animation_manager->OnGestureCancelled();
-          if (screen_changed) {
-            cancel_played.Run();
-          }
+          cancel_played.Run();
           break;
         }
         case GestureType::kInvoke: {
@@ -755,22 +739,17 @@ class BackForwardTransitionAnimationManagerBrowserTest
           // Use a RunLoop because the animation runs asynchronously at the next
           // BeginFrame.
           base::RunLoop invoke_played;
-          if (screen_changed) {
-            GetAnimatorForTesting()->set_on_invoke_animation_displayed(
-                invoke_played.QuitClosure());
-          }
+          GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+              invoke_played.QuitClosure());
           animation_manager->OnGestureInvoked();
-          if (screen_changed) {
-            invoke_played.Run();
-          }
+          invoke_played.Run();
           break;
         }
       }
     }
   }
 
-  void ProgressGestureAndExpectTransformAndScrim(GestureType gesture,
-                                                 bool screen_changed) {
+  void ProgressGestureAndExpectTransformAndScrim(GestureType gesture) {
     // The touch location doesn't matter.
     const gfx::PointF touch_pt(1, 1);
     const float progress = GetProgress(gesture, GetParam().edge);
@@ -783,11 +762,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
       GetAnimationManager(web_contents())
           ->OnGestureProgressed(ui::BackGestureEvent(touch_pt, progress));
     }
-    if (screen_changed) {
-      ExpectLayerTransformsAndScrimForGestureProgress(gesture);
-    } else {
-      ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
-    }
+    ExpectLayerTransformsAndScrimForGestureProgress(gesture);
   }
 
   void ExpectLayerTransformsAndScrimForGestureProgress(GestureType gesture) {
@@ -829,15 +804,15 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // Back nav from the green page to the red page. The live page (green) is on
   // top and slides towards right. The red page (screenshot) is on the bottom
   // and appears on the left of screen.
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k90ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k90ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   // Manually trigger the back navigation to wait for the animations to fully
@@ -877,11 +852,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // Back nav from the green page to the red page. The live page (green) is on
   // top and slides towards right. The red page (screenshot) is on the bottom
   // and appears on the left of screen.
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k90ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   // Manually trigger the back navigation.
@@ -907,15 +882,15 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // Back nav from the green page to the red page. The live page (green) is on
   // top and slides towards right. The red page (screenshot) is on the bottom
   // and appears on the left of screen.
-  std::vector<GestureAndScreenChanged> expected;
+  std::vector<GestureType> expected;
 
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k90ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::kCancel});
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::kCancel);
 
   HistoryBackNavAndAssertAnimatedTransition(expected);
   ASSERT_EQ(web_contents()->GetController().GetActiveEntry()->GetURL(),
@@ -927,34 +902,77 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
-// TODO(crbug.com/40260440): We should show a fallback UX instead of
-// skipping the transition.
+// If the destination has no screenshot, we will compose a fallback screenshot
+// for transition.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        DestinationHasNoScreenshot) {
-  auto* red_entry = web_contents()->GetController().GetEntryAtOffset(-1);
+  std::optional<int> index =
+      web_contents()->GetController().GetIndexForGoBack();
+  ASSERT_TRUE(index);
+  auto* red_entry = web_contents()->GetController().GetEntryAtIndex(*index);
+  ASSERT_TRUE(web_contents()
+                  ->GetController()
+                  .GetNavigationEntryScreenshotCache()
+                  ->RemoveScreenshot(red_entry));
+  red_entry->navigation_transition_data().set_main_frame_background_color(
+      SkColors::kMagenta);
+
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  const auto& children =
+      static_cast<WebContentsViewAndroid*>(web_contents()->GetView())
+          ->parent_for_web_page_widgets()
+          ->parent()
+          ->children();
+  // `parent_for_web_page_widgets()` and the screenshot.
+  ASSERT_EQ(children.size(), 2U);
+  auto* fallback_screenshot = static_cast<cc::slim::SolidColorLayer*>(
+      GetParam().edge == SwipeEdge::LEFT ? children[0].get()
+                                         : children[1].get());
+  ASSERT_EQ(fallback_screenshot->background_color(), SkColors::kMagenta);
+
+  // Manually trigger the back navigation.
+  TestFrameNavigationObserver back_navigation(web_contents());
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+  destroyed.Run();
+  back_navigation.Wait();
+
+  ASSERT_EQ(back_navigation.last_committed_url(), RedURL());
+  ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
+      NavigationEntryScreenshot::kUserDataKey));
+}
+
+// Assert that if the user does not start the navigation, we don't put the
+// fallback screenshot back.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       Cancel_DestinationNoScreenshot) {
+  std::optional<int> index =
+      web_contents()->GetController().GetIndexForGoBack();
+  ASSERT_TRUE(index);
+  auto* red_entry = web_contents()->GetController().GetEntryAtIndex(*index);
   ASSERT_TRUE(web_contents()
                   ->GetController()
                   .GetNavigationEntryScreenshotCache()
                   ->RemoveScreenshot(red_entry));
 
-  std::vector<GestureAndScreenChanged> expected;
+  std::vector<GestureType> expected;
 
-  expected.push_back({.gesture = GestureType::kStart, .screen_changed = false});
-  expected.push_back(
-      {.gesture = GestureType::k30ViewportWidth, .screen_changed = false});
-  expected.push_back(
-      {.gesture = GestureType::k60ViewportWidth, .screen_changed = false});
-  expected.push_back(
-      {.gesture = GestureType::k90ViewportWidth, .screen_changed = false});
-  expected.push_back(
-      {.gesture = GestureType::kInvoke, .screen_changed = false});
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::kCancel);
 
-  TestFrameNavigationObserver back_to_red(web_contents());
   HistoryBackNavAndAssertAnimatedTransition(expected);
-  back_to_red.Wait();
-
-  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
-  ASSERT_FALSE(web_contents()->GetController().GetActiveEntry()->GetUserData(
+  ASSERT_EQ(web_contents()->GetController().GetActiveEntry()->GetURL(),
+            GreenURL());
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 1);
+  ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(0)->GetURL(),
+            RedURL());
+  ASSERT_FALSE(web_contents()->GetController().GetEntryAtIndex(0)->GetUserData(
       NavigationEntryScreenshot::kUserDataKey));
 }
 
@@ -966,10 +984,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
+  std::vector<GestureType> expected;
 
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
 
   // We haven't started the navigation at this point.
   HistoryBackNavAndAssertAnimatedTransition(expected);
@@ -1014,9 +1032,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1066,9 +1084,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // destroy the animation manager synchronously.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        NavigationWhileOnGestureProgressed) {
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
 
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
@@ -1085,9 +1103,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // destroy the animation manager synchronously.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        NavigationWhileDisplayingCancelAnimation) {
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1107,9 +1125,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;
@@ -1145,9 +1163,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 //   no navigation committed.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        NotAbleToStartNavigationOnInvoke) {
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   // Only have the active green entry after this call.
@@ -1183,9 +1201,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;
@@ -1226,9 +1244,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // that tab.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        OnVisibilityChange) {
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1249,9 +1267,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
 // detached.
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
                        OnDetachCompositor) {
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1272,9 +1290,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;
@@ -1326,9 +1344,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;
@@ -1377,9 +1395,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop cross_fade_displayed;
@@ -1438,9 +1456,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1496,9 +1514,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1532,9 +1550,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1596,9 +1614,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_FALSE(crashed->IsRenderFrameLive());
   ASSERT_FALSE(crashed->GetView());
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   GetAnimatorForTesting()->set_navigating_from_a_crashed_page(true);
@@ -1640,9 +1658,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   // Mark green as skipped.
   nav_controller.GetEntryAtIndex(1)->set_should_skip_on_back_forward_ui(true);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   TestFrameNavigationObserver back_to_red(web_contents());
@@ -1788,9 +1806,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   InjectBeforeUnloadForMainFrame(web_contents(),
                                  EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1834,9 +1852,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   InjectBeforeUnloadForMainFrame(web_contents(),
                                  EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1881,9 +1899,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   InjectBeforeUnloadForMainFrame(web_contents(),
                                  EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1923,9 +1941,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   InjectBeforeUnloadForMainFrame(web_contents(),
                                  EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -1969,9 +1987,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   InjectBeforeUnloadForMainFrame(web_contents(),
                                  EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -2048,9 +2066,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   InjectBeforeUnloadForMainFrame(web_contents(),
                                  EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop destroyed;
@@ -2088,9 +2106,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;
@@ -2165,9 +2183,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
   // Start a back transition gesture.
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;
@@ -2241,9 +2259,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   GetAnimatorForTesting()->SetFinishedStateToInProgress();
@@ -2268,9 +2286,9 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   GetAnimatorForTesting()->SetFinishedStateToDisplayingInvokeAnimation();
@@ -2334,9 +2352,9 @@ IN_PROC_BROWSER_TEST_P(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
 
   // We haven't started the navigation at this point.
   HistoryBackNavAndAssertAnimatedTransition(expected);
@@ -2427,15 +2445,15 @@ class BackForwardTransitionAnimationManagerBrowserTestDeviceScalingFactor
 IN_PROC_BROWSER_TEST_P(
     BackForwardTransitionAnimationManagerBrowserTestDeviceScalingFactor,
     Invoke) {
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k90ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k30ViewportWidth});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
-  expected.push_back({.gesture = GestureType::k90ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k30ViewportWidth);
+  expected.push_back(GestureType::k60ViewportWidth);
+  expected.push_back(GestureType::k90ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   TestFrameNavigationObserver back_to_red(web_contents());
@@ -2484,9 +2502,9 @@ IN_PROC_BROWSER_TEST_P(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   bool invoke_played = false;
@@ -2541,9 +2559,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
   WaitForCopyableViewInWebContents(web_contents());
 
-  std::vector<GestureAndScreenChanged> expected;
-  expected.push_back({.gesture = GestureType::kStart});
-  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  std::vector<GestureType> expected;
+  expected.push_back(GestureType::kStart);
+  expected.push_back(GestureType::k60ViewportWidth);
   HistoryBackNavAndAssertAnimatedTransition(expected);
 
   base::RunLoop invoke_played;

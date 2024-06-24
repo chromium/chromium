@@ -46,8 +46,14 @@ void PutScreenshotBack(NavigationControllerImpl* controller,
   }
 }
 
-// The default background color if the CSS has not computed one.
-static constexpr SkColor4f kDefaultBackgoundColor = SkColors::kWhite;
+SkColor4f GetBackgroundColor(const std::optional<SkColor4f>& background_color) {
+  // The default background color if the CSS has not computed one.
+  static constexpr SkColor4f kDefaultBackgoundColor = SkColors::kWhite;
+  if (!background_color || !background_color->isOpaque()) {
+    return kDefaultBackgoundColor;
+  }
+  return *background_color;
+}
 
 //========================== Fitted animation timeline =========================
 //
@@ -139,12 +145,11 @@ BackForwardTransitionAnimator::Factory::Create(
     NavigationControllerImpl* controller,
     const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
-    int destination_entry_id,
-    BackForwardTransitionAnimationManagerAndroid* animation_manager,
-    const NavigationTransitionData& transition_data) {
+    NavigationEntryImpl* destination_entry,
+    BackForwardTransitionAnimationManagerAndroid* animation_manager) {
   return base::WrapUnique(new BackForwardTransitionAnimator(
       web_contents_view_android, controller, gesture, nav_direction,
-      destination_entry_id, animation_manager, transition_data));
+      destination_entry, animation_manager));
 }
 
 BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
@@ -163,12 +168,12 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   // TODO(crbug.com/40283503): If there is the old visual state hovering
   // above the RWHV layer, we need to remove that as well.
 
-  if (ui_resource_layer_) {
+  if (screenshot_layer_) {
     screenshot_scrim_->RemoveFromParent();
     screenshot_scrim_.reset();
 
-    ui_resource_layer_->RemoveFromParent();
-    ui_resource_layer_.reset();
+    screenshot_layer_->RemoveFromParent();
+    screenshot_layer_.reset();
   }
 
   if (old_surface_clone_) {
@@ -176,16 +181,18 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
     old_surface_clone_.reset();
   }
 
-  CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
-  DeleteUIResource(ui_resource_id_);
+  if (!use_fallback_screenshot_) {
+    CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
+    DeleteUIResource(ui_resource_id_);
 
-  if (navigation_state_ != NavigationState::kCommitted) {
-    CHECK(screenshot_);
-    PutScreenshotBack(animation_manager_->navigation_controller(),
-                      std::move(screenshot_));
-  } else {
-    // If the navigation has committed then the destination entry is active. We
-    // don't persist the screenshot for the active entry.
+    if (navigation_state_ != NavigationState::kCommitted) {
+      CHECK(screenshot_);
+      PutScreenshotBack(animation_manager_->navigation_controller(),
+                        std::move(screenshot_));
+    } else {
+      // If the navigation has committed then the destination entry is active.
+      // We don't persist the screenshot for the active entry.
+    }
   }
 
   // This can happen if the navigation started for this gesture was committed
@@ -205,16 +212,18 @@ BackForwardTransitionAnimator::BackForwardTransitionAnimator(
     NavigationControllerImpl* controller,
     const ui::BackGestureEvent& gesture,
     NavigationDirection nav_direction,
-    int destination_entry_id,
-    BackForwardTransitionAnimationManagerAndroid* animation_manager,
-    const NavigationTransitionData& transition_data)
+    NavigationEntryImpl* destination_entry,
+    BackForwardTransitionAnimationManagerAndroid* animation_manager)
     : nav_direction_(nav_direction),
-      destination_entry_id_(destination_entry_id),
+      destination_entry_id_(destination_entry->GetUniqueID()),
       animation_manager_(animation_manager),
-      is_copied_from_embedder_(transition_data.is_copied_from_embedder()),
+      is_copied_from_embedder_(destination_entry->navigation_transition_data()
+                                   .is_copied_from_embedder()),
       main_frame_background_color_(
-          transition_data.main_frame_background_color().value_or(
-              kDefaultBackgoundColor)),
+          GetBackgroundColor(destination_entry->navigation_transition_data()
+                                 .main_frame_background_color())),
+      use_fallback_screenshot_(!destination_entry->GetUserData(
+          NavigationEntryScreenshot::kUserDataKey)),
       physics_model_(web_contents_view_android->GetNativeView()
                          ->GetPhysicalBackingSize()
                          .width(),
@@ -721,10 +730,10 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
       return;
     }
     case TargetProperty::kCrossFade: {
-      CHECK(ui_resource_layer_);
+      CHECK(screenshot_layer_);
       // Scrim (second timeline) and the crossfade model.
       CHECK_EQ(effect_.keyframe_models().size(), 2u);
-      ui_resource_layer_->SetOpacity(value);
+      screenshot_layer_->SetOpacity(value);
       return;
     }
   }
@@ -884,13 +893,7 @@ void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
 void BackForwardTransitionAnimator::ProcessState() {
   switch (state_) {
     case State::kStarted: {
-      NavigationControllerImpl* nav_controller =
-          animation_manager_->navigation_controller();
-      auto* destination_entry =
-          nav_controller->GetEntryWithUniqueID(destination_entry_id_);
-      CHECK(destination_entry);
-      auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
-      SetupForScreenshotPreview(cache->RemoveScreenshot(destination_entry));
+      SetupForScreenshotPreview();
       // Become a WCO as soon as this class is created, because we want to
       // observe all navigations while this class is controlling the UI. This
       // allows us to ensure the visuals displayed align with the active page
@@ -978,15 +981,15 @@ void BackForwardTransitionAnimator::ProcessState() {
       // the cross-fade we need to bring it back to the center of the viewport.
       ResetTransformForLayer(animation_manager_->web_contents_view_android()
                                  ->parent_for_web_page_widgets());
-      ResetTransformForLayer(ui_resource_layer_.get());
+      ResetTransformForLayer(screenshot_layer_.get());
 
       // Move the screenshot to the very top, so we can cross-fade from the
       // screenshot (top) into the active page (bottom).
-      CHECK(ui_resource_layer_->parent());
-      ui_resource_layer_->RemoveFromParent();
+      CHECK(screenshot_layer_->parent());
+      screenshot_layer_->RemoveFromParent();
       animation_manager_->web_contents_view_android()
           ->AddScreenshotLayerForNavigationTransitions(
-              ui_resource_layer_.get(), /*screenshot_layer_on_top=*/true);
+              screenshot_layer_.get(), /*screenshot_layer_on_top=*/true);
 
       InitializeEffectForCrossfadeAnimation();
 
@@ -1006,11 +1009,21 @@ void BackForwardTransitionAnimator::ProcessState() {
   }
 }
 
-void BackForwardTransitionAnimator::SetupForScreenshotPreview(
-    std::unique_ptr<NavigationEntryScreenshot> screenshot) {
-  CHECK(screenshot);
-  CHECK_EQ(screenshot->navigation_entry_id(), destination_entry_id_);
-  screenshot_ = std::move(screenshot);
+void BackForwardTransitionAnimator::SetupForScreenshotPreview() {
+  NavigationControllerImpl* nav_controller =
+      animation_manager_->navigation_controller();
+  auto* destination_entry =
+      nav_controller->GetEntryWithUniqueID(destination_entry_id_);
+  CHECK(destination_entry);
+  auto* preview = static_cast<NavigationEntryScreenshot*>(
+      destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey));
+  CHECK_EQ(use_fallback_screenshot_, !preview);
+  CHECK(use_fallback_screenshot_ ||
+        preview->navigation_entry_id() == destination_entry_id_);
+  if (!use_fallback_screenshot_) {
+    auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
+    screenshot_ = cache->RemoveScreenshot(destination_entry);
+  }
 
   // The layers can be reused. We need to make sure there is no ongoing
   // transform on the layer of the current `WebContents`'s view.
@@ -1019,18 +1032,32 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
                        ->transform();
   CHECK(transform.IsIdentity()) << transform.ToString();
 
-  ui_resource_id_ = CreateUIResource(screenshot_.get());
-  ui_resource_layer_ = cc::slim::UIResourceLayer::Create();
-  ui_resource_layer_->SetIsDrawable(true);
-  ui_resource_layer_->SetUIResourceId(ui_resource_id_);
+  if (use_fallback_screenshot_) {
+    // For now, the fallback screenshot is only the destination page's
+    // background color.
+    // TODO(crbug/40260440): Implement the UX's spec using the favicon.
+    auto screenshot_layer = cc::slim::SolidColorLayer::Create();
+    screenshot_layer->SetBackgroundColor(main_frame_background_color_);
+    screenshot_layer_ = std::move(screenshot_layer);
+  } else {
+    ui_resource_id_ = CreateUIResource(screenshot_.get());
+    auto screenshot_layer = cc::slim::UIResourceLayer::Create();
+    screenshot_layer->SetUIResourceId(ui_resource_id_);
+    screenshot_layer_ = std::move(screenshot_layer);
+  }
+  screenshot_layer_->SetIsDrawable(true);
+  screenshot_layer_->SetPosition(gfx::PointF(0.f, 0.f));
+  screenshot_layer_->SetBounds(animation_manager_->web_contents_view_android()
+                                   ->GetNativeView()
+                                   ->GetPhysicalBackingSize());
 
   screenshot_scrim_ = cc::slim::SolidColorLayer::Create();
-  screenshot_scrim_->SetBounds(screenshot_->GetDimensions());
+  screenshot_scrim_->SetBounds(screenshot_layer_->bounds());
   screenshot_scrim_->SetIsDrawable(true);
   screenshot_scrim_->SetBackgroundColor(SkColors::kTransparent);
-  // This makes sure `screenshot_scrim_` is drawn on top of
-  // `ui_resource_layer_`.
-  ui_resource_layer_->AddChild(screenshot_scrim_);
+
+  // Makes sure `screenshot_scrim_` is drawn on top of `screenshot_layer_`.
+  screenshot_layer_->AddChild(screenshot_scrim_);
   screenshot_scrim_->SetContentsOpaque(false);
 
   // Insert a new `cc::slim::UIResourceLayer` into the existing layer tree.
@@ -1046,13 +1073,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
       nav_direction_ == NavigationDirection::kForward;
   animation_manager_->web_contents_view_android()
       ->AddScreenshotLayerForNavigationTransitions(
-          ui_resource_layer_.get(), screenshot_on_top_of_web_page);
-
-  // Reposition the new layer and set its bounds.
-  ui_resource_layer_->SetPosition(gfx::PointF(0.f, 0.f));
-  ui_resource_layer_->SetBounds(animation_manager_->web_contents_view_android()
-                                    ->GetNativeView()
-                                    ->GetPhysicalBackingSize());
+          screenshot_layer_.get(), screenshot_on_top_of_web_page);
 
   // Set up `effect_`.
   InitializeEffectForGestureProgressAnimation();
@@ -1063,7 +1084,7 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
 }
 
 bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
-  CHECK(screenshot_);
+  CHECK(use_fallback_screenshot_ || screenshot_);
   CHECK(!primary_main_frame_navigation_request_id_of_gesture_nav_.has_value());
   CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
 
@@ -1143,7 +1164,7 @@ void BackForwardTransitionAnimator::DeleteUIResource(
 
 bool BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
     const PhysicsModel::Result& result) {
-  ui_resource_layer_->SetTransform(
+  screenshot_layer_->SetTransform(
       gfx::Transform::MakeTranslation(result.background_offset_physical, 0.f));
 
   const auto foreground_transform =

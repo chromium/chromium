@@ -35,25 +35,6 @@ bool ShouldSkipDefaultNavTransitionForPendingUX(
   return true;
 }
 
-// TODO(crbug.com/40260440): We shouldn't skip any transitions. Use a
-// fallback UX instead.
-bool ShouldSkipDefaultNavTransition(const gfx::Size& physical_backing_size,
-                                    NavigationEntry* destination_entry) {
-  auto* data =
-      destination_entry->GetUserData(NavigationEntryScreenshot::kUserDataKey);
-  if (!data) {
-    // No screenshot at the destination.
-    //
-    // TODO(crbug.com/40260440): We should show the animation using the
-    // favicon and the background color of the destination page.
-    return true;
-  }
-  // TODO(crbug.com/41482490): We should skip if `physical_backing_size`
-  // != screenshot's dimension (except for Clank native views).
-
-  return false;
-}
-
 }  // namespace
 
 BackForwardTransitionAnimationManagerAndroid::
@@ -99,18 +80,21 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     animator_.reset();
   }
 
-  if (ShouldSkipDefaultNavTransitionForPendingUX(navigation_direction, edge) ||
-      ShouldSkipDefaultNavTransition(
-          web_contents_view_android_->GetNativeView()->GetPhysicalBackingSize(),
-          destination_entry)) {
+  // Handle the case where the screenshot's dimension does not match the
+  // physical viewport:
+  // - TODO(https://crbug.com/340292683): Screenshot is captured with the URL
+  // bar shown but used for transition where the URL bar is hidden (default
+  // background color at the bottom).
+  // - TODO(https://crbug.com/346979589): Screenshot is captured in a landscape
+  // / portrait mode but used for transition in the different mode.
+  if (ShouldSkipDefaultNavTransitionForPendingUX(navigation_direction, edge)) {
     return;
   }
 
   CHECK(animator_factory_);
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
-      navigation_direction, destination_entry->GetUniqueID(), this,
-      destination_entry->navigation_transition_data());
+      navigation_direction, destination_entry, this);
   OnAnimationStageChanged();
 }
 

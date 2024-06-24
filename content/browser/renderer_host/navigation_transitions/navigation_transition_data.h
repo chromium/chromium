@@ -12,7 +12,7 @@
 
 namespace content {
 
-// Holds the relavent information about a navigation transition. Just like the
+// Holds the relevant information about a navigation transition. Just like the
 // `NavigationEntryScreenshot`, this struct is not persistent on the
 // `NavigationEntry` (i.e. can't be restored).
 class NavigationTransitionData {

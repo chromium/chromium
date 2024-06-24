@@ -19,9 +19,9 @@
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 
 namespace cc::slim {
+class Layer;
 class SolidColorLayer;
 class SurfaceLayer;
-class UIResourceLayer;
 }
 
 namespace content {
@@ -59,9 +59,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
         const ui::BackGestureEvent& gesture,
         BackForwardTransitionAnimationManager::NavigationDirection
             nav_direction,
-        int destination_entry_id,
-        BackForwardTransitionAnimationManagerAndroid* animation_manager,
-        const NavigationTransitionData& transition_data);
+        NavigationEntryImpl* destination_entry,
+        BackForwardTransitionAnimationManagerAndroid* animation_manager);
   };
 
   BackForwardTransitionAnimator(const BackForwardTransitionAnimator&) = delete;
@@ -90,9 +89,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
       BackForwardTransitionAnimationManager::NavigationDirection nav_type,
-      int destination_entry_id,
-      BackForwardTransitionAnimationManagerAndroid* animation_manager,
-      const NavigationTransitionData& transition_data);
+      NavigationEntryImpl* destination_entry,
+      BackForwardTransitionAnimationManagerAndroid* animation_manager);
 
   // `RenderFrameMetadataProvider::Observer`:
   void OnRenderFrameMetadataChangedBeforeActivation(
@@ -262,8 +260,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void ProcessState();
 
   // Initializes the `ui_resource_layer_` and sets up the layer tree.
-  void SetupForScreenshotPreview(
-      std::unique_ptr<NavigationEntryScreenshot> screenshot);
+  void SetupForScreenshotPreview();
 
   // Start the session history navigation, and start tracking the created
   // `NavigationRequests` by their IDs. Returns true if the requests are
@@ -314,7 +311,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   scoped_refptr<cc::slim::SolidColorLayer> screenshot_scrim_;
 
   // New layer for `screenshot_`.
-  scoped_refptr<cc::slim::UIResourceLayer> ui_resource_layer_;
+  scoped_refptr<cc::slim::Layer> screenshot_layer_;
 
   // A copy of old surface, covering the entire old page from when the
   // navigation commits to the end of the invoke animation (where the old page
@@ -338,8 +335,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // If `screenshot_` is supplied by the embedder.
   const bool is_copied_from_embedder_;
   // The background color of the destination page. Used to compose a fallback
-  // screenshot when no screenshot is available in the desination entry.
+  // screenshot when no screenshot is available in the destination entry.
   const SkColor4f main_frame_background_color_;
+  // The current transition is using a fallback screenshot of page's background
+  // color.
+  const bool use_fallback_screenshot_;
 
   // Tracks various state of the navigation request associated with this
   // gesture. Only set if the navigation request is successfully created.
