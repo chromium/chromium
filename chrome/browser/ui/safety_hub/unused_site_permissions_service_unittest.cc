@@ -105,10 +105,10 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 }
 
 PermissionsData CreatePermissionsData(
-    ContentSettingsPattern& origin,
+    ContentSettingsPattern& primary_pattern,
     std::set<ContentSettingsType>& permission_types) {
   PermissionsData permissions_data;
-  permissions_data.origin = origin;
+  permissions_data.primary_pattern = primary_pattern;
   permissions_data.permission_types = permission_types;
   return permissions_data;
 }
@@ -362,7 +362,7 @@ class UnusedSitePermissionsServiceTest
       base::Time expiration = base::Time(),
       base::TimeDelta lifetime = base::Milliseconds(0)) {
     PermissionsData permissions_data;
-    permissions_data.origin =
+    permissions_data.primary_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url));
     permissions_data.permission_types = permission_types;
     permissions_data.chooser_permissions_data = base::Value::Dict().Set(
@@ -426,8 +426,8 @@ class UnusedSitePermissionsServiceTest
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& permission : permissions_data) {
-      if (permission.origin.ToString() == url ||
-          permission.origin.ToString() == url_pattern) {
+      if (permission.primary_pattern.ToString() == url ||
+          permission.primary_pattern.ToString() == url_pattern) {
         return true;
       }
     }
@@ -1208,7 +1208,7 @@ TEST_P(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
     EXPECT_EQ(3U, result->GetRevokedPermissions().size());
     EXPECT_EQ(ContentSettingsPattern::FromString(url1),
-              result->GetRevokedPermissions().front().origin);
+              result->GetRevokedPermissions().front().primary_pattern);
     EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url1));
     EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
     EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url3));

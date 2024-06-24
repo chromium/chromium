@@ -76,7 +76,8 @@ PermissionsData GetUnusedSitePermissionsFromDict(
   const std::string* origin_str =
       unused_site_permissions.FindString(site_settings::kOrigin);
   CHECK(origin_str);
-  permissions_data.origin = ContentSettingsPattern::FromString(*origin_str);
+  permissions_data.primary_pattern =
+      ContentSettingsPattern::FromString(*origin_str);
 
   const base::Value::List* permissions =
       unused_site_permissions.FindList(site_settings::kPermissions);
@@ -262,7 +263,8 @@ void SafetyHubHandler::HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(
       HostContentSettingsMap* map =
           HostContentSettingsMapFactory::GetForProfile(profile_);
       // This pattern is origin-scoped, so this conversion is safe.
-      GURL permission_url = permissions_data.origin.ToRepresentativeUrl();
+      GURL permission_url =
+          permissions_data.primary_pattern.ToRepresentativeUrl();
       DCHECK(permission_url.is_valid());
       // If the permission_types includes `NOTIFICATIONS`, then the revocation
       // is for a site that should have a
@@ -309,7 +311,7 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
   for (const auto& permissions_data : service_result->GetRevokedPermissions()) {
     base::Value::Dict revoked_permission_value;
     revoked_permission_value.Set(site_settings::kOrigin,
-                                 permissions_data.origin.ToString());
+                                 permissions_data.primary_pattern.ToString());
 
     base::Value::List permissions_value_list;
     for (ContentSettingsType type : permissions_data.permission_types) {

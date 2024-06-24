@@ -66,7 +66,8 @@ class UnusedSitePermissionsBridgeTest : public testing::Test {
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   PermissionsData expected;
-  expected.origin = ContentSettingsPattern::FromString(kUnusedTestSite);
+  expected.primary_pattern =
+      ContentSettingsPattern::FromString(kUnusedTestSite);
   expected.permission_types = kUnusedPermissionList;
   expected.constraints =
       content_settings::ContentSettingConstraints(kExpiration - kLifetime);
@@ -75,7 +76,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   const auto jobject = ToJavaPermissionsData(env(), expected);
   PermissionsData converted = FromJavaPermissionsData(env(), jobject);
 
-  EXPECT_EQ(expected.origin, converted.origin);
+  EXPECT_EQ(expected.primary_pattern, converted.primary_pattern);
   EXPECT_EQ(expected.permission_types, converted.permission_types);
   EXPECT_EQ(kExpiration, converted.constraints.expiration());
   EXPECT_EQ(kLifetime, converted.constraints.lifetime());
@@ -83,11 +84,14 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
   PermissionsData expected;
+  // The pattern has to be a valid single origin pattern.
+  expected.primary_pattern =
+      ContentSettingsPattern::FromString(kUnusedTestSite);
 
   const auto jobject = ToJavaPermissionsData(env(), expected);
   PermissionsData converted = FromJavaPermissionsData(env(), jobject);
 
-  EXPECT_EQ(expected.origin, converted.origin);
+  EXPECT_EQ(expected.primary_pattern, converted.primary_pattern);
   EXPECT_EQ(expected.permission_types, converted.permission_types);
   EXPECT_EQ(expected.constraints.expiration(),
             converted.constraints.expiration());

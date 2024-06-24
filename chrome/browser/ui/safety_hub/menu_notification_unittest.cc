@@ -33,7 +33,7 @@ CreateUnusedSitePermissionsResult(base::Value::List urls) {
       UnusedSitePermissionsService::UnusedSitePermissionsResult>();
   PermissionsData permissions_data;
   for (base::Value& url_val : urls) {
-    permissions_data.origin =
+    permissions_data.primary_pattern =
         ContentSettingsPattern::FromString(url_val.GetString());
     permissions_data.permission_types = {ContentSettingsType::GEOLOCATION};
     permissions_data.constraints =

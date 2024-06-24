@@ -46,8 +46,8 @@ class UnusedSitePermissionsBridge {
         return UnusedSitePermissionsBridgeJni.get().getRevokedPermissions(mProfile);
     }
 
-    void regrantPermissions(String primaryPattern) {
-        UnusedSitePermissionsBridgeJni.get().regrantPermissions(mProfile, primaryPattern);
+    void regrantPermissions(String origin) {
+        UnusedSitePermissionsBridgeJni.get().regrantPermissions(mProfile, origin);
         notifyRevokedPermissionsChanged();
     }
 
@@ -85,8 +85,7 @@ class UnusedSitePermissionsBridge {
         PermissionsData[] getRevokedPermissions(@JniType("Profile*") Profile profile);
 
         void regrantPermissions(
-                @JniType("Profile*") Profile profile,
-                @JniType("std::string") String primaryPattern);
+                @JniType("Profile*") Profile profile, @JniType("std::string") String origin);
 
         void undoRegrantPermissions(
                 @JniType("Profile*") Profile profile,

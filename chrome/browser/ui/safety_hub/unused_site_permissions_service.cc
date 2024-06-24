@@ -162,6 +162,15 @@ UnusedSitePermissionsService::ConvertKeyToContentSettingsType(
   return website_setting_registry->GetByName(key)->type();
 }
 
+// static
+url::Origin UnusedSitePermissionsService::ConvertPrimaryPatternToOrigin(
+    const ContentSettingsPattern& primary_pattern) {
+  GURL origin_url = GURL(primary_pattern.ToString());
+  CHECK(origin_url.is_valid());
+
+  return url::Origin::Create(origin_url);
+}
+
 base::TimeDelta UnusedSitePermissionsService::GetRepeatedUpdateInterval() {
   return content_settings::features::
       kSafetyCheckUnusedSitePermissionsRepeatedUpdateInterval.Get();
@@ -182,7 +191,7 @@ PermissionsData::PermissionsData() = default;
 PermissionsData::~PermissionsData() = default;
 
 PermissionsData::PermissionsData(const PermissionsData& other)
-    : origin(other.origin),
+    : primary_pattern(other.primary_pattern),
       permission_types(other.permission_types),
       constraints(other.constraints),
       abusive_revocation_constraints(other.abusive_revocation_constraints) {
@@ -218,7 +227,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::GetRevokedOrigins()
     const {
   std::set<ContentSettingsPattern> origins;
   for (auto permission : revoked_permissions_) {
-    origins.insert(permission.origin);
+    origins.insert(permission.primary_pattern);
   }
   return origins;
 }
@@ -228,7 +237,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() const {
   base::Value::Dict result = BaseToDictValue();
   base::Value::List revoked_origins;
   for (auto permission : revoked_permissions_) {
-    revoked_origins.Append(permission.origin.ToString());
+    revoked_origins.Append(permission.primary_pattern.ToString());
   }
   result.Set(kUnusedSitePermissionsResultKey, std::move(revoked_origins));
   return result;
@@ -501,7 +510,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
     const PermissionsData& permissions_data) {
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->UndoRegrantPermissionForOriginIfNecessary(
-        GURL(permissions_data.origin.ToString()),
+        GURL(permissions_data.primary_pattern.ToString()),
         permissions_data.permission_types,
         permissions_data.abusive_revocation_constraints);
   }
@@ -522,12 +531,12 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
   for (const auto& permission : unused_site_permission_types) {
     if (IsContentSetting(permission)) {
       hcsm()->SetContentSettingCustomScope(
-          permissions_data.origin, ContentSettingsPattern::Wildcard(),
+          permissions_data.primary_pattern, ContentSettingsPattern::Wildcard(),
           permission, ContentSetting::CONTENT_SETTING_DEFAULT);
     } else if (IsChooserPermissionSupported() && IsWebsiteSetting(permission)) {
       hcsm()->SetWebsiteSettingDefaultScope(
-          permissions_data.origin.ToRepresentativeUrl(), GURL(), permission,
-          base::Value());
+          permissions_data.primary_pattern.ToRepresentativeUrl(), GURL(),
+          permission, base::Value());
     } else {
       NOTREACHED_IN_MIGRATION()
           << "Unable to find ContentSettingsType in neither "
@@ -541,7 +550,7 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
 
   StorePermissionInRevokedPermissionSetting(
       unused_site_permission_types, permissions_data.chooser_permissions_data,
-      permissions_data.constraints, permissions_data.origin,
+      permissions_data.constraints, permissions_data.primary_pattern,
       ContentSettingsPattern::Wildcard());
 }
 
@@ -645,12 +654,12 @@ UnusedSitePermissionsService::UpdateOnBackgroundThread(
       }
       if (setting.metadata.last_visited() != base::Time() &&
           setting.metadata.last_visited() < threshold) {
-        GURL url = GURL(setting.primary_pattern.ToString());
-        // Converting URL to a origin is normally an anti-pattern but here it is
-        // ok since the URL belongs to a single origin. Therefore, it has a
-        // fully defined URL+scheme+port which makes converting URL to origin
-        // successful.
-        url::Origin origin = url::Origin::Create(url);
+        // Converting a primary pattern to an origin is normally an anti-pattern
+        // but here it is ok since the primary pattern belongs to a single
+        // origin. Therefore, it has a fully defined URL+scheme+port which makes
+        // converting primary pattern to origin successful.
+        url::Origin origin =
+            ConvertPrimaryPatternToOrigin(setting.primary_pattern);
         recently_unused[origin.Serialize()].push_back(
             {type, std::move(setting)});
       }
@@ -687,7 +696,7 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
 
   for (const auto& revoked_permissions : settings) {
     PermissionsData permissions_data;
-    permissions_data.origin = revoked_permissions.primary_pattern;
+    permissions_data.primary_pattern = revoked_permissions.primary_pattern;
     const base::Value& stored_value = revoked_permissions.setting_value;
     DCHECK(stored_value.is_dict());
 
@@ -745,7 +754,7 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
       continue;
     }
     PermissionsData permissions_data;
-    permissions_data.origin =
+    permissions_data.primary_pattern =
         revoked_abusive_notification_permission.primary_pattern;
     permissions_data.permission_types.insert(
         static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
@@ -879,7 +888,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   StorePermissionInRevokedPermissionSetting(
       permissions_data.permission_types,
       permissions_data.chooser_permissions_data, permissions_data.constraints,
-      permissions_data.origin, ContentSettingsPattern::Wildcard());
+      permissions_data.primary_pattern, ContentSettingsPattern::Wildcard());
 }
 
 void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(

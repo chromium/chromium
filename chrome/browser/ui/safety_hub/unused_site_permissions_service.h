@@ -53,7 +53,7 @@ struct PermissionsData {
   PermissionsData(const PermissionsData&);
   PermissionsData& operator=(const PermissionsData&) = delete;
 
-  ContentSettingsPattern origin;
+  ContentSettingsPattern primary_pattern;
   std::set<ContentSettingsType> permission_types;
   base::Value::Dict chooser_permissions_data;
   content_settings::ContentSettingConstraints constraints;
@@ -200,6 +200,14 @@ class UnusedSitePermissionsService final : public SafetyHubService,
   static std::string ConvertContentSettingsTypeToKey(ContentSettingsType type);
   static ContentSettingsType ConvertKeyToContentSettingsType(
       const std::string& key);
+
+  // Helper to convert single origin primary pattern to an origin.
+  // Converting a primary pattern to an origin is normally an anti-pattern, and
+  // this method should only be used for single origin primary patterns.
+  // They have fully defined URL+scheme+port which makes converting
+  // a primary pattern to an origin successful.
+  static url::Origin ConvertPrimaryPatternToOrigin(
+      const ContentSettingsPattern& primary_pattern);
 
   // SafetyHubService implementation
   // Returns a weak pointer to the service.
