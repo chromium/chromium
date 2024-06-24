@@ -7,6 +7,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/consent_countries.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/pref_names.h"
@@ -16,14 +17,6 @@
 namespace privacy_sandbox {
 
 namespace {
-
-constexpr auto kConsentCountries = base::MakeFixedFlatSet<std::string_view>({
-    "gb", "at", "ax", "be", "bg", "bl", "ch", "cy", "cz", "de", "dk",
-    "ee", "es", "fi", "fr", "gf", "gg", "gi", "gp", "gr", "hr", "hu",
-    "ie", "is", "it", "je", "ke", "li", "lt", "lu", "lv", "mf", "mt",
-    "mq", "nc", "nl", "no", "pf", "pl", "pm", "pt", "qa", "re", "ro",
-    "se", "si", "sk", "sj", "tf", "va", "wf", "yt",
-});
 
 enum class ConfirmationType { Notice, Consent, RestrictedNotice };
 
@@ -91,7 +84,7 @@ std::string GetCountry(variations::VariationsService* variations_service) {
 bool IsConsentRequired() {
   CHECK(g_browser_process);
   return IsConfirmationRequired(ConfirmationType::Consent, []() {
-    return kConsentCountries.contains(
+    return kPrivacySandboxConsentCountries.contains(
         GetCountry(g_browser_process->variations_service()));
   });
 }
@@ -106,7 +99,8 @@ bool IsNoticeRequired() {
     base::UmaHistogramBoolean(
         "PrivacySandbox.NoticeRequirement.IsVariationCountryEmpty",
         country.empty());
-    return !country.empty() && !kConsentCountries.contains(country);
+    return !country.empty() &&
+           !kPrivacySandboxConsentCountries.contains(country);
   });
 }
 
