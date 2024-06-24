@@ -38,9 +38,9 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
-#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
@@ -504,7 +504,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
   }
 
   size_t GetDisabledStaticRuleCount() const {
-    const DeclarativeNetRequestPrefsHelper helper(*extension_prefs_);
+    const PrefsHelper helper(*extension_prefs_);
     return helper.GetDisabledStaticRuleCount(extension()->id());
   }
 

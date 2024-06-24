@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -17,9 +17,9 @@ namespace {
 
 using ::testing::UnorderedElementsAre;
 
-class DeclarativeNetRequestPrefsHelperTest : public ExtensionsTest {
+class PrefsHelperTest : public ExtensionsTest {
  public:
-  DeclarativeNetRequestPrefsHelperTest() = default;
+  PrefsHelperTest() = default;
 
   // ExtensionsTest override.
   void SetUp() override {
@@ -37,26 +37,25 @@ class DeclarativeNetRequestPrefsHelperTest : public ExtensionsTest {
   }
 
  protected:
-  using RuleIdsToUpdate = DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
+  using RuleIdsToUpdate = PrefsHelper::RuleIdsToUpdate;
   using UpdateDisabledStaticRulesResult =
-      DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRulesResult;
+      PrefsHelper::UpdateDisabledStaticRulesResult;
   using ExtensionId = extensions::ExtensionId;
 
   UpdateDisabledStaticRulesResult UpdateDisabledStaticRules(
       RulesetID ruleset_id,
       const RuleIdsToUpdate& ids_to_update) {
-    return DeclarativeNetRequestPrefsHelper(*prefs_).UpdateDisabledStaticRules(
+    return PrefsHelper(*prefs_).UpdateDisabledStaticRules(
         extension_id_, ruleset_id, ids_to_update);
   }
 
   base::flat_set<int> GetDisabledRuleIds(RulesetID ruleset_id) const {
-    return DeclarativeNetRequestPrefsHelper(*prefs_).GetDisabledStaticRuleIds(
+    return PrefsHelper(*prefs_).GetDisabledStaticRuleIds(
         extension_id_, ruleset_id);
   }
 
   size_t GetDisabledRuleCount() const {
-    return DeclarativeNetRequestPrefsHelper(*prefs_).GetDisabledStaticRuleCount(
-        extension_id_);
+    return PrefsHelper(*prefs_).GetDisabledStaticRuleCount(extension_id_);
   }
 
  private:
@@ -64,7 +63,7 @@ class DeclarativeNetRequestPrefsHelperTest : public ExtensionsTest {
   ExtensionId extension_id_;
 };
 
-TEST_F(DeclarativeNetRequestPrefsHelperTest, UpdateStaticRulesTest) {
+TEST_F(PrefsHelperTest, UpdateStaticRulesTest) {
   const RulesetID ruleset1(1);
   const RulesetID ruleset2(2);
 

@@ -781,9 +781,8 @@ void RulesMonitorService::UpdateStaticRulesInternal(
     return;
   }
 
-  auto result =
-      DeclarativeNetRequestPrefsHelper(*prefs_).UpdateDisabledStaticRules(
-          extension_id, ruleset_id, rule_ids_to_update);
+  auto result = PrefsHelper(*prefs_).UpdateDisabledStaticRules(
+      extension_id, ruleset_id, rule_ids_to_update);
 
   if (result.error) {
     std::move(callback).Run(result.error);
@@ -826,8 +825,8 @@ void RulesMonitorService::GetDisabledRuleIdsInternal(
   }
 
   base::flat_set<int> disabled_rule_ids =
-      DeclarativeNetRequestPrefsHelper(*prefs_).GetDisabledStaticRuleIds(
-          extension->id(), ruleset_id);
+      PrefsHelper(*prefs_).GetDisabledStaticRuleIds(extension->id(),
+                                                    ruleset_id);
 
   std::move(callback).Run(
       std::vector<int>(disabled_rule_ids.begin(), disabled_rule_ids.end()));
@@ -921,9 +920,8 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
 
     static_rule_count = new_ruleset_count;
 
-    matcher->SetDisabledRuleIds(
-        DeclarativeNetRequestPrefsHelper(*prefs_).GetDisabledStaticRuleIds(
-            extension->id(), matcher->id()));
+    matcher->SetDisabledRuleIds(PrefsHelper(*prefs_).GetDisabledStaticRuleIds(
+        extension->id(), matcher->id()));
 
     matchers.push_back(std::move(matcher));
   }
@@ -1018,8 +1016,8 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     static_rule_count += matcher_count;
 
     ruleset_matcher->SetDisabledRuleIds(
-        DeclarativeNetRequestPrefsHelper(*prefs_).GetDisabledStaticRuleIds(
-            extension->id(), ruleset_matcher->id()));
+        PrefsHelper(*prefs_).GetDisabledStaticRuleIds(extension->id(),
+                                                      ruleset_matcher->id()));
 
     new_matchers.push_back(std::move(ruleset_matcher));
   }

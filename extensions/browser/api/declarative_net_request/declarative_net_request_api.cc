@@ -18,8 +18,8 @@
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
-#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
@@ -377,8 +377,7 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
   using Params = dnr_api::UpdateStaticRules::Params;
   using DNRManifestData = declarative_net_request::DNRManifestData;
   using RulesMonitorService = declarative_net_request::RulesMonitorService;
-  using RuleIdsToUpdate = declarative_net_request::
-      DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
+  using RuleIdsToUpdate = declarative_net_request::PrefsHelper::RuleIdsToUpdate;
 
   auto params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.has_value());

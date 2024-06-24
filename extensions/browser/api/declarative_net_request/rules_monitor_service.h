@@ -19,8 +19,8 @@
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
-#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/global_rules_tracker.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -105,7 +105,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
 
   // Updates the set of disabled rule ids for the |ruleset_id| of the
   // |extension| and then invokes |callback| with an optional error.
-  using RuleIdsToUpdate = DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate;
+  using RuleIdsToUpdate = PrefsHelper::RuleIdsToUpdate;
   void UpdateStaticRules(const Extension& extension,
                          RulesetID ruleset_id,
                          RuleIdsToUpdate rule_ids_to_update,

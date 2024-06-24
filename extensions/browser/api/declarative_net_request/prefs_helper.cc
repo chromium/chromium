@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
 
 #include <string>
 
@@ -70,12 +70,11 @@ size_t CountDisabledRules(const base::Value::Dict* disabled_rule_ids_dict) {
 
 }  // namespace
 
-DeclarativeNetRequestPrefsHelper::DeclarativeNetRequestPrefsHelper(
-    ExtensionPrefs& prefs)
+PrefsHelper::PrefsHelper(ExtensionPrefs& prefs)
     : prefs_(prefs) {}
-DeclarativeNetRequestPrefsHelper::~DeclarativeNetRequestPrefsHelper() = default;
+PrefsHelper::~PrefsHelper() = default;
 
-DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
+PrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
     const std::optional<std::vector<int>>& ids_to_disable,
     const std::optional<std::vector<int>>& ids_to_enable) {
   if (ids_to_disable)
@@ -91,20 +90,20 @@ DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
   }
 }
 
-DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
+PrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
     RuleIdsToUpdate&& other) = default;
-DeclarativeNetRequestPrefsHelper::RuleIdsToUpdate::~RuleIdsToUpdate() = default;
+PrefsHelper::RuleIdsToUpdate::~RuleIdsToUpdate() = default;
 
-DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRulesResult::
+PrefsHelper::UpdateDisabledStaticRulesResult::
     UpdateDisabledStaticRulesResult() = default;
-DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRulesResult::
+PrefsHelper::UpdateDisabledStaticRulesResult::
     UpdateDisabledStaticRulesResult(UpdateDisabledStaticRulesResult&& other) =
         default;
-DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRulesResult::
+PrefsHelper::UpdateDisabledStaticRulesResult::
     ~UpdateDisabledStaticRulesResult() = default;
 
 const base::Value::Dict*
-DeclarativeNetRequestPrefsHelper::GetDisabledRuleIdsDict(
+PrefsHelper::GetDisabledRuleIdsDict(
     const ExtensionId& extension_id) const {
   return prefs_->ReadPrefAsDict(
       extension_id,
@@ -112,19 +111,19 @@ DeclarativeNetRequestPrefsHelper::GetDisabledRuleIdsDict(
           {ExtensionPrefs::kDNRStaticRulesetPref, kDNRDisabledStaticRuleIds}));
 }
 
-base::flat_set<int> DeclarativeNetRequestPrefsHelper::GetDisabledStaticRuleIds(
+base::flat_set<int> PrefsHelper::GetDisabledStaticRuleIds(
     const ExtensionId& extension_id,
     RulesetID ruleset_id) const {
   return GetDisabledStaticRuleIdsFromDict(GetDisabledRuleIdsDict(extension_id),
                                           ruleset_id);
 }
 
-size_t DeclarativeNetRequestPrefsHelper::GetDisabledStaticRuleCount(
+size_t PrefsHelper::GetDisabledStaticRuleCount(
     const ExtensionId& extension_id) const {
   return CountDisabledRules(GetDisabledRuleIdsDict(extension_id));
 }
 
-void DeclarativeNetRequestPrefsHelper::SetDisabledStaticRuleIds(
+void PrefsHelper::SetDisabledStaticRuleIds(
     const ExtensionId& extension_id,
     RulesetID ruleset_id,
     const base::flat_set<int>& disabled_rule_ids) {
@@ -153,8 +152,8 @@ void DeclarativeNetRequestPrefsHelper::SetDisabledStaticRuleIds(
                               base::Value(std::move(ids_list)));
 }
 
-DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRulesResult
-DeclarativeNetRequestPrefsHelper::UpdateDisabledStaticRules(
+PrefsHelper::UpdateDisabledStaticRulesResult
+PrefsHelper::UpdateDisabledStaticRules(
     const ExtensionId& extension_id,
     RulesetID ruleset_id,
     const RuleIdsToUpdate& rule_ids_to_update) {

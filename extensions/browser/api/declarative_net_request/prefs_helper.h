@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
-#define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
+#ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
+#define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
 
 #include <optional>
 #include <vector>
@@ -28,15 +28,14 @@ namespace declarative_net_request {
 // and updating it whenever UpdateDisabledStaticRules() is called, so that
 // GetDisabledStaticRuleCount() doesn't hit ExtensionPrefs to calculate the
 // size each time)
-class DeclarativeNetRequestPrefsHelper {
+class PrefsHelper {
  public:
-  explicit DeclarativeNetRequestPrefsHelper(ExtensionPrefs&);
-  ~DeclarativeNetRequestPrefsHelper();
+  explicit PrefsHelper(ExtensionPrefs&);
+  ~PrefsHelper();
 
   // Prevent copy constructor and dynamic allocation so that the instance
   // lifecycle can be scoped by stack.
-  DeclarativeNetRequestPrefsHelper(const DeclarativeNetRequestPrefsHelper&) =
-      delete;
+  PrefsHelper(const PrefsHelper&) = delete;
   void* operator new(size_t) = delete;
 
   // Struct that contains the rule ids to disable or enable.
@@ -94,4 +93,4 @@ class DeclarativeNetRequestPrefsHelper {
 }  // namespace declarative_net_request
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
+#endif  // EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_PREFS_HELPER_H_
