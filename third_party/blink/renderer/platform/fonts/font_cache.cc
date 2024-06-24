@@ -34,11 +34,13 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/strings/escape.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
@@ -54,7 +56,10 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/font_list.h"
@@ -368,6 +373,82 @@ FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
     result.push_back(kColorEmojiLocale);
   return result;
 }
+
+// TODO(crbug/342967843): In WebTest, Fuchsia initializes fonts by calling
+// `skia::InitializeSkFontMgrForTest();` expecting that other code doesn't
+// initialize SkFontMgr beforehand. But `FontCache::MaybePreloadSystemFonts()`
+// breaks this expectation. So we don't provide
+// `FontCache::MaybePreloadSystemFonts()` feature for Fuchsia for now.
+#if BUILDFLAG(IS_FUCHSIA)
+// static
+void FontCache::MaybePreloadSystemFonts() {}
+#else
+// static
+void FontCache::MaybePreloadSystemFonts() {
+  static bool initialized = false;
+  if (initialized) {
+    return;
+  }
+
+  initialized = true;
+  CHECK(IsMainThread());
+
+  if (!base::FeatureList::IsEnabled(features::kPreloadSystemFonts)) {
+    return;
+  }
+
+  std::unique_ptr<JSONArray> targets =
+      JSONArray::From(ParseJSON(String::FromUTF8(
+          base::UnescapeURLComponent(features::kPreloadSystemFontsTargets.Get(),
+                                     base::UnescapeRule::SPACES))));
+
+  if (!targets) {
+    return;
+  }
+
+  const LayoutLocale& locale = LayoutLocale::GetDefault();
+
+  for (wtf_size_t i = 0; i < targets->size(); ++i) {
+    JSONObject* target = JSONObject::Cast(targets->at(i));
+    bool success = true;
+    String family;
+    success &= target->GetString("family", &family);
+    int weight;
+    success &= target->GetInteger("weight", &weight);
+    double specified_size;
+    success &= target->GetDouble("size", &specified_size);
+    double computed_size;
+    success &= target->GetDouble("csize", &computed_size);
+    String text;
+    success &= target->GetString("text", &text);
+    if (success) {
+      TRACE_EVENT("fonts", "PreloadSystemFonts", "family", family, "weight",
+                  weight, "specified_size", specified_size, "computed_size",
+                  computed_size, "text", text);
+      FontDescription font_description;
+      const AtomicString family_atomic_string(family);
+      FontFamily font_family(family_atomic_string,
+                             FontFamily::Type::kFamilyName);
+      font_description.SetFamily(font_family);
+      font_description.SetWeight(FontSelectionValue(weight));
+      font_description.SetLocale(&locale);
+      font_description.SetSpecifiedSize(
+          base::saturated_cast<float>(specified_size));
+      font_description.SetComputedSize(
+          base::saturated_cast<float>(computed_size));
+      font_description.SetGenericFamily(FontDescription::kSansSerifFamily);
+      const SimpleFontData* simple_font_data =
+          FontCache::Get().GetFontData(font_description, AtomicString(family));
+      if (simple_font_data) {
+        for (UChar32 c : text) {
+          Glyph glyph = simple_font_data->GlyphForCharacter(c);
+          std::ignore = simple_font_data->BoundsForGlyph(glyph);
+        }
+      }
+    }
+  }
+}
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 FontFallbackMap& FontCache::GetFontFallbackMap() {
   if (!font_fallback_map_) {

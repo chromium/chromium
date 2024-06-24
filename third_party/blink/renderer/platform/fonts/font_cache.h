@@ -163,6 +163,8 @@ class PLATFORM_EXPORT FontCache final {
   static void PrewarmFamily(const AtomicString& family_name) {}
 #endif
 
+  static void MaybePreloadSystemFonts();
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // These are needed for calling QueryRenderStyleForStrike, since
   // gfx::GetFontRenderParams makes distinctions based on DSF.

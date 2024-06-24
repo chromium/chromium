@@ -1402,6 +1402,16 @@ const base::FeatureParam<LcppPreloadLazyLoadImageType>
         &kLCPPLazyLoadImagePreload, "lcpp_preload_lazy_load_image_type",
         LcppPreloadLazyLoadImageType::kNone, &lcpp_preload_lazy_load_image};
 
+BASE_FEATURE(kPreloadSystemFonts,
+             "PreloadSystemFonts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kPreloadSystemFontsTargets{
+    &kPreloadSystemFonts, "preload_system_fonts_targets", "[]"};
+
+const base::FeatureParam<bool> kPreloadSystemFontsFromPage{
+    &kPreloadSystemFonts, "preload_system_fonts_from_page", false};
+
 BASE_FEATURE(kLCPPMultipleKey,
              "LCPPMultipleKey",
              base::FEATURE_DISABLED_BY_DEFAULT);

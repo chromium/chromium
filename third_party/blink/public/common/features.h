@@ -894,6 +894,15 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
     LcppPreloadLazyLoadImageType>
     kLCPCriticalPathPredictorPreloadLazyLoadImageType;
 
+// If enabled, some system fonts are preloaded.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadSystemFonts);
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kPreloadSystemFontsTargets;
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kPreloadSystemFontsFromPage;
+
 // If enabled, LCPP learns with additional first-level-path key to origin.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPMultipleKey);
 
