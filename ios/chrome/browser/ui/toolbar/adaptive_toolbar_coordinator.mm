@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 @interface AdaptiveToolbarCoordinator () <AdaptiveToolbarViewControllerDelegate>
 
@@ -132,9 +134,16 @@
 - (void)exitFullscreen {
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
-  fullscreenController->LogMimeTypeWhenExitFullscreen(
-      self.browser->GetWebStateList()->GetActiveWebState());
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  fullscreenController->LogMimeTypeWhenExitFullscreen(webState);
   fullscreenController->ExitFullscreen();
+  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
+  if (sourceID != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_FullscreenActions(sourceID)
+        .SetHasExitedManually(true)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 #pragma mark - NewTabPageControllerDelegate

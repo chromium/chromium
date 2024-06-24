@@ -74,6 +74,7 @@ source_set("internal") {
     ":ui",
     "//base",
     "//components/keyed_service/ios",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/shared/model/browser",
@@ -89,6 +90,7 @@ source_set("internal") {
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/web/common",
     "//ios/web/public/security",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/gfx/geometry",
   ]
 

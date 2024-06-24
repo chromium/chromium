@@ -35,6 +35,7 @@ source_set("toolbar") {
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
     "//components/strings",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
@@ -97,6 +98,7 @@ source_set("toolbar") {
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
 

@@ -13917,6 +13917,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="IOS.FullscreenActions">
+  <owner>ajuma@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <summary>
+    Logged when a user exited the fullscreen mode when browsing a web page in
+    iOS.
+  </summary>
+  <metric name="HasExitedManually" enum="Boolean">
+    <summary>
+      True if the user tapped on the top toolbar to exit and false if they
+      exited it in any other way.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="IOS.IsDefaultBrowser">
   <owner>rkgibson@chromium.org</owner>
   <summary>
