@@ -626,12 +626,6 @@ extern const char kIOSTipsNotificationsEnabledParam[];
 // Helper for whether Tips Notifications are enabled.
 bool IsIOSTipsNotificationsEnabled();
 
-// Feature flag to use a UICollectionView for the Magic Stack.
-BASE_DECLARE_FEATURE(kIOSMagicStackCollectionView);
-
-// Returns true if the MagicStack UICollectionView implementation is enabled.
-bool IsIOSMagicStackCollectionViewEnabled();
-
 // Feature flag to disable fullscreen scrolling logic.
 BASE_DECLARE_FEATURE(kDisableFullscreenScrolling);
 

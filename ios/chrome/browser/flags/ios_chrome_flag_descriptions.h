@@ -502,11 +502,6 @@ extern const char kIOSEditMenuHideSearchWebDescription[];
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];
 
-// Title and description for the flag to use a UICollectionView for the Magic
-// Stack.
-extern const char kIOSMagicStackCollectionViewName[];
-extern const char kIOSMagicStackCollectionViewDescription[];
-
 // Title and description for the flag to require Local Authentication before
 // accessing the any of the Password Manager surfaces.
 extern const char kIOSPasswordAuthOnEntryV2Name[];

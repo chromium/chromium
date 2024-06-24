@@ -500,12 +500,9 @@ const CGFloat kModuleMinMargin = 16;
     [self addViewControllerAboveFeed:self.feedHeaderViewController];
   }
 
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [self addViewControllerAboveFeed:self.magicStackCollectionView];
-  }
+  [self addViewControllerAboveFeed:self.magicStackCollectionView];
 
-  if (!IsIOSMagicStackCollectionViewEnabled() ||
-      !ShouldPutMostVisitedSitesInMagicStack()) {
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
     [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
   }
 
@@ -596,8 +593,7 @@ const CGFloat kModuleMinMargin = 16;
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.magicStackCollectionView];
-  if (!IsIOSMagicStackCollectionViewEnabled() ||
-      !ShouldPutMostVisitedSitesInMagicStack()) {
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
     [self removeFromViewHierarchy:self.contentSuggestionsViewController];
   }
 
@@ -648,9 +644,7 @@ const CGFloat kModuleMinMargin = 16;
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     heightAboveFeed += viewController.view.frame.size.height;
   }
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    heightAboveFeed += kBottomMagicStackPadding;
-  }
+  heightAboveFeed += kBottomMagicStackPadding;
   return heightAboveFeed;
 }
 
@@ -1296,19 +1290,11 @@ const CGFloat kModuleMinMargin = 16;
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
 
   NSMutableArray* constraints = [NSMutableArray array];
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [constraints
-        addObject:[self.collectionView.topAnchor
-                      constraintEqualToAnchor:self.magicStackCollectionView.view
-                                                  .bottomAnchor
-                                     constant:kBottomMagicStackPadding]];
-
-  } else {
-    [constraints addObject:[self.collectionView.topAnchor
-                               constraintEqualToAnchor:
-                                   self.contentSuggestionsViewController.view
-                                       .bottomAnchor]];
-  }
+  [constraints
+      addObject:[self.collectionView.topAnchor
+                    constraintEqualToAnchor:self.magicStackCollectionView.view
+                                                .bottomAnchor
+                                   constant:kBottomMagicStackPadding]];
 
   // If the fake omnibox is pinned to the top, we pin the feed header below it.
   // Otherwise, the feed header gets pinned to the top.
@@ -1351,15 +1337,9 @@ const CGFloat kModuleMinMargin = 16;
   }
 
   NSLayoutConstraint* feedHeaderTopAnchor;
-  if (IsIOSMagicStackCollectionViewEnabled()) {
     feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
         constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
                        constant:kBottomMagicStackPadding];
-  } else {
-    feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
-        constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                    .bottomAnchor];
-  }
   self.feedHeaderConstraints = @[
     feedHeaderTopAnchor,
     [bottomView.topAnchor constraintEqualToAnchor:self.feedHeaderViewController
@@ -1503,10 +1483,8 @@ const CGFloat kModuleMinMargin = 16;
 - (void)applyCollectionViewConstraints {
   UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
   contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    self.magicStackCollectionView.view
-        .translatesAutoresizingMaskIntoConstraints = NO;
-  }
+  self.magicStackCollectionView.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
 
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
@@ -1556,19 +1534,11 @@ const CGFloat kModuleMinMargin = 16;
       ]];
     }
   } else {
-    if (IsIOSMagicStackCollectionViewEnabled()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.collectionView.topAnchor
-            constraintEqualToAnchor:self.magicStackCollectionView.view
-                                        .bottomAnchor],
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.collectionView.topAnchor
-            constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                        .bottomAnchor],
-      ]];
-    }
+    [NSLayoutConstraint activateConstraints:@[
+      [self.collectionView.topAnchor
+          constraintEqualToAnchor:self.magicStackCollectionView.view
+                                      .bottomAnchor],
+    ]];
   }
 
   if (_feedContainer) {
@@ -1598,20 +1568,18 @@ const CGFloat kModuleMinMargin = 16;
           constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
     ]];
   }
-  if (IsIOSMagicStackCollectionViewEnabled()) {
+  [NSLayoutConstraint activateConstraints:@[
+    [self.magicStackCollectionView.view.leadingAnchor
+        constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+    [self.magicStackCollectionView.view.trailingAnchor
+        constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+  ]];
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
     [NSLayoutConstraint activateConstraints:@[
-      [self.magicStackCollectionView.view.leadingAnchor
-          constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
-      [self.magicStackCollectionView.view.trailingAnchor
-          constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+      [self.magicStackCollectionView.view.topAnchor
+          constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                      .bottomAnchor],
     ]];
-    if (!ShouldPutMostVisitedSitesInMagicStack()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.magicStackCollectionView.view.topAnchor
-            constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                        .bottomAnchor],
-      ]];
-    }
   }
   [self setInitialFakeOmniboxConstraints];
 }
@@ -1742,9 +1710,7 @@ const CGFloat kModuleMinMargin = 16;
     [self.view layoutIfNeeded];
   }
   if (existingConstraintUpdated) {
-    if (IsIOSMagicStackCollectionViewEnabled()) {
-      [self.magicStackCollectionView moduleWidthDidUpdate];
-    }
+    [self.magicStackCollectionView moduleWidthDidUpdate];
   }
 }
 

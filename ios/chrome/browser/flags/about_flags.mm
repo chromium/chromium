@@ -1688,10 +1688,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature)},
-    {"ios-magic-stack-collection-view",
-     flag_descriptions::kIOSMagicStackCollectionViewName,
-     flag_descriptions::kIOSMagicStackCollectionViewDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSMagicStackCollectionView)},
     {"autofill-enable-card-benefits-for-american-express",
      flag_descriptions::kAutofillEnableCardBenefitsForAmericanExpressName,
      flag_descriptions::

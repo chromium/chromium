@@ -754,10 +754,8 @@
 - (void)configureNTPViewController {
   DCHECK(self.NTPViewController);
 
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    self.NTPViewController.magicStackCollectionView =
-        self.contentSuggestionsCoordinator.magicStackCollectionView;
-  }
+  self.NTPViewController.magicStackCollectionView =
+      self.contentSuggestionsCoordinator.magicStackCollectionView;
   self.NTPViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
 

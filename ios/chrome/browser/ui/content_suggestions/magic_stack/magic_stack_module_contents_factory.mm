@@ -89,9 +89,7 @@
            .shortcutItems) {
     ContentSuggestionsShortcutTileView* view =
         [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
-    if (IsIOSMagicStackCollectionViewEnabled()) {
-      [shortcutsConfig.consumerSource addConsumer:view];
-    }
+    [shortcutsConfig.consumerSource addConsumer:view];
     [shortcutsViews addObject:view];
   }
   UIStackView* shortcutsStackView = [[UIStackView alloc] init];

@@ -613,7 +613,7 @@ const char kGStatic[] = ".gstatic.com";
     // A new item has been fetched, ignore.
     return;
   }
-  if (!self.itemConfig || !IsIOSMagicStackCollectionViewEnabled()) {
+  if (!self.itemConfig) {
     self.itemConfig = item;
     [self.delegate tabResumptionHelperDidReceiveItem];
     return;

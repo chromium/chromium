@@ -114,9 +114,6 @@
   if (!self.consumer) {
     return;
   }
-  if (!IsIOSMagicStackCollectionViewEnabled()) {
-    [self.magicStackRankingModel fetchLatestMagicStackRanking];
-  }
   if (!ShouldPutMostVisitedSitesInMagicStack() &&
       self.mostVisitedTilesMediator.mostVisitedConfig) {
     [self.consumer setMostVisitedTilesConfig:self.mostVisitedTilesMediator

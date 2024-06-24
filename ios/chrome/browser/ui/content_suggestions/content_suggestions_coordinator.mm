@@ -356,13 +356,10 @@
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
       _magicStackRankingModel;
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
-  }
+  _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
   _magicStackRankingModel.homeStartDataSource = self.homeStartDataSource;
 
-  if (!IsIOSMagicStackCollectionViewEnabled() ||
-      !ShouldPutMostVisitedSitesInMagicStack()) {
+  if (!ShouldPutMostVisitedSitesInMagicStack()) {
     ContentSuggestionsViewController* viewController =
         [[ContentSuggestionsViewController alloc] init];
     viewController.audience = self;
@@ -373,17 +370,12 @@
     self.contentSuggestionsViewController = viewController;
   }
 
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    _magicStackCollectionView =
-        [[MagicStackCollectionViewController alloc] init];
-    _magicStackCollectionView.audience = self;
-  }
+  _magicStackCollectionView = [[MagicStackCollectionViewController alloc] init];
+  _magicStackCollectionView.audience = self;
   _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;
 
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    self.contentSuggestionsMediator.magicStackConsumer =
-        _magicStackCollectionView;
-  }
+  self.contentSuggestionsMediator.magicStackConsumer =
+      _magicStackCollectionView;
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
   [self.browser->GetCommandDispatcher()

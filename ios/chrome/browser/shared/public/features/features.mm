@@ -792,14 +792,6 @@ bool IsIOSTipsNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSTipsNotifications);
 }
 
-BASE_FEATURE(kIOSMagicStackCollectionView,
-             "IOSMagicStackCollectionView",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsIOSMagicStackCollectionViewEnabled() {
-  return base::FeatureList::IsEnabled(kIOSMagicStackCollectionView);
-}
-
 BASE_FEATURE(kDisableFullscreenScrolling,
              "DisableFullscreenScrolling",
              base::FEATURE_DISABLED_BY_DEFAULT);

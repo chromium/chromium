@@ -179,9 +179,7 @@
   // running state changes; this avoids calling the consumer every time an
   // individual check state changes.
   _safetyCheckState.audience = self;
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
-  }
+  [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
 }
 
 - (void)safetyCheckManagerWillShutdown {

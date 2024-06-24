@@ -357,8 +357,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _mostVisitedConfig.commandHandler = self;
     _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
     _mostVisitedConfig.consumerSource = self;
-    if (IsIOSMagicStackCollectionViewEnabled() &&
-        ShouldPutMostVisitedSitesInMagicStack()) {
+    if (ShouldPutMostVisitedSitesInMagicStack()) {
       if ([_freshMostVisitedItems count] == 0) {
         [self.delegate removeMostVisitedTilesModule];
       } else if (!oldMostVisitedSites.empty()) {

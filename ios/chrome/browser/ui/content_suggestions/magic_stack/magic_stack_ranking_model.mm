@@ -59,7 +59,6 @@
   // The latest Magic Stack module order sent up to the consumer. This includes
   // any omissions due to filtering from `_magicStackOrderFromSegmentation` and
   // any additions beyond `_magicStackOrderFromSegmentation` (e.g. Set Up List).
-  NSArray<NSNumber*>* _latestMagicStackOrder;
   NSArray<MagicStackModule*>* _latestMagicStackConfigOrder;
   // Module mediators.
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
@@ -142,7 +141,6 @@
 - (void)removeSetUpList {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kCompactedSetUpList);
-  DCHECK(IsIOSMagicStackCollectionViewEnabled());
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_setUpListMediator.setUpListConfigs[0]];
 }
@@ -158,12 +156,8 @@
 - (void)removeSafetyCheckModule {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kSafetyCheck);
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [self.delegate
-        magicStackRankingModel:self
-                 didRemoveItem:_safetyCheckMediator.safetyCheckState];
-    return;
-  }
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_safetyCheckMediator.safetyCheckState];
 }
 
 #pragma mark - TabResumptionHelperDelegate
@@ -181,60 +175,41 @@
   if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
     return;
   }
-
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    TabResumptionItem* item = _tabResumptionMediator.itemConfig;
-    [self.delegate magicStackRankingModel:self didReconfigureItem:item];
-    return;
-  }
+  TabResumptionItem* item = _tabResumptionMediator.itemConfig;
+  [self.delegate magicStackRankingModel:self didReconfigureItem:item];
 }
 
 - (void)removeTabResumptionModule {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kTabResumption);
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [self.delegate magicStackRankingModel:self
-                            didRemoveItem:_tabResumptionMediator.itemConfig];
-    return;
-  }
+  [self.delegate magicStackRankingModel:self
+                          didRemoveItem:_tabResumptionMediator.itemConfig];
 }
 
 #pragma mark - ParcelTrackingMediatorDelegate
 
 - (void)newParcelsAvailable {
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    MagicStackModule* item = _parcelTrackingMediator.parcelTrackingItemToShow;
-    NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-    NSUInteger index = [rank indexOfObject:item];
-    [self.delegate magicStackRankingModel:self
-                            didInsertItem:item
-                                  atIndex:index];
-    return;
-  }
+  MagicStackModule* item = _parcelTrackingMediator.parcelTrackingItemToShow;
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
 - (void)parcelTrackingDisabled {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kParcelTracking);
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [self.delegate magicStackRankingModel:self
-                            didRemoveItem:_parcelTrackingMediator
-                                              .parcelTrackingItemToShow];
-    return;
-  }
+  [self.delegate
+      magicStackRankingModel:self
+               didRemoveItem:_parcelTrackingMediator.parcelTrackingItemToShow];
 }
 
 - (NSUInteger)indexForMagicStackModule:
     (ContentSuggestionsModuleType)moduleType {
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    return [_latestMagicStackConfigOrder
-        indexOfObjectPassingTest:^BOOL(MagicStackModule* config, NSUInteger idx,
-                                       BOOL* stop) {
-          return config.type == moduleType;
-        }];
-  } else {
-    return [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
-  }
+  return [_latestMagicStackConfigOrder
+      indexOfObjectPassingTest:^BOOL(MagicStackModule* config, NSUInteger idx,
+                                     BOOL* stop) {
+        return config.type == moduleType;
+      }];
 }
 
 #pragma mark - MostVisitedTilesMediatorDelegate
@@ -395,11 +370,9 @@
   }
   _magicStackOrderFromSegmentationReceived = YES;
   _magicStackOrderFromSegmentation = magicStackOrder;
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
-    [self.delegate magicStackRankingModel:self
-                 didGetLatestRankingOrder:_latestMagicStackConfigOrder];
-  }
+  _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
+  [self.delegate magicStackRankingModel:self
+               didGetLatestRankingOrder:_latestMagicStackConfigOrder];
 }
 
 - (NSArray<MagicStackModule*>*)latestMagicStackConfigRank {
@@ -540,17 +513,12 @@
     return;
   }
 
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    if (![self isMagicStackOrderReady]) {
-      return;
-    }
-    NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
-    NSUInteger index = [rank indexOfObject:item];
-    [self.delegate magicStackRankingModel:self
-                            didInsertItem:item
-                                  atIndex:index];
+  if (![self isMagicStackOrderReady]) {
     return;
   }
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:item];
+  [self.delegate magicStackRankingModel:self didInsertItem:item atIndex:index];
 }
 
 // Returns YES if the tab resumption module should added into the Magic Stack.

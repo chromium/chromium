@@ -299,16 +299,14 @@ bool DefaultBrowserPromoCompleted() {
   // completes animation
   ProceduralBlock completion = ^{
     if (completed) {
-      if (IsIOSMagicStackCollectionViewEnabled()) {
-        SetUpListConfig* config = [[SetUpListConfig alloc] init];
-        config.setUpListItems = @[ [self allSetItem] ];
-        [self.audience replaceSetUpListWithAllSet:config];
-      }
+      SetUpListConfig* config = [[SetUpListConfig alloc] init];
+      config.setUpListItems = @[ [self allSetItem] ];
+      [self.audience replaceSetUpListWithAllSet:config];
     }
   };
-    [_consumers setUpListItemDidComplete:item
-                       allItemsCompleted:completed
-                              completion:completion];
+  [_consumers setUpListItemDidComplete:item
+                     allItemsCompleted:completed
+                            completion:completion];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -448,10 +446,7 @@ bool DefaultBrowserPromoCompleted() {
 
 // Hides the Set Up List with an animation.
 - (void)hideSetUpList {
-  if (IsIOSMagicStackCollectionViewEnabled()) {
-    [self.audience removeSetUpList];
-    return;
-  }
+  [self.audience removeSetUpList];
 }
 
 // Checks if the CPE is enabled and marks the SetUpList Autofill item complete
