@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 
 #include "ash/accessibility/caption_bubble_context_ash.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_util.h"
@@ -35,7 +37,12 @@ namespace ash {
 SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
     : profile_(profile),
       controller_(
-          ::captions::LiveCaptionControllerFactory::GetForProfile(profile)) {
+          ::captions::LiveCaptionControllerFactory::GetForProfile(profile)),
+      // Unretained is safe because the live caption service outlives the
+      // caption bubble that uses this callback.
+      context_(
+          base::BindRepeating(&SystemLiveCaptionService::OpenCaptionSettings,
+                              base::Unretained(this))) {
   DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
   // The controller handles all SODA installation / languages etc. for us. We
   // just subscribe to the interface that informs us when we're ready to go.
@@ -328,6 +335,11 @@ void SystemLiveCaptionService::OnTranslationCallback(
           &context_, media::SpeechRecognitionResult(text, is_final))) {
     StopRecognizing();
   }
+}
+
+void SystemLiveCaptionService::OpenCaptionSettings() {
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, chromeos::settings::mojom::kAudioAndCaptionsSubpagePath);
 }
 
 }  // namespace ash

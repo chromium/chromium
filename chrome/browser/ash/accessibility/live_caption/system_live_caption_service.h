@@ -117,6 +117,8 @@ class SystemLiveCaptionService
   void CreateClient();
   void StopTimeoutFinished();
 
+  void OpenCaptionSettings();
+
   ::captions::TranslationCache translation_cache_;
 
   const raw_ptr<Profile> profile_;

@@ -3338,7 +3338,7 @@ source_set("ash") {
   allow_circular_includes_from = [
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/accessibility",
-    "//chrome/browser/ash/cert_provisioning",
+    "//chrome/browser/ash/accessibility/live_caption",
     "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/android_sms",
     "//chrome/browser/ash/app_restore",
@@ -3347,6 +3347,7 @@ source_set("ash") {
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/bluetooth",
     "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/cert_provisioning",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/cryptauth",
     "//chrome/browser/ash/customization",

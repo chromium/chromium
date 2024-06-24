@@ -17,7 +17,9 @@ constexpr char kAshSessionId[] = "ash";
 
 namespace ash::captions {
 
-CaptionBubbleContextAsh::CaptionBubbleContextAsh() = default;
+CaptionBubbleContextAsh::CaptionBubbleContextAsh(
+    ::captions::OpenCaptionSettingsCallback callback)
+    : open_caption_settings_callback_(std::move(callback)) {}
 
 CaptionBubbleContextAsh::~CaptionBubbleContextAsh() = default;
 
@@ -48,9 +50,7 @@ CaptionBubbleContextAsh::GetCaptionBubbleSessionObserver() {
 
 ::captions::OpenCaptionSettingsCallback
 CaptionBubbleContextAsh::GetOpenCaptionSettingsCallback() {
-  // Live Translate is not implemented on ChromeOS.
-  NOTIMPLEMENTED();
-  return base::RepeatingClosure();
+  return open_caption_settings_callback_;
 }
 
 }  // namespace ash::captions

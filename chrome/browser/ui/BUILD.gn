@@ -3805,6 +3805,7 @@ static_library("ui") {
       "//chrome/browser/apps/app_discovery_service",
       "//chrome/browser/apps/app_preload_service",
       "//chrome/browser/ash",
+      "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/android_sms",
       "//chrome/browser/ash/app_list/search/ranking:proto",
       "//chrome/browser/ash/app_list/search/util:proto",
@@ -4073,6 +4074,7 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/android_sms",
