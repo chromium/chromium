@@ -32,6 +32,7 @@ struct ClickEvent {
   int veid = -1;
   int mouse_button = -1;
   int context = -1;
+  int double_click = -1;
 };
 
 struct HoverEvent {

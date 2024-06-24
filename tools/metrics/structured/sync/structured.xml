@@ -2845,6 +2845,11 @@
         An index of a mouse button as defined in JavaScript MouseEvent.
       </summary>
     </metric>
+    <metric name="DoubleClick" type="int">
+      <summary>
+        A boolean describing if the event is a double click.
+      </summary>
+    </metric>
     <metric name="Context" type="int">
       <summary>
         Arbitrary contextual information for the event.

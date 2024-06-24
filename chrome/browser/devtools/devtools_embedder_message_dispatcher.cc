@@ -153,6 +153,10 @@ bool GetValue(const base::Value& value, ClickEvent* event) {
   if (mouse_button) {
     event->mouse_button = *mouse_button;
   }
+  std::optional<int> double_click = value.GetDict().FindInt("doubleClick");
+  if (double_click) {
+    event->double_click = *double_click;
+  }
   std::optional<int> context = value.GetDict().FindInt("context");
   if (context) {
     event->context = *context;
