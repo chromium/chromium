@@ -13,6 +13,7 @@
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -29,6 +30,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 
@@ -267,8 +269,7 @@ FormFiller::FillingContext::FillingContext(
     base::optional_ref<const std::u16string> cvc)
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
-      filled_origin(field.origin()),
-      original_fill_time(base::TimeTicks::Now()) {
+      filled_origin(field.origin()) {
   DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
          !cvc.has_value());
 
@@ -295,13 +296,6 @@ FormFiller::~FormFiller() = default;
 void FormFiller::Reset() {
   filling_context_.clear();
   form_autofill_history_.Reset();
-}
-
-std::optional<base::TimeTicks> FormFiller::GetOriginalFillingTime(
-    FormGlobalId form_id) {
-  FillingContext* filling_context = GetFillingContext(form_id);
-  return filling_context ? std::optional(filling_context->original_fill_time)
-                         : std::nullopt;
 }
 
 base::flat_map<FieldGlobalId, FieldFillingSkipReason>
@@ -450,6 +444,10 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = FillingMethod::kFieldByFieldFilling});
+    // Since the user chose to only fill a single field, we don't want to
+    // trigger a refill that will fill the whole form
+    SetFillingContext(form.global_id(), nullptr);
+    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
 
     if (type == SuggestionType::kCreditCardFieldByFieldFilling ||
         type == SuggestionType::kAddressFieldByFieldFilling) {
@@ -807,8 +805,9 @@ void FormFiller::FillOrPreviewForm(
     }
   }
 
-  // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill) {
+    form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
+    // Save filling history to support undoing it later if needed.
     form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields.old_values,
                                             safe_newly_filled_fields.cached,
                                             filling_product, is_refill);
@@ -834,17 +833,34 @@ void FormFiller::FillOrPreviewForm(
 bool FormFiller::ShouldTriggerRefill(
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason) {
+  std::optional<base::TimeTicks> last_filling_timestamp =
+      form_structure.last_filling_timestamp();
+
   // Should not refill if a form with the same FormGlobalId that has not been
   // filled before.
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
-  if (filling_context == nullptr) {
+  if (filling_context == nullptr || !last_filling_timestamp) {
+    return false;
+  }
+  // Autofill allows at most one refill per filling operation.
+  if (filling_context->attempted_refill) {
     return false;
   }
 
-  // Confirm that the form changed by running a DeepEqual check on the filled
-  // form and the received form. Other trigger reasons do not need this check
-  // since they do not depend on the form changing.
+  // Autofill doesn't allow refills after more than `limit_before_refill_`.
+  // This is done to increase confidence that the refill was a consequence
+  // of the filling operation and not some other event.
+  if (base::TimeDelta time_since_last_fill =
+          base::TimeTicks::Now() - *last_filling_timestamp;
+      time_since_last_fill >= limit_before_refill_) {
+    return false;
+  }
+
+  // In the case of kFormChanged, verify that the form actually changed
+  // dynamically since Autofill receives updated forms from the renderer on
+  // any interaction, and not necessarily ones that dynamically change the
+  // form.
   if (refill_trigger_reason == RefillTriggerReason::kFormChanged &&
       filling_context->filled_form &&
       FormData::DeepEqual(form_structure.ToFormData(),
@@ -852,10 +868,7 @@ bool FormFiller::ShouldTriggerRefill(
     return false;
   }
 
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta delta = now - filling_context->original_fill_time;
-
-  return !filling_context->attempted_refill && delta < limit_before_refill_;
+  return true;
 }
 
 void FormFiller::ScheduleRefill(const FormData& form,

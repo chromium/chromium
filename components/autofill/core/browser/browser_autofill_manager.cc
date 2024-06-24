@@ -2048,12 +2048,11 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
     return;
   }
   base::TimeTicks now = base::TimeTicks::Now();
-  std::optional<base::TimeTicks> original_fill_time =
-      form_filler_->GetOriginalFillingTime(form.global_id());
-  if (!original_fill_time) {
+  std::optional<base::TimeTicks> last_fill_time = form.last_filling_timestamp();
+  if (!last_fill_time) {
     return;
   }
-  base::TimeDelta delta = now - *original_fill_time;
+  base::TimeDelta delta = now - *last_fill_time;
   // If the filling happened too long ago, maybe this is just an effect of
   // the user pressing a "reset form" button.
   if (delta >= form_filler_->get_limit_before_refill()) {

@@ -5683,28 +5683,11 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   base::HistogramTester histogram_tester;
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate checking whether to fill a dynamic form before the form was filled
-  // initially.
-  test_api(autofill_manager())
-      .form_filler()
-      .ShouldTriggerRefill(FormStructure(form),
-                           RefillTriggerReason::kFormChanged);
-  histogram_tester.ExpectTotalCount("Autofill.FormEvents.Address", 0);
-
   // Simulate filling the form.
   FillTestProfile(form);
 
   // Dynamically change the form.
   test_api(form).Remove(-1);
-
-  // Simulate checking whether to fill a dynamic form after the form was filled
-  // initially.
-  test_api(autofill_manager())
-      .form_filler()
-      .ShouldTriggerRefill(FormStructure(form),
-                           RefillTriggerReason::kFormChanged);
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
-              BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 0)));
 
   // Trigger a refill, the refill metric should be updated.
   autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
