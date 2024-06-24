@@ -25,6 +25,13 @@ std::u16string GetSelectedText(ui::TextInputClient* client) {
   return u"";
 }
 
+gfx::Range GetSelectionRange(ui::TextInputClient* client) {
+  gfx::Range selection_range;
+  return client && client->GetEditableSelectionRange(&selection_range)
+             ? selection_range
+             : gfx::Range();
+}
+
 }  // namespace
 
 PickerModel::PickerModel(ui::TextInputClient* focused_client,
@@ -32,6 +39,7 @@ PickerModel::PickerModel(ui::TextInputClient* focused_client,
                          EditorStatus editor_status)
     : has_focus_(focused_client != nullptr),
       selected_text_(GetSelectedText(focused_client)),
+      selection_range_(GetSelectionRange(focused_client)),
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
       editor_status_(editor_status) {}
 
@@ -101,11 +109,8 @@ PickerModeType PickerModel::GetMode() const {
     return PickerModeType::kUnfocused;
   }
 
-  if (selected_text_.empty()) {
-    return PickerModeType::kNoSelection;
-  }
-
-  return PickerModeType::kHasSelection;
+  return selection_range_.is_empty() ? PickerModeType::kNoSelection
+                                     : PickerModeType::kHasSelection;
 }
 
 }  // namespace ash

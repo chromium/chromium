@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
+#include "ui/gfx/range/range.h"
 
 namespace ui {
 class TextInputClient;
@@ -44,6 +45,7 @@ class ASH_EXPORT PickerModel {
  private:
   bool has_focus_;
   std::u16string selected_text_;
+  gfx::Range selection_range_;
   bool is_caps_lock_enabled_;
   EditorStatus editor_status_;
 };
