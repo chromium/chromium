@@ -3737,6 +3737,13 @@ const FeatureEntry::FeatureVariation kAndroidHubV2Variations[] = {
      nullptr},
     {"Phase 3", kHubPhase3, std::size(kHubPhase3), nullptr},
     {"Phase 4", kHubPhase4, std::size(kHubPhase4), nullptr}};
+
+const FeatureEntry::FeatureParam kTabGroupParityAndroidSkipCreationDialog[] = {
+    {"skip_tab_group_creation_dialog", "true"}};
+
+const FeatureEntry::FeatureVariation kTabGroupParityAndroidVariations[] = {
+    {"Skip tab group creation dialog", kTabGroupParityAndroidSkipCreationDialog,
+     std::size(kTabGroupParityAndroidSkipCreationDialog), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const flags_ui::FeatureEntry::FeatureParam kParcelTrackingTestDataDelivered[] =
@@ -10159,7 +10166,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
      flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabGroupParityAndroid,
+                                    kTabGroupParityAndroidVariations,
+                                    "TabGroupParityVariations")},
 
     {"tab-strip-group-collapse-android",
      flag_descriptions::kTabStripGroupCollapseAndroidName,

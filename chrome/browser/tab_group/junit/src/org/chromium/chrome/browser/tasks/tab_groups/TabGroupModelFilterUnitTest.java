@@ -408,6 +408,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Before
     public void setUp() {
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
         // After setUp, TabModel has 6 tabs in the following order: mTab1, mTab2, mTab3, mTab4,
         // mTab5, mTab6. While mTab2 and mTab3 are in a group, and mTab5 and mTab6 are in a separate
         // group.
@@ -571,6 +572,7 @@ public class TabGroupModelFilterUnitTest {
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab1.getTabGroupId(), newTab.getTabGroupId());
 
+        verify(mTabGroupModelFilterObserver).willMergeTabToGroup(newTab, TAB1_ROOT_ID);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(newTab, mTabGroupModelFilter);
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
     }

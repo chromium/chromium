@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -49,6 +52,17 @@ public class TabGroupCreationDialogManagerUnitTest {
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(
                         mActivity, mModalDialogManager, mOnTabGroupCreation);
+    }
+
+    @Test
+    public void testCreationDialogSkipped() {
+        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
+
+        mTabGroupCreationDialogManager.setDialogManagerForTesting(mTabGroupVisualDataDialogManager);
+
+        mTabGroupCreationDialogManager.showDialog(TAB1_ID, mTabGroupModelFilter);
+
+        verify(mTabGroupVisualDataDialogManager, never()).showDialog(anyInt(), any(), any());
     }
 
     @Test

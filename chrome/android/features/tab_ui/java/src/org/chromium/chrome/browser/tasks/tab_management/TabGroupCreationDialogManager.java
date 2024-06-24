@@ -113,6 +113,8 @@ public class TabGroupCreationDialogManager {
      * @param filter The current TabGroupModelFilter that this group is created on.
      */
     public void showDialog(int rootId, TabGroupModelFilter filter) {
+        if (TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.getValue()) return;
+
         mTabGroupCreationDialogController = new TabGroupCreationDialogController(rootId, filter);
         mTabGroupVisualDataDialogManager.showDialog(
                 rootId, filter, mTabGroupCreationDialogController);
