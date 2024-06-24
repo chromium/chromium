@@ -70,37 +70,6 @@ void EncryptionMigrationScreenHandler::DeclareLocalizedValues(
   builder->Add("gaiaLoading", IDS_LOGIN_GAIA_LOADING_MESSAGE);
 }
 
-void EncryptionMigrationScreenHandler::SetBatteryState(double batteryPercent,
-                                                       bool isEnoughBattery,
-                                                       bool isCharging) {
-  CallExternalAPI("setBatteryState", batteryPercent, isEnoughBattery,
-                  isCharging);
-}
-
-void EncryptionMigrationScreenHandler::SetIsResuming(bool isResuming) {
-  CallExternalAPI("setIsResuming", isResuming);
-}
-
-void EncryptionMigrationScreenHandler::SetUIState(UIState state) {
-  CallExternalAPI("setUIState", static_cast<int>(state));
-}
-
-void EncryptionMigrationScreenHandler::SetSpaceInfoInString(
-    int64_t availableSpaceSize,
-    int64_t necessarySpaceSize) {
-  CallExternalAPI("setSpaceInfoInString", ui::FormatBytes(availableSpaceSize),
-                  ui::FormatBytes(necessarySpaceSize));
-}
-
-void EncryptionMigrationScreenHandler::SetNecessaryBatteryPercent(
-    double batteryPercent) {
-  CallExternalAPI("setNecessaryBatteryPercent", batteryPercent);
-}
-
-void EncryptionMigrationScreenHandler::SetMigrationProgress(double progress) {
-  CallExternalAPI("setMigrationProgress", progress);
-}
-
 base::WeakPtr<EncryptionMigrationScreenView>
 EncryptionMigrationScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

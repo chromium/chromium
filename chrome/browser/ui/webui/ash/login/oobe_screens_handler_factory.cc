@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
+#include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/screens/tuna_screen.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
@@ -142,6 +144,19 @@ void OobeScreensHandlerFactory::EstablishArcVmDataMigrationScreenPipe(
           .GetScreen<ArcVmDataMigrationScreen>();
   arc_vm_data_migration->BindPageHandlerReceiver(std::move(receiver));
   arc_vm_data_migration->PassPagePendingReceiverWithCallback(
+      std::move(callback));
+}
+
+void OobeScreensHandlerFactory::EstablishEncryptionMigrationScreenPipe(
+    mojo::PendingReceiver<screens_login::mojom::EncryptionMigrationPageHandler>
+        receiver,
+    EstablishEncryptionMigrationScreenPipeCallback callback) {
+  CHECK(WizardController::default_controller());
+  EncryptionMigrationScreen* encryption_migration =
+      WizardController::default_controller()
+          ->GetScreen<EncryptionMigrationScreen>();
+  encryption_migration->BindPageHandlerReceiver(std::move(receiver));
+  encryption_migration->PassPagePendingReceiverWithCallback(
       std::move(callback));
 }
 

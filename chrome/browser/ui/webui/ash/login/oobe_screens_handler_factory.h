@@ -74,6 +74,11 @@ class OobeScreensHandlerFactory
           receiver,
       EstablishArcVmDataMigrationScreenPipeCallback callback) override;
 
+  void EstablishEncryptionMigrationScreenPipe(
+      mojo::PendingReceiver<
+          screens_login::mojom::EncryptionMigrationPageHandler> receiver,
+      EstablishEncryptionMigrationScreenPipeCallback callback) override;
+
   void EstablishLocalDataLossWarningScreenPipe(
       mojo::PendingReceiver<
           screens_osauth::mojom::LocalDataLossWarningPageHandler> receiver)
