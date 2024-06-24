@@ -12,6 +12,8 @@
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 
+// This test suite requires the host to have special Xorg/Xrandr configuration.
+// See: //docs/ui/display/multiscreen_testing.md
 class VirtualDisplayUtilLinuxInteractiveUitest : public testing::Test {
  public:
   VirtualDisplayUtilLinuxInteractiveUitest(

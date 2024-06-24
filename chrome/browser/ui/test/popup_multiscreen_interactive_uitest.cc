@@ -38,6 +38,7 @@ namespace {
 // Tests are run with and without the requisite Window Management permission.
 // Tests must run in series to manage virtual displays on supported platforms.
 // Use 2+ physical displays to run locally with --gtest_also_run_disabled_tests.
+// See: //docs/ui/display/multiscreen_testing.md
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_PopupMultiScreenTest PopupMultiScreenTest
 #else

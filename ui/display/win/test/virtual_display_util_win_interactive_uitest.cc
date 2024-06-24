@@ -9,10 +9,9 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/test/virtual_display_util_win.h"
 
-// Flag passed to use the custom display driver to make virtual displays.
-static constexpr char kSwitchWindowsVirtualDisplayDriver[] =
-    "windows-virtual-display-driver";
-
+// This test suite requires the host to have a special driver installed.
+// If the driver is not detected, this test will skip.
+// See: //docs/ui/display/multiscreen_testing.md
 class VirtualDisplayUtilWinInteractiveUitest : public testing::Test {
  public:
   VirtualDisplayUtilWinInteractiveUitest(
@@ -26,15 +25,8 @@ class VirtualDisplayUtilWinInteractiveUitest : public testing::Test {
 
   void SetUp() override {
     if (!virtual_display_util_win_.IsAPIAvailable()) {
-      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-              kSwitchWindowsVirtualDisplayDriver)) {
-        GTEST_FAIL() << "Driver not detected to be installed, but "
-                     << kSwitchWindowsVirtualDisplayDriver
-                     << " switch was passed. This indicates a possible "
-                        "misconfiguration.";
-      }
-      GTEST_SKIP()
-          << "Host does not support virtual displays (driver is not detected).";
+      GTEST_SKIP() << "Host does not support virtual displays (driver is not "
+                      "detected).";
     }
     display::Screen::SetScreenInstance(&screen_);
     testing::Test::SetUp();

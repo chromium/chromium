@@ -32,7 +32,7 @@ class WebAppInteractiveUiTest : public WebAppBrowserTestBase {};
 // only platforms with functional display mocking at the moment. While a partial
 // solution is possible using display::Screen::SetScreenInstance on other
 // platforms, window placement doesn't work right with a faked Screen
-// instance.
+// instance. See: //docs/ui/display/multiscreen_testing.md
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 #define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
   TabOpensOnCorrectDisplayMultiScreen
