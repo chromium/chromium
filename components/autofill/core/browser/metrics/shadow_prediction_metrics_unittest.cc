@@ -127,22 +127,8 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
 class AutofillShadowPredictionMetricsTest : public AutofillMetricsBaseTest,
                                             public testing::Test {
  public:
-  AutofillShadowPredictionMetricsTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
-            features::kAutofillParsingPatternProvider,
-            {{"prediction_source", "default"}})},
-        {});
-  }
-
-  ~AutofillShadowPredictionMetricsTest() override = default;
-
   void SetUp() override { SetUpHelper(); }
-
   void TearDown() override { TearDownHelper(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // When shadow predictions are not calculated, the shadow prediction metrics

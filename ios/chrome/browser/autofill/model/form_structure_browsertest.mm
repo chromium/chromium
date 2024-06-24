@@ -205,8 +205,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableDependentLocalityParsing,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          // TODO(crbug.com/40158074) Remove once launched.
-          features::kAutofillParsingPatternProvider,
           features::kAutofillPageLanguageDetection,
           // TODO(crbug.com/40220393): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,

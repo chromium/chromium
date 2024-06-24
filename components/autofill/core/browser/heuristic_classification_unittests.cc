@@ -583,8 +583,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   // parser is used.
   const bool kEnableAddressFieldParserNG = base::FeatureList::IsEnabled(
       features::kAutofillEnableAddressFieldParserNG);
-  init_feature_to_value(features::kAutofillParsingPatternProvider,
-                        kEnableAddressFieldParserNG);
   init_feature_to_value(features::kAutofillUseINAddressModel,
                         kEnableAddressFieldParserNG);
 

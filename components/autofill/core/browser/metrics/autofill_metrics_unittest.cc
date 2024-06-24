@@ -6214,15 +6214,10 @@ class AutofillMetricsSeamlessnessTest
 
  protected:
   AutofillMetricsSeamlessnessTest() {
-    base::FieldTrialParams feature_parameters{
-        {features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name, "100"},
-    };
-    scoped_features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::
-                                   kAutofillLogUKMEventsWithSamplingOnSession,
-                               feature_parameters},
-                              {features::kAutofillParsingPatternProvider, {}}},
-        /*disabled_features=*/{});
+    scoped_features_.InitAndEnableFeatureWithParameters(
+        features::kAutofillLogUKMEventsWithSamplingOnSession,
+        {{features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name,
+          "100"}});
   }
 
  private:
@@ -6551,15 +6546,10 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
 class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
  protected:
   AutofillMetricsFromLogEventsTest() {
-    base::FieldTrialParams feature_parameters{
-        {features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name, "100"},
-    };
-    scoped_features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::
-                                   kAutofillLogUKMEventsWithSamplingOnSession,
-                               feature_parameters},
-                              {features::kAutofillParsingPatternProvider, {}}},
-        /*disabled_features=*/{});
+    scoped_features_.InitAndEnableFeatureWithParameters(
+        features::kAutofillLogUKMEventsWithSamplingOnSession,
+        {{features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name,
+          "100"}});
   }
 
  private:

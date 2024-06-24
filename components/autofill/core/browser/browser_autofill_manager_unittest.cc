@@ -3922,15 +3922,10 @@ class BrowserAutofillManagerWithLogEventsTest
     : public BrowserAutofillManagerTest {
  protected:
   BrowserAutofillManagerWithLogEventsTest() {
-    base::FieldTrialParams feature_parameters{
-        {features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name, "100"},
-    };
-    scoped_features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::
-                                   kAutofillLogUKMEventsWithSamplingOnSession,
-                               feature_parameters},
-                              {features::kAutofillParsingPatternProvider, {}}},
-        /*disabled_features=*/{});
+    scoped_features_.InitAndEnableFeatureWithParameters(
+        features::kAutofillLogUKMEventsWithSamplingOnSession,
+        {{features::kAutofillLogUKMEventsWithSamplingOnSessionRate.name,
+          "100"}});
   }
 
   std::vector<AutofillField::FieldLogEventType> ToFieldTypeEvents(
