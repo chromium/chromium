@@ -20,6 +20,7 @@ class VideoDecoder;
 }  // namespace mojom
 
 class MojoMediaClient;
+class MailboxFrameRegistry;
 
 // A StableVideoDecoderFactoryService allows a browser process to create
 // StableVideoDecoders. It's intended to live inside a video decoder process (a
@@ -67,6 +68,9 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderFactoryService
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::Receiver<stable::mojom::StableVideoDecoderFactory> receiver_;
+
+  // Shared between the MojoMediaClientImpl and the StableVideoDecoderService.
+  scoped_refptr<MailboxFrameRegistry> mailbox_frame_registry_;
 
   // |mojo_media_client_| and |cdm_service_context_| must be declared before
   // |video_decoders_| because the interface implementation instances managed by

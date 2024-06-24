@@ -4,6 +4,8 @@
 
 #include "media/mojo/services/stable_video_decoder_service.h"
 
+#include "base/notreached.h"
+#include "media/gpu/chromeos/mailbox_frame_registry.h"
 #include "media/mojo/common/media_type_converters.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_VAAPI)
@@ -14,12 +16,34 @@ namespace media {
 
 namespace {
 
+// GetGpuMemoryBufferHandle() is a helper function that gets or creates a
+// GpuMemoryBufferHandle from |media_frame|. For decoders that use VDA, the
+// storage type is STORAGE_GPU_MEMORY_BUFFER. For decoders that use VD directly,
+// the storage type is STORAGE_OPAQUE.
+gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle(
+    scoped_refptr<VideoFrame> media_frame,
+    scoped_refptr<const MailboxFrameRegistry> mailbox_frame_registry) {
+  switch (media_frame->storage_type()) {
+    case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+      CHECK(media_frame->HasMappableGpuBuffer());
+      return media_frame->GetGpuMemoryBufferHandle();
+    case VideoFrame::STORAGE_OPAQUE: {
+      CHECK(mailbox_frame_registry);
+      CHECK(media_frame->HasTextures());
+      auto frame_resource = mailbox_frame_registry->AccessFrame(
+          media_frame->mailbox_holder(0).mailbox);
+      CHECK(frame_resource);
+      return frame_resource->CreateGpuMemoryBufferHandle();
+    }
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
 stable::mojom::VideoFramePtr MediaVideoFrameToMojoVideoFrame(
-    scoped_refptr<VideoFrame> media_frame) {
+    scoped_refptr<VideoFrame> media_frame,
+    scoped_refptr<const MailboxFrameRegistry> mailbox_frame_registry) {
   CHECK(!media_frame->metadata().end_of_stream);
-  CHECK_EQ(media_frame->storage_type(),
-           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-  CHECK(media_frame->HasMappableGpuBuffer());
 
   stable::mojom::VideoFramePtr mojo_frame = stable::mojom::VideoFrame::New();
   CHECK(mojo_frame);
@@ -73,7 +97,7 @@ stable::mojom::VideoFramePtr MediaVideoFrameToMojoVideoFrame(
   mojo_frame->timestamp = media_frame->timestamp();
 
   gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle =
-      media_frame->GetGpuMemoryBufferHandle();
+      GetGpuMemoryBufferHandle(media_frame, mailbox_frame_registry);
   CHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
   CHECK(!gpu_memory_buffer_handle.native_pixmap_handle.planes.empty());
   mojo_frame->gpu_memory_buffer_handle = std::move(gpu_memory_buffer_handle);
@@ -116,7 +140,8 @@ StableVideoDecoderService::StableVideoDecoderService(
     mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker>
         tracker_remote,
     std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
-    MojoCdmServiceContext* cdm_service_context)
+    MojoCdmServiceContext* cdm_service_context,
+    scoped_refptr<const MailboxFrameRegistry> mailbox_frame_registry)
     : tracker_remote_(std::move(tracker_remote)),
       video_decoder_client_receiver_(this),
       media_log_receiver_(this),
@@ -127,7 +152,8 @@ StableVideoDecoderService::StableVideoDecoderService(
       ,
       cdm_service_context_(cdm_service_context)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-{
+      ,
+      mailbox_frame_registry_(mailbox_frame_registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!!dst_video_decoder_);
   dst_video_decoder_remote_.Bind(
@@ -315,7 +341,8 @@ void StableVideoDecoderService::OnVideoFrameDecoded(
   CHECK(frame->metadata().power_efficient);
 
   stable_video_decoder_client_remote_->OnVideoFrameDecoded(
-      MediaVideoFrameToMojoVideoFrame(std::move(frame)),
+      MediaVideoFrameToMojoVideoFrame(std::move(frame),
+                                      mailbox_frame_registry_),
       can_read_without_stalling, *release_token);
 }
 

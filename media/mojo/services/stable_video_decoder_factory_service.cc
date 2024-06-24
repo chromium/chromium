@@ -12,7 +12,9 @@
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/chromeos/mailbox_frame_registry.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
+#include "media/gpu/chromeos/registered_mailbox_frame_converter.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
@@ -34,11 +36,14 @@ namespace {
 // like its |gpu_task_runner_| and |media_gpu_channel_manager_| members.
 class MojoMediaClientImpl : public MojoMediaClient {
  public:
-  MojoMediaClientImpl(const gpu::GpuFeatureInfo& gpu_feature_info,
-                      bool enable_direct_video_decoder)
+  MojoMediaClientImpl(
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      bool enable_direct_video_decoder,
+      scoped_refptr<MailboxFrameRegistry> mailbox_frame_registry)
       : gpu_driver_bug_workarounds_(
             gpu_feature_info.enabled_gpu_driver_bug_workarounds),
-        enable_direct_video_decoder_(enable_direct_video_decoder) {}
+        enable_direct_video_decoder_(enable_direct_video_decoder),
+        mailbox_frame_registry_(std::move(mailbox_frame_registry)) {}
   MojoMediaClientImpl(const MojoMediaClientImpl&) = delete;
   MojoMediaClientImpl& operator=(const MojoMediaClientImpl&) = delete;
   ~MojoMediaClientImpl() override = default;
@@ -130,7 +135,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
           gpu_driver_bug_workarounds_,
           /*client_task_runner=*/std::move(task_runner),
           std::make_unique<PlatformVideoFramePool>(),
-          /*frame_converter=*/nullptr,
+          RegisteredMailboxFrameConverter::Create(mailbox_frame_registry_),
           VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::move(log),
           /*oop_video_decoder=*/{},
@@ -153,6 +158,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
   const bool enable_direct_video_decoder_;
+  const scoped_refptr<MailboxFrameRegistry> mailbox_frame_registry_;
 };
 
 }  // namespace
@@ -161,9 +167,11 @@ StableVideoDecoderFactoryService::StableVideoDecoderFactoryService(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     bool enable_direct_video_decoder)
     : receiver_(this),
+      mailbox_frame_registry_(base::MakeRefCounted<MailboxFrameRegistry>()),
       mojo_media_client_(
           std::make_unique<MojoMediaClientImpl>(gpu_feature_info,
-                                                enable_direct_video_decoder)) {
+                                                enable_direct_video_decoder,
+                                                mailbox_frame_registry_)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo_media_client_->Initialize();
 }
@@ -199,7 +207,7 @@ void StableVideoDecoderFactoryService::CreateStableVideoDecoder(
   }
   video_decoders_.Add(std::make_unique<StableVideoDecoderService>(
                           std::move(tracker), std::move(dst_video_decoder),
-                          &cdm_service_context_),
+                          &cdm_service_context_, mailbox_frame_registry_),
                       std::move(receiver));
 }
 
