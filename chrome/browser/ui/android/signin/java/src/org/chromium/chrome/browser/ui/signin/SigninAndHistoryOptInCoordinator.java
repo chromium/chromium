@@ -235,8 +235,7 @@ public class SigninAndHistoryOptInCoordinator
     @Override
     public void onSignInComplete() {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && SyncFeatureMap.isEnabled(
-                        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+                && SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
                 && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             Profile profile = mProfileSupplier.get();
             SyncService syncService = SyncServiceFactory.getForProfile(profile);

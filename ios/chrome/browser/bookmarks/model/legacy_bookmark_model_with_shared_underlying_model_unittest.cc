@@ -79,7 +79,7 @@ class LegacyBookmarkModelWithSharedUnderlyingModelTest : public testing::Test {
   const std::u16string kAccountTitle3 = u"AccountTitle3";
 
   base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<bookmarks::BookmarkModel> shared_model_;
   LegacyBookmarkModelWithSharedUnderlyingModel local_view_;
   LegacyBookmarkModelWithSharedUnderlyingModel account_view_;

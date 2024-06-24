@@ -2319,7 +2319,7 @@ class SingleClientBookmarksWithAccountStorageSyncTest
 
  private:
   base::test::ScopedFeatureList features_override_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,

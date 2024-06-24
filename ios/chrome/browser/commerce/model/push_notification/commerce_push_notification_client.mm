@@ -130,7 +130,7 @@ CommercePushNotificationClient::GetShoppingService() {
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
   return base::FeatureList::IsEnabled(
-             syncer::kEnableBookmarkFoldersForAccountStorage)
+             syncer::kSyncEnableBookmarksInTransportMode)
              ? ios::BookmarkModelFactory::
                    GetModelForBrowserStateIfUnificationEnabledOrDie(
                        GetLastUsedBrowserState())

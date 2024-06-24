@@ -232,7 +232,7 @@ void BookmarkBridge::Destroy(JNIEnv* env) {
 
 jboolean BookmarkBridge::AreAccountBookmarkFoldersActive(JNIEnv* env) {
   if (!base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     return false;
   }
 
@@ -1737,7 +1737,7 @@ void BookmarkBridge::ReadingListModelCompletedBatchUpdates(
 void BookmarkBridge::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (!base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     return;
   }
 

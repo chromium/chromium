@@ -165,7 +165,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @DisableFeatures({
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
@@ -199,7 +199,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @DisableFeatures({
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
     public void testBookmarkSyncPromoViewSignedInAndNotSyncing() throws Throwable {
@@ -257,7 +257,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -285,7 +285,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @DisableFeatures({
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlow() throws Throwable {
@@ -311,7 +311,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlowIfSyncDataLeft()
             throws Throwable {
@@ -349,7 +349,7 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
         mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
         ProfileDataCache profileDataCache = createProfileDataCache();
@@ -378,7 +378,7 @@ public class SyncPromoControllerUITest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisableFeatures({
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSyncFlow() throws Throwable {

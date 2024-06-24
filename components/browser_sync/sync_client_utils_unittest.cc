@@ -142,7 +142,7 @@ class LocalDataQueryHelperTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
 
@@ -574,7 +574,7 @@ class LocalDataMigrationHelperTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
 

@@ -963,7 +963,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingFaviconHash) {
 TEST(SyncedBookmarkTrackerTest,
      ShouldInvalidateMetadataIfPermanentFolderMissingLocally) {
   base::test::ScopedFeatureList features(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
+      syncer::kSyncEnableBookmarksInTransportMode);
   std::unique_ptr<bookmarks::BookmarkModel> model =
       bookmarks::TestBookmarkClient::CreateModel();
 

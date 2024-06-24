@@ -281,7 +281,7 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void testWithExistingAccount_dismissCollapsedBottomSheet_backPress_fromBookmarks() {
         // The new sign-in flow contains behaviors specific to the bookmark access point (enabling
         // bookmark & reading list sync after successful sign-in) therefore the access point is

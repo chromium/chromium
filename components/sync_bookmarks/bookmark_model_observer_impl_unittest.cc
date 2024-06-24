@@ -199,7 +199,7 @@ class BookmarkModelObserverImplTest
 
  private:
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   NiceMock<base::MockCallback<base::RepeatingClosure>>
       nudge_for_commit_closure_;
   std::unique_ptr<SyncedBookmarkTracker> bookmark_tracker_;

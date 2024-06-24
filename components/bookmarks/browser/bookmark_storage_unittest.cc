@@ -178,7 +178,7 @@ TEST(BookmarkStorageTest, RecordTimeSinceLastScheduledSave) {
 
 TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
   model->CreateAccountPermanentFolders();
@@ -211,7 +211,7 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
 
 TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
   ASSERT_EQ(nullptr, model->account_bookmark_bar_node());

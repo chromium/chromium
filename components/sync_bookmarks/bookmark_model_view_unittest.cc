@@ -53,7 +53,7 @@ class BookmarkModelViewTest : public testing::Test {
   ~BookmarkModelViewTest() override = default;
 
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<bookmarks::BookmarkModel> model_;
   raw_ptr<bookmarks::BookmarkNode> managed_node_;
 };

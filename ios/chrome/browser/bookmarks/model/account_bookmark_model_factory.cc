@@ -36,7 +36,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildLegacyBookmarkModelWithSharedUnderlyingModel(
     ChromeBrowserState* browser_state) {
   CHECK(base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
   // Using nullptr for `ManagedBookmarkService`, since managed bookmarks
   // affect only the local bookmark storage.
   return std::make_unique<LegacyBookmarkModelWithSharedUnderlyingModel>(
@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService>
 BuildLegacyBookmarkModelWithDedicatedUnderlyingModel(
     ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
   // When using a dedicated BookmarkModel instance, account bookmarks are
   // actually stored as descendants of the local-or-syncable permanent folders
   // in the dedicated BookmarkModel instance (created here). Their sync
@@ -80,7 +80,7 @@ std::unique_ptr<KeyedService> BuildLegacyBookmarkModel(
       ChromeBrowserState::FromBrowserState(context);
 
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     return BuildLegacyBookmarkModelWithSharedUnderlyingModel(browser_state);
   }
 
@@ -101,7 +101,7 @@ bookmarks::BookmarkModel* AccountBookmarkModelFactory::
     GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
         ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
   LegacyBookmarkModel* model = GetForBrowserState(browser_state);
   return model ? model->underlying_model() : nullptr;
 }
@@ -123,7 +123,7 @@ AccountBookmarkModelFactory::AccountBookmarkModelFactory()
           "AccountBookmarkModel",
           BrowserStateDependencyManager::GetInstance()) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     DependsOn(ios::BookmarkModelFactory::GetInstance());
   } else {
     // Bookmark-related prefs are registered by the LocalOrSyncable factory.

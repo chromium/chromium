@@ -720,7 +720,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
+    @EnableFeatures({SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE})
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignInFromInitialExpandedSheetForBookmarks() {
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;

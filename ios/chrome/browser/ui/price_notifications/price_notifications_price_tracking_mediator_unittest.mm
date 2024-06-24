@@ -87,8 +87,7 @@ const bookmarks::BookmarkNode* PrepareSubscription(
       commerce::AddProductBookmark(bookmark_model, base::UTF8ToUTF16(title),
                                    GURL(kTestUrl), kClusterId, true);
   const bookmarks::BookmarkNode* default_folder =
-      base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)
+      base::FeatureList::IsEnabled(syncer::kSyncEnableBookmarksInTransportMode)
           ? bookmark_model->account_mobile_node()
           : bookmark_model->mobile_node();
   bookmark_model->AddURL(default_folder, default_folder->children().size(),
@@ -126,10 +125,10 @@ class PriceNotificationsPriceTrackingMediatorTest
   PriceNotificationsPriceTrackingMediatorTest() {
     if (GetParam()) {
       feature_list_.InitAndEnableFeature(
-          syncer::kEnableBookmarkFoldersForAccountStorage);
+          syncer::kSyncEnableBookmarksInTransportMode);
     } else {
       feature_list_.InitAndDisableFeature(
-          syncer::kEnableBookmarkFoldersForAccountStorage);
+          syncer::kSyncEnableBookmarksInTransportMode);
     }
 
     TestChromeBrowserState::Builder builder;
@@ -168,7 +167,7 @@ class PriceNotificationsPriceTrackingMediatorTest
         test_chrome_browser_state->GetSharedURLLoaderFactory());
 
     if (base::FeatureList::IsEnabled(
-            syncer::kEnableBookmarkFoldersForAccountStorage)) {
+            syncer::kSyncEnableBookmarksInTransportMode)) {
       bookmark_model_ = ios::BookmarkModelFactory::
           GetModelForBrowserStateIfUnificationEnabledOrDie(
               test_chrome_browser_state.get());
@@ -251,8 +250,7 @@ TEST_P(
 
   consumer_.didExecuteAction = NO;
   const bookmarks::BookmarkNode* default_folder =
-      base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)
+      base::FeatureList::IsEnabled(syncer::kSyncEnableBookmarksInTransportMode)
           ? bookmark_model_->account_mobile_node()
           : bookmark_model_->mobile_node();
   bookmark_model_->AddURL(default_folder, default_folder->children().size(),
@@ -326,8 +324,7 @@ TEST_P(PriceNotificationsPriceTrackingMediatorTest,
   optional_product_info.emplace(product_info);
 
   const bookmarks::BookmarkNode* default_folder =
-      base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)
+      base::FeatureList::IsEnabled(syncer::kSyncEnableBookmarksInTransportMode)
           ? bookmark_model_->account_mobile_node()
           : bookmark_model_->mobile_node();
   bookmark_model_->AddURL(default_folder, default_folder->children().size(),
@@ -356,8 +353,7 @@ TEST_P(PriceNotificationsPriceTrackingMediatorTest,
   optional_product_info.emplace(product_info);
 
   const bookmarks::BookmarkNode* default_folder =
-      base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)
+      base::FeatureList::IsEnabled(syncer::kSyncEnableBookmarksInTransportMode)
           ? bookmark_model_->account_mobile_node()
           : bookmark_model_->mobile_node();
   bookmark_model_->AddURL(default_folder, default_folder->children().size(),

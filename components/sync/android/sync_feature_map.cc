@@ -17,7 +17,7 @@
 namespace {
 // Array of features exposed through the Java SyncFeatureMap.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &syncer::kEnableBookmarkFoldersForAccountStorage};
+    &syncer::kSyncEnableBookmarksInTransportMode};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {

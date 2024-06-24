@@ -60,7 +60,7 @@ class BookmarkUndoServiceTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<BookmarkUndoService> bookmark_undo_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
@@ -545,8 +545,7 @@ TEST_F(BookmarkUndoServiceTest, TestUpperLimit) {
 
 TEST_F(BookmarkUndoServiceTest, UndoMoveToOtherModel) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
+  features.InitAndDisableFeature(syncer::kSyncEnableBookmarksInTransportMode);
 
   std::unique_ptr<BookmarkModel> second_model =
       bookmarks::TestBookmarkClient::CreateModel();

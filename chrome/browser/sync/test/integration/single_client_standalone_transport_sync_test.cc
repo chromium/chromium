@@ -495,7 +495,7 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
         {switches::kExplicitBrowserSigninUIOnDesktop,
          syncer::kReadingListEnableSyncTransportModeUponSignIn,
          syncer::kSyncEnableContactInfoDataTypeInTransportMode,
-         syncer::kEnableBookmarkFoldersForAccountStorage,
+         syncer::kSyncEnableBookmarksInTransportMode,
          syncer::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
 

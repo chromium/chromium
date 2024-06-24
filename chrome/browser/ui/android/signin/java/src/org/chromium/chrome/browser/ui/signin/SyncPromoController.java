@@ -429,8 +429,7 @@ public class SyncPromoController {
     private boolean canShowBookmarkPromo() {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            assert SyncFeatureMap.isEnabled(
-                    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE);
+            assert SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE);
             if (IdentityServicesProvider.get()
                     .getIdentityManager(mProfile)
                     .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
@@ -439,7 +438,7 @@ public class SyncPromoController {
         }
 
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
                 && syncService
                         .getSelectedTypes()
                         .containsAll(
@@ -848,12 +847,11 @@ public class SyncPromoController {
             PrefService prefService) {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            assert SyncFeatureMap.isEnabled(
-                    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE);
+            assert SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE);
             return true;
         }
 
-        if (!SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+        if (!SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)) {
             return false;
         }
         if (accessPoint != SigninAccessPoint.BOOKMARK_MANAGER) {

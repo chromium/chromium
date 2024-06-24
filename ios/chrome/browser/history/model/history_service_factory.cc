@@ -32,7 +32,7 @@ namespace {
 std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithUnifiedBookmarkModel(
     ChromeBrowserState* browser_state) {
   CHECK(base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
   return std::make_unique<HistoryClientImpl>(
       BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
           browser_state),
@@ -42,7 +42,7 @@ std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithUnifiedBookmarkModel(
 std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithTwoBookmarkModels(
     ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
   return std::make_unique<HistoryClientImpl>(
       LocalOrSyncableBookmarkModelFactory::
           GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
@@ -55,7 +55,7 @@ std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithTwoBookmarkModels(
 std::unique_ptr<HistoryClientImpl> BuildHistoryClient(
     ChromeBrowserState* browser_state) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     return BuildHistoryClientWithUnifiedBookmarkModel(browser_state);
   }
 
@@ -123,7 +123,7 @@ HistoryServiceFactory::HistoryServiceFactory()
           "HistoryService",
           BrowserStateDependencyManager::GetInstance()) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     DependsOn(BookmarkModelFactory::GetInstance());
   } else {
     DependsOn(AccountBookmarkModelFactory::GetInstance());

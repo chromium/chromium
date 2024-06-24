@@ -67,7 +67,7 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+@DisableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
 public class BookmarkFolderPickerRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =

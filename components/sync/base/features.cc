@@ -142,8 +142,8 @@ BASE_FEATURE(kReplaceSyncPromosWithSignInPromos,
 #endif
 );
 
-BASE_FEATURE(kEnableBookmarkFoldersForAccountStorage,
-             "EnableBookmarkFoldersForAccountStorage",
+BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
+             "SyncEnableBookmarksInTransportMode",
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

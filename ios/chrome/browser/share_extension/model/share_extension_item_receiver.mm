@@ -292,7 +292,7 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     case app_group::BOOKMARK_ITEM: {
       LogHistogramReceivedItem(BOOKMARK_ENTRY);
       // TODO(crbug.com/40260909): Once feature
-      // `syncer::kEnableBookmarkFoldersForAccountStorage` is launched, this
+      // `syncer::kSyncEnableBookmarksInTransportMode` is launched, this
       // may want to save bookmarks under `_bookmarkModel->mobile_node()`, if
       // it returns non-null.
       _bookmarkModel->AddNewURL(_bookmarkModel->mobile_node(), 0,

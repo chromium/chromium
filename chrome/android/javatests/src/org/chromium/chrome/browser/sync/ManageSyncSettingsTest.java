@@ -268,7 +268,7 @@ public class ManageSyncSettingsTest {
                         Arrays.asList(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PAYMENTS_TOGGLE,
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_SETTINGS_TOGGLE));
-        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)) {
             expectedEnabledTypes.add(ManageSyncSettings.PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE);
         }
         if (ChromeFeatureList.isEnabled(

@@ -61,7 +61,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
 
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     DependsOn(ios::BookmarkModelFactory::GetInstance());
   } else {
     DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
@@ -89,7 +89,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   bookmarks::BookmarkModel* account_bookmark_model = nullptr;
 
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     local_or_syncable_bookmark_model = ios::BookmarkModelFactory::
         GetModelForBrowserStateIfUnificationEnabledOrDie(chrome_state);
     // No second instance is injected in this case. ShoppingService is capable

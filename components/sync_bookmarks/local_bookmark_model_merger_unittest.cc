@@ -183,7 +183,7 @@ class LocalBookmarkModelMergerTest : public testing::Test {
   ~LocalBookmarkModelMergerTest() override = default;
 
   base::test::ScopedFeatureList feature_list_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 };
 
 TEST_F(LocalBookmarkModelMergerTest,

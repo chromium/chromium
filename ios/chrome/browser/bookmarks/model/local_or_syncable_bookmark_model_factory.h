@@ -30,7 +30,7 @@ class LocalOrSyncableBookmarkModelFactory
 
   // Returns a dedicated BookmarkModel instance for `browser_state` that is
   // guaranteed to not be shared with other factories. Callers must ensure that
-  // `syncer::kEnableBookmarkFoldersForAccountStorage` is disabled.
+  // `syncer::kSyncEnableBookmarksInTransportMode` is disabled.
   static bookmarks::BookmarkModel*
   GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
       ChromeBrowserState* browser_state);

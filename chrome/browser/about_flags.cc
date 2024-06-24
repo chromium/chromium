@@ -3822,7 +3822,7 @@ const FeatureEntry::Choice kAccountBookmarksAndReadingListBehindOptInChoices[] =
     {
         {"Default", "", ""},
         {"Enabled", switches::kEnableFeatures,
-         "EnableBookmarkFoldersForAccountStorage,"
+         "SyncEnableBookmarksInTransportMode,"
          "ReadingListEnableSyncTransportModeUponSignIn"},
 };
 

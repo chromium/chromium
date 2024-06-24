@@ -56,7 +56,7 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
                 /*require_sync_feature_enabled=*/!base::FeatureList::IsEnabled(
                     syncer::kReplaceSyncPromosWithSignInPromos) &&
                     !base::FeatureList::IsEnabled(
-                        syncer::kEnableBookmarkFoldersForAccountStorage)),
+                        syncer::kSyncEnableBookmarksInTransportMode)),
         timeout_duration_);
   } else if (model_type == syncer::ModelType::HISTORY_DELETE_DIRECTIVES) {
     consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(

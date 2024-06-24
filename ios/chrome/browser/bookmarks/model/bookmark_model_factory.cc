@@ -124,7 +124,7 @@ class MergedBookmarkModel : public bookmarks::CoreBookmarkModel {
 std::unique_ptr<KeyedService> BuildUnifiedBookmarkModel(
     ChromeBrowserState* browser_state) {
   CHECK(base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
 
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
@@ -146,7 +146,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
       ChromeBrowserState::FromBrowserState(context);
 
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     return BuildUnifiedBookmarkModel(browser_state);
   }
 
@@ -180,7 +180,7 @@ bookmarks::BookmarkModel*
 BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
     ChromeBrowserState* browser_state) {
   CHECK(base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage));
+      syncer::kSyncEnableBookmarksInTransportMode));
   return static_cast<bookmarks::BookmarkModel*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -201,7 +201,7 @@ BookmarkModelFactory::BookmarkModelFactory()
           "BookmarkModel",
           BrowserStateDependencyManager::GetInstance()) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
     DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
     DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
@@ -217,7 +217,7 @@ BookmarkModelFactory::~BookmarkModelFactory() {}
 void BookmarkModelFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     bookmarks::RegisterProfilePrefs(registry);
   }
 }

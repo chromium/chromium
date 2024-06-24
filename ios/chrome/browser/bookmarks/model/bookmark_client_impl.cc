@@ -146,10 +146,10 @@ std::string BookmarkClientImpl::EncodeLocalOrSyncableBookmarkSyncMetadata() {
 std::string BookmarkClientImpl::EncodeAccountBookmarkSyncMetadata() {
   if (!account_bookmark_sync_service_) {
     CHECK(!base::FeatureList::IsEnabled(
-        syncer::kEnableBookmarkFoldersForAccountStorage));
+        syncer::kSyncEnableBookmarksInTransportMode));
 
     // On iOS, for historic reasons and before rolling out
-    // `syncer::kEnableBookmarkFoldersForAccountStorage`, a dedicated
+    // `syncer::kSyncEnableBookmarksInTransportMode`, a dedicated
     // BookmarkModel is used for account bookmarks and, counter-intuitively, the
     // local-or-syncable nodes within are used to represent account data. The
     // same is true for sync metadata, so account sync metadata remains unused.

@@ -181,7 +181,7 @@ class BookmarkBridgeTest : public testing::Test {
     if (enable_account_bookmarks) {
       features_.InitWithFeatures(
           /*enabled_features=*/
-          {syncer::kEnableBookmarkFoldersForAccountStorage,
+          {syncer::kSyncEnableBookmarksInTransportMode,
            syncer::kReadingListEnableSyncTransportModeUponSignIn},
           /*disabled_features=*/{});
       bookmark_model_->CreateAccountPermanentFolders();

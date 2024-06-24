@@ -565,7 +565,7 @@ using PriceNotificationItems =
   if (!bookmark) {
     const bookmarks::BookmarkNode* defaultFolder =
         base::FeatureList::IsEnabled(
-            syncer::kEnableBookmarkFoldersForAccountStorage)
+            syncer::kSyncEnableBookmarksInTransportMode)
             ? self.bookmarkModel->account_mobile_node()
             : self.bookmarkModel->mobile_node();
     if (!defaultFolder) {

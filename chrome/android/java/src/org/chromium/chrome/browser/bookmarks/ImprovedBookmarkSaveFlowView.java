@@ -45,7 +45,7 @@ public class ImprovedBookmarkSaveFlowView extends FrameLayout {
         mBookmarkContainer.setBackgroundResource(
                 R.drawable.improved_bookmark_save_flow_single_pane_background);
 
-        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)) {
             ApiCompatibilityUtils.setTextAppearance(
                     mBookmarkTitleView, R.style.TextAppearance_TextMedium_Secondary);
             ApiCompatibilityUtils.setTextAppearance(

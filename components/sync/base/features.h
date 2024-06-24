@@ -126,7 +126,7 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 // sync namespace as it controls whether BOOKMARKS datatype is enabled in the
 // transport mode.
 // TODO(crbug.com/40943550): Remove this.
-BASE_DECLARE_FEATURE(kEnableBookmarkFoldersForAccountStorage);
+BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.

@@ -10,8 +10,8 @@ import org.chromium.base.FeatureMap;
 
 /** Java accessor for base/android/feature_map.h state. */
 public final class SyncFeatureMap extends FeatureMap {
-    public static final String ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE =
-            "EnableBookmarkFoldersForAccountStorage";
+    public static final String SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE =
+            "SyncEnableBookmarksInTransportMode";
 
     private static final SyncFeatureMap sInstance = new SyncFeatureMap();
 

@@ -55,7 +55,7 @@ namespace {
 
 bool AreFoldersForAccountStorageAllowed() {
   return base::FeatureList::IsEnabled(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
+      syncer::kSyncEnableBookmarksInTransportMode);
 }
 
 // Helper to get a mutable bookmark node.
@@ -236,7 +236,7 @@ bool BookmarkModel::IsLocalOnlyNode(const BookmarkNode& node) const {
 
   if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_) {
     // `this` only contains account bookmarks (iOS-specific codepath), for the
-    // case where `syncer::kEnableBookmarkFoldersForAccountStorage` is disabled.
+    // case where `syncer::kSyncEnableBookmarksInTransportMode` is disabled.
     return false;
   }
 

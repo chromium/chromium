@@ -86,7 +86,7 @@ void BookmarkIOSUnitTestSupport::SetUp() {
 
   if (wait_for_initialization_ &&
       base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     // Some tests exercise account bookmarks. Make sure their permanent
     // folders exist.
     ios::BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(

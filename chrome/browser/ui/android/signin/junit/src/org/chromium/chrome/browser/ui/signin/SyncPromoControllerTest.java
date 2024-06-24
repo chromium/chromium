@@ -58,7 +58,7 @@ import java.util.Set;
     ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
 })
-@EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+@EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
 public class SyncPromoControllerTest {
     private static final int TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS = 100;
     private static final long TIME_SINCE_FIRST_SHOWN_LIMIT_MS =
@@ -584,7 +584,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @DisableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_AccountStorageFeatureDisabled() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
@@ -602,7 +602,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_NotBookmarkAccessPoint() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
@@ -620,7 +620,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_SignedIn() {
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
@@ -638,7 +638,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_SyncDataLeft() {
         when(mPrefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID))
                 .thenReturn(AccountManagerTestRule.TEST_ACCOUNT_1.getGaiaId());
@@ -657,7 +657,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_NonGmailDomain() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn("nongmail.com").when(mSigninManager).extractDomainName(anyString());
@@ -673,7 +673,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_EmptyAccountList() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
@@ -690,7 +690,7 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    @EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
     public void shouldLaunchBookmarksSigninFlowReturnsFalse_NullAccountList() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)

@@ -181,7 +181,7 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
 bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
                                        LegacyBookmarkModel* account_model) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     return account_model->mobile_node() != nullptr;
   }
   return IsAccountBookmarkStorageOptedIn(sync_service);

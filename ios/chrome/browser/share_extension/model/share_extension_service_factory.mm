@@ -41,7 +41,7 @@ ShareExtensionServiceFactory::ShareExtensionServiceFactory()
           "ShareExtensionService",
           BrowserStateDependencyManager::GetInstance()) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     DependsOn(ios::BookmarkModelFactory::GetInstance());
   } else {
     DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
@@ -58,8 +58,7 @@ ShareExtensionServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
 
   bookmarks::BookmarkModel* bookmark_model =
-      base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)
+      base::FeatureList::IsEnabled(syncer::kSyncEnableBookmarksInTransportMode)
           ? ios::BookmarkModelFactory::
                 GetModelForBrowserStateIfUnificationEnabledOrDie(
                     chrome_browser_state)

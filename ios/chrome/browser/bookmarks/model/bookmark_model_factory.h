@@ -29,7 +29,7 @@ class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
 
   // Alternative getter that exposes the whole BookmarkModel API. Callers must
-  // ensure that `syncer::kEnableBookmarkFoldersForAccountStorage` is enabled.
+  // ensure that `syncer::kSyncEnableBookmarksInTransportMode` is enabled.
   static bookmarks::BookmarkModel*
   GetModelForBrowserStateIfUnificationEnabledOrDie(
       ChromeBrowserState* browser_state);

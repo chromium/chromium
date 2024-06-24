@@ -222,7 +222,7 @@ public class ImprovedBookmarkRowCoordinator {
             BookmarkItem item, @BookmarkRowDisplayPref int displayPref) {
         // Local bookmarks shouldn't get images, even if they're cached. This is only relevant when
         // account bookmarks are enabled.
-        if (SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+        if (SyncFeatureMap.isEnabled(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
                 && !item.isAccountBookmark()) {
             return false;
         }

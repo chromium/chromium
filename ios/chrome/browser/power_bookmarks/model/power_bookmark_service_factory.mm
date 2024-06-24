@@ -33,7 +33,7 @@ PowerBookmarkServiceFactory::PowerBookmarkServiceFactory()
           "PowerBookmarkService",
           BrowserStateDependencyManager::GetInstance()) {
   if (base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+          syncer::kSyncEnableBookmarksInTransportMode)) {
     DependsOn(ios::BookmarkModelFactory::GetInstance());
   } else {
     DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
@@ -52,8 +52,7 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
   // more likely that PowerBookmarkService intends to integrate with account
   // bookmarks only.
   bookmarks::BookmarkModel* bookmark_model =
-      base::FeatureList::IsEnabled(
-          syncer::kEnableBookmarkFoldersForAccountStorage)
+      base::FeatureList::IsEnabled(syncer::kSyncEnableBookmarksInTransportMode)
           ? ios::BookmarkModelFactory::
                 GetModelForBrowserStateIfUnificationEnabledOrDie(chrome_state)
           : ios::LocalOrSyncableBookmarkModelFactory::GetInstance()

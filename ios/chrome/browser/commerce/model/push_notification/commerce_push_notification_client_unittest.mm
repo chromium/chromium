@@ -155,7 +155,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
   CommercePushNotificationClientTest() {
     // TODO(crbug.com/346918509): These tests rely on Sync-the-feature and thus
     // break with kMigrateSyncingUserToSignedIn enabled. Once
-    // kEnableBookmarkFoldersForAccountStorage gets enabled, that should resolve
+    // kSyncEnableBookmarksInTransportMode gets enabled, that should resolve
     // this.
     features_.InitAndDisableFeature(switches::kMigrateSyncingUserToSignedIn);
   }
@@ -204,7 +204,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
     commerce_push_notification_client_.SetLastUsedChromeBrowserStateForTesting(
         chrome_browser_state_.get());
     if (base::FeatureList::IsEnabled(
-            syncer::kEnableBookmarkFoldersForAccountStorage)) {
+            syncer::kSyncEnableBookmarksInTransportMode)) {
       bookmark_model_ = ios::BookmarkModelFactory::
           GetModelForBrowserStateIfUnificationEnabledOrDie(
               chrome_browser_state_.get());

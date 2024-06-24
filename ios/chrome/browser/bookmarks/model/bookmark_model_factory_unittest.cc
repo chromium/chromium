@@ -57,16 +57,16 @@ class BookmarkModelFactoryTest : public BookmarkIOSUnitTestSupport,
                                  public ::testing::WithParamInterface<bool> {
  public:
   BookmarkModelFactoryTest() {
-    if (GetEnableBookmarkFoldersForAccountStorageTestParam()) {
+    if (GetSyncEnableBookmarksInTransportModeTestParam()) {
       scoped_feature_list_.InitAndEnableFeature(
-          syncer::kEnableBookmarkFoldersForAccountStorage);
+          syncer::kSyncEnableBookmarksInTransportMode);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          syncer::kEnableBookmarkFoldersForAccountStorage);
+          syncer::kSyncEnableBookmarksInTransportMode);
     }
   }
 
-  bool GetEnableBookmarkFoldersForAccountStorageTestParam() const {
+  bool GetSyncEnableBookmarksInTransportModeTestParam() const {
     return GetParam();
   }
 
@@ -203,7 +203,7 @@ TEST_P(BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest,
   // across two files are detected and reassigned.
   histogram_tester_.ExpectUniqueSample(
       kLocalOrSyncableIdsReassignedMetricName,
-      /*sample=*/GetEnableBookmarkFoldersForAccountStorageTestParam(),
+      /*sample=*/GetSyncEnableBookmarksInTransportModeTestParam(),
       /*expected_bucket_count=*/1);
 }
 

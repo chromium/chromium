@@ -91,7 +91,7 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
-    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
     // TODO(crbug.com/344981899): ReplaceSyncPromosWithSigninPromos is disabled because bookmarks
     // account storage is disabled above, otherwise tests run into assertion failures. Long term,
     // these tests probably need to be fixed for the bookmarks account storage case rather than

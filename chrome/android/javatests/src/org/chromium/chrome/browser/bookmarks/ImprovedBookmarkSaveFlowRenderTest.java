@@ -52,7 +52,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+@DisableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
 public class ImprovedBookmarkSaveFlowRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
@@ -218,7 +218,7 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @Feature({"RenderTest"})
     @EnableFeatures({
         ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE
     })
     public void testTitleAndSubtitle() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(

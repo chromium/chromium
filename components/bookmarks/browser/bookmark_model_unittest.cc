@@ -524,7 +524,7 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
 
  protected:
   base::test::ScopedFeatureList features_{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<BookmarkModel> model_;
   ObserverDetails observer_details_;
   std::vector<AllNodesRemovedDetail> all_bookmarks_removed_details_;
@@ -2223,7 +2223,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
 
 TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with one local-or-syncable url and one account url.
   base::ScopedTempDir tmp_dir;
@@ -2262,7 +2262,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
 
 TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   // Since metadata str serialized proto, it could contain non-ASCII characters.
   const std::string sync_metadata_str("a/2'\"");
@@ -2318,7 +2318,7 @@ TEST(BookmarkModelLoadTest, AccountNodesPopulatedOnLoadAsLocalOrSyncable) {
   // including one bookmarked URL.
   {
     base::test::ScopedFeatureList features{
-        syncer::kEnableBookmarkFoldersForAccountStorage};
+        syncer::kSyncEnableBookmarksInTransportMode};
 
     auto model =
         std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
@@ -2335,8 +2335,7 @@ TEST(BookmarkModelLoadTest, AccountNodesPopulatedOnLoadAsLocalOrSyncable) {
   }
 
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
+  features.InitAndDisableFeature(syncer::kSyncEnableBookmarksInTransportMode);
 
   auto model =
       std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
@@ -2382,7 +2381,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 // Verifies the TitledUrlIndex is properly loaded for account bookmarks.
 TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
@@ -2451,7 +2450,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
 // Verifies the UUID index is properly loaded, for account nodes.
 TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
@@ -2489,7 +2488,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
 
 TEST(BookmarkModelStorageTest, SaveExactlyOneFile) {
   base::test::ScopedFeatureList features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
 
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
@@ -2692,7 +2691,7 @@ TEST_F(BookmarkModelTest,
        IsLocalOnlyNodeIfAccountNodesPopulatedAsLocalOrSyncable) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      syncer::kEnableBookmarkFoldersForAccountStorage);
+      syncer::kSyncEnableBookmarksInTransportMode);
 
   const GURL node_url("http://google.com/");
   base::test::TaskEnvironment task_environment{
@@ -2893,7 +2892,7 @@ class BookmarkDualModelTest : public testing::Test {
     account_observation_.Observe(account_model_.get());
 
     scoped_feature_list_.InitAndDisableFeature(
-        syncer::kEnableBookmarkFoldersForAccountStorage);
+        syncer::kSyncEnableBookmarksInTransportMode);
   }
 
  protected:

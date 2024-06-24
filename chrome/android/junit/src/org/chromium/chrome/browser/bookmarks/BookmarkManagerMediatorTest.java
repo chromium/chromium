@@ -141,7 +141,7 @@ import java.util.function.Consumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({
-    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
     ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
@@ -1022,7 +1022,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @DisableFeatures({
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
     public void testBuildImprovedBookmarkRow_Folder_Visual() {
@@ -1350,7 +1350,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @DisableFeatures({
-        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+        SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
     public void testParentFolderUpdatedWhenChildDeleted() {

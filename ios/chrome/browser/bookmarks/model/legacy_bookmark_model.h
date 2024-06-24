@@ -55,7 +55,7 @@ class LegacyBookmarkModel : public KeyedService {
   // WARNING: avoid exercising this API, in particular if the caller may use
   // the node to iterate children. This is because the behavior of this function
   // changes based on whether or not feature
-  // `syncer::kEnableBookmarkFoldersForAccountStorage` is enabled.
+  // `syncer::kSyncEnableBookmarksInTransportMode` is enabled.
   const bookmarks::BookmarkNode* subtle_root_node_with_unspecified_children()
       const;
 

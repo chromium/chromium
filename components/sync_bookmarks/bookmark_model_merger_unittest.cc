@@ -546,7 +546,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
 
 TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodes) {
   base::test::ScopedFeatureList override_features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   TestBookmarkModelView view(TestBookmarkModelView::ViewType::kAccountNodes);
   view.EnsurePermanentNodesExist();
 
@@ -573,7 +573,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodes) {
 // been previously turned on and later off.
 TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodeWithCollidingUuid) {
   base::test::ScopedFeatureList override_features{
-      syncer::kEnableBookmarkFoldersForAccountStorage};
+      syncer::kSyncEnableBookmarksInTransportMode};
   TestBookmarkModelView view(TestBookmarkModelView::ViewType::kAccountNodes);
   view.EnsurePermanentNodesExist();
 
