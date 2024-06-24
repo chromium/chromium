@@ -42,14 +42,16 @@ config("raw_ptr_check") {
       "-Xclang",
       "-plugin-arg-raw-ptr-plugin",
       "-Xclang",
-      "raw-ptr-exclude-path=third_party/blink/public/web/",
+      "raw-ptr-exclude-path=" +
+          rebase_path("//third_party/blink/public/web/", root_build_dir),
 
       # TODO(crbug.com/40944547): Remove when raw_ptr check has been
       # enabled for the dawn repo.
       "-Xclang",
       "-plugin-arg-raw-ptr-plugin",
       "-Xclang",
-      "raw-ptr-exclude-path=/third_party/dawn/",
+      "raw-ptr-exclude-path=" +
+          rebase_path("//third_party/dawn/", root_build_dir),
     ]
 
     if (enable_check_raw_ptr_fields) {
