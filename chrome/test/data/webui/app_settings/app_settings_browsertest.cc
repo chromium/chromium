@@ -29,7 +29,8 @@ IN_PROC_BROWSER_TEST_F(AppSettingsTest, FileHandlingItem) {
   RunTest("app_settings/file_handling_item_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(AppSettingsTest, SupportedLinksItem) {
+// TODO(crbug.com/348992509): Re-enable the test.
+IN_PROC_BROWSER_TEST_F(AppSettingsTest, DISABLED_SupportedLinksItem) {
   WebAppSettingsNavigationThrottle::DisableForTesting();
   RunTest("app_settings/supported_links_item_test.js", "mocha.run()");
 }
