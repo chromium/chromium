@@ -557,17 +557,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       pref_service_->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed));
 
-  // TODO(b/301157620) Temporarily hardcoding SecondaryAccountAllowedInArcpolicy
-  // value since ChromeOS client side implementation b/301157620 is yet to be
-  // completed.
-  const bool secondaryAccountAllowedInArcPolicyValue = false;
-  html_source->AddBoolean(
-      "isSecondaryAccountAllowedInArc",
-      base::FeatureList::IsEnabled(
-          ash::features::kSecondaryAccountAllowedInArcPolicy)
-          ? secondaryAccountAllowedInArcPolicyValue
-          : true);
-
   html_source->AddBoolean(
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
