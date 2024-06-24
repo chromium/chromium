@@ -53,10 +53,13 @@ const DownloadFileType& GetOrCreatePolicyForExtensionOverrideNotDangerous(
 
 using base::AutoLock;
 
-// Our Singleton needs to populate itself when first constructed.
-// This is left out of the constructor to make testing simpler.
+// Our Singleton needs to populate itself when first constructed.  This
+// is left out of the constructor to make testing simpler. This
+// singleton needs to be leaky so that archive analyzers can access file
+// type policies from a helper thread. FileTypePolicies must not do
+// nontrivial work in the destructor.
 struct FileTypePoliciesSingletonTrait
-    : public base::DefaultSingletonTraits<FileTypePolicies> {
+    : public base::LeakySingletonTraits<FileTypePolicies> {
   static FileTypePolicies* New() {
     FileTypePolicies* instance = new FileTypePolicies();
     instance->PopulateFromResourceBundle();
@@ -82,9 +85,9 @@ FileTypePolicies::FileTypePolicies() {
   settings->set_auto_open_hint(DownloadFileType::DISALLOW_AUTO_OPEN);
 }
 
-FileTypePolicies::~FileTypePolicies() {
-  AutoLock lock(lock_);  // DCHECK fail if the lock is held.
-}
+// Since FileTypePolicies is a leaky singleton, the destructor will
+// never run.
+FileTypePolicies::~FileTypePolicies() = default;
 
 std::string FileTypePolicies::ReadResourceBundle() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();

@@ -34,6 +34,7 @@ class FileTypePolicies {
  public:
   FileTypePolicies(const FileTypePolicies&) = delete;
   FileTypePolicies& operator=(const FileTypePolicies&) = delete;
+
   virtual ~FileTypePolicies();
 
   static FileTypePolicies* GetInstance();  // Singleton
