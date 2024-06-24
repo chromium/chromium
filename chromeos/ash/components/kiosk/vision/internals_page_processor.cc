@@ -23,10 +23,10 @@ mojom::StatePtr NewState(mojom::Status status,
 }
 
 mojom::BoxPtr ToPageBox(const cros::mojom::KioskVisionBoundingBox& box) {
-  return mojom::Box::New(/*top=*/box.y,
-                         /*left=*/box.x,
-                         /*right=*/box.x + box.width,
-                         /*bottom=*/box.y + box.height);
+  return mojom::Box::New(/*x=*/box.x,
+                         /*y=*/box.y,
+                         /*width=*/box.width,
+                         /*height=*/box.height);
 }
 
 std::vector<mojom::BoxPtr> DetectionToBoxes(

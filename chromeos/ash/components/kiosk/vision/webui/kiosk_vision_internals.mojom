@@ -45,8 +45,8 @@ enum Status {
 // A Box represents a rectangular area that should be highlighted in the camera
 // feed on the page.
 struct Box {
-  uint32 top;
-  uint32 left;
-  uint32 right;
-  uint32 bottom;
+  int32 x;
+  int32 y;
+  int32 width;
+  int32 height;
 };

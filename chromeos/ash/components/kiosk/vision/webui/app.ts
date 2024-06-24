@@ -98,10 +98,9 @@ function draw(state: State, overlay: HTMLCanvasElement) {
   ctx.clearRect(0, 0, overlay.width, overlay.height);
 
   // TODO(crbug.com/345457885): Fix coordinates based on `overlay` size.
-  for (const { top, left, right, bottom } of state.boxes) {
-    const [width, height] = [right - left, bottom - top];
+  for (const { x, y, width, height } of state.boxes) {
     ctx.beginPath();
-    ctx.rect(left, top, width, height);
+    ctx.rect(x, y, width, height);
     ctx.lineWidth = 1;
     ctx.strokeStyle = "red";
     ctx.stroke();
