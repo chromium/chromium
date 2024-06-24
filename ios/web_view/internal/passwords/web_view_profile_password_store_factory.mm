@@ -15,6 +15,7 @@
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
@@ -71,12 +72,19 @@ WebViewProfilePasswordStoreFactory::BuildServiceInstanceFor(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
+  os_crypt_async::OSCryptAsync* os_crypt_async =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
+          ? ApplicationContext::GetInstance()->GetOSCryptAsync()
+          : nullptr;
+
   scoped_refptr<password_manager::PasswordStore> store =
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
               syncer::WipeModelUponSyncDisabledBehavior::kNever,
-              WebViewBrowserState::FromBrowserState(context)->GetPrefs()));
+              WebViewBrowserState::FromBrowserState(context)->GetPrefs(),
+              os_crypt_async));
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   return store;
 }

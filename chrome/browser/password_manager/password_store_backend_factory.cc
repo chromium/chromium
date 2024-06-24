@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
@@ -124,7 +124,8 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
     password_manager::PasswordAffiliationSourceAdapter&
-        password_affiliation_adapter) {
+        password_affiliation_adapter,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
@@ -133,7 +134,8 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
   std::unique_ptr<PasswordStoreBackend> backend =
       std::make_unique<PasswordStoreBuiltInBackend>(
           std::move(login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs);
+          syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs,
+          os_crypt_async);
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   // This are the absolute minimum requirements to have any version of UPM.
@@ -169,7 +171,8 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
     std::unique_ptr<password_manager::UnsyncedCredentialsDeletionNotifier>
-        unsynced_deletions_notifier) {
+        unsynced_deletions_notifier,
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(
           login_db_directory));
@@ -181,14 +184,13 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
 #if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   backend = std::make_unique<PasswordStoreBuiltInBackend>(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-      prefs, /*os_crypt_async=*/nullptr,
-      std::move(unsynced_deletions_notifier));
+      prefs, os_crypt_async, std::move(unsynced_deletions_notifier));
 #else  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   if (!password_manager_android_util::AreMinUpmRequirementsMet()) {
     // Can happen if the downstream code is not available.
     backend = std::make_unique<PasswordStoreBuiltInBackend>(
         std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-        prefs);
+        prefs, os_crypt_async);
   }
 
   // Note: The built-in backend is backed by the login database and Chrome
@@ -198,7 +200,8 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
   backend = std::make_unique<AndroidBackendWithDoubleDeletion>(
       std::make_unique<PasswordStoreBuiltInBackend>(
           std::move(login_db),
-          syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs),
+          syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs,
+          os_crypt_async),
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
           prefs, /*password_affiliation_adapter=*/nullptr,
           password_manager::kAccountStore));

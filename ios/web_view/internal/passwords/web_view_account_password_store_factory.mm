@@ -12,6 +12,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
@@ -19,6 +20,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/prefs/pref_service.h"
+#import "ios/web_view/internal/app/application_context.h"
 
 namespace ios_web_view {
 
@@ -63,12 +65,18 @@ WebViewAccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabaseForAccountStorage(
           browser_state->GetStatePath()));
 
+  os_crypt_async::OSCryptAsync* os_crypt_async =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
+          ? ApplicationContext::GetInstance()->GetOSCryptAsync()
+          : nullptr;
+
   scoped_refptr<password_manager::PasswordStore> ps =
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
               syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-              browser_state->GetPrefs()));
+              browser_state->GetPrefs(), os_crypt_async));
 
   ps->Init(browser_state->GetPrefs(), /*affiliated_match_helper=*/nullptr);
 

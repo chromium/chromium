@@ -75,8 +75,16 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   // mechanism, if the sync service isn't created yet, we proceed as if the
   // user isn't syncing which forces moving the passwords to the Android backend
   // to avoid data loss.
+
+  os_crypt_async::OSCryptAsync* os_crypt_async =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
+          ? g_browser_process->os_crypt_async()
+          : nullptr;
+
   ps = new password_manager::PasswordStore(CreateProfilePasswordStoreBackend(
-      profile->GetPath(), profile->GetPrefs(), *password_affiliation_adapter));
+      profile->GetPath(), profile->GetPrefs(), *password_affiliation_adapter,
+      os_crypt_async));
 #else
   NOTIMPLEMENTED();
 #endif

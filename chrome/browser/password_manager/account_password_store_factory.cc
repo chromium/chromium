@@ -126,15 +126,22 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
       profile->GetPrefs()));
   DCHECK(!profile->IsOffTheRecord());
 
+  os_crypt_async::OSCryptAsync* os_crypt_async =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
+          ? g_browser_process->os_crypt_async()
+          : nullptr;
+
   scoped_refptr<password_manager::PasswordStore> ps =
 #if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          /*unsynced_deletions_notifier=*/nullptr));
+          /*unsynced_deletions_notifier=*/nullptr, os_crypt_async));
 #else
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile)));
+          std::make_unique<UnsyncedCredentialsDeletionNotifierImpl>(profile),
+          os_crypt_async));
 #endif
 
   affiliations::AffiliationService* affiliation_service =
