@@ -4472,7 +4472,7 @@
     },
     {
       name: "WebCodecsHBDFormats",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebCodecsVideoEncoderBuffers",
