@@ -22,18 +22,23 @@ mojom::StatePtr NewState(mojom::Status status,
   return mojom::State::New(status, std::move(boxes));
 }
 
+mojom::BoxPtr ToPageBox(const cros::mojom::KioskVisionBoundingBox& box) {
+  return mojom::Box::New(/*top=*/box.y,
+                         /*left=*/box.x,
+                         /*right=*/box.x + box.width,
+                         /*bottom=*/box.y + box.height);
+}
+
 std::vector<mojom::BoxPtr> DetectionToBoxes(
     const cros::mojom::KioskVisionDetection& detection) {
   std::vector<mojom::BoxPtr> boxes;
-  // TODO(crbug.com/336760251): use real `detection` data to populate boxes.
-  constexpr int kBoxesPerRow = 6, kMaxOffset = 24;
   for (const auto& appearance : detection.appearances) {
-    int offset = appearance->person_id % kMaxOffset;
-    boxes.push_back(
-        mojom::Box::New(/*top=*/10 + 50 * (offset / kBoxesPerRow),
-                        /*left=*/20 + 50 * (offset % kBoxesPerRow),
-                        /*right=*/60 + 50 * (offset % kBoxesPerRow),
-                        /*bottom=*/50 + 50 * (offset / kBoxesPerRow)));
+    if (appearance->face) {
+      boxes.push_back(ToPageBox(*appearance->face->box));
+    }
+    if (appearance->body) {
+      boxes.push_back(ToPageBox(*appearance->body->box));
+    }
   }
   return boxes;
 }

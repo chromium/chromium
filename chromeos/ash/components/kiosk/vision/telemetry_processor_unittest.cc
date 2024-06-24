@@ -27,7 +27,11 @@ cros::mojom::KioskVisionDetectionPtr NewFakeDetectionOfPersons(
 
   std::vector<cros::mojom::KioskVisionAppearancePtr> appearances;
   for (int person_id : person_ids) {
-    appearances.push_back(cros::mojom::KioskVisionAppearance::New(person_id));
+    auto appearance = cros::mojom::KioskVisionAppearance::New();
+    appearance->person_id = person_id;
+    appearance->face = cros::mojom::KioskVisionFaceDetection::New();
+    appearance->face->box = cros::mojom::KioskVisionBoundingBox::New();
+    appearances.push_back(std::move(appearance));
   }
   return cros::mojom::KioskVisionDetection::New(kFakeTimestamp,
                                                 std::move(appearances));

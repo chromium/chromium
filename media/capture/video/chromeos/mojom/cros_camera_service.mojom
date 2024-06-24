@@ -74,19 +74,60 @@ interface KioskVisionObserver {
   OnError@1(KioskVisionError error);
 };
 
-// An appearance represents one person in a detection set.
-struct KioskVisionAppearance {
-  // TODO(b/336760251): This struct is not finalized, add remaining fields.
-  // The tracking ID of this person.
-  int32 person_id;
-};
-
 // Output detection of the Kiosk Vision graph.
 struct KioskVisionDetection {
   // The timestamp in microseconds of this detection.
   int64 timestamp_in_us;
   // The persons detected.
   array<KioskVisionAppearance> appearances;
+};
+
+// An appearance represents one person in a detection set.
+struct KioskVisionAppearance {
+  // The timestamp in microseconds of this appearance.
+  int64 timestamp_in_us;
+  // The tracking ID of this person.
+  int32 person_id;
+  // The face detection of this person.  At least one of `body` and `face` must
+  // be present.
+  KioskVisionFaceDetection? face;
+  // The detection of this person. At least one of `body` and `face` must be
+  // present.
+  KioskVisionBodyDetection? body;
+};
+
+// The face angles of a person detected.
+struct KioskVisionFaceDetection {
+  // The confidence level of this detection. Value in the [0,1] interval.
+  double confidence;
+  // The roll angle of this face in the [-180, 180] interval.
+  float roll;
+  // The pan angle of this face in the [-180, 180] interval.
+  float pan;
+  // The tilt angle of this face in the [-180, 180] interval.
+  float tilt;
+  // The bounding box of this face.
+  KioskVisionBoundingBox box;
+};
+
+// The body description of a detected person.
+struct KioskVisionBodyDetection {
+  // The confidence level of this detection. Value in the [0,1] interval.
+  double confidence;
+  // The bounding box of this body.
+  KioskVisionBoundingBox box;
+};
+
+// Describes the size and coordinates of a bounding box.
+struct KioskVisionBoundingBox {
+  // The x of the top-left point of the bounding box.
+  int32 x;
+  // The y of the top-left point of the bounding box.
+  int32 y;
+  // The width of the bounding box.
+  int32 width;
+  // The height of the bounding box.
+  int32 height;
 };
 
 // Describes errors that may happen when running the Kiosk Vision feature.
