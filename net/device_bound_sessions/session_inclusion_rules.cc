@@ -15,7 +15,8 @@
 #include "net/base/scheme_host_port_matcher_rule.h"
 #include "net/base/url_util.h"
 
-namespace net {
+namespace net::device_bound_sessions {
+
 namespace {
 
 bool IsIncludeSiteAllowed(const url::Origin& origin) {
@@ -251,4 +252,4 @@ size_t SessionInclusionRules::num_url_rules_for_testing() const {
   return url_rules_.size();
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

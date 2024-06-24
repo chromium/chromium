@@ -13,7 +13,7 @@
 #include "net/cookies/parsed_cookie.h"
 #include "url/url_canon.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 namespace {
 
@@ -266,4 +266,4 @@ std::ostream& operator<<(std::ostream& os, const CookieCraving& cc) {
   return os;
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

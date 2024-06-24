@@ -53,7 +53,7 @@ unexportable_keys::UnexportableKeyTaskManager* GetSharedTaskManagerInstance() {
 
 }  // namespace
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // Currently there is another UnexportableKeyServiceFactory in the
 // chrome/browser/signin code in the browser process. They do not share code,
@@ -84,4 +84,4 @@ UnexportableKeyServiceFactory::GetShared() {
 UnexportableKeyServiceFactory::UnexportableKeyServiceFactory() = default;
 UnexportableKeyServiceFactory::~UnexportableKeyServiceFactory() = default;
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

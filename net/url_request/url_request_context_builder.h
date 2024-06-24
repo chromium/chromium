@@ -66,7 +66,9 @@ class PersistentReportingAndNelStore;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-class DeviceBoundSessionService;
+namespace device_bound_sessions {
+class SessionService;
+}
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 // A URLRequestContextBuilder creates a single URLRequestContext. It provides
@@ -351,7 +353,8 @@ class NET_EXPORT URLRequestContextBuilder {
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   void set_device_bound_session_service(
-      std::unique_ptr<DeviceBoundSessionService> device_bound_session_service);
+      std::unique_ptr<device_bound_sessions::SessionService>
+          device_bound_session_service);
 
   void set_has_device_bound_session_service(bool enable) {
     has_device_bound_session_service_ = enable;
@@ -466,7 +469,8 @@ class NET_EXPORT URLRequestContextBuilder {
       protocol_handlers_;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   bool has_device_bound_session_service_ = false;
-  std::unique_ptr<DeviceBoundSessionService> device_bound_session_service_;
+  std::unique_ptr<device_bound_sessions::SessionService>
+      device_bound_session_service_;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;

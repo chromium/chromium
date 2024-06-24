@@ -64,7 +64,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "net/device_bound_sessions/device_bound_session_service.h"
+#include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace net {
@@ -249,7 +249,8 @@ void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestContextBuilder::set_device_bound_session_service(
-    std::unique_ptr<DeviceBoundSessionService> device_bound_session_service) {
+    std::unique_ptr<device_bound_sessions::SessionService>
+        device_bound_session_service) {
   device_bound_session_service_ = std::move(device_bound_session_service);
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -506,7 +507,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (has_device_bound_session_service_) {
     context->set_device_bound_session_service(
-        DeviceBoundSessionService::Create(context.get()));
+        device_bound_sessions::SessionService::Create(context.get()));
   } else {
     if (device_bound_session_service_) {
       context->set_device_bound_session_service(

@@ -195,7 +195,7 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "net/device_bound_sessions/device_bound_session_service.h"
+#include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace network {

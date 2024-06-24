@@ -5,24 +5,24 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
 #define NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
 
-#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
-#include "net/device_bound_sessions/device_bound_session_service.h"
+#include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
-class DeviceBoundSessionServiceMock : public DeviceBoundSessionService {
+class SessionServiceMock : public SessionService {
  public:
-  DeviceBoundSessionServiceMock();
-  ~DeviceBoundSessionServiceMock() override;
+  SessionServiceMock();
+  ~SessionServiceMock() override;
 
   MOCK_METHOD(void,
               RegisterBoundSession,
-              (DeviceBoundSessionRegistrationFetcherParam registration_params,
+              (RegistrationFetcherParam registration_params,
                const IsolationInfo& isolation_info),
               (override));
 };
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_

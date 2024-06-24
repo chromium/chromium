@@ -108,8 +108,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
-#include "net/device_bound_sessions/device_bound_session_service.h"
+#include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace {
@@ -1109,8 +1109,8 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
-  std::vector<DeviceBoundSessionRegistrationFetcherParam> params =
-      DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
+  std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+      device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
           request_->url(), GetResponseHeaders());
   if (auto* service = request_->context()->device_bound_session_service()) {
     for (auto& param : params) {

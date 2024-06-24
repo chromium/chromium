@@ -12,7 +12,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_context.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 namespace {
 
@@ -206,7 +206,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   RegistrationFetcherImpl(
-      DeviceBoundSessionRegistrationFetcherParam registration_params,
+      RegistrationFetcherParam registration_params,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
@@ -260,14 +260,13 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   // Running callback when fetching is complete or on error.
   // Deletes `this` afterwards.
-  void RunCallbackAndDeleteSelf(
-      std::optional<DeviceBoundSessionCreateParams> params) {
+  void RunCallbackAndDeleteSelf(std::optional<SessionParams> params) {
     std::move(callback_).Run(std::move(params));
     delete this;
   }
 
   // State passed in to constructor
-  DeviceBoundSessionRegistrationFetcherParam registration_params_;
+  RegistrationFetcherParam registration_params_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
@@ -282,7 +281,7 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 }  // namespace
 
 void RegistrationFetcher::StartCreateTokenAndFetch(
-    DeviceBoundSessionRegistrationFetcherParam registration_params,
+    RegistrationFetcherParam registration_params,
     unexportable_keys::UnexportableKeyService& key_service,
     // TODO(kristianm): Check the lifetime of context and make sure this use
     // is safe.
@@ -315,4 +314,4 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
                    std::move(callback));
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

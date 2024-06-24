@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_CREATE_PARAMS_H_
-#define NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_CREATE_PARAMS_H_
+#ifndef NET_DEVICE_BOUND_SESSIONS_SESSION_PARAMS_H_
+#define NET_DEVICE_BOUND_SESSIONS_SESSION_PARAMS_H_
 
 #include <string>
 #include <vector>
 
 #include "net/base/net_export.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // Struct to contain the parameters from the session instruction JSON.
 // https://github.com/WICG/dbsc/blob/main/README.md#session-registration-instructions-json
-struct NET_EXPORT DeviceBoundSessionCreateParams final {
+// This is sent on session creation and session refresh
+struct NET_EXPORT SessionParams final {
   // Scope section of session instructions.
   struct Scope {
     // Specification section of the session scope instructions.
@@ -43,15 +44,14 @@ struct NET_EXPORT DeviceBoundSessionCreateParams final {
     std::string attributes;
   };
 
-  DeviceBoundSessionCreateParams(std::string id,
-                                 std::string refresh_url,
-                                 Scope scope,
-                                 std::vector<Credential> creds);
-  DeviceBoundSessionCreateParams(DeviceBoundSessionCreateParams&& other);
-  DeviceBoundSessionCreateParams& operator=(
-      DeviceBoundSessionCreateParams&& other);
+  SessionParams(std::string id,
+                std::string refresh_url,
+                Scope scope,
+                std::vector<Credential> creds);
+  SessionParams(SessionParams&& other);
+  SessionParams& operator=(SessionParams&& other);
 
-  ~DeviceBoundSessionCreateParams();
+  ~SessionParams();
 
   std::string session_id;
   std::string refresh_url;
@@ -59,6 +59,6 @@ struct NET_EXPORT DeviceBoundSessionCreateParams final {
   std::vector<Credential> credentials;
 };
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
-#endif  // NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_CREATE_PARAMS_H_
+#endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_PARAMS_H_

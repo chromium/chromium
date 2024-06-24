@@ -4,9 +4,9 @@
 
 #include "net/device_bound_sessions/test_util.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
-DeviceBoundSessionServiceMock::DeviceBoundSessionServiceMock() = default;
-DeviceBoundSessionServiceMock::~DeviceBoundSessionServiceMock() = default;
+SessionServiceMock::SessionServiceMock() = default;
+SessionServiceMock::~SessionServiceMock() = default;
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

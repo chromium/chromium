@@ -12,7 +12,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace net {
+namespace net::device_bound_sessions {
+
 namespace {
 
 using Result = SessionInclusionRules::InclusionResult;
@@ -502,4 +503,5 @@ TEST(SessionInclusionRulesTest, NonstandardPort) {
 }
 
 }  // namespace
-}  // namespace net
+
+}  // namespace net::device_bound_sessions

@@ -14,7 +14,7 @@
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // This class represents a set of rules that define which network requests may
 // potentially be deferred on account of an active DBSC session. It is derived
@@ -122,6 +122,6 @@ class NET_EXPORT SessionInclusionRules final {
   std::vector<UrlRule> url_rules_;
 };
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_INCLUSION_RULES_H_

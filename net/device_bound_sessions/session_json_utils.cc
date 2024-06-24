@@ -6,13 +6,12 @@
 
 #include "base/json/json_reader.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 namespace {
 
-DeviceBoundSessionCreateParams::Scope ParseScope(
-    const base::Value::Dict& scope_dict) {
-  DeviceBoundSessionCreateParams::Scope scope;
+SessionParams::Scope ParseScope(const base::Value::Dict& scope_dict) {
+  SessionParams::Scope scope;
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
   scope.include_site = include_site.value_or(false);
@@ -34,17 +33,13 @@ DeviceBoundSessionCreateParams::Scope ParseScope(
     if (type && !type->empty() && domain && !domain->empty() && path &&
         !path->empty()) {
       if (*type == "include") {
-        scope.specifications.push_back(
-            DeviceBoundSessionCreateParams::Scope::Specification{
-                DeviceBoundSessionCreateParams::Scope::Specification::Type::
-                    kInclude,
-                *domain, *path});
+        scope.specifications.push_back(SessionParams::Scope::Specification{
+            SessionParams::Scope::Specification::Type::kInclude, *domain,
+            *path});
       } else if (*type == "exclude") {
-        scope.specifications.push_back(
-            DeviceBoundSessionCreateParams::Scope::Specification{
-                DeviceBoundSessionCreateParams::Scope::Specification::Type::
-                    kExclude,
-                *domain, *path});
+        scope.specifications.push_back(SessionParams::Scope::Specification{
+            SessionParams::Scope::Specification::Type::kExclude, *domain,
+            *path});
       }
     }
   }
@@ -52,11 +47,11 @@ DeviceBoundSessionCreateParams::Scope ParseScope(
   return scope;
 }
 
-std::vector<DeviceBoundSessionCreateParams::Credential> ParseCredentials(
+std::vector<SessionParams::Credential> ParseCredentials(
     const base::Value::List& credentials_list) {
-  std::vector<DeviceBoundSessionCreateParams::Credential> cookie_credentials;
+  std::vector<SessionParams::Credential> cookie_credentials;
   for (const auto& json_credential : credentials_list) {
-    DeviceBoundSessionCreateParams::Credential credential;
+    SessionParams::Credential credential;
     const base::Value::Dict* credential_dict = json_credential.GetIfDict();
     if (!credential_dict) {
       continue;
@@ -69,7 +64,7 @@ std::vector<DeviceBoundSessionCreateParams::Credential> ParseCredentials(
     const std::string* attributes = credential_dict->FindString("attributes");
     if (name && attributes) {
       cookie_credentials.push_back(
-          DeviceBoundSessionCreateParams::Credential{*name, *attributes});
+          SessionParams::Credential{*name, *attributes});
     }
   }
 
@@ -78,7 +73,7 @@ std::vector<DeviceBoundSessionCreateParams::Credential> ParseCredentials(
 
 }  // namespace
 
-std::optional<DeviceBoundSessionCreateParams> ParseSessionInstructionJson(
+std::optional<SessionParams> ParseSessionInstructionJson(
     std::string_view response_json) {
   // TODO(kristianm): Skip XSSI-escapes, see for example:
   // https://hg.mozilla.org/mozilla-central/rev/4cee9ec9155e
@@ -103,7 +98,7 @@ std::optional<DeviceBoundSessionCreateParams> ParseSessionInstructionJson(
 
   std::string* refresh_url = maybe_root->FindString("refresh_url");
 
-  std::vector<DeviceBoundSessionCreateParams::Credential> credentials;
+  std::vector<SessionParams::Credential> credentials;
   base::Value::List* credentials_list = maybe_root->FindList("credentials");
   if (credentials_list) {
     credentials = ParseCredentials(*credentials_list);
@@ -113,11 +108,10 @@ std::optional<DeviceBoundSessionCreateParams> ParseSessionInstructionJson(
     return std::nullopt;
   }
 
-  return DeviceBoundSessionCreateParams(
+  return SessionParams(
       *session_id, refresh_url ? *refresh_url : "",
-      scope_dict ? ParseScope(*scope_dict)
-                 : DeviceBoundSessionCreateParams::Scope{},
+      scope_dict ? ParseScope(*scope_dict) : SessionParams::Scope{},
       std::move(credentials));
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

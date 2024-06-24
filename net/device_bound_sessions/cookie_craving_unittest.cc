@@ -12,7 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // Default values for tests.
 constexpr char kUrlString[] = "https://www.example.test/foo";
@@ -612,4 +612,4 @@ TEST(CookieCravingTest, IsNotSatisfiedByWithPartitionKey) {
   EXPECT_FALSE(cookie_craving.IsSatisfiedBy(canonical_cookie));
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

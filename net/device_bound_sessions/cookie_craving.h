@@ -15,8 +15,10 @@
 #include "net/cookies/cookie_partition_key.h"
 
 namespace net {
-
 class CanonicalCookie;
+}
+
+namespace net::device_bound_sessions {
 
 // This class represents the need for a certain cookie to be present. It is not
 // a cookie itself, but rather represents a requirement which can be satisfied
@@ -149,6 +151,6 @@ class NET_EXPORT CookieCraving : public CookieBase {
 // Outputs a debug string, e.g. for more helpful test failure messages.
 NET_EXPORT std::ostream& operator<<(std::ostream& os, const CookieCraving& cc);
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_COOKIE_CRAVING_H_

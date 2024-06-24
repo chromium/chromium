@@ -19,7 +19,7 @@ namespace base {
 class Time;
 }
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // Creates header and payload parts of a registration JWT.
 std::optional<std::string> NET_EXPORT CreateKeyRegistrationHeaderAndPayload(
@@ -36,6 +36,6 @@ std::optional<std::string> NET_EXPORT AppendSignatureToHeaderAndPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> signature);
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_BINDING_UTILS_H_

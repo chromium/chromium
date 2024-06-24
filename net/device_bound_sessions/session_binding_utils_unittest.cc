@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 namespace {
 
@@ -98,4 +98,4 @@ TEST(SessionBindingUtilsTest,
   EXPECT_EQ(result, std::nullopt);
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
-#define NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
+#ifndef NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_PARAM_H_
+#define NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_PARAM_H_
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // Class to parse Sec-Session-Registration header.
 // See explainer for details:
@@ -25,28 +25,25 @@ namespace net {
 // representing the challenge, the other is a string representing
 // the path. Example:
 // (RS256 ES256);path="start";challenge="code"
-class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
+class NET_EXPORT RegistrationFetcherParam {
  public:
-  DeviceBoundSessionRegistrationFetcherParam(
-      DeviceBoundSessionRegistrationFetcherParam&& other);
-  DeviceBoundSessionRegistrationFetcherParam& operator=(
-      DeviceBoundSessionRegistrationFetcherParam&& other) noexcept;
+  RegistrationFetcherParam(RegistrationFetcherParam&& other);
+  RegistrationFetcherParam& operator=(
+      RegistrationFetcherParam&& other) noexcept;
 
   // Disabled to make accidental copies compile errors.
-  DeviceBoundSessionRegistrationFetcherParam(
-      const DeviceBoundSessionRegistrationFetcherParam& other) = delete;
-  DeviceBoundSessionRegistrationFetcherParam& operator=(
-      const DeviceBoundSessionRegistrationFetcherParam&) = delete;
-  ~DeviceBoundSessionRegistrationFetcherParam();
+  RegistrationFetcherParam(const RegistrationFetcherParam& other) = delete;
+  RegistrationFetcherParam& operator=(const RegistrationFetcherParam&) = delete;
+  ~RegistrationFetcherParam();
 
   // Returns a vector of valid instances.
   // TODO(chlily): Get IsolationInfo from the request as well
-  static std::vector<DeviceBoundSessionRegistrationFetcherParam> CreateIfValid(
+  static std::vector<RegistrationFetcherParam> CreateIfValid(
       const GURL& request_url,
       const HttpResponseHeaders* headers);
 
   // Convenience constructor for testing.
-  static DeviceBoundSessionRegistrationFetcherParam CreateInstanceForTesting(
+  static RegistrationFetcherParam CreateInstanceForTesting(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
@@ -62,13 +59,13 @@ class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
   const std::string& challenge() const { return challenge_; }
 
  private:
-  DeviceBoundSessionRegistrationFetcherParam(
+  RegistrationFetcherParam(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
       std::string challenge);
 
-  static std::optional<DeviceBoundSessionRegistrationFetcherParam> ParseItem(
+  static std::optional<RegistrationFetcherParam> ParseItem(
       const GURL& request_url,
       const structured_headers::ParameterizedMember& session_registration);
 
@@ -79,6 +76,6 @@ class NET_EXPORT DeviceBoundSessionRegistrationFetcherParam {
   std::string challenge_;
 };
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
-#endif  // NET_DEVICE_BOUND_SESSIONS_DEVICE_BOUND_SESSION_REGISTRATION_FETCHER_PARAM_H_
+#endif  // NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_PARAM_H_

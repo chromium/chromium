@@ -13,7 +13,7 @@ namespace unexportable_keys {
 class UnexportableKeyService;
 }
 
-namespace net {
+namespace net::device_bound_sessions {
 
 class UnexportableKeyServiceFactory {
  public:
@@ -39,6 +39,6 @@ class UnexportableKeyServiceFactory {
   ~UnexportableKeyServiceFactory();
 };
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_UNEXPORTABLE_KEY_SERVICE_FACTORY_H_

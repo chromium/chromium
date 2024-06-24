@@ -9,8 +9,8 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/device_bound_sessions/device_bound_session_create_params.h"
-#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/registration_fetcher_param.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
@@ -22,7 +22,7 @@ namespace unexportable_keys {
 class UnexportableKeyService;
 }
 
-namespace net {
+namespace net::device_bound_sessions {
 
 // This class creates a new unexportable key, creates a registration JWT and
 // signs it with the new key, and makes the network request to the DBSC
@@ -31,7 +31,7 @@ namespace net {
 class NET_EXPORT RegistrationFetcher {
  public:
   using RegistrationCompleteCallback =
-      base::OnceCallback<void(std::optional<DeviceBoundSessionCreateParams>)>;
+      base::OnceCallback<void(std::optional<SessionParams>)>;
 
   // TODO(kristianm): Add more parameters when the returned JSON is parsed.
   struct NET_EXPORT RegistrationTokenResult {
@@ -48,7 +48,7 @@ class NET_EXPORT RegistrationFetcher {
   // This can fail during key creation, signing and during the network request,
   // and if so it the callback with be called with a std::nullopt.
   static void StartCreateTokenAndFetch(
-      DeviceBoundSessionRegistrationFetcherParam registration_params,
+      RegistrationFetcherParam registration_params,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
@@ -66,6 +66,6 @@ class NET_EXPORT RegistrationFetcher {
           callback);
 };
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_H_

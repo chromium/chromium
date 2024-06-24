@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/device_bound_sessions/device_bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/registration_fetcher_param.h"
 
 #include <vector>
 
@@ -38,33 +38,25 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 }
 }  // namespace
 
-namespace net {
+namespace net::device_bound_sessions {
 
-DeviceBoundSessionRegistrationFetcherParam::
-    DeviceBoundSessionRegistrationFetcherParam(
-        DeviceBoundSessionRegistrationFetcherParam&& other) = default;
+RegistrationFetcherParam::RegistrationFetcherParam(
+    RegistrationFetcherParam&& other) = default;
 
-DeviceBoundSessionRegistrationFetcherParam&
-DeviceBoundSessionRegistrationFetcherParam::
-    operator=(
-        DeviceBoundSessionRegistrationFetcherParam&& other) noexcept = default;
+RegistrationFetcherParam& RegistrationFetcherParam::operator=(
+    RegistrationFetcherParam&& other) noexcept = default;
 
-DeviceBoundSessionRegistrationFetcherParam::
-    ~DeviceBoundSessionRegistrationFetcherParam() =
-        default;
+RegistrationFetcherParam::~RegistrationFetcherParam() = default;
 
-DeviceBoundSessionRegistrationFetcherParam::
-    DeviceBoundSessionRegistrationFetcherParam(
-        GURL registration_endpoint,
-        std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-            supported_algos,
-        std::string challenge)
-        : registration_endpoint_(std::move(registration_endpoint)),
-          supported_algos_(std::move(supported_algos)),
-          challenge_(std::move(challenge)) {}
+RegistrationFetcherParam::RegistrationFetcherParam(
+    GURL registration_endpoint,
+    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::string challenge)
+    : registration_endpoint_(std::move(registration_endpoint)),
+      supported_algos_(std::move(supported_algos)),
+      challenge_(std::move(challenge)) {}
 
-std::optional<DeviceBoundSessionRegistrationFetcherParam>
-DeviceBoundSessionRegistrationFetcherParam::ParseItem(
+std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     const GURL& request_url,
     const structured_headers::ParameterizedMember& session_registration) {
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
@@ -120,16 +112,15 @@ DeviceBoundSessionRegistrationFetcherParam::ParseItem(
     return std::nullopt;
   }
 
-  return DeviceBoundSessionRegistrationFetcherParam(
-      std::move(registration_endpoint), std::move(supported_algos),
-      std::move(challenge));
+  return RegistrationFetcherParam(std::move(registration_endpoint),
+                                  std::move(supported_algos),
+                                  std::move(challenge));
 }
 
-std::vector<DeviceBoundSessionRegistrationFetcherParam>
-DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
+std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
     const GURL& request_url,
     const net::HttpResponseHeaders* headers) {
-  std::vector<DeviceBoundSessionRegistrationFetcherParam> params;
+  std::vector<RegistrationFetcherParam> params;
   if (!request_url.is_valid()) {
     return params;
   }
@@ -148,7 +139,7 @@ DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
 
   for (const auto& item : *list) {
     if (item.member_is_inner_list) {
-      std::optional<DeviceBoundSessionRegistrationFetcherParam> fetcher_param =
+      std::optional<RegistrationFetcherParam> fetcher_param =
           ParseItem(request_url, item);
       if (fetcher_param) {
         params.push_back(std::move(*fetcher_param));
@@ -160,14 +151,13 @@ DeviceBoundSessionRegistrationFetcherParam::CreateIfValid(
 }
 
 // static
-DeviceBoundSessionRegistrationFetcherParam
-DeviceBoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
+RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
     std::string challenge) {
-  return DeviceBoundSessionRegistrationFetcherParam(
-      std::move(registration_endpoint), std::move(supported_algos),
-      std::move(challenge));
+  return RegistrationFetcherParam(std::move(registration_endpoint),
+                                  std::move(supported_algos),
+                                  std::move(challenge));
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions

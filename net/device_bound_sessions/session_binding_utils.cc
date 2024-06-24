@@ -21,7 +21,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "url/gurl.h"
 
-namespace net {
+namespace net::device_bound_sessions {
 
 namespace {
 
@@ -163,4 +163,4 @@ std::optional<std::string> AppendSignatureToHeaderAndPayload(
       {header_and_payload, ".", Base64UrlEncode(as_string_view(signature))});
 }
 
-}  // namespace net
+}  // namespace net::device_bound_sessions
