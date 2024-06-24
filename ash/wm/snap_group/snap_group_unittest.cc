@@ -2651,7 +2651,10 @@ TEST_F(SnapGroupTest, WindowDestroyToBreakSnapGroup) {
 // Tests to verify that resnapping a window within a Snap Group to the same
 // position but with a different snap ratio will break the existing group. See
 // http://b/342230763 for more details.
-TEST_F(SnapGroupTest, ReSnapWindowWithDifferentSnapRatioToBreakTheGroup) {
+// TODO(http://b/347091612) : Re-purpose this function to refresh group windows
+// bounds instead of removing.
+TEST_F(SnapGroupTest,
+       DISABLED_ReSnapWindowWithDifferentSnapRatioToBreakTheGroup) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
@@ -6907,43 +6910,14 @@ TEST_F(SnapGroupDisplayMetricsTest, ScaleUpWorkAreaInOverview) {
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
 
-  // Verify that there is one `OverviewGroupItem` in `OverviewGrid` initially.
-  EXPECT_EQ(1u, overview_grid->window_list().size());
-
-  OverviewGroupItem* group_item =
-      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
-  const auto& items = group_item->overview_items_for_testing();
-  CHECK_EQ(2U, items.size());
-  const auto& overview_item1 = items[0];
-  const auto& overview_item2 = items[1];
-  ASSERT_FALSE(overview_item1->target_bounds().Intersects(
-      overview_item2->target_bounds()));
-  ASSERT_FALSE(GetUnionScreenBoundsForWindow(w1.get()).Intersects(
-      GetUnionScreenBoundsForWindow(w2.get())));
-
   // Zoom in to make the windows no longer fit, the Snap Group should be broken.
   PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   const int64_t primary_id =
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
   ASSERT_EQ(1.05f, display_manager()->GetDisplayInfo(primary_id).zoom_factor());
-  ASSERT_TRUE(overview_item1->target_bounds().Intersects(
-      overview_item2->target_bounds()));
   ASSERT_TRUE(GetUnionScreenBoundsForWindow(w1.get()).Intersects(
       GetUnionScreenBoundsForWindow(w2.get())));
-
-  // Wait for zoom operation to complete, ensuring snap group removal is
-  // finalized.
-  base::RunLoop().RunUntilIdle();
-
-  // Verify that snap group will be broken due to snapped bounds no longer fit
-  // within work area.
-  EXPECT_FALSE(
-      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-
-  // The `OverviewGroupItem` will be removed and two individual `OverviewItem`s
-  // will be added instead.
-  EXPECT_EQ(2u, overview_grid->window_list().size());
 
   ToggleOverview();
   ASSERT_FALSE(IsInOverviewSession());

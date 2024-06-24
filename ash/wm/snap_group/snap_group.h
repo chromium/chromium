@@ -96,10 +96,6 @@ class SnapGroup : public aura::WindowObserver,
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
 
   // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
@@ -161,17 +157,6 @@ class SnapGroup : public aura::WindowObserver,
   // the windows are no longer valid for a snap group.
   void RefreshSnapGroup();
 
-  // Returns true if the entire work area is completely occupied by the
-  // windows in this snap group, taking into account the divider between them.
-  // Returns false otherwise.
-  bool IsWorkAreaFullyFilledBySnappedWindows() const;
-
-  // Called asynchronously by `OnWindowBoundsChanged()` to validate the current
-  // snap group on window bounds changed. If the union bounds of the snapped
-  // windows do not completely fill the work area (including the divider), the
-  // snap group is removed.
-  void RemoveSnapGroupIfNotFillWorkArea();
-
   // Hides scoped windows in a snap group in partial overview, restores their
   // visibility when partial overview ends.
   void OnOverviewModeStarting();
@@ -202,14 +187,6 @@ class SnapGroup : public aura::WindowObserver,
 
   // True if the shutting down process has been triggered.
   bool is_shutting_down_ = false;
-
-  // Boolean flag indicating whether a task has been posted to validate the
-  // bounds of the currently snapped windows. This flag prevents multiple
-  // validation tasks from being queued up simultaneously.
-  bool pending_check_ = false;
-
-  // True if the snapped windows bounds are being adjusted.
-  bool adjusting_snapped_window_bounds_ = false;
 
   // Tracks the timestamp of the original Snap Group's creation time, preserved
   // when using 'Snap to Replace'.
