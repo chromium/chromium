@@ -13,6 +13,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/test/related_website_sets.pb.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -31,18 +32,20 @@ constexpr char kReplacements[] = "replacements";
 constexpr char kAdditions[] = "additions";
 
 constexpr char const* kSites[10] = {
-    "https://site-0.test", "https://site-1.test", "https://site-2.test",
-    "https://site-3.test", "https://site-4.test", "https://site-5.test",
-    "https://site-6.test", "https://site-7.test", "https://site-8.test",
-    "https://site-9.test",
+    "https://site-0.test", "https://sub.site-0.test",
+    "https://site-1.test", "https://sub.site-1.test",
+    "https://site-2.test", "https://sub.site-2.test",
+    "https://site-3.test", "https://sub.site-3.test",
+    "https://site-4.test", "https://sub.site-4.test",
 };
 
-constexpr char const* kCctlds[10] = {
-    "https://site-0.cctld", "https://site-1.cctld", "https://site-2.cctld",
-    "https://site-3.cctld", "https://site-4.cctld", "https://site-5.cctld",
-    "https://site-6.cctld", "https://site-7.cctld", "https://site-8.cctld",
-    "https://site-9.cctld",
-};
+std::string MakeCctld(size_t index) {
+  CHECK_LT(index, std::size(kSites));
+  std::string out = kSites[index];
+  base::ReplaceFirstSubstringAfterOffset(
+      &out, /*start_offset=*/0, /*find_this=*/"test", /*replace_with*/ "cctld");
+  return out;
+}
 
 base::Value::Dict ConvertSet(const related_website_sets::proto::Set& set) {
   base::Value::Dict json_set;
@@ -55,7 +58,7 @@ base::Value::Dict ConvertSet(const related_website_sets::proto::Set& set) {
   }
   for (const related_website_sets::proto::SitePair& site_pair :
        set.cctld_aliases()) {
-    json_set.EnsureDict(kCctld)->Set(kCctlds[site_pair.alias()],
+    json_set.EnsureDict(kCctld)->Set(MakeCctld(site_pair.alias()),
                                      kSites[site_pair.canonical()]);
   }
 
