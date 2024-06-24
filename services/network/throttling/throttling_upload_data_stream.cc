@@ -63,8 +63,12 @@ int ThrottlingUploadDataStream::ReadInternal(net::IOBuffer* buf, int buf_len) {
 
 void ThrottlingUploadDataStream::StreamReadCallback(int result) {
   result = ThrottleRead(result);
-  if (result != net::ERR_IO_PENDING)
+  if (result != net::ERR_IO_PENDING) {
+    if (result < net::ERR_IO_PENDING) {
+      LOG(ERROR) << "StreamReadCallback failed with Error: " << result;
+    }
     OnReadCompleted(result);
+  }
 }
 
 int ThrottlingUploadDataStream::ThrottleRead(int result) {
@@ -83,6 +87,9 @@ int ThrottlingUploadDataStream::ThrottleRead(int result) {
 
 void ThrottlingUploadDataStream::ThrottleCallback(int result, int64_t bytes) {
   throttled_byte_count_ = bytes;
+  if (result < net::ERR_IO_PENDING) {
+    LOG(ERROR) << "ThrottleCallback failed with Error: " << result;
+  }
   OnReadCompleted(result);
 }
 

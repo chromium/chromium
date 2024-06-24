@@ -209,6 +209,9 @@ void ChunkedDataPipeUploadDataStream::OnSizeReceived(int32_t status,
     buf_len_ = 0;
     chunked_data_pipe_getter_.reset();
 
+    if (status_ < net::ERR_IO_PENDING) {
+      LOG(ERROR) << "OnSizeReceived failed with Error: " << status_;
+    }
     OnReadCompleted(status_);
 
     // |this| may have been deleted at this point.
@@ -226,8 +229,12 @@ void ChunkedDataPipeUploadDataStream::OnHandleReadable(MojoResult result) {
 
   int rv = ReadInternal(buf.get(), buf_len);
 
-  if (rv != net::ERR_IO_PENDING)
+  if (rv != net::ERR_IO_PENDING) {
+    if (rv < net::ERR_IO_PENDING) {
+      LOG(ERROR) << "OnHandleReadable failed with Error: " << rv;
+    }
     OnReadCompleted(rv);
+  }
 
   // |this| may have been deleted at this point.
 }

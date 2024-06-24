@@ -131,8 +131,12 @@ void ElementsUploadDataStream::OnReadElementCompleted(
   ProcessReadResult(buf, result);
 
   result = ReadElements(buf);
-  if (result != ERR_IO_PENDING)
+  if (result != ERR_IO_PENDING) {
+    if (result < ERR_IO_PENDING) {
+      LOG(ERROR) << "OnReadElementCompleted failed with Error: " << result;
+    }
     OnReadCompleted(result);
+  }
 }
 
 void ElementsUploadDataStream::ProcessReadResult(
