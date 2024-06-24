@@ -107,6 +107,11 @@ public class TabGroupVisualDataManager {
                             if (sourceGroupColor != TabGroupColorUtils.INVALID_COLOR_ID
                                     && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
                                 filter.setTabGroupColor(newRootId, sourceGroupColor);
+                            } else if (sourceGroupColor == TabGroupColorUtils.INVALID_COLOR_ID
+                                    && targetGroupColor == TabGroupColorUtils.INVALID_COLOR_ID) {
+                                filter.setTabGroupColor(
+                                        newRootId,
+                                        TabGroupColorUtils.getNextSuggestedColorId(filter));
                             }
                         }
 

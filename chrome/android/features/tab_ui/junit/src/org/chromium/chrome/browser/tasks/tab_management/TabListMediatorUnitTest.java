@@ -2689,7 +2689,8 @@ public class TabListMediatorUnitTest {
 
         // Fake a different color on the group to check that the color was set properly on group
         // creation.
-        when(mTabGroupModelFilter.getOrCreateTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
+                .thenReturn(COLOR_2);
 
         mTabGroupModelFilterObserverCaptor
                 .getValue()
@@ -3226,7 +3227,8 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isIncognito()).thenReturn(false);
         // Mock that we have a stored color stored with reference to root ID of tab1.
         when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
-        when(mTabGroupModelFilter.getOrCreateTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
+                .thenReturn(COLOR_2);
 
         // Test a group of three.
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);

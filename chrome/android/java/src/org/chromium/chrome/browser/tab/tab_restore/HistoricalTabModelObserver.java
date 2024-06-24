@@ -96,7 +96,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             // Give a tab group the first color in the color list as a placeholder.
             @TabGroupColorId int color = TabGroupColorId.GREY;
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                color = mTabGroupModelFilter.getOrCreateTabGroupColor(rootId);
+                color = mTabGroupModelFilter.getTabGroupColorWithFallback(rootId);
             }
             List<Tab> groupTabs = new ArrayList<>();
             groupTabs.add(tab);

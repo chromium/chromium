@@ -601,7 +601,7 @@ public class TabGridDialogMediator
             TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
             Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
             final @TabGroupColorId int color =
-                    filter.getOrCreateTabGroupColor(currentTab.getRootId());
+                    filter.getTabGroupColorWithFallback(currentTab.getRootId());
             mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, color);
         }
         updateTitle(tabsCount);

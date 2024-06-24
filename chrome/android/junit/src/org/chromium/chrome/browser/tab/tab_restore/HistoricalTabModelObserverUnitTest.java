@@ -500,7 +500,7 @@ public class HistoricalTabModelObserverUnitTest {
 
         final int rootId = tabList[0].getId();
         when(mTabGroupModelFilter.getTabGroupTitle(rootId)).thenReturn(title);
-        when(mTabGroupModelFilter.getOrCreateTabGroupColor(rootId)).thenReturn(color);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(rootId)).thenReturn(color);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)).thenReturn(tabList.length);
         when(mTabGroupModelFilter.tabGroupExistsForRootId(rootId)).thenReturn(true);
         for (MockTab tab : tabList) {

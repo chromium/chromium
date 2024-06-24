@@ -2300,16 +2300,14 @@ public class TabGroupModelFilterUnitTest {
     @Test
     public void testGetOrCreateTabGroupColor() {
         assertEquals(
-                TabGroupColorId.GREY, mTabGroupModelFilter.getOrCreateTabGroupColor(TAB1_ROOT_ID));
-        verify(mTabGroupModelFilterObserver)
-                .didChangeTabGroupColor(TAB1_ROOT_ID, TabGroupColorId.GREY);
+                TabGroupColorId.GREY,
+                mTabGroupModelFilter.getTabGroupColorWithFallback(TAB1_ROOT_ID));
 
         when(mSharedPreferencesColor.getInt(eq(String.valueOf(TAB2_ROOT_ID)), anyInt()))
                 .thenReturn(TabGroupColorId.BLUE);
         assertEquals(
-                TabGroupColorId.BLUE, mTabGroupModelFilter.getOrCreateTabGroupColor(TAB2_ROOT_ID));
-        verify(mTabGroupModelFilterObserver, never())
-                .didChangeTabGroupColor(eq(TAB2_ROOT_ID), anyInt());
+                TabGroupColorId.BLUE,
+                mTabGroupModelFilter.getTabGroupColorWithFallback(TAB2_ROOT_ID));
     }
 
     @Test
