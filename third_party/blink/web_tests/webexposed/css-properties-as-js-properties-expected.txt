@@ -252,6 +252,7 @@ length
 letterSpacing
 lightingColor
 lineBreak
+lineClamp
 lineGapOverride
 lineHeight
 listStyle

@@ -921,6 +921,7 @@
     },
     {
       name: "CSSLineClamp",
+      status: "experimental",
     },
     {
       name: "CSSLogicalOverflow",

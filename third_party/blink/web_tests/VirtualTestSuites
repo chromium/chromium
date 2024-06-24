@@ -2990,10 +2990,16 @@
     "expires": "Feb 1, 2025"
   },
   {
-    "prefix": "css-line-clamp",
+    "prefix": "disable-css-line-clamp",
     "platforms": ["Linux"],
-    "bases": ["external/wpt/css/css-overflow/line-clamp", "fast/overflow"],
-    "args": ["--enable-blink-features=CSSLineClamp"],
+    "bases": [
+      "external/wpt/css/css-overflow/line-clamp",
+      "external/wpt/css/css-overflow/parsing",
+      "fast/overflow"
+    ],
+    "args": [
+      "--disable-blink-features=CSSLineClamp"
+    ],
     "owners": ["abotella@igalia.com"]
   },
   {

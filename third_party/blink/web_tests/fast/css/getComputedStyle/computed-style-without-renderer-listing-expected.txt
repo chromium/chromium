@@ -217,6 +217,7 @@ left: auto
 letter-spacing: normal
 lighting-color: rgb(255, 255, 255)
 line-break: auto
+line-clamp: none
 line-height: normal
 list-style-image: none
 list-style-position: outside
