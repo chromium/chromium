@@ -197,6 +197,9 @@ InsertionContent GetInsertionContentForResult(
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
             return std::monostate();
           },
+          [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
+            return std::monostate();
+          },
       },
       result.data());
 }
@@ -264,8 +267,6 @@ std::u16string TransformText(std::u16string_view text,
     case PickerCategory::kDatesTimes:
     case PickerCategory::kUnitsMaths:
     case PickerCategory::kClipboard:
-    case PickerCategory::kCapsOn:
-    case PickerCategory::kCapsOff:
       NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
@@ -415,6 +416,12 @@ void PickerController::GetZeroStateSuggestedResults(
     callback.Run(std::move(new_window_results));
   }
 
+  if (model_->GetMode() == PickerModeType::kUnfocused ||
+      model_->GetMode() == PickerModeType::kNoSelection) {
+    callback.Run(
+        {PickerSearchResult::CapsLock(!model_->is_caps_lock_enabled())});
+  }
+
   if (base::Contains(model_->GetAvailableCategories(),
                      PickerCategory::kEditorRewrite)) {
     client_->GetSuggestedEditorResults(callback);
@@ -438,8 +445,6 @@ void PickerController::GetResultsForCategory(PickerCategory category,
     case PickerCategory::kLowerCase:
     case PickerCategory::kSentenceCase:
     case PickerCategory::kTitleCase:
-    case PickerCategory::kCapsOn:
-    case PickerCategory::kCapsOff:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
       client_->GetSuggestedLinkResults(
@@ -601,6 +606,11 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerSearchResult::NewWindowData& data) {
             OpenLink(GetUrlForNewWindow(data.type));
           },
+          [&](const PickerSearchResult::CapsLockData& data) {
+            session_metrics_->SetOutcome(
+                PickerSessionMetrics::SessionOutcome::kFormat);
+            GetImeKeyboard().SetCapsLockEnabled(data.enabled);
+          },
       },
       result.data());
 }
@@ -618,10 +628,6 @@ void PickerController::ShowEditor(std::optional<std::string> preset_query_id,
     std::move(show_editor_callback_)
         .Run(std::move(preset_query_id), std::move(freeform_text));
   }
-}
-
-void PickerController::SetCapsLockEnabled(bool enabled) {
-  GetImeKeyboard().SetCapsLockEnabled(enabled);
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {
@@ -692,6 +698,9 @@ PickerActionType PickerController::GetActionForResult(
             return PickerActionType::kCreate;
           },
           [](const PickerSearchResult::NewWindowData& data) {
+            return PickerActionType::kDo;
+          },
+          [](const PickerSearchResult::CapsLockData& data) {
             return PickerActionType::kDo;
           },
       },

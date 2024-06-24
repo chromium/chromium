@@ -23,10 +23,9 @@ TEST(PickerModel, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
   input_method::FakeImeKeyboard fake_ime_keyboard;
   PickerModel model(/*focused_client=*/nullptr, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled);
-  EXPECT_THAT(
-      model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kLinks,
-                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles));
+  EXPECT_THAT(model.GetAvailableCategories(),
+              ElementsAre(PickerCategory::kLinks, PickerCategory::kDriveFiles,
+                          PickerCategory::kLocalFiles));
 }
 
 TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
@@ -38,11 +37,10 @@ TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {
                     PickerModel::EditorStatus::kEnabled);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kEditorWrite,
-                  PickerCategory::kLinks, PickerCategory::kExpressions,
-                  PickerCategory::kClipboard, PickerCategory::kDriveFiles,
-                  PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
-                  PickerCategory::kUnitsMaths));
+      ElementsAre(PickerCategory::kEditorWrite, PickerCategory::kLinks,
+                  PickerCategory::kExpressions, PickerCategory::kClipboard,
+                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles,
+                  PickerCategory::kDatesTimes, PickerCategory::kUnitsMaths));
 }
 
 TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
@@ -57,28 +55,6 @@ TEST(PickerModel, AvailableCategoriesWithSelectedTextHasCorrectOrdering) {
       ElementsAre(PickerCategory::kEditorRewrite, PickerCategory::kUpperCase,
                   PickerCategory::kLowerCase, PickerCategory::kSentenceCase,
                   PickerCategory::kTitleCase));
-}
-
-TEST(PickerModel, AvailableCategoriesShowsCapsOffWhenCapsIsOn) {
-  input_method::FakeImeKeyboard fake_ime_keyboard;
-  fake_ime_keyboard.SetCapsLockEnabled(true);
-  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
-
-  PickerModel model(&client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled);
-  EXPECT_THAT(model.GetAvailableCategories(),
-              Contains(PickerCategory::kCapsOff));
-}
-
-TEST(PickerModel, AvailableCategoriesShowsCapsOnWhenCapsIsOff) {
-  input_method::FakeImeKeyboard fake_ime_keyboard;
-  fake_ime_keyboard.SetCapsLockEnabled(false);
-  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
-
-  PickerModel model(&client, &fake_ime_keyboard,
-                    PickerModel::EditorStatus::kEnabled);
-  EXPECT_THAT(model.GetAvailableCategories(),
-              Contains(PickerCategory::kCapsOn));
 }
 
 TEST(PickerModel, AvailableCategoriesContainsEditorWriteWhenEnabled) {

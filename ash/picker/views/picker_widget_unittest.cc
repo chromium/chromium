@@ -49,7 +49,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
                        std::u16string_view query) override {}
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text) override {}
-  void SetCapsLockEnabled(bool enabled) override {}
   PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
   PickerSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;

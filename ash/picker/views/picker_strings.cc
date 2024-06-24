@@ -57,10 +57,6 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_SENTENCE_CASE_CATEGORY_LABEL);
     case PickerCategory::kTitleCase:
       return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_CATEGORY_LABEL);
-    case PickerCategory::kCapsOn:
-      return l10n_util::GetStringUTF16(IDS_PICKER_CAPS_ON_CATEGORY_LABEL);
-    case PickerCategory::kCapsOff:
-      return l10n_util::GetStringUTF16(IDS_PICKER_CAPS_OFF_CATEGORY_LABEL);
   }
 }
 
@@ -92,8 +88,6 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kLowerCase:
     case PickerCategory::kSentenceCase:
     case PickerCategory::kTitleCase:
-    case PickerCategory::kCapsOn:
-    case PickerCategory::kCapsOff:
       NOTREACHED_NORETURN();
   }
 }

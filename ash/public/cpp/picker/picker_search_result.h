@@ -222,6 +222,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const NewWindowData&) const;
   };
 
+  struct CapsLockData {
+    bool enabled;
+
+    bool operator==(const CapsLockData&) const;
+  };
+
   using Data = std::variant<TextData,
                             SearchRequestData,
                             EmojiData,
@@ -234,7 +240,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             DriveFileData,
                             CategoryData,
                             EditorData,
-                            NewWindowData>;
+                            NewWindowData,
+                            CapsLockData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -286,6 +293,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       std::optional<std::string> preset_query_id,
       std::optional<std::string> freeform_text);
   static PickerSearchResult NewWindow(NewWindowData::Type type);
+  static PickerSearchResult CapsLock(bool enabled);
 
   const Data& data() const;
 

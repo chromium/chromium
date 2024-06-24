@@ -47,8 +47,6 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   switch (GetMode()) {
     case PickerModeType::kUnfocused:
       return std::vector<PickerCategory>{
-          is_caps_lock_enabled_ ? PickerCategory::kCapsOff
-                                : PickerCategory::kCapsOn,
           PickerCategory::kLinks,
           PickerCategory::kDriveFiles,
           PickerCategory::kLocalFiles,
@@ -67,9 +65,7 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       return categories;
     }
     case PickerModeType::kNoSelection: {
-      std::vector<PickerCategory> categories{is_caps_lock_enabled_
-                                                 ? PickerCategory::kCapsOff
-                                                 : PickerCategory::kCapsOn};
+      std::vector<PickerCategory> categories;
       if (editor_status_ == EditorStatus::kEnabled) {
         categories.push_back(PickerCategory::kEditorWrite);
       }
@@ -102,6 +98,10 @@ std::vector<PickerCategory> PickerModel::GetRecentResultsCategories() const {
 
 std::u16string_view PickerModel::selected_text() const {
   return selected_text_;
+}
+
+bool PickerModel::is_caps_lock_enabled() const {
+  return is_caps_lock_enabled_;
 }
 
 PickerModeType PickerModel::GetMode() const {

@@ -25,6 +25,7 @@
 #include "ash/test/view_drawn_waiter.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -51,6 +52,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AnyNumber;
 using ::testing::Contains;
 using ::testing::Each;
 using ::testing::ElementsAre;
@@ -59,6 +61,7 @@ using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Not;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::VariantWith;
 
@@ -455,6 +458,30 @@ TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
       PickerSearchResult::NewWindowData::Type::kDoc));
 }
 
+TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOnCapsLock) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  controller.OpenResult(PickerSearchResult::CapsLock(true));
+
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
+}
+
+TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLock) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  controller.OpenResult(PickerSearchResult::CapsLock(false));
+
+  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
+  ASSERT_TRUE(ime_keyboard);
+  EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
+}
+
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
@@ -470,28 +497,6 @@ TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   EXPECT_EQ(category, ui::EmojiPickerCategory::kSymbols);
   EXPECT_EQ(focus_behavior, ui::EmojiPickerFocusBehavior::kAlwaysShow);
   EXPECT_EQ(initial_query, "abc");
-}
-
-TEST_F(PickerControllerTest, SetCapsLockEnabledToTrueTurnsOnCapsLock) {
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.SetCapsLockEnabled(true);
-
-  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
-  ASSERT_TRUE(ime_keyboard);
-  EXPECT_TRUE(ime_keyboard->IsCapsLockEnabled());
-}
-
-TEST_F(PickerControllerTest, SetCapsLockEnabledToFalseTurnsOffCapsLock) {
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.SetCapsLockEnabled(false);
-
-  input_method::ImeKeyboard* ime_keyboard = GetImeKeyboard();
-  ASSERT_TRUE(ime_keyboard);
-  EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
 }
 
 TEST_F(PickerControllerTest, ShowingAndClosingWidgetRecordsUsageMetrics) {
@@ -702,15 +707,15 @@ TEST_F(PickerControllerTest,
   NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> results_future;
-  controller.GetZeroStateSuggestedResults(
-      results_future.GetRepeatingCallback());
+  base::MockCallback<PickerController::SuggestedResultsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(callback,
+              Run(Contains(
+                  Property(&PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::NewWindowData>(_)))))
+      .Times(1);
 
-  EXPECT_THAT(
-      results_future.Get(),
-      AllOf(Not(IsEmpty()),
-            Each(Property("data", &PickerSearchResult::data,
-                          VariantWith<PickerSearchResult::NewWindowData>(_)))));
+  controller.GetZeroStateSuggestedResults(callback.Get());
 }
 
 TEST_F(
@@ -761,12 +766,47 @@ TEST_F(PickerControllerTest,
   NiceMock<TestPickerClient> client(&controller);
   controller.ToggleWidget();
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> results_future;
-  controller.GetZeroStateSuggestedResults(
-      results_future.GetRepeatingCallback());
+  base::MockCallback<PickerController::SuggestedResultsCallback> callback;
+  EXPECT_CALL(callback,
+              Run(Contains(
+                  Property(&PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::NewWindowData>(_)))))
+      .Times(0);
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
 
-  // No other suggestions are available, so the callback is not called.
-  EXPECT_FALSE(results_future.IsReady());
+  controller.GetZeroStateSuggestedResults(callback.Get());
+}
+
+TEST_F(PickerControllerTest,
+       GetZeroStateSuggestedResultsWhenCapsOffReturnsCapsOn) {
+  input_method::InputMethodManager::Get()->GetImeKeyboard()->SetCapsLockEnabled(
+      false);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  base::MockCallback<PickerController::SuggestedResultsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CapsLock(true))))
+      .Times(1);
+
+  controller.GetZeroStateSuggestedResults(callback.Get());
+}
+
+TEST_F(PickerControllerTest,
+       GetZeroStateSuggestedResultsWhenCapsOnReturnsCapsOff) {
+  input_method::InputMethodManager::Get()->GetImeKeyboard()->SetCapsLockEnabled(
+      true);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  base::MockCallback<PickerController::SuggestedResultsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CapsLock(false))))
+      .Times(1);
+
+  controller.GetZeroStateSuggestedResults(callback.Get());
 }
 
 struct ActionTestCase {

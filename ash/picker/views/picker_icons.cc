@@ -42,10 +42,6 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
       return kPickerSentenceCaseIcon;
     case PickerCategory::kTitleCase:
       return kPickerTitleCaseIcon;
-    case PickerCategory::kCapsOn:
-      return kPickerCapsLockOnIcon;
-    case PickerCategory::kCapsOff:
-      return kPickerCapsLockOffIcon;
   }
 }
 

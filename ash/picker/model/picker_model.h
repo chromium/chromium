@@ -40,6 +40,8 @@ class ASH_EXPORT PickerModel {
 
   std::u16string_view selected_text() const;
 
+  bool is_caps_lock_enabled() const;
+
   PickerModeType GetMode() const;
 
  private:
