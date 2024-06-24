@@ -38,7 +38,7 @@ export interface CertificateManagerV2Element {
   $: {
     crsCerts: CertificateListV2Element,
     platformClientCerts: CertificateListV2Element,
-    // <if expr="is_win or is_macosx">
+    // <if expr="is_win or is_macosx or is_linux">
     provisionedClientCerts: CertificateListV2Element,
     // </if>
     // <if expr="is_chromeos">

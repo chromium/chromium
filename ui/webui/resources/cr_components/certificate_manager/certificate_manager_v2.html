@@ -27,7 +27,7 @@
   <div>
     Client certificates are certificates that identify you to other servers.
 
-    <if expr="is_win or is_macosx">
+    <if expr="is_win or is_macosx or is_linux">
       <certificate-list-v2
           id="provisionedClientCerts"
           cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"

@@ -97,7 +97,7 @@ suite('CertificateManagerV2FocusTest', () => {
     assertEquals('deadbeef2', await navigator.clipboard.readText());
   });
 
-  // <if expr="is_win or is_macosx">
+  // <if expr="is_win or is_macosx or is_linux">
   test('Copy provisioned client certs hash', async () => {
     const getCertificatesResolver = new PromiseResolver<void>();
     testProxy.handler.setCertificatesCallback((source: CertificateSource) => {

@@ -143,7 +143,7 @@ suite('CertificateManagerV2Test', () => {
     document.body.appendChild(certManager);
   }
 
-  // <if expr="not (is_win or is_macosx)">
+  // <if expr="not (is_win or is_macosx or is_linux)">
   test('provisioned client certs not present', async () => {
     initializeElement();
     await microtasksFinished();
