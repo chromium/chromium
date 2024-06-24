@@ -30,6 +30,10 @@ class NtpLoadedCondition extends UiThreadCondition {
         Tab tab = mLoadedTabSupplier.get();
 
         NativePage nativePage = tab.getNativePage();
+        if (nativePage == null) {
+            return notFulfilled("tab.getNativePage() is null");
+        }
+
         if (!tab.isIncognito()) {
             if (!(nativePage instanceof NewTabPage)) {
                 return notFulfilled(
