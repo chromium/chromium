@@ -10,7 +10,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -47,7 +46,6 @@ public class StartSurfaceToolbarCoordinator {
     private final StartSurfaceToolbarMediator mToolbarMediator;
     private final ViewStub mStub;
     private final PropertyModel mPropertyModel;
-    private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
 
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private StartSurfaceToolbarView mView;
@@ -124,9 +122,6 @@ public class StartSurfaceToolbarCoordinator {
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
-        mTopToolbarInteractabilityManager =
-                new TopToolbarInteractabilityManager(
-                        enabled -> mToolbarMediator.setNewTabEnabled(enabled));
     }
 
     /** Cleans up any code and removes observers as necessary. */
@@ -276,11 +271,6 @@ public class StartSurfaceToolbarCoordinator {
      */
     void setNewTabButtonHighlight(boolean highlight) {
         mToolbarMediator.setNewTabButtonHighlight(highlight);
-    }
-
-    @NonNull
-    TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
-        return mTopToolbarInteractabilityManager;
     }
 
     private void inflate() {

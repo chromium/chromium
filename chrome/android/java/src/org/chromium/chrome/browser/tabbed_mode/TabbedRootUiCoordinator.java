@@ -61,11 +61,9 @@ import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
-import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
@@ -740,29 +738,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
             Profile profile) {
-        // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
-        // IncognitoReauthTopToolbarDelegate and pass TopToolbarInteractabilityManager.
-        IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate =
-                new IncognitoReauthTopToolbarDelegate() {
-                    @Override
-                    public int disableNewTabButton() {
-                        // Hub handles this at the pane level.
-                        if (HubFieldTrial.isHubEnabled()) return 0;
-                        return mToolbarManager
-                                .getTopToolbarInteractabilityManager()
-                                .disableNewTabButton();
-                    }
-
-                    @Override
-                    public void enableNewTabButton(int clientToken) {
-                        // Hub handles this at the pane level.
-                        if (HubFieldTrial.isHubEnabled()) return;
-                        mToolbarManager
-                                .getTopToolbarInteractabilityManager()
-                                .enableNewTabButton(clientToken);
-                    }
-                };
-
         IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
                 new IncognitoReauthCoordinatorFactory(
                         mActivity,
@@ -770,7 +745,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mModalDialogManagerSupplier.get(),
                         new IncognitoReauthManager(mActivity, profile),
                         new SettingsLauncherImpl(),
-                        incognitoReauthTopToolbarDelegate,
                         mLayoutManager,
                         mHubManagerSupplier,
                         /* showRegularOverviewIntent= */ null,

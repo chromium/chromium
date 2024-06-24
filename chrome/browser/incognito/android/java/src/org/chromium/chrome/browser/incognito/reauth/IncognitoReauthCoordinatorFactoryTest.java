@@ -73,7 +73,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     @Mock private IncognitoReauthManager mIncognitoReauthManagerMock;
     @Mock private SettingsLauncher mSettingsLauncherMock;
     @Mock private TabSwitcherCustomViewManager mTabSwitcherCustomViewManagerMock;
-    @Mock private IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegateMock;
     @Mock private LayoutManager mLayoutManagerMock;
     @Mock private Intent mIntentMock;
     @Mock private TabModel mIncognitoTabModelMock;
@@ -116,7 +115,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
                         mModalDialogManagerMock,
                         mIncognitoReauthManagerMock,
                         mSettingsLauncherMock,
-                        mIncognitoReauthTopToolbarDelegateMock,
                         mLayoutManagerMock,
                         mHubManagerSupplier,
                         mIntentMock,
@@ -143,7 +141,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
                 mIncognitoReauthManagerMock,
                 mSettingsLauncherMock,
                 mTabSwitcherCustomViewManagerMock,
-                mIncognitoReauthTopToolbarDelegateMock,
                 mLayoutManagerMock,
                 mPaneManagerMock,
                 mIncognitoTabHostMock);

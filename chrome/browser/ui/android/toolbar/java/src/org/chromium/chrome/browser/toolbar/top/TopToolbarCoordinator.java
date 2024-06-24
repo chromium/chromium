@@ -905,16 +905,6 @@ public class TopToolbarCoordinator implements Toolbar {
         }
     }
 
-    /**
-     * @return A {@link TopToolbarInteractabilityManager} which allows non toolbar clients to toggle
-     *     the interactability of elements present in the top toolbar.
-     */
-    public @NonNull TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
-        return mStartSurfaceToolbarCoordinator != null
-                ? mStartSurfaceToolbarCoordinator.getTopToolbarInteractabilityManager()
-                : mTabSwitcherModeCoordinator.getTopToolbarInteractabilityManager();
-    }
-
     /** Returns the {@link OptionalBrowsingModeButtonController}. */
     public OptionalBrowsingModeButtonController getOptionalButtonControllerForTesting() {
         return mOptionalButtonController;

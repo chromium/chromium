@@ -147,7 +147,6 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarAlphaInOverviewObserver;
-import org.chromium.chrome.browser.toolbar.top.TopToolbarInteractabilityManager;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
@@ -2378,14 +2377,6 @@ public class ToolbarManager
      */
     public LoadProgressCoordinator getProgressBarCoordinator() {
         return mProgressBarCoordinator;
-    }
-
-    /**
-     * @return A {@link TopToolbarInteractabilityManager} which allows non toolbar clients to toggle
-     *         the interactability of elements present in the top toolbar.
-     */
-    public @NonNull TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
-        return mToolbar.getTopToolbarInteractabilityManager();
     }
 
     /**

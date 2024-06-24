@@ -54,12 +54,6 @@ public class IncognitoReauthCoordinatorFactory {
     private final boolean mIsTabbedActivity;
 
     /**
-     * This allows to disable/enable top toolbar elements.
-     * Non-null for {@link TabSwitcherIncognitoReauthCoordinator} instance.
-     */
-    private final @Nullable IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
-
-    /**
      * This allows to pass the re-auth view to the tab switcher. Non-null contents for {@link
      * TabSwitcherIncognitoReauthCoordinator}.
      */
@@ -91,8 +85,6 @@ public class IncognitoReauthCoordinatorFactory {
      *     to initiate re-authentication.
      * @param settingsLauncher A {@link SettingsLauncher} to use for launching {@link
      *     SettingsActivity} from 3 dots menu inside full-screen re-auth.
-     * @param incognitoReauthTopToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate} to use
-     *     for disabling/enabling few top toolbar elements inside tab switcher.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
      * @param hubManagerSupplier The supplier of the {@link HubManager}.
      * @param showRegularOverviewIntent An {@link Intent} to show the regular overview mode.
@@ -104,7 +96,6 @@ public class IncognitoReauthCoordinatorFactory {
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull SettingsLauncher settingsLauncher,
-            @Nullable IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate,
             @Nullable LayoutManager layoutManager,
             @Nullable OneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable Intent showRegularOverviewIntent,
@@ -114,7 +105,6 @@ public class IncognitoReauthCoordinatorFactory {
         mModalDialogManager = modalDialogManager;
         mIncognitoReauthManager = incognitoReauthManager;
         mSettingsLauncher = settingsLauncher;
-        mIncognitoReauthTopToolbarDelegate = incognitoReauthTopToolbarDelegate;
         mLayoutManager = layoutManager;
         mHubManagerSupplier = hubManagerSupplier;
         mShowRegularOverviewIntent = showRegularOverviewIntent;
@@ -241,7 +231,6 @@ public class IncognitoReauthCoordinatorFactory {
                         incognitoReauthCallback,
                         getSeeOtherTabsRunnable(),
                         getBackPressRunnable(),
-                        mTabSwitcherCustomViewManagerSupplier.get(),
-                        mIncognitoReauthTopToolbarDelegate);
+                        mTabSwitcherCustomViewManagerSupplier.get());
     }
 }

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.view.View;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -46,7 +45,6 @@ class TabSwitcherModeTTCoordinator {
 
     private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
-    private final TopToolbarInteractabilityManager mTopToolbarInteractabilityManager;
 
     TabSwitcherModeTTCoordinator(
             ViewStub tabSwitcherToolbarStub,
@@ -58,8 +56,6 @@ class TabSwitcherModeTTCoordinator {
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
-        mTopToolbarInteractabilityManager =
-                new TopToolbarInteractabilityManager(enabled -> setNewTabEnabled(enabled));
         mToolbarColorObserverManager = toolbarColorObserverManager;
     }
 
@@ -197,11 +193,6 @@ class TabSwitcherModeTTCoordinator {
     void setNewTabButtonHighlight(boolean highlight) {
         assert mActiveTabSwitcherToolbar != null;
         mActiveTabSwitcherToolbar.setNewTabButtonHighlight(highlight);
-    }
-
-    @NonNull
-    TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
-        return mTopToolbarInteractabilityManager;
     }
 
     /**
