@@ -5,7 +5,6 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/test/ash_test_util.h"
@@ -108,14 +107,11 @@ class BrowsersWaiter : public BrowserListObserver {
 class InformedRestoreTest : public InProcessBrowserTest {
  public:
   InformedRestoreTest() {
-    switches::SetIgnoreForestSecretKeyForTest(true);
     set_launch_browser_for_testing(nullptr);
   }
   InformedRestoreTest(const InformedRestoreTest&) = delete;
   InformedRestoreTest& operator=(const InformedRestoreTest&) = delete;
-  ~InformedRestoreTest() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  ~InformedRestoreTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

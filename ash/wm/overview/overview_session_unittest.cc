@@ -39,7 +39,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/raster_scale_change_tracker.h"
 #include "ash/test/test_window_builder.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desk.h"
@@ -1913,7 +1912,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
   // centered vertically.
   gfx::Point no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     EXPECT_EQ(200, no_windows_centerpoint.x());
     EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
     EXPECT_LT(no_windows_centerpoint.y(),
@@ -1931,7 +1930,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPosition) {
       display::Display::RotationSource::ACTIVE);
   no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     EXPECT_EQ(150, no_windows_centerpoint.x());
     EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
     EXPECT_LT(no_windows_centerpoint.y(),
@@ -1991,7 +1990,7 @@ TEST_P(OverviewSessionTest, OverviewGridBounds) {
   const gfx::Rect shelf_bounds = shelf->GetIdealBounds();
   EXPECT_FALSE(GetGridBounds().Intersects(shelf_bounds));
 
-  if (!IsForestFeatureEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     const gfx::Rect hotseat_bounds =
         shelf->hotseat_widget()->GetWindowBoundsInScreen();
     EXPECT_FALSE(GetGridBounds().Intersects(hotseat_bounds));
@@ -2029,7 +2028,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   // bar for the y location.
   gfx::Point no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     EXPECT_EQ(expected_x, no_windows_centerpoint.x());
     EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
     EXPECT_LT(no_windows_centerpoint.y(), 300 - workarea_bottom_inset);
@@ -2043,7 +2042,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   no_windows_centerpoint =
       no_windows_widget->GetWindowBoundsInScreen().CenterPoint();
   expected_x = /*bounds_right=*/(200 - 4) / 2;
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     EXPECT_EQ(expected_x, no_windows_centerpoint.x());
     EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
     EXPECT_LT(no_windows_centerpoint.y(), 300 - workarea_bottom_inset);
@@ -5628,7 +5627,7 @@ class FloatOverviewSessionTest : public OverviewTestBase {
   // it is not true on any of the root windows.
   bool IsFloatContainerNormalStacked() const {
     for (aura::Window* root : Shell::GetAllRootWindows()) {
-      if (IsForestFeatureEnabled()) {
+      if (features::IsForestFeatureEnabled()) {
         // The float container should be the top-most child of the
         // `ShutdownScreenshotContainer` when the feature `ForestFeature` is
         // enabled.

@@ -23,14 +23,6 @@ namespace {
 constexpr base::TimeDelta kAshContextualNudgesMinInterval = base::Seconds(0);
 constexpr base::TimeDelta kAshContextualNudgesMaxInterval = base::Seconds(60);
 
-// The hash value for the secret key of the forest feature.
-constexpr char kForestHashKey[] =
-    "\x1a\x93\x5f\x64\x0d\x7f\x0c\x2f\x88\xe8\x80\x9a\x5f\x16\xbb\xd8\x74\x06"
-    "\x8a\xb1";
-
-// Whether checking the forest secret key is ignored.
-bool g_ignore_forest_secret_key = false;
-
 // The hash value for the secret key of the campbell feature.
 constexpr char kCampbellHashKey[] =
     "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
@@ -1398,30 +1390,6 @@ bool IsConchSecretKeyMatched() {
   }
 
   return key_matched;
-}
-
-bool IsForestSecretKeyMatched() {
-  if (g_ignore_forest_secret_key) {
-    return true;
-  }
-
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --forest-feature-key="INSERT KEY HERE" --enable-features=ForestFeature
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kForestFeatureKey));
-
-  bool forest_key_matched = (provided_key_hash == kForestHashKey);
-  if (!forest_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
-
-  return forest_key_matched;
-}
-
-void SetIgnoreForestSecretKeyForTest(bool ignore) {
-  g_ignore_forest_secret_key = ignore;
 }
 
 bool IsMahiSecretKeyMatched() {

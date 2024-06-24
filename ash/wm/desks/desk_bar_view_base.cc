@@ -21,7 +21,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -128,7 +127,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
   auto* layer = view->layer();
   layer->SetFillsBoundsOpaquely(false);
 
-  if ((features::IsOakFeatureEnabled() || IsForestFeatureEnabled()) &&
+  if ((features::IsOakFeatureEnabled() || features::IsForestFeatureEnabled()) &&
       !type_is_desk_button) {
     // Oak feature needs a transparent desks bar background. Still needs the
     // view layer to perform animations.
@@ -647,7 +646,8 @@ int DeskBarViewBase::GetPreferredBarHeight(aura::Window* root,
         height = kDeskBarZeroStateHeight;
       } else {
         height = DeskPreviewView::GetHeight(root) +
-                 (features::IsOakFeatureEnabled() || IsForestFeatureEnabled()
+                 (features::IsOakFeatureEnabled() ||
+                          features::IsForestFeatureEnabled()
                       ? kExpandedDeskBarHeightWithOak
                       : kDeskBarNonPreviewAllocatedHeight);
       }

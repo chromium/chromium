@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/utility/forest_util.h"
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -50,7 +50,7 @@ BirchKeyedService* BirchKeyedServiceFactory::GetService(
     content::BrowserContext* context) {
   return static_cast<BirchKeyedService*>(
       GetInstance()->GetServiceForBrowserContext(
-          context, /*create=*/IsForestFeatureEnabled()));
+          context, /*create=*/features::IsForestFeatureEnabled()));
 }
 
 std::unique_ptr<KeyedService>

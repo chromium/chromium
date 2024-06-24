@@ -65,16 +65,11 @@ class TestFaviconService : public favicon::MockFaviconService {
 // a BirchModel) needed by the test.
 class BirchMostVisitedProviderTest : public BrowserWithTestWindowTest {
  public:
-  BirchMostVisitedProviderTest() {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    feature_list_.InitAndEnableFeature(features::kForestFeature);
-  }
-  ~BirchMostVisitedProviderTest() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  BirchMostVisitedProviderTest() = default;
+  ~BirchMostVisitedProviderTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
 
 TEST_F(BirchMostVisitedProviderTest, RequestBirchDataFetch) {

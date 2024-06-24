@@ -630,6 +630,13 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 // restore finishes.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreAndLaunchBrowserWithClickRestore) {
+  // TODO(http://b/328779923): This test tests clicking a notification that will
+  // not be shown if forest feature is enabled. Remove this test once forest
+  // feature can no longer be disabled.
+  if (ash::features::IsForestFeatureEnabled()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  }
+
   base::HistogramTester histogram_tester;
   size_t count = BrowserList::GetInstance()->size();
 
@@ -684,6 +691,13 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 // when |kShowPostRebootNotification| pref is set.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreWithPostRebootTitle) {
+  // TODO(http://b/328779923): This test tests checking a notification that will
+  // not be shown if forest feature is enabled. Remove this test once forest
+  // feature can no longer be disabled.
+  if (ash::features::IsForestFeatureEnabled()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  }
+
   base::HistogramTester histogram_tester;
   // Add the chrome browser launch info.
   SaveBrowserAppLaunchInfo(kWindowId1);

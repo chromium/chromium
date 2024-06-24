@@ -248,16 +248,6 @@ class BirchBrowserTest : public InProcessBrowserTest {
   BirchBrowserTest(const BirchBrowserTest&) = delete;
   BirchBrowserTest& operator=(const BirchBrowserTest&) = delete;
 
-  void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    InProcessBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    InProcessBrowserTest::TearDown();
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     // Clear out the existing NewWindowDelegateProvider so we can replace it

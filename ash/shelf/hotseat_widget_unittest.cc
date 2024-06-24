@@ -40,7 +40,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_verifier.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -991,7 +990,7 @@ TEST_P(HotseatWidgetTest, ObserverCallsMatch) {
 TEST_P(HotseatWidgetTest, DisableBlurDuringOverviewMode) {
   // TODO(sammiequon): Remove this test when forest feature can no longer be
   // disabled.
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     return;
   }
 

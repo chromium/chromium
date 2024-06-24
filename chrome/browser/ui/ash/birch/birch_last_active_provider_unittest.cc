@@ -6,7 +6,6 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
@@ -78,16 +77,11 @@ history::QueryResults CreateHistoryQueryResults() {
 // a BirchModel) needed by the test.
 class BirchLastActiveProviderTest : public BrowserWithTestWindowTest {
  public:
-  BirchLastActiveProviderTest() {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    feature_list_.InitAndEnableFeature(features::kForestFeature);
-  }
-  ~BirchLastActiveProviderTest() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-  }
+  BirchLastActiveProviderTest() = default;
+  ~BirchLastActiveProviderTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
 };
 
 TEST_F(BirchLastActiveProviderTest, RequestBirchDataFetch) {

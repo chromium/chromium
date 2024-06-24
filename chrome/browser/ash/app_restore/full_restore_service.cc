@@ -11,7 +11,6 @@
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/shell.h"
-#include "ash/utility/forest_util.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
@@ -339,7 +338,7 @@ void FullRestoreService::Init(bool& show_notification) {
       MaybeInitiateAdminTemplateAutoLaunch();
       break;
     case RestoreOption::kDoNotRestore:
-      if (IsForestFeatureEnabled()) {
+      if (features::IsForestFeatureEnabled()) {
         MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
       }
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
@@ -599,7 +598,8 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   }
 
   // Do not show the notification if we have no restore data.
-  if (!IsForestFeatureEnabled() && !app_launch_handler_->HasRestoreData()) {
+  if (!features::IsForestFeatureEnabled() &&
+      !app_launch_handler_->HasRestoreData()) {
     return;
   }
 
@@ -618,7 +618,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
 
   const bool last_session_crashed = id == kRestoreForCrashNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
-    CHECK(IsForestFeatureEnabled());
+    CHECK(features::IsForestFeatureEnabled());
     MaybeShowInformedRestoreOnboarding(/*restore_on=*/true);
     return;
   }
@@ -638,7 +638,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
         ->RecordPostLoginFullRestoreShown();
   }
 
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     CHECK(delegate_);
 
     InitInformedRestoreContentsData(last_session_crashed);

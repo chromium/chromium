@@ -4,11 +4,11 @@
 
 #include "ash/wm/overview/overview_test_util.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focus_cycler_old.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -126,7 +126,7 @@ OverviewItemBase* GetOverviewItemForWindow(aura::Window* window) {
 gfx::Rect ShrinkBoundsByHotseatInset(const gfx::Rect& rect) {
   // TODO(sammiequon): Forest feature shrinks if the home launcher is visible,
   // and no-ops otherwise. Determine if we need the home launcher logic here.
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     return rect;
   }
 

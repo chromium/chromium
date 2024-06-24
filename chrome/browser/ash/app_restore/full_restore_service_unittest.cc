@@ -1029,16 +1029,6 @@ class ForestFullRestoreServiceTest : public FullRestoreServiceTest {
   ForestFullRestoreServiceTest& operator=(const ForestFullRestoreServiceTest&) =
       delete;
   ~ForestFullRestoreServiceTest() override = default;
-
-  void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    FullRestoreServiceTest::SetUp();
-  }
-
-  void TearDown() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-    FullRestoreServiceTest::TearDown();
-  }
 };
 
 // If the system is crash, and there is no full restore file, don't show the
@@ -1224,16 +1214,6 @@ class ForestFullRestoreServiceTestHavingFullRestoreFile
   ForestFullRestoreServiceTestHavingFullRestoreFile& operator=(
       const ForestFullRestoreServiceTestHavingFullRestoreFile&) = delete;
   ~ForestFullRestoreServiceTestHavingFullRestoreFile() override = default;
-
-  void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    FullRestoreServiceTestHavingFullRestoreFile::SetUp();
-  }
-
-  void TearDown() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-    FullRestoreServiceTestHavingFullRestoreFile::TearDown();
-  }
 };
 
 // If the system is crash, the delegate is notified.
@@ -1320,16 +1300,6 @@ class ForestFullRestoreServiceMultipleUsersTest
   ForestFullRestoreServiceMultipleUsersTest& operator=(
       const ForestFullRestoreServiceMultipleUsersTest&) = delete;
   ~ForestFullRestoreServiceMultipleUsersTest() override = default;
-
-  void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-    FullRestoreServiceMultipleUsersTest::SetUp();
-  }
-
-  void TearDown() override {
-    switches::SetIgnoreForestSecretKeyForTest(false);
-    FullRestoreServiceMultipleUsersTest::TearDown();
-  }
 };
 
 // Verify the full restore init process when 2 users login at the same time,
