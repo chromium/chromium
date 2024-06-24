@@ -7,13 +7,18 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
+@protocol SwitchProfileSettingsDelegate;
+
 // Controller for the UI that allows the user to switch from one profile to
 // another.
 @interface SwitchProfileSettingsTableViewController
-    : SettingsRootTableViewController
+    : SettingsRootTableViewController <UITableViewDelegate>
 
 // Name of the active browser state.
 @property(nonatomic, copy) NSString* activeBrowserStateName;
+
+// InfobarTranslateModalDelegate for this ViewController.
+@property(nonatomic, strong) id<SwitchProfileSettingsDelegate> delegate;
 
 // The designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

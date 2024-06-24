@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -983,7 +984,10 @@ void OnListFamilyMembersResponse(
 
   // TODO(b/326184192): startUpChromeUI should use the browser state associated
   // to the scene.
-  ChromeBrowserState* browserState = sceneState.appState.mainBrowserState;
+  ChromeBrowserState* browserState =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLastUsedBrowserStateDeprecatedDoNotUse();
   self.browserViewWrangler = [[BrowserViewWrangler alloc]
       initWithBrowserState:browserState
                 sceneState:sceneState

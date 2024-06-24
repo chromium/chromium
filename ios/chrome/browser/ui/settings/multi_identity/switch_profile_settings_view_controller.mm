@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
+#import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -35,6 +37,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @implementation SwitchProfileSettingsTableViewController {
+  NSString* selectedProfile_;
 }
 
 - (instancetype)init {
@@ -114,6 +117,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewTextButtonItem alloc] initWithType:SwitchProfileButton];
   switchProfileButtonItem.buttonText =
       l10n_util::GetNSString(IDS_IOS_SWITCH_PROFILE_MANAGEMENT_SETTINGS);
+
+  // TODO(crbug.com/333520714): Current solution only works if multiple scenes
+  // are supported, remove this check as soon as we have the correct APIs to
+  // switch profile within the same window.
+  if (!base::ios::IsMultipleScenesSupported()) {
+    switchProfileButtonItem.enabled = NO;
+  }
+
   [model addItem:switchProfileButtonItem
       toSectionWithIdentifier:LoadedProfilesIdentifier];
 }
@@ -138,9 +149,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 #pragma mark - Private
-
 - (void)switchProfileButtonWasTapped {
-  // TODO(crbug.com/333520714): Add logic once the API is available.
+  // TODO(crbug.com/333520714): Add logic to open the profile in the same window
+  // once the API is available.
+
+  [self.delegate openProfileInNewWindow:selectedProfile_];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+  selectedProfile_ = cell.textLabel.text;
 }
 
 @end
