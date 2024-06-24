@@ -6,12 +6,29 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
 namespace content {
 
 using blink::WebAXObject;
 using blink::WebDocument;
+
+namespace {
+
+const char kHistogramsName[] =
+    "Accessibility.MainNodeAnnotations.AnnotationResult";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MainNodeAnnotationResult {
+  kSuccess = 0,
+  kInvalid = 1,
+  kDuplicate = 2,
+  kMaxValue = kDuplicate,
+};
+
+}  // namespace
 
 AXMainNodeAnnotator::AXMainNodeAnnotator(
     RenderAccessibilityImpl* const render_accessibility)
@@ -104,19 +121,27 @@ void AXMainNodeAnnotator::ProcessScreen2xResult(const WebDocument& document,
                                                 ui::AXNodeID main_node_id) {
   // If Screen2x returned an invalid main node id, do nothing.
   if (main_node_id == ui::kInvalidAXNodeID) {
+    base::UmaHistogramEnumeration(kHistogramsName,
+                                  MainNodeAnnotationResult::kInvalid);
     return;
   }
   // If the main node id was already set, do nothing.
   if (main_node_id_ != ui::kInvalidAXNodeID) {
+    base::UmaHistogramEnumeration(kHistogramsName,
+                                  MainNodeAnnotationResult::kDuplicate);
     return;
   }
   WebAXObject object = WebAXObject::FromWebDocumentByID(document, main_node_id);
   // If the tree has changed, do nothing.
   if (!object.IsIncludedInTree()) {
+    base::UmaHistogramEnumeration(kHistogramsName,
+                                  MainNodeAnnotationResult::kInvalid);
     return;
   }
   main_node_id_ = main_node_id;
   render_accessibility_->MarkWebAXObjectDirty(object);
+  base::UmaHistogramEnumeration(kHistogramsName,
+                                MainNodeAnnotationResult::kSuccess);
 }
 
 void AXMainNodeAnnotator::ComputeAuthorStatus(ui::AXTreeUpdate* update) {
