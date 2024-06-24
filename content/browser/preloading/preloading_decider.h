@@ -142,6 +142,20 @@ class CONTENT_EXPORT PreloadingDecider
   void RemoveStandbyCandidate(const SpeculationCandidateKey key);
   void ClearStandbyCandidates();
 
+  // Helper functions to select a prerender/prefetch candidate to be
+  // triggered.
+  std::optional<
+      std::pair<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>>
+  GetMatchedPreloadingCandidate(const SpeculationCandidateKey& lookup_key,
+                                const PreloadingPredictor& enacting_predictor,
+                                PreloadingConfidence confidence) const;
+  std::optional<
+      std::pair<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>>
+  GetMatchedPreloadingCandidateByNoVarySearchHint(
+      const SpeculationCandidateKey& lookup_key,
+      const PreloadingPredictor& enacting_predictor,
+      PreloadingConfidence confidence) const;
+
   // |on_standby_candidates_| stores preloading candidates for each target URL,
   // action pairs that are safe to perform but are not marked as |kEager| and
   // should be performed when we are confident enough that the user will most
