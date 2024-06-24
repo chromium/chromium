@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -44,8 +43,6 @@ public class HistoryNavigationCoordinator
 
     private NavigationHandler mNavigationHandler;
 
-    private OverscrollGlowOverlay mOverscrollGlowOverlay;
-
     private Supplier<TouchEventProvider> mTouchEventProvider;
 
     private boolean mForceFeatureEnabledForTesting;
@@ -63,7 +60,6 @@ public class HistoryNavigationCoordinator
      * @param startSurfaceSupplier StartSurface supplier.
      * @param backActionDelegate Delegate handling actions for back gesture.
      * @param touchEventProvider {@link TouchEventProvider} object.
-     * @param layoutManager LayoutManager for handling overscroll glow effect as scene layer.
      * @return HistoryNavigationCoordinator object or null if not enabled via feature flag.
      */
     public static HistoryNavigationCoordinator create(
@@ -75,8 +71,7 @@ public class HistoryNavigationCoordinator
             InsetObserver insetObserver,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             BackActionDelegate backActionDelegate,
-            Supplier<TouchEventProvider> touchEventProvider,
-            LayoutManager layoutManager) {
+            Supplier<TouchEventProvider> touchEventProvider) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(
                 window,
@@ -87,14 +82,8 @@ public class HistoryNavigationCoordinator
                 insetObserver,
                 startSurfaceSupplier,
                 backActionDelegate,
-                touchEventProvider,
-                layoutManager);
+                touchEventProvider);
         return coordinator;
-    }
-
-    /** @return The class of the {@link SceneOverlay} owned by this coordinator. */
-    public static Class getSceneOverlayClass() {
-        return OverscrollGlowOverlay.class;
     }
 
     /** Initializes the navigation layout and internal objects. */
@@ -107,14 +96,10 @@ public class HistoryNavigationCoordinator
             InsetObserver insetObserver,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             BackActionDelegate backActionDelegate,
-            Supplier<TouchEventProvider> touchEventProvider,
-            LayoutManager layoutManager) {
-        mOverscrollGlowOverlay = new OverscrollGlowOverlay(window, parentView, requestRunnable);
+            Supplier<TouchEventProvider> touchEventProvider) {
         mNavigationLayout =
                 new HistoryNavigationLayout(
                         parentView.getContext(),
-                        this::isNativePage,
-                        mOverscrollGlowOverlay,
                         (direction) -> mNavigationHandler.navigate(direction));
 
         mParentView = parentView;
@@ -165,7 +150,6 @@ public class HistoryNavigationCoordinator
             mInsetObserver = insetObserver;
             insetObserver.addObserver(this);
         }
-        layoutManager.addSceneOverlay(mOverscrollGlowOverlay);
         GestureNavMetrics.logGestureType(isFeatureEnabled());
     }
 
@@ -173,10 +157,6 @@ public class HistoryNavigationCoordinator
     public @Nullable TouchEventObserver getTouchEventObserver() {
         // Can be null if gesture navigation was not triggered at all or already destroyed.
         return mNavigationHandler;
-    }
-
-    private boolean isNativePage() {
-        return mTab != null && mTab.isNativePage();
     }
 
     private static boolean isDetached(Tab tab) {
@@ -270,8 +250,8 @@ public class HistoryNavigationCoordinator
     }
 
     /**
-     * Makes UI (either arrow puck or overscroll glow) visible when an edge swipe
-     * is made big enough to trigger it.
+     * Makes UI visible when an edge swipe is made big enough to trigger it.
+     *
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      * @param x X coordinate of the current position.
      * @param y Y coordinate of the current position.
@@ -321,10 +301,6 @@ public class HistoryNavigationCoordinator
         mNavigationLayout = null;
         mParentView.removeCallbacks(mUpdateNavigationStateRunnable);
 
-        if (mOverscrollGlowOverlay != null) {
-            mOverscrollGlowOverlay.destroy();
-            mOverscrollGlowOverlay = null;
-        }
         if (mNavigationHandler != null) {
             mNavigationHandler.setTab(null);
             mNavigationHandler.destroy();

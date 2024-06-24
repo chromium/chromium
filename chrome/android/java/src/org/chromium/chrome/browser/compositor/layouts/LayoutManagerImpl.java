@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
-import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.EventFilter.EventType;
@@ -334,7 +333,6 @@ public class LayoutManagerImpl
 
         overlayOrder =
                 new Class[] {
-                    HistoryNavigationCoordinator.getSceneOverlayClass(),
                     // Place the tab strip behind the toolbar scene layer as during tab strip
                     // transition, the toolbar will move up and cover the tab strip.
                     StripLayoutHelperManager.class,

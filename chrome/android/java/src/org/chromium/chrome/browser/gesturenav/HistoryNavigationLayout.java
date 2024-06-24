@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.gesturenav;
 
 import android.content.Context;
-import android.gesture.GesturePoint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,25 +13,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
 
 /** FrameLayout that supports side-wise slide gesture for history navigation. */
 class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarchyChangeListener {
-    // {@link NavigationGlow} object for rendered pages.
-    private final NavigationGlow mCompositorGlowEffect;
-
-    // Whether the current tab shows a native or rendered page.
-    private final Supplier<Boolean> mIsNativePage;
-
     // Callback that performs navigation action in response to UI.,
     private final Callback<Boolean> mNavigateCallback;
 
     // Frame layout hosting the arrow puck UI.
     @Nullable private SideSlideLayout mSideSlideLayout;
-
-    // {@link NavigationGlow} object for native pages. Lazily created.
-    private NavigationGlow mJavaGlowEffect;
 
     // Async runnable for ending the refresh animation after the page first
     // loads a frame. This is used to provide a reasonable minimum animation time.
@@ -42,14 +31,8 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     // it does not conflict with pending Android draws.
     private Runnable mDetachLayoutRunnable;
 
-    public HistoryNavigationLayout(
-            Context context,
-            Supplier<Boolean> isNativePage,
-            NavigationGlow compositorGlowEffect,
-            Callback<Boolean> navigateCallback) {
+    public HistoryNavigationLayout(Context context, Callback<Boolean> navigateCallback) {
         super(context);
-        mIsNativePage = isNativePage;
-        mCompositorGlowEffect = compositorGlowEffect;
         mNavigateCallback = navigateCallback;
         setOnHierarchyChangeListener(this);
         setVisibility(View.INVISIBLE);
@@ -104,28 +87,11 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         mSideSlideLayout.start();
     }
 
-    /** Create {@link NavigationGlow} object, lazily when possible. */
-    private NavigationGlow getGlowEffect() {
-        if (mIsNativePage.get()) {
-            if (mJavaGlowEffect == null) mJavaGlowEffect = new AndroidUiNavigationGlow(this);
-            return mJavaGlowEffect;
-        } else {
-            return mCompositorGlowEffect;
-        }
-    }
-
-    /**
-     * Start showing edge glow effect.
-     * @param p Current position of the touch event.
-     */
-    void showGlow(GesturePoint p) {
-        getGlowEffect().prepare(p.x, p.y);
-    }
-
     /**
      * Signals a pull update.
-     * @param offset The change in horizontal pull distance (positive if toward right,
-     *         negative if left).
+     *
+     * @param offset The change in horizontal pull distance (positive if toward right, negative if
+     *     left).
      */
     void pullBubble(float offset) {
         if (mSideSlideLayout == null) return;
@@ -133,16 +99,9 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     }
 
     /**
-     * Signals a pull update for glow effect.
-     * @param offset The change in horizontal pull distance.
-     */
-    void pullGlow(float offset) {
-        getGlowEffect().onScroll(offset);
-    }
-
-    /**
-     * Release the active pull. If no pull has started, the release will be ignored.
-     * If the pull was sufficiently large, the navigation sequence will be initiated.
+     * Release the active pull. If no pull has started, the release will be ignored. If the pull was
+     * sufficiently large, the navigation sequence will be initiated.
+     *
      * @param allowNav {@code true} if release action is supposed to trigger navigation.
      */
     void releaseBubble(boolean allowNav) {
@@ -151,21 +110,11 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
         mSideSlideLayout.release(allowNav);
     }
 
-    /** Release the glow effect. */
-    void releaseGlow() {
-        getGlowEffect().release();
-    }
-
     /** Reset navigation bubble UI in action. */
     void resetBubble() {
         if (mSideSlideLayout == null) return;
         cancelStopNavigatingRunnable();
         mSideSlideLayout.reset();
-    }
-
-    /** Reset the glow effect. */
-    void resetGlow() {
-        getGlowEffect().reset();
     }
 
     /**

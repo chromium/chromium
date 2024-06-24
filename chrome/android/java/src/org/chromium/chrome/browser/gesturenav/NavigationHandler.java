@@ -9,12 +9,9 @@ import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.BUBBLE_OFFSET;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.CLOSE_INDICATOR;
 import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.DIRECTION;
-import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.GESTURE_POS;
-import static org.chromium.chrome.browser.gesturenav.GestureNavigationProperties.GLOW_OFFSET;
 
 import android.app.Activity;
 import android.content.Context;
-import android.gesture.GesturePoint;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
@@ -65,38 +62,18 @@ class NavigationHandler implements TouchEventObserver {
         int GLOW = 3;
     }
 
-    @IntDef({
-        GestureAction.SHOW_ARROW,
-        GestureAction.SHOW_GLOW,
-        GestureAction.RELEASE_BUBBLE,
-        GestureAction.RELEASE_GLOW,
-        GestureAction.RESET_BUBBLE,
-        GestureAction.RESET_GLOW
-    })
+    @IntDef({GestureAction.SHOW_ARROW, GestureAction.RELEASE_BUBBLE, GestureAction.RESET_BUBBLE})
     @Retention(RetentionPolicy.SOURCE)
     @interface GestureAction {
         int SHOW_ARROW = 1;
-        int SHOW_GLOW = 2;
-        int RELEASE_BUBBLE = 3;
-        int RELEASE_GLOW = 4;
-        int RESET_BUBBLE = 5;
-        int RESET_GLOW = 6;
+        int RELEASE_BUBBLE = 2;
+        int RESET_BUBBLE = 3;
     }
 
     private final ViewGroup mParentView;
     private final Context mContext;
     private final Handler mHandler = new Handler();
 
-    // Frame layout where the main logic turning the gesture into corresponding UI resides.
-    private SideSlideLayout mSideSlideLayout;
-
-    // Async runnable for ending the refresh animation after the page first
-    // loads a frame. This is used to provide a reasonable minimum animation time.
-    private Runnable mStopNavigatingRunnable;
-
-    // Handles removing the layout from the view hierarchy.  This is posted to ensure
-    // it does not conflict with pending Android draws.
-    private Runnable mDetachLayoutRunnable;
     private GestureDetector mDetector;
     private View.OnAttachStateChangeListener mAttachStateListener;
     private final BackActionDelegate mBackActionDelegate;
@@ -253,12 +230,8 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(CLOSE_INDICATOR, getCloseIndicator(forward));
             mModel.set(ACTION, GestureAction.SHOW_ARROW);
             mState = GestureState.DRAGGED;
-        } else {
-            if (mState != GestureState.STARTED) mModel.set(ACTION, GestureAction.RESET_GLOW);
-            mModel.set(GESTURE_POS, new GesturePoint(x, y, 0L));
-            mModel.set(ACTION, GestureAction.SHOW_GLOW);
-            mState = GestureState.GLOW;
         }
+
         mInitialX = x;
         mInitialY = y;
         if (navigable && willUpdateTabHistory(forward)) {
@@ -350,8 +323,6 @@ class NavigationHandler implements TouchEventObserver {
         mModel.set(ALLOW_NAV, allowNav);
         if (mState == GestureState.DRAGGED) {
             mModel.set(ACTION, GestureAction.RELEASE_BUBBLE);
-        } else if (mState == GestureState.GLOW) {
-            mModel.set(ACTION, GestureAction.RELEASE_GLOW);
         }
         mPullOffsetX = mPullOffsetY = 0.f;
         if (mTabOnBackGestureHandler != null) {
@@ -370,8 +341,6 @@ class NavigationHandler implements TouchEventObserver {
     void reset() {
         if (mState == GestureState.DRAGGED) {
             mModel.set(ACTION, GestureAction.RESET_BUBBLE);
-        } else if (mState == GestureState.GLOW) {
-            mModel.set(ACTION, GestureAction.RESET_GLOW);
         }
         mState = GestureState.NONE;
         mPullOffsetX = mPullOffsetY = 0.f;
@@ -385,8 +354,6 @@ class NavigationHandler implements TouchEventObserver {
         mPullOffsetY += yDelta;
         if (mState == GestureState.DRAGGED) {
             mModel.set(BUBBLE_OFFSET, mPullOffsetX);
-        } else if (mState == GestureState.GLOW) {
-            mModel.set(GLOW_OFFSET, mPullOffsetX);
         }
         if (mTabOnBackGestureHandler != null) {
             mTabOnBackGestureHandler.onBackProgressed(
