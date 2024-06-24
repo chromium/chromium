@@ -5496,6 +5496,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE" desc="The iOS menu item for requesting the mobile site [iOS only]" meaning="Request the mobile version of the current web site. [Length: Unlimited]">
         Request Mobile Site
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN" desc="The iOS menu item for saving images in either Google Photos or iOS Photos app.">
+        Save Image in...
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_SAVE_IMAGE_TO_PHOTOS" desc="The iOS menu item for saving images to Google Photos.">
         Save in Google Photos
       </message>

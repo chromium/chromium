@@ -61,6 +61,7 @@ extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kPasswordManagerSymbol;
 extern NSString* const kPopupBadgeMinusSymbol;
+extern NSString* const kPhotoBadgeArrowDownSymbol;
 extern NSString* const kPhotoBadgePlusSymbol;
 extern NSString* const kPhotoBadgeMagnifyingglassSymbol;
 extern NSString* const kReadingListSymbol;

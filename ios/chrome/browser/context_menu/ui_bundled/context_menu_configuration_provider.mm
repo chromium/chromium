@@ -9,6 +9,8 @@
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -32,12 +34,11 @@
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_copier.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
-#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
@@ -614,6 +615,17 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
                                              kAvailableDidSaveImageToGooglePhotos);
                                    }];
     [imageSavingElements addObject:saveImageToPhotosAction];
+  }
+
+  if (IsSaveToPhotosActionImprovementEnabled() && saveToPhotosAvailable) {
+    UIMenu* saveImageInMenu = [UIMenu
+        menuWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN)
+                image:DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              options:UIMenuOptionsSingleSelection
+             children:imageSavingElements];
+    return @[ saveImageInMenu ];
   }
 
   return imageSavingElements;
