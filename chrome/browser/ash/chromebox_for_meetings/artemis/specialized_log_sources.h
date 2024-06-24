@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_SPECIALIZED_LOG_SOURCES_H_
-#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_SPECIALIZED_LOG_SOURCES_H_
+#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_SPECIALIZED_LOG_SOURCES_H_
+#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_SPECIALIZED_LOG_SOURCES_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace ash::cfm {
@@ -88,4 +88,4 @@ class VariationsListLogSource : public LogSource {
 };
 
 }  // namespace ash::cfm
-#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_SPECIALIZED_LOG_SOURCES_H_
+#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_SPECIALIZED_LOG_SOURCES_H_

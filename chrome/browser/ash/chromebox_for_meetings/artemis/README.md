@@ -1,4 +1,4 @@
-chrome/browser/ash/chromebox_for_meetings/hotlog2
+chrome/browser/ash/chromebox_for_meetings/artemis
 =================================================
 
 Last modified: 04/12/2024
@@ -6,7 +6,7 @@ Last modified: 04/12/2024
 Overview
 --------
 
-This directory contains the source code for Hotlog2, a data-collection API
+This directory contains the source code for Artemis, a data-collection API
 maintained by the Chromebox-for-Meetings team that supports aggregating
 data from multiple sources and optionally uploading said data to a cloud
 logging platform for developer analysis. The API also supports adding
@@ -36,24 +36,18 @@ Internal Notes
 **DataAggregator**
 
 - Manages multiple data sources
-- Calls Fetch() on each DataSource on a periodic cadence. Every call to
-  Fetch() is accompanied by an attempt to upload the data via ERP.
+- Calls Fetch() on each DataSource on a periodic cadence. When the payload
+  grows large enough, it will be pushed to the Fleet endpoint via ERP.
 - If the upload succeeds, Flush() is called on corresponding DataSources
   to alert them that they can clear their internal buffers. If it fails,
-  the internal buffers will be re-consumed until success.
+  it will be re-attempted until success.
 
 **DataSource**
 
 - Collects data on its own (faster) cadence, separate from DataAggregator.
-- Maintains two separate buffers:
-    - Internal data buffer: filled up on cadence with any new data. Data
-      is moved to pending upload buffer when Fetch() is called.
-    - Pending upload buffer: data that is to be returned next when Fetch()
-      is called. Data remains there until we get a Flush(), which indicates
-      that data transfer was successful. If pending upload buffer is not empty
-      upon next Fetch(), the previous upload failed, so try to consume this
-      buffer again. Note that internal data buffer will continue to fill up
-      during this time.
+- Maintains an internal data buffer for new data. Calls to Fetch() will
+  clear this data; the caller is responsible for ensuring that the data
+  is transported properly.
 - Internal buffer & separate cadence are used to support watchdogs. We want
   to poll for data much faster than the Fetch() cadence to ensure that (a)
   we trigger watchdog callbacks close to when the event occurs, and (b) we

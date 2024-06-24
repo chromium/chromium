@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_WATCHDOG_H_
-#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_WATCHDOG_H_
+#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_TEST_WATCHDOG_H_
+#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_TEST_WATCHDOG_H_
 
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,4 +31,4 @@ class TestWatchDog : public mojom::DataWatchDog {
 
 }  // namespace ash::cfm
 
-#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_WATCHDOG_H_
+#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_TEST_WATCHDOG_H_

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_LOG_SOURCE_H_
-#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_LOG_SOURCE_H_
+#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_LOG_SOURCE_H_
+#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_LOG_SOURCE_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_file.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
@@ -79,4 +79,4 @@ class LogSource : public LocalDataSource {
 };
 
 }  // namespace ash::cfm
-#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_LOG_SOURCE_H_
+#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_LOG_SOURCE_H_

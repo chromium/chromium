@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 
 #include <filesystem>
 #include <fstream>
@@ -11,8 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/persistent_db.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_file.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::cfm {
@@ -81,14 +81,14 @@ class LogSourceForTesting : public LogSource {
 // require similar setup. Each test will create real (temporary)
 // files on the filesystem, to be used as the underlying data
 // sources.
-class HotlogLogSourceTest : public testing::Test {
+class ArtemisLogSourceTest : public testing::Test {
  public:
-  HotlogLogSourceTest()
+  ArtemisLogSourceTest()
       : test_file_("test_file.log"),
         rotated_file_("test_file.log.1"),
         rotate_log_prefix_("ROTATE: ") {}
-  HotlogLogSourceTest(const HotlogLogSourceTest&) = delete;
-  HotlogLogSourceTest& operator=(const HotlogLogSourceTest&) = delete;
+  ArtemisLogSourceTest(const ArtemisLogSourceTest&) = delete;
+  ArtemisLogSourceTest& operator=(const ArtemisLogSourceTest&) = delete;
 
   void SetUp() override {
     test_db_ = std::make_unique<PersistentDbForTesting>();
@@ -138,7 +138,7 @@ class HotlogLogSourceTest : public testing::Test {
 
 // ------- Start LogFile tests -------
 
-TEST_F(HotlogLogSourceTest, OpenFileAtVariousOffsets) {
+TEST_F(ArtemisLogSourceTest, OpenFileAtVariousOffsets) {
   LogFile logfile_bad(test_file_ + "noexist");
   LogFile logfile(test_file_);
 
@@ -164,7 +164,7 @@ TEST_F(HotlogLogSourceTest, OpenFileAtVariousOffsets) {
   logfile.CloseStream();
 }
 
-TEST_F(HotlogLogSourceTest, CheckEOFStateAfterVariousOpens) {
+TEST_F(ArtemisLogSourceTest, CheckEOFStateAfterVariousOpens) {
   LogFile logfile(test_file_);
   int file_size = GetFileSize();
 
@@ -187,7 +187,7 @@ TEST_F(HotlogLogSourceTest, CheckEOFStateAfterVariousOpens) {
   EXPECT_FALSE(logfile.IsAtEOF());
 }
 
-TEST_F(HotlogLogSourceTest, RequestVaryingAmountOfLogLines) {
+TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
   LogFile logfile(test_file_);
   logfile.OpenAtOffset(0);
 
@@ -216,7 +216,7 @@ TEST_F(HotlogLogSourceTest, RequestVaryingAmountOfLogLines) {
   logfile.CloseStream();
 }
 
-TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
+TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
   LogFile logfile(test_file_);
   logfile.OpenAtOffset(0);
 
@@ -274,7 +274,7 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 
 // ------- Start LogSource tests -------
 
-TEST_F(HotlogLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
+TEST_F(ArtemisLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
   const size_t batch_size = 2;
   const size_t expected_num_reads = kTestFileNumLines / batch_size;
 
@@ -289,7 +289,7 @@ TEST_F(HotlogLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
   EXPECT_EQ(data.size(), 0u);
 }
 
-TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRotation) {
+TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRotation) {
   auto log_source =
       LogSource(test_file_, kDefaultPollFrequency, kDefaultBatchSize);
 
@@ -314,7 +314,7 @@ TEST_F(HotlogLogSourceTest, VerifyNewLinesAppearAfterRotation) {
   }
 }
 
-TEST_F(HotlogLogSourceTest, TestCrashRecovery) {
+TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
   base::test::TaskEnvironment task_environment;
   base::RunLoop run_loop;
 

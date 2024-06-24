@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/specialized_log_sources.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/specialized_log_sources.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace ash::cfm {

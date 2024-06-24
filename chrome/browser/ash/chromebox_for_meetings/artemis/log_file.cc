@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/log_file.h"
 
 #include <unistd.h>
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_DATA_AGGREGATOR_SERVICE_H_
-#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_DATA_AGGREGATOR_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_TEST_DATA_AGGREGATOR_SERVICE_H_
+#define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_TEST_DATA_AGGREGATOR_SERVICE_H_
 
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/data_aggregator_service.h"
-#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/test_watchdog.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/data_aggregator_service.h"
+#include "chrome/browser/ash/chromebox_for_meetings/artemis/test_watchdog.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
@@ -33,4 +33,4 @@ class DataAggregatorServiceForTesting : public DataAggregatorService {
 
 }  // namespace ash::cfm
 
-#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_TEST_DATA_AGGREGATOR_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_TEST_DATA_AGGREGATOR_SERVICE_H_
