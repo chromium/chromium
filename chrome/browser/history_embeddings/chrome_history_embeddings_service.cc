@@ -38,8 +38,8 @@ QualityLogEntry ChromeHistoryEmbeddingsService::PrepareQualityLogEntry() {
     return nullptr;
   }
 
-  optimization_guide::ChromeModelQualityLogsUploaderService* quality_uploader =
-      optimization_guide_service_->GetChromeModelQualityLogsUploaderService();
+  auto* quality_uploader =
+      optimization_guide_service_->GetModelQualityLogsUploaderService();
   if (!quality_uploader) {
     return nullptr;
   }
