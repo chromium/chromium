@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "build/build_config.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_test_base.h"
 #include "ipc/message_filter.h"
@@ -49,7 +47,7 @@ namespace IPC {
 
 namespace {
 
-void CreateRunLoopAndRun(base::RunLoop** run_loop_ptr) {
+void CreateRunLoopAndRun(raw_ptr<base::RunLoop>* run_loop_ptr) {
   base::RunLoop run_loop;
   *run_loop_ptr = &run_loop;
   run_loop.Run();
@@ -86,8 +84,7 @@ class QuitListener : public IPC::Listener {
 
   bool bad_message_received_ = false;
   bool quit_message_received_ = false;
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 class ChannelReflectorListener : public IPC::Listener {
@@ -129,8 +126,7 @@ class ChannelReflectorListener : public IPC::Listener {
     run_loop_->QuitWhenIdle();
   }
 
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
  private:
   raw_ptr<IPC::Channel> channel_ = nullptr;
