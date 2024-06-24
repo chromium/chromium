@@ -621,9 +621,12 @@ class WPTAdapter:
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
-        with self._processor.stream_results() as events:
-            runner_options.log.add_handler(events.put)
+        if self.using_upstream_wpt:
             yield
+        else:
+            with self._processor.stream_results() as events:
+                runner_options.log.add_handler(events.put)
+                yield
         if runner_options.log_wptreport:
             self._processor.process_wpt_report(
                 runner_options.log_wptreport[0].name)

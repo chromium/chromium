@@ -536,7 +536,7 @@ class WPTResultsProcessor:
             # enough time to report all incomplete tests. Slow exit is less of a
             # concern.
             if timeout is None and self.sink.resultdb_supported:
-                timeout = 10
+                timeout = 15
             raise
         finally:
             # Keep the default exit fast for local or completed runs.
@@ -567,11 +567,6 @@ class WPTResultsProcessor:
         event = Event(raw_event.pop('action'), raw_event.pop('time'),
                       raw_event.pop('thread'), raw_event.pop('pid'),
                       raw_event.pop('source'))
-        if (event.action in ['test_start', 'test_status', 'test_end']
-                and self.run_info.get('used_upstream')):
-            # Do not process test related events when run with
-            # --use-upstream-wpt. Only Wpt report is needed for such case.
-            return
         test = raw_event.pop('test', None)
         subsuite = raw_event.pop('subsuite', '')
         if test:
