@@ -109,8 +109,11 @@ class AuthenticatorRequestWindow
       : step_(model->step()), model_(model) {
     model_->observers.AddObserver(this);
 
+    // The original profile is used so that cookies are available. If this is an
+    // Incognito session then a warning has already been shown to the user.
     Profile* const profile =
-        Profile::FromBrowserContext(caller_web_contents->GetBrowserContext());
+        Profile::FromBrowserContext(caller_web_contents->GetBrowserContext())
+            ->GetOriginalProfile();
     // If the profile is shutting down, don't attempt to create a pop-up.
     if (Browser::GetCreationStatusForProfile(profile) !=
         Browser::CreationStatus::kOk) {
