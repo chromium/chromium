@@ -12,7 +12,6 @@
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_id.h"
@@ -119,18 +118,6 @@ void SearchResultPageView::InitializeContainers(
           view_delegate, dialog_controller_.get(), search_box_view);
   search_view_ = search_view_ptr.get();
   AddChildView(std::make_unique<SearchCardView>(std::move(search_view_ptr)));
-}
-
-void SearchResultPageView::VisibilityChanged(View* starting_from,
-                                             bool is_visible) {
-  auto* notifier_controller = search_view_->search_notifier_controller();
-  if (starting_from == this && notifier_controller) {
-    notifier_controller->UpdateNotifierVisibility(is_visible);
-    if (search_view_->search_notifier_view() &&
-        !notifier_controller->ShouldShowPrivacyNotice()) {
-      search_view_->RemoveSearchNotifierView();
-    }
-  }
 }
 
 gfx::Size SearchResultPageView::CalculatePreferredSize(

@@ -17,7 +17,6 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
-#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
@@ -163,13 +162,6 @@ void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 bool AppListMainView::CanSelectSearchResults() {
   // If there's a result, keyboard selection is allowed.
   return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
-}
-
-bool AppListMainView::HandleFocusMoveAboveSearchResults(
-    const ui::KeyEvent& key_event) {
-  return contents_view_->search_result_page_view()
-      ->search_view()
-      ->OverrideKeyNavigationAboveSearchResults(key_event);
 }
 
 void AppListMainView::AssistantButtonPressed() {

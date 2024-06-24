@@ -17,7 +17,6 @@
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/app_list/views/search_result_image_list_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
@@ -78,10 +77,6 @@ AppListSearchView::AppListSearchView(
   scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
   scroll_view_->SetDrawOverflowIndicator(false);
 
-  // Arrow keys are used for focus updating and the result selection handles the
-  // scrolling.
-  scroll_view_->SetAllowKeyboardScrolling(false);
-
   // Don't paint a background. The bubble already has one.
   scroll_view_->SetBackgroundColor(std::nullopt);
 
@@ -103,10 +98,6 @@ AppListSearchView::AppListSearchView(
                           base::Unretained(this)));
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
-
-  if (features::IsProductivityLauncherImageSearchEnabled()) {
-    search_notifier_controller_ = std::make_unique<SearchNotifierController>();
-  }
 
   auto add_result_container = [&](SearchResultContainerView* new_container) {
     new_container->SetResults(
@@ -289,38 +280,6 @@ void AppListSearchView::VisibilityChanged(View* starting_from,
   }
 }
 
-void AppListSearchView::OnKeyEvent(ui::KeyEvent* event) {
-  // Only handle the key event that triggers the focus or result selection
-  // traversal here.
-  if (event->type() != ui::ET_KEY_PRESSED ||
-      !(IsUnhandledArrowKeyEvent(*event) ||
-        event->key_code() == ui::VKEY_TAB)) {
-    return;
-  }
-
-  // Only handle the case when the search notifier has the focus.
-  if (!search_notifier_ || !search_notifier_->toast_button()->HasFocus()) {
-    return;
-  }
-
-  // Left/Right key shouldn't update the focus. Set the event to handled to make
-  // left/right keys no-ops.
-  if (IsUnhandledLeftRightKeyEvent(*event)) {
-    event->SetHandled();
-    return;
-  }
-
-  bool moving_down =
-      (event->key_code() == ui::VKEY_TAB && !event->IsShiftDown()) ||
-      event->key_code() == ui::VKEY_DOWN;
-  if (moving_down) {
-    search_box_view_->EnterSearchResultSelection(*event);
-  } else {
-    search_box_view_->close_button()->RequestFocus();
-  }
-  event->SetHandled();
-}
-
 void AppListSearchView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!GetVisible()) {
     return;
@@ -361,19 +320,6 @@ void AppListSearchView::OnActiveAppListModelsChanged(
   }
 }
 
-bool AppListSearchView::OverrideKeyNavigationAboveSearchResults(
-    const ui::KeyEvent& key_event) {
-  // The toast button on the search notifier is the only target to check if the
-  // `key_event` should be handled. Other events will be handled by either the
-  // search box or the SearchBoxViewDelegate.
-  if (!search_notifier_) {
-    return false;
-  }
-
-  search_notifier_->toast_button()->RequestFocus();
-  return true;
-}
-
 void AppListSearchView::UpdateForNewSearch(bool search_active) {
   for (ash::SearchResultContainerView* container : result_container_views_) {
     container->SetActive(search_active);
@@ -394,18 +340,6 @@ void AppListSearchView::UpdateForNewSearch(bool search_active) {
   }
 }
 
-void AppListSearchView::RemoveSearchNotifierView() {
-  // TODO(b/311785210): Remove this function if the category nudge is not
-  // wanted.
-  if (!search_notifier_) {
-    return;
-  }
-
-  auto* scroll_contents = search_notifier_->parent();
-  scroll_contents->RemoveChildViewT(std::exchange(search_notifier_, nullptr));
-  scroll_contents->InvalidateLayout();
-}
-
 void AppListSearchView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   if (image_search_container_ && width() != old_bounds.width()) {
     image_search_container_->ConfigureLayoutForAvailableWidth(width());
@@ -413,20 +347,6 @@ void AppListSearchView::OnBoundsChanged(const gfx::Rect& old_bounds) {
 }
 
 void AppListSearchView::OnSelectedResultChanged() {
-  if (search_notifier_guide_) {
-    // Only announce the guidance to the notifier if the selected result is the
-    // first available one.
-    ui::AXNodeData& notifier_guidance_node_data =
-        search_notifier_guide_->GetCustomData();
-    if (search_notifier_ && search_box_view_->search_box()->HasFocus() &&
-        result_selection_controller_
-            ->IsSelectedResultAtFirstAvailableLocation()) {
-      notifier_guidance_node_data.RemoveState(ax::mojom::State::kIgnored);
-    } else {
-      notifier_guidance_node_data.AddState(ax::mojom::State::kIgnored);
-    }
-  }
-
   if (!result_selection_controller_->selected_result()) {
     return;
   }
@@ -487,17 +407,6 @@ void AppListSearchView::MaybeNotifySelectedResultChanged() {
 
   search_box_view_->SetA11yActiveDescendant(
       selected_view->GetViewAccessibility().GetUniqueId());
-}
-
-void AppListSearchView::OnSearchNotifierButtonPressed() {
-  // TODO(b/311785210): Remove this function if the category nudge is not
-  // wanted.
-  search_notifier_controller_->SetPrivacyNoticeAcceptedPref();
-  RemoveSearchNotifierView();
-
-  // Update the search results as the image search category should be populated
-  // now.
-  search_box_view()->TriggerSearch();
 }
 
 bool AppListSearchView::CanSelectSearchResults() {

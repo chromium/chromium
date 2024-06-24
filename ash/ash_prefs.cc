@@ -12,7 +12,6 @@
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
-#include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
@@ -171,7 +170,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   quick_pair::Mediator::RegisterProfilePrefs(registry);
   ScreensaverImagesPolicyHandler::RegisterPrefs(registry);
   SeaPenWallpaperManager::RegisterProfilePrefs(registry);
-  SearchNotifierController::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   system::BrightnessControllerChromeos::RegisterProfilePrefs(registry);

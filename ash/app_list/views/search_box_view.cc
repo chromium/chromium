@@ -960,13 +960,8 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
   }
 
   // Check if the `delegate_` can handle the event if the focus is moving to
-  // result selection.
-  if (focus_on_filter_button ||
-      !delegate_->HandleFocusMoveAboveSearchResults(*evt)) {
-    EnterSearchResultSelection(*evt);
-  }
-
-  // All events focusing on the buttons should be handled now.
+  // result selection. All events focusing on the buttons should be handled now.
+  EnterSearchResultSelection(*evt);
   evt->SetHandled();
 }
 
@@ -1584,10 +1579,8 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
 
       // Check if the `delegate_` can handle the event if the focus is moving
       // out from the result selection.
-      if (!delegate_->HandleFocusMoveAboveSearchResults(key_event)) {
-        DCHECK(close_button()->GetVisible());
-        close_button()->RequestFocus();
-      }
+      DCHECK(close_button()->GetVisible());
+      close_button()->RequestFocus();
 
       SetA11yActiveDescendant(std::nullopt);
       break;
