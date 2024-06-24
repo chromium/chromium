@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/fake_local_frame_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -1088,6 +1090,39 @@ TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
         EXPECT_THAT(mock_data_host->header_errors(), ::testing::IsEmpty());
       }
     }
+  }
+}
+
+TEST_F(AttributionSrcLoaderTest,
+       HasAttributionHeaderInAttributionSrcResponseMetric) {
+  KURL url = ToKURL(kUrl);
+
+  for (const bool has_header : {false, true}) {
+    SCOPED_TRACE(has_header);
+
+    base::HistogramTester histograms;
+
+    ResourceResponse response(url);
+    response.SetHttpStatusCode(200);
+    if (has_header) {
+      response.SetHttpHeaderField(
+          http_names::kAttributionReportingRegisterSource, AtomicString("!"));
+    }
+
+    url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
+        url, test::CoreTestDataPath("foo.html"),
+        WrappedResourceResponse(std::move(response)));
+
+    attribution_src_loader_->Register(AtomicString(kUrl), /*element=*/nullptr,
+                                      network::mojom::ReferrerPolicy::kDefault);
+
+    url_test_helpers::ServeAsynchronousRequests();
+
+    histograms.ExpectBucketCount(
+        "Conversions.HasAttributionHeaderInAttributionSrcResponse", has_header,
+        1);
+
+    url_test_helpers::RegisterMockedURLUnregister(url);
   }
 }
 

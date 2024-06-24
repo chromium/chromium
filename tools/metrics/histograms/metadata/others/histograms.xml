@@ -3559,6 +3559,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.HasAttributionHeaderInAttributionSrcResponse"
+    enum="Boolean" expires_after="2024-12-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether the response to an attributionsrc request contains
+    Attribution Reporting headers. This is emitted whenever a redirect or final
+    response to an attributionsrc request is received.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.HeadersSize.Register{Type}" units="bytes"
     expires_after="2024-11-03">
   <owner>tquintanilla@chromium.org</owner>

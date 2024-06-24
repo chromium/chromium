@@ -366,7 +366,8 @@ class AttributionSrcLoader::ResourceClient
   void Finish();
 
  private:
-  void HandleResponseHeaders(const ResourceResponse& response,
+  void HandleResponseHeaders(Resource* resource,
+                             const ResourceResponse& response,
                              uint64_t request_id);
 
   void HandleSourceRegistration(
@@ -852,20 +853,14 @@ String AttributionSrcLoader::ResourceClient::DebugName() const {
 void AttributionSrcLoader::ResourceClient::ResponseReceived(
     Resource* resource,
     const ResourceResponse& response) {
-  if (ResponseHandledInBrowser(resource->GetResourceRequest(), response)) {
-    return;
-  }
-  HandleResponseHeaders(response, resource->InspectorId());
+  HandleResponseHeaders(resource, response, resource->InspectorId());
 }
 
 bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     Resource* resource,
     const ResourceRequest& request,
     const ResourceResponse& response) {
-  if (ResponseHandledInBrowser(resource->GetResourceRequest(), response)) {
-    return true;
-  }
-  HandleResponseHeaders(response, request.InspectorId());
+  HandleResponseHeaders(resource, response, request.InspectorId());
   return true;
 }
 
@@ -900,6 +895,7 @@ void AttributionSrcLoader::ResourceClient::Finish() {
 }
 
 void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
+    Resource* resource,
     const ResourceResponse& response,
     uint64_t request_id) {
   const bool cross_app_web_enabled =
@@ -909,7 +905,15 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
           network::features::kAttributionReportingCrossAppWeb);
   AttributionHeaders headers(response.HttpHeaderFields(), request_id,
                              cross_app_web_enabled);
-  if (headers.count() == 0) {
+  const bool has_header = headers.count() > 0;
+  base::UmaHistogramBoolean(
+      "Conversions.HasAttributionHeaderInAttributionSrcResponse", has_header);
+
+  if (!has_header) {
+    return;
+  }
+
+  if (ResponseHandledInBrowser(resource->GetResourceRequest(), response)) {
     return;
   }
 
