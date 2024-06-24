@@ -1821,12 +1821,6 @@ const char kFileSystemAccessLockingSchemeDescription[] =
     "https://github.com/whatwg/fs/blob/main/proposals/"
     "MultipleReadersWriters.md for more information.";
 
-const char kFileSystemAccessPersistentPermissionName[] =
-    "Persistent Permission for File System Access API";
-const char kFileSystemAccessPersistentPermissionDescription[] =
-    "Allows users to opt in to keep the file system permission persistent "
-    "across visits and to restore recently granted file permissions.";
-
 const char kFileSystemAccessPersistentPermissionUpdatedPageInfoName[] =
     "Updated Page Info UI for the File System Access API Persistent "
     "Permissions";

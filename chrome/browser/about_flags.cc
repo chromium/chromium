@@ -7969,12 +7969,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFileSystemAccessLockingSchemeDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kFileSystemAccessLockingScheme)},
 
-    {"file-system-access-persistent-permission",
-     flag_descriptions::kFileSystemAccessPersistentPermissionName,
-     flag_descriptions::kFileSystemAccessPersistentPermissionDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kFileSystemAccessPersistentPermissions)},
-
     {"file-system-access-persistent-permission-updated-page-info",
      flag_descriptions::
          kFileSystemAccessPersistentPermissionUpdatedPageInfoName,
