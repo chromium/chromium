@@ -6,9 +6,19 @@
 
 <manifest
       xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.chromium.webview_ui_test.test">
+      package="org.chromium.webview_ui_test">
 
-    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
+    <application
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Light" >
+        <activity
+            android:name="org.chromium.webview_ui_test.WebViewUiTestActivity"
+            android:exported="true">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+        </intent-filter>
+        </activity>
+    </application>
 
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.webview_ui_test"

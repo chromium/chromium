@@ -2022,9 +2022,6 @@
   "webview_ui_test_app_test_apk": {
     "label": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
     "type": "console_test_launcher",
-    "args": [
-      "--use-apk-under-test-flags-file",
-    ],
   },
   "wm_unittests": {
     "label": "//ui/wm:wm_unittests",

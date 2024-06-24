@@ -412,7 +412,7 @@ group("gn_all") {
         deps += [
           "//android_webview:empty_group",
           "//android_webview/test",
-          "//android_webview/tools/automated_ui_tests:webview_ui_test_app",
+          "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
           "//android_webview/tools/captured_sites_tests:captured_sites_test_app",
           "//android_webview/tools/sdk_sandbox",
           "//android_webview/tools/system_webview_shell",

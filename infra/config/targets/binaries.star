@@ -2192,9 +2192,6 @@ targets.binaries.console_test_launcher(
 targets.binaries.console_test_launcher(
     name = "webview_ui_test_app_test_apk",
     label = "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
-    args = [
-        "--use-apk-under-test-flags-file",
-    ],
 )
 
 targets.binaries.windowed_test_launcher(
