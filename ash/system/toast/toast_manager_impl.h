@@ -108,9 +108,6 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   void Pause() override;
   void Resume() override;
 
-  // Data of the toast which is currently shown. Empty if no toast is visible.
-  std::optional<ToastData> current_toast_data_;
-
   // Used to destroy the currently running toast if its duration is not
   // infinite. Also allows us to persist the toast on hover by pausing this
   // timer when a toast instance is being hovered by the mouse.
@@ -126,6 +123,12 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // Keeps track of the number of `ScopedToastPause`.
   int pause_counter_ = 0;
+
+  // Data of the toast which is currently shown. Empty if no toast is visible.
+  // Destroying a `ToastData` can reentrantly access other fields, so ensure it
+  // is destroyed before other data fields to prevent use-after-dtor issues when
+  // destroying `this`.
+  std::optional<ToastData> current_toast_data_;
 
   ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ToastManagerImpl> weak_ptr_factory_{this};

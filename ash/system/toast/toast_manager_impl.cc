@@ -108,6 +108,10 @@ ToastManagerImpl::ToastManagerImpl()
 
 ToastManagerImpl::~ToastManagerImpl() {
   Shell::Get()->RemoveShellObserver(this);
+
+  // If there are live `ToastOverlay`s, destroying `current_toast_data_` can
+  // call into the `ToastOverlay`s and then back into `ToastManagerImpl`, which
+  // then tries to destroy the already-being-destroyed `current_toast_data_`.
   CloseAllToastsWithoutAnimation();
 }
 
