@@ -992,6 +992,13 @@
        {}
       ]
      ],
+     "firefox-bug1903652-crash.html": [
+      "45dc078c5e84183a5e5f10a597be65bb03991745",
+      [
+       null,
+       {}
+      ]
+     ],
      "flex-item-padding-block-in-inline-crash.html": [
       "43418771150ce1b430b30c1055e2c5321dde6879",
       [
@@ -5385,7 +5392,14 @@
          {}
         ]
        ]
-      }
+      },
+      "nth-of-namespace-class-invalidation-crash.html": [
+       "4ad1cfe1c69c0b498ebdf628a94b59b8886371b2",
+       [
+        null,
+        {}
+       ]
+      ]
      },
      "link-sharing-crash.html": [
       "3bcce92d49d67bd694028db2549b65eb5644fdca",
@@ -395187,7 +395201,7 @@
      ],
      "support": {
       "animated-path-helpers.js": [
-       "3f6fffb9078b74ea674951d1299e2a29ce1f93ac",
+       "8fd4492265c2eb8aa00fb173bd8d625f119adaac",
        []
       ]
      },
@@ -654896,21 +654910,21 @@
       ]
      ],
      "animate-path-animation-Ll-Vv-Hh.tentative.html": [
-      "8a1e2cb032f268f3609521d33fa6d4d9d9f96cb7",
+      "6d2e94b7abac51c484b9e0305d600e3e50546c2f",
       [
        null,
        {}
       ]
      ],
      "animate-path-animation-Mm-Aa-Z.tentative.html": [
-      "fd0787792f85a6f6b1dcb920b949d484e6fa9cfd",
+      "cb7dcf724bc8d9797061a5b531a77df3d418f3ce",
       [
        null,
        {}
       ]
      ],
      "animate-path-animation-Qq-Tt.tentative.html": [
-      "e8b0ad8f71aa31aa969eea3e6d66dee36ff79353",
+      "3f018331c9a960c5980703c70c3453b2c963b492",
       [
        null,
        {}
@@ -657969,28 +657983,28 @@
        ]
       ],
       "SVGLength-cap.html": [
-       "1eb308b0b8ebed4b84c5b91705f370b85ffaf40b",
+       "058e9a72b1090fa7aaa965239750457b2a866c03",
        [
         null,
         {}
        ]
       ],
       "SVGLength-ch.html": [
-       "fcacbd2e228fe9d63df701dd1a945f2cec3fb5fb",
+       "6e82a85d1c195dfdec9c03391da61969431db90e",
        [
         null,
         {}
        ]
       ],
       "SVGLength-ic.html": [
-       "583a964444ecc5dc3878d11e62c3e884084a89b0",
+       "2dfb0e1c42be71e8a4333e4d42affb851f506c2f",
        [
         null,
         {}
        ]
       ],
       "SVGLength-lh.html": [
-       "023d04fbd0c507a7f16168256653773f7525b9dc",
+       "56287eacff2586a29c66e9a2e945e40c8ff2de82",
        [
         null,
         {}
@@ -658011,21 +658025,21 @@
        ]
       ],
       "SVGLength-rem.html": [
-       "c89f937cf37211c19b21c8a1812fb831820b28f7",
+       "73ea00edc25db600235149d22a68f5a9ad9d3948",
        [
         null,
         {}
        ]
       ],
       "SVGLength-rlh.html": [
-       "411013b65b5b1601d221dba99ee84efa9e990bbf",
+       "1d1670bd81dea6b9aaf253b28ff9312914e14f7c",
        [
         null,
         {}
        ]
       ],
       "SVGLength-viewport.html": [
-       "2a29c0ba54978fa732b60460689e34d08db93448",
+       "402210779b20267bcfe8e5d76aff5b2e42bd90b1",
        [
         null,
         {}
