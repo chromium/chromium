@@ -869,7 +869,7 @@ BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeacons,
 // `content/public/common/content_features.cc` for more information.
 BASE_FEATURE(kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
              "FencedFramesCrossOriginEventReportingUnlabeledTraffic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // The "AllTraffic" flag allows the feature for all traffic regardless of label.
 BASE_FEATURE(kFencedFramesCrossOriginEventReportingAllTraffic,
              "FencedFramesCrossOriginEventReportingAllTraffic",
