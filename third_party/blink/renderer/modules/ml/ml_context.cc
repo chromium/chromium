@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
 #include "base/notreached.h"
-#include "components/ml/webnn/features.mojom-blink.h"
+#include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

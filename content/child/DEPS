@@ -2,7 +2,6 @@ include_rules = [
   # Allow inclusion of specific components that we depend on.
   # See comment in content/DEPS for which components are allowed.
   "+components/metrics",
-  "+components/ml/webnn/features.mojom-features.h",
   "+components/services/font/public",
   "+components/tracing",
   "+components/webcrypto",
@@ -20,6 +19,7 @@ include_rules = [
   "+services/resource_coordinator",
   "+services/service_manager",
   "+services/tracing",
+  "+services/webnn/public/mojom/features.mojom-features.h",
   "+v8/include/v8.h"
 ]
 

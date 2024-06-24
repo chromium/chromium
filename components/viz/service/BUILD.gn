@@ -267,7 +267,6 @@ viz_component("service") {
 
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.
-    "//components/ml/webnn:features",
     "//components/version_info:version_info",
     "//components/viz/common",
     "//gpu/command_buffer/client",
@@ -285,6 +284,7 @@ viz_component("service") {
     "//services/tracing/public/cpp:cpp",
     "//services/viz/privileged/mojom",
     "//services/webnn:webnn_service",
+    "//services/webnn/public/mojom",
     "//skia",
     "//skia:skcms",
     "//third_party/libyuv",
@@ -589,7 +589,6 @@ viz_source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
-    "//components/ml/webnn:features",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",

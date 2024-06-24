@@ -22,7 +22,6 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
-#include "components/ml/webnn/features.mojom-features.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace viz {

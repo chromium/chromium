@@ -141,7 +141,7 @@ specific_include_rules = {
     "+services/network/test",
   ],
   "browser_interface_binders\.cc": [
-    "+components/ml/webnn/features.mojom-features.h",
+    "+services/webnn/public/mojom/features.mojom-features.h",
   ],
   "browser_main_loop\.cc": [
     # TODO(crbug.com/40672800): Remove.

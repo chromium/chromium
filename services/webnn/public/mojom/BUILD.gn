@@ -9,6 +9,7 @@ mojom_component("mojom") {
   macro_prefix = "WEBNN_MOJOM"
 
   sources = [
+    "features.mojom",
     "webnn_buffer.mojom",
     "webnn_context_provider.mojom",
     "webnn_error.mojom",
@@ -16,7 +17,6 @@ mojom_component("mojom") {
   ]
 
   deps = [
-    "//components/ml/webnn:features",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
   ]

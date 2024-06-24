@@ -41,7 +41,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 [EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
 [EnableIfNot=is_chromeos]
-import "components/ml/webnn/features.mojom";
+import "services/webnn/public/mojom/features.mojom";
 [EnableIfNot=is_chromeos]
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
 

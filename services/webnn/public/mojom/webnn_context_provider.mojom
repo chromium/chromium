@@ -4,7 +4,7 @@
 
 module webnn.mojom;
 
-import "components/ml/webnn/features.mojom";
+import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_buffer.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";

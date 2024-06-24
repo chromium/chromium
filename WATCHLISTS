@@ -2378,8 +2378,7 @@
     },
     'webnn': {
         'filepath': 'third_party/blink/renderer/modules/ml/webnn/'\
-                    '|services/webnn/'\
-                    '|components/ml/webnn/',
+                    '|services/webnn/',
     },
     'webotp': {
         'filepath': 'third_party/blink/renderer/modules/credentialmanager/credentials_container\.cc'\

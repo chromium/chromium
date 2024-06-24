@@ -111,7 +111,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "components/ml/webnn/features.mojom-features.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

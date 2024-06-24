@@ -124,7 +124,6 @@ browser_exposed_mojom_targets = [
   "//components/mirroring/mojom:common",
   "//components/mirroring/mojom:service",
   "//components/ml/mojom:mojom",
-  "//components/ml/webnn:features",
   "//components/network_hints/common:mojo_bindings",
   "//components/no_state_prefetch/common:mojo_bindings",
   "//components/omnibox/browser:mojo_bindings",
