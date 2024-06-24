@@ -8,6 +8,7 @@
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <vector>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/check.h"
@@ -202,13 +203,13 @@ TEST(SafeSPrintfTestPA, ASANFriendlyBufferTest) {
   // There is a more complicated test in PrintLongString() that covers a lot
   // more edge case, but it is also harder to debug in case of a failure.
   const char kTestString[] = "This is a test";
-  std::unique_ptr<char[]> buf(new char[sizeof(kTestString)]);
+  std::vector<char> buf(sizeof(kTestString), 'X');
   EXPECT_EQ(static_cast<ssize_t>(sizeof(kTestString) - 1),
-            SafeSNPrintf(buf.get(), sizeof(kTestString), kTestString));
-  EXPECT_EQ(std::string(kTestString), std::string(buf.get()));
+            SafeSNPrintf(buf.data(), sizeof(kTestString), kTestString));
+  EXPECT_EQ(std::string(kTestString), std::string(buf.data()));
   EXPECT_EQ(static_cast<ssize_t>(sizeof(kTestString) - 1),
-            SafeSNPrintf(buf.get(), sizeof(kTestString), "%s", kTestString));
-  EXPECT_EQ(std::string(kTestString), std::string(buf.get()));
+            SafeSNPrintf(buf.data(), sizeof(kTestString), "%s", kTestString));
+  EXPECT_EQ(std::string(kTestString), std::string(buf.data()));
 }
 
 TEST(SafeSPrintfTestPA, NArgs) {
@@ -368,8 +369,7 @@ void PrintLongString(char* buf, size_t sz) {
 
   // Allocate slightly more space, so that we can verify that SafeSPrintf()
   // never writes past the end of the buffer.
-  std::unique_ptr<char[]> tmp(new char[sz + 2]);
-  memset(tmp.get(), 'X', sz + 2);
+  std::vector<char> tmp(sz + 2, 'X');
 
   // Use SafeSPrintf() to output a complex list of arguments:
   // - test padding and truncating %c single characters.
@@ -379,10 +379,10 @@ void PrintLongString(char* buf, size_t sz) {
   // - test outputting and truncating %d MININT.
   // - test outputting and truncating %p arbitrary pointer values.
   // - test outputting, padding and truncating NULL-pointer %s strings.
-  char* out = tmp.get();
+  char* out = tmp.data();
   size_t out_sz = sz;
   size_t len;
-  for (std::unique_ptr<char[]> perfect_buf;;) {
+  for (std::vector<char> perfect_buf;;) {
     size_t needed =
         SafeSNPrintf(out, out_sz,
 #if defined(NDEBUG)
@@ -397,7 +397,7 @@ void PrintLongString(char* buf, size_t sz) {
     // Various sanity checks:
     // The numbered of characters needed to print the full string should always
     // be bigger or equal to the bytes that have actually been output.
-    len = strlen(tmp.get());
+    len = strlen(tmp.data());
     PA_BASE_CHECK(needed >= len + 1);
 
     // The number of characters output should always fit into the buffer that
@@ -413,10 +413,10 @@ void PrintLongString(char* buf, size_t sz) {
     // running SafeSNPrintf() the first time, it is possible to compute the
     // correct buffer size for this test. So, allocate a second buffer and run
     // the exact same SafeSNPrintf() command again.
-    if (!perfect_buf.get()) {
+    if (perfect_buf.empty()) {
       out_sz = std::min(needed, sz);
-      out = new char[out_sz];
-      perfect_buf.reset(out);
+      perfect_buf.resize(out_sz, 'X');
+      out = perfect_buf.data();
     } else {
       break;
     }
@@ -450,12 +450,12 @@ void PrintLongString(char* buf, size_t sz) {
 #endif
 
   // Compare the output from SafeSPrintf() to the one from snprintf().
-  EXPECT_EQ(std::string(ref).substr(0, kSSizeMax - 1), std::string(tmp.get()));
+  EXPECT_EQ(std::string(ref).substr(0, kSSizeMax - 1), std::string(tmp.data()));
 
   // We allocated a slightly larger buffer, so that we could perform some
   // extra sanity checks. Now that the tests have all passed, we copy the
   // data to the output buffer that the caller provided.
-  memcpy(buf, tmp.get(), len + 1);
+  memcpy(buf, tmp.data(), len + 1);
 }
 
 #if !defined(NDEBUG)
