@@ -32,46 +32,98 @@ class BrowserContext;
 namespace extensions {
 class Extension;
 
-// A service worker based background specific LazyContextTaskQueue.
+// A service worker implementation of `LazyContextTaskQueue`. For an overview of
+// service workers on the web see https://web.dev/learn/pwa/service-workers.
+// Extension workers do not follow the typical web worker lifecycle. At a high
+// level:
+//   * only one worker instance should run at any given time for an extension
+//     (e.g. there should not be a active and waiting version)
+//   * only one worker version (version of its code) should run for each browser
+//     session
+//   * events can be dispatched to the worker before it is activated
 //
-// This class queues up and runs tasks added through AddPendingTask, after
-// registering and starting extension's background Service Worker script if
-// necessary.
+// This class, despite being a task queue, does much more than just queue tasks
+// for the worker. It handles worker registration, starting/stopping, and task
+// readiness monitoring. The highlights to understand this class are:
 //
-// There are two sets of concepts/events that are important to this class:
+// Worker Registration:
 //
-// C1) Registering and starting a background worker:
-//   Upon extension activation, this class registers the extension's
-//   background worker if necessary. After that, if it has queued up tasks
-//   in |pending_tasks_map_|, then it moves on to starting the worker.
-//   Registration and start are initiated from this class. Once started, the
-//   worker is considered browser process ready. These workers are stored in
-//   |worker_state_map_| with |browser_ready| = false until we run tasks.
+// Worker registration must occur in order to start a worker for the extension.
+// Otherwise requests to start a worker will fail. Service worker registration
+// is persisted to disk in the //content layer to avoid unnecessary registration
+// requests. This prevents a registration request for every restart of the
+// browser. If there’s a registration record the registration is still verified
+// with the //content layer).
 //
-// C2) Listening for worker's state update from the renderer:
-//   - Init (DidInitializeServiceWorkerContext) when the worker is initialized,
-//       JavaScript starts running after this.
-//   - Start (DidStartServiceWorkerContext) when the worker has reached
-//       loadstop. The worker is considered ready to run tasks from this task
-//       queue. The worker's entry in |worker_state_map_| will carry
-//       |renderer_ready| = true.
-//   - Stop (DidStopServiceWorkerContext) when the worker is destroyed, we clear
-//       its |renderer_ready| status from |worker_state_map_|.
+// Worker Started/Stopped:
 //
-// Once a worker reaches readiness in both browser process
-// (DidStartWorkerForScope) and worker process (DidStartServiceWorkerContext),
-// we consider the worker to be ready to run tasks from |pending_tasks_map_|.
-// Note that events from #C1 and #C2 are somewhat independent, e.g. it is
-// possible to see an Init state update from #C2 before #C1 has seen a start
-// worker completion.
+// Starting:
 //
-// Sequences of extension activation:
-//   This class also assigns a unique activation token to an extension
-//   activation so that it can differentiate between two activations of a
-//   particular extension (e.g. reloading an extension can cause two
-//   activations). |pending_tasks_map_|, worker registration and start (#C1)
-//   have activation tokens attached to them. The activation expires upon
-//   extension deactivation, and tasks are dropped from |pending_tasks_map_|.
+// A worker must be started before it can become ready to process the event
+// tasks. Every task added outside of when the worker is starting will cause
+// this class to request the worker to start. This is done this way because it
+// is difficult to know if a worker is currently running and ready to process
+// tasks.
+//
+// `DidStartServiceWorkerContext()` is called asynchronously from the extension
+// renderer process (potentially before or after `DidStartWorkerForScope()`) and
+// it records that the worker has started in the renderer (process).
+//
+// Stopping:
+//
+// TODO(crbug.com/40936639): update the below once `OnStopped()` is called to
+// track browser starting.
+//
+// `DidStopServiceWorkerContext()` is called when the worker is stopped to track
+// renderer stopping. `DidStopServiceWorkerContext()` is not always guaranteed
+// to be called.
+//
+// Task Processing Readiness:
+//
+// Three worker started signals are together used to determine when a worker is
+// ready to process tasks. Due to this it makes the process more complicated
+// than just checking if the worker is “running” (e.g by calling the //content
+// layer for this).
+//
+// A worker is checked for readiness by its worker state. Readiness checks three
+// signals: `BrowserState`, `RendererState`, and `WorkerId` that are each set by
+// certain methods:
+//   * `BrowserState`: `DidStartWorkerForScope()` signal sets the value to
+//     ready. This signal means that the worker was *requested* to start and it
+//     verified that a worker registration exists at the //content layer. It is
+//     considered the “browser-side” signal that the worker is ready.
+//   * `RendererState`: `DidStartServiceWorkerContext()` signal sets the value
+//     to ready. This is start requests are sent to the worker. This signal
+//     means:
+//       * that there is a worker renderer process thread running the service
+//         worker code
+//       * the worker has done one pass and executed it’s entire JS global scope
+//       * as part of executing that scope: the worker has registered all its
+//         (top-level/global) event listeners with the //extensions layer (all
+//         event listener mojom calls have been received and processed). This
+//         ordering is guaranteed because the mojom message that calls this
+//         signal is after the event listener mojom messages on an associated
+//         mojom pipe.
+//   * `worker_id_.has_value()`: this signal confirms that
+//     the class is populated with the running service worker’s information
+//     (render process and thread id, and worker version id) . This confirms
+//     that when the task is dispatched to the worker it is sent to the running
+//     worker (and not a previously stopped one).
+//
+// Ordering of Registration and Start Worker Completion:
+//
+// Note that while worker registration in //content `DidRegisterServiceWorker()`
+// will finish before requesting the worker to start, there is no guarantee on
+// how the signals for their completion will be received.
+//
+//  For example `DidRegisterServiceWorker()`, `DidStartWorkerForScope()` and
+//  `DidStartServiceWorkerContext()` signals are not guaranteed to finish in any
+//  order.
+//
+// Activation Token:
+//
+// TODO(jlulejian): Explain how the activation token tracks
+// activation/deactivation and how the class uses it.
 //
 // TODO(lazyboy): Clean up queue when extension is unloaded/uninstalled.
 class ServiceWorkerTaskQueue
