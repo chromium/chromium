@@ -12,6 +12,11 @@ namespace net {
 FirstPartySetsValidator::FirstPartySetsValidator() = default;
 FirstPartySetsValidator::~FirstPartySetsValidator() = default;
 
+FirstPartySetsValidator::FirstPartySetsValidator(FirstPartySetsValidator&&) =
+    default;
+FirstPartySetsValidator& FirstPartySetsValidator::operator=(
+    FirstPartySetsValidator&&) = default;
+
 void FirstPartySetsValidator::Update(const SchemefulSite& site,
                                      const SchemefulSite& primary) {
   if (site == primary) {

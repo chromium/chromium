@@ -25,8 +25,10 @@ class NET_EXPORT FirstPartySetsValidator {
   FirstPartySetsValidator();
   ~FirstPartySetsValidator();
 
-  FirstPartySetsValidator(FirstPartySetsValidator&&) = delete;
-  FirstPartySetsValidator& operator=(FirstPartySetsValidator&&) = delete;
+  FirstPartySetsValidator(FirstPartySetsValidator&&);
+  FirstPartySetsValidator& operator=(FirstPartySetsValidator&&);
+  FirstPartySetsValidator(const FirstPartySetsValidator&) = delete;
+  FirstPartySetsValidator& operator=(const FirstPartySetsValidator&) = delete;
 
   // Updates the internal state of the validator with `site` and its `primary`.
   // This method should be called once for each site in each set.

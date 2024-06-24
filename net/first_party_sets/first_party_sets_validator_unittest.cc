@@ -4,6 +4,7 @@
 
 #include "net/first_party_sets/first_party_sets_validator.h"
 
+#include <initializer_list>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,19 @@ const SchemefulSite kAssociated1(GURL("https://associated1.test"));
 const SchemefulSite kAssociated2(GURL("https://associated2.test"));
 const SchemefulSite kService(GURL("https://service.test"));
 
+struct SiteEntry {
+  SchemefulSite site;
+  SchemefulSite primary;
+};
+
+FirstPartySetsValidator ValidateSets(std::initializer_list<SiteEntry> sites) {
+  FirstPartySetsValidator validator;
+  for (const auto& site_entry : sites) {
+    validator.Update(site_entry.site, site_entry.primary);
+  }
+  return validator;
+}
+
 }  // namespace
 
 TEST(FirstPartySetsValidator, Default) {
@@ -32,16 +46,12 @@ TEST(FirstPartySetsValidator, Default) {
 
 TEST(FirstPartySetsValidator, Valid) {
   // This is a valid RWSs.
-  std::vector<std::pair<SchemefulSite, SchemefulSite>> sets({
+  FirstPartySetsValidator validator = ValidateSets({
       {kAssociated1, kPrimary},
       {kPrimary, kPrimary},
       {kService, kPrimary2},
       {kPrimary2, kPrimary2},
   });
-  FirstPartySetsValidator validator;
-  for (const auto& [site, primary] : sets) {
-    validator.Update(site, primary);
-  }
 
   EXPECT_TRUE(validator.IsValid());
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary));
@@ -50,15 +60,11 @@ TEST(FirstPartySetsValidator, Valid) {
 
 TEST(FirstPartySetsValidator, Invalid_Singleton) {
   // `kPrimary` is a singleton.
-  std::vector<std::pair<SchemefulSite, SchemefulSite>> sets({
+  FirstPartySetsValidator validator = ValidateSets({
       {kPrimary, kPrimary},
       {kService, kPrimary2},
       {kPrimary2, kPrimary2},
   });
-  FirstPartySetsValidator validator;
-  for (const auto& [site, primary] : sets) {
-    validator.Update(site, primary);
-  }
 
   EXPECT_FALSE(validator.IsValid());
   EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary));
@@ -67,15 +73,11 @@ TEST(FirstPartySetsValidator, Invalid_Singleton) {
 
 TEST(FirstPartySetsValidator, Invalid_Orphan) {
   // `kAssociated1` is an orphan.
-  std::vector<std::pair<SchemefulSite, SchemefulSite>> sets({
+  FirstPartySetsValidator validator = ValidateSets({
       {kAssociated1, kPrimary},
       {kService, kPrimary2},
       {kPrimary2, kPrimary2},
   });
-  FirstPartySetsValidator validator;
-  for (const auto& [site, primary] : sets) {
-    validator.Update(site, primary);
-  }
 
   EXPECT_FALSE(validator.IsValid());
   EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary));
