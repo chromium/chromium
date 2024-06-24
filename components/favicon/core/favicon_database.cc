@@ -216,9 +216,10 @@ void DatabaseErrorCallback(sql::Database* db,
     return;
   }
 
-  // The default handling is to assert on debug and to ignore on release.
-  if (!sql::Database::IsExpectedSqliteError(extended_error))
-    DLOG(FATAL) << db->GetErrorMessage();
+  // The default handling is to log an error on debug and to ignore on release.
+  if (!sql::Database::IsExpectedSqliteError(extended_error)) {
+    DLOG(ERROR) << db->GetErrorMessage();
+  }
 }
 
 }  // namespace
