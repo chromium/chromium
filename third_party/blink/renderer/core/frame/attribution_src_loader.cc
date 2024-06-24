@@ -802,12 +802,12 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     document->AddPostPrerenderingActivationStep(
         WTF::BindOnce(&AttributionSrcLoader::RegisterAttributionHeaders,
                       WrapPersistentIfNeeded(this), *registration_eligibility,
-                      support, std::move(*reporting_origin), std::move(headers),
+                      support, *std::move(reporting_origin), std::move(headers),
                       response.GetTriggerVerifications(), *registration_info,
                       response.WasFetchedViaServiceWorker()));
   } else {
     RegisterAttributionHeaders(
-        *registration_eligibility, support, std::move(*reporting_origin),
+        *registration_eligibility, support, *std::move(reporting_origin),
         headers, response.GetTriggerVerifications(), *registration_info,
         response.WasFetchedViaServiceWorker());
   }
@@ -927,7 +927,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
     return;
   }
 
-  HandleResponseHeaders(std::move(*reporting_origin), headers,
+  HandleResponseHeaders(*std::move(reporting_origin), headers,
                         response.GetTriggerVerifications(), *registration_info,
                         response.WasFetchedViaServiceWorker());
 }
@@ -1013,7 +1013,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       }
 
       data_host_->SourceDataAvailable(std::move(reporting_origin),
-                                      std::move(*source_data),
+                                      *std::move(source_data),
                                       was_fetched_via_service_worker);
       ++num_registrations_;
       break;
@@ -1041,7 +1041,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       }
 
       data_host_->OsSourceDataAvailable(std::move(reporting_origin),
-                                        std::move(registration_items.value()),
+                                        *std::move(registration_items),
                                         was_fetched_via_service_worker);
       ++num_registrations_;
     }
@@ -1085,7 +1085,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
       }
 
       data_host_->TriggerDataAvailable(
-          std::move(reporting_origin), std::move(*trigger_data),
+          std::move(reporting_origin), *std::move(trigger_data),
           trigger_verifications, was_fetched_via_service_worker);
       ++num_registrations_;
       break;
@@ -1112,7 +1112,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         return;
       }
       data_host_->OsTriggerDataAvailable(std::move(reporting_origin),
-                                         std::move(registration_items.value()),
+                                         *std::move(registration_items),
                                          was_fetched_via_service_worker);
       ++num_registrations_;
       break;
