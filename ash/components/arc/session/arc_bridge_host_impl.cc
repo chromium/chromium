@@ -32,7 +32,6 @@
 #include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
-#include "ash/components/arc/mojom/kiosk.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
 #include "ash/components/arc/mojom/memory.mojom.h"
 #include "ash/components/arc/mojom/metrics.mojom.h"
@@ -261,11 +260,6 @@ void ArcBridgeHostImpl::OnKeymasterInstanceReady(
 void ArcBridgeHostImpl::OnKeyMintInstanceReady(
     mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote) {
   OnInstanceReady(arc_bridge_service_->keymint(), std::move(keymint_remote));
-}
-
-void ArcBridgeHostImpl::OnKioskInstanceReady(
-    mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) {
-  OnInstanceReady(arc_bridge_service_->kiosk(), std::move(kiosk_remote));
 }
 
 void ArcBridgeHostImpl::OnMediaSessionInstanceReady(
