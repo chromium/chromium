@@ -1339,23 +1339,8 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksOptedIn) {
     disable_sync_to_signin.InitAndDisableFeature(
         kReplaceSyncPromosWithSignInPromos);
 
-    // The user enables Bookmarks and Reading List. On iOS
-    // pre-kReplaceSyncPromosWithSignInPromos, this used to involve a special
-    // opt-in pref.
+    // The user enables Bookmarks and Reading List.
     SyncPrefs prefs(&pref_service_);
-#if BUILDFLAG(IS_IOS)
-    pref_service_.SetBoolean(
-        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, true);
-
-    ASSERT_TRUE(pref_service_.GetBoolean(
-        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn));
-    // The opt in doesn't take effect immediately, until
-    // `MaybeMigratePrefsForSyncToSigninPart1()`  is exercised.
-    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kBookmarks));
-    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
-                     .Has(UserSelectableType::kReadingList));
-#else
     prefs.SetSelectedTypeForAccount(UserSelectableType::kBookmarks, true,
                                     gaia_id_hash_);
     prefs.SetSelectedTypeForAccount(UserSelectableType::kReadingList, true,
@@ -1365,7 +1350,6 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksOptedIn) {
                     .Has(UserSelectableType::kBookmarks));
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                     .Has(UserSelectableType::kReadingList));
-#endif  // BUILDFLAG(IS_IOS)
   }
 
   {
@@ -1401,19 +1385,12 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksNotOptedIn) {
 
     SyncPrefs prefs(&pref_service_);
 
-#if BUILDFLAG(IS_IOS)
-    // The regular Bookmarks and ReadingList prefs are enabled (by default), but
-    // the additional opt-in pref should not be enabled.
-    ASSERT_FALSE(pref_service_.GetBoolean(
-        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn));
-#else   // BUILDFLAG(IS_IOS)
-    // With the feature disabled, and outside iOS, Bookmarks and ReadingList are
-    // disabled by default.
+    // With the feature disabled, Bookmarks and ReadingList are disabled by
+    // default.
     ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                      .Has(UserSelectableType::kBookmarks));
     ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                      .Has(UserSelectableType::kReadingList));
-#endif  // BUILDFLAG(IS_IOS)
   }
 
   {

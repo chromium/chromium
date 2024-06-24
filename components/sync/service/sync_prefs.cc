@@ -129,15 +129,6 @@ SyncPrefs::SyncPrefs(PrefService* pref_service)
       prefs::internal::kSelectedTypesPerAccount,
       base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_IOS)
-  // On iOS, in some situations, there was a dedicated opt-in for bookmarks and
-  // reading list. It's not used anymore with kReplaceSyncPromosWithSigninPromos
-  // enabled, except for a migration.
-  pref_change_registrar_.Add(
-      prefs::internal::kBookmarksAndReadingListAccountStorageOptIn,
-      base::BindRepeating(&SyncPrefs::OnSelectedTypesPrefChanged,
-                          base::Unretained(this)));
-#endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // On ChromeOS-Lacros, syncing of apps is determined by a special
   // Ash-controlled pref.
@@ -164,10 +155,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Actual user-controlled preferences.
   registry->RegisterBooleanPref(prefs::internal::kSyncKeepEverythingSynced,
                                 true);
-#if BUILDFLAG(IS_IOS)
-  registry->RegisterBooleanPref(
-      prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, false);
-#endif  // BUILDFLAG(IS_IOS)
   registry->RegisterDictionaryPref(prefs::internal::kSelectedTypesPerAccount);
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     RegisterTypeSelectedPref(registry, type);
@@ -881,20 +868,10 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
           GetPrefNameForType(UserSelectableType::kPreferences), false);
 
       // Bookmarks and reading list remain enabled only if the user previously
-      // explicitly opted in.
-#if BUILDFLAG(IS_IOS)
-      // On iOS, the opt-in state is controlled by a dedicated pref.
-      const bool was_opted_in = pref_service_->GetBoolean(
-          prefs::internal::kBookmarksAndReadingListAccountStorageOptIn);
-      account_settings->Set(GetPrefNameForType(UserSelectableType::kBookmarks),
-                            was_opted_in);
-      account_settings->Set(
-          GetPrefNameForType(UserSelectableType::kReadingList), was_opted_in);
-#else   // BUILDFLAG(IS_IOS)
-      // Outside iOS, the type's opt-in state is represented in the regular
-      // account-keyed prefs. However, the default value for new sign-ins
-      // changes with `kReplaceSyncPromosWithSignInPromos`, so it is important
-      // to grab a snapshot now during migration.
+      // explicitly opted in, which is represented in the regular account-keyed
+      // prefs. However, the default value for new sign-ins changes with
+      // `kReplaceSyncPromosWithSignInPromos`, so it is important to grab a
+      // snapshot now during migration.
       for (UserSelectableType type :
            {UserSelectableType::kBookmarks, UserSelectableType::kReadingList}) {
         const char* pref_name = GetPrefNameForType(type);
@@ -908,7 +885,6 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
         // `kReplaceSyncPromosWithSignInPromos`.
         account_settings->Set(pref_name, is_type_on);
       }
-#endif  // BUILDFLAG(IS_IOS)
 
       return true;
     }

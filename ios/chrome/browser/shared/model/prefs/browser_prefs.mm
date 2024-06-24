@@ -197,6 +197,8 @@ inline constexpr char kReverseAutologinRejectedEmailList[] =
 // Deprecated 06/2024.
 constexpr char kObsoletePasswordsPerAccountPrefMigrationDone[] =
     "sync.passwords_per_account_pref_migration_done";
+constexpr char kObsoleteBookmarksAndReadingListAccountStorageOptIn[] =
+    "sync.bookmarks_and_reading_list_account_storage_opt_in";
 
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
@@ -859,6 +861,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
                                 false);
+
+  registry->RegisterBooleanPref(
+      kObsoleteBookmarksAndReadingListAccountStorageOptIn, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1091,6 +1096,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 06/2024.
   prefs->ClearPref(kObsoletePasswordsPerAccountPrefMigrationDone);
+
+  // Added 06/2024.
+  prefs->ClearPref(kObsoleteBookmarksAndReadingListAccountStorageOptIn);
 }
 
 void MigrateObsoleteUserDefault() {
