@@ -380,8 +380,9 @@ TEST_P(QuicChromiumClientStreamTest, Handle) {
 TEST_P(QuicChromiumClientStreamTest, HandleAfterConnectionClose) {
   quic::test::QuicConnectionPeer::TearDownLocalConnectionState(
       session_.connection());
-  stream_->OnConnectionClosed(quic::QUIC_INVALID_FRAME_DATA,
-                              quic::ConnectionCloseSource::FROM_PEER);
+  quic::QuicConnectionCloseFrame frame;
+  frame.quic_error_code = quic::QUIC_INVALID_FRAME_DATA;
+  stream_->OnConnectionClosed(frame, quic::ConnectionCloseSource::FROM_PEER);
 
   EXPECT_FALSE(handle_->IsOpen());
   EXPECT_EQ(quic::QUIC_INVALID_FRAME_DATA, handle_->connection_error());
