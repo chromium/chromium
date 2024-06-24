@@ -10,6 +10,8 @@
     "optimize_for_fuzzing": true,
     "pdf_enable_xfa": true,
     "proprietary_codecs": true,
+    "target_cpu": "x64",
+    "target_os": "linux",
     "use_centipede": true,
     "use_remoteexec": true,
     "use_siso": true
