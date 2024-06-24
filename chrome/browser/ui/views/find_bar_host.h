@@ -27,12 +27,12 @@ class FindNotificationDetails;
 ////////////////////////////////////////////////////////////////////////////////
 //
 // The FindBarHost implements the container widget for the find-in-page
-// functionality. It is responsible for showing,hiding, closing, and moving the
-// widget if needed, for example if the widgetis obscuring the selection
-// results. It also receives notifications about thesearch results and
-// communicates that to the viewThere is one FindBarHost per BrowserView, and
-// its state is updatedwhenever the selected Tab is changed. The FindBarHost is
-// created whenthe BrowserView is attached to the frame's Widget for the first
+// functionality. It is responsible for showing, hiding, closing, and moving the
+// widget if needed, for example if the widget is obscuring the selection
+// results. It also receives notifications about the search results and
+// communicates that to the view. There is one FindBarHost per BrowserView, and
+// its state is updated whenever the selected Tab is changed. The FindBarHost is
+// created when the BrowserView is attached to the frame's Widget for the first
 // time.
 //
 ////////////////////////////////////////////////////////////////////////////////

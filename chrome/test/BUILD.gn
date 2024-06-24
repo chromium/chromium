@@ -11559,6 +11559,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/app/vector_icons:vector_icons",
         "//chrome/browser/image_fetcher",
+        "//chrome/browser/ui/lens",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
         "//components/data_sharing/public",

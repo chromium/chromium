@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -52,6 +53,7 @@ class FindBarView : public views::BoxLayoutView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPreviousButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNextButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLensButtonElementId);
 
   explicit FindBarView(FindBarHost* host = nullptr);
 
@@ -113,6 +115,10 @@ class FindBarView : public views::BoxLayoutView,
   // Returns the color for the icons on the buttons per the current NativeTheme.
   SkColor GetTextColorForIcon();
 
+  // Hides the Lens Overlay entrypoint if search_text is not empty, else, shows
+  // the button.
+  void UpdateLensButtonVisibility(const std::u16string& search_text);
+
   // The OS-specific view for the find bar that acts as an intermediary
   // between us and the WebContentsView.
   raw_ptr<FindBarHost> find_bar_host_;
@@ -129,6 +135,8 @@ class FindBarView : public views::BoxLayoutView,
   raw_ptr<views::ImageButton> find_previous_button_;
   raw_ptr<views::ImageButton> find_next_button_;
   raw_ptr<views::ImageButton> close_button_;
+  raw_ptr<views::Separator> lens_button_separator_;
+  raw_ptr<views::MdTextButton> lens_button_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -26,6 +27,7 @@
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -186,6 +188,11 @@ class FindInPageTest : public InteractiveBrowserTest {
   FindInPageTest() {
     // TODO(https://crbug.com/40183900): Undo this in the destructor!
     FindBarHost::SetEnableAnimationsForTesting(false);
+
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay, {
+                                          {"find-in-page-entry-point", "true"},
+                                      });
   }
 
   void SetUp() override {
@@ -236,6 +243,8 @@ class FindInPageTest : public InteractiveBrowserTest {
     FindBar* find_bar = browser()->GetFindBarController()->find_bar();
     return static_cast<FindBarHost*>(find_bar);
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
@@ -881,4 +890,34 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MatchOrdinalStableWhileTyping) {
       WaitForState(kFindResultState, []() { return FindResultState(1, 3); }),
       EnterText(FindBarView::kTextField, u"o", TextEntryMode::kAppend),
       WaitForState(kFindResultState, []() { return FindResultState(1, 3); }));
+}
+
+IN_PROC_BROWSER_TEST_F(FindInPageTest, LensButton) {
+  if (browser()
+          ->GetFindBarController()
+          ->find_bar()
+          ->HasGlobalFindPasteboard()) {
+    // The presence of a global find pasteboard does not guarantee the find bar
+    // will be empty on launch.
+    return;
+  }
+
+  constexpr char16_t kASearch[] = u"a";
+  const GURL page_a = embedded_test_server()->GetURL("/a.html");
+
+  RunTestSequence(
+      // Setup test and open Find Bar.
+      InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
+      EnsurePresent(FindBarView::kLensButtonElementId),
+      // Search for 'a'.
+      EnterText(FindBarView::kTextField, kASearch),
+      // Ensure Lens Button hides after a search is made.
+      WaitForHide(FindBarView::kLensButtonElementId),
+      // Delete the search text.
+      SendKeyPress(ui::VKEY_BACK, false, false),
+      // Ensure Lens Button comes back after no search is being made.
+      WaitForShow(FindBarView::kLensButtonElementId),
+      // Ensure clicking on the button triggers the Lens Overlay.
+      MoveMouseTo(FindBarView::kLensButtonElementId), ClickMouse(),
+      WaitForShow(kLensPermissionDialogOkButtonElementId));
 }

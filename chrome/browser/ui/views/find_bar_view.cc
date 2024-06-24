@@ -72,6 +72,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kPreviousButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kNextButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kCloseButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kLensButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
   METADATA_HEADER(FindBarMatchCountLabel, views::Label)
@@ -285,10 +286,12 @@ FindBarView::FindBarView(FindBarHost* host) {
 #endif
 
     AddChildView(views::Builder<views::Separator>()
+                     .CopyAddressTo(&lens_button_separator_)
                      .SetOrientation(views::Separator::Orientation::kHorizontal)
                      .Build());
     AddChildView(
         views::Builder<views::MdTextButton>()
+            .CopyAddressTo(&lens_button_)
             .SetText(
                 l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_LENS_OVERLAY))
             .SetCallback(base::BindRepeating(
@@ -320,6 +323,7 @@ FindBarView::FindBarView(FindBarHost* host) {
             .SetProperty(
                 views::kMarginsKey,
                 gfx::Insets(toast_label_vertical_margin + horizontal_margin))
+            .SetProperty(views::kElementIdentifierKey, kLensButtonElementId)
             .Build());
   }
 
@@ -508,6 +512,9 @@ void FindBarView::Find(const std::u16string& search_text) {
   // can lead to crashes, as exposed by automation testing in issue 8048.
   if (!web_contents)
     return;
+
+  UpdateLensButtonVisibility(search_text);
+
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
 
@@ -579,6 +586,28 @@ void FindBarView::OnThemeChanged() {
                                          fg_color, fg_disabled_color);
   views::SetImageFromVectorIconWithColor(close_button_, kCloseChromeRefreshIcon,
                                          fg_color, fg_disabled_color);
+}
+
+void FindBarView::UpdateLensButtonVisibility(
+    const std::u16string& search_text) {
+  // Exit early if the Lens button is disabled via finch.
+  if (!lens_button_) {
+    return;
+  }
+
+  bool visibility_changed = search_text.empty() != lens_button_->GetVisible();
+  if (!visibility_changed) {
+    // The visibility didn't change, so exit early so we don't force unnecessary
+    // repaints.
+    return;
+  }
+
+  // Show the button if there is no search_text.
+  lens_button_separator_->SetVisible(search_text.empty());
+  lens_button_->SetVisible(search_text.empty());
+
+  // Notify the parent to re-layout with out new size.
+  find_bar_host_->MoveWindowIfNecessary();
 }
 
 BEGIN_METADATA(FindBarView)
