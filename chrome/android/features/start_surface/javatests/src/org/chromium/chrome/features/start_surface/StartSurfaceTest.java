@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_SINGLE_ENABLED_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.getStartSurfaceLayoutType;
@@ -381,10 +381,10 @@ public class StartSurfaceTest {
     })
     public void startSurfaceRecordHistogramsTest_SingleTab() {
         if (!mImmediateReturn) {
-            assertNotEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
+            assertNotEquals(0, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
         } else {
-            assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
+            assertEquals(0, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
         }
 
         StartSurfaceTestUtils.waitForStartSurfaceVisible(

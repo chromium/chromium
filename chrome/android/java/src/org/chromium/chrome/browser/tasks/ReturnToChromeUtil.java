@@ -293,18 +293,11 @@ public final class ReturnToChromeUtil {
      *
      * @param lastTimeMillis The last time the application was backgrounded or foreground, depends
      *     on which time is the max. Set in ChromeTabbedActivity::onStopWithNative
-     * @param useNewReturnTime Whether to use a new return time feature flag. The new flag is
-     *     equivalent to the existing one, but allows a different default value other than 8 hours.
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
-    public static boolean shouldShowTabSwitcher(
-            final long lastTimeMillis, boolean useNewReturnTime) {
+    public static boolean shouldShowTabSwitcher(final long lastTimeMillis) {
         long tabSwitcherAfterMillis =
-                getReturnTime(
-                        useNewReturnTime
-                                ? StartSurfaceConfiguration
-                                        .START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS
-                                : StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS);
+                getReturnTime(StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS);
 
         if (lastTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
@@ -599,12 +592,10 @@ public final class ReturnToChromeUtil {
         // If Start surface isn't enabled, return false.
         if (!ReturnToChromeUtil.isStartSurfaceEnabled(context)) return false;
 
-        return shouldShowHomeSurfaceAtStartupImpl(
-                /* useNewReturnTime= */ false, intent, tabModelSelector, inactivityTracker);
+        return shouldShowHomeSurfaceAtStartupImpl(intent, tabModelSelector, inactivityTracker);
     }
 
     private static boolean shouldShowHomeSurfaceAtStartupImpl(
-            boolean useNewReturnTime,
             Intent intent,
             TabModelSelector tabModelSelector,
             ChromeInactivityTracker inactivityTracker) {
@@ -633,7 +624,7 @@ public final class ReturnToChromeUtil {
         long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
         return IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.shouldShowTabSwitcher(
-                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs), useNewReturnTime);
+                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs));
     }
 
     /**
@@ -655,8 +646,7 @@ public final class ReturnToChromeUtil {
             return false;
         }
 
-        return shouldShowHomeSurfaceAtStartupImpl(
-                /* useNewReturnTime= */ true, intent, tabModelSelector, inactivityTracker);
+        return shouldShowHomeSurfaceAtStartupImpl(intent, tabModelSelector, inactivityTracker);
     }
 
     /** Returns whether a recreate was happened. */

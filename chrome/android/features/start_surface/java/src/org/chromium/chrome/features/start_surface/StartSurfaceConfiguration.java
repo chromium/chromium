@@ -65,24 +65,14 @@ public class StartSurfaceConfiguration {
                     ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
 
     // Start return time experiment:
-    @VisibleForTesting
-    public static final String START_SURFACE_RETURN_TIME_SECONDS_PARAM =
-            "start_surface_return_time_seconds";
 
-    public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_SECONDS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_RETURN_TIME,
-                    START_SURFACE_RETURN_TIME_SECONDS_PARAM,
-                    28800); // 8 hours
-
-    // Equivalent to the START_SURFACE_RETURN_TIME_SECONDS, but allows a different default value
-    // other than 8 hours. This parameter isn't just used on tablets anymore.
-    public static final String START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM =
+    // This parameter isn't just used on tablets anymore.
+    public static final String HOME_SURFACE_RETURN_TIME_SECONDS_PARAM =
             "start_surface_return_time_on_tablet_seconds";
-    public static final IntCachedFieldTrialParameter START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS =
+    public static final IntCachedFieldTrialParameter HOME_SURFACE_RETURN_TIME_SECONDS =
             ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_RETURN_TIME,
-                    START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS_PARAM,
+                    HOME_SURFACE_RETURN_TIME_SECONDS_PARAM,
                     28800); // 8 hours
     private static final String START_SURFACE_RETURN_TIME_USE_MODEL_PARAM =
             "start_surface_return_time_use_model";

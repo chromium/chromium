@@ -113,8 +113,7 @@ public class ChromeCachedFlags {
                         ShoppingPersistedTabDataService
                                 .SKIP_SHOPPING_PERSISTED_TAB_DATA_DELAYED_INITIALIZATION,
                         StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,
-                        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS,
-                        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS,
+                        StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS,
                         StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL,
                         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT,
                         StartSurfaceConfiguration

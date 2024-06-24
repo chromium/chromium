@@ -118,8 +118,7 @@ public class HubLayoutPublicTransitTest {
     @LargeTest
     @EnableFeatures({SHOW_NTP_AT_STARTUP_ANDROID, START_SURFACE_RETURN_TIME})
     public void testExitHubOnStartSurfaceAsNtp() {
-        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.setForTesting(0);
+        StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
 
         PageStation page = mInitialStateRule.startOnBlankPage();
 

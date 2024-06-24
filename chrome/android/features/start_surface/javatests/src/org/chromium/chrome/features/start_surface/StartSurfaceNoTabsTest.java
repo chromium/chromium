@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -88,11 +88,11 @@ public class StartSurfaceNoTabsTest {
     @Before
     public void setUp() throws IOException {
         if (mImmediateReturn) {
-            START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-            assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
-            assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+            HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+            assertEquals(0, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
+            assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         } else {
-            assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+            assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         }
         ReturnToChromeUtil.setSkipInitializationCheckForTesting(true);
 

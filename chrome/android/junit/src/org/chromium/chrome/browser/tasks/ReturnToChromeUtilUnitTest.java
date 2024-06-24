@@ -18,9 +18,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_HOME_SURFACE_UI_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS;
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_USE_MODEL;
 
 import android.content.Context;
@@ -156,60 +155,20 @@ public class ReturnToChromeUtilUnitTest {
     @SmallTest
     public void testShouldShowTabSwitcher() {
         Assert.assertEquals(
-                START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
-                START_SURFACE_RETURN_TIME_SECONDS.getValue());
+                HOME_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
+                HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
 
         long returnTimeMs =
-                START_SURFACE_RETURN_TIME_SECONDS.getValue() * DateUtils.SECOND_IN_MILLIS;
+                HOME_SURFACE_RETURN_TIME_SECONDS.getValue() * DateUtils.SECOND_IN_MILLIS;
         // When return time doesn't arrive, return false:
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs + DELTA_MS, false));
+                        System.currentTimeMillis() - returnTimeMs + DELTA_MS));
 
         // When return time arrives, return true:
         assertTrue(
                 ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs - 1, false));
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldShowTabSwitcherOnMixPhoneAndTabletMode() {
-        Assert.assertEquals(
-                START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
-                START_SURFACE_RETURN_TIME_SECONDS.getValue());
-        Assert.assertEquals(
-                START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.getDefaultValue(),
-                START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.getValue());
-
-        int updatedReturnTimeMs = 1;
-        // Sets the return time on phones arrived.
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(updatedReturnTimeMs);
-        Assert.assertEquals(updatedReturnTimeMs, START_SURFACE_RETURN_TIME_SECONDS.getValue());
-        long returnTimeMs = updatedReturnTimeMs * DateUtils.SECOND_IN_MILLIS;
-        // When return time on phones arrives, return true on phones:
-        assertTrue(
-                ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs - 1, false));
-        // Verifies that return time on phones doesn't impact the return time on tablets.
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs - 1, true));
-
-        // Sets the return time on tablets arrived, while resets the one of phones.
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(
-                START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue());
-        START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.setForTesting(updatedReturnTimeMs);
-        Assert.assertEquals(
-                updatedReturnTimeMs, START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.getValue());
-        // When return time on tablets arrives, return true on tablets:
-        assertTrue(
-                ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs - 1, true));
-        // Verifies that return time on tablets doesn't impact the return time on phones.
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs - 1, false));
+                        System.currentTimeMillis() - returnTimeMs - 1));
     }
 
     @Test
@@ -218,47 +177,45 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertFalse(START_SURFACE_RETURN_TIME_USE_MODEL.getValue());
 
         // Set to not shown.
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
-        Assert.assertEquals(-1, START_SURFACE_RETURN_TIME_SECONDS.getValue());
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
+        Assert.assertEquals(-1, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - DELTA_MS, false));
+                ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis() - DELTA_MS));
 
         // Sets to immediate return.
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        Assert.assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis(), false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        Assert.assertEquals(0, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis()));
 
         // Sets to an random time.
         int expectedReturnTimeSeconds = 60; // one minute
         int expectedReturnTimeMs = (int) (expectedReturnTimeSeconds * DateUtils.SECOND_IN_MILLIS);
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(expectedReturnTimeSeconds);
-        Assert.assertEquals(
-                expectedReturnTimeSeconds, START_SURFACE_RETURN_TIME_SECONDS.getValue());
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(expectedReturnTimeSeconds);
+        Assert.assertEquals(expectedReturnTimeSeconds, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
         assertTrue(
                 ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - expectedReturnTimeMs, false));
+                        System.currentTimeMillis() - expectedReturnTimeMs));
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - expectedReturnTimeSeconds, false));
+                        System.currentTimeMillis() - expectedReturnTimeSeconds));
     }
 
     @Test
     @SmallTest
     public void testShouldShowTabSwitcherWithSegmentationReturnTime() {
         // Verifies that when the preference key isn't stored, return
-        // START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue() as default value, i.e., 8 hours.
+        // START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS.getDefaultValue() as default value, i.e., 8
+        // hours.
         Assert.assertEquals(
-                START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
-                ReturnToChromeUtil.getReturnTimeFromSegmentation(
-                        START_SURFACE_RETURN_TIME_SECONDS));
+                HOME_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(HOME_SURFACE_RETURN_TIME_SECONDS));
 
         // Verifies returning false if both flags haven't been set any value or any meaningful yet.
         START_SURFACE_RETURN_TIME_USE_MODEL.setForTesting(true);
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
         // Return time from segmentation model is enabled for 1 min:
         long returnTimeSeconds = 60; // One minute
@@ -271,26 +228,23 @@ public class ReturnToChromeUtilUnitTest {
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(
                 returnTimeMs,
-                ReturnToChromeUtil.getReturnTimeFromSegmentation(
-                        START_SURFACE_RETURN_TIME_SECONDS));
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(HOME_SURFACE_RETURN_TIME_SECONDS));
 
         // Returns false if it isn't immediate return but without last backgrounded time available:
         result = new ClassificationResult(PredictionStatus.SUCCEEDED, new String[] {"1"});
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(
                 1 * DateUtils.SECOND_IN_MILLIS,
-                ReturnToChromeUtil.getReturnTimeFromSegmentation(
-                        START_SURFACE_RETURN_TIME_SECONDS));
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(HOME_SURFACE_RETURN_TIME_SECONDS));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
 
         // Verifies returning false if segmentation result is negative (not show).
         result = new ClassificationResult(PredictionStatus.NOT_READY, null);
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(
                 -1,
-                ReturnToChromeUtil.getReturnTimeFromSegmentation(
-                        START_SURFACE_RETURN_TIME_SECONDS));
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1, false));
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(HOME_SURFACE_RETURN_TIME_SECONDS));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1));
 
         // Verifies returning false if segmentation result is negative (not show).
         result =
@@ -299,9 +253,8 @@ public class ReturnToChromeUtilUnitTest {
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(
                 -1,
-                ReturnToChromeUtil.getReturnTimeFromSegmentation(
-                        START_SURFACE_RETURN_TIME_SECONDS));
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1, false));
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(HOME_SURFACE_RETURN_TIME_SECONDS));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(1));
 
         // Tests regular cases with last backgrounded time set:
         result =
@@ -311,21 +264,19 @@ public class ReturnToChromeUtilUnitTest {
         ReturnToChromeUtil.cacheReturnTimeFromSegmentationImpl(result);
         Assert.assertEquals(
                 returnTimeMs,
-                ReturnToChromeUtil.getReturnTimeFromSegmentation(
-                        START_SURFACE_RETURN_TIME_SECONDS));
+                ReturnToChromeUtil.getReturnTimeFromSegmentation(HOME_SURFACE_RETURN_TIME_SECONDS));
 
         int doubleReturnTimeMs = (int) (2 * returnTimeMs); // Two minutes
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(doubleReturnTimeMs);
-        Assert.assertEquals(doubleReturnTimeMs, START_SURFACE_RETURN_TIME_SECONDS.getValue());
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(doubleReturnTimeMs);
+        Assert.assertEquals(doubleReturnTimeMs, HOME_SURFACE_RETURN_TIME_SECONDS.getValue());
 
         // When segmentation platform's return time arrives, return true:
         assertTrue(
                 ReturnToChromeUtil.shouldShowTabSwitcher(
-                        System.currentTimeMillis() - returnTimeMs - 1, false));
+                        System.currentTimeMillis() - returnTimeMs - 1));
 
         // When segmentation platform's return times hasn't arrived, return false:
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis(), false));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis()));
 
         // Clean up.
         sharedPreferencesManager.removeKey(
@@ -344,7 +295,7 @@ public class ReturnToChromeUtilUnitTest {
         // Tests the case when the total tab count > 0:
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(ON_RETURN_THRESHOLD_SECOND);
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(ON_RETURN_THRESHOLD_SECOND);
 
         long currentTime = System.currentTimeMillis();
         long returnTimeMS = ON_RETURN_THRESHOLD_SECOND * DateUtils.SECOND_IN_MILLIS;
@@ -355,9 +306,8 @@ public class ReturnToChromeUtilUnitTest {
 
         // Verifies that Start will show if the threshold of return time has reached using last
         // visible time, while last background time is lost or not set.
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime, false));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime, false));
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
         assertTrue(
                 ReturnToChromeUtil.shouldShowOverviewPageOnStart(
                         mContext,
@@ -372,9 +322,8 @@ public class ReturnToChromeUtilUnitTest {
         expectedVisibleTime = currentTime - returnTimeMS + DELTA_MS; // doesn't reach
         doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
         doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime, false));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime, false));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowOverviewPageOnStart(
                         mContext,
@@ -390,9 +339,8 @@ public class ReturnToChromeUtilUnitTest {
         expectedLastBackgroundTime = currentTime - returnTimeMS + DELTA_MS; // doesn't reach
         doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
         doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime, false));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime, false));
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
         Assert.assertFalse(
                 ReturnToChromeUtil.shouldShowOverviewPageOnStart(
                         mContext,
@@ -408,8 +356,8 @@ public class ReturnToChromeUtilUnitTest {
         expectedLastBackgroundTime = currentTime - returnTimeMS - 1; // has reached
         doReturn(expectedVisibleTime).when(mInactivityTracker).getLastVisibleTimeMs();
         doReturn(expectedLastBackgroundTime).when(mInactivityTracker).getLastBackgroundedTimeMs();
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime, false));
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime, false));
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedVisibleTime));
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(expectedLastBackgroundTime));
         assertTrue(
                 ReturnToChromeUtil.shouldShowOverviewPageOnStart(
                         mContext,
@@ -429,8 +377,8 @@ public class ReturnToChromeUtilUnitTest {
         Intent intent = createMainIntentFromLauncher();
 
         // Sets background time to not show Start:
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // Tests the case when there isn't any Tab:
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -458,8 +406,8 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // Verifies that Start will show since the return time has arrived.
         assertTrue(
@@ -491,8 +439,8 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // Tests the case when there isn't any Tab but with customized homepage:
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -533,8 +481,8 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // When homepage is disabled, verifies that Start isn't shown when there isn't any Tab, even
         // if the return time has arrived.
@@ -597,8 +545,8 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // Tests the case when there isn't any Tab. Verifies that Start isn't shown if
         // HomepagePolicyManager isn't initialized.
@@ -647,8 +595,8 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // Tests the case when there isn't any Tab. Verifies that Start is only shown on tablets.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
@@ -921,8 +869,8 @@ public class ReturnToChromeUtilUnitTest {
         ChromeSharedPreferences.getInstance()
                 .addToStringSet(
                         ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
+        HOME_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
+        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0));
 
         // There should always be at least 1 tab. Otherwise one will be created regardless.
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();

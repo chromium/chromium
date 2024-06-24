@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tasks;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM;
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.HOME_SURFACE_RETURN_TIME_SECONDS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStatesAndMetadataFile;
 
 import android.app.Activity;
@@ -74,7 +74,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @DoNotBatch(reason = "This test suite tests Clank's startup.")
 public class ReturnToChromeUtilTest {
     private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:" + START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
+            "force-fieldtrial-params=Study.Group:" + HOME_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
