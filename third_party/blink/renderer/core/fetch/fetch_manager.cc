@@ -578,6 +578,12 @@ void FetchManager::Loader::Start() {
   }
 
   const KURL& url = fetch_request_data_->Url();
+
+  if (recordreplay::IsInReplayCode()) {
+    // [TT-1422] Always allow |fetch| from Replay code.
+    PerformSchemeFetch();
+    return;
+  }
   // "- |request|'s url's origin is same origin with |request|'s origin,
   //    |request|'s tainted origin flag is unset, and the CORS flag is unset"
   // Note tainted origin flag is always unset here.

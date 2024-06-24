@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/record_replay.h"
 #include "base/record_replay_paint_surface.h"
@@ -176,20 +177,39 @@ typedef std::unordered_map<int, InspectorData*> ContextGroupIdInspectorMap;
 std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>* gInspectorData = nullptr;
 std::unordered_map<v8::Isolate*, v8_inspector::V8Inspector*>* gV8Inspectors = nullptr;
 
-static std::string ReadReplayAssetFileRaw(const char* filename, size_t& len) {
-  const char* scriptDir = getenv("RECORD_REPLAY_ASSETS_DIRECTORY");
-  if (!scriptDir) {
-    recordreplay::Crash("ReadReplayAssetFileRaw failed: RECORD_REPLAY_ASSETS_DIRECTORY not provided");
-  }
+static std::string ReadReplayAssetFile(const char* filename, size_t& len) {
+  base::FilePath binPath;
+  std::string assetsDir;
 
-  std::string fpath = std::string(scriptDir) + std::string("/") + filename;
+  if (getenv("RECORD_REPLAY_ASSETS_DIRECTORY")) {
+    assetsDir = getenv("RECORD_REPLAY_ASSETS_DIRECTORY");
+  } else if (base::PathService::Get(base::FILE_EXE, &binPath)) {
+    // PathService::Get(base::DIR_EXE, result);
+    auto assetRoot = binPath.DirName();
+#if BUILDFLAG(IS_MAC)
+    // NOTE: We have to go up by 9 directories on Mac -
+    // E.g.:
+    // Replay-Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/108.0.5359.0/Helpers/Chromium Helper (Renderer).app/Contents/MacOS/replay-assets/replay_sourcemap_handler.js
+    assetRoot = assetRoot.AppendASCII("../../../../../../../../..");
+#endif
+    assetsDir = assetRoot.AppendASCII("replay-assets").AsUTF8Unsafe();
+  }
+  if (!assetsDir.length()) {
+    recordreplay::Crash("ReadReplayAssetFile failed: Neither base::FILE_EXE nor RECORD_REPLAY_ASSETS_DIRECTORY provided.");
+  }
+  std::string fpath = assetsDir + std::string("/") + filename;
   std::ifstream ifs(fpath);
   std::stringstream ss;
   ss << ifs.rdbuf();
   std::string s = ss.str();
   len = s.length();
+  recordreplay::Print("ReadReplayAssetFile from '%s' (%zu)",
+    fpath.c_str(),
+    len);
   if (!len) {
-    recordreplay::Crash("ReadReplayAssetFileRaw failed: %s", fpath.c_str());
+    recordreplay::Crash("ReadReplayAssetFile (\"%s\") failed: %s",
+      fpath.c_str(),
+      strerror(errno));
   }
   return s;
 }
@@ -198,10 +218,21 @@ static String ReadReplayAssetFile(const char* fname) {
   size_t len;
 
   // Important: Treat as UTF-8.
+  String result = String::FromUTF8(ReadReplayAssetFile(fname, len).c_str(), len);
+  if (!len) {
+    recordreplay::Crash("ReadReplayAssetFile failed: %s", fname);
+  }
+  return result;
+}
+
+static String ReadReplayCommandAssetFile(const char* fname) {
+  size_t len;
+
+  // Important: Treat as UTF-8.
   String result = String::FromUTF8(
     IsCommandHandlingEnabledWhenRecording()
       // Recording + Replay.
-      ? ReadReplayAssetFileRaw(fname, len).c_str()
+      ? ReadReplayAssetFile(fname, len).c_str()
       // Replay only.
       : V8RecordReplayReadAssetFileContents(fname, &len),
     len
@@ -212,268 +243,13 @@ static String ReadReplayAssetFile(const char* fname) {
   return result;
 }
 
-// static
-String ReadReplayCommandHandlerScript() {
-  return ReadReplayAssetFile("replay_command_handlers.js");
+static String ReadReplaySourcemapHandlerScript() {
+  return ReadReplayAssetFile("replay_sourcemap_handler.js");
 }
 
-
-/** ###########################################################################
- * gSourceMapScript
- * ##########################################################################*/
-
-// Script which sets a handler for collecting source maps from scripts in the
-// recording. Runs when recording/replaying if source map collection is enabled.
-const char* gSourceMapScript = R""""(
-//js
-(() => {
-
-// Avoid monkey patching.
-const fetch = window.fetch;
-const DateNow = Date.now;
-
-const {
-  log,
-  warning,
-  getRecordingId,
-  sha256DigestHex,
-  writeToRecordingDirectory,
-  addRecordingEvent,
-  addNewScriptHandler,
-  getScriptSource,
-  recordingDirectoryFileExists,
-  readFromRecordingDirectory,
-  getRecordingFilePath,
-  RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE,
-} = __RECORD_REPLAY_ARGUMENTS__;
-
-const cache = {};
-
-// Provide a cache for urls, salted with the supplied hash.  Practically, this
-// means if the script content changes at the url, we will re-download the resource.
-async function getCachedResource(url, hash) {
-  const key = `${url}:${hash}`;
-  if (cache[key] && !RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE) {
-    return cache[key];
-  }
-
-  log(`fetching sourcemap resource ${key}`);
-
-  const res = await fetchText(url);
-  cache[key] = res;
-  return res;
+static String ReadReplayCommandHandlerScript() {
+  return ReadReplayCommandAssetFile("replay_command_handlers.js");
 }
-
-addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
-  try {
-  if (!relativeSourceMapURL || relativeSourceMapURL.startsWith("data:"))
-    return;
-
-  const recordingId = getRecordingId();
-  if (!recordingId) {
-    // The recording has been invalidated.
-    return;
-  }
-
-  const urls = getSourceMapURLs(sourceURL, relativeSourceMapURL);
-  if (!urls)
-    return;
-
-  const scriptSource = getScriptSource(scriptId);
-  const scriptHash = sha256DigestHex(scriptSource);
-
-  const { sourceMapURL, sourceMapBaseURL } = urls;
-
-  let sourceMap;
-  try {
-    sourceMap = await getCachedResource(sourceMapURL, scriptHash);
-  } catch (err) {
-    log(`[RuntimeError] Failed to read sourcemap ${sourceMapURL}: ${err.message}`);
-  }
-  if (!sourceMap) {
-    return;
-  }
-
-  const id = scriptHash;
-  const name = `sourcemap-${id}.map`;
-  const lookupName = `sourcemap-${id}.lookup`;
-
-  let sources;
-  if (recordingDirectoryFileExists(name) && recordingDirectoryFileExists(lookupName)) {
-    try {
-      sources = JSON.parse(readFromRecordingDirectory(lookupName));
-    } catch (err) {
-      log(`[RuntimeError][sourcemaps] Failed to load sourcemaps from file: ${lookupName} - ${err.message}`);
-    }
-  }
-
-  if (!sources) {
-    writeToRecordingDirectory(name, sourceMap);
-
-    sources = collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, sourceURL);
-    writeToRecordingDirectory(lookupName, JSON.stringify(sources));
-  }
-
-  addRecordingEvent(JSON.stringify({
-    kind: "sourcemapAdded",
-    path: getRecordingFilePath(name),
-    recordingId,
-    id,
-    url: sourceMapURL,
-    baseURL: sourceMapBaseURL,
-    targetContentHash: `sha256:${scriptHash}`,
-    targetURLHash: sourceURL ? makeAPIHash(sourceURL) : undefined,
-    targetMapURLHash: makeAPIHash(sourceMapURL),
-    timestamp: DateNow(),
-  }));
-
-  for (const { offset, url } of sources) {
-    let sourceContent;
-    try {
-      sourceContent = await getCachedResource(url, scriptHash);
-    } catch (err) {
-      log(`[RuntimeError][sourcemaps] Failed to read original source ${url}: ${err.message}`);
-      continue;
-    }
-    const hash = sha256DigestHex(sourceContent);
-    const name = `source-${hash}`;
-
-    if (!recordingDirectoryFileExists(name)) {
-      writeToRecordingDirectory(name, sourceContent);
-    }
-    addRecordingEvent(JSON.stringify({
-      kind: "originalSourceAdded",
-      path: getRecordingFilePath(name),
-      recordingId,
-      parentId: id,
-      parentOffset: offset,
-      timestamp: DateNow(),
-    }));
-  }
-  } catch (err) {
-    warning(`[RuntimeError][sourcemaps] Exception - ${err?.stack || err}`);
-  }
-});
-
-async function fetchText(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Fetching ${url} failed with status code ${response.status} (${response.statusText})`);
-  }
-  return await response.text();
-}
-
-function makeAPIHash(content) {
-  assert(typeof content === "string");
-  const digestHex = sha256DigestHex(content);
-  return "sha256:" + digestHex;
-}
-
-function collectUnresolvedSourceMapResources(mapText, mapURL) {
-  let obj;
-  let sourceOffset = 0;
-
-  function logError(msg) {
-    log(`[RuntimeError][sourcemaps] ${msg} (${mapURL}:${sourceOffset})`);
-  }
-
-  try {
-    obj = JSON.parse(mapText);
-    if (typeof obj !== "object" || !obj) {
-      return [];
-    }
-  } catch (err) {
-    logError(`Exception parsing sourcemap JSON (${mapURL}): ${err?.message || err}`);
-    return [];
-  }
-
-  const unresolvedSources = [];
-  if (obj.version !== 3) {
-    logError("Invalid sourcemap version: " + obj.version);
-    return [];
-  }
-
-  if (obj.sources != null) {
-    const { sourceRoot, sources, sourcesContent } = obj;
-
-    if (Array.isArray(sources)) {
-      for (let i = 0; i < sources.length; i++) {
-        const offset = sourceOffset++;
-
-        if (
-          !Array.isArray(sourcesContent) ||
-          typeof sourcesContent[i] !== "string"
-        ) {
-          let url = sources[i];
-          if (typeof sourceRoot === "string" && sourceRoot) {
-            url = sourceRoot.replace(/\/?/, "/") + url;
-          }
-          let sourceURL;
-          try {
-            sourceURL = new URL(url, mapURL).toString();
-          } catch {
-            logError("Unable to compute original source URL: " + url);
-            continue;
-          }
-
-          unresolvedSources.push({
-            offset,
-            url: sourceURL,
-          });
-        }
-      }
-    } else {
-      logError("Invalid sourcemap sources list");
-    }
-  }
-
-  return unresolvedSources;
-}
-
-function assert(v, msg = "") {
-  if (!v) {
-    const m = `Assertion failed when handling command (${msg})`;
-    log(`[RuntimeError] ${m} - ${Error().stack}`);
-    throw new Error(m);
-  }
-}
-
-function getSourceMapURLs(sourceURL, relativeSourceMapURL) {
-  let sourceBaseURL;
-  if (typeof sourceURL === "string" && isValidBaseURL(sourceURL)) {
-    sourceBaseURL = sourceURL;
-  } else if (window?.location?.href && isValidBaseURL(window?.location?.href)) {
-    sourceBaseURL = window.location.href;
-  }
-
-  let sourceMapURL;
-  try {
-    sourceMapURL = new URL(relativeSourceMapURL, sourceBaseURL).toString();
-  } catch (err) {
-    log("Failed to process sourcemap url: " + err.message);
-    return null;
-  }
-
-  // If the map was a data: URL or something along those lines, we want
-  // to resolve paths in the map relative to the overall base.
-  const sourceMapBaseURL =
-    isValidBaseURL(sourceMapURL) ? sourceMapURL : sourceBaseURL;
-
-  return { sourceMapURL, sourceMapBaseURL };
-}
-
-function isValidBaseURL(url) {
-  try {
-    new URL("", url);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-})();
-
-)"""";
 
 // Script that injects React DevTools "stub" functions to capture
 // marker annotations while recording, for use in later processing
@@ -937,8 +713,7 @@ static void SetCDPMessageCallback(const v8::FunctionCallbackInfo<v8::Value>& arg
 }
 
 static void SendMessageToFrontend(const v8_inspector::StringView& message) {
-  recordreplay::AutoDisallowEvents disallow(
-      "RecordReplay_SendMessageToFrontend");
+  recordreplay::AutoDisallowEvents disallow("RecordReplay_SendMessageToFrontend");
   CHECK(v8::IsMainThread());
 
   CHECK(gCDPMessageCallback);
@@ -2719,7 +2494,7 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
   if (recordreplay::FeatureEnabled("collect-source-maps") &&
       !TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_COLLECTION")) {
     recordreplay::AutoMarkReplayCode amrc;
-    RunScript(isolate, context, gSourceMapScript, InternalScriptURL);
+    RunScript(isolate, context, ReadReplaySourcemapHandlerScript().Utf8().c_str(), InternalScriptURL);
   }
 
   if (recordreplay::FeatureEnabled("force-main-world-initialization")) {

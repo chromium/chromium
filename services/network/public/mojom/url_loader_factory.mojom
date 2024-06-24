@@ -54,6 +54,9 @@ const uint32 kURLLoadOptionAsCorsPreflight = 128;
 // default if the security state is unknown.
 const uint32 kURLLoadOptionBlockLocalRequest = 256;
 
+// [TT-1422] Ignore CORS and other limitations for Replay fetch requests.
+const uint32 kURLLoadOptionReplayRequest = 512;
+
 // URLLoaderFactory is an interface for requesting URLs. It creates URLLoader
 // instances. One URLLoader instance can load one URL.
 interface URLLoaderFactory {

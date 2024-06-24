@@ -24,7 +24,7 @@ function findMatches(text /*: string*/, regex /*: RegExp*/) {
 function extractNamedScriptBlock(
   text /*: string*/,
   start /*: number*/,
-  end /*: number*/,
+  end /*: number*/
 ) {
   const lines = text.split("\n");
   const name = lines[start].split(" ")[2];
@@ -66,7 +66,10 @@ function calculateStatsPerFile(messages) {
   return stat;
 }
 
-async function lintScript(fpath, { name, text } /*: { name: string, text: string }*/) {
+async function lintScript(
+  fpath,
+  { name, text } /*: { name: string, text: string }*/
+) {
   const messages = linter.verify(text, {
     parserOptions: {
       ecmaVersion: 2023,
@@ -135,22 +138,34 @@ async function lintScript(fpath, { name, text } /*: { name: string, text: string
   return { errorCount, fatalErrorCount, warningCount };
 }
 
+const AssetFiles = [
+  "replay_command_handlers.js",
+  "replay_sourcemap_handler.js",
+];
+
+let totalErrorCount = 0;
+let totalWarningCount = 0;
+
 async function main() {
   await lintFile(
     path.join(
       ROOT_DIR,
-      "third_party/blink/renderer/bindings/core/v8/record_replay_interface.cc",
+      "third_party/blink/renderer/bindings/core/v8/record_replay_interface.cc"
     ),
     /R""""\(/g,
     /\)""""/g
   );
 
-  await lintFile(
-    path.join(
-      ROOT_DIR,
-      "replay-assets/replay_command_handlers.js",
-    )
-  );
+  for (const jsFile of AssetFiles) {
+    await lintFile(path.join(ROOT_DIR, "replay-assets/" + jsFile));
+  }
+
+  const bad = !!totalErrorCount;
+  console.log(`\n${bad ? '❌' : '✅'} Final Result:\n  ${totalErrorCount} errors\n  ${totalWarningCount} warnings`);
+  console.groupEnd();
+  if (bad) {
+    process.exit(1);
+  }
 }
 
 async function lintFile(fpath, startRegex, endRegex) {
@@ -161,15 +176,19 @@ async function lintFile(fpath, startRegex, endRegex) {
     const lineNumbers = findMatches(replayText, startRegex);
     const endLineNumbers = findMatches(replayText, endRegex);
     if (lineNumbers?.length != endLineNumbers?.length) {
-      throw new Error(`Lint failed in ${fpath} - start and end line numbers don't match: ${lineNumbers?.length} != ${endLineNumbers?.length}`);
+      throw new Error(
+        `Lint failed in ${fpath} - start and end line numbers don't match: ${lineNumbers?.length} != ${endLineNumbers?.length}`
+      );
     }
     // console.log("lintFile", lineNumbers?.length, endLineNumbers?.length);
     jsTextBlocks = lineNumbers.map((lineNumber, index) =>
-      extractNamedScriptBlock(replayText, lineNumber, endLineNumbers[index]),
+      extractNamedScriptBlock(replayText, lineNumber, endLineNumbers[index])
     );
 
     if (!jsTextBlocks.length) {
-      throw new Error(`Invalid regexes or file path. Could not find js text block in ${fpath}.`);
+      throw new Error(
+        `Invalid regexes or file path. Could not find js text block in ${fpath}.`
+      );
     }
   } else {
     jsTextBlocks = [{ text: replayText }];
@@ -185,11 +204,10 @@ async function lintFile(fpath, startRegex, endRegex) {
     warningCount += blockWarningCount;
   }
 
-  console.log(`Total counts: ${errorCount} errors, ${warningCount} warnings`);
+  console.log(`Stats: ${errorCount} errors, ${warningCount} warnings`);
+  totalErrorCount += errorCount;
+  totalWarningCount += warningCount;
   console.groupEnd();
-  if (errorCount > 0) {
-    process.exit(1);
-  }
 }
 
 main();
