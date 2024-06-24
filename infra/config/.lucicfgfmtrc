@@ -49,7 +49,7 @@ rules {
         arg: "cpu"
         arg: "ssd"
         arg: "free_space"
-        arg: "disallow_gce"
+        arg: "gce"
         arg: "gardener_rotations"
         arg: "tree_closing"
         arg: "console_view_entry"

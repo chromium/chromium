@@ -324,7 +324,7 @@ defaults = args.defaults(
     free_space = None,
     cores = None,
     cpu = None,
-    disallow_gce = False,
+    gce = None,
     fully_qualified_builder_dimension = False,
     console_view = args.COMPUTE,
     list_view = args.COMPUTE,
@@ -399,7 +399,7 @@ def builder(
         override_builder_dimension = None,
         auto_builder_dimension = args.DEFAULT,
         fully_qualified_builder_dimension = args.DEFAULT,
-        disallow_gce = args.DEFAULT,
+        gce = args.DEFAULT,
         cores = args.DEFAULT,
         cpu = args.DEFAULT,
         bootstrap = args.DEFAULT,
@@ -570,9 +570,10 @@ def builder(
         list_view: A string or a list of strings identifying the ID(s) of the
             list view(s) to add an entry to. Supports a module-level default
             that defaults to no list views.
-        disallow_gce: A boolean indicating whether the builder can run on GCE
-            machines. If True, emits a 'gce:0' dimension. By default, gce is
-            allowed.
+        gce: A boolean indicating whether the builder runs on GCE machines.
+            If True, emits a 'gce:1' dimension. If False, emits a 'gce:0'
+            dimension. If None, 'gce' dimension is not emitted, meaning don't
+            care if running on GCE machines or not. By default, considered None.
         coverage_gs_bucket: a string specifying the GS bucket to upload
             coverage data to. Will be copied to '$build/code_coverage' property.
             By default, considered None.
@@ -792,11 +793,11 @@ def builder(
             os.category not in _EXCLUDE_BUILDERLESS_SSD_OS_CATEGORIES):
             ssd = False
     if ssd != None:
-        dimensions["ssd"] = str(int(ssd))
+        dimensions["ssd"] = "1" if ssd else "0"
 
-    disallow_gce = defaults.get_value("disallow_gce", disallow_gce)
-    if disallow_gce:
-        dimensions["gce"] = "0"
+    gce = defaults.get_value("gce", gce)
+    if gce != None:
+        dimensions["gce"] = "1" if gce else "0"
 
     code_coverage = _code_coverage_property(
         coverage_gs_bucket = coverage_gs_bucket,
