@@ -124,7 +124,7 @@ BASE_FEATURE(kEvDetailsInPageInfo,
 // to update Chrome.
 BASE_FEATURE(kFewerUpdateConfirmations,
              "FewerUpdateConfirmations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
