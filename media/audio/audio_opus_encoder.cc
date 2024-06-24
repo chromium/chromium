@@ -200,7 +200,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
 
   DCHECK(timestamp_tracker_);
 
-  if (timestamp_tracker_->base_timestamp() == kNoTimestamp) {
+  if (!timestamp_tracker_->base_timestamp()) {
     timestamp_tracker_->SetBaseTimestamp(capture_time - base::TimeTicks());
   }
 
@@ -249,7 +249,7 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
     fifo_has_data_ = false;
   }
 
-  timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
+  timestamp_tracker_->Reset();
   if (current_done_cb_) {
     // Is |current_done_cb_| is null, it means OnFifoOutput() has already
     // reported an error.

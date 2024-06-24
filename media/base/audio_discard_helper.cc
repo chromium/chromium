@@ -45,7 +45,7 @@ size_t AudioDiscardHelper::TimeDeltaToFrames(base::TimeDelta duration) const {
 void AudioDiscardHelper::Reset(size_t initial_discard) {
   discard_frames_ = initial_discard;
   last_input_timestamp_ = kNoTimestamp;
-  timestamp_helper_.SetBaseTimestamp(kNoTimestamp);
+  timestamp_helper_.Reset();
   delayed_discard_padding_ = DecoderBuffer::DiscardPadding();
 }
 

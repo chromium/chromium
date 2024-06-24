@@ -177,7 +177,7 @@ bool EsParserAdts::ParseFromEsQueue() {
     if (current_timing_desc.pts != kNoTimestamp)
       audio_timestamp_helper_->SetBaseTimestamp(current_timing_desc.pts);
 
-    if (audio_timestamp_helper_->base_timestamp() == kNoTimestamp) {
+    if (!audio_timestamp_helper_->base_timestamp()) {
       DVLOG(1) << "Skipping audio frame with unknown timestamp";
       SkipAdtsFrame(adts_frame);
       continue;
@@ -270,8 +270,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
     // sample rate to compute audio timestamps and durations correctly.
 
     // Reset the timestamp helper to use a new time scale.
-    if (audio_timestamp_helper_ &&
-        audio_timestamp_helper_->base_timestamp() != kNoTimestamp) {
+    if (audio_timestamp_helper_ && audio_timestamp_helper_->base_timestamp()) {
       base::TimeDelta base_timestamp = audio_timestamp_helper_->GetTimestamp();
       audio_timestamp_helper_.reset(new AudioTimestampHelper(orig_sample_rate));
       audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);

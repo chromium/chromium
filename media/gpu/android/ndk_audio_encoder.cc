@@ -239,7 +239,7 @@ void NdkAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
     return;
   }
 
-  if (input_timestamp_tracker_->base_timestamp() == kNoTimestamp) {
+  if (!input_timestamp_tracker_->base_timestamp()) {
     input_timestamp_tracker_->SetBaseTimestamp(capture_time -
                                                base::TimeTicks());
     output_timestamp_tracker_->SetBaseTimestamp(capture_time -
@@ -283,7 +283,7 @@ void NdkAudioEncoder::Flush(EncoderStatusCB done_cb) {
   }
 
   // Nothing to flush if we never fed input to the encoder.
-  if (input_timestamp_tracker_->base_timestamp() == kNoTimestamp) {
+  if (!input_timestamp_tracker_->base_timestamp()) {
     ReportOk(std::move(done_cb));
     return;
   }
@@ -431,8 +431,8 @@ void NdkAudioEncoder::CompleteFlush() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(flush_state_, FlushState::kPendingEOS);
 
-  input_timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
-  output_timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
+  input_timestamp_tracker_->Reset();
+  output_timestamp_tracker_->Reset();
 
   ClearMediaCodec();
   flush_state_ = FlushState::kNeedsMediaCodec;

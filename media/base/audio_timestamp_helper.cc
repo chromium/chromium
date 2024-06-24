@@ -26,7 +26,7 @@ int64_t AudioTimestampHelper::TimeToFrames(base::TimeDelta time,
 }
 
 AudioTimestampHelper::AudioTimestampHelper(int samples_per_second)
-    : base_timestamp_(kNoTimestamp), frame_count_(0) {
+    : frame_count_(0) {
   CHECK_GT(samples_per_second, 0);
   double fps = samples_per_second;
   microseconds_per_frame_ = base::Time::kMicrosecondsPerSecond / fps;
@@ -37,13 +37,9 @@ void AudioTimestampHelper::SetBaseTimestamp(base::TimeDelta base_timestamp) {
   frame_count_ = 0;
 }
 
-base::TimeDelta AudioTimestampHelper::base_timestamp() const {
-  return base_timestamp_;
-}
-
 void AudioTimestampHelper::AddFrames(int frame_count) {
   CHECK_GE(frame_count, 0);
-  CHECK(base_timestamp_ != kNoTimestamp);
+  CHECK(base_timestamp_);
   frame_count_ += frame_count;
 }
 
@@ -65,8 +61,8 @@ base::TimeDelta AudioTimestampHelper::GetFrameDuration(int frame_count) const {
 }
 
 int64_t AudioTimestampHelper::GetFramesToTarget(base::TimeDelta target) const {
-  CHECK(base_timestamp_ != kNoTimestamp);
-  CHECK(target >= base_timestamp_);
+  CHECK(base_timestamp_);
+  CHECK(target >= *base_timestamp_);
 
   int64_t delta_in_us = (target - GetTimestamp()).InMicroseconds();
   if (delta_in_us == 0)
@@ -76,7 +72,7 @@ int64_t AudioTimestampHelper::GetFramesToTarget(base::TimeDelta target) const {
   // created from |frame_count_| are computed relative to this base.
   // This ensures that the time to frame computation here is the proper inverse
   // of the frame to time computation in ComputeTimestamp().
-  base::TimeDelta delta_from_base = target - base_timestamp_;
+  base::TimeDelta delta_from_base = target - *base_timestamp_;
 
   // Compute frame count for the time delta. This computation rounds to
   // the nearest whole number of frames.
@@ -86,12 +82,17 @@ int64_t AudioTimestampHelper::GetFramesToTarget(base::TimeDelta target) const {
   return target_frame_count - frame_count_;
 }
 
+void AudioTimestampHelper::Reset() {
+  base_timestamp_.reset();
+  frame_count_ = 0;
+}
+
 base::TimeDelta AudioTimestampHelper::ComputeTimestamp(
     int64_t frame_count) const {
   CHECK_GE(frame_count, 0);
-  CHECK(base_timestamp_ != kNoTimestamp);
+  CHECK(base_timestamp_);
   double frames_us = microseconds_per_frame_ * frame_count;
-  return base_timestamp_ + base::Microseconds(frames_us);
+  return *base_timestamp_ + base::Microseconds(frames_us);
 }
 
 }  // namespace media

@@ -185,8 +185,9 @@ void AudioToolboxAudioEncoder::Encode(std::unique_ptr<AudioBus> input_bus,
 
   DCHECK(timestamp_helper_);
 
-  if (timestamp_helper_->base_timestamp() == kNoTimestamp)
+  if (!timestamp_helper_->base_timestamp()) {
     timestamp_helper_->SetBaseTimestamp(capture_time - base::TimeTicks());
+  }
 
   current_done_cb_ = std::move(done_cb);
 
@@ -209,7 +210,7 @@ void AudioToolboxAudioEncoder::Flush(EncoderStatusCB flush_cb) {
     return;
   }
 
-  if (timestamp_helper_->base_timestamp() == kNoTimestamp) {
+  if (!timestamp_helper_->base_timestamp()) {
     // We never fed any data into the encoder. Skip the flush.
     std::move(flush_cb).Run(EncoderStatus::Codes::kOk);
     return;
@@ -232,7 +233,7 @@ void AudioToolboxAudioEncoder::Flush(EncoderStatusCB flush_cb) {
     status_code = EncoderStatus::Codes::kEncoderFailedFlush;
   }
 
-  timestamp_helper_->SetBaseTimestamp(kNoTimestamp);
+  timestamp_helper_->Reset();
 
   if (current_done_cb_) {
     // If |current_done_cb_| is null, DoEncode() has already reported an error.

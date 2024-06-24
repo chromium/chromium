@@ -252,7 +252,7 @@ void MediaCodecAudioDecoder::Reset(base::OnceClosure closure) {
   if (!success)
     success = CreateMediaCodecLoop();
 
-  timestamp_helper_->SetBaseTimestamp(kNoTimestamp);
+  timestamp_helper_->Reset();
 
   SetState(success ? STATE_READY : STATE_ERROR);
 
@@ -498,9 +498,7 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
   }
 
   // Calculate and set buffer timestamp.
-
-  const bool first_buffer = timestamp_helper_->base_timestamp() == kNoTimestamp;
-  if (first_buffer) {
+  if (!timestamp_helper_->base_timestamp()) {
     // Clamp the base timestamp to zero.
     timestamp_helper_->SetBaseTimestamp(std::max(base::TimeDelta(), out.pts));
   }
@@ -539,13 +537,15 @@ bool MediaCodecAudioDecoder::OnOutputFormatChanged() {
              << " -> " << new_sampling_rate;
 
     sample_rate_ = new_sampling_rate;
-    const base::TimeDelta base_timestamp =
-        timestamp_helper_->base_timestamp() == kNoTimestamp
-            ? kNoTimestamp
-            : timestamp_helper_->GetTimestamp();
+
+    std::optional<base::TimeDelta> base_timestamp;
+    if (timestamp_helper_->base_timestamp()) {
+      base_timestamp = timestamp_helper_->GetTimestamp();
+    }
     timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
-    if (base_timestamp != kNoTimestamp)
-      timestamp_helper_->SetBaseTimestamp(base_timestamp);
+    if (base_timestamp) {
+      timestamp_helper_->SetBaseTimestamp(*base_timestamp);
+    }
   }
 
   int new_channel_count = 0;

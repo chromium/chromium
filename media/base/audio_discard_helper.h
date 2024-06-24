@@ -69,7 +69,7 @@ class MEDIA_EXPORT AudioDiscardHelper {
 
   // Whether any buffers have been processed.
   bool initialized() const {
-    return timestamp_helper_.base_timestamp() != kNoTimestamp;
+    return timestamp_helper_.base_timestamp().has_value();
   }
 
   size_t decoder_delay() const { return decoder_delay_; }

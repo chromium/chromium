@@ -126,8 +126,7 @@ void DecryptingAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   // Initialize the |next_output_timestamp_| to be the timestamp of the first
   // non-EOS buffer.
-  if (timestamp_helper_->base_timestamp() == kNoTimestamp &&
-      !buffer->end_of_stream()) {
+  if (!timestamp_helper_->base_timestamp() && !buffer->end_of_stream()) {
     timestamp_helper_->SetBaseTimestamp(buffer->timestamp());
   }
 
@@ -349,7 +348,7 @@ void DecryptingAudioDecoder::OnCdmContextEvent(CdmContext::Event event) {
 void DecryptingAudioDecoder::DoReset() {
   DCHECK(!init_cb_);
   DCHECK(!decode_cb_);
-  timestamp_helper_->SetBaseTimestamp(kNoTimestamp);
+  timestamp_helper_->Reset();
   state_ = kIdle;
   std::move(reset_cb_).Run();
 }

@@ -591,8 +591,8 @@ void MFAudioEncoder::EnqueueInput(std::unique_ptr<AudioBus> audio_bus,
   // after flushing. In either case, we need to notify the encoder that we are
   // about to send data.
   HRESULT hr;
-  if (input_timestamp_tracker_->base_timestamp() == kNoTimestamp) {
-    DCHECK_EQ(output_timestamp_tracker_->base_timestamp(), kNoTimestamp);
+  if (!input_timestamp_tracker_->base_timestamp()) {
+    DCHECK(!output_timestamp_tracker_->base_timestamp());
     hr = mf_encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING,
                                      /*message_param=*/0);
     if (FAILED(hr)) {
@@ -943,8 +943,8 @@ void MFAudioEncoder::OnFlushComplete(EncoderStatusCB done_cb) {
   samples_in_encoder_ = 0;
   can_produce_output_ = false;
   can_flush_ = false;
-  input_timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
-  output_timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
+  input_timestamp_tracker_->Reset();
+  output_timestamp_tracker_->Reset();
   state_ = EncoderState::kIdle;
 
   if (!pending_inputs_.empty()) {
