@@ -439,6 +439,17 @@ extern int GetLensOverlayMaxSignificantRegions();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetLensOverlayPostSelectionComparisonThreshold();
 
+// The timeout set for every request from the browser to the server in
+// milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayServerRequestTimeout();
+
+// Whether the error page is enabled on the lens overlay. This error page is
+// visible when the full image request times out or when the user is offline. It
+// prevents the user from interacting with the side panel results and searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlayEnableErrorPage();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

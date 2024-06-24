@@ -8,6 +8,8 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
+#include <memory>
+
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -58,6 +60,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/network_connection_change_simulator.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/url_util.h"
@@ -272,8 +275,10 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
     test_objects.push_back(kTestOverlayObject->Clone());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(full_image_callback_, std::move(test_objects),
-                                  kTestText->Clone()));
+        FROM_HERE,
+        base::BindOnce(full_image_callback_, std::move(test_objects),
+                       kTestText->Clone(),
+                       /*is_error=*/full_image_request_should_return_error_));
 
     // Send response for interaction data callback /
     // HandleInteractionDataResponse.
@@ -307,6 +312,11 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_multimodal_selection_type_ = multimodal_selection_type;
   }
 
+  void SetShouldReturnError(bool full_image_request_should_return_error) {
+    full_image_request_should_return_error_ =
+        full_image_request_should_return_error;
+  }
+
   void Reset() {
     last_multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     last_queried_region_.reset();
@@ -314,6 +324,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_region_bytes_ = std::nullopt;
   }
 
+  bool full_image_request_should_return_error_ = false;
   std::string last_queried_text_;
   lens::LensOverlaySelectionType last_multimodal_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
@@ -345,10 +356,14 @@ class LensOverlayControllerFake : public LensOverlayController {
       signin::IdentityManager* identity_manager,
       lens::LensOverlayInvocationSource invocation_source,
       bool use_dark_mode) override {
-    return std::make_unique<LensOverlayQueryControllerFake>(
-        full_image_callback, url_callback, interaction_data_callback,
-        thumbnail_created_callback, variations_client, identity_manager,
-        invocation_source, use_dark_mode);
+    auto fake_query_controller =
+        std::make_unique<LensOverlayQueryControllerFake>(
+            full_image_callback, url_callback, interaction_data_callback,
+            thumbnail_created_callback, variations_client, identity_manager,
+            invocation_source, use_dark_mode);
+    fake_query_controller->SetShouldReturnError(
+        full_image_request_should_return_error_);
+    return fake_query_controller;
   }
 
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
@@ -369,16 +384,36 @@ class LensOverlayControllerFake : public LensOverlayController {
     is_side_panel_loading_set_to_false_++;
   }
 
-  void ResetLoadingTracking() {
+  void SetSidePanelShowErrorPage(bool should_show_error_page) override {
+    if (should_show_error_page) {
+      side_panel_set_show_error_page_++;
+      return;
+    }
+
+    side_panel_set_hide_error_page_++;
+  }
+
+  // Helper function to force the fake query controller to return errors in its
+  // responses to full image requests. This should be called before ShowUI.
+  void SetFullImageRequestShouldReturnError() {
+    full_image_request_should_return_error_ = true;
+  }
+
+  void ResetSidePanelTracking() {
+    side_panel_set_show_error_page_ = 0;
+    side_panel_set_hide_error_page_ = 0;
     is_side_panel_loading_set_to_true_ = 0;
     is_side_panel_loading_set_to_false_ = 0;
   }
 
   void FlushForTesting() { fake_overlay_page_receiver_.FlushForTesting(); }
 
+  int side_panel_set_show_error_page_ = 0;
+  int side_panel_set_hide_error_page_ = 0;
   int is_side_panel_loading_set_to_true_ = 0;
   int is_side_panel_loading_set_to_false_ = 0;
   LensOverlayPageFake fake_overlay_page_;
+  bool full_image_request_should_return_error_ = false;
   mojo::Receiver<lens::mojom::LensPage> fake_overlay_page_receiver_{
       &fake_overlay_page_};
 };
@@ -1202,6 +1237,37 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       HandleStartQueryResponseError) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Set the full image request to return an error.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->SetFullImageRequestShouldReturnError();
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  // When the overlay is bound, it should start the query flow which returns a
+  // response for the full image callback.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Verify the error page was set correctly.
+  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 0);
+  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        HandleInteractionDataResponse) {
   WaitForPaint();
 
@@ -1328,6 +1394,79 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OfflineErrorPageInSidePanel) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Set the network connection type to being offline.
+  content::NetworkConnectionChangeSimulator network_change_simulator;
+  network_change_simulator.SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Side panel is not showing at first.
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  EXPECT_FALSE(coordinator->IsSidePanelShowing());
+  EXPECT_FALSE(controller->GetSidePanelWebContentsForTesting());
+
+  // Reset any side panel tracking values that may have been set by initial
+  // open.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->ResetSidePanelTracking();
+
+  // Loading a url in the side panel should show the side panel even if we
+  // expect the navigation to fail.
+  const GURL search_url("https://www.google.com/search");
+  controller->LoadURLInResultsFrame(search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Expect the Lens Overlay results panel to open.
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_EQ(coordinator->GetCurrentEntryId(),
+            SidePanelEntry::Id::kLensOverlayResults);
+
+  // Verify the error page was set correctly. The error page is set to show
+  // twice because the URL is modified and attempted to reload due to not having
+  // the proper query parameters.
+  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 0);
+  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 2);
+
+  // Set the network connection type to being online.
+  network_change_simulator.SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  fake_controller->ResetSidePanelTracking();
+
+  // Loading a url in the side panel should show the results page.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->LoadURLInResultsFrame(search_url);
+  observer.WaitForNavigationFinished();
+
+  // Verify the error page was set correctly. It should be hidden after a
+  // successful navigation. This happens twice because the URL is modified to
+  // add extra search query parameters.
+  EXPECT_EQ(fake_controller->side_panel_set_hide_error_page_, 2);
+  EXPECT_EQ(fake_controller->side_panel_set_show_error_page_, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        LoadURLInResultsFrameOverlayNotShowing) {
   WaitForPaint();
 
@@ -1386,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // before as part of setup.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  fake_controller->ResetLoadingTracking();
+  fake_controller->ResetSidePanelTracking();
 
   // The results frame should be the only child frame of the side panel web
   // contents.
@@ -1474,7 +1613,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // before as part of setup.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  fake_controller->ResetLoadingTracking();
+  fake_controller->ResetSidePanelTracking();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   const GURL nav_url("http://new.domain.com/");
@@ -1541,7 +1680,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // before as part of setup.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  fake_controller->ResetLoadingTracking();
+  fake_controller->ResetSidePanelTracking();
 
   // Simulate a cross-origin navigation on the results frame.
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
@@ -1606,7 +1745,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // before as part of setup.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  fake_controller->ResetLoadingTracking();
+  fake_controller->ResetSidePanelTracking();
 
   // Simulate a cross-origin navigation on the results frame.
   EXPECT_TRUE(content::ExecJs(
