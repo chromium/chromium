@@ -304,11 +304,6 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
   config->AddKernelObjectToClose(HandleToClose::kDeviceApi);
   config->SetDesktop(Desktop::kAlternateWinstation);
 
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxZeroAppShim)) {
-    config->SetZeroAppShim();
-  }
-
   return SBOX_ALL_OK;
 }
 
@@ -624,6 +619,17 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     result = AddDefaultConfigForSandboxedProcess(config);
     if (result != SBOX_ALL_OK)
       return result;
+  }
+
+  // Disable apphelp for tightly sandboxed processes that are not running
+  // in WoW or ARM64 emulated modes.
+  if (sandbox_type == Sandbox::kRenderer || sandbox_type == Sandbox::kService) {
+    if (base::FeatureList::IsEnabled(
+            sandbox::policy::features::kWinSboxZeroAppShim) &&
+        base::win::OSInfo::GetInstance()->IsWowDisabled() &&
+        !base::win::OSInfo::IsRunningEmulatedOnArm64()) {
+      config->SetZeroAppShim();
+    }
   }
 
   result =
