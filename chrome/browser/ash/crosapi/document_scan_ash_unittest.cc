@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
+#include "chromeos/crosapi/mojom/document_scan.mojom-shared.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -369,6 +370,31 @@ TEST_F(DocumentScanAshTest, SetOptions_BadResponse) {
   EXPECT_EQ(response->results[0]->name, "option-name");
   EXPECT_EQ(response->results[0]->result,
             mojom::ScannerOperationResult::kInternalError);
+}
+
+TEST_F(DocumentScanAshTest, SetOptions_BadValue) {
+  // Insert an option whose value type is different than the option type.
+  auto option = mojom::OptionSetting::New();
+  option->name = "bad-option";
+  option->type = mojom::OptionType::kString;
+  option->value = crosapi::mojom::OptionValue::NewBoolValue(false);
+  std::vector<mojom::OptionSettingPtr> options;
+  options.emplace_back(std::move(option));
+
+  // Don't add any results to our fake response.  The result in our response
+  // should come from our DocumentScanAsh object itself, not from the backend.
+  lorgnette::SetOptionsResponse fake_response;
+  fake_response.mutable_scanner()->set_token("scanner-handle");
+
+  GetLorgnetteScannerManager()->SetSetOptionsResponse(std::move(fake_response));
+  const mojom::SetOptionsResponsePtr response =
+      SetOptions("scanner-handle", std::move(options));
+
+  EXPECT_EQ(response->scanner_handle, "scanner-handle");
+  ASSERT_EQ(response->results.size(), 1U);
+  EXPECT_EQ(response->results[0]->name, "bad-option");
+  EXPECT_EQ(response->results[0]->result,
+            mojom::ScannerOperationResult::kWrongType);
 }
 
 TEST_F(DocumentScanAshTest, SetOptions_GoodResponse) {

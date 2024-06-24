@@ -376,48 +376,64 @@ crosapi::mojom::ScannerOptionPtr ConvertForTesting(  // IN-TEST
   return crosapi::mojom::ScannerOption::From(input);
 }
 
-lorgnette::ScannerOption
-TypeConverter<lorgnette::ScannerOption, crosapi::mojom::OptionSettingPtr>::
+std::optional<lorgnette::ScannerOption>
+TypeConverter<std::optional<lorgnette::ScannerOption>,
+              crosapi::mojom::OptionSettingPtr>::
     Convert(const crosapi::mojom::OptionSettingPtr& input) {
   lorgnette::ScannerOption output;
   output.set_name(input->name);
   output.set_option_type(ConvertTo<lorgnette::OptionType>(input->type));
 
-  if (input->value) {
-    switch (input->type) {
-      case (crosapi::mojom::OptionType::kBool):
-        output.set_bool_value(input->value->get_bool_value());
-        break;
-      case (crosapi::mojom::OptionType::kInt):
-        // This can represent a single int value or a list.  Check for both.
-        if (input->value->is_int_value()) {
-          output.mutable_int_value()->add_value(input->value->get_int_value());
-        } else if (input->value->is_int_list()) {
-          for (auto& value : input->value->get_int_list()) {
-            output.mutable_int_value()->add_value(value);
-          }
+  // Some options are automatically settable in which case a value is not
+  // needed.
+  if (!input->value) {
+    return output;
+  }
+
+  // If there is a value, check to make sure it has the correct type.
+  switch (input->type) {
+    case (crosapi::mojom::OptionType::kBool):
+      if (!input->value->is_bool_value()) {
+        return std::nullopt;
+      }
+      output.set_bool_value(input->value->get_bool_value());
+      break;
+    case (crosapi::mojom::OptionType::kInt):
+      // This can represent a single int value or a list.  Check for both.
+      if (input->value->is_int_value()) {
+        output.mutable_int_value()->add_value(input->value->get_int_value());
+      } else if (input->value->is_int_list()) {
+        for (auto& value : input->value->get_int_list()) {
+          output.mutable_int_value()->add_value(value);
         }
-        break;
-      case (crosapi::mojom::OptionType::kFixed):
-        // This can represent a single fixed value or a list.  Check for both.
-        if (input->value->is_fixed_value()) {
-          output.mutable_fixed_value()->add_value(
-              input->value->get_fixed_value());
-        } else if (input->value->is_fixed_list()) {
-          for (auto& value : input->value->get_fixed_list()) {
-            output.mutable_fixed_value()->add_value(value);
-          }
+      } else {
+        return std::nullopt;
+      }
+      break;
+    case (crosapi::mojom::OptionType::kFixed):
+      // This can represent a single fixed value or a list.  Check for both.
+      if (input->value->is_fixed_value()) {
+        output.mutable_fixed_value()->add_value(
+            input->value->get_fixed_value());
+      } else if (input->value->is_fixed_list()) {
+        for (auto& value : input->value->get_fixed_list()) {
+          output.mutable_fixed_value()->add_value(value);
         }
-        break;
-      case (crosapi::mojom::OptionType::kString):
-        output.set_string_value(input->value->get_string_value());
-        break;
-      case (crosapi::mojom::OptionType::kUnknown):
-      case (crosapi::mojom::OptionType::kButton):
-      case (crosapi::mojom::OptionType::kGroup):
-        // kButton and kGroup don't need to set a value.
-        break;
-    }
+      } else {
+        return std::nullopt;
+      }
+      break;
+    case (crosapi::mojom::OptionType::kString):
+      if (!input->value->is_string_value()) {
+        return std::nullopt;
+      }
+      output.set_string_value(input->value->get_string_value());
+      break;
+    case (crosapi::mojom::OptionType::kUnknown):
+    case (crosapi::mojom::OptionType::kButton):
+    case (crosapi::mojom::OptionType::kGroup):
+      // kButton and kGroup don't need to set a value.
+      break;
   }
 
   return output;

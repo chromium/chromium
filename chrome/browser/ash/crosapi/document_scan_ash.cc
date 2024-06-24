@@ -175,6 +175,7 @@ void ReadScanDataAdapter(
 void SetOptionsAdapter(
     const std::string& scanner_handle,
     std::vector<std::string> option_names,
+    std::vector<std::string> invalid_option_names,
     DocumentScanAsh::SetOptionsCallback callback,
     const std::optional<lorgnette::SetOptionsResponse>& response_in) {
   if (!response_in) {
@@ -189,7 +190,12 @@ void SetOptionsAdapter(
     std::move(callback).Run(std::move(response));
     return;
   }
-  std::move(callback).Run(mojom::SetOptionsResponse::From(response_in.value()));
+  lorgnette::SetOptionsResponse response = response_in.value();
+  for (const std::string& invalid_name : invalid_option_names) {
+    (*response.mutable_results())[invalid_name] =
+        lorgnette::OperationResult::OPERATION_RESULT_WRONG_TYPE;
+  }
+  std::move(callback).Run(mojom::SetOptionsResponse::From(response));
 }
 
 void GetOptionGroupsAdapter(
@@ -321,17 +327,30 @@ void DocumentScanAsh::SetOptions(const std::string& scanner_handle,
                                  SetOptionsCallback callback) {
   lorgnette::SetOptionsRequest request;
   request.mutable_scanner()->set_token(scanner_handle);
-  // Keep track of the option names so we can bind to our adapter below.
+  // Keep track of all of the option names.  This is used if we don't get a
+  // valid response from the backend.  All of these options will get sent back
+  // to the caller with an error result.
   std::vector<std::string> option_names;
+  // Separately, keep track of any invalid options names (where the type
+  // specified for the value does not equal the type of the option).  These
+  // options will get sent back to the caller with an appropriate error result.
+  std::vector<std::string> invalid_option_names;
   for (const mojom::OptionSettingPtr& option_request : options) {
     option_names.emplace_back(option_request->name);
 
-    *request.add_options() = option_request.To<lorgnette::ScannerOption>();
+    auto maybe_option =
+        option_request.To<std::optional<lorgnette::ScannerOption>>();
+    if (maybe_option.has_value()) {
+      *request.add_options() = maybe_option.value();
+    } else {
+      invalid_option_names.emplace_back(option_request->name);
+    }
   }
 
   ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
       ->SetOptions(request, base::BindOnce(&SetOptionsAdapter, scanner_handle,
-                                           option_names, std::move(callback)));
+                                           option_names, invalid_option_names,
+                                           std::move(callback)));
 }
 
 void DocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,

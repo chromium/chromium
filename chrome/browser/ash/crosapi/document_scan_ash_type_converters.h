@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_DOCUMENT_SCAN_ASH_TYPE_CONVERTERS_H_
 #define CHROME_BROWSER_ASH_CROSAPI_DOCUMENT_SCAN_ASH_TYPE_CONVERTERS_H_
 
+#include <optional>
+
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -54,9 +56,9 @@ struct TypeConverter<crosapi::mojom::ReadScanDataResponsePtr,
 };
 
 template <>
-struct TypeConverter<lorgnette::ScannerOption,
+struct TypeConverter<std::optional<lorgnette::ScannerOption>,
                      crosapi::mojom::OptionSettingPtr> {
-  static lorgnette::ScannerOption Convert(
+  static std::optional<lorgnette::ScannerOption> Convert(
       const crosapi::mojom::OptionSettingPtr& input);
 };
 
