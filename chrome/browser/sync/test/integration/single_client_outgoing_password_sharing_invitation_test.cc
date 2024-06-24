@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
@@ -94,8 +93,7 @@ class SingleClientOutgoingPasswordSharingInvitationTest : public SyncTest {
       : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
-        {password_manager::features::kPasswordManagerEnableSenderService,
-         syncer::kSharingOfferKeyPairBootstrap},
+        {password_manager::features::kPasswordManagerEnableSenderService},
         /*disabled_features=*/{});
   }
 

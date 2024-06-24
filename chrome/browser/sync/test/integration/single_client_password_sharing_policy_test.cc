@@ -11,7 +11,6 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 
@@ -26,8 +25,7 @@ class SingleClientPasswordSharingPolicyTest : public SyncTest {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
         {password_manager::features::kPasswordManagerEnableReceiverService,
-         password_manager::features::kPasswordManagerEnableSenderService,
-         syncer::kSharingOfferKeyPairBootstrap},
+         password_manager::features::kPasswordManagerEnableSenderService},
         /*disabled_features=*/{});
   }
   ~SingleClientPasswordSharingPolicyTest() override = default;

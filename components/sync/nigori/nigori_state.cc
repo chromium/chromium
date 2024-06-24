@@ -394,12 +394,6 @@ ModelTypeSet NigoriState::GetEncryptedTypes() const {
 }
 
 bool NigoriState::NeedsGenerateCrossUserSharingKeyPair() const {
-  // Check the feature toggle before any other conditions to keep it consistent
-  // with the previous code and to avoid changes in groups.
-  if (!base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap)) {
-    return false;
-  }
-
   if (pending_keys || !cryptographer->CanEncrypt()) {
     // There are pending keys so the current state of the key pair is unknown,
     // or cryptographer is not ready yet (this should not happen but not using

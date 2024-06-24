@@ -8,12 +8,11 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
@@ -1898,11 +1897,6 @@ TEST_F(NigoriSyncBridgeImplTest,
 // Tests that the initial built keystore Nigori, includes initialized
 // Public-private key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
-      /*disabled_features*/ {});
-
   base::HistogramTester histogram_tester;
 
   const KeyParamsForTesting kKeystoreKeyParams =
@@ -1939,10 +1933,6 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
 
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnDifferentKeyInitializingKeystoreNigoriWithKeyPair) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
-      /*disabled_features*/ {});
   base::HistogramTester histogram_tester;
 
   const KeyParamsForTesting kKeystoreKeyParams =
@@ -1993,11 +1983,6 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
       /*keystore_key_params=*/kKeystoreKeyParams)));
   ASSERT_THAT(bridge()->GetData(), Not(HasPublicKeyVersion(0)));
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
-      /*disabled_features*/ {});
-
   // Mimic the browser restart.
   std::string key_value;
   EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)))
@@ -2031,11 +2016,6 @@ TEST_F(NigoriSyncBridgeImplTest,
       /*keystore_decryptor_params=*/kKeystoreKeyParams,
       /*keystore_key_params=*/kKeystoreKeyParams)));
   ASSERT_THAT(bridge()->GetData(), Not(HasPublicKeyVersion(0)));
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kSharingOfferKeyPairBootstrap, kSharingOfferKeyPairRead},
-      /*disabled_features*/ {});
 
   // Mimic the browser restart.
   MimicRestartWithLocalData(nigori_local_data());

@@ -327,8 +327,7 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
     // Enable the password receiving flow to verify cross-user sharing keys by
     // decrypting incoming password sharing invitations.
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSharingOfferKeyPairBootstrap,
-                              password_manager::features::
+        /*enabled_features=*/{password_manager::features::
                                   kPasswordManagerEnableReceiverService},
         /*disabled_features=*/{});
   }

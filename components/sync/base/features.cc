@@ -12,14 +12,6 @@ BASE_FEATURE(kDeferredSyncStartupCustomDelay,
              "DeferredSyncStartupCustomDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharingOfferKeyPairBootstrap,
-             "SharingOfferKeyPairBootstrap",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharingOfferKeyPairRead,
-             "SharingOfferKeyPairRead",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              "SyncAndroidLimitNTPPromoImpressions",

@@ -7,13 +7,11 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
@@ -728,8 +726,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   state_.pending_keys = specifics.encryption_keybag();
   state_.cryptographer->ClearDefaultEncryptionKey();
 
-  if (base::FeatureList::IsEnabled(kSharingOfferKeyPairRead) &&
-      specifics.has_cross_user_sharing_public_key()) {
+  if (specifics.has_cross_user_sharing_public_key()) {
     // Remote update wins over local state.
     state_.cross_user_sharing_public_key =
         PublicKeyFromProto(specifics.cross_user_sharing_public_key());
@@ -842,35 +839,33 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
                       "Received keybag is missing the last trusted vault key.");
   }
 
-  if (base::FeatureList::IsEnabled(kSharingOfferKeyPairRead)) {
-    CrossUserSharingKeys new_cross_user_sharing_keys =
-        CrossUserSharingKeys::CreateEmpty();
-    for (auto key_pair :
-         decrypted_pending_keys.cross_user_sharing_private_key()) {
-      new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
-    }
+  CrossUserSharingKeys new_cross_user_sharing_keys =
+      CrossUserSharingKeys::CreateEmpty();
+  for (auto key_pair :
+       decrypted_pending_keys.cross_user_sharing_private_key()) {
+    new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
+  }
 
-    if (state_.cross_user_sharing_key_pair_version.has_value() &&
-        !new_cross_user_sharing_keys.HasKeyPair(
-            state_.cross_user_sharing_key_pair_version.value())) {
-      // TODO(crbug.com/40070237): Record metric to capture this state.
-      DLOG(ERROR) << "Received keybag is missing the last "
-                  << "cross-user-sharing private key.";
-      // Reset keys so that on next startup they would be recreated and
-      // committed to the server.
-      // TODO(crbug.com/40070237): Clear obsolete key-pairs from cryptographer.
-      state_.cross_user_sharing_key_pair_version = std::nullopt;
-      state_.cross_user_sharing_public_key = std::nullopt;
-    } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
-      // Use the keys from the server and replace any pre-existing ones (so in
-      // case of conflict the server wins). One of cases when this can happen is
-      // when one of older clients is upgraded to a newer version and generated
-      // a new key pair because it wasn't aware of the previous key pair.
-      state_.cryptographer->ReplaceCrossUserSharingKeys(
-          std::move(new_cross_user_sharing_keys));
-      state_.cryptographer->SelectDefaultCrossUserSharingKey(
-          state_.cross_user_sharing_key_pair_version.value());
-    }
+  if (state_.cross_user_sharing_key_pair_version.has_value() &&
+      !new_cross_user_sharing_keys.HasKeyPair(
+          state_.cross_user_sharing_key_pair_version.value())) {
+    // TODO(crbug.com/40070237): Record metric to capture this state.
+    DLOG(ERROR) << "Received keybag is missing the last "
+                << "cross-user-sharing private key.";
+    // Reset keys so that on next startup they would be recreated and
+    // committed to the server.
+    // TODO(crbug.com/40070237): Clear obsolete key-pairs from cryptographer.
+    state_.cross_user_sharing_key_pair_version = std::nullopt;
+    state_.cross_user_sharing_public_key = std::nullopt;
+  } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
+    // Use the keys from the server and replace any pre-existing ones (so in
+    // case of conflict the server wins). One of cases when this can happen is
+    // when one of older clients is upgraded to a newer version and generated
+    // a new key pair because it wasn't aware of the previous key pair.
+    state_.cryptographer->ReplaceCrossUserSharingKeys(
+        std::move(new_cross_user_sharing_keys));
+    state_.cryptographer->SelectDefaultCrossUserSharingKey(
+        state_.cross_user_sharing_key_pair_version.value());
   }
 
   // Reset |last_default_trusted_vault_key_name| as |state_| might go out of
