@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/permissions/system_permission_delegate.h"
 #include "chrome/browser/permissions/system_permission_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_system_settings_view.h"
+#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
@@ -58,6 +60,69 @@ bool IsPermissionSetByAdministator(ContentSetting setting,
            setting == ContentSetting::CONTENT_SETTING_ALLOW) &&
           (info.source == SettingSource::kPolicy ||
            info.source == SettingSource::kSupervised));
+}
+
+// TODO(41014586): Integrate policy-set media permissions into
+// SettingsSource.policy. Currently, AudioCaptureAllowed, VideoCaptureAllowed
+// are not checked within |IsPermissionSetByAdministrator|, so
+// |IsPermissionBlockedByDevicePolicy| and |IsPermissionAllowedByDevicePolicy|
+// methods are needed to show the appropriate policy screen.
+bool IsPermissionBlockedByDevicePolicy(
+    content::WebContents* web_contents,
+    ContentSetting setting,
+    const content_settings::SettingInfo& info,
+    ContentSettingsType type) {
+  if (IsPermissionSetByAdministator(setting, info) &&
+      setting == CONTENT_SETTING_BLOCK) {
+    return true;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
+    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
+                           prefs::kAudioCaptureAllowed,
+                           prefs::kAudioCaptureAllowedUrls) ==
+           MediaStreamDevicePolicy::ALWAYS_DENY;
+  }
+
+  if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
+                           prefs::kVideoCaptureAllowed,
+                           prefs::kVideoCaptureAllowedUrls) ==
+           MediaStreamDevicePolicy::ALWAYS_DENY;
+  }
+
+  return false;
+}
+
+bool IsPermissionAllowedByDevicePolicy(
+    content::WebContents* web_contents,
+    ContentSetting setting,
+    const content_settings::SettingInfo& info,
+    ContentSettingsType type) {
+  if (IsPermissionSetByAdministator(setting, info) &&
+      setting == CONTENT_SETTING_ALLOW) {
+    return true;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
+    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
+                           prefs::kAudioCaptureAllowed,
+                           prefs::kAudioCaptureAllowedUrls) ==
+           MediaStreamDevicePolicy::ALWAYS_ALLOW;
+  }
+
+  if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
+    return GetDevicePolicy(profile, web_contents->GetLastCommittedURL(),
+                           prefs::kVideoCaptureAllowed,
+                           prefs::kVideoCaptureAllowedUrls) ==
+           MediaStreamDevicePolicy::ALWAYS_ALLOW;
+  }
+
+  return false;
 }
 
 permissions::ElementAnchoredBubbleVariant GetVariant(
@@ -106,8 +171,7 @@ EmbeddedPermissionPrompt::DeterminePromptVariant(
     ContentSettingsType type) {
   // If the administrator blocked the permission, there is nothing the user can
   // do. Presenting them with a different screen in unproductive.
-  if (IsPermissionSetByAdministator(setting, info) &&
-      setting == CONTENT_SETTING_BLOCK) {
+  if (IsPermissionBlockedByDevicePolicy(web_contents(), setting, info, type)) {
     return Variant::kAdministratorDenied;
   }
 
@@ -126,7 +190,7 @@ EmbeddedPermissionPrompt::DeterminePromptVariant(
     return Variant::kOsPrompt;
   }
 
-  if (IsPermissionSetByAdministator(setting, info)) {
+  if (IsPermissionAllowedByDevicePolicy(web_contents(), setting, info, type)) {
     return Variant::kAdministratorGranted;
   }
 
