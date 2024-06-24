@@ -126,6 +126,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @DisabledTest(message = "https://crbug.com/348618570")
     public void testExitOnLeaveFullscreen() throws Throwable {
         testExitOn(() -> DOMUtils.exitFullscreen(getWebContents()));
     }
