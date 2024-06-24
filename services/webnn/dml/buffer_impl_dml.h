@@ -36,16 +36,26 @@ class BufferImplDml final : public WebNNBufferImpl {
   void SetLastSubmissionFenceValue(uint64_t last_submission_fence_value);
   uint64_t last_submission_fence_value() const;
 
+  base::WeakPtr<BufferImplDml> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   void ReadBufferImpl(ReadBufferCallback callback) override;
   void WriteBufferImpl(mojo_base::BigBuffer src_buffer) override;
 
-  Microsoft::WRL::ComPtr<ID3D12Resource> buffer_;
+  // The D3D12 resource that holds the buffer data.
+  // The buffer must always remain valid after creation and could outlive
+  // the scope of this `BufferImplDml` instance because it may be used
+  // as the key to cache and synchronize buffers used in recordering.
+  const Microsoft::WRL::ComPtr<ID3D12Resource> buffer_;
 
   // The fence value used to track progress of GPU execution of commands using
   // this buffer. Comparing it with the command queue's completed fence can
   // indicate whether commands have completed execution.
   uint64_t last_submission_fence_value_ = UINT64_MAX;
+
+  base::WeakPtrFactory<BufferImplDml> weak_factory_{this};
 };
 
 }  // namespace webnn::dml

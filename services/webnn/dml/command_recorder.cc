@@ -79,6 +79,7 @@ HRESULT CommandRecorder::Open() {
     RETURN_IF_FAILED(command_list_->Reset(command_allocator_.Get(), nullptr));
   }
   command_resources_.clear();
+  command_buffer_impls_.clear();
   is_open_ = true;
   return S_OK;
 }
@@ -115,6 +116,18 @@ HRESULT CommandRecorder::Execute() {
   for (auto& resource : command_resources_) {
     command_queue_->ReferenceUntilCompleted(resource);
   }
+
+  // After command submission succeeds, update the last submission fence on the
+  // recorded buffers so the CPU knows when the GPU has completed execution.
+  for (auto& [command_buffer, webnn_buffer_impl] : command_buffer_impls_) {
+    // WebNNBuffer was destroyed prior to Execute() and does not require further
+    // CPU/GPU synchronization but its resource will be kept alive anyway until
+    // Open() or the command queue completes execution by `command_resources_`.
+    if (webnn_buffer_impl) {
+      webnn_buffer_impl->SetLastSubmissionFenceValue(
+          last_submitted_fence_value_);
+    }
+  }
   return S_OK;
 }
 
@@ -145,6 +158,24 @@ void CommandRecorder::RecordDispatch(IDMLDispatchable* dispatchable,
   TRACE_EVENT0("gpu", "dml::CommandRecorder::RecordDispatch");
   command_recorder_->RecordDispatch(command_list_.Get(), dispatchable,
                                     binding_table);
+}
+
+void CommandRecorder::UploadBufferWithBarrier(
+    BufferImplDml* dst_buffer,
+    Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
+    size_t buffer_size) {
+  dml::UploadBufferWithBarrier(this, dst_buffer->buffer(),
+                               std::move(src_buffer), buffer_size);
+  OnBufferAccessed(dst_buffer);
+}
+
+void CommandRecorder::ReadbackBufferWithBarrier(
+    Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
+    BufferImplDml* src_buffer,
+    size_t buffer_size) {
+  dml::ReadbackBufferWithBarrier(this, std::move(dst_buffer),
+                                 src_buffer->buffer(), buffer_size);
+  OnBufferAccessed(src_buffer);
 }
 
 HRESULT CommandRecorder::InitializeOperator(
@@ -395,7 +426,7 @@ HRESULT CommandRecorder::ExecuteOperator(
 }
 
 void CommandRecorder::OnBufferAccessed(BufferImplDml* buffer) {
-  buffer->SetLastSubmissionFenceValue(command_queue_->GetPendingFenceValue());
+  command_buffer_impls_.emplace(buffer->buffer(), buffer->AsWeakPtr());
 }
 
 }  // namespace webnn::dml

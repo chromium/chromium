@@ -220,11 +220,6 @@ CommandQueue::GetQueuedObjectsForTesting() const {
   return queued_objects_;
 }
 
-uint64_t CommandQueue::GetPendingFenceValue() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return last_fence_value_ + 1;
-}
-
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,
                                          ComPtr<IUnknown> object)
     : fence_value(fence_value), object(std::move(object)) {}

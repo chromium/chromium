@@ -143,8 +143,8 @@ void ContextImplDml::ReadBuffer(
     return;
   }
 
-  ReadbackBufferWithBarrier(command_recorder_.get(), download_buffer,
-                            src_buffer, src_buffer_size);
+  command_recorder_->ReadbackBufferWithBarrier(download_buffer, src_buffer,
+                                               src_buffer_size);
 
   // Submit copy and schedule GPU wait.
   hr = command_recorder_->CloseAndExecute();
@@ -246,8 +246,8 @@ void ContextImplDml::WriteBuffer(BufferImplDml* dst_buffer,
       return;
     }
 
-    UploadBufferWithBarrier(command_recorder_.get(), dst_buffer,
-                            std::move(buffer_to_map), src_buffer.size());
+    command_recorder_->UploadBufferWithBarrier(
+        dst_buffer, std::move(buffer_to_map), src_buffer.size());
 
     // TODO(crbug.com/40278771): consider not submitting after every write.
     // CloseAndExecute() only needs to be called once, when the buffer is read

@@ -5,12 +5,14 @@
 #ifndef SERVICES_WEBNN_DML_COMMAND_RECORDER_H_
 #define SERVICES_WEBNN_DML_COMMAND_RECORDER_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
 // Windows SDK headers should be included after DirectX headers.
@@ -72,6 +74,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
                         Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
                         uint64_t src_offset,
                         uint64_t byte_length);
+
+  // Helper function to upload buffer data from GPU to CPU.
+  void UploadBufferWithBarrier(
+      BufferImplDml* dst_buffer,
+      Microsoft::WRL::ComPtr<ID3D12Resource> src_buffer,
+      size_t buffer_size);
+
+  // Helper function to readback buffer data from GPU to CPU.
+  void ReadbackBufferWithBarrier(
+      Microsoft::WRL::ComPtr<ID3D12Resource> dst_buffer,
+      BufferImplDml* src_buffer,
+      size_t buffer_size);
 
   // Initialize a compiled DirectML operator, which may also represent a
   // DirectML graph, on the GPU, before it can be executed. For a compiled
@@ -166,6 +180,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
   // these resources would be kept alive until the command queue has completed
   // the execution of these commands on GPU.
   std::vector<Microsoft::WRL::ComPtr<IUnknown>> command_resources_;
+
+  // Keep WebNNBuffers used in recorded commands pending execution. The key is
+  // a strong pointer to the underlying ID3D12Resource to ensure the recorded
+  // buffer entry will always remain valid until Open() is called again to reset
+  // it.
+  std::map<Microsoft::WRL::ComPtr<ID3D12Resource>, base::WeakPtr<BufferImplDml>>
+      command_buffer_impls_;
 };
 
 }  // namespace webnn::dml
