@@ -11235,16 +11235,22 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Stay organized with tab groups
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE" desc="The header text for the first run experience of the not started state in the tab organization UI">
-        Let Chrome organize your tabs
+        Keep your tabs tidy with AI
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY" desc="The body text for the not started state in the tab organization UI">
         You can check for tab group suggestions anytime
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI">
-        You'll get tab group suggestions that group similar tabs. Your tabs, titles and groups are sent to Google, and may be reviewed by humans to improve this feature.
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_HEADER" desc="Body header text in the tab organization UI first run experience not started state">
+        Things to consider
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_LINK_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI">
-        Learn more about tab group suggestions
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_BULLET_1" desc="Text of the first bullet point in the tab organization UI first run experience not started state">
+        This feature uses AI and won't always get it right
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_BULLET_2" desc="Text of the second bullet point in the tab organization UI first run experience not started state">
+        Your tabs, page titles, and URLs are sent to Google
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_BULLET_3" desc="Text of the third bullet point in the tab organization UI first run experience not started state">
+        Data may be seen by trained reviewers to improve this feature
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT" desc="The body text for the not started state in the tab organization UI, when not signed in">
         Sign in and turn on sync to let Chrome suggest tab groups and keep your tabs organized

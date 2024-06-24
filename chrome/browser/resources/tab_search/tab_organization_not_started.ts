@@ -111,13 +111,9 @@ export class TabOrganizationNotStartedElement extends
         return loadTimeData.getString('notStartedBodyUnsyncedHistory');
       case SyncState.SYNCED: {
         return loadTimeData.getString(
-            this.showFre ? 'notStartedBodyFRE' : 'notStartedBody');
+            this.showFre ? 'notStartedBodyFREHeader' : 'notStartedBody');
       }
     }
-  }
-
-  protected shouldShowBodyLink_(): boolean {
-    return this.getSyncState_() === SyncState.SYNCED && this.showFre;
   }
 
   protected shouldShowAccountInfo_(): boolean {
@@ -132,7 +128,7 @@ export class TabOrganizationNotStartedElement extends
         'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
   }
 
-  protected getButtonAriaLabel_(): string {
+  protected getActionButtonAriaLabel_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
       case SyncState.UNSYNCED:
@@ -149,7 +145,7 @@ export class TabOrganizationNotStartedElement extends
     }
   }
 
-  protected getButtonText_(): string {
+  protected getActionButtonText_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:
       case SyncState.UNSYNCED:
@@ -187,14 +183,8 @@ export class TabOrganizationNotStartedElement extends
     }
   }
 
-  protected onLinkClick_() {
+  protected onLearnMoreClick_() {
     this.fire('learn-more-click');
-  }
-
-  protected onLinkKeyDown_(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      this.onLinkClick_();
-    }
   }
 }
 

@@ -13,11 +13,6 @@
   --avatar-size: 40px;
 }
 
-cr-button {
-  align-self: flex-end;
-  width: fit-content;
-}
-
 .account-email {
   font-size: 12px;
 }
@@ -40,6 +35,21 @@ cr-button {
   gap: 4px;
 }
 
-.tab-organization-link {
-  display: inline;
+.bullet-list {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  border-spacing: 0 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.button-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+td:first-child {
+  padding-inline-end: 12px;
 }

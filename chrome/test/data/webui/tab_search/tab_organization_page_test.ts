@@ -146,10 +146,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const organizeTabsButton =
-        notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!organizeTabsButton);
-    organizeTabsButton.click();
+    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
+    assertEquals(2, actionButtons.length);
+    actionButtons[1]!.click();
 
     assertEquals(1, testApiProxy.getCallCount('requestTabOrganization'));
   });
@@ -463,9 +462,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
+    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
+    assertEquals(2, actionButtons.length);
+    actionButtons[1]!.click();
 
     assertEquals(1, testApiProxy.getCallCount('triggerSync'));
   });
@@ -483,9 +482,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
+    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
+    assertEquals(2, actionButtons.length);
+    actionButtons[1]!.click();
 
     assertEquals(1, testApiProxy.getCallCount('triggerSignIn'));
   });
@@ -503,9 +502,9 @@ suite('TabOrganizationPageTest', () => {
     assertTrue(!!notStarted);
     assertTrue(isVisible(notStarted));
 
-    const actionButton = notStarted.shadowRoot!.querySelector('cr-button');
-    assertTrue(!!actionButton);
-    actionButton.click();
+    const actionButtons = notStarted.shadowRoot!.querySelectorAll('cr-button');
+    assertEquals(2, actionButtons.length);
+    actionButtons[1]!.click();
 
     assertEquals(1, testApiProxy.getCallCount('openSyncSettings'));
   });

@@ -9,14 +9,21 @@
     </div>
     <div class="tab-organization-body">
       ${this.getBody_()}
-      ${this.shouldShowBodyLink_() ? html`
-        <a class="tab-organization-link"
-            role="link"
-            tabindex="0"
-            @click="${this.onLinkClick_}"
-            @keydown="${this.onLinkKeyDown_}">
-          $i18n{notStartedBodyLinkFRE}
-        </a>
+      ${this.showFre ? html`
+        <table class="bullet-list">
+          <tr>
+            <td><cr-icon icon="tab-search:plant"></cr-icon></td>
+            <td>$i18n{notStartedBodyFREBullet1}</td>
+          </tr>
+          <tr>
+            <td><cr-icon icon="tab-search:google"></cr-icon></td>
+            <td>$i18n{notStartedBodyFREBullet2}</td>
+          </tr>
+          <tr>
+            <td><cr-icon icon="tab-search:frame"></cr-icon></td>
+            <td>$i18n{notStartedBodyFREBullet3}</td>
+          </tr>
+        </table>
       ` : ''}
     </div>
   </div>
@@ -32,9 +39,18 @@
       </div>
     </div>
   ` : ''}
-  <cr-button class="action-button"
-      aria-label="${this.getButtonAriaLabel_()}"
-      @click="${this.onButtonClick_}">
-    ${this.getButtonText_()}
-  </cr-button>
+  <div class="button-row">
+    ${this.showFre ? html`
+      <cr-button class="tonal-button"
+          aria-label="$i18n{learnMoreAriaLabel}"
+          @click="${this.onLearnMoreClick_}">
+        $i18n{learnMore}
+      </cr-button>
+    ` : ''}
+    <cr-button class="action-button"
+        aria-label="${this.getActionButtonAriaLabel_()}"
+        @click="${this.onButtonClick_}">
+      ${this.getActionButtonText_()}
+    </cr-button>
+  </div>
 </div>
