@@ -127,10 +127,9 @@ public interface SyncService {
     /**
      * Enables syncing for the passed types.
      *
-     * @param syncEverything Set to true if the user wants to sync all data types
-     *                       (including new data types we add in the future).
-     * @param enabledTypes   The set of types to enable. Ignored (can be null) if
-     *                       syncEverything is true.
+     * @param syncEverything Set to true if the user wants to sync all data types (including new
+     *     data types we add in the future).
+     * @param enabledTypes The set of types to enable.
      */
     public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 

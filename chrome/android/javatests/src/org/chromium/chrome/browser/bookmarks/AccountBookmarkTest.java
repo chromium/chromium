@@ -46,6 +46,7 @@ import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.sync.SyncFeatureMap;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -92,7 +93,15 @@ public class AccountBookmarkTest {
     @SmallTest
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testEnableDatatypesManually() {
-        mSyncTestRule.setSelectedTypes(true, null);
+        runOnUiThreadBlocking(
+                () -> {
+                    mSyncTestRule
+                            .getSyncService()
+                            .setSelectedType(UserSelectableType.BOOKMARKS, true);
+                    mSyncTestRule
+                            .getSyncService()
+                            .setSelectedType(UserSelectableType.READING_LIST, true);
+                });
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountMobileFolderId() != null);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(
                 mBookmarkManagerCoordinator.getRecyclerViewForTesting());
@@ -107,7 +116,6 @@ public class AccountBookmarkTest {
             message =
                     "Enable this test when reading list is available w/o restart crbug.com/1510547")
     public void testOpenFromReadingListAndNavigateBack() throws Exception {
-        mSyncTestRule.setSelectedTypes(true, null);
         CriteriaHelper.pollUiThread(() -> mBookmarkModel.getAccountReadingListFolder() != null);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(
                 mBookmarkManagerCoordinator.getRecyclerViewForTesting());

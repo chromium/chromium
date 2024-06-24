@@ -49,21 +49,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    /**
-     * UserSelectableTypes that the user can directly select in settings. This is a subset of the
-     * native UserSelectableTypeSet.
-     */
-    private static final int[] ALL_SELECTABLE_TYPES =
-            new int[] {
-                UserSelectableType.AUTOFILL,
-                UserSelectableType.PAYMENTS,
-                UserSelectableType.BOOKMARKS,
-                UserSelectableType.PASSWORDS,
-                UserSelectableType.PREFERENCES,
-                UserSelectableType.TABS,
-                UserSelectableType.HISTORY
-            };
-
     @CalledByNative
     private SyncServiceImpl(long ptr) {
         mThreadChecker.assertOnValidThread();
@@ -216,9 +201,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
                 .setSelectedTypes(
                         mSyncServiceAndroidBridge,
                         syncEverything,
-                        syncEverything
-                                ? ALL_SELECTABLE_TYPES
-                                : userSelectableTypeSetToArray(enabledTypes));
+                        userSelectableTypeSetToArray(enabledTypes));
     }
 
     @Override
