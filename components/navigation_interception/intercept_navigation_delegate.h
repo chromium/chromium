@@ -58,7 +58,7 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
   // base::EscapeExternalHandlerValue() invoked on URLs passed to
   // ShouldIgnoreNavigation() before the navigation is processed.
   InterceptNavigationDelegate(JNIEnv* env,
-                              jobject jdelegate,
+                              const jni_zero::JavaRef<jobject>& jdelegate,
                               bool escape_external_handler_value = false);
 
   InterceptNavigationDelegate(const InterceptNavigationDelegate&) = delete;

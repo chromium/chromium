@@ -21,9 +21,10 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using contextual_search::UnhandledTapWebContentsObserver;
 
-ContextualSearchTabHelper::ContextualSearchTabHelper(JNIEnv* env,
-                                                     jobject obj,
-                                                     Profile* profile)
+ContextualSearchTabHelper::ContextualSearchTabHelper(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    Profile* profile)
     : weak_java_ref_(env, obj),
       pref_change_registrar_(new PrefChangeRegistrar()) {
   pref_change_registrar_->Init(profile->GetPrefs());

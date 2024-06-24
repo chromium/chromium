@@ -44,7 +44,8 @@ enum WebContentsDelegateLogLevel {
 // as required.
 class WebContentsDelegateAndroid : public content::WebContentsDelegate {
  public:
-  WebContentsDelegateAndroid(JNIEnv* env, jobject obj);
+  WebContentsDelegateAndroid(JNIEnv* env,
+                             const jni_zero::JavaRef<jobject>& obj);
   ~WebContentsDelegateAndroid() override;
 
   // Overridden from WebContentsDelegate:

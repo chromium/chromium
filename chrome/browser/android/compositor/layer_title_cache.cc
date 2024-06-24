@@ -35,7 +35,7 @@ LayerTitleCache* LayerTitleCache::FromJavaObject(const JavaRef<jobject>& jobj) {
 }
 
 LayerTitleCache::LayerTitleCache(JNIEnv* env,
-                                 jobject obj,
+                                 const jni_zero::JavaRef<jobject>& obj,
                                  jint fade_width,
                                  jint favicon_start_padding,
                                  jint favicon_end_padding,

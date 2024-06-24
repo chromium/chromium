@@ -23,7 +23,7 @@ class UsageReportsBufferService;
 
 class HistoryReportJniBridge {
  public:
-  HistoryReportJniBridge(JNIEnv* env, jobject obj);
+  HistoryReportJniBridge(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
 
   HistoryReportJniBridge(const HistoryReportJniBridge&) = delete;
   HistoryReportJniBridge& operator=(const HistoryReportJniBridge&) = delete;

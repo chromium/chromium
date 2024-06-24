@@ -54,7 +54,9 @@ using content::WebContents;
 
 namespace android_webview {
 
-AwWebContentsDelegate::AwWebContentsDelegate(JNIEnv* env, jobject obj)
+AwWebContentsDelegate::AwWebContentsDelegate(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : WebContentsDelegateAndroid(env, obj), is_fullscreen_(false) {}
 
 AwWebContentsDelegate::~AwWebContentsDelegate() = default;

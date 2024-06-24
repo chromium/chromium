@@ -15,7 +15,7 @@ namespace android_webview {
 class PopupTouchHandleDrawable : public ui::TouchHandleDrawable {
  public:
   PopupTouchHandleDrawable(JNIEnv* env,
-                           jobject obj,
+                           const jni_zero::JavaRef<jobject>& obj,
                            float horizontal_padding_ratio);
 
   PopupTouchHandleDrawable(const PopupTouchHandleDrawable&) = delete;

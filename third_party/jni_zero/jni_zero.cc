@@ -136,9 +136,6 @@ ScopedJavaGlobalWeakRef::ScopedJavaGlobalWeakRef(
   Assign(orig);
 }
 
-ScopedJavaGlobalWeakRef::ScopedJavaGlobalWeakRef(JNIEnv* env, jobject obj)
-    : obj_(env->NewWeakGlobalRef(obj)) {}
-
 ScopedJavaGlobalWeakRef::ScopedJavaGlobalWeakRef(JNIEnv* env,
                                                  const JavaRef<jobject>& obj)
     : obj_(env->NewWeakGlobalRef(obj.obj())) {}

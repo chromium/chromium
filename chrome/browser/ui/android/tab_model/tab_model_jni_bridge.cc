@@ -34,12 +34,12 @@ using chrome::android::ActivityType;
 using content::WebContents;
 
 TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
-                                     jobject jobj,
+                                     const jni_zero::JavaRef<jobject>& jobj,
                                      Profile* profile,
                                      ActivityType activity_type,
                                      bool track_in_native_model_list)
     : TabModel(profile, activity_type),
-      java_object_(env, env->NewWeakGlobalRef(jobj)),
+      java_object_(env, jobj),
       track_in_native_model_list_(track_in_native_model_list) {
   if (track_in_native_model_list) {
     TabModelList::AddTabModel(this);

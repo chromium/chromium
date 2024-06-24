@@ -168,7 +168,7 @@ InterceptNavigationDelegate::MaybeCreateThrottleFor(
 
 InterceptNavigationDelegate::InterceptNavigationDelegate(
     JNIEnv* env,
-    jobject jdelegate,
+    const jni_zero::JavaRef<jobject>& jdelegate,
     bool escape_external_handler_value)
     : weak_jdelegate_(env, jdelegate),
       escape_external_handler_value_(escape_external_handler_value) {}

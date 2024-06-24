@@ -55,7 +55,8 @@ bool InputHintChecker::HasInputImplWithThrottling() {
   return false;
 }
 
-void InputHintChecker::SetView(JNIEnv* env, jobject root_view) {
+void InputHintChecker::SetView(JNIEnv* env,
+                               const jni_zero::JavaRef<jobject>& root_view) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   view_ = JavaObjectWeakGlobalRef(env, root_view);
 }
@@ -86,8 +87,8 @@ InputHintChecker::ScopedOverrideInstance::~ScopedOverrideInstance() {
 }
 
 void JNI_InputHintChecker_SetView(_JNIEnv* env,
-                                  const JavaParamRef<jobject>& v) {
-  InputHintChecker::GetInstance().SetView(env, v.obj());
+                                  const jni_zero::JavaParamRef<jobject>& v) {
+  InputHintChecker::GetInstance().SetView(env, v);
 }
 
 }  // namespace base::android

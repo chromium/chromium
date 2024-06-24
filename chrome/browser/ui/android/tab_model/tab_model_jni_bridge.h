@@ -26,7 +26,7 @@ class WebContents;
 class TabModelJniBridge : public TabModel {
  public:
   TabModelJniBridge(JNIEnv* env,
-                    jobject obj,
+                    const jni_zero::JavaRef<jobject>& jobj,
                     Profile* profile,
                     chrome::android::ActivityType activity_type,
                     bool track_in_native_model_list);

@@ -39,7 +39,7 @@ class BASE_EXPORT InputHintChecker {
   // Obtains a weak reference to |root_view| so that the following calls to
   // HasInput() take the input hint for this View. Requirements for the View
   // object are described in InputHintChecker.java.
-  void SetView(JNIEnv* env, jobject root_view);
+  void SetView(JNIEnv* env, const jni_zero::JavaRef<jobject>& root_view);
 
   // Fetches and returns the input hint from the Android Framework. Throttles
   // the calls to one every few milliseconds. When a call is made before the

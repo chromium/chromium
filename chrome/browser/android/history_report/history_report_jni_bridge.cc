@@ -44,7 +44,9 @@ static jlong JNI_HistoryReportJniBridge_Init(JNIEnv* env,
   return reinterpret_cast<intptr_t>(bridge);
 }
 
-HistoryReportJniBridge::HistoryReportJniBridge(JNIEnv* env, jobject obj)
+HistoryReportJniBridge::HistoryReportJniBridge(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_provider_(env, obj) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Profile* profile = g_browser_process->profile_manager()->

@@ -76,7 +76,9 @@ static jlong JNI_TracingControllerAndroidImpl_Init(
   return reinterpret_cast<intptr_t>(profiler);
 }
 
-TracingControllerAndroid::TracingControllerAndroid(JNIEnv* env, jobject obj)
+TracingControllerAndroid::TracingControllerAndroid(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_object_(env, obj) {}
 
 TracingControllerAndroid::~TracingControllerAndroid() {}

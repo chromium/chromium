@@ -103,7 +103,7 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
 };
 
 AwSettings::AwSettings(JNIEnv* env,
-                       jobject obj,
+                       const jni_zero::JavaRef<jobject>& obj,
                        content::WebContents* web_contents)
     : WebContentsObserver(web_contents),
       xrw_allowlist_matcher_(base::MakeRefCounted<AwContentsOriginMatcher>()),

@@ -74,7 +74,9 @@ class AwSettings : public content::WebContentsObserver {
   // on feature flags and trial config
   static RequestedWithHeaderMode GetDefaultRequestedWithHeaderMode();
 
-  AwSettings(JNIEnv* env, jobject obj, content::WebContents* web_contents);
+  AwSettings(JNIEnv* env,
+             const jni_zero::JavaRef<jobject>& obj,
+             content::WebContents* web_contents);
   ~AwSettings() override;
 
   bool GetAllowFileAccessFromFileURLs();
