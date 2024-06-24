@@ -463,9 +463,13 @@ TEST_F(PasswordGenerationManagerTest, PresaveGeneratedPassword_ThenUpdate) {
   related_psl_password_expected.date_password_modified = base::Time::Now();
   EXPECT_CALL(store(), UpdateLogin(related_psl_password_expected, _));
 
+  const std::vector<PasswordForm> matches_for_generation = {
+      related_password, related_psl_password, unrelated_password,
+      unrelated_psl_password};
   manager().CommitGeneratedPassword(
-      generated, matches, u"old password", PasswordForm::Store::kProfileStore,
-      &form_saver(), nullptr /* account_store_form_saver */);
+      generated, matches_for_generation, u"old password",
+      PasswordForm::Store::kProfileStore, &form_saver(),
+      nullptr /* account_store_form_saver */);
   EXPECT_TRUE(manager().HasGeneratedPassword());
 }
 
@@ -708,7 +712,7 @@ TEST_F(PasswordGenerationManagerTest,
   EXPECT_CALL(store(), UpdateLoginWithPrimaryKey(generated, _, _));
 
   manager().CommitGeneratedPassword(
-      generated, {&saved}, u"",
+      generated, std::vector{saved}, u"",
       PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore,
       &form_saver(), &account_store_form_saver);
 }

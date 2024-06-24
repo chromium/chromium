@@ -85,14 +85,12 @@ class PasswordGenerationManager {
 
   // Finish the generation flow by saving the final credential |generated|.
   // |matches| and |old_password| have the same meaning as in FormSaver.
-  void CommitGeneratedPassword(
-      PasswordForm generated,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
-      const std::u16string& old_password,
-      PasswordForm::Store store_to_save,
-      FormSaver* profile_store_form_saver,
-      FormSaver* account_store_form_saver);
+  void CommitGeneratedPassword(PasswordForm generated,
+                               base::span<const PasswordForm> matches,
+                               const std::u16string& old_password,
+                               PasswordForm::Store store_to_save,
+                               FormSaver* profile_store_form_saver,
+                               FormSaver* account_store_form_saver);
 
  private:
   void OnPresaveBubbleResult(const base::WeakPtr<PasswordManagerDriver>& driver,

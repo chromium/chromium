@@ -394,7 +394,7 @@ void PasswordGenerationManager::PasswordNoLongerGenerated(
 
 void PasswordGenerationManager::CommitGeneratedPassword(
     PasswordForm generated,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    base::span<const PasswordForm> matches,
     const std::u16string& old_password,
     PasswordForm::Store store_to_save,
     FormSaver* profile_store_form_saver,

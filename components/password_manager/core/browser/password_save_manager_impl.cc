@@ -118,13 +118,13 @@ void SanitizeAlternativeUsernames(PasswordForm* form) {
 // From all |matches| returns those that are in |store|. |matches| point to
 // forms held by |form_fetcher_|.
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MatchesInStore(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    base::span<const PasswordForm> matches,
     PasswordForm::Store store) {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> store_matches;
-  for (const PasswordForm* match : matches) {
-    DCHECK(match->in_store != PasswordForm::Store::kNotSet);
-    if (static_cast<int>(match->in_store) & static_cast<int>(store)) {
-      store_matches.push_back(match);
+  for (const PasswordForm& match : matches) {
+    CHECK_NE(match.in_store, PasswordForm::Store::kNotSet);
+    if (static_cast<int>(match.in_store) & static_cast<int>(store)) {
+      store_matches.push_back(&match);
     }
   }
   return store_matches;
@@ -255,11 +255,6 @@ void PopulateAlternativeUsernames(base::span<const PasswordForm> best_matches,
   }
 }
 
-// TODO(crbug.com/327343301) to be replaced after refactoring of
-// GetAllRelevantMatches.
-// Helper function used for internal handling and
-// filtering of PasswordForms. Returns vector of pointers to the forms holded by
-// form_fetcher_.
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
     base::span<const PasswordForm> matches) {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>> result(
@@ -269,21 +264,11 @@ std::vector<raw_ptr<const PasswordForm, VectorExperimental>> MakeWeakCopies(
   return result;
 }
 
-std::vector<raw_ptr<const PasswordForm, VectorExperimental>> JoinMatches(
-    base::span<const PasswordForm> non_federated_matches,
-    base::span<const PasswordForm> federated_matches) {
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches =
-      MakeWeakCopies(non_federated_matches);
-  base::ranges::transform(federated_matches, std::back_inserter(matches),
-                          [](const PasswordForm& form) { return &form; });
-  return matches;
-}
-
 }  // namespace
 
 PendingCredentialsStates ComputePendingCredentialsStates(
     const PasswordForm& parsed_submitted_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+    base::span<const PasswordForm> matches,
     bool username_updated_in_bubble,
     PasswordGenerationManager* generation_manager) {
   PendingCredentialsStates result;
@@ -311,16 +296,12 @@ PendingCredentialsStates ComputePendingCredentialsStates(
 }
 
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-AccountStoreMatches(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
+AccountStoreMatches(base::span<const PasswordForm> matches) {
   return MatchesInStore(matches, PasswordForm::Store::kAccountStore);
 }
 
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-ProfileStoreMatches(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
+ProfileStoreMatches(base::span<const PasswordForm> matches) {
   return MatchesInStore(matches, PasswordForm::Store::kProfileStore);
 }
 
@@ -494,7 +475,7 @@ void PasswordSaveManagerImpl::PresaveGeneratedPassword(
 
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       matches_for_generation = GetRelevantMatchesForGeneration(
-          MakeWeakCopies(form_fetcher_->GetAllRelevantMatches()));
+          form_fetcher_->GetAllRelevantMatches());
   generation_manager_->PresaveGeneratedPassword(std::move(parsed_form),
                                                 matches_for_generation,
                                                 GetFormSaverForGeneration());
@@ -507,11 +488,11 @@ void PasswordSaveManagerImpl::GeneratedPasswordAccepted(
 
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       non_federated_matches = GetRelevantMatchesForGeneration(
-          MakeWeakCopies(form_fetcher_->GetNonFederatedMatches()));
+          form_fetcher_->GetNonFederatedMatches());
 
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      federated_matches = GetRelevantMatchesForGeneration(
-          MakeWeakCopies(form_fetcher_->GetFederatedMatches()));
+      federated_matches =
+          GetRelevantMatchesForGeneration(form_fetcher_->GetFederatedMatches());
 
   generation_manager_->GeneratedPasswordAccepted(
       std::move(parsed_form), non_federated_matches, federated_matches,
@@ -545,14 +526,25 @@ void PasswordSaveManagerImpl::MoveCredentialsToAccountStore(
   // TODO(crbug.com/40111151): Moving credentials upon an update. FormFetch will
   // have an outdated credentials. Fix it if this turns out to be a product
   // requirement.
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches =
-      JoinMatches(form_fetcher_->GetNonFederatedMatches(),
-                  form_fetcher_->GetFederatedMatches());
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      profile_store_matches =
+          ProfileStoreMatches(form_fetcher_->GetNonFederatedMatches());
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
+      profile_store_federated =
+          ProfileStoreMatches(form_fetcher_->GetFederatedMatches());
+  profile_store_matches.insert(profile_store_matches.end(),
+                               profile_store_federated.begin(),
+                               profile_store_federated.end());
 
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      profile_store_matches = ProfileStoreMatches(matches);
+      account_store_matches =
+          AccountStoreMatches(form_fetcher_->GetNonFederatedMatches());
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
-      account_store_matches = AccountStoreMatches(matches);
+      account_store_federated =
+          AccountStoreMatches(form_fetcher_->GetFederatedMatches());
+  account_store_matches.insert(account_store_matches.end(),
+                               account_store_federated.begin(),
+                               account_store_federated.end());
 
   for (const PasswordForm* match : profile_store_matches) {
     DCHECK(!match->IsUsingAccountStore());
@@ -582,8 +574,7 @@ void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
   // We offer moving credentials to the account store only upon successful
   // login. This entails that the credentials must exist in the profile store.
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      pending_credentials_,
-      MakeWeakCopies(form_fetcher_->GetAllRelevantMatches()),
+      pending_credentials_, form_fetcher_->GetAllRelevantMatches(),
       username_updated_in_bubble_, generation_manager_.get());
   DCHECK(states.similar_saved_form_from_profile_store);
   DCHECK_EQ(PendingCredentialsState::EQUAL_TO_SAVED_MATCH,
@@ -721,7 +712,7 @@ std::pair<const PasswordForm*, PendingCredentialsState>
 PasswordSaveManagerImpl::FindSimilarSavedFormAndComputeState(
     const PasswordForm& parsed_submitted_form) const {
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form, MakeWeakCopies(form_fetcher_->GetBestMatches()),
+      parsed_submitted_form, form_fetcher_->GetBestMatches(),
       username_updated_in_bubble_, generation_manager_.get());
 
   // Resolve the two states to a single canonical one. This will be used to
@@ -750,14 +741,12 @@ void PasswordSaveManagerImpl::SavePendingToStore(
   UploadVotesAndMetrics(observed_form, parsed_submitted_form);
 
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      parsed_submitted_form,
-      MakeWeakCopies(form_fetcher_->GetAllRelevantMatches()),
+      parsed_submitted_form, form_fetcher_->GetAllRelevantMatches(),
       username_updated_in_bubble_, generation_manager_.get());
   PasswordForm::Store store_to_save = GetPasswordStoreForSavingImpl(states);
   if (HasGeneratedPassword()) {
     generation_manager_->CommitGeneratedPassword(
-        pending_credentials_,
-        MakeWeakCopies(form_fetcher_->GetAllRelevantMatches()),
+        pending_credentials_, form_fetcher_->GetAllRelevantMatches(),
         GetOldPassword(parsed_submitted_form), store_to_save,
         profile_store_form_saver_.get(), account_store_form_saver_.get());
   } else {
@@ -783,8 +772,8 @@ void PasswordSaveManagerImpl::SavePendingToStoreImpl(
     const PasswordForm* similar_saved_form,
     FormSaver* form_saver,
     PasswordForm::Store store_to_save) {
-  auto matches = MatchesInStore(
-      MakeWeakCopies(form_fetcher_->GetAllRelevantMatches()), store_to_save);
+  auto matches =
+      MatchesInStore(form_fetcher_->GetAllRelevantMatches(), store_to_save);
   std::u16string old_password = similar_saved_form
                                     ? similar_saved_form->password_value
                                     : std::u16string();
@@ -911,13 +900,12 @@ FormSaver* PasswordSaveManagerImpl::GetFormSaverForGeneration() {
 
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
 PasswordSaveManagerImpl::GetRelevantMatchesForGeneration(
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-        matches) {
+    base::span<const PasswordForm> matches) {
   //  For account store users, only matches in the account store should be
   //  considered for conflict resolution during generation.
   return (ShouldStoreGeneratedPasswordsInAccountStore())
              ? MatchesInStore(matches, PasswordForm::Store::kAccountStore)
-             : matches;
+             : MakeWeakCopies(matches);
 }
 
 void PasswordSaveManagerImpl::CloneInto(PasswordSaveManagerImpl* clone) {
@@ -1014,7 +1002,7 @@ void PasswordSaveManagerImpl::UsernameUpdatedInBubble() {
 PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSaving(
     const PasswordForm& password_form) const {
   PendingCredentialsStates states = ComputePendingCredentialsStates(
-      password_form, MakeWeakCopies(form_fetcher_->GetAllRelevantMatches()),
+      password_form, form_fetcher_->GetAllRelevantMatches(),
       username_updated_in_bubble_, generation_manager_.get());
   return GetPasswordStoreForSavingImpl(states);
 }
