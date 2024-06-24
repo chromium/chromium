@@ -477,12 +477,6 @@ TEST_F(SyncPrefsTest,
   expected_types.Remove(UserSelectableType::kAutofill);
 #endif
 
-#if BUILDFLAG(IS_IOS)
-  // On iOS, Bookmarks and Reading List are enabled by default.
-  expected_types.PutAll(
-      {UserSelectableType::kBookmarks, UserSelectableType::kReadingList});
-#endif
-
   EXPECT_EQ(sync_prefs_->GetSelectedTypesForAccount(gaia_id_hash_),
             expected_types);
 }
@@ -1352,17 +1346,26 @@ TEST_F(SyncPrefsMigrationTest, MigratesBookmarksOptedIn) {
 #if BUILDFLAG(IS_IOS)
     pref_service_.SetBoolean(
         prefs::internal::kBookmarksAndReadingListAccountStorageOptIn, true);
+
+    ASSERT_TRUE(pref_service_.GetBoolean(
+        prefs::internal::kBookmarksAndReadingListAccountStorageOptIn));
+    // The opt in doesn't take effect immediately, until
+    // `MaybeMigratePrefsForSyncToSigninPart1()`  is exercised.
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kBookmarks));
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kReadingList));
 #else
     prefs.SetSelectedTypeForAccount(UserSelectableType::kBookmarks, true,
                                     gaia_id_hash_);
     prefs.SetSelectedTypeForAccount(UserSelectableType::kReadingList, true,
                                     gaia_id_hash_);
-#endif  // BUILDFLAG(IS_IOS)
 
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                     .Has(UserSelectableType::kBookmarks));
     ASSERT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
                     .Has(UserSelectableType::kReadingList));
+#endif  // BUILDFLAG(IS_IOS)
   }
 
   {

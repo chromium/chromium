@@ -317,7 +317,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
       } else if (type == UserSelectableType::kBookmarks ||
                  type == UserSelectableType::kReadingList) {
         type_enabled = true;
-#if !BUILDFLAG(IS_IOS)
         // Consider kBookmarks and kReadingList off by default until
         // `kReplaceSyncPromosWithSignInPromos` is enabled. For existing clients
         // at the time the feature transitions from disabled to enabled, the
@@ -326,7 +325,6 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
           type_enabled = false;
         }
-#endif
       } else {
         // All other types are always enabled by default.
         type_enabled = true;
@@ -732,11 +730,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
   // Features to be enabled.
   switch (type) {
     case UserSelectableType::kBookmarks:
-#if BUILDFLAG(IS_IOS)
-      return true;
-#else
       return base::FeatureList::IsEnabled(kSyncEnableBookmarksInTransportMode);
-#endif
     case UserSelectableType::kReadingList:
       return syncer::IsReadingListAccountStorageEnabled();
     case UserSelectableType::kPreferences:
