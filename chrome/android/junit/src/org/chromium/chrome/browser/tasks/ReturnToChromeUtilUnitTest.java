@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_HOME_SURFACE_UI_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
-import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.RESUME_HOME_SURFACE_ON_MODE_CHANGE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
@@ -78,7 +77,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FailToShowHomeSurfaceReason;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
-import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -674,28 +672,6 @@ public class ReturnToChromeUtilUnitTest {
         assertTrue(
                 ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
                         true, intent, null, mTabModelSelector, mInactivityTracker));
-
-        // Sets the return time not arrive.
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
-        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
-        doReturn(true)
-                .when(mSaveInstanceState)
-                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-        doReturn(true)
-                .when(mSaveInstanceState)
-                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, null, mTabModelSelector, mInactivityTracker));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
-        Assert.assertFalse(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        false, intent, null, mTabModelSelector, mInactivityTracker));
-        assertTrue(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
     }
 
     @Test
@@ -931,72 +907,6 @@ public class ReturnToChromeUtilUnitTest {
         mTabModelObserverCaptor.getValue().willAddTab(mTab1, TabLaunchType.FROM_RESTORE);
         verify(mNewTabPage).showMagicStack(eq(mTab1));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
-    }
-
-    @Test
-    @SmallTest
-    public void testShouldShowNtpOnFoldChange() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
-        // Sets main intent from launcher:
-        Intent intent = createMainIntentFromLauncher();
-
-        // Sets background time to make the return time arrive:
-        ChromeSharedPreferences.getInstance()
-                .addToStringSet(
-                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF, "0");
-        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(0);
-        assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(0, false));
-
-        // There should always be at least 1 tab. Otherwise one will be created regardless.
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        doReturn(1).when(mTabModelSelector).getTotalTabCount();
-        assertTrue(HomepagePolicyManager.isInitializedWithNative());
-
-        assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
-        assertTrue(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
-
-        doReturn(true)
-                .when(mSaveInstanceState)
-                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-        doReturn(false)
-                .when(mSaveInstanceState)
-                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        assertFalse(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
-
-        doReturn(false)
-                .when(mSaveInstanceState)
-                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-        doReturn(false)
-                .when(mSaveInstanceState)
-                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        assertTrue(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
-
-        doReturn(true)
-                .when(mSaveInstanceState)
-                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-        doReturn(true)
-                .when(mSaveInstanceState)
-                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        assertTrue(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
-
-        doReturn(false)
-                .when(mSaveInstanceState)
-                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-        doReturn(true)
-                .when(mSaveInstanceState)
-                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
-        assertTrue(
-                ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                        true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
     }
 
     @Test

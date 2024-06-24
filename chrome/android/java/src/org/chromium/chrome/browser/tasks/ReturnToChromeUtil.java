@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.RESUME_HOME_SURFACE_ON_MODE_CHANGE;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +59,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
-import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
@@ -653,18 +650,6 @@ public final class ReturnToChromeUtil {
         // ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID isn't enabled, return false.
         if (!StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet)) return false;
 
-        // If the current session is recreated due to a transition from the phone mode to the tablet
-        // mode on foldable, checks if the Start surface was shown on the phone mode before the
-        // transition.
-        if (didFoldConfigurationChange(bundle)) {
-            if (shouldResumeHomeSurfaceOnFoldConfigurationChange(bundle)) {
-                return true;
-            }
-            // If the change was caused by fold/unfold there is no need to show the start surface so
-            // just early out. See crbug.com/341812558.
-            return false;
-        }
-
         // If the current session is due to recreated, don't show a NTP homepage.
         if (isFromRecreate(bundle)) {
             return false;
@@ -674,28 +659,11 @@ public final class ReturnToChromeUtil {
                 /* useNewReturnTime= */ true, intent, tabModelSelector, inactivityTracker);
     }
 
-    /** Returns whether the device transitioned between phone and tablet mode. */
-    private static boolean didFoldConfigurationChange(Bundle bundle) {
-        if (bundle == null) return false;
-
-        return bundle.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
-    }
-
     /** Returns whether a recreate was happened. */
     private static boolean isFromRecreate(Bundle bundle) {
         if (bundle == null) return false;
 
         return bundle.getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
-    }
-
-    /**
-     * Returns true if Start surface was showing on device before the transition between device
-     * modes.
-     */
-    private static boolean shouldResumeHomeSurfaceOnFoldConfigurationChange(Bundle bundle) {
-        if (bundle == null) return false;
-
-        return bundle.getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
     }
 
     /**

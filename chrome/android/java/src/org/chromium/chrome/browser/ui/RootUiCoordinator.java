@@ -574,7 +574,6 @@ public class RootUiCoordinator
                         mToolbarManagerOneshotSupplier,
                         mLayoutManagerSupplier,
                         mActivityTabProvider,
-                        mStartSurfaceSupplier,
                         new Handler());
         mExpandedBottomSheetHelper =
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());

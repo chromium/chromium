@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -20,14 +19,11 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** A utility class to handle saving and restoring the UI state across fold transitions. */
 public class FoldTransitionController {
     public static final String DID_CHANGE_TABLET_MODE = "did_change_tablet_mode";
-    public static final String RESUME_HOME_SURFACE_ON_MODE_CHANGE =
-            "resume_home_surface_on_mode_change";
     public static final long KEYBOARD_RESTORATION_TIMEOUT_MS = 2 * 1000; // 2 seconds
     static final String URL_BAR_FOCUS_STATE = "url_bar_focus_state";
     static final String URL_BAR_EDIT_TEXT = "url_bar_edit_text";
@@ -38,7 +34,6 @@ public class FoldTransitionController {
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final Handler mLayoutStateHandler;
-    private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     private boolean mKeyboardVisibleDuringFoldTransition;
     private Long mKeyboardVisibilityTimestamp;
 
@@ -54,13 +49,11 @@ public class FoldTransitionController {
             @NonNull OneshotSupplierImpl<ToolbarManager> toolbarManagerSupplier,
             @NonNull ObservableSupplier<LayoutManager> layoutManagerSupplier,
             @NonNull ActivityTabProvider activityTabProvider,
-            @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             Handler layoutStateHandler) {
         mToolbarManagerSupplier = toolbarManagerSupplier;
         mLayoutManagerSupplier = layoutManagerSupplier;
         mActivityTabProvider = activityTabProvider;
         mLayoutStateHandler = layoutStateHandler;
-        mStartSurfaceSupplier = startSurfaceSupplier;
     }
 
     /**
@@ -91,10 +84,6 @@ public class FoldTransitionController {
         if (mLayoutManagerSupplier.hasValue()) {
             if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                 savedInstanceState.putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
-            } else if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.START_SURFACE)
-                    && mStartSurfaceSupplier.hasValue()
-                    && mStartSurfaceSupplier.get().isHomepageShown()) {
-                saveHomeSurfaceState(savedInstanceState, mStartSurfaceSupplier.get(), isIncognito);
             }
         }
     }
@@ -125,20 +114,6 @@ public class FoldTransitionController {
                 mLayoutManagerSupplier.get(),
                 mLayoutStateHandler);
         restoreTabSwitcherState(savedInstanceState, mLayoutManagerSupplier.get());
-    }
-
-    /** Saves the Home surface state on a phone to tablet configuration change. */
-    @VisibleForTesting
-    static void saveHomeSurfaceState(
-            Bundle savedInstanceState, StartSurface startSurface, boolean isIncognito) {
-        if (savedInstanceState == null
-                || startSurface == null
-                || isIncognito
-                || !savedInstanceState.getBoolean(DID_CHANGE_TABLET_MODE)) {
-            return;
-        }
-
-        savedInstanceState.putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
     }
 
     boolean getKeyboardVisibleDuringFoldTransitionForTesting() {
