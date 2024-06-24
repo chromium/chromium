@@ -9,6 +9,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './ai_page.html.js';
 
@@ -27,6 +28,12 @@ export enum SettingsAiPageFeaturePrefName {
   COMPOSE = 'optimization_guide.compose_setting_state',
   TAB_ORGANIZATION = 'optimization_guide.tab_organization_setting_state',
   WALLPAPER_SEARCH = 'optimization_guide.wallpaper_search_setting_state',
+}
+
+export interface SettingsAiPageElement {
+  $: {
+    historySearchRow: HTMLElement,
+  };
 }
 
 const SettingsAiPageElementBase = PrefsMixin(PolymerElement);
@@ -50,6 +57,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       showComposeControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showComposeControl'),
+      },
+
+      showHistorySearchControl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showHistorySearchControl'),
       },
 
       showTabOrganizationControl_: {
@@ -76,6 +88,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   private showComposeControl_: boolean;
+  private showHistorySearchControl_: boolean;
   private showTabOrganizationControl_: boolean;
   private showWallpaperSearchControl_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
@@ -92,6 +105,19 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private getWallpaperSearchHrCssClass_(): string {
     return this.showComposeControl_ || this.showTabOrganizationControl_ ? 'hr' :
                                                                           '';
+  }
+
+  private getHistorySearchHrCssClass_(): string {
+    if (this.showComposeControl_ || this.showTabOrganizationControl_ ||
+        this.showWallpaperSearchControl_) {
+      return 'hr';
+    }
+    return '';
+  }
+
+  private onHistorySearchRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().HISTORY_SEARCH);
   }
 }
 

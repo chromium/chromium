@@ -46,6 +46,15 @@
         label="$i18n{experimentalAdvancedFeature3Label}"
         sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
     </settings-toggle-button>
+    <cr-link-row id="historySearchRow"
+        class$="[[getHistorySearchHrCssClass_(
+            showComposeControl_, showTabOrganizationControl_,
+            showWallpaperSearchControl_)]]"
+        hidden="[[!showHistorySearchControl_]]"
+        label="$i18n{historySearchSettingLabel}"
+        sub-label="$i18n{historySearchSettingSublabel}"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        on-click="onHistorySearchRowClick_">
+    </cr-link-row>
   </div>
 </cr-collapse>
-

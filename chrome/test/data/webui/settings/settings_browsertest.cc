@@ -10,7 +10,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -716,8 +715,7 @@ class SettingsPersonalizationOptionsTest : public SettingsBrowserTest {
  public:
   SettingsPersonalizationOptionsTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPageContentOptIn,
-                              history_embeddings::kHistoryEmbeddings},
+        /*enabled_features=*/{features::kPageContentOptIn},
         /*disabled_features=*/{});
   }
 
@@ -734,12 +732,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest,
                        PageContentSettingOff) {
   RunTest("settings/personalization_options_test.js",
           "runMochaSuite('PageContentSettingOff')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest,
-                       HistorySearchSettingOff) {
-  RunTest("settings/personalization_options_test.js",
-          "runMochaSuite('HistorySearchSettingOff')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -198,10 +198,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         },
       },
 
-      enableHistorySearchSetting_: {
+      showHistorySearchControl_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enableHistorySearchSetting');
+          return loadTimeData.getBoolean('showHistorySearchControl');
         },
       },
     };
@@ -215,7 +215,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private profileIconUrl_: string;
   private isProfileActionable_: boolean;
   private profileName_: string;
-  private enableHistorySearchSetting_: boolean;
+  private showHistorySearchControl_: boolean;
 
   // <if expr="not chromeos_ash">
   storedAccounts: StoredAccount[]|null;

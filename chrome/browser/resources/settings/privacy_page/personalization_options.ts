@@ -139,10 +139,10 @@ export class SettingsPersonalizationOptionsElement extends
         },
       },
 
-      enableHistorySearchSetting_: {
+      showHistorySearchControl_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enableHistorySearchSetting');
+          return loadTimeData.getBoolean('showHistorySearchControl');
         },
       },
     };
@@ -167,7 +167,7 @@ export class SettingsPersonalizationOptionsElement extends
   // </if>
 
   private enablePageContentSetting_: boolean;
-  private enableHistorySearchSetting_: boolean;
+  private showHistorySearchControl_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();

@@ -355,7 +355,8 @@ suite('AllBuilds', function() {
     const pageContentRow =
         testElement.shadowRoot!.querySelector<HTMLElement>('#pageContentRow')!;
 
-    // TODO(crbug.com/40070860): Remove visibility check once crbug/1476887 launched.
+    // TODO(crbug.com/40070860): Remove visibility check once crbug/1476887
+    // launched.
     assertTrue(isVisible(pageContentRow));
 
     // The sublabel is dynamic based on the setting state.
@@ -374,12 +375,21 @@ suite('AllBuilds', function() {
   });
 
   test('historySearchRow', () => {
+    loadTimeData.overrideValues({showHistorySearchControl: true});
+    resetRouterForTesting();
+    buildTestElement();
+
     const historySearchRow =
         testElement.shadowRoot!.querySelector<HTMLElement>('#historySearchRow');
     assertTrue(!!historySearchRow);
     assertTrue(isVisible(historySearchRow));
     historySearchRow.click();
     assertEquals(routes.HISTORY_SEARCH, Router.getInstance().getCurrentRoute());
+
+    loadTimeData.overrideValues({showHistorySearchControl: false});
+    buildTestElement();
+    assertFalse(!!testElement.shadowRoot!.querySelector<HTMLElement>(
+        '#historySearchRow'));
   });
 });
 
@@ -409,29 +419,6 @@ suite('PageContentSettingOff', function() {
         isVisible(testElement.shadowRoot!.querySelector('#pageContentRow')));
   });
 });
-
-suite('HistorySearchSettingOff', function() {
-  let testElement: SettingsPersonalizationOptionsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableHistorySearchSetting: false,
-    });
-    resetRouterForTesting();
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('settings-personalization-options');
-    document.body.appendChild(testElement);
-    flush();
-  });
-
-  test('historySearchRowNotVisible', function() {
-    assertFalse(!!testElement.shadowRoot!.querySelector('#historySearchRow'));
-  });
-});
-
 
 // <if expr="_google_chrome">
 suite('OfficialBuild', function() {
@@ -525,18 +512,17 @@ suite('OfficialBuild', function() {
   // </if>
 
   // <if expr="chromeos_ash">
-  test(
-      'Metrics row links to OS Settings Privacy Hub subpage', function() {
-        let targetUrl: string = '';
-        testElement['navigateTo_'] = (url: string) => {
-          targetUrl = url;
-        };
+  test('Metrics row links to OS Settings Privacy Hub subpage', function() {
+    let targetUrl: string = '';
+    testElement['navigateTo_'] = (url: string) => {
+      targetUrl = url;
+    };
 
-        testElement.$.metricsReportingLink.click();
-        const expectedUrl =
-            loadTimeData.getString('osSettingsPrivacyHubSubpageUrl');
-        assertEquals(expectedUrl, targetUrl);
-      });
+    testElement.$.metricsReportingLink.click();
+    const expectedUrl =
+        loadTimeData.getString('osSettingsPrivacyHubSubpageUrl');
+    assertEquals(expectedUrl, targetUrl);
+  });
   // </if>
 });
 // </if>

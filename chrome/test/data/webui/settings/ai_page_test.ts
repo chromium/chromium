@@ -55,12 +55,13 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(collapse.opened);
   });
 
-  test('FeatureTogglesVisibility', async () => {
+  test('FeaturesVisbiility', async () => {
     // Case 1, a subset of the controls should be visible.
     loadTimeData.overrideValues({
       showComposeControl: true,
       showTabOrganizationControl: false,
       showWallpaperSearchControl: false,
+      showHistorySearchControl: false,
     });
     createPage();
 
@@ -75,12 +76,14 @@ suite('ExperimentalAdvancedPage', function() {
     assertTrue(isVisible(toggles[0]!));
     assertFalse(isVisible(toggles[1]!));
     assertFalse(isVisible(toggles[2]!));
+    assertFalse(isVisible(page.$.historySearchRow));
 
     // Case 1, a different subset of the controls should be visible.
     loadTimeData.overrideValues({
       showComposeControl: false,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
+      showHistorySearchControl: true,
     });
     createPage();
 
@@ -90,6 +93,7 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(isVisible(toggles[0]!));
     assertTrue(isVisible(toggles[1]!));
     assertTrue(isVisible(toggles[2]!));
+    assertTrue(isVisible(page.$.historySearchRow));
   });
 
   test('FeatureTogglesInteraction', () => {
@@ -97,6 +101,7 @@ suite('ExperimentalAdvancedPage', function() {
       showComposeControl: true,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
+      showHistorySearchControl: false,
     });
     createPage();
     const toggles =
@@ -151,16 +156,16 @@ suite('ExperimentalAdvancedPage', function() {
         FeatureOptInState.DISABLED);
   });
 
-  test('FeatureTogglesSeparators', () => {
+  test('FeaturesSeparators', () => {
     // Asserts whether a separator is shown for each visible row.
     function assertSeparatorsVisible(expected: boolean[]) {
-      const toggles =
-          page.shadowRoot!.querySelectorAll<SettingsToggleButtonElement>(
-              'cr-collapse settings-toggle-button:not([hidden])');
+      const rows = page.shadowRoot!.querySelectorAll<HTMLElement>(
+          'cr-collapse settings-toggle-button:not([hidden]),' +
+          'cr-link-row:not([hidden])');
 
-      assertEquals(expected.length, toggles.length);
+      assertEquals(expected.length, rows.length);
       expected.forEach((visible, i) => {
-        assertEquals(visible, toggles[i]!.classList.contains('hr'));
+        assertEquals(visible, rows[i]!.classList.contains('hr'));
       });
     }
 
@@ -169,51 +174,67 @@ suite('ExperimentalAdvancedPage', function() {
       showComposeControl: true,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
+      showHistorySearchControl: true,
     });
     createPage();
-    assertSeparatorsVisible([false, true, true]);
+    assertSeparatorsVisible([false, true, true, true]);
 
     // Case2: Row 0 hidden.
     loadTimeData.overrideValues({
       showComposeControl: false,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: true,
+      showHistorySearchControl: true,
     });
     createPage();
-    assertSeparatorsVisible([false, true]);
+    assertSeparatorsVisible([false, true, true]);
 
     // Case3: Row 1 hidden.
     loadTimeData.overrideValues({
       showComposeControl: true,
       showTabOrganizationControl: false,
       showWallpaperSearchControl: true,
+      showHistorySearchControl: true,
     });
     createPage();
-    assertSeparatorsVisible([false, true]);
+    assertSeparatorsVisible([false, true, true]);
 
     // Case4: Row 2 hidden.
     loadTimeData.overrideValues({
       showComposeControl: true,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: false,
+      showHistorySearchControl: true,
     });
     createPage();
-    assertSeparatorsVisible([false, true]);
+    assertSeparatorsVisible([false, true, true]);
 
     // Case5: Rows 0,1 hidden.
     loadTimeData.overrideValues({
       showComposeControl: false,
       showTabOrganizationControl: false,
       showWallpaperSearchControl: true,
+      showHistorySearchControl: true,
     });
     createPage();
-    assertSeparatorsVisible([false]);
+    assertSeparatorsVisible([false, true]);
 
     // Case6: Rows 0,2 hidden.
     loadTimeData.overrideValues({
       showComposeControl: false,
       showTabOrganizationControl: true,
       showWallpaperSearchControl: false,
+      showHistorySearchControl: true,
+    });
+    createPage();
+    assertSeparatorsVisible([false, true]);
+
+    // Case7: Rows 0-3 hidden.
+    loadTimeData.overrideValues({
+      showComposeControl: false,
+      showTabOrganizationControl: false,
+      showWallpaperSearchControl: false,
+      showHistorySearchControl: true,
     });
     createPage();
     assertSeparatorsVisible([false]);

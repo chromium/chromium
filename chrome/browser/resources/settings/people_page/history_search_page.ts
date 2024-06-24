@@ -11,6 +11,15 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './history_search_page.html.js';
 
+// These values must stay in sync with
+// optimization_guide::prefs::FeatureOptInState in
+// components/optimization_guide/core/optimization_guide_prefs.h.
+export enum FeatureOptInState {
+  NOT_INITIALIZED = 0,
+  ENABLED = 1,
+  DISABLED = 2,
+}
+
 export class SettingsHistorySearchPageElement extends PolymerElement {
   static get is() {
     return 'settings-history-search-page';
@@ -19,6 +28,26 @@ export class SettingsHistorySearchPageElement extends PolymerElement {
   static get template() {
     return getTemplate();
   }
+
+  static get properties() {
+    return {
+      featureOptInStateEnum_: {
+        type: Object,
+        value: FeatureOptInState,
+      },
+
+      numericUncheckedValues_: {
+        type: Array,
+        value: () =>
+            [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
+      },
+
+      prefs: Object,
+    };
+  }
+
+  private numericUncheckedValues_: FeatureOptInState[];
+  prefs: {[key: string]: any};
 }
 
 declare global {

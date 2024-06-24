@@ -88,7 +88,6 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
@@ -406,10 +405,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
           base::FeatureList::IsEnabled(
               companion::features::kCompanionEnablePageContent));
-
-  html_source->AddBoolean(
-      "enableHistorySearchSetting",
-      base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings));
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",
