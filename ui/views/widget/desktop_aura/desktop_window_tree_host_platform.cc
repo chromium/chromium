@@ -1043,6 +1043,12 @@ gfx::PointF DesktopWindowTreeHostPlatform::ConvertScreenPointToLocalDIP(
 #endif
 }
 
+gfx::Insets DesktopWindowTreeHostPlatform::ConvertInsetsToPixels(
+    const gfx::Insets& insets_dip) const {
+  auto scale = GetRootTransform().To2dScale();
+  return gfx::ScaleToCeiledInsets(insets_dip, scale.x(), scale.y());
+}
+
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {
   OnHostWorkspaceChanged();
 }
