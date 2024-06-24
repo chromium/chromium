@@ -3945,9 +3945,11 @@ crbug.com/851363 http/tests/devtools/sxg/sxg-prefetch.js [ Failure Pass ]
 
 # Prefetching inspector protocol test is flaky
 crbug.com/40854799 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
+crbug.com/40854799 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
+crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
+crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
 
 # Sheriff 2018-03-22
 crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
@@ -7603,6 +7605,11 @@ crbug.com/345499788 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/co
 # Temporarily disable as it's failing due to increasing <option> height in <select>:
 crbug.com/341124482 fast/forms/select-popup/popup-menu-mouse-operations.html [ Failure Pass ]
 crbug.com/341124482 fast/forms/select-popup/popup-menu-scrollbar-button-scrolls.html [ Failure Pass ]
+
+# Not working tests at the timing of adding virtual/prerender2-fallback-prefetch-spec-rules
+crbug.com/346751349 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/preload/rule-set-updated.js [ Crash ]
+crbug.com/346751349 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/back-from-prerender-crash.js [ Crash ]
+crbug.com/346751886 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-ua-override.js [ Failure ]
 
 # Gardener 2024-06-06
 crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]

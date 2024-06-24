@@ -1944,6 +1944,41 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "prerender2-fallback-prefetch-spec-rules",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/preload",
+      "http/tests/inspector-protocol/prerender",
+      "http/tests/inspector-protocol/tracing/prerender.js"
+    ],
+    "args": [
+      "--enable-features=PrefetchReusable,Prerender2FallbackPrefetchSpecRules"
+    ],
+    "owners": ["kenoss@chromium.org"],
+    "expires": "Dec 12, 2024"
+  },
+  "prerender2-fallback-prefetch-spec-rules for exclusive tests http/tests/inspector-protocol/prefetch",
+  "We maintain this separated from prerender2-fallback-prefetch-spec-rules because",
+  "- http/tests/inspector-protocol/prefetch is `exclusive_tests` in `prefetch`.",
+  "  If other suite wants to execute it, it needs include the directry to its `exclusive_tests`.",
+  "- It requires lots of feature flags. We don't need to mix them up.",
+  {
+    "prefix": "prerender2-fallback-prefetch-spec-rules-prefetch",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/prefetch"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchRedirects,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules",
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
+    ],
+    "owners": ["kenoss@chromium.org"],
+    "expires": "Dec 12, 2024"
+  },
+  {
     "prefix": "cookie-reject-domain-non-ascii",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
