@@ -85,6 +85,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
  private:
   void OnGetPresetTextQueriesResult(
       GetEditorPanelContextCallback callback,
+      crosapi::mojom::EditorPanelMode panel_mode,
       std::vector<orca::mojom::PresetTextQueryPtr> queries);
 
   raw_ptr<Delegate> delegate_;

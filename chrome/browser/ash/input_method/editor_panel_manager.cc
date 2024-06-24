@@ -99,21 +99,20 @@ void EditorPanelManager::GetEditorPanelContext(
   // the editor panel do not interfere with the context.
   delegate_->CacheContext();
 
-  // TODO(b/295059934): Get the panel mode from the editor mediator.
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
 
-  // TODO(b/295059934): Bind the editor client before getting the preset text
-  // queries.
-  if (editor_panel_mode == crosapi::mojom::EditorPanelMode::kRewrite &&
+  if (editor_panel_mode != crosapi::mojom::EditorPanelMode::kBlocked &&
       editor_client_remote_.is_bound()) {
     editor_client_remote_->GetPresetTextQueries(
         base::BindOnce(&EditorPanelManager::OnGetPresetTextQueriesResult,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  } else {
-    auto context = crosapi::mojom::EditorPanelContext::New();
-    context->editor_panel_mode = editor_panel_mode;
-    std::move(callback).Run(std::move(context));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       editor_panel_mode));
+    return;
   }
+
+  auto context = crosapi::mojom::EditorPanelContext::New();
+  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kBlocked;
+  std::move(callback).Run(std::move(context));
 }
 
 void EditorPanelManager::OnPromoCardDismissed() {}
@@ -146,9 +145,10 @@ void EditorPanelManager::StartEditingFlowWithFreeform(const std::string& text) {
 
 void EditorPanelManager::OnGetPresetTextQueriesResult(
     GetEditorPanelContextCallback callback,
+    crosapi::mojom::EditorPanelMode panel_mode,
     std::vector<orca::mojom::PresetTextQueryPtr> queries) {
   auto context = crosapi::mojom::EditorPanelContext::New();
-  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kRewrite;
+  context->editor_panel_mode = panel_mode;
   for (const auto& query : queries) {
     context->preset_text_queries.push_back(ToEditorPanelQuery(query));
   }
