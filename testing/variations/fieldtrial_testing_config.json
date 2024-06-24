@@ -7364,6 +7364,21 @@
             ]
         }
     ],
+    "DeskBarWindowOcclusionOptimization": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeskBarWindowOcclusionOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeskButton": [
         {
             "platforms": [
