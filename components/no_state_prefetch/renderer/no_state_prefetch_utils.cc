@@ -90,7 +90,7 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
 
     // If the page has played media before and doesn't require deferred
     // media load, load the player now.
-    if (has_played_before && web_frame &&
+    if (has_played_before && web_frame && web_frame->IsWebLocalFrame() &&
         !DeferredMediaLoadState::ShouldDeferMediaLoad(
             content::RenderFrame::FromWebFrame(web_frame->ToWebLocalFrame()))) {
       std::move(continue_loading_cb_).Run();
