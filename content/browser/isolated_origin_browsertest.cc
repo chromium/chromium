@@ -6555,8 +6555,13 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
  public:
   // Note: the COOP header is only populated for HTTPS.
   COOPIsolationTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSiteIsolationForCrossOriginOpenerPolicy);
+    // Note: OriginKeyedProcessesByDefault should only apply when strict site
+    // isolation is in effect, and these tests turn that off via
+    // NoSiteIsolationContentBrowserClient.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::
+                                  kSiteIsolationForCrossOriginOpenerPolicy},
+        /*disabled_features=*/{features::kOriginKeyedProcessesByDefault});
   }
 
   ~COOPIsolationTest() override = default;
