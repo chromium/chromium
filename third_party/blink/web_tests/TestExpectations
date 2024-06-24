@@ -2745,9 +2745,6 @@ crbug.com/332370892 external/wpt/fetch/api/request/request-bad-port.any.worker.h
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 virtual/keepalive-in-browser-migration/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
-crbug.com/332370892 virtual/orb-v02/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
-crbug.com/332370892 virtual/orb-v02/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
-crbug.com/332370892 virtual/orb-v02/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
 crbug.com/332370892 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.html [ Timeout ]
 crbug.com/332370892 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.sharedworker.html [ Timeout ]
 crbug.com/332370892 virtual/plz-dedicated-worker-disabled/external/wpt/fetch/api/request/request-bad-port.any.worker.html [ Timeout ]
@@ -6740,10 +6737,6 @@ crbug.com/1468996 fast/events/touch/gesture/gesture-tap-active-state-hidden-ifra
 
 # Gardener 2023-08-01
 crbug.com/1469087 virtual/fenced-frame-mparch/external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.html [ Failure Pass ]
-
-
-# Fix importer 2023-08-04
-crbug.com/626703 virtual/orb-v02/external/wpt/fetch/api/basic/request-forbidden-headers.any.serviceworker.html [ Failure Pass ]
 
 crbug.com/1471020 http/tests/devtools/network/request-name-path.js [ Failure Pass ]
 

@@ -498,8 +498,7 @@ OpaqueResponseBlockingAnalyzer::ShouldHandleBlockedResponseAs() const {
     return BlockedResponseHandling::kNetworkError;
   }
 
-  if (base::FeatureList::IsEnabled(features::kOpaqueResponseBlockingV02) &&
-      request_destination_from_renderer_ != mojom::RequestDestination::kEmpty) {
+  if (request_destination_from_renderer_ != mojom::RequestDestination::kEmpty) {
     return BlockedResponseHandling::kNetworkError;
   }
 
