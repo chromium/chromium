@@ -38,6 +38,7 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     wgpu::TextureFormat format,
     PredefinedColorSpace color_space,
     const gfx::HDRMetadata& hdr_metadata)
@@ -46,6 +47,7 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
       device_(device),
       format_(WGPUFormatToViz(format)),
       usage_(usage),
+      internal_usage_(internal_usage),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata) {
   wgpu::SupportedLimits limits = {};
@@ -194,6 +196,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     CHECK_EQ(desc.nextInChain->sType,
              wgpu::SType::DawnTextureInternalUsageDescriptor);
     CHECK_EQ(desc.nextInChain->nextInChain, nullptr);
+    const auto* internal_usage_desc =
+        static_cast<const wgpu::DawnTextureInternalUsageDescriptor*>(
+            desc.nextInChain);
+    DCHECK_EQ(internal_usage_desc->internalUsage, internal_usage_);
+  } else {
+    DCHECK_EQ(internal_usage_, wgpu::TextureUsage::None);
   }
 
   auto context_provider = GetContextProviderWeakPtr();
@@ -277,7 +285,10 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
     return WebGPUMailboxTextureAndSize(nullptr, gfx::Size());
   }
 
+  wgpu::DawnTextureInternalUsageDescriptor internal_usage;
+  internal_usage.internalUsage = internal_usage_;
   wgpu::TextureDescriptor desc = {
+      .nextInChain = &internal_usage,
       .usage = usage_,
   };
 

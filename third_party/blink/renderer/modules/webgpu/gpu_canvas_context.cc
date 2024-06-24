@@ -524,9 +524,21 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_metadata);
   }
 
+  const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
+  if (const wgpu::ChainedStruct* next_in_chain =
+          swap_texture_descriptor_.nextInChain) {
+    // The internal usage descriptor is the only valid struct to chain.
+    CHECK_EQ(next_in_chain->sType,
+             wgpu::SType::DawnTextureInternalUsageDescriptor);
+    internal_usage_desc =
+        static_cast<const wgpu::DawnTextureInternalUsageDescriptor*>(
+            next_in_chain);
+  }
+  auto internal_usage = internal_usage_desc ? internal_usage_desc->internalUsage
+                                            : wgpu::TextureUsage::None;
   swap_buffers_ = base::AdoptRef(new WebGPUSwapBufferProvider(
       this, device_->GetDawnControlClient(), device_->GetHandle(),
-      static_cast<wgpu::TextureUsage>(swap_texture_descriptor_.usage),
+      swap_texture_descriptor_.usage, internal_usage,
       swap_texture_descriptor_.format, color_space_, hdr_metadata));
   swap_buffers_->SetFilterQuality(filter_quality_);
 

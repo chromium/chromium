@@ -110,6 +110,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
                                  dawn_control_client,
                                  device,
                                  usage,
+                                 wgpu::TextureUsage::None,
                                  format,
                                  color_space,
                                  hdr_metadata),

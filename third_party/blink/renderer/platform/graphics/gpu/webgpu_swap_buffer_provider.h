@@ -46,6 +46,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
       wgpu::TextureUsage usage,
+      wgpu::TextureUsage internal_usage,
       wgpu::TextureFormat format,
       PredefinedColorSpace color_space,
       const gfx::HDRMetadata& hdr_metadata);
@@ -167,6 +168,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   scoped_refptr<SwapBuffer> last_swap_buffer_;
   const viz::SharedImageFormat format_;
   const wgpu::TextureUsage usage_;
+  const wgpu::TextureUsage internal_usage_;
   const PredefinedColorSpace color_space_;
   const gfx::HDRMetadata hdr_metadata_;
   cc::PaintFlags::FilterQuality filter_quality_ =
