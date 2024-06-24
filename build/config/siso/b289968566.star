@@ -277,6 +277,7 @@ def __step_config(ctx, step_config):
         # symbol_level = 2
         # use_siso = true
         exit137_list.extend([
+            "./obj/content/test/test_support/browser_test_utils.obj",
             "./obj/third_party/blink/renderer/core/core/local_frame.obj",
         ])
 
