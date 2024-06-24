@@ -22,9 +22,7 @@ declare_args() {
 
   # Set to true to enable settings for high end Android devices, typically
   # enhancing speed at the expense of resources such as binary sizes and memory.
-  # Non-official builds should ignore this argument so that arm64 builders
-  # remain fast and independent from PGO without having to set the value to false.
-  is_high_end_android = target_cpu == "arm64"
+  is_high_end_android = target_cpu == "arm64" || target_cpu == "x64"
 
   if (is_android) {
     # By default, Trichrome channels are compiled using separate package names.
