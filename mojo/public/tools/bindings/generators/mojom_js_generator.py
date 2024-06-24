@@ -41,31 +41,31 @@ _kind_to_javascript_default_value = {
 }
 
 _kind_to_codec_type = {
-    mojom.BOOL: "codec.Uint8",
-    mojom.INT8: "codec.Int8",
-    mojom.UINT8: "codec.Uint8",
-    mojom.INT16: "codec.Int16",
-    mojom.UINT16: "codec.Uint16",
-    mojom.INT32: "codec.Int32",
-    mojom.UINT32: "codec.Uint32",
-    mojom.FLOAT: "codec.Float",
-    mojom.HANDLE: "codec.Handle",
-    mojom.DCPIPE: "codec.Handle",
-    mojom.DPPIPE: "codec.Handle",
-    mojom.MSGPIPE: "codec.Handle",
-    mojom.SHAREDBUFFER: "codec.Handle",
-    mojom.PLATFORMHANDLE: "codec.Handle",
-    mojom.NULLABLE_HANDLE: "codec.NullableHandle",
-    mojom.NULLABLE_DCPIPE: "codec.NullableHandle",
-    mojom.NULLABLE_DPPIPE: "codec.NullableHandle",
-    mojom.NULLABLE_MSGPIPE: "codec.NullableHandle",
-    mojom.NULLABLE_SHAREDBUFFER: "codec.NullableHandle",
-    mojom.NULLABLE_PLATFORMHANDLE: "codec.NullableHandle",
-    mojom.INT64: "codec.Int64",
-    mojom.UINT64: "codec.Uint64",
-    mojom.DOUBLE: "codec.Double",
-    mojom.STRING: "codec.String",
-    mojom.NULLABLE_STRING: "codec.NullableString",
+    mojom.BOOL: "mojo.internal.Uint8",
+    mojom.INT8: "mojo.internal.Int8",
+    mojom.UINT8: "mojo.internal.Uint8",
+    mojom.INT16: "mojo.internal.Int16",
+    mojom.UINT16: "mojo.internal.Uint16",
+    mojom.INT32: "mojo.internal.Int32",
+    mojom.UINT32: "mojo.internal.Uint32",
+    mojom.FLOAT: "mojo.internal.Float",
+    mojom.HANDLE: "mojo.internal.Handle",
+    mojom.DCPIPE: "mojo.internal.Handle",
+    mojom.DPPIPE: "mojo.internal.Handle",
+    mojom.MSGPIPE: "mojo.internal.Handle",
+    mojom.SHAREDBUFFER: "mojo.internal.Handle",
+    mojom.PLATFORMHANDLE: "mojo.internal.Handle",
+    mojom.NULLABLE_HANDLE: "mojo.internal.NullableHandle",
+    mojom.NULLABLE_DCPIPE: "mojo.internal.NullableHandle",
+    mojom.NULLABLE_DPPIPE: "mojo.internal.NullableHandle",
+    mojom.NULLABLE_MSGPIPE: "mojo.internal.NullableHandle",
+    mojom.NULLABLE_SHAREDBUFFER: "mojo.internal.NullableHandle",
+    mojom.NULLABLE_PLATFORMHANDLE: "mojo.internal.NullableHandle",
+    mojom.INT64: "mojo.internal.Int64",
+    mojom.UINT64: "mojo.internal.Uint64",
+    mojom.DOUBLE: "mojo.internal.Double",
+    mojom.STRING: "mojo.internal.String",
+    mojom.NULLABLE_STRING: "mojo.internal.NullableString",
 }
 
 _kind_to_closure_type = {
@@ -263,7 +263,7 @@ def JavaScriptPayloadSize(packed):
 
 
 def JavaScriptFieldOffset(packed_field):
-  return "offset + codec.kStructHeaderSize + %s" % packed_field.offset
+  return "offset + mojo.internal.kStructHeaderSize + %s" % packed_field.offset
 
 
 def GetArrayExpectedDimensionSizes(kind):
@@ -448,9 +448,9 @@ class Generator(generator.Generator):
 
     self.module.Stylize(JavaScriptStylizer())
 
-    # TODO(crbug.com/41361453): Change the media router extension to not mess with
-    # the mojo namespace, so that namespaces such as "mojo.common.mojom" are not
-    # affected and we can remove this method.
+    # TODO(crbug.com/41361453): Change the media router extension to not mess
+    # with the mojo namespace, so that namespaces such as "mojo.common.mojom"
+    # are not affected and we can remove this method.
     self._SetUniqueNameForImports()
 
     self.WriteWithComment(self._GenerateAMDModule(), "%s.js" % self.module.path)
@@ -820,7 +820,8 @@ class Generator(generator.Generator):
     if mojom.IsStructKind(kind):
       pointer_type = "NullablePointerTo" if mojom.IsNullableKind(kind) \
           else "PointerTo"
-      return "new codec.%s(%s)" % (pointer_type, self._JavaScriptType(kind))
+      return "new mojo.internal.%s(%s)" % (pointer_type,
+                                           self._JavaScriptType(kind))
     if mojom.IsUnionKind(kind):
       return self._JavaScriptType(kind)
     if mojom.IsArrayKind(kind):
@@ -828,37 +829,38 @@ class Generator(generator.Generator):
                     if mojom.IsNullableKind(kind) else "ArrayOf")
       array_length = "" if kind.length is None else ", %d" % kind.length
       element_type = self._ElementCodecType(kind.kind)
-      return "new codec.%s(%s%s)" % (array_type, element_type, array_length)
+      return "new mojo.internal.%s(%s%s)" % (array_type, element_type,
+                                             array_length)
     if mojom.IsInterfaceKind(kind):
-      return "new codec.%s(%sPtr)" % (
+      return "new mojo.internal.%s(%sPtr)" % (
           "NullableInterface" if mojom.IsNullableKind(kind) else "Interface",
           self._JavaScriptType(kind))
     if mojom.IsPendingRemoteKind(kind):
-      return "new codec.%s(%sPtr)" % (
+      return "new mojo.internal.%s(%sPtr)" % (
           "NullableInterface" if mojom.IsNullableKind(kind) else "Interface",
           self._JavaScriptType(kind.kind))
     if mojom.IsPendingReceiverKind(kind):
-      return "codec.%s" % ("NullableInterfaceRequest" if
-                           mojom.IsNullableKind(kind) else "InterfaceRequest")
+      return "mojo.internal.%s" % ("NullableInterfaceRequest" if mojom.
+                                   IsNullableKind(kind) else "InterfaceRequest")
     if mojom.IsPendingAssociatedRemoteKind(kind):
-      return "codec.%s" % ("NullableAssociatedInterfacePtrInfo"
-                           if mojom.IsNullableKind(kind) else
-                           "AssociatedInterfacePtrInfo")
+      return "mojo.internal.%s" % ("NullableAssociatedInterfacePtrInfo"
+                                   if mojom.IsNullableKind(kind) else
+                                   "AssociatedInterfacePtrInfo")
     if mojom.IsPendingAssociatedReceiverKind(kind):
-      return "codec.%s" % ("NullableAssociatedInterfaceRequest"
-                           if mojom.IsNullableKind(kind) else
-                           "AssociatedInterfaceRequest")
+      return "mojo.internal.%s" % ("NullableAssociatedInterfaceRequest"
+                                   if mojom.IsNullableKind(kind) else
+                                   "AssociatedInterfaceRequest")
     if mojom.IsEnumKind(kind):
-      return "new codec.Enum(%s)" % self._JavaScriptType(kind)
+      return "new mojo.internal.Enum(%s)" % self._JavaScriptType(kind)
     if mojom.IsMapKind(kind):
       map_type = "NullableMapOf" if mojom.IsNullableKind(kind) else "MapOf"
       key_type = self._ElementCodecType(kind.key_kind)
       value_type = self._ElementCodecType(kind.value_kind)
-      return "new codec.%s(%s, %s)" % (map_type, key_type, value_type)
+      return "new mojo.internal.%s(%s, %s)" % (map_type, key_type, value_type)
     raise Exception("No codec type for %s" % kind)
 
   def _ElementCodecType(self, kind):
-    return ("codec.PackedBool"
+    return ("mojo.internal.PackedBool"
             if mojom.IsBoolKind(kind) else self._CodecType(kind))
 
   def _JavaScriptDecodeSnippet(self, kind):
@@ -871,7 +873,7 @@ class Generator(generator.Generator):
       return "decodeMapPointer(%s, %s)" % (self._ElementCodecType(
           kind.key_kind), self._ElementCodecType(kind.value_kind))
     if mojom.IsArrayKind(kind) and mojom.IsBoolKind(kind.kind):
-      return "decodeArrayPointer(codec.PackedBool)"
+      return "decodeArrayPointer(mojo.internal.PackedBool)"
     if mojom.IsArrayKind(kind):
       return "decodeArrayPointer(%s)" % self._CodecType(kind.kind)
     if mojom.IsUnionKind(kind):
@@ -892,7 +894,7 @@ class Generator(generator.Generator):
       return "encodeMapPointer(%s, %s, " % (self._ElementCodecType(
           kind.key_kind), self._ElementCodecType(kind.value_kind))
     if mojom.IsArrayKind(kind) and mojom.IsBoolKind(kind.kind):
-      return "encodeArrayPointer(codec.PackedBool, "
+      return "encodeArrayPointer(mojo.internal.PackedBool, "
     if mojom.IsArrayKind(kind):
       return "encodeArrayPointer(%s, " % self._CodecType(kind.kind)
     if mojom.IsEnumKind(kind):

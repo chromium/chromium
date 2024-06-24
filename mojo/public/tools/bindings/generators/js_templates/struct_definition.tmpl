@@ -82,8 +82,8 @@
 
   {{struct.name}}.validate = function(messageValidator, offset) {
     var err;
-    err = messageValidator.validateStructHeader(offset, codec.kStructHeaderSize);
-    if (err !== validator.validationError.NONE)
+    err = messageValidator.validateStructHeader(offset, mojo.internal.kStructHeaderSize);
+    if (err !== mojo.internal.validationError.NONE)
         return err;
 
     var kVersionSizes = [
@@ -93,7 +93,7 @@
 {%  endfor %}
     ];
     err = messageValidator.validateStructVersion(offset, kVersionSizes);
-    if (err !== validator.validationError.NONE)
+    if (err !== mojo.internal.validationError.NONE)
         return err;
 
 {#- Before validating fields introduced at a certain version, we need to add
@@ -113,18 +113,18 @@
 {%        set last_checked_version = packed_field.min_version %}
     // version check {{name}}
     if (!messageValidator.isFieldInStructVersion(offset, {{packed_field.min_version}}))
-      return validator.validationError.NONE;
+      return mojo.internal.validationError.NONE;
 {%-     endif -%}
 {{validate_struct_field(field, offset, name)|indent(4)}}
 {%-   endif %}
 {%- endfor %}
 
-    return validator.validationError.NONE;
+    return mojo.internal.validationError.NONE;
   };
 
 {#--- Encoding and decoding #}
 
-  {{struct.name}}.encodedSize = codec.kStructHeaderSize + {{struct.packed|payload_size}};
+  {{struct.name}}.encodedSize = mojo.internal.kStructHeaderSize + {{struct.packed|payload_size}};
 
   {{struct.name}}.decode = function(decoder) {
     var packed;

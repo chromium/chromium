@@ -12,13 +12,6 @@
   }
   mojo.internal.markMojomLoaded(mojomId);
 
-{#- TODO(crbug.com/41361453): Change the media router extension to not mess with
-    the mojo namespace, so that we can refer to mojo directly. #}
-  var bindings = mojo;
-  var associatedBindings = mojo;
-  var codec = mojo.internal;
-  var validator = mojo.internal;
-
   var exports = mojo.internal.exposeNamespace('{{module.namespace}}');
 
 {%- for import in imports %}

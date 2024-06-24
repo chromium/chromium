@@ -194,7 +194,7 @@ Object.defineProperty({{union.name}}.prototype, "{{field.name}}", {
 {{union.name}}.validate = function(messageValidator, offset) {
   var size = messageValidator.decodeUnionSize(offset);
   if (size != 16) {
-    return validator.validationError.INVALID_UNION_SIZE;
+    return mojo.internal.validationError.INVALID_UNION_SIZE;
   }
 
   var tag = messageValidator.decodeUnionTag(offset);
@@ -209,6 +209,6 @@ Object.defineProperty({{union.name}}.prototype, "{{field.name}}", {
 {%-   endfor %}
   }
 
-  return validator.validationError.NONE;
+  return mojo.internal.validationError.NONE;
 };
 {%- endmacro %}
