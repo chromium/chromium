@@ -93,6 +93,20 @@ TEST(SharedImageUsage, ImplicitCasting) {
             as_uint32_t);
 }
 
+TEST(SharedImageUsage, EqualityTest) {
+  SharedImageUsageSet usage_a =
+      SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;
+  SharedImageUsageSet usage_b =
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE;
+  SharedImageUsageSet usage_c = SHARED_IMAGE_USAGE_CPU_WRITE;
+  SharedImageUsageSet usage_d = SHARED_IMAGE_USAGE_CPU_WRITE |
+                                SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
+  EXPECT_TRUE(usage_a == usage_b);
+  EXPECT_FALSE(usage_a == usage_c);
+  EXPECT_FALSE(usage_a == usage_d);
+}
+
 TEST(SharedImageUsage, ExplicitCasting) {
   // Explicit creation from raw bits of a uint32_t.
   SharedImageUsageSet explicit_constructor_set =

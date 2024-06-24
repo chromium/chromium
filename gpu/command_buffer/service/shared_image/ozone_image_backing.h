@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -48,7 +49,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<gfx::NativePixmap> pixmap,

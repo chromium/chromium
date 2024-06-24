@@ -438,7 +438,7 @@ OzoneImageBacking::OzoneImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<gfx::NativePixmap> pixmap,

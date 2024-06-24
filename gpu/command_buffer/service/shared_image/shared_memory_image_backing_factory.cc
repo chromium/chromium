@@ -133,7 +133,7 @@ bool SharedMemoryImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (usage != SHARED_IMAGE_USAGE_CPU_WRITE) {
+  if (usage != SharedImageUsageSet(SHARED_IMAGE_USAGE_CPU_WRITE)) {
     return false;
   }
 

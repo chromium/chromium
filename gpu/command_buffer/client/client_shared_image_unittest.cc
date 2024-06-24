@@ -28,7 +28,7 @@ TEST(ClientSharedImageTest, ImportUnowned) {
   auto mailbox = Mailbox::Generate();
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
   SharedImageMetadata metadata{kFormat,
                                kSize,
@@ -55,7 +55,7 @@ TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
 
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
   SharedImageInfo si_info{kFormat,
                           kSize,
@@ -87,7 +87,7 @@ TEST(ClientSharedImageTest, ExportAndImport) {
 
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
   SharedImageInfo si_info{kFormat,
                           kSize,
@@ -114,7 +114,7 @@ TEST(ClientSharedImageTest, MakeUnowned) {
 
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
   SharedImageInfo si_info{kFormat,
                           kSize,
@@ -142,7 +142,7 @@ TEST(ClientSharedImageTest,
      GetTextureTarget_SinglePlaneFormats_NoNativeBuffer) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   for (auto format : viz::SinglePlaneFormat::kAll) {
@@ -176,7 +176,7 @@ TEST(ClientSharedImageTest,
 #endif
 
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   for (auto format : viz::SinglePlaneFormat::kAll) {
@@ -213,7 +213,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
 #endif
 
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage = SHARED_IMAGE_USAGE_SCANOUT;
+  const SharedImageUsageSet kUsage = SHARED_IMAGE_USAGE_SCANOUT;
 
   // Test all single-plane formats as well as multiplane formats for which
   // hardware GMBs are supported.
@@ -268,10 +268,10 @@ TEST(ClientSharedImageTest, GetTextureTarget_WebGPUUsage) {
     formats_to_test.push_back(format);
   }
 
-  for (uint32_t webgpu_usage :
+  for (SharedImageUsageSet webgpu_usage :
        {SHARED_IMAGE_USAGE_WEBGPU_READ, SHARED_IMAGE_USAGE_WEBGPU_WRITE}) {
     const gfx::Size kSize(256, 256);
-    const uint32_t kUsage = webgpu_usage;
+    const SharedImageUsageSet kUsage = webgpu_usage;
 
     for (auto format : formats_to_test) {
       SharedImageInfo si_info{format,
@@ -301,7 +301,7 @@ TEST(ClientSharedImageTest,
      GetTextureTarget_MultiplanarFormats_NoScanoutOrWebGPUUsage) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Pass all the multiplanar formats that are used with hardware GMBs.
@@ -332,7 +332,7 @@ TEST(ClientSharedImageTest,
   sii->emulate_client_provided_native_buffer();
 
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Pass all the multiplanar formats that are used with hardware GMBs.
@@ -370,7 +370,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
   sii->emulate_client_provided_native_buffer();
 
   const gfx::Size kSize(256, 256);
-  const uint32_t kUsage =
+  const SharedImageUsageSet kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   for (auto format : viz::LegacyMultiPlaneFormat::kAll) {

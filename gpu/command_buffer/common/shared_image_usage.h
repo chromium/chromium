@@ -148,6 +148,9 @@ class SharedImageUsageSet {
   // NOLINTEND(google-explicit-constructor)
 
  private:
+  friend inline constexpr bool operator==(gpu::SharedImageUsageSet set_a,
+                                          gpu::SharedImageUsageSet set_b);
+
   friend inline constexpr gpu::SharedImageUsageSet operator|(
       gpu::SharedImageUsageSet set_a,
       gpu::SharedImageUsage mask_b);
@@ -196,6 +199,11 @@ inline constexpr gpu::SharedImageUsageSet operator|(
     gpu::SharedImageUsage mask_a,
     gpu::SharedImageUsage mask_b) {
   return gpu::SharedImageUsageSet(mask_a) | mask_b;
+}
+
+inline constexpr bool operator==(gpu::SharedImageUsageSet set_a,
+                                 gpu::SharedImageUsageSet set_b) {
+  return set_a.set_storage_ == set_b.set_storage_;
 }
 
 // This is used as the debug_label prefix for all shared images created by
