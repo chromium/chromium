@@ -1854,6 +1854,7 @@
       // Enables using a 'reportingTimeout' field within the Protected Audience
       // ad auction config.
       name: "FledgeReportingTimeout",
+      status: "stable",
     },
     {
       name: "FledgeTrustedBiddingSignalsSlotSize",

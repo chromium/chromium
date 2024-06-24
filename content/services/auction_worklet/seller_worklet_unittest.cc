@@ -3397,9 +3397,13 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   decision_logic_url_ = GURL("https://example.test/auction.js");
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
-      R"({"seller":"https://example.test",)"
-      R"("decisionLogicURL":"https://example.test/auction.js",)"
-      R"("decisionLogicUrl":"https://example.test/auction.js"})",
+      base::StringPrintf(
+          R"({"seller":"https://example.test",)"
+          R"("decisionLogicURL":"https://example.test/auction.js",)"
+          R"("decisionLogicUrl":"https://example.test/auction.js",)"
+          R"("reportingTimeout": %s})",
+          base::NumberToString(AuctionV8Helper::kScriptTimeout.InMilliseconds())
+              .c_str()),
       /*expected_report_url=*/std::nullopt);
 
   // Everything filled in but component auctions (can't include component
@@ -3447,6 +3451,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_cumulative_timeouts));
 
+  auction_ad_config_non_shared_params_.reporting_timeout =
+      base::Milliseconds(200);
   std::vector<blink::AuctionConfig::AdKeywordReplacement> example_replacement =
       {blink::AuctionConfig::AdKeywordReplacement({"${SELLER}", "ExampleSSP"})};
 
@@ -3486,6 +3492,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
                                 "https://ca.test": "CAD"},
           "perBuyerTimeouts":{"https://a.com":100,"*":150},
           "perBuyerCumulativeTimeouts":{"https://a.com":101,"*":151},
+          "reportingTimeout":200,
           "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
                                      "*":            {"signals_d":0}},
           "deprecatedRenderURLReplacements": {"${SELLER}":"ExampleSSP"}
@@ -3497,7 +3504,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   // Clear NonSharedParams(), and add and populate two component auctions, each
   // with one the mandatory `seller` and `decision_logic_url` fields filled in,
   // and one extra field: One that's directly a member of the AuctionAdConfig,
-  // and one that's in the non-shared params.
+  // and one that's in the non-shared params. A default reporting timeout is set
+  // when auction config does not have one.
   auction_ad_config_non_shared_params_ =
       blink::AuctionConfig::NonSharedParams();
   auto& component_auctions =
@@ -3518,24 +3526,30 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       GURL("https://component2.com/script.js");
   component_auctions[1].trusted_scoring_signals_url =
       GURL("https://component2.com/signals.json");
-
-  const char kExpectedJson2[] =
+  std::string default_reporting_timeout =
+      base::NumberToString(AuctionV8Helper::kScriptTimeout.InMilliseconds());
+  std::string kExpectedJson2 = base::StringPrintf(
       R"({"seller":"https://example.test",
           "decisionLogicURL":"https://example.test/auction.js",
           "decisionLogicUrl":"https://example.test/auction.js",
+          "reportingTimeout":%s,
           "trustedScoringSignalsURL":"https://example.test/scoring_signals.json",
           "trustedScoringSignalsUrl":"https://example.test/scoring_signals.json",
           "componentAuctions":[
               {"seller":"https://component1.com",
                "decisionLogicURL":"https://component1.com/script.js",
                "decisionLogicUrl":"https://component1.com/script.js",
+               "reportingTimeout":%s,
                "sellerTimeout":111},
               {"seller":"https://component2.com",
                "decisionLogicURL":"https://component2.com/script.js",
                "decisionLogicUrl":"https://component2.com/script.js",
+               "reportingTimeout":%s,
                "trustedScoringSignalsURL":"https://component2.com/signals.json",
                "trustedScoringSignalsUrl":"https://component2.com/signals.json"}
-          ]})";
+          ]})",
+      default_reporting_timeout.c_str(), default_reporting_timeout.c_str(),
+      default_reporting_timeout.c_str());
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson2,
       /*expected_report_url=*/std::nullopt);
@@ -3739,9 +3753,13 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
   decision_logic_url_ = GURL("https://example.test/auction.js");
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
-      R"({"seller":"https://example.test",)"
-      R"("decisionLogicURL":"https://example.test/auction.js",)"
-      R"("decisionLogicUrl":"https://example.test/auction.js"})",
+      base::StringPrintf(
+          R"({"seller":"https://example.test",)"
+          R"("decisionLogicURL":"https://example.test/auction.js",)"
+          R"("decisionLogicUrl":"https://example.test/auction.js",)"
+          R"("reportingTimeout": %s})",
+          base::NumberToString(AuctionV8Helper::kScriptTimeout.InMilliseconds())
+              .c_str()),
       /*expected_report_url=*/std::nullopt);
 
   {
@@ -3753,10 +3771,15 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
 
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
-        R"({"seller":"https://example.test",)"
-        R"("decisionLogicURL":"https://example.test/auction.js",)"
-        R"("decisionLogicUrl":"https://example.test/auction.js",)"
-        R"("perBuyerTimeouts":{}})",
+        base::StringPrintf(
+            R"({"seller":"https://example.test",)"
+            R"("decisionLogicURL":"https://example.test/auction.js",)"
+            R"("decisionLogicUrl":"https://example.test/auction.js",)"
+            R"("perBuyerTimeouts":{},)"
+            R"("reportingTimeout": %s})",
+            base::NumberToString(
+                AuctionV8Helper::kScriptTimeout.InMilliseconds())
+                .c_str()),
         /*expected_report_url=*/std::nullopt);
   }
 
@@ -3770,10 +3793,15 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
 
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
-        R"({"seller":"https://example.test",)"
-        R"("decisionLogicURL":"https://example.test/auction.js",)"
-        R"("decisionLogicUrl":"https://example.test/auction.js",)"
-        R"("perBuyerTimeouts":{"*":150}})",
+        base::StringPrintf(
+            R"({"seller":"https://example.test",)"
+            R"("decisionLogicURL":"https://example.test/auction.js",)"
+            R"("decisionLogicUrl":"https://example.test/auction.js",)"
+            R"("perBuyerTimeouts":{"*":150},)"
+            R"("reportingTimeout": %s})",
+            base::NumberToString(
+                AuctionV8Helper::kScriptTimeout.InMilliseconds())
+                .c_str()),
         /*expected_report_url=*/std::nullopt);
   }
 }
