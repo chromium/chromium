@@ -4,12 +4,6 @@
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
 -org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
 
-# crbug.com/1429439
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsOnly
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionView
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
-
 # crbug.com/1193745
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
