@@ -40,6 +40,7 @@
 #include "sql/fuzzers/sql_disk_corruption.pb.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_proto_to_string.h"
@@ -51,9 +52,9 @@ namespace {
 class Environment {
  public:
   Environment()
-      : temp_dir_(MakeTempDir()),
-        db_path_(GetTempFilePath("db.sqlite")),
-        should_dump_input_(std::getenv("LPM_DUMP_NATIVE_INPUT") != nullptr) {
+      : temp_dir_(MakeTempDir()), db_path_(GetTempFilePath("db.sqlite")) {
+    base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+    should_dump_input_ = command_line.HasSwitch("dump_input");
     // Logging must be initialized before `ScopedLoggingSettings`. See
     // <https://crbug.com/331909454>.
     logging::InitLogging(logging::LoggingSettings{
@@ -301,6 +302,13 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   env.DeleteDbFiles();
   // Ensure that no unexpected files were created in the temp directory.
   env.AssertTempDirIsEmpty();
+}
+
+// One-time early initialization at process startup.
+extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
+  // Parse command line arguments
+  base::CommandLine::Init(*argc, *argv);
+  return 0;
 }
 
 namespace {
