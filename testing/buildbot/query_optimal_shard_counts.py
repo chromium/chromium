@@ -35,6 +35,7 @@ ANDROID_OVERHEAD_SEC = 60 * 2
 # All suites triggered by the builder will not be autosharded.
 BUILDER_EXCLUDE_SET = set([
     'mac-rel',
+    'mac14-arm64-rel',
     'ios-simulator',
     'ios-simulator-full-configs',
     'android-arm64-rel',
