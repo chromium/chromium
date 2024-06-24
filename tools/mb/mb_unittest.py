@@ -1241,18 +1241,39 @@ class UnitTest(unittest.TestCase):
     self.assertIn(['autoninja.bat', '-C', 'out\\Default', 'base_unittests'],
                   mbw.calls)
 
-  def test_bot_missing_definition(self):
-    """Ensures builder missing MBErr is thrown
+  def test_lookup_non_existent_builder_group(self):
+    """Ensure correct behavior when non-existent builder group is specified.
 
-    Expect the original MBErr to be thrown for iOS bots when the bot definition
-    doesn't exist at all.
+    Lookups for builders that don't exist in the config file return a different
+    exit code so that they can be distinguished from other errors.
     """
     mbw = self.fake_mbw()
-    self.check(['lookup', '-m', 'fake_builder_group', '-b', 'random_bot'],
-               mbw=mbw,
-               ret=1)
-    self.assertIn('MBErr: Builder name "random_bot"  not found under groups',
-                  mbw.out)
+    self.check(
+        [
+            'lookup', '-m', 'non-existent-builder-group', '-b',
+            'non-existent-builder'
+        ],
+        mbw=mbw,
+        ret=2,
+    )
+    self.assertIn(
+        'MBErr: Builder group name "non-existent-builder-group" not found',
+        mbw.out)
+
+  def test_lookup_non_existent_builder(self):
+    """Ensure correct behavior when non-existent builder is specified.
+
+    Lookups for builders that don't exist in the config file return a different
+    exit code so that they can be distinguished from other errors.
+    """
+    mbw = self.fake_mbw()
+    self.check(
+        ['lookup', '-m', 'fake_builder_group', '-b', 'non-existent-builder'],
+        mbw=mbw,
+        ret=2)
+    self.assertIn(
+        'MBErr: Builder name "non-existent-builder" not found under groups',
+        mbw.out)
 
 
 if __name__ == '__main__':

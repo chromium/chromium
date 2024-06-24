@@ -36,6 +36,9 @@ sys.path.insert(0, os.path.join(
 import gn_helpers
 from mb.lib import validation
 
+_DEFAULT_ERROR_RETCODE = 1
+_CONFIG_NOT_FOUND_RETCODE = 2
+
 
 def DefaultVals():
   """Default mixin values"""
@@ -115,12 +118,12 @@ class MetaBuildWrapper:
     except KeyboardInterrupt:
       self.Print('interrupted, exiting')
       return 130
-    except Exception:
+    except Exception as e:
       self.DumpInputFiles()
       s = traceback.format_exc()
       for l in s.splitlines():
         self.Print(l)
-      return 1
+      return getattr(e, 'retcode', _DEFAULT_ERROR_RETCODE)
 
   def ParseArgs(self, argv):
     def AddCommonOptions(subp):
@@ -1034,13 +1037,15 @@ class MetaBuildWrapper:
         }
 
     if not self.args.builder_group in self.builder_groups:
-      raise MBErr('Builder group name "%s" not found in "%s"' %
-                  (self.args.builder_group, self.args.config_file))
+      raise MBErr(('Builder group name "%s" not found in "%s"' %
+                   (self.args.builder_group, self.args.config_file)),
+                  retcode=_CONFIG_NOT_FOUND_RETCODE)
 
     if not self.args.builder in self.builder_groups[self.args.builder_group]:
-      raise MBErr('Builder name "%s"  not found under groups[%s] in "%s"' %
-                  (self.args.builder, self.args.builder_group,
-                   self.args.config_file))
+      raise MBErr(
+          ('Builder name "%s" not found under groups[%s] in "%s"' %
+           (self.args.builder, self.args.builder_group, self.args.config_file)),
+          retcode=_CONFIG_NOT_FOUND_RETCODE)
 
     config = self.builder_groups[self.args.builder_group][self.args.builder]
     if isinstance(config, dict):
@@ -2110,10 +2115,11 @@ def FlattenMixins(mixin_pool, mixins_to_flatten, vals, visited):
       FlattenMixins(mixin_pool, mixin_vals['mixins'], vals, visited)
   return vals
 
-
-
 class MBErr(Exception):
-  pass
+
+  def __init__(self, *args: object, retcode=_DEFAULT_ERROR_RETCODE) -> None:
+    super().__init__(*args)
+    self.retcode = retcode
 
 
 # See http://goo.gl/l5NPDW and http://goo.gl/4Diozm for the painful
