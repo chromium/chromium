@@ -449,9 +449,17 @@ class ASH_EXPORT AppListControllerImpl
   // `AppListModelController::Get()`.
   std::unique_ptr<AppListModelProvider> model_provider_;
 
-  // Manages the tablet mode home launcher.
-  // |fullscreen_presenter_| should be put below |client_| and |model_| to
-  // prevent a crash in destruction.
+  // A callback that can be registered by a test to wait for the app list state
+  // transition animation to finish.
+  StateTransitionAnimationCallback state_transition_animation_callback_;
+
+  // Used for closing the Assistant ui in the asynchronous way.
+  base::ScopedClosureRunner close_assistant_ui_runner_;
+
+  // Manages the tablet mode home launcher. Destroying `AppListPresenterImpl`
+  // can reentrantly call back into `this` and use `model_provider_`,
+  // `state_transition_animation_callback_`, and `close_assistant_ui_runner_`,
+  // so `fullscreen_presenter_` must be ordered after all those fields.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
   // Manages the clamshell launcher bubble.
@@ -496,10 +504,6 @@ class ASH_EXPORT AppListControllerImpl
   // This window changing it's visibility to false is used as a signal that the
   // home launcher visibility should be recalculated.
   raw_ptr<aura::Window> tracked_app_window_ = nullptr;
-
-  // A callback that can be registered by a test to wait for the app list state
-  // transition animation to finish.
-  StateTransitionAnimationCallback state_transition_animation_callback_;
 
   // A callback that can be registered by a test to wait for the home launcher
   // visibility animation to finish. Should only be used in tablet mode.
@@ -546,9 +550,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // Sub-controller to handle app collections page.
   std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
-
-  // Used for closing the Assistant ui in the asynchronous way.
-  base::ScopedClosureRunner close_assistant_ui_runner_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};
