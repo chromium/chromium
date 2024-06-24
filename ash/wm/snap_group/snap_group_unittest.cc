@@ -3949,6 +3949,83 @@ TEST_F(SnapGroupDividerTest, DoubleTapDividerToSwapWindowsBounds) {
   UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
 }
 
+// Tests that a double-tap gesture on the divider handler within a Snap Group
+// successfully swaps the two snapped windows, each of which has a transient
+// window attached.
+TEST_F(SnapGroupDividerTest, DoubleTapDividerWithTransient) {
+  UpdateDisplay("800x600");
+
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  // By default transient is `MODAL_TYPE_NONE`, meaning that the associated
+  // window is interactable.
+  std::unique_ptr<aura::Window> w1_transient(
+      CreateTransientChildWindow(w1.get(), gfx::Rect(10, 20, 20, 30)));
+  std::unique_ptr<aura::Window> w2_transient(
+      CreateTransientChildWindow(w2.get(), gfx::Rect(510, 30, 50, 30)));
+
+  // A double-tap on the divider handler within a Snap Group swaps the window
+  // positions.
+  auto* event_generator = GetEventGenerator();
+  const auto divider_center_point =
+      snap_group_divider_bounds_in_screen().CenterPoint();
+  event_generator->set_current_screen_location(divider_center_point);
+  event_generator->GestureTapAt(divider_center_point);
+  event_generator->GestureTapAt(divider_center_point);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  SnapGroup* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  EXPECT_EQ(w1.get(), snap_group->window2());
+  EXPECT_TRUE(
+      wm::HasTransientAncestor(w1_transient.get(), snap_group->window2()));
+  EXPECT_EQ(w2.get(), snap_group->window1());
+  EXPECT_TRUE(
+      wm::HasTransientAncestor(w2_transient.get(), snap_group->window1()));
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+}
+
+// Tests that performing a double-tap gesture during a divider drag operation
+// does not cause crash.
+TEST_F(SnapGroupDividerTest, DoubleTapWhileDraggingDivider) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+
+  auto* event_generator = GetEventGenerator();
+  const auto divider_center_point_0 =
+      snap_group_divider_bounds_in_screen().CenterPoint();
+  event_generator->PressTouchId(
+      /*touch_id=*/0, divider_center_point_0);
+
+  // Use the initial tap to drag the divider.
+  event_generator->MoveTouchId(gfx::Point(100, divider_center_point_0.y()), 0);
+  ASSERT_TRUE(divider->is_resizing_with_divider());
+
+  // Trigger double tap, using a different `touch_id`.
+  const auto divider_center_point_1 =
+      snap_group_divider_bounds_in_screen().CenterPoint();
+  event_generator->PressTouchId(
+      /*touch_id=*/1, divider_center_point_1);
+  event_generator->PressTouchId(
+      /*touch_id=*/1, divider_center_point_1);
+
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(SnapGroupDividerTest, DoubleTapDividerInTablet) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
