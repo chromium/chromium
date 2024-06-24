@@ -26,11 +26,10 @@ namespace syncer {
 
 namespace {
 
-// When enabled, if the local state contains a corrupted cross-user sharing key
-// pair (i.e. the public key does not match the private key), the key pair will
-// be removed and re-generated.
-BASE_FEATURE(kSyncDropCrossUserKeyPairIfCorrupted,
-             "SyncDropCrossUserKeyPairIfCorrupted",
+// When enabled, if the local state does not contain the private key for the
+// current version, the key pair will be removed and re-generated.
+BASE_FEATURE(kSyncDropCrossUserKeyPairIfPrivateKeyDoesNotExist,
+             "SyncDropCrossUserKeyPairIfPrivateKeyDoesNotExist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values are persisted to UMA. Entries should not be renumbered and
@@ -111,6 +110,9 @@ void UpdateSpecificsFromKeyDerivationParams(
 
 std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::CrossUserSharingPublicKey& public_key) {
+  if (!public_key.has_version()) {
+    return std::nullopt;
+  }
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
   return CrossUserSharingPublicKey::CreateByImport(key);
@@ -164,11 +166,6 @@ NigoriState NigoriState::CreateFromLocalProto(
   state.cryptographer =
       CryptographerImpl::FromProto(proto.cryptographer_data());
 
-  if (proto.has_cross_user_sharing_public_key()) {
-    state.cryptographer->SelectDefaultCrossUserSharingKey(
-        proto.cross_user_sharing_public_key().version());
-  }
-
   if (proto.has_pending_keys()) {
     state.pending_keys = proto.pending_keys();
   }
@@ -213,8 +210,12 @@ NigoriState NigoriState::CreateFromLocalProto(
   if (proto.has_cross_user_sharing_public_key()) {
     state.cross_user_sharing_public_key =
         PublicKeyFromProto(proto.cross_user_sharing_public_key());
-    state.cross_user_sharing_key_pair_version =
-        proto.cross_user_sharing_public_key().version();
+    if (state.cross_user_sharing_public_key) {
+      state.cross_user_sharing_key_pair_version =
+          proto.cross_user_sharing_public_key().version();
+      state.cryptographer->SelectDefaultCrossUserSharingKey(
+          proto.cross_user_sharing_public_key().version());
+    }
   }
 
   base::UmaHistogramEnumeration("Sync.CrossUserSharingKeyPairState",
@@ -401,30 +402,35 @@ bool NigoriState::NeedsGenerateCrossUserSharingKeyPair() const {
     return false;
   }
 
-  if (cross_user_sharing_public_key.has_value() &&
-      GetCrossUserSharingPublicKeyState(*this) !=
-          CrossUserSharingKeyPairState::kCorruptedKeyPair) {
-    // Key pair is already generated and is not corrupted.
-    return false;
-  }
-
-  // Generate a new key pair if there is no public key in the local state.
-  // Note that this can trigger a key pair generation if the current client
-  // has been just upgraded from the older version (so it wasn't aware of key
-  // pairs). Other clients are expected to apply the newly generated key pair.
+  // Generate a new key pair if there is no public key in the local state. Note
+  // that this can trigger a key pair generation if the current client has been
+  // just upgraded from the older version (so it wasn't aware of key pairs).
+  // Other clients are expected to apply the newly generated key pair.
   if (!cross_user_sharing_public_key.has_value()) {
     return true;
   }
 
-  // The public key doesn't match the private key. Generate a new key pair and
-  // commit it to the server. Other clients are expected to apply the new
-  // state. This behavior is similar to a client has just been upgraded.
-  // This code also covers the case when the key pair is corrupted on the
-  // server. In this case after browser restart the current client will
-  // generate a new key pair.
-  CHECK_EQ(GetCrossUserSharingPublicKeyState(*this),
-           CrossUserSharingKeyPairState::kCorruptedKeyPair);
-  return base::FeatureList::IsEnabled(kSyncDropCrossUserKeyPairIfCorrupted);
+  CrossUserSharingKeyPairState key_pair_state =
+      GetCrossUserSharingPublicKeyState(*this);
+  switch (key_pair_state) {
+    case CrossUserSharingKeyPairState::kValidKeyPair:
+    case CrossUserSharingKeyPairState::kPendingKeysNotEmpty:
+      return false;
+    case CrossUserSharingKeyPairState::kPublicKeyNotInitialized:
+    case CrossUserSharingKeyPairState::kCorruptedKeyPair:
+      // The public key doesn't match the private key. Generate a new key pair
+      // and commit it to the server. Other clients are expected to apply the
+      // new state. This behavior is similar to a client has just been upgraded.
+      // This code also covers the case when the key pair is corrupted on the
+      // server. In this case after browser restart the current client will
+      // generate a new key pair.
+      return true;
+    case CrossUserSharingKeyPairState::kPublicKeyVersionInvalid:
+      // Similar to `kCorruptedKeyPair` but when the private key does not exist
+      // for the current public key version.
+      return base::FeatureList::IsEnabled(
+          kSyncDropCrossUserKeyPairIfPrivateKeyDoesNotExist);
+  }
 }
 
 }  // namespace syncer

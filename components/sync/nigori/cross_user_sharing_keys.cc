@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 
 namespace syncer {
@@ -46,7 +47,9 @@ CrossUserSharingKeys CrossUserSharingKeys::CreateFromProto(
     const sync_pb::CrossUserSharingKeys& proto) {
   CrossUserSharingKeys output;
   for (const sync_pb::CrossUserSharingPrivateKey& key : proto.private_key()) {
-    if (!output.AddKeyPairFromProto(key)) {
+    bool success = output.AddKeyPairFromProto(key);
+    base::UmaHistogramBoolean("Sync.CrossUserSharingLoadedFromDisk", success);
+    if (!success) {
       // TODO(crbug.com/40267990): consider re-downloading Nigori node in this
       // case.
       LOG(ERROR) << "Could not add PrivateKey protocol buffer message.";

@@ -238,6 +238,9 @@ bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
 
 std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::CrossUserSharingPublicKey& public_key) {
+  if (!public_key.has_version()) {
+    return std::nullopt;
+  }
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
   return CrossUserSharingPublicKey::CreateByImport(key);
@@ -728,10 +731,13 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   if (specifics.has_cross_user_sharing_public_key()) {
     // Remote update wins over local state.
+    state_.cross_user_sharing_key_pair_version.reset();
     state_.cross_user_sharing_public_key =
         PublicKeyFromProto(specifics.cross_user_sharing_public_key());
-    state_.cross_user_sharing_key_pair_version =
-        specifics.cross_user_sharing_public_key().version();
+    if (state_.cross_user_sharing_public_key) {
+      state_.cross_user_sharing_key_pair_version =
+          specifics.cross_user_sharing_public_key().version();
+    }
   }
 
   std::optional<ModelError> error =
@@ -841,7 +847,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
 
   CrossUserSharingKeys new_cross_user_sharing_keys =
       CrossUserSharingKeys::CreateEmpty();
-  for (auto key_pair :
+  for (const sync_pb::CrossUserSharingPrivateKey& key_pair :
        decrypted_pending_keys.cross_user_sharing_private_key()) {
     new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
   }
@@ -849,7 +855,6 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   if (state_.cross_user_sharing_key_pair_version.has_value() &&
       !new_cross_user_sharing_keys.HasKeyPair(
           state_.cross_user_sharing_key_pair_version.value())) {
-    // TODO(crbug.com/40070237): Record metric to capture this state.
     DLOG(ERROR) << "Received keybag is missing the last "
                 << "cross-user-sharing private key.";
     // Reset keys so that on next startup they would be recreated and
