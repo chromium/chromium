@@ -40,6 +40,8 @@ const char kSystemFontFamily[] = "system-font-family";
 #if BUILDFLAG(IS_LINUX)
 // Specify the toolkit used to construct the Linux GUI.
 const char kUiToolkitFlag[] = "ui-toolkit";
+// Disables GTK IME integration.
+const char kDisableGtkIme[] = "disable-gtk-ime";
 #endif
 
 // Disables layer-edge anti-aliasing in the compositor.

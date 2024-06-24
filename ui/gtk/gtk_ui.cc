@@ -36,6 +36,7 @@
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -504,6 +505,10 @@ void GtkUi::SetWindowFrameAction(WindowFrameActionSource source,
 
 std::unique_ptr<ui::LinuxInputMethodContext> GtkUi::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableGtkIme)) {
+    return nullptr;
+  }
   return GetPlatform()->CreateInputMethodContext(delegate);
 }
 
