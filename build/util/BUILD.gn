@@ -35,3 +35,11 @@ group("test_results") {
     "//build/util/lib/results/",
   ]
 }
+
+group("proto") {
+  data = [
+    "//.vpython3",
+    "//build/util/lib/__init__.py",
+    "//build/util/lib/proto/",
+  ]
+}

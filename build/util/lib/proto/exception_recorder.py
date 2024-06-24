@@ -13,8 +13,8 @@ from typing import List
 from google.protobuf import any_pb2
 from google.protobuf.json_format import MessageToDict
 
-from exception_occurrences_pb2 import ExceptionOccurrence
-from exception_occurrences_pb2 import ExceptionOccurrences
+from lib.proto.exception_occurrences_pb2 import ExceptionOccurrence
+from lib.proto.exception_occurrences_pb2 import ExceptionOccurrences
 
 # This is used as the key when being uploaded to ResultDB via result_sink
 # and shouldn't be changed
@@ -63,6 +63,11 @@ def register(exc: Exception,
   ret.occurred_time.GetCurrentTime()
   _records.append(ret)
   return ret
+
+
+def size() -> int:
+  """Get the current size of registered ExceptionOccurrence records."""
+  return len(_records)
 
 
 def clear() -> None:

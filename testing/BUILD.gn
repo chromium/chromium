@@ -23,6 +23,9 @@ if (!is_clang) {
 # Targets needed for isolate script to execute.
 group("test_scripts_shared") {
   data_deps = [
+    # Used for reporting exceptions and test script metrics to RDB.
+    "//build/util:proto",
+
     # Used for reporting test results to RDB.
     "//build/util:test_results",
   ]

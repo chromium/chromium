@@ -13,6 +13,9 @@ from devil.utils import timeout_retry
 from pylib.local.device import local_device_environment
 from pylib.local.emulator import avd
 
+# TODO(crbug.com/348470234): Fix the pylint import-error
+from lib.proto import exception_recorder  # pylint: disable=import-error
+
 # Mirroring https://bit.ly/2OjuxcS#23
 _MAX_ANDROID_EMULATORS = 16
 
@@ -71,10 +74,12 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
                      debug_tags=self._emulator_debug_tags,
                      enable_network=self._emulator_enable_network,
                      require_fast_start=True)
-        except avd.AvdException:
+        except avd.AvdException as e:
+          exception_recorder.register(e)
           logging.exception('Failed to start emulator instance.')
           return None
         except base_error.BaseError as e:
+          exception_recorder.register(e)
           # Timeout error usually indicates the emulator is not responding.
           # In this case, we should stop it forcely.
           logging.info("Force stop the emulator")

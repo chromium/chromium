@@ -6,12 +6,18 @@
 """File for testing exception_recorder.py."""
 
 import os
+import sys
 import tempfile
 import unittest
 import unittest.mock
 
-import exception_recorder
-from exception_occurrences_pb2 import ExceptionOccurrences
+_BUILD_UTIL_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
+if _BUILD_UTIL_PATH not in sys.path:
+  sys.path.insert(0, _BUILD_UTIL_PATH)
+
+from lib.proto import exception_recorder
+from lib.proto.exception_occurrences_pb2 import ExceptionOccurrences
 
 
 class MyClass:
