@@ -86,10 +86,7 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   };
 
   CacheEntry(const ImageFrameGenerator* generator, int use_count)
-      : generator_(generator),
-        use_count_(use_count),
-        prev_(nullptr),
-        next_(nullptr) {}
+      : generator_(generator), use_count_(use_count) {}
   CacheEntry(const CacheEntry&) = delete;
   CacheEntry& operator=(const CacheEntry&) = delete;
 
@@ -113,8 +110,8 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   int use_count_;
 
  private:
-  CacheEntry* prev_;
-  CacheEntry* next_;
+  raw_ptr<CacheEntry> prev_ = nullptr;
+  raw_ptr<CacheEntry> next_ = nullptr;
 };
 
 class DecoderCacheEntry final : public CacheEntry {
