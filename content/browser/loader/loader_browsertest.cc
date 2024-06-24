@@ -1239,4 +1239,38 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, URLLoaderThrottleRedirectModify) {
   }
 }
 
+class LoaderNoScriptStreamingBrowserTest : public ContentBrowserTest {
+ public:
+  LoaderNoScriptStreamingBrowserTest() = default;
+  LoaderNoScriptStreamingBrowserTest(
+      const LoaderNoScriptStreamingBrowserTest&) = delete;
+  LoaderNoScriptStreamingBrowserTest& operator=(
+      const LoaderNoScriptStreamingBrowserTest&) = delete;
+  ~LoaderNoScriptStreamingBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII("js-flags", "--no-script-streaming");
+  }
+};
+
+// Regression test for https://crbug.com/348520461
+// Loading a script should not cause a crash even when Script Streaming
+// is disabled on V8 side.
+IN_PROC_BROWSER_TEST_F(LoaderNoScriptStreamingBrowserTest, LoadScript) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/loader/blank.html")));
+  std::string expected_title("DONE");
+  std::u16string expected_title16(ASCIIToUTF16(expected_title));
+  TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
+  ASSERT_TRUE(ExecJs(shell(), R"(
+      (() => {
+        const script = document.createElement('script');
+        script.src = './change_title.js';
+        document.body.appendChild(script);
+      })();
+    )"));
+  EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
+}
+
 }  // namespace content

@@ -299,6 +299,12 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     ready_to_run_.Set();
   }
 
+  mojo::ScopedDataPipeConsumerHandle ReleaseDataPipe() {
+    mojo::ScopedDataPipeConsumerHandle body = std::move(data_pipe_);
+    data_pipe_.reset();
+    return body;
+  }
+
   ResourceScriptStreamer::LoadingState LoadingState() const {
     return load_state_;
   }
@@ -1542,6 +1548,13 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
                              : nullptr,
               compile_hints_ ? compile_hints_->GetCompileHintCallbackData()
                              : nullptr));
+  if (!script_streaming_task) {
+    // V8 can't stream the script.
+    body_ = source_stream_ptr_->ReleaseDataPipe();
+    source_stream_ptr_ = nullptr;
+    SuppressStreaming(NotStreamingReason::kV8CannotStream);
+    return false;
+  }
   SetState(BackgroundProcessorState::kWaitingForParseResult);
   worker_pool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
@@ -1579,6 +1592,7 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
   TRACE_EVENT_BEGIN0(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
       "v8.parseOnBackgroundParsing");
+  CHECK(script_streaming_task) << "BackgroundProcessor::RunScriptStreamingTask";
   script_streaming_task->Run();
   source_stream_ptr->DrainRemainingDataWithoutStreaming();
   TRACE_EVENT_END0(
