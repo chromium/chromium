@@ -70,16 +70,6 @@ class LevelDBScopes {
                          bool sync_on_commit,
                          base::OnceClosure on_complete);
 
-  base::SequencedTaskRunner* RevertRunnerForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return revert_runner_.get();
-  }
-
-  base::SequencedTaskRunner* CleanupRunnerForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return cleanup_runner_.get();
-  }
-
   const std::vector<uint8_t>& metadata_key_prefix() const {
     return metadata_key_prefix_;
   }
@@ -97,19 +87,11 @@ class LevelDBScopes {
   void OnCleanupTaskResult(base::OnceClosure on_complete,
                            leveldb::Status result);
 
-  void StartRevertTask(int64_t scope_id, std::vector<PartitionedLock> locks);
-
-  void OnRevertTaskResult(int64_t scope_id,
-                          std::vector<PartitionedLock> locks,
-                          leveldb::Status result);
-
   SEQUENCE_CHECKER(sequence_checker_);
   const std::vector<uint8_t> metadata_key_prefix_;
   const size_t max_write_batch_size_bytes_;
   std::vector<StartupScopeToCleanup> startup_scopes_to_clean_;
   std::vector<StartupScopeToRevert> startup_scopes_to_revert_;
-  scoped_refptr<base::SequencedTaskRunner> revert_runner_;
-  scoped_refptr<base::SequencedTaskRunner> cleanup_runner_;
 
   // This gets set to |true| when |Initialize()| succeeds.
   bool recovery_finished_ = false;

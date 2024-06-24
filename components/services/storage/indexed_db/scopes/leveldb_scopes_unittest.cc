@@ -41,9 +41,7 @@ TEST_F(LevelDBScopesStartupTest, CleanupOnRecovery) {
   scopes.StartRecoveryAndCleanupTasks();
 
   // Wait until cleanup task runs.
-  base::RunLoop loop;
-  scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
+  task_env_.RunUntilIdle();
 
   EXPECT_TRUE(IsScopeCleanedUp(kScopeToCleanUp));
   EXPECT_FALSE(ScopeDataExistsOnDisk());
@@ -109,11 +107,8 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   EXPECT_FALSE(lock_grabbed);
 
   // Wait until revert runs.
-  {
-    base::RunLoop loop;
-    scopes.RevertRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
+  base::RunLoop().RunUntilIdle();
+
   value_buffer_.clear();
   EXPECT_TRUE(leveldb_->db()
                   ->Get(leveldb::ReadOptions(), kUndoPutKey, &value_buffer_)
@@ -130,11 +125,8 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   EXPECT_TRUE(lock_grabbed);
 
   // Wait until cleanup runs.
-  {
-    base::RunLoop loop;
-    scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
+  task_env_.RunUntilIdle();
+
   EXPECT_TRUE(IsScopeCleanedUp(kScopeToResumeRevert));
   EXPECT_FALSE(ScopeDataExistsOnDisk());
 

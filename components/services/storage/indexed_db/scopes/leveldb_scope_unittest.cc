@@ -193,9 +193,7 @@ TEST_F(LevelDBScopeTest, ManyScopes) {
   }
 
   // Wait until cleanup task runs.
-  base::RunLoop loop;
-  scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
+  task_env_.RunUntilIdle();
 
   ScopesEncoder encoder;
   for (int i = 0; i < 20; ++i) {
@@ -344,9 +342,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeDeferred) {
   EXPECT_TRUE(s.ok());
 
   // Wait until cleanup task runs.
-  base::RunLoop loop;
-  scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
+  task_env_.RunUntilIdle();
 
   // Be a good citizen and acquire read locks.
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
@@ -394,9 +390,7 @@ TEST_F(LevelDBScopeTest, DeleteRangeCompact) {
   EXPECT_TRUE(s.ok());
 
   // Wait until cleanup task runs.
-  base::RunLoop loop;
-  scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
+  task_env_.RunUntilIdle();
 
   // Be a good citizen and acquire read locks.
   auto locks = AcquireLocksSync(&lock_manager, {CreateSimpleSharedLock()});
@@ -449,19 +443,8 @@ TEST_F(LevelDBScopeTest, RevertWithDeferredDelete) {
   EXPECT_TRUE(s.ok());
   scope.reset();
 
-  // Wait until revert runner runs.
-  {
-    base::RunLoop loop;
-    scopes.RevertRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
-
-  // Wait until cleanup runner runs.
-  {
-    base::RunLoop loop;
-    scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
+  // Wait until cleanup task runs.
+  task_env_.RunUntilIdle();
 
   // If the cleanup correctly ignored the tasks, then the values should still
   // exist.
@@ -551,9 +534,7 @@ TEST_F(LevelDBScopeTest, BrokenDBForCleanup) {
   EXPECT_TRUE(s.ok());
 
   // Wait until cleanup task runs.
-  base::RunLoop loop;
-  scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
+  task_env_.RunUntilIdle();
 
   EXPECT_FALSE(failure_status.ok());
   EXPECT_EQ(failure_status.ToString(), error.ToString());
@@ -583,11 +564,6 @@ TEST_F(LevelDBScopeTest, BrokenDBForRevert) {
   EXPECT_TRUE(s.ok());
   std::move(break_db).Run(error);
   scope.reset();
-
-  // Wait until revert task runs.
-  base::RunLoop loop;
-  scopes.RevertRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
 
   EXPECT_FALSE(failure_status.ok());
   EXPECT_EQ(failure_status.ToString(), error.ToString());
