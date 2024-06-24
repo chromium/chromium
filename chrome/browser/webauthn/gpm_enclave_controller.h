@@ -214,8 +214,6 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // PIN UV, and the request succeeded or a PIN validation error occurred.
   void HandlePINValidationResult(device::enclave::PINValidationResult type);
 
-  void ContinueGPMCreatePasskey();
-
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::string rp_id_;
   const device::FidoRequestType request_type_;
@@ -298,9 +296,9 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Set to true when the user initiates reset GPM pin flow during UV.
   bool changing_gpm_pin_ = false;
 
-  // Used for the incognito dialog confirmation handler to know which flow
-  // to resume.
-  AuthenticatorRequestDialogModel::Step last_step_;
+  // Records when the user has confirmed credential creation in an Incognito
+  // context.
+  bool off_the_record_confirmed_ = false;
 
   const raw_ptr<base::Clock> clock_;
 

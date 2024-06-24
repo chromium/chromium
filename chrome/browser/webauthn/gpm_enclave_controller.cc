@@ -803,6 +803,11 @@ void GPMEnclaveController::SetAccountStateReady() {
 }
 
 void GPMEnclaveController::OnGPMSelected() {
+  if (model_->is_off_the_record && !off_the_record_confirmed_) {
+    model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
+    return;
+  }
+
   switch (account_state_) {
     case AccountState::kEmpty:
     case AccountState::kReady:
@@ -945,12 +950,6 @@ void GPMEnclaveController::OnTrustThisComputer() {
   // Clicking through the bootstrapping dialog resets the count even if it
   // doesn't end up being successful.
   ResetDeclinedBootstrappingCount(model_.get());
-  if (model_->step() == Step::kTrustThisComputerCreation &&
-      model_->is_off_the_record) {
-    last_step_ = Step::kTrustThisComputerCreation;
-    model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
-    return;
-  }
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 
@@ -970,26 +969,6 @@ void GPMEnclaveController::OnGPMPinOptionChanged(bool is_arbitrary) {
 
 void GPMEnclaveController::OnGPMCreatePasskey() {
   CHECK_EQ(model_->step(), Step::kGPMCreatePasskey);
-
-  if (model_->is_off_the_record) {
-    last_step_ = Step::kGPMCreatePasskey;
-    model_->SetStep(Step::kGPMConfirmOffTheRecordCreate);
-    return;
-  }
-  ContinueGPMCreatePasskey();
-}
-
-void GPMEnclaveController::OnGPMConfirmOffTheRecordCreate() {
-  CHECK_EQ(model_->step(), Step::kGPMConfirmOffTheRecordCreate);
-  if (last_step_ == Step::kGPMCreatePasskey) {
-    ContinueGPMCreatePasskey();
-  } else {
-    CHECK_EQ(last_step_, Step::kTrustThisComputerCreation);
-    model_->SetStep(Step::kRecoverSecurityDomain);
-  }
-}
-
-void GPMEnclaveController::ContinueGPMCreatePasskey() {
   CHECK(account_state_ == AccountState::kEmpty ||
         account_state_ == AccountState::kReady ||
         account_state_ == AccountState::kReadyWithPIN ||
@@ -1006,6 +985,12 @@ void GPMEnclaveController::ContinueGPMCreatePasskey() {
   } else {
     NOTREACHED_NORETURN();
   }
+}
+
+void GPMEnclaveController::OnGPMConfirmOffTheRecordCreate() {
+  CHECK_EQ(model_->step(), Step::kGPMConfirmOffTheRecordCreate);
+  off_the_record_confirmed_ = true;
+  OnGPMSelected();
 }
 
 void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {

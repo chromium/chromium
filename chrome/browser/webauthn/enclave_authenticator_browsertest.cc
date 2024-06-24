@@ -2229,20 +2229,21 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
   delegate_observer()->WaitForUI();
 
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+  EXPECT_EQ(
+      dialog_model()->step(),
+      AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
-  model_observer()->SetStepToObserve(AuthenticatorRequestDialogController::
-                                         Step::kGPMConfirmOffTheRecordCreate);
-  dialog_model()->OnTrustThisComputer();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  dialog_model()->OnGPMConfirmOffTheRecordCreate();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
-  dialog_model()->OnGPMConfirmOffTheRecordCreate();
+  dialog_model()->OnTrustThisComputer();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
@@ -2265,16 +2266,17 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
   delegate_observer()->WaitForUI();
 
-  EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
-  model_observer()->SetStepToObserve(AuthenticatorRequestDialogController::
-                                         Step::kGPMConfirmOffTheRecordCreate);
-  dialog_model()->OnGPMCreatePasskey();
+  EXPECT_EQ(
+      dialog_model()->step(),
+      AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  dialog_model()->OnGPMConfirmOffTheRecordCreate();
   model_observer()->WaitForStep();
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMEnterPin);
-  dialog_model()->OnGPMConfirmOffTheRecordCreate();
+  dialog_model()->OnGPMCreatePasskey();
   model_observer()->WaitForStep();
 
   dialog_model()->OnGPMPinEntered(u"123456");
