@@ -121,6 +121,7 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
                              gfx::ColorSpace::MatrixID::YCOCG,
                              gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
+    default:
       NOTREACHED_IN_MIGRATION();
       return gfx::ColorSpace();
   };
