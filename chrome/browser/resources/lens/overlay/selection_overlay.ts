@@ -730,7 +730,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // finished.
     if (!this.disableShimmer) {
       if (this.useShimmerCanvas) {
-        this.$.overlayShimmerCanvas.startInvocationAnimation();
+        this.$.overlayShimmerCanvas.startAnimation();
       } else {
         this.$.overlayShimmer.startAnimation();
       }
