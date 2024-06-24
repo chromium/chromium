@@ -56,7 +56,7 @@ body > header {
 .header-row {
   align-items: center;
   display: flex;
-  height: 56px;
+  height: fit-content;
 }
 
 .action-header-row {
@@ -66,7 +66,7 @@ body > header {
 
 .action-row-buttons {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -169,6 +169,7 @@ body > header {
   font-size: 170%;
   font-weight: 500;
   letter-spacing: .25px;
+  line-height: 80%;
 }
 
 <if expr="not is_android and not is_ios">
