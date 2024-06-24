@@ -144,9 +144,12 @@ void RejectSession(device::mojom::VRService::RequestSessionCallback callback,
         rejected_features->begin(), rejected_features->end());
   }
 
-  content::XRRuntimeManagerImpl::GetOrCreateInstance()
-      ->GetLoggerManager()
-      .RecordSessionRejected(std::move(session_rejected_record));
+  auto* runtime_manager_impl = static_cast<content::XRRuntimeManagerImpl*>(
+      content::XRRuntimeManager::GetInstanceIfCreated());
+  if (runtime_manager_impl) {
+    runtime_manager_impl->GetLoggerManager().RecordSessionRejected(
+        std::move(session_rejected_record));
+  }
 
   std::move(callback).Run(
       device::mojom::RequestSessionResult::NewFailureReason(error));
@@ -206,7 +209,8 @@ VRServiceImpl::VRServiceImpl(content::RenderFrameHost* render_frame_host)
   DCHECK(render_frame_host_);
   DVLOG(2) << __func__;
 
-  runtime_manager_ = XRRuntimeManagerImpl::GetOrCreateInstance();
+  runtime_manager_ =
+      XRRuntimeManagerImpl::GetOrCreateInstance(*GetWebContents());
   runtime_manager_->AddService(this);
 
   magic_window_controllers_.set_disconnect_handler(base::BindRepeating(
@@ -219,7 +223,7 @@ VRServiceImpl::VRServiceImpl(content::RenderFrameHost* render_frame_host)
 VRServiceImpl::VRServiceImpl(base::PassKey<XRRuntimeManagerTest>)
     : render_frame_host_(nullptr) {
   DVLOG(2) << __func__;
-  runtime_manager_ = XRRuntimeManagerImpl::GetOrCreateInstance();
+  runtime_manager_ = XRRuntimeManagerImpl::GetOrCreateInstanceForTesting();
   runtime_manager_->AddService(this);
 }
 

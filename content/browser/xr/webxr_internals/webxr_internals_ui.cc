@@ -65,8 +65,8 @@ void WebXrInternalsUI::WebUIRenderFrameCreated(
 void WebXrInternalsUI::BindInterface(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<webxr::mojom::WebXrInternalsHandler> receiver) {
-  ui_handler_ =
-      std::make_unique<WebXrInternalsHandlerImpl>(std::move(receiver));
+  ui_handler_ = std::make_unique<WebXrInternalsHandlerImpl>(
+      std::move(receiver), web_ui()->GetWebContents());
 }
 
 }  // namespace content

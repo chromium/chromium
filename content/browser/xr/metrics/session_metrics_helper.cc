@@ -160,7 +160,7 @@ SessionMetricsHelper::StartImmersiveSession(
   session_started_record->trace_id = session_timer_->GetTraceId();
   session_started_record->started_time = session_timer_->GetStartTime();
   session_started_record->device_id = runtime_id;
-  XRRuntimeManagerImpl::GetOrCreateInstance()
+  XRRuntimeManagerImpl::GetOrCreateInstance(*web_contents())
       ->GetLoggerManager()
       .RecordSessionStarted(std::move(session_started_record));
 
@@ -193,7 +193,7 @@ void SessionMetricsHelper::StopAndRecordImmersiveSession() {
       webxr::mojom::SessionStoppedRecord::New();
   session_stopped_record->trace_id = session_timer_->GetTraceId();
   session_stopped_record->stopped_time = stop_time;
-  XRRuntimeManagerImpl::GetOrCreateInstance()
+  XRRuntimeManagerImpl::GetOrCreateInstance(*web_contents())
       ->GetLoggerManager()
       .RecordSessionStopped(std::move(session_stopped_record));
 

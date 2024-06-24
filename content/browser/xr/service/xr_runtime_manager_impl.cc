@@ -165,7 +165,8 @@ void XRRuntimeManager::ExitImmersivePresentation() {
 
 // Static
 scoped_refptr<XRRuntimeManagerImpl>
-XRRuntimeManagerImpl::GetOrCreateInstance() {
+XRRuntimeManagerImpl::GetOrCreateRuntimeManagerInternal(
+    WebContents* web_contents) {
   if (g_xr_runtime_manager) {
     return base::WrapRefCounted(g_xr_runtime_manager);
   }
@@ -203,7 +204,17 @@ XRRuntimeManagerImpl::GetOrCreateInstance() {
         std::make_unique<device::VROrientationDeviceProvider>(
             std::move(sensor_provider)));
   }
-  return CreateInstance(std::move(providers));
+  return CreateInstance(std::move(providers), web_contents);
+}
+
+scoped_refptr<XRRuntimeManagerImpl> XRRuntimeManagerImpl::GetOrCreateInstance(
+    WebContents& web_contents) {
+  return GetOrCreateRuntimeManagerInternal(&web_contents);
+}
+
+scoped_refptr<XRRuntimeManagerImpl>
+XRRuntimeManagerImpl::GetOrCreateInstanceForTesting() {
+  return GetOrCreateRuntimeManagerInternal(nullptr);
 }
 
 // static
@@ -222,11 +233,6 @@ content::WebContents* XRRuntimeManagerImpl::GetImmersiveSessionWebContents() {
 void XRRuntimeManagerImpl::AddService(VRServiceImpl* service) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(2) << __func__;
-
-  // Loop through any currently active runtimes and send Connected messages to
-  // the service. Future runtimes that come online will send a Connected message
-  // when they are created.
-  InitializeProviders(service);
 
   if (AreAllProvidersInitialized())
     service->InitializationComplete();
@@ -495,11 +501,13 @@ void XRRuntimeManagerImpl::OnGpuInfoUpdate() {
     service->OnMakeXrCompatibleComplete(xr_compatible_result);
 }
 
-XRRuntimeManagerImpl::XRRuntimeManagerImpl(XRProviderList providers)
+XRRuntimeManagerImpl::XRRuntimeManagerImpl(XRProviderList providers,
+                                           WebContents* web_contents)
     : providers_(std::move(providers)) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(!g_xr_runtime_manager);
   g_xr_runtime_manager = this;
+  InitializeProviders(web_contents);
 }
 
 XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
@@ -530,8 +538,9 @@ XRRuntimeManagerImpl::~XRRuntimeManagerImpl() {
 }
 
 scoped_refptr<XRRuntimeManagerImpl> XRRuntimeManagerImpl::CreateInstance(
-    XRProviderList providers) {
-  auto* ptr = new XRRuntimeManagerImpl(std::move(providers));
+    XRProviderList providers,
+    WebContents* contents) {
+  auto* ptr = new XRRuntimeManagerImpl(std::move(providers), contents);
   CHECK_EQ(ptr, g_xr_runtime_manager);
   return base::AdoptRef(ptr);
 }
@@ -555,8 +564,7 @@ size_t XRRuntimeManagerImpl::NumberOfConnectedServices() {
 // some aspect of the service, such as the WebContents, to perform
 // initialization can do so, but the providers should be initialized in such a
 // way that they are not explicitly tied to this service.
-void XRRuntimeManagerImpl::InitializeProviders(
-    VRServiceImpl* initializing_service) {
+void XRRuntimeManagerImpl::InitializeProviders(WebContents* web_contents) {
   if (providers_initialized_)
     return;
 
@@ -571,7 +579,7 @@ void XRRuntimeManagerImpl::InitializeProviders(
     // to ourselves here, since we own the providers and can guarantee that they
     // will not outlive us. Providers should not take a long-term reference to
     // the WebContents.
-    provider->Initialize(this, initializing_service->GetWebContents());
+    provider->Initialize(this, web_contents);
   }
 
   providers_initialized_ = true;
