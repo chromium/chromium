@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
@@ -439,6 +440,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSyncRowLaunchesSignInFlowForSignedInAccounts() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
@@ -463,7 +465,12 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
 
-        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+        assertSettingsExists(
+                MainSettings.PREF_SIGN_IN,
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? ManageSyncSettings.class
+                        : AccountManagementFragment.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
     }
 
@@ -485,7 +492,12 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         launchSettingsActivity();
 
-        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+        assertSettingsExists(
+                MainSettings.PREF_SIGN_IN,
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? ManageSyncSettings.class
+                        : AccountManagementFragment.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
     }
 
@@ -507,7 +519,12 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         launchSettingsActivity();
 
-        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
+        assertSettingsExists(
+                MainSettings.PREF_SIGN_IN,
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? ManageSyncSettings.class
+                        : AccountManagementFragment.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(matches(isDisplayed()));
     }
 
@@ -805,7 +822,10 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+    @DisableFeatures({
+        SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testSyncPromoNotShownAfterBeingDismissed() throws Exception {
         var dismissedCountHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -827,7 +847,10 @@ public class MainSettingsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+    @DisableFeatures({
+        SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
     public void testSyncPromoShownIsNotOverCounted() {
         var showCountHistogram =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Settings", 1);
