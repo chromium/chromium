@@ -276,6 +276,8 @@ HashSet<ax::mojom::blink::Role> GetExpectedParentRole(
     ax::mojom::blink::Role role) {
   switch (role) {
       // TODO(crbug.com/341369908): Add other roles that have required parents.
+      // kListItem is a special case, handled in
+      // ComputeFinalRoleForSerialization().
     case ax::mojom::blink::Role::kRow:
       return {ax::mojom::blink::Role::kTable, ax::mojom::blink::Role::kGrid,
               ax::mojom::blink::Role::kRowGroup,
@@ -2667,7 +2669,13 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
           return ax::mojom::blink::Role::kDocEndnote;
       }
     } else {
-      return ax::mojom::blink::Role::kGenericContainer;
+      // If listitem is not the child of a list, return the native role (CORE
+      // AAM 1.2). If the native role is also listitem, return generic container
+      // (HTML AAM 1.0).
+      ax::mojom::blink::Role native_role = NativeRoleIgnoringAria();
+      return native_role == ax::mojom::blink::Role::kListItem
+                 ? ax::mojom::blink::Role::kGenericContainer
+                 : native_role;
     }
   }
 

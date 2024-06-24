@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] orphan p with listitem role
-  assert_equals: <p role="listitem" data-testname="orphan p with listitem role" data-expectedrole="paragraph" class="ex">x</p> expected "paragraph" but got "generic"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.
