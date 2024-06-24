@@ -32,13 +32,6 @@
 
 namespace android_webview {
 
-namespace prefs {
-const char kMetricsAppPackageNameLoggingRule[] =
-    "aw_metrics_app_package_name_logging_rule";
-const char kAppPackageNameLoggingRuleLastUpdateTime[] =
-    "aw_metrics_app_package_name_logging_rule_last_update";
-}  // namespace prefs
-
 namespace {
 
 // IMPORTANT: DO NOT CHANGE sample rates without first ensuring the Chrome
@@ -211,9 +204,6 @@ void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
 void AwMetricsServiceClient::RegisterMetricsPrefs(
     PrefRegistrySimple* registry) {
   RegisterPrefs(registry);
-  registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule);
-  registry->RegisterTimePref(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
-                             base::Time());
   AndroidMetricsProvider::RegisterPrefs(registry);
 }
 
