@@ -1218,7 +1218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached"
-    enum="BooleanCacheHit" expires_after="2024-07-30">
+    enum="BooleanCacheHit" expires_after="M135">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1230,7 +1230,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.BatchRequestedSize.{AnnotationType}"
-    units="counts" expires_after="2024-07-30">
+    units="counts" expires_after="M135">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1242,7 +1242,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.BatchSuccess.{AnnotationType}"
-    enum="BooleanSuccess" expires_after="2024-07-30">
+    enum="BooleanSuccess" expires_after="M135">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1255,7 +1255,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted"
-    enum="Boolean" expires_after="2024-09-29">
+    enum="Boolean" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1266,7 +1266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.JobExecutionTime.{AnnotationType}"
-    units="ms" expires_after="2024-07-30">
+    units="ms" expires_after="M135">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1278,7 +1278,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.JobScheduleTime.{AnnotationType}"
-    units="ms" expires_after="2024-07-30">
+    units="ms" expires_after="M135">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1291,7 +1291,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.SalientImageAvailability"
-    enum="OptimizationGuideSalientImageAvailability" expires_after="2024-07-30">
+    enum="OptimizationGuideSalientImageAvailability" expires_after="M135">
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>Records the availability of salient images on page load.</summary>
@@ -1299,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotated"
-    enum="BooleanAnnotated" expires_after="M130">
+    enum="BooleanAnnotated" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1311,7 +1311,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
-    enum="PageContentAnnotationsStorageStatus" expires_after="M130">
+    enum="PageContentAnnotationsStorageStatus" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1324,7 +1324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus.{PageContentAnnotationsStorageType}"
-    enum="PageContentAnnotationsStorageStatus" expires_after="2024-07-30">
+    enum="PageContentAnnotationsStorageStatus" expires_after="M135">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1338,7 +1338,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesCache.CacheHit"
-    enum="BooleanCacheHit" expires_after="2024-07-30">
+    enum="BooleanCacheHit" expires_after="M135">
   <owner>khalidpeer@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1350,7 +1350,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesExtracted"
-    enum="BooleanAnnotated" expires_after="2024-07-30">
+    enum="BooleanAnnotated" expires_after="M135">
   <owner>mahmadi@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -1362,7 +1362,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.VisibilityScoreOfGoogleSRP"
-    units="score" expires_after="2024-07-30">
+    units="score" expires_after="M135">
   <owner>robertogden@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
