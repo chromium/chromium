@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -46,6 +47,7 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
     private int mSuggestionEntrySourceRefCount;
 
     @Nullable private ImageServiceBridge mImageServiceBridge;
+    @NonNull private LargeIconBridge mLargeIconBridge;
 
     public TabResumptionModuleBuilder(
             @NonNull Context context,
@@ -85,12 +87,14 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                 () -> makeDataProvider(profile, moduleDelegate);
 
         maybeInitImageServiceBridge(profile);
+        maybeInitLargeIconBridge(profile);
 
         assert mTabContentManagerSupplier.hasValue();
         UrlImageSourceImpl urlImageSource =
-                new UrlImageSourceImpl(mContext, profile, mTabContentManagerSupplier.get());
+                new UrlImageSourceImpl(mContext, mTabContentManagerSupplier.get());
         UrlImageProvider urlImageProvider =
-                new UrlImageProvider(mContext, urlImageSource, mImageServiceBridge);
+                new UrlImageProvider(
+                        mContext, urlImageSource, mImageServiceBridge, mLargeIconBridge);
 
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
@@ -118,6 +122,10 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
 
     @Override
     public void destroy() {
+        if (mLargeIconBridge != null) {
+            mLargeIconBridge.destroy();
+            mLargeIconBridge = null;
+        }
         if (mImageServiceBridge != null) {
             mImageServiceBridge.destroy();
             mImageServiceBridge = null;
@@ -225,5 +233,11 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
                         ImageFetcher.TAB_RESUMPTION_MODULE_NAME,
                         profile,
                         imageFetcher);
+    }
+
+    private void maybeInitLargeIconBridge(Profile profile) {
+        if (mLargeIconBridge != null) return;
+
+        mLargeIconBridge = new LargeIconBridge(profile);
     }
 }

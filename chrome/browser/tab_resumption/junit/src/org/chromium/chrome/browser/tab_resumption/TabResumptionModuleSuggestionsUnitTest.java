@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -280,11 +281,11 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                 .thenReturn(expectedFallbackIcon);
 
         UrlImageSource urlImageSource = Mockito.mock(UrlImageSource.class);
-        when(urlImageSource.createLargeIconBridge()).thenReturn(largeIconBridge);
         when(urlImageSource.createThumbnailProvider()).thenReturn(thumbnailProvider);
         when(urlImageSource.createIconGenerator()).thenReturn(roundedIconGenerator);
         Context context = ApplicationProvider.getApplicationContext();
-        UrlImageProvider urlImageProvider = new UrlImageProvider(context, urlImageSource, null);
+        UrlImageProvider urlImageProvider =
+                new UrlImageProvider(context, urlImageSource, null, largeIconBridge);
 
         urlImageProvider.fetchImageForUrl(
                 urlWithFavicon,
@@ -312,5 +313,9 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
                 });
 
         Assert.assertEquals(3, mCallbackCounter);
+
+        urlImageProvider.destroy();
+        assertNull(urlImageProvider.getImageServiceBridgeForTesting());
+        assertNull(urlImageProvider.getLargeIconBridgeForTesting());
     }
 }
