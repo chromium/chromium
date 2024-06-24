@@ -15,10 +15,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -87,9 +87,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // a no-op. Returns true if there was a change of state, false otherwise.
   bool Reshape(const gfx::Size& size,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format);
-
-  gfx::BufferFormat buffer_format() const { return *format_; }
+               SharedImageFormat format);
 
   // Sets the number of frame buffers to use when
   // |supports_dynamic_frame_buffer_allocation| is true, and allocates those
@@ -174,7 +172,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   gfx::ColorSpace color_space_;
   // The format of all allocated buffers. The |format_| is optional to prevent
   // use of uninitialized values.
-  std::optional<gfx::BufferFormat> format_;
+  std::optional<SharedImageFormat> format_;
 
   // This buffer is currently bound. This may be nullptr if no buffer has
   // been bound.

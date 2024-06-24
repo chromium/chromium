@@ -32,7 +32,7 @@ namespace viz {
 
 namespace {
 
-constexpr gfx::BufferFormat kBufferQueueFormat = gfx::BufferFormat::RGBA_8888;
+constexpr SharedImageFormat kBufferQueueFormat = SinglePlaneFormat::kRGBA_8888;
 constexpr gfx::ColorSpace kBufferQueueColorSpace =
     gfx::ColorSpace::CreateSRGB();
 

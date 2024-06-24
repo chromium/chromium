@@ -1225,8 +1225,8 @@ gpu::Mailbox SkiaRenderer::GetProtectedSharedImage(bool is_10bit) {
       gfx::ColorSpace::CreateSRGB(),
       (is_10bit &&
        base::FeatureList::IsEnabled(media::kEnableArmHwdrm10bitOverlays))
-          ? gfx::BufferFormat::BGRA_1010102
-          : gfx::BufferFormat::BGRA_8888);
+          ? SinglePlaneFormat::kBGRA_1010102
+          : SinglePlaneFormat::kBGRA_8888);
 
   return protected_buffer_queue_->GetCurrentBuffer();
 }
@@ -4305,8 +4305,9 @@ gfx::Rect SkiaRenderer::GetCurrentFramebufferDamage() const {
 
 void SkiaRenderer::Reshape(const OutputSurface::ReshapeParams& reshape_params) {
   if (buffer_queue_) {
-    buffer_queue_->Reshape(reshape_params.size, reshape_params.color_space,
-                           reshape_params.format);
+    buffer_queue_->Reshape(
+        reshape_params.size, reshape_params.color_space,
+        GetSinglePlaneSharedImageFormat(reshape_params.format));
   }
   // Even if we have our own BufferQueue, we still need to forward the Reshape()
   // call down to the OutputPresenter.
