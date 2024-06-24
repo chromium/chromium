@@ -95,6 +95,10 @@ BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers,
              "CustomWebSignInInterceptForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi,
+             "CustomWebSignInInterceptForSupervisedUsersUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 BASE_FEATURE(kHideGuestModeForSupervisedUsers,
              "HideGuestModeForSupervisedUsers",
