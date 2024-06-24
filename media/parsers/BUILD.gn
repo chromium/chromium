@@ -17,6 +17,8 @@ source_set("parsers") {
     "h264_poc.h",
     "jpeg_parser.cc",
     "jpeg_parser.h",
+    "temporal_scalability_id_extractor.cc",
+    "temporal_scalability_id_extractor.h",
     "vp8_bool_decoder.cc",
     "vp8_bool_decoder.h",
     "vp8_parser.cc",
@@ -68,13 +70,27 @@ source_set("parsers") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+  visibility = [ "//media:test_support" ]
+
+  sources = [
+    "ivf_parser.cc",
+    "ivf_parser.h",
+  ]
+
+  deps = [ "//base/test:test_support" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "h264_bit_reader_unittest.cc",
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
+    "ivf_parser_unittest.cc",
     "jpeg_parser_unittest.cc",
+    "temporal_scalability_id_extractor_unittest.cc",
     "vp8_bool_decoder_unittest.cc",
     "vp8_parser_unittest.cc",
     "vp9_parser_unittest.cc",

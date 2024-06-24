@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_IVF_PARSER_H_
-#define MEDIA_FILTERS_IVF_PARSER_H_
+#ifndef MEDIA_PARSERS_IVF_PARSER_H_
+#define MEDIA_PARSERS_IVF_PARSER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -77,4 +77,4 @@ class IvfParser {
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_IVF_PARSER_H_
+#endif  // MEDIA_PARSERS_IVF_PARSER_H_

@@ -9,8 +9,8 @@
 #include <optional>
 #include <vector>
 
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/parsers/ivf_parser.h"
 // For libgav1::ObuSequenceHeader. std::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.

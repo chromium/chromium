@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "base/numerics/safe_conversions.h"
-#include "media/filters/ivf_parser.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
 
 // Entry point for LibFuzzer.

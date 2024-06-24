@@ -17,8 +17,8 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
-#include "media/filters/temporal_scalability_id_extractor.h"
 #include "media/gpu/android/video_accelerator_util.h"
+#include "media/parsers/temporal_scalability_id_extractor.h"
 #include "third_party/libyuv/include/libyuv.h"
 
 #pragma clang attribute push DEFAULT_REQUIRES_ANDROID_API( \

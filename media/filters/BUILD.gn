@@ -59,8 +59,6 @@ source_set("filters") {
     "source_buffer_stream.h",
     "stream_parser_factory.cc",
     "stream_parser_factory.h",
-    "temporal_scalability_id_extractor.cc",
-    "temporal_scalability_id_extractor.h",
     "video_cadence_estimator.cc",
     "video_cadence_estimator.h",
     "video_renderer_algorithm.cc",
@@ -280,8 +278,6 @@ static_library("test_support") {
   sources = [
     "fake_video_decoder.cc",
     "fake_video_decoder.h",
-    "ivf_parser.cc",
-    "ivf_parser.h",
   ]
 
   deps = [
@@ -306,13 +302,11 @@ source_set("unit_tests") {
     "fake_video_decoder_unittest.cc",
     "file_data_source_unittest.cc",
     "frame_processor_unittest.cc",
-    "ivf_parser_unittest.cc",
     "memory_data_source_unittest.cc",
     "offloading_video_decoder_unittest.cc",
     "pipeline_controller_unittest.cc",
     "source_buffer_state_unittest.cc",
     "source_buffer_stream_unittest.cc",
-    "temporal_scalability_id_extractor_unittest.cc",
     "video_cadence_estimator_unittest.cc",
     "video_decoder_stream_unittest.cc",
     "video_renderer_algorithm_unittest.cc",

@@ -13,8 +13,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp9_parser.h"
 
 namespace media {

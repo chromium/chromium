@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
-#include "media/filters/ivf_parser.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp9_parser.h"
 
 struct Environment {

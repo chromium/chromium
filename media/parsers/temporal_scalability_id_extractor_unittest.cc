@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/temporal_scalability_id_extractor.h"
+#include "media/parsers/temporal_scalability_id_extractor.h"
 
 #include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"

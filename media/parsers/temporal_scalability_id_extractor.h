@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_TEMPORAL_SCALABILITY_ID_EXTRACTOR_H_
-#define MEDIA_FILTERS_TEMPORAL_SCALABILITY_ID_EXTRACTOR_H_
+#ifndef MEDIA_PARSERS_TEMPORAL_SCALABILITY_ID_EXTRACTOR_H_
+#define MEDIA_PARSERS_TEMPORAL_SCALABILITY_ID_EXTRACTOR_H_
 
 #include <array>
 #include <vector>
@@ -79,4 +79,4 @@ class MEDIA_EXPORT TemporalScalabilityIdExtractor {
 };
 
 }  // namespace media
-#endif  // MEDIA_FILTERS_TEMPORAL_SCALABILITY_ID_EXTRACTOR_H_
+#endif  // MEDIA_PARSERS_TEMPORAL_SCALABILITY_ID_EXTRACTOR_H_

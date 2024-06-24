@@ -9,8 +9,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/macros.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
 
 namespace media {

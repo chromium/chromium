@@ -10,9 +10,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/base/video_types.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
 
 namespace {

@@ -13,6 +13,8 @@
 // The first two are expected frame entropy, fhdr->initial_frame_context and
 // fhdr->frame_context.
 // If |should_update| is true, it follows by the frame context to update.
+#include "media/parsers/vp9_parser.h"
+
 #include <stdint.h>
 #include <string.h>
 
@@ -23,8 +25,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
-#include "media/filters/ivf_parser.h"
-#include "media/parsers/vp9_parser.h"
+#include "media/parsers/ivf_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::TestWithParam;

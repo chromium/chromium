@@ -6,11 +6,11 @@
 #define MEDIA_GPU_VAAPI_TEST_VP8_DECODER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/scoped_va_config.h"
 #include "media/gpu/vaapi/test/scoped_va_context.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
 
 namespace media {

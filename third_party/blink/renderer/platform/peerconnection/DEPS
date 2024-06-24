@@ -52,7 +52,7 @@ specific_include_rules = {
         "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
     ],
     "resolution_monitor_unittest.cc" : [
-        "+media/filters/ivf_parser.h",
+        "+media/parsers/ivf_parser.h",
     ],
     "h265_parameter_sets_tracker_fuzzer.cc" : [
         "+third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h",

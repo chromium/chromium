@@ -24,8 +24,8 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/test/raw_video.h"
+#include "media/parsers/ivf_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
