@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
@@ -47,25 +48,6 @@ base::Value::Dict CardDataToValue(int header_id,
 
   return card_info;
 }
-
-// Returns the state of Safe Browsing setting.
-SafeBrowsingState GetSafeBrowsingState(PrefService* pref_service) {
-  // TODO(crbug.com/40267370): Use SafeBrowsingResult from Safety Hub instead.
-  if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service)) {
-    return SafeBrowsingState::kEnabledEnhanced;
-  }
-  if (safe_browsing::IsSafeBrowsingEnabled(*pref_service)) {
-    return SafeBrowsingState::kEnabledStandard;
-  }
-  if (safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service)) {
-    return SafeBrowsingState::kDisabledByAdmin;
-  }
-  if (safe_browsing::IsSafeBrowsingExtensionControlled(*pref_service)) {
-    return SafeBrowsingState::kDisabledByExtension;
-  }
-  return SafeBrowsingState::kDisabledByUser;
-}
-
 }  // namespace
 
 namespace safety_hub {
@@ -107,11 +89,11 @@ base::Value::Dict GetPasswordCardData(Profile* profile) {
 }
 
 base::Value::Dict GetSafeBrowsingCardData(Profile* profile) {
-  SafeBrowsingState result = GetSafeBrowsingState(profile->GetPrefs());
-
+  SafeBrowsingState state =
+      SafetyHubSafeBrowsingResult::GetState(profile->GetPrefs());
   base::Value::Dict sb_card_info;
 
-  switch (result) {
+  switch (state) {
     case SafeBrowsingState::kEnabledEnhanced:
       sb_card_info =
           CardDataToValue(IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER,

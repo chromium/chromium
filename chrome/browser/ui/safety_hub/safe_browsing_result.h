@@ -24,6 +24,8 @@ class SafetyHubSafeBrowsingResult : public SafetyHubService::Result {
   static std::optional<std::unique_ptr<SafetyHubService::Result>> GetResult(
       const PrefService* pref_service);
 
+  static SafeBrowsingState GetState(const PrefService* pref_service);
+
   // SafetyHubService::Result implementation
 
   std::unique_ptr<SafetyHubService::Result> Clone() const override;

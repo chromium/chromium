@@ -28,24 +28,26 @@ SafetyHubSafeBrowsingResult::~SafetyHubSafeBrowsingResult() = default;
 // static
 std::optional<std::unique_ptr<SafetyHubService::Result>>
 SafetyHubSafeBrowsingResult::GetResult(const PrefService* pref_service) {
+  SafeBrowsingState state = SafetyHubSafeBrowsingResult::GetState(pref_service);
+  return std::make_unique<SafetyHubSafeBrowsingResult>(state);
+}
+
+// static
+SafeBrowsingState SafetyHubSafeBrowsingResult::GetState(
+    const PrefService* pref_service) {
   if (safe_browsing::IsEnhancedProtectionEnabled(*pref_service)) {
-    return std::make_unique<SafetyHubSafeBrowsingResult>(
-        SafeBrowsingState::kEnabledEnhanced);
+    return SafeBrowsingState::kEnabledEnhanced;
   }
   if (safe_browsing::IsSafeBrowsingEnabled(*pref_service)) {
-    return std::make_unique<SafetyHubSafeBrowsingResult>(
-        SafeBrowsingState::kEnabledStandard);
+    return SafeBrowsingState::kEnabledStandard;
   }
   if (safe_browsing::IsSafeBrowsingPolicyManaged(*pref_service)) {
-    return std::make_unique<SafetyHubSafeBrowsingResult>(
-        SafeBrowsingState::kDisabledByAdmin);
+    return SafeBrowsingState::kDisabledByAdmin;
   }
   if (safe_browsing::IsSafeBrowsingExtensionControlled(*pref_service)) {
-    return std::make_unique<SafetyHubSafeBrowsingResult>(
-        SafeBrowsingState::kDisabledByExtension);
+    return SafeBrowsingState::kDisabledByExtension;
   }
-  return std::make_unique<SafetyHubSafeBrowsingResult>(
-      SafeBrowsingState::kDisabledByUser);
+  return SafeBrowsingState::kDisabledByUser;
 }
 
 std::unique_ptr<SafetyHubService::Result> SafetyHubSafeBrowsingResult::Clone()
