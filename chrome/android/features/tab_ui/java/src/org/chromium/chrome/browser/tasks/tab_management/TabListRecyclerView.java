@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout.ZOOMING_DURATION;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -65,6 +63,8 @@ class TabListRecyclerView extends RecyclerView
     // Default values from experimentation.
     private static final float DEFAULT_DOWNSAMPLING_SCALE = 0.5f;
     private static final float DEFAULT_MAX_DUTY_CYCLE = 0.2f;
+
+    private static final int ZOOMING_DURATION = 325;
 
     public static final long BASE_ANIMATION_DURATION_MS = 218;
     public static final long FINAL_FADE_IN_DURATION_MS = 50;

@@ -23,9 +23,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -42,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -56,29 +52,6 @@ import java.util.function.DoubleConsumer;
 
 /** Impl class that will resolve components for tab management. */
 public class TabManagementDelegateImpl implements TabManagementDelegate {
-    @Override
-    public Layout createTabSwitcherLayout(
-            Context context,
-            LayoutUpdateHost updateHost,
-            LayoutStateProvider layoutStateProvider,
-            LayoutRenderHost renderHost,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            TabSwitcher tabSwitcher,
-            ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator,
-            DesktopWindowStateProvider desktopWindowStateProvider) {
-        return new TabSwitcherLayout(
-                context,
-                updateHost,
-                layoutStateProvider,
-                renderHost,
-                browserControlsStateProvider,
-                tabSwitcher,
-                tabSwitcherScrimAnchor,
-                scrimCoordinator,
-                desktopWindowStateProvider);
-    }
-
     @Override
     public TabSwitcher createGridTabSwitcher(
             @NonNull Activity activity,

@@ -333,8 +333,6 @@ public abstract class ChromeFeatureList {
     public static final String FULLSCREEN_INSETS_API_MIGRATION = "FullscreenInsetsApiMigration";
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
-    public static final String GRID_TAB_SWITCHER_ANDROID_ANIMATIONS =
-            "GridTabSwitcherAndroidAnimations";
     public static final String GCM_NATIVE_BACKGROUND_TASK = "GcmNativeBackgroundTask";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
@@ -626,8 +624,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE, true);
     public static final CachedFlag sGcmNativeBackgroundTask =
             newCachedFlag(GCM_NATIVE_BACKGROUND_TASK, false);
-    public static final CachedFlag sGridTabSwitcherAndroidAnimations =
-            newCachedFlag(GRID_TAB_SWITCHER_ANDROID_ANIMATIONS, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             newCachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
     public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, false);
@@ -757,7 +753,6 @@ public abstract class ChromeFeatureList {
                     sFriendlierSafeBrowsingSettingsStandardProtection,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
-                    sGridTabSwitcherAndroidAnimations,
                     sGcmNativeBackgroundTask,
                     sIncognitoReauthenticationForAndroid,
                     sLogoPolish,

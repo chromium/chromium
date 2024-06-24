@@ -101,7 +101,6 @@ BASE_DECLARE_FEATURE(kFocusOmniboxInIncognitoTabIntents);
 BASE_DECLARE_FEATURE(kForceListTabSwitcher);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);
-BASE_DECLARE_FEATURE(kGridTabSwitcherAndroidAnimations);
 BASE_DECLARE_FEATURE(kGcmNativeBackgroundTask);
 BASE_DECLARE_FEATURE(kIncognitoReauthenticationForAndroid);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);

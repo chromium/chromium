@@ -38,7 +38,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
@@ -880,31 +879,15 @@ public class TabUiTestHelper {
      */
     public static Layout getTabSwitcherLayoutAndVerify(ChromeTabbedActivity cta) {
         final LayoutManagerChrome layoutManager = cta.getLayoutManager();
-        Layout layout = layoutManager.getTabSwitcherLayoutForTesting();
+        Layout layout = layoutManager.getHubLayoutForTesting();
         if (layout == null) {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        layoutManager.initTabSwitcherLayoutForTesting();
+                        layoutManager.initHubLayoutForTesting();
                     });
         }
-        layout = layoutManager.getTabSwitcherLayoutForTesting();
+        layout = layoutManager.getHubLayoutForTesting();
         assertTrue(layout instanceof HubLayout);
         return layout;
-    }
-
-    /**
-     * Presses the back button on the Tab switcher.
-     *
-     * @param tabSwitcherLayout The {@link TabSwitcherLayout}.
-     */
-    public static void pressBackOnTabSwitcher(@NonNull TabSwitcherLayout tabSwitcherLayout)
-            throws InterruptedException {
-        assert tabSwitcherLayout != null;
-        Thread.sleep(1000);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherLayout.getTabSwitcherForTesting().getController().onBackPressed();
-                });
-        Thread.sleep(1000);
     }
 }

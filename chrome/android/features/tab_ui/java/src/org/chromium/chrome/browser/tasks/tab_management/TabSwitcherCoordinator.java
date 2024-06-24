@@ -26,7 +26,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -346,8 +345,7 @@ public class TabSwitcherCoordinator
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherCoordinator.initWithNative")) {
             final boolean shouldUseDynamicResource =
                     mMode == TabListCoordinator.TabListMode.GRID
-                            && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                            && !ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled();
+                            && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
 
             Profile profile = mTabModelSelector.getModel(false).getProfile();
             assert profile != null;

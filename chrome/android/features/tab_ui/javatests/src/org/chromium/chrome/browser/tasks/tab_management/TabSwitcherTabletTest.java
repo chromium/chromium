@@ -140,15 +140,15 @@ public class TabSwitcherTabletTest {
     @DisabledTest(message = "Flaky, see crbug.com/327457591")
     public void testEnterAndExitTabSwitcher() throws TimeoutException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        checkTabSwitcherLayout(cta, false);
+        checkHubLayout(cta, false);
         checkTabSwitcherViewHolderStub(cta, true);
         checkTabSwitcherViewHolder(cta, false);
 
         TabUiTestHelper.prepareTabsWithThumbnail(sActivityTestRule, 1, 0, null);
         TabUiTestHelper.enterTabSwitcher(cta);
-        ensureTabSwitcherLayout();
+        ensureHubLayout();
 
-        checkTabSwitcherLayout(cta, true);
+        checkHubLayout(cta, true);
         checkTabSwitcherViewHolderStub(cta, false);
         checkTabSwitcherViewHolder(cta, true);
 
@@ -199,9 +199,9 @@ public class TabSwitcherTabletTest {
     @MediumTest
     public void testGridTabSwitcherOnNoNextTab_WithoutRestart() throws ExecutionException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        ensureTabSwitcherLayout();
+        ensureHubLayout();
 
-        checkTabSwitcherLayout(cta, /* isInitialized= */ true);
+        checkHubLayout(cta, /* isInitialized= */ true);
         checkTabSwitcherViewHolderStub(cta, /* exists= */ false);
         checkTabSwitcherViewHolder(cta, /* exists= */ true);
 
@@ -223,7 +223,7 @@ public class TabSwitcherTabletTest {
     @DisabledTest(message = "crbug.com/342983248")
     public void testGridTabSwitcherOnNoNextTab_WithRestart() throws ExecutionException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        checkTabSwitcherLayout(cta, /* isInitialized= */ false);
+        checkHubLayout(cta, /* isInitialized= */ false);
         checkTabSwitcherViewHolderStub(cta, /* exists= */ true);
         checkTabSwitcherViewHolder(cta, /* exists= */ false);
 
@@ -235,7 +235,7 @@ public class TabSwitcherTabletTest {
         // Assert the grid tab switcher is shown automatically, since there is no next tab.
         checkTabSwitcherViewHolderVisibility(cta, true);
 
-        checkTabSwitcherLayout(cta, /* isInitialized= */ true);
+        checkHubLayout(cta, /* isInitialized= */ true);
         checkTabSwitcherViewHolderStub(cta, /* exists= */ false);
         checkTabSwitcherViewHolder(cta, /* exists= */ true);
     }
@@ -244,9 +244,9 @@ public class TabSwitcherTabletTest {
     @MediumTest
     public void testGridTabSwitcherOnCloseAllTabs_WithoutRestart() throws ExecutionException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        ensureTabSwitcherLayout();
+        ensureHubLayout();
 
-        checkTabSwitcherLayout(cta, /* isInitialized= */ true);
+        checkHubLayout(cta, /* isInitialized= */ true);
         checkTabSwitcherViewHolderStub(cta, /* exists= */ false);
         checkTabSwitcherViewHolder(cta, /* exists= */ true);
 
@@ -295,7 +295,7 @@ public class TabSwitcherTabletTest {
     @Test
     @MediumTest
     @RequiresRestart
-    public void testGridTabSwitcher_DeferredTabSwitcherLayoutCreation() throws ExecutionException {
+    public void testGridTabSwitcher_DeferredHubLayoutCreation() throws ExecutionException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareTabs(2, 0);
         // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
@@ -305,14 +305,14 @@ public class TabSwitcherTabletTest {
                     cta.getCurrentTabModel().closeTab(cta.getActivityTab());
                 });
 
-        checkTabSwitcherLayout(cta, /* isInitialized= */ false);
+        checkHubLayout(cta, /* isInitialized= */ false);
         checkTabSwitcherViewHolderStub(cta, /* exists= */ true);
         checkTabSwitcherViewHolder(cta, /* exists= */ false);
 
         // Click tab switcher button
         TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
 
-        checkTabSwitcherLayout(cta, /* isInitialized= */ true);
+        checkHubLayout(cta, /* isInitialized= */ true);
         checkTabSwitcherViewHolderStub(cta, /* exists= */ false);
         checkTabSwitcherViewHolder(cta, /* exists= */ true);
     }
@@ -436,22 +436,22 @@ public class TabSwitcherTabletTest {
                 });
     }
 
-    private void ensureTabSwitcherLayout() {
+    private void ensureHubLayout() {
         LayoutManagerChrome layoutManager = sActivityTestRule.getActivity().getLayoutManager();
-        Layout tabSwitcherLayout = layoutManager.getTabSwitcherLayoutForTesting();
+        Layout tabSwitcherLayout = layoutManager.getHubLayoutForTesting();
         if (tabSwitcherLayout == null) {
-            TestThreadUtils.runOnUiThreadBlocking(layoutManager::initTabSwitcherLayoutForTesting);
-            tabSwitcherLayout = layoutManager.getTabSwitcherLayoutForTesting();
+            TestThreadUtils.runOnUiThreadBlocking(layoutManager::initHubLayoutForTesting);
+            tabSwitcherLayout = layoutManager.getHubLayoutForTesting();
         }
         assertNotNull(tabSwitcherLayout);
     }
 
-    private void checkTabSwitcherLayout(ChromeTabbedActivity cta, boolean isInitialized) {
-        Layout layout = cta.getLayoutManager().getTabSwitcherLayoutForTesting();
+    private void checkHubLayout(ChromeTabbedActivity cta, boolean isInitialized) {
+        Layout layout = cta.getLayoutManager().getHubLayoutForTesting();
         if (isInitialized) {
-            assertNotNull("TabSwitcherLayout should be initialized", layout);
+            assertNotNull("HubLayout should be initialized", layout);
         } else {
-            assertNull("TabSwitcherLayout should not be initialized", layout);
+            assertNull("HubLayout should not be initialized", layout);
         }
     }
 

@@ -19,9 +19,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
-import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -36,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -49,34 +45,6 @@ import java.util.function.DoubleConsumer;
 
 /** Interface to get access to components concerning tab management. */
 public interface TabManagementDelegate {
-    /**
-     * Create the {@link TabSwitcherLayout}.
-     *
-     * @param context The current Android's context.
-     * @param updateHost The parent {@link LayoutUpdateHost}.
-     * @param layoutStateProvider The {@link LayoutStateProvider} to provide layout state changes.
-     * @param renderHost The parent {@link LayoutRenderHost}.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for the top
-     *     controls.
-     * @param tabSwitcher The {@link TabSwitcher} the layout should own.
-     * @param tabSwitcherScrimAnchor {@link ViewGroup} used by tab switcher layout to show scrim
-     *     when overview is visible.
-     * @param scrimCoordinator {@link ScrimCoordinator} to show/hide scrim.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance for the
-     *     current activity.
-     * @return The {@link TabSwitcherLayout}.
-     */
-    Layout createTabSwitcherLayout(
-            Context context,
-            LayoutUpdateHost updateHost,
-            LayoutStateProvider layoutStateProvider,
-            LayoutRenderHost renderHost,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            TabSwitcher tabSwitcher,
-            ViewGroup tabSwitcherScrimAnchor,
-            ScrimCoordinator scrimCoordinator,
-            DesktopWindowStateProvider desktopWindowStateProvider);
-
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
      *

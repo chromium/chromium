@@ -156,7 +156,7 @@ public class AppHeaderCoordinatorBrowserTest {
         TabUiTestHelper.enterTabSwitcher(activity);
 
         var layoutManager = (LayoutManagerChromeTablet) activity.getLayoutManager();
-        var hubLayout = ((HubLayout) layoutManager.getTabSwitcherLayoutForTesting());
+        var hubLayout = ((HubLayout) layoutManager.getHubLayoutForTesting());
         var hubContainerView = hubLayout.getHubControllerForTesting().getContainerView();
         var params = (LayoutParams) hubContainerView.getLayoutParams();
 
@@ -196,7 +196,7 @@ public class AppHeaderCoordinatorBrowserTest {
         TabUiTestHelper.enterTabSwitcher(activity);
 
         var layoutManager = (LayoutManagerChromeTablet) activity.getLayoutManager();
-        var hubLayout = ((HubLayout) layoutManager.getTabSwitcherLayoutForTesting());
+        var hubLayout = ((HubLayout) layoutManager.getHubLayoutForTesting());
         var hubContainerView = hubLayout.getHubControllerForTesting().getContainerView();
         var params = (LayoutParams) hubContainerView.getLayoutParams();
 

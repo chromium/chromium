@@ -41,7 +41,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -917,15 +916,6 @@ class TabSwitcherMediator
         mHandler.postDelayed(mClearTabListRunnable, HARD_CLEANUP_DELAY_MS);
         mIsTransitionInProgress = false;
         notifyBackPressStateChangedInternal();
-        if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
-            // Ensure we skip animating here as the UI is entirely occluded already.
-            boolean previousAnimateVisibilityChangesValue =
-                    mContainerViewModel.get(ANIMATE_VISIBILITY_CHANGES);
-            mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, false);
-            setVisibility(false);
-            mContainerViewModel.set(
-                    ANIMATE_VISIBILITY_CHANGES, previousAnimateVisibilityChangesValue);
-        }
     }
 
     /** Destroy any members that needs clean up. */

@@ -31,15 +31,6 @@ public class TabUiFeatureUtilities {
             ChromeFeatureList.newIntCachedFieldTrialParameter(
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
 
-    // Field trial parameter for animation start timeout for new Android based shrink and expand
-    // animations in TabSwitcherLayout.
-    private static final String ANIMATION_START_TIMEOUT_MS_PARAM = "animation_start_timeout_ms";
-    public static final IntCachedFieldTrialParameter ANIMATION_START_TIMEOUT_MS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS,
-                    ANIMATION_START_TIMEOUT_MS_PARAM,
-                    300);
-
     // Cached and fixed values.
     private static boolean sTabListEditorLongPressEntryEnabled;
     private static Boolean sIsTabToGtsAnimationEnabled;
