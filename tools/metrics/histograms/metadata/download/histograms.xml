@@ -710,7 +710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.PartialView.RowShownTimeToOpenDownloadClick"
-    units="ms" expires_after="2024-07-19">
+    units="ms" expires_after="2024-12-08">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
