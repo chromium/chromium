@@ -614,12 +614,6 @@ void HTMLCanvasElement::DidDraw(const SkIRect& rect) {
 void HTMLCanvasElement::PreFinalizeFrame() {
   RecordCanvasSizeToUMA();
 
-  // PreFinalizeFrame indicates the end of a script task that may have rendered
-  // into the canvas, now is a good time to unlock cache entries.
-  auto* resource_provider = ResourceProvider();
-  if (resource_provider)
-    resource_provider->ReleaseLockedImages();
-
   // Low-latency 2d canvases produce their frames after the resource gets single
   // buffered.
   if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&

@@ -169,7 +169,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void OnContextDestroyed() override;
 
   MemoryManagedPaintCanvas& Canvas(bool needs_will_draw = false);
-  void ReleaseLockedImages();
   // FlushCanvas and preserve recording only if IsPrinting or
   // FlushReason indicates printing in progress.
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason);
@@ -405,6 +404,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
   void DisableLineDrawingAsPathsIfNecessary();
+
+  void ReleaseLockedImages();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher_;

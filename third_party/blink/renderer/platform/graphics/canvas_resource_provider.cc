@@ -1623,6 +1623,9 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   }
   cc::PaintRecord recording = recorder_->ReleaseMainRecording();
   RasterRecord(recording);
+  // Images are locked for the duration of the rasterization, in case they get
+  // used multiple times. We can unlock them once the rasterization is complete.
+  ReleaseLockedImages();
   last_recording_ =
       preserve_recording ? std::optional(recording) : std::nullopt;
   return recording;

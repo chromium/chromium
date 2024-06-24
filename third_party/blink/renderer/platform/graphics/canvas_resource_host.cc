@@ -269,8 +269,6 @@ void CanvasResourceHost::SetOpacityMode(OpacityMode opacity_mode) {
 void CanvasResourceHost::FlushRecording(FlushReason reason) {
   if (resource_provider_) {
     resource_provider_->FlushCanvas(reason);
-    // Flushing consumed locked images.
-    resource_provider_->ReleaseLockedImages();
   }
 }
 

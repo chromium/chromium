@@ -145,7 +145,6 @@ void OffscreenCanvasRenderingContext2D::FlushRecording(FlushReason reason) {
   }
 
   provider->FlushCanvas(reason);
-  provider->ReleaseLockedImages();
 }
 
 void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {

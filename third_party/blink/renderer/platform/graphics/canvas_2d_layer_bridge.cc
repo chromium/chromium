@@ -354,10 +354,6 @@ void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
 
   provider->FlushCanvas(reason);
 
-  // Rastering the recording would have locked images, since we've flushed
-  // all recorded ops, we should release all locked images as well.
-  provider->ReleaseLockedImages();
-
   // Recreate the resource provider if the playback crashed the GPU context.
   GetOrCreateResourceProvider();
 }
