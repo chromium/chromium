@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -41,7 +43,16 @@ class TestWebUIContentsWrapper final : public WebUIContentsWrapper {
   base::WeakPtrFactory<TestWebUIContentsWrapper> weak_ptr_factory_{this};
 };
 
-using MakoRewriteViewTest = ChromeViewsTestBase;
+class MakoRewriteViewTest : public ChromeViewsTestBase {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kOrcaResizingSupport);
+    ChromeViewsTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_F(MakoRewriteViewTest, ResizesToWebViewSize) {
   TestingProfile profile;
