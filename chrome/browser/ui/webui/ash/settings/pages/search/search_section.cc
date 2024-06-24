@@ -24,6 +24,7 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -49,7 +50,8 @@ namespace {
 
 // Whether Quick answers is supported for the current language.
 bool IsQuickAnswersSupported() {
-  return QuickAnswersState::Get() && QuickAnswersState::Get()->is_eligible();
+  return QuickAnswersState::IsEligibleAs(
+      QuickAnswersState::FeatureType::kQuickAnswers);
 }
 
 const std::vector<SearchConcept>& GetSearchPageSearchConcepts(

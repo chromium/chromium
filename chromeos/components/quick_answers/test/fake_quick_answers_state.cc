@@ -24,7 +24,7 @@ void FakeQuickAnswersState::SetApplicationLocale(const std::string& locale) {
     observer.OnApplicationLocaleReady(locale);
   }
 
-  UpdateEligibility();
+  MaybeNotifyEligibilityChanged();
 }
 
 void FakeQuickAnswersState::SetPreferredLanguages(
@@ -46,7 +46,7 @@ void FakeQuickAnswersState::OnPrefsInitialized() {
     observer.OnPrefsInitialized();
   }
 
-  UpdateEligibility();
+  MaybeNotifyEligibilityChanged();
 }
 
 void FakeQuickAnswersState::AsyncWriteConsentUiImpressionCount(int32_t count) {
