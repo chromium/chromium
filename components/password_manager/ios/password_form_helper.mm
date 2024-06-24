@@ -270,22 +270,33 @@ const char kFrameIdKey[] = "frame_id";
 
   [self recordFormFillingSuccessMetrics:success];
 
-  if (fillData.username_element_id && success && *did_fill_username) {
+  // TODO(crbug.com/347882357): Add a metric to record the reason why
+  // |didFillUsername| or |didFillPassword| is false.
+
+  // Set the fill property even if |*did_fill_password| or |*did_fill_username|
+  // are false to avoid skewing the PasswordManager.FillingAssistance histogram.
+  // This is the status quo with how the field data used to be updated, before
+  // crrev.com/c/5494354.
+  if (fillData.username_element_id && success) {
     manager->UpdateFieldDataMap(fillData.username_element_id,
                                 fillData.username_value,
                                 FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
-    driver->GetPasswordManager()->UpdateStateOnUserInput(
-        driver, fillData.form_id, fillData.username_element_id,
-        fillData.username_value);
+    if (*did_fill_username) {
+      driver->GetPasswordManager()->UpdateStateOnUserInput(
+          driver, fillData.form_id, fillData.username_element_id,
+          fillData.username_value);
+    }
   }
-  if (fillData.password_element_id && success && *did_fill_password) {
+  if (fillData.password_element_id && success) {
     manager->UpdateFieldDataMap(fillData.password_element_id,
                                 fillData.password_value,
                                 FieldPropertiesFlags::kAutofilledOnUserTrigger);
-    driver->GetPasswordManager()->UpdateStateOnUserInput(
-        driver, fillData.form_id, fillData.password_element_id,
-        fillData.password_value);
+    if (*did_fill_password) {
+      driver->GetPasswordManager()->UpdateStateOnUserInput(
+          driver, fillData.form_id, fillData.password_element_id,
+          fillData.password_value);
+    }
   }
 
   return success;
