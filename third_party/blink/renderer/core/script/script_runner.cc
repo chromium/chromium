@@ -145,7 +145,6 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
       pending_async_scripts_.insert(pending_script, delay_reasons);
-      number_of_async_scripts_not_evaluated_yet_++;
       break;
 
     case ScriptSchedulingType::kInOrder:
@@ -243,17 +242,7 @@ void ScriptRunner::ExecuteAsyncPendingScript(
   base::UmaHistogramMediumTimes(
       "Blink.Script.AsyncScript.FromReadyToStartExecution.Time",
       base::TimeTicks::Now() - ready_to_evaluate_time);
-  DCHECK_GT(number_of_async_scripts_not_evaluated_yet_, 0u);
   ExecutePendingScript(pending_script);
-  number_of_async_scripts_not_evaluated_yet_--;
-  if (base::FeatureList::IsEnabled(
-          features::kDOMContentLoadedWaitForAsyncScript) &&
-      !HasAsyncScripts()) {
-    if (ScriptableDocumentParser* parser =
-            document_->GetScriptableDocumentParser()) {
-      parser->NotifyNoRemainingAsyncScripts();
-    }
-  }
 }
 
 void ScriptRunner::ExecuteForceInOrderPendingScript(

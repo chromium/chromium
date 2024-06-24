@@ -447,18 +447,6 @@ bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
       return false;
   }
 
-  // Block the DOMContentLoaded event if there are pending async scripts, just
-  // like pending defer scripts do so by returning false here. The
-  // DOMContentLoaded event will be unblocked when this method is called from
-  // |NotifyNoRemainingAsyncScripts()| after all pending async scripts are
-  // evaluated.
-  if (base::FeatureList::IsEnabled(
-          features::kDOMContentLoadedWaitForAsyncScript) &&
-      document_ && document_->GetScriptRunner() &&
-      document_->GetScriptRunner()->HasAsyncScripts()) {
-    return false;
-  }
-
   return true;
 }
 

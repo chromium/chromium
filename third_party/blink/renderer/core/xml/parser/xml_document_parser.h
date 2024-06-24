@@ -143,9 +143,6 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
   // XMLParserScriptRunnerHost
   void NotifyScriptExecuted() override;
-  // |kDOMContentLoadedWaitForAsyncScript| experiment is not effective for XML
-  // documents and thus we don't have to do anything here.
-  void NotifyNoRemainingAsyncScripts() final {}
 
   void end();
 

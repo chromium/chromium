@@ -1607,13 +1607,6 @@
     "expires": "Jul 1, 2025"
   },
   {
-    "prefix": "async-script-scheduling-finished-parsing-with-dom-content-loaded-wait-for-async-script",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["wpt_internal/async-script-scheduling"],
-    "args": ["--enable-features=DelayAsyncScriptExecution:delay_async_exec_delay_type/finished_parsing,DOMContentLoadedWaitForAsyncScript"],
-    "expires": "Jul 1, 2025"
-  },
-  {
     "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/async-script-scheduling"],

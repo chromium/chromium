@@ -1266,17 +1266,6 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
     ResumeParsingAfterPause();
 }
 
-// This method is called from |ScriptRunner::ExecuteAsyncPendingScript| after
-// all async scripts are evaluated, which means that
-// |ExecuteScriptsWaitingForParsing()| might return true, so call
-// |AttemptToRunDeferredScriptsAndEnd()| to possibly proceed to |end()|.
-void HTMLDocumentParser::NotifyNoRemainingAsyncScripts() {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kDOMContentLoadedWaitForAsyncScript));
-  if (IsStopping())
-    AttemptToRunDeferredScriptsAndEnd();
-}
-
 // static
 void HTMLDocumentParser::ResetCachedFeaturesForTesting() {
   ThreadedPreloadScannerEnabled(FeatureResetMode::kResetForTesting);

@@ -85,12 +85,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     task_runner_ = task_runner;
   }
 
-  // Returns true until all async scripts are evaluated.
-  // pending_async_scripts_ can be empty a little earlier than that.
-  bool HasAsyncScripts() const {
-    return number_of_async_scripts_not_evaluated_yet_ > 0;
-  }
-
   // Returns true until all force in-order scripts are evaluated.
   // pending_force_in_order_scripts_ can be empty a little earlier than that.
   bool HasForceInOrderScripts() const {
@@ -125,11 +119,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   HeapHashMap<Member<PendingScript>, DelayReasons> pending_async_scripts_;
 
   Member<Document> document_;
-
-  // The number of async scripts that aren't yet evaluated. This is different
-  // from pending_async_scripts_.size() == the number of async scripts that
-  // aren't yet scheduled to evaluate.
-  wtf_size_t number_of_async_scripts_not_evaluated_yet_ = 0;
 
   HeapDeque<Member<PendingScript>> pending_force_in_order_scripts_;
   // The number of force in-order scripts that aren't yet evaluated. This is
