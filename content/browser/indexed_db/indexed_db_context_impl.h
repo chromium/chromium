@@ -98,7 +98,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
                               StartMetadataRecordingCallback callback) override;
   void StopMetadataRecording(storage::BucketId bucket_id,
                              StopMetadataRecordingCallback callback) override;
-
+  void GetDevToolsTokenForClient(
+      storage::BucketId bucket_id,
+      const base::UnguessableToken& client_token,
+      GetDevToolsTokenForClientCallback callback) override;
   void DownloadBucketData(storage::BucketId bucket_id,
                           DownloadBucketDataCallback callback) override;
   void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;

@@ -19,7 +19,8 @@ class DedicatedWorkerHost;
 class DedicatedWorkerDevToolsAgentHost final
     : public WorkerOrWorkletDevToolsAgentHost {
  public:
-  static DedicatedWorkerDevToolsAgentHost* GetFor(DedicatedWorkerHost* host);
+  static DedicatedWorkerDevToolsAgentHost* GetFor(
+      const DedicatedWorkerHost* host);
 
   DedicatedWorkerDevToolsAgentHost(
       int process_id,

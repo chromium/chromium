@@ -69,7 +69,8 @@ void StorageAccessHandle::BindIndexedDB(
   render_frame_host().GetProcess()->BindIndexedDB(
       blink::StorageKey::CreateFirstParty(
           render_frame_host().GetStorageKey().origin()),
-      render_frame_host().GetGlobalId(), std::move(receiver));
+      static_cast<RenderFrameHostImpl&>(render_frame_host()),
+      std::move(receiver));
 }
 
 void StorageAccessHandle::BindLocks(

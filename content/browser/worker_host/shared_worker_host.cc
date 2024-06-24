@@ -849,7 +849,7 @@ bool SharedWorkerHost::HasClients() const {
   return !clients_.empty();
 }
 
-const base::UnguessableToken& SharedWorkerHost::GetDevToolsToken() const {
+base::UnguessableToken SharedWorkerHost::GetDevToolsToken() const {
   return devtools_handle_->dev_tools_token();
 }
 

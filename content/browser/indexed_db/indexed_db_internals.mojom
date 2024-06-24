@@ -21,15 +21,13 @@ interface IdbInternalsHandler {
   // partition contains an array of 'IdbOriginMetadata's which contain a
   // representation of an IDB database.
   GetAllBucketsAcrossAllStorageKeys()
-    => (string? error, array<IdbPartitionMetadata> partitions);
+      => (string? error, array<IdbPartitionMetadata> partitions);
 
   // Downloads the IDB in a zip file and closes it for the given bucket.
-  DownloadBucketData(BucketId bucketId)
-    => (string? error);
+  DownloadBucketData(BucketId bucketId) => (string? error);
 
   // Closes the IDB for the given bucket.
-  ForceClose(BucketId bucketId)
-    => (string? error);
+  ForceClose(BucketId bucketId) => (string? error);
 
   // Starts a metadata recording session for a given bucket ID.
   // Records metadata over time for all databases on the specified bucket.
@@ -37,6 +35,10 @@ interface IdbInternalsHandler {
 
   // Stops metadata recording session. Returns an list of metadata structs for
   // each snapshot taken during the recording session.
-  StopMetadataRecording(BucketId bucket_id) => (
-    string? error, array<IdbBucketMetadata> metadata);
+  StopMetadataRecording(BucketId bucket_id)
+      => (string? error, array<IdbBucketMetadata> metadata);
+
+  // Opens the DevTools inspect window for the client associated with the
+  // specified token in the specified bucket.
+  InspectClient(BucketId bucket_id, string client_token) => (string? error);
 };

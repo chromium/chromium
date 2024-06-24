@@ -2883,6 +2883,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::vector<std::string>& directory_path_components,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
   GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
+  base::UnguessableToken GetDevToolsToken() const override;
 
   // Returns false if this document not the initial empty document, or if the
   // current document's input stream has been opened with document.open(),

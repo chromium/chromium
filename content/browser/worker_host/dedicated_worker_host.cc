@@ -1093,6 +1093,11 @@ GlobalRenderFrameHostId DedicatedWorkerHost::GetAssociatedRenderFrameHostId()
   return GetAncestorRenderFrameHostId();
 }
 
+base::UnguessableToken DedicatedWorkerHost::GetDevToolsToken() const {
+  return DedicatedWorkerDevToolsAgentHost::GetFor(this)
+      ->devtools_worker_token();
+}
+
 blink::scheduler::WebSchedulerTrackedFeatures
 DedicatedWorkerHost::GetBackForwardCacheDisablingFeatures() const {
   blink::scheduler::WebSchedulerTrackedFeatures features;

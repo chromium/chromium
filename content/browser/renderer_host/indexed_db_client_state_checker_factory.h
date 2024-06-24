@@ -16,20 +16,24 @@
 
 namespace content {
 
+class BucketContext;
+
 class CONTENT_EXPORT IndexedDBClientStateCheckerFactory {
  public:
   IndexedDBClientStateCheckerFactory() = delete;
   ~IndexedDBClientStateCheckerFactory() = delete;
 
-  // Factory method that creates and returns a client state checker, and
-  // a token that serves as a unique identifier, for the given render frame
-  // (which is null for worker contexts). This method is called on the browser
-  // UI thread and the objects it returns are suitable for use from other
-  // (privileged) threads or processes.
+  // Factory method that creates and returns a client state checker and a token
+  // that serves as a unique identifier for the `RenderFrameHost` associated
+  // with `bucket_context`. This method is called on the browser UI thread and
+  // the objects it returns are suitable for use from other (privileged) threads
+  // or processes.
+  // TODO (crbug.com/349019967): Return a strongly-typed token from Blink's
+  // tokens.h here instead of a custom, generated token.
   static std::tuple<
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
       base::UnguessableToken>
-  InitializePendingRemote(const GlobalRenderFrameHostId& rfh_id);
+  InitializePendingRemote(BucketContext& bucket_context);
 
   // Factory method that returns the pointer to the implementation of
   // `storage::mojom::IndexedDBClientStateChecker`. `rfh_id` should be a valid

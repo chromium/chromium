@@ -209,7 +209,7 @@ class MockRenderProcessHost : public RenderProcessHost {
           callback) override;
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
-      const GlobalRenderFrameHostId& rfh_id,
+      BucketContext& bucket_context,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void BindBucketManagerHost(
       base::WeakPtr<BucketContext> bucket_context,

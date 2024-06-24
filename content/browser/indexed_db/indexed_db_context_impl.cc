@@ -402,6 +402,20 @@ void IndexedDBContextImpl::StopMetadataRecording(
   }
 }
 
+void IndexedDBContextImpl::GetDevToolsTokenForClient(
+    storage::BucketId bucket_id,
+    const base::UnguessableToken& client_token,
+    GetDevToolsTokenForClientCallback callback) {
+  auto iter = bucket_contexts_.find(bucket_id);
+  if (iter != bucket_contexts_.end()) {
+    iter->second.AsyncCall(&IndexedDBBucketContext::GetDevToolsTokenForClient)
+        .WithArgs(client_token,
+                  base::BindPostTask(idb_task_runner_, std::move(callback)));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
+}
+
 void IndexedDBContextImpl::DownloadBucketData(
     storage::BucketId bucket_id,
     DownloadBucketDataCallback callback) {

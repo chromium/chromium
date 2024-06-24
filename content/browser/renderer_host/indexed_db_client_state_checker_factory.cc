@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-shared.h"
+#include "content/browser/buckets/bucket_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_user_data.h"
@@ -42,11 +43,13 @@ DisallowActivationReasonId ConvertToDisallowActivationReasonId(
 // The class will only provide the default result and the client will be
 // considered active. It should be used when the client doesn't have an
 // associated RenderFrameHost, as is the case for shared worker or service
-// worker.
+// worker. Also stores the DevTools token corresponding to the worker.
 class NoDocumentIndexedDBClientStateChecker
     : public storage::mojom::IndexedDBClientStateChecker {
  public:
-  NoDocumentIndexedDBClientStateChecker() = default;
+  explicit NoDocumentIndexedDBClientStateChecker(
+      base::UnguessableToken dev_tools_token)
+      : dev_tools_token_(dev_tools_token) {}
   ~NoDocumentIndexedDBClientStateChecker() override = default;
   NoDocumentIndexedDBClientStateChecker(
       const NoDocumentIndexedDBClientStateChecker&) = delete;
@@ -63,6 +66,9 @@ class NoDocumentIndexedDBClientStateChecker
       DisallowInactiveClientCallback callback) override {
     std::move(callback).Run(/*was_active=*/true);
   }
+  void GetDevToolsToken(GetDevToolsTokenCallback callback) override {
+    std::move(callback).Run(dev_tools_token_);
+  }
   void MakeClone(
       mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
           receiver) override {
@@ -70,6 +76,7 @@ class NoDocumentIndexedDBClientStateChecker
   }
 
  private:
+  base::UnguessableToken dev_tools_token_;
   mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
 };
 
@@ -142,6 +149,12 @@ class DocumentIndexedDBClientStateChecker final
     std::move(callback).Run(was_active);
   }
 
+  void GetDevToolsToken(GetDevToolsTokenCallback callback) override {
+    std::move(callback).Run(
+        static_cast<RenderFrameHostImpl&>(render_frame_host())
+            .GetDevToolsToken());
+  }
+
   void MakeClone(
       mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
           receiver) override {
@@ -193,10 +206,11 @@ DOCUMENT_USER_DATA_KEY_IMPL(DocumentIndexedDBClientStateChecker);
 std::tuple<mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>,
            base::UnguessableToken>
 IndexedDBClientStateCheckerFactory::InitializePendingRemote(
-    const GlobalRenderFrameHostId& rfh_id) {
+    BucketContext& bucket_context) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker_remote;
-  if (RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id)) {
+  if (RenderFrameHost* rfh = RenderFrameHost::FromID(
+          bucket_context.GetAssociatedRenderFrameHostId())) {
     auto* checker =
         DocumentIndexedDBClientStateChecker::GetOrCreateForCurrentDocument(rfh);
     checker->Bind(client_state_checker_remote.InitWithNewPipeAndPassReceiver());
@@ -208,7 +222,8 @@ IndexedDBClientStateCheckerFactory::InitializePendingRemote(
   // checker instance for it.
   // See comments from `NoDocumentIndexedDBClientStateChecker`.
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<NoDocumentIndexedDBClientStateChecker>(),
+      std::make_unique<NoDocumentIndexedDBClientStateChecker>(
+          bucket_context.GetDevToolsToken()),
       client_state_checker_remote.InitWithNewPipeAndPassReceiver());
   return {std::move(client_state_checker_remote),
           base::UnguessableToken::Create()};

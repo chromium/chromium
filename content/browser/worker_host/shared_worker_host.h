@@ -188,8 +188,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
 
-  const base::UnguessableToken& GetDevToolsToken() const;
-
   // Signals the remote worker to terminate and returns the mojo::Remote
   // instance so the caller can be notified when the connection is lost. Should
   // be called right before deleting this instance.
@@ -228,6 +226,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       const std::vector<std::string>& directory_path_components,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
   GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
+  base::UnguessableToken GetDevToolsToken() const override;
 
  private:
   friend class SharedWorkerHostTest;

@@ -170,11 +170,9 @@ void BucketHost::GetIdbFactory(
     return;
   }
 
-  GlobalRenderFrameHostId rfh_id =
-      bucket_context->GetAssociatedRenderFrameHostId();
-
   auto [state_checker, token] =
-      IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id);
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(
+          *bucket_context);
   bucket_manager_host_->GetStoragePartition()->BindIndexedDB(
       bucket_info_.ToBucketLocator(), std::move(state_checker), token,
       std::move(receiver));

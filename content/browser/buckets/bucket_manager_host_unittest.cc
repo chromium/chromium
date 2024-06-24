@@ -107,6 +107,9 @@ class BucketManagerHostTest : public testing::Test {
     GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override {
       return GlobalRenderFrameHostId();
     }
+    base::UnguessableToken GetDevToolsToken() const override {
+      return base::UnguessableToken::Null();
+    }
 
     void GetSandboxedFileSystemForBucket(
         const storage::BucketInfo& bucket,

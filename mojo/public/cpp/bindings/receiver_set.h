@@ -373,6 +373,19 @@ class ReceiverSetBase {
     return static_cast<Context*>(it->second->receiver().GetContext());
   }
 
+  // Returns a map from the ID to the associated context for each receiver in
+  // the set.
+  std::map<ReceiverId, Context*> GetAllContexts() const {
+    static_assert(ContextTraits::SupportsContext(),
+                  "GetAllContexts() requires non-void context type.");
+    std::map<ReceiverId, Context*> contexts;
+    for (const auto& [receiver_id, entry] : state_.entries()) {
+      contexts[receiver_id] =
+          static_cast<Context*>(entry->receiver().GetContext());
+    }
+    return contexts;
+  }
+
   bool empty() const { return state_.entries().empty(); }
 
   size_t size() const { return state_.entries().size(); }

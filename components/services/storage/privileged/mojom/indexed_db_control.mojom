@@ -4,11 +4,11 @@
 
 module storage.mojom;
 
-import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
-import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
+import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -24,6 +24,7 @@ enum ForceCloseReason {
   FORCE_CLOSE_BACKING_STORE_FAILURE = 1,
   FORCE_CLOSE_INTERNALS_PAGE = 2,
   FORCE_CLOSE_COPY_ORIGIN = 3,
+
   // Deprecated: FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
   // Append new values here and update IDBContextForcedCloseReason in
   // enums.xml.
@@ -54,11 +55,11 @@ interface IndexedDBControl {
   // Binds an IDBFactory for the given bucket. If the bucket locator refers to
   // the default bucket, its ID may be invalid.
   BindIndexedDB(
-    storage.mojom.BucketLocator bucket_locator,
-    pending_remote<storage.mojom.IndexedDBClientStateChecker>
-        client_state_checker_remote,
-    mojo_base.mojom.UnguessableToken client_token,
-    pending_receiver<blink.mojom.IDBFactory> receiver);
+      storage.mojom.BucketLocator bucket_locator,
+      pending_remote<storage.mojom.IndexedDBClientStateChecker>
+          client_state_checker_remote,
+      mojo_base.mojom.UnguessableToken client_token,
+      pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Forcibly closes all connections to all databases within the bucket.
   ForceClose(storage.mojom.BucketId bucket_id, ForceCloseReason reason) => ();
@@ -67,14 +68,15 @@ interface IndexedDBControl {
   // data for a particular bucket.  This creates a zip file at
   // `zip_path` using the temporary directory `temp_path` which needs to be
   // cleaned up after the user downloads the file.
-  DownloadBucketData(storage.mojom.BucketId bucket_id) => (
-      bool success,
-      mojo_base.mojom.FilePath temp_path,
-      mojo_base.mojom.FilePath zip_path);
+  DownloadBucketData(storage.mojom.BucketId bucket_id)
+      => (bool success,
+          mojo_base.mojom.FilePath temp_path,
+          mojo_base.mojom.FilePath zip_path);
 
   // Called by chrome://indexeddb-internals to populate its page details. Gets
   // all buckets across all origins.
-  GetAllBucketsDetails() => (bool incognito, array<IdbOriginMetadata> details);
+  GetAllBucketsDetails()
+      => (bool incognito, array<IdbOriginMetadata> details);
 
   // Starts a metadata recording session for a given bucket ID.
   // Records metadata over time for all databases on the specified bucket until
@@ -83,8 +85,20 @@ interface IndexedDBControl {
 
   // Stops metadata recording session. Returns a list of metadata structs for
   // each snapshot taken during the recording session.
-  StopMetadataRecording(storage.mojom.BucketId bucket_id) => (
-    array<IdbBucketMetadata> metadata);
+  StopMetadataRecording(storage.mojom.BucketId bucket_id)
+      => (array<IdbBucketMetadata> metadata);
+
+  // Retrieves the DevTools token for a client represented by `client_token`
+  // that has bound an `IDBFactory` on `bucket_id` through an earlier call to
+  // `BindIndexedDB()`. The token is retrieved from the
+  // `IndexedDBClientStateChecker` that was passed in said call. The token will
+  // not be present if the client is no longer alive or has disconnected from
+  // the bucket. Refer to the code comments on
+  // `IndexedDBClientStateChecker::GetDevToolsToken()` for potential uses of
+  // this token.
+  GetDevToolsTokenForClient(storage.mojom.BucketId bucket_id,
+                            mojo_base.mojom.UnguessableToken client_token)
+      => (mojo_base.mojom.UnguessableToken? dev_tools_token);
 
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.

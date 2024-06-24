@@ -16,7 +16,7 @@ namespace content {
 
 // static
 DedicatedWorkerDevToolsAgentHost* DedicatedWorkerDevToolsAgentHost::GetFor(
-    DedicatedWorkerHost* host) {
+    const DedicatedWorkerHost* host) {
   return WorkerDevToolsManager::GetInstance().GetDevToolsHost(host);
 }
 

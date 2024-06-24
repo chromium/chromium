@@ -26,15 +26,16 @@ class WorkerDevToolsManager {
   // Returns the WorkerDevToolsManager singleton.
   static WorkerDevToolsManager& GetInstance();
 
-  DedicatedWorkerDevToolsAgentHost* GetDevToolsHost(DedicatedWorkerHost* host);
+  DedicatedWorkerDevToolsAgentHost* GetDevToolsHost(
+      const DedicatedWorkerHost* host);
   DedicatedWorkerDevToolsAgentHost* GetDevToolsHostFromToken(
       const base::UnguessableToken& token);
   void WorkerCreated(
-      DedicatedWorkerHost* host,
+      const DedicatedWorkerHost* host,
       int process_id,
       const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
       scoped_refptr<DevToolsThrottleHandle> throttle_handle);
-  void WorkerDestroyed(DedicatedWorkerHost* host);
+  void WorkerDestroyed(const DedicatedWorkerHost* host);
 
  private:
   friend struct base::DefaultSingletonTraits<WorkerDevToolsManager>;
@@ -43,7 +44,7 @@ class WorkerDevToolsManager {
   ~WorkerDevToolsManager();
 
   // Retains agent hosts as long as the dedicated worker is alive.
-  std::map<DedicatedWorkerHost*,
+  std::map<const DedicatedWorkerHost*,
            scoped_refptr<DedicatedWorkerDevToolsAgentHost>>
       hosts_;
 };

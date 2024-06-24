@@ -206,6 +206,11 @@ class CONTENT_EXPORT IndexedDBBucketContext
   void StartMetadataRecording();
   std::vector<storage::mojom::IdbBucketMetadataPtr> StopMetadataRecording();
 
+  using OptionalTokenCallback =
+      base::OnceCallback<void(const std::optional<base::UnguessableToken>&)>;
+  void GetDevToolsTokenForClient(base::UnguessableToken client_token,
+                                 OptionalTokenCallback callback);
+
   int64_t GetInMemorySize();
 
   bool IsClosing() const {

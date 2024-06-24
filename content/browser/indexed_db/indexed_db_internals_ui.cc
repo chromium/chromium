@@ -22,6 +22,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/thread_pool.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
+#include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom.h"
 #include "content/grit/indexed_db_resources.h"
@@ -158,7 +159,7 @@ void IndexedDBInternalsUI::DownloadBucketData(
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found");
+    std::move(callback).Run("IndexedDB control not found");
     return;
   }
 
@@ -187,7 +188,7 @@ void IndexedDBInternalsUI::ForceClose(storage::BucketId bucket_id,
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found");
+    std::move(callback).Run("IndexedDB control not found");
     return;
   }
 
@@ -207,7 +208,7 @@ void IndexedDBInternalsUI::StartMetadataRecording(
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found");
+    std::move(callback).Run("IndexedDB control not found");
     return;
   }
 
@@ -221,12 +222,60 @@ void IndexedDBInternalsUI::StopMetadataRecording(
 
   storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
   if (!control) {
-    std::move(callback).Run("IndexedDb control not found", {});
+    std::move(callback).Run("IndexedDB control not found", {});
     return;
   }
 
   control->StopMetadataRecording(
       bucket_id, base::BindOnce(std::move(callback), std::nullopt));
+}
+
+void IndexedDBInternalsUI::InspectClient(storage::BucketId bucket_id,
+                                         const std::string& client_token,
+                                         InspectClientCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  storage::mojom::IndexedDBControl* control = GetBucketControl(bucket_id);
+  if (!control) {
+    std::move(callback).Run("IndexedDB control not found");
+    return;
+  }
+
+  std::optional<base::UnguessableToken> deserialized_token =
+      base::UnguessableToken::DeserializeFromString(client_token);
+  if (!deserialized_token) {
+    std::move(callback).Run("Invalid client token");
+    return;
+  }
+
+  control->GetDevToolsTokenForClient(
+      bucket_id, deserialized_token.value(),
+      base::BindOnce(
+          [](InspectClientCallback callback,
+             const std::optional<base::UnguessableToken>& dev_tools_token) {
+            DCHECK_CURRENTLY_ON(BrowserThread::UI);
+            DevToolsAgentHostImpl* dev_tools_agent =
+                dev_tools_token ? DevToolsAgentHostImpl::GetForId(
+                                      dev_tools_token->ToString())
+                                      .get()
+                                : nullptr;
+            if (dev_tools_agent && dev_tools_agent->Inspect()) {
+              std::move(callback).Run(std::nullopt);
+              return;
+            }
+            std::move(callback).Run("Client not found");
+          },
+          std::move(callback)));
+  if (!devtools_agent_hosts_created_) {
+    // If a DevTools window has never been opened in this browser session, the
+    // DevTools Agent Hosts for Render Frames and Web Contents will not have
+    // been created. Trigger their creation now so that the inspect action
+    // succeeds when we finish fetching the devtools token. The callback above
+    // will be queued on the current `SequencedTaskRunner` so is guaranteed to
+    // run only after this completes.
+    DevToolsAgentHostImpl::GetOrCreateAll();
+    devtools_agent_hosts_created_ = true;
+  }
 }
 
 void IndexedDBInternalsUI::OnDownloadDataReady(

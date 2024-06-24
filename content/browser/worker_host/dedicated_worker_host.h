@@ -249,6 +249,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
   GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
+  base::UnguessableToken GetDevToolsToken() const override;
 
   // Returns the features set that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures

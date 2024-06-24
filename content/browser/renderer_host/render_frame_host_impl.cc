@@ -12843,8 +12843,7 @@ void RenderFrameHostImpl::CreateLockManager(
 
 void RenderFrameHostImpl::CreateIDBFactory(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  GetProcess()->BindIndexedDB(GetStorageKey(), GetGlobalId(),
-                              std::move(receiver));
+  GetProcess()->BindIndexedDB(GetStorageKey(), *this, std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateBucketManagerHost(
@@ -16728,6 +16727,10 @@ void RenderFrameHostImpl::GetSandboxedFileSystemForBucket(
 GlobalRenderFrameHostId RenderFrameHostImpl::GetAssociatedRenderFrameHostId()
     const {
   return GetGlobalId();
+}
+
+base::UnguessableToken RenderFrameHostImpl::GetDevToolsToken() const {
+  return devtools_frame_token();
 }
 
 std::ostream& operator<<(std::ostream& o,

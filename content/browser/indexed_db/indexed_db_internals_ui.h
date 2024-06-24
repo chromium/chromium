@@ -62,6 +62,9 @@ class IndexedDBInternalsUI : public WebUIController,
                               StartMetadataRecordingCallback callback) override;
   void StopMetadataRecording(storage::BucketId bucket_id,
                              StopMetadataRecordingCallback callback) override;
+  void InspectClient(storage::BucketId bucket_id,
+                     const std::string& client_token,
+                     InspectClientCallback callback) override;
 
  private:
   void OnDownloadDataReady(DownloadBucketDataCallback callback,
@@ -77,6 +80,7 @@ class IndexedDBInternalsUI : public WebUIController,
       storage::BucketId bucket_id);
 
   std::map<storage::BucketId, base::FilePath> bucket_to_partition_path_map_;
+  bool devtools_agent_hosts_created_ = false;
 
   std::unique_ptr<mojo::Receiver<storage::mojom::IdbInternalsHandler>>
       receiver_;

@@ -12,6 +12,8 @@
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -275,6 +277,14 @@ GlobalRenderFrameHostId ServiceWorkerHost::GetAssociatedRenderFrameHostId()
     const {
   // For `ServiceWorkerHost` there is no associated `RenderFrameHost`.
   return GlobalRenderFrameHostId();
+}
+
+base::UnguessableToken ServiceWorkerHost::GetDevToolsToken() const {
+  return ServiceWorkerDevToolsManager::GetInstance()
+      ->GetDevToolsAgentHostForWorker(
+          version_->GetInfo().process_id,
+          version_->GetInfo().devtools_agent_route_id)
+      ->devtools_worker_token();
 }
 
 RenderProcessHost* ServiceWorkerHost::GetProcessHost() const {

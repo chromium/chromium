@@ -603,7 +603,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
           callback) = 0;
   virtual void BindIndexedDB(
       const blink::StorageKey& storage_key,
-      const GlobalRenderFrameHostId& rfh_id,
+      BucketContext& bucket_context,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) = 0;
   virtual void BindBucketManagerHost(
       base::WeakPtr<BucketContext> bucket_context,

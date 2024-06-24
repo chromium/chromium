@@ -138,6 +138,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
   GlobalRenderFrameHostId GetAssociatedRenderFrameHostId() const override;
+  base::UnguessableToken GetDevToolsToken() const override;
 
   void BindAIManager(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 

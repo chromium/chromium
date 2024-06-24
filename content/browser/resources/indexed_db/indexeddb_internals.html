@@ -38,7 +38,7 @@
               <span>Storage key:</span>
               <span jscontent="serializedStorageKey"></span>
             </div>
-            <indexeddb-bucket class="metadata-list-item" jsselect="buckets" jsvalues=".idbBucketId:bucketLocator.id;">
+            <indexeddb-bucket class="metadata-list-item" jsselect="buckets" jsvars="idbBucketId:bucketLocator.id;" jsvalues=".idbBucketId:idbBucketId">
               <div>
                 <span>Bucket:</span>
                 <span jscontent="`'${name}'`"></span>
@@ -84,7 +84,7 @@
                 </div>
               </div>
               <div class="database-view">
-                <indexeddb-database class="metadata-list-item" jsselect="$this.databases" jsvalues=".data:$this;">
+                <indexeddb-database class="metadata-list-item" jsselect="$this.databases" jsvalues=".idbBucketId:idbBucketId;.data:$this;">
                 </indexeddb-database>
               </div>
           </div>

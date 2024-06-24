@@ -634,6 +634,23 @@ IndexedDBBucketContext::StopMetadataRecording() {
   return std::move(metadata_recording_buffer_);
 }
 
+void IndexedDBBucketContext::GetDevToolsTokenForClient(
+    base::UnguessableToken client_token,
+    OptionalTokenCallback callback) {
+  for (const auto& [receiver_id, context] : receivers_.GetAllContexts()) {
+    if (context->client_token == client_token) {
+      context->client_state_checker_remote->GetDevToolsToken(base::BindOnce(
+          [](OptionalTokenCallback callback,
+             const base::UnguessableToken& token) {
+            std::move(callback).Run(token);
+          },
+          std::move(callback)));
+      return;
+    }
+  }
+  std::move(callback).Run(std::nullopt);
+}
+
 int64_t IndexedDBBucketContext::GetInMemorySize() {
   return backing_store_ ? backing_store_->GetInMemorySize() : 0;
 }

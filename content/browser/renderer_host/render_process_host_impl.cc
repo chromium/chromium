@@ -1773,7 +1773,7 @@ void RenderProcessHostImpl::BindCacheStorage(
 
 void RenderProcessHostImpl::BindIndexedDB(
     const blink::StorageKey& storage_key,
-    const GlobalRenderFrameHostId& rfh_id,
+    BucketContext& bucket_context,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (storage_key.origin().opaque()) {
@@ -1785,7 +1785,8 @@ void RenderProcessHostImpl::BindIndexedDB(
   }
 
   auto [state_checker, token] =
-      IndexedDBClientStateCheckerFactory::InitializePendingRemote(rfh_id);
+      IndexedDBClientStateCheckerFactory::InitializePendingRemote(
+          bucket_context);
   storage_partition_impl_->BindIndexedDB(
       storage::BucketLocator::ForDefaultBucket(storage_key),
       std::move(state_checker), token, std::move(receiver));

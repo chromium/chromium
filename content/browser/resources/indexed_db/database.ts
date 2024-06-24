@@ -7,11 +7,15 @@ import './transaction_table.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
+import type {BucketId} from './bucket_id.mojom-webui.js';
 import {getTemplate} from './database.html.js';
+import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
 import type {IdbDatabaseMetadata, IdbTransactionMetadata} from './indexed_db_internals_types.mojom-webui.js';
 import type {IndexedDbTransactionTable} from './transaction_table.js';
 
 export class IndexedDbDatabase extends CustomElement {
+  idbBucketId: BucketId;
+
   static override get template() {
     return getTemplate();
   }
@@ -50,7 +54,7 @@ export class IndexedDbDatabase extends CustomElement {
                                                IdbTransactionMetadata[]) {
     const groupedTransactions = new Map<string, IdbTransactionMetadata[]>();
     for (const transaction of transactions) {
-      const client = transaction.clientToken.toString();
+      const client = transaction.clientToken;
       if (!groupedTransactions.has(client)) {
         groupedTransactions.set(client, []);
       }
@@ -59,12 +63,9 @@ export class IndexedDbDatabase extends CustomElement {
 
     const transactionsBlockElement = this.$a('#transactions');
     transactionsBlockElement.textContent = '';
-    let clientId = 0;
-    for (const [_, clientTransactions] of groupedTransactions) {
-      // Instead of displaying the clientToken which is not meaningful to the
-      // web developer, we display an incrementing number as the client ID.
+    for (const [clientToken, clientTransactions] of groupedTransactions) {
       const container = this.createClientTransactionsContainer(
-          (++clientId).toString(), clientTransactions);
+          clientToken, clientTransactions);
       container.classList.add('metadata-list-item');
       transactionsBlockElement.appendChild(container);
     }
@@ -73,13 +74,24 @@ export class IndexedDbDatabase extends CustomElement {
   // Creates a div containing an instantiation of the client metadata template
   // and a table of transactions.
   private createClientTransactionsContainer(
-      clientId: string, transactions: IdbTransactionMetadata[]): HTMLElement {
+      clientToken: string,
+      transactions: IdbTransactionMetadata[]): HTMLElement {
     const clientMetadataTemplate =
         this.$a<HTMLTemplateElement>('#client-metadata');
     const clientMetadata =
-        (clientMetadataTemplate.content.cloneNode(true) as DocumentFragment)
-            .firstElementChild!;
-    clientMetadata.querySelector('.client-id')!.textContent = clientId;
+        clientMetadataTemplate.content.cloneNode(true) as DocumentFragment;
+    clientMetadata.querySelector('.client-id')!.textContent = clientToken;
+    clientMetadata.querySelector('.control.inspect')!.addEventListener(
+        'click', () => {
+          IdbInternalsHandler.getRemote()
+              .inspectClient(this.idbBucketId, clientToken)
+              .then(message => {
+                if (message.error) {
+                  console.error(message.error);
+                }
+              })
+              .catch(errorMsg => console.error(errorMsg));
+        });
     const transactionTable =
         document.createElement('indexeddb-transaction-table') as
         IndexedDbTransactionTable;

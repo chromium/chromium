@@ -207,6 +207,7 @@ class BucketElement extends HTMLElement {
       const dbView = document.createElement('indexeddb-database');
       const dbElement = this.getNode('.database-view').appendChild(dbView) as
           IndexedDbDatabase;
+      dbElement.idbBucketId = this.idbBucketId;
       dbElement.data = db;
     }
   }

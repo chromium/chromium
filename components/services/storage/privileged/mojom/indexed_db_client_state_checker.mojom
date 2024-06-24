@@ -4,6 +4,8 @@
 
 module storage.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
 enum DisallowInactiveClientReason {
   // Used when a new connection is being opened with a higher version
   // number which triggers a version change event being sent to existing
@@ -47,8 +49,14 @@ interface IndexedDBClientStateChecker {
   // message is handled.
   DisallowInactiveClient(
       DisallowInactiveClientReason reason,
-      pending_receiver<IndexedDBClientKeepActive>? keep_active
-  ) => (bool was_active);
+      pending_receiver<IndexedDBClientKeepActive>? keep_active)
+      => (bool was_active);
+
+  // Retrieves the DevTools token for this client. The token can be used by
+  // objects living on the UI thread in the browser process to get a handle to
+  // the corresponding `DevToolsAgentHost`, which enables exposing information
+  // about and inspecting the client in DevTools and other diagnostics surfaces.
+  GetDevToolsToken() => (mojo_base.mojom.UnguessableToken token);
 
   // Binds another mojo connection to `this`.
   MakeClone(pending_receiver<IndexedDBClientStateChecker> receiver);

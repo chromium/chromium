@@ -52,6 +52,7 @@ class IndexedDBContextTest : public testing::Test {
             keep_active,
         storage::mojom::IndexedDBClientStateChecker::
             DisallowInactiveClientCallback callback) override {}
+    void GetDevToolsToken(GetDevToolsTokenCallback callback) override {}
     void MakeClone(
         mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
             checker) override {}
