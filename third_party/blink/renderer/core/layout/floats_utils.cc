@@ -80,8 +80,8 @@ ConstraintSpace CreateConstraintSpaceForFloat(
     DCHECK_EQ(style.GetWritingMode(), parent_space.GetWritingMode());
 
     SetupSpaceBuilderForFragmentation(
-        parent_space, unpositioned_float.node, *origin_block_offset, &builder,
-        /* is_new_fc */ true, /* requires_content_before_breaking */ false);
+        parent_space, unpositioned_float.node, *origin_block_offset,
+        /*requires_content_before_breaking=*/false, &builder);
 
     // For other node types, what matters is whether the block-start border edge
     // is at the fragmentainer start, but for floats, it's the block start

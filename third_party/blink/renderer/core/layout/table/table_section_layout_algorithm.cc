@@ -81,9 +81,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
 
     if (constraint_space.HasBlockFragmentation()) {
       SetupSpaceBuilderForFragmentation(
-          constraint_space, row, offset.block_offset, &row_space_builder,
-          /* is_new_fc */ true,
-          container_builder_.RequiresContentBeforeBreaking());
+          container_builder_, row, offset.block_offset, &row_space_builder);
     }
 
     ConstraintSpace row_space = row_space_builder.ToConstraintSpace();

@@ -541,10 +541,8 @@ FieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       GetConstraintSpace().GetBaselineAlgorithmType());
 
   if (GetConstraintSpace().HasBlockFragmentation()) {
-    SetupSpaceBuilderForFragmentation(
-        GetConstraintSpace(), fieldset_content, block_offset, &builder,
-        /* is_new_fc */ true,
-        container_builder_.RequiresContentBeforeBreaking());
+    SetupSpaceBuilderForFragmentation(container_builder_, fieldset_content,
+                                      block_offset, &builder);
   }
   return builder.ToConstraintSpace();
 }

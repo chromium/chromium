@@ -3156,9 +3156,15 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
       fragmentainer_offset_delta = builder.ExpectedBfcBlockOffset() -
                                    constraint_space.ExpectedBfcBlockOffset();
     }
-    SetupSpaceBuilderForFragmentation(
-        constraint_space, child, fragmentainer_offset_delta, &builder,
-        is_new_fc, container_builder_.RequiresContentBeforeBreaking());
+    SetupSpaceBuilderForFragmentation(container_builder_, child,
+                                      fragmentainer_offset_delta, &builder);
+
+    if (!is_new_fc && GetConstraintSpace().IsInColumnBfc()) {
+      // Need to keep track of whether we're in the same formatting context as a
+      // column, in order to determine whether column-span:all applies on a
+      // descendant.
+      builder.SetIsInColumnBfc();
+    }
 
     // If there's a child break inside (typically in a parallel flow, or we
     // would have finished layout by now), we need to produce more

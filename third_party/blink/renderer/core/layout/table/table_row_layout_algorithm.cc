@@ -79,10 +79,8 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
 
         if (GetConstraintSpace().HasBlockFragmentation()) {
           SetupSpaceBuilderForFragmentation(
-              GetConstraintSpace(), cell,
-              /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
-              /* is_new_fc */ true,
-              container_builder_.RequiresContentBeforeBreaking());
+              container_builder_, cell,
+              /*fragmentainer_offset_delta=*/LayoutUnit(), &builder);
 
           if (min_block_size_should_encompass_intrinsic_size)
             builder.SetMinBlockSizeShouldEncompassIntrinsicSize();

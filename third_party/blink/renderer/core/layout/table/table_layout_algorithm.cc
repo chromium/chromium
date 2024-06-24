@@ -81,9 +81,9 @@ ConstraintSpace CreateCaptionConstraintSpace(
   // enabled for previous fragments, but is disabled for this fragment, because
   // of overflow clipping.
   if (block_offset && table_constraint_space.HasBlockFragmentation()) {
-    SetupSpaceBuilderForFragmentation(table_constraint_space, caption,
-                                      *block_offset, &builder,
-                                      /* is_new_fc */ true, false);
+    SetupSpaceBuilderForFragmentation(
+        table_constraint_space, caption, *block_offset,
+        /*requires_content_before_breaking=*/false, &builder);
   }
 
   return builder.ToConstraintSpace();
@@ -1039,10 +1039,9 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       // This way the fragmentation engine will refuse to insert a break before
       // having made some content progress (even if the first piece of content
       // doesn't fit).
-      SetupSpaceBuilderForFragmentation(
-          GetConstraintSpace(), section, fragmentainer_block_offset,
-          &section_space_builder, /* is_new_fc */ true,
-          container_builder_.RequiresContentBeforeBreaking());
+      SetupSpaceBuilderForFragmentation(container_builder_, section,
+                                        fragmentainer_block_offset,
+                                        &section_space_builder);
 
       // Reserve space for any repeated header / footer.
       if (GetConstraintSpace().HasKnownFragmentainerBlockSize()) {

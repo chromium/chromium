@@ -297,9 +297,8 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder& builder,
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
-                                       ConstraintSpaceBuilder* builder,
-                                       bool is_new_fc,
-                                       bool requires_content_before_breaking) {
+                                       bool requires_content_before_breaking,
+                                       ConstraintSpaceBuilder* builder) {
   DCHECK(parent_space.HasBlockFragmentation());
 
   // If the child is truly unbreakable, it won't participate in block
@@ -343,8 +342,6 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
       parent_space.ShouldIgnoreForcedBreaks())
     builder->SetShouldIgnoreForcedBreaks();
 
-  if (parent_space.IsInColumnBfc() && !is_new_fc)
-    builder->SetIsInColumnBfc();
   builder->SetMinBreakAppeal(parent_space.MinBreakAppeal());
 
   if (parent_space.IsPaginated()) {
@@ -353,6 +350,17 @@ void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
     else
       builder->SetPageName(parent_space.PageName());
   }
+}
+
+void SetupSpaceBuilderForFragmentation(
+    const BoxFragmentBuilder& parent_fragment_builder,
+    const LayoutInputNode& child,
+    LayoutUnit fragmentainer_offset_delta,
+    ConstraintSpaceBuilder* builder) {
+  return SetupSpaceBuilderForFragmentation(
+      parent_fragment_builder.GetConstraintSpace(), child,
+      fragmentainer_offset_delta,
+      parent_fragment_builder.RequiresContentBeforeBreaking(), builder);
 }
 
 void SetupFragmentBuilderForFragmentation(

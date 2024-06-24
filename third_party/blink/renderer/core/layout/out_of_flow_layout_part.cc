@@ -2083,9 +2083,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       // initial column balancing pass.
       SetupSpaceBuilderForFragmentation(
           GetConstraintSpace(), node_info.node,
-          /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
-          /* is_new_fc */ true,
-          /* requires_content_before_breaking */ false);
+          /*fragmentainer_offset_delta=*/LayoutUnit(),
+          /*requires_content_before_breaking=*/false, &builder);
     }
     return builder.ToConstraintSpace();
   })();
@@ -2426,8 +2425,8 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       is_repeatable = true;
     } else {
       SetupSpaceBuilderForFragmentation(
-          *fragmentainer_constraint_space, node, block_offset, &builder,
-          /* is_new_fc */ true, node_info.requires_content_before_breaking);
+          *fragmentainer_constraint_space, node, block_offset,
+          node_info.requires_content_before_breaking, &builder);
 
       // Out-of-flow positioned elements whose containing block is inside
       // clipped overflow shouldn't generate any additional fragmentainers. Just
@@ -2451,9 +2450,8 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
     }
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
-        GetConstraintSpace(), node, block_offset, &builder,
-        /* is_new_fc */ true,
-        /* requires_content_before_breaking */ false);
+        GetConstraintSpace(), node, block_offset,
+        /*requires_content_before_breaking=*/false, &builder);
   }
   ConstraintSpace space = builder.ToConstraintSpace();
 

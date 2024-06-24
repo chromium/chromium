@@ -230,9 +230,13 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder&,
 void SetupSpaceBuilderForFragmentation(const ConstraintSpace& parent_space,
                                        const LayoutInputNode& child,
                                        LayoutUnit fragmentainer_offset_delta,
-                                       ConstraintSpaceBuilder*,
-                                       bool is_new_fc,
-                                       bool requires_content_before_breaking);
+                                       bool requires_content_before_breaking,
+                                       ConstraintSpaceBuilder*);
+void SetupSpaceBuilderForFragmentation(
+    const BoxFragmentBuilder& parent_fragment_builder,
+    const LayoutInputNode& child,
+    LayoutUnit fragmentainer_offset_delta,
+    ConstraintSpaceBuilder*);
 
 // Set up a node's fragment builder for block fragmentation. To be done at the
 // beginning of layout.

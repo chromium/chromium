@@ -582,11 +582,9 @@ ConstraintSpace FlexLayoutAlgorithm::BuildSpaceForLayout(
              GetConstraintSpace().HasBlockFragmentation()) {
     if (min_block_size_should_encompass_intrinsic_size)
       space_builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
-    SetupSpaceBuilderForFragmentation(
-        GetConstraintSpace(), flex_item_node, *block_offset_for_fragmentation,
-        &space_builder,
-        /* is_new_fc */ true,
-        container_builder_.RequiresContentBeforeBreaking());
+    SetupSpaceBuilderForFragmentation(container_builder_, flex_item_node,
+                                      *block_offset_for_fragmentation,
+                                      &space_builder);
   }
 
   space_builder.SetAvailableSize(available_size);
