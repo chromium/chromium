@@ -31,15 +31,12 @@ void FakeBlobDataHandle::Read(mojo::ScopedDataPipeProducerHandle producer,
   base::span<const uint8_t> bytes = base::as_byte_span(body_data_);
   bytes = bytes.subspan(src_offset);
   bytes = bytes.first(base::checked_cast<size_t>(bytes_to_read));
-  size_t actually_written_bytes = 0;
-  MojoResult result = producer->WriteData(
-      bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
+  MojoResult result = producer->WriteAllData(bytes);
 
   // This should all succeed.
   DCHECK_EQ(MOJO_RESULT_OK, result);
-  DCHECK_EQ(bytes.size(), actually_written_bytes);
 
-  std::move(callback).Run(base::checked_cast<int>(actually_written_bytes));
+  std::move(callback).Run(base::checked_cast<int>(bytes.size()));
 }
 
 uint64_t FakeBlobDataHandle::GetSideDataSize() const {

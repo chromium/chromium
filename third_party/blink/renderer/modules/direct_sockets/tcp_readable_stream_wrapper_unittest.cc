@@ -64,12 +64,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   void ResetPipe() { data_pipe_producer_.reset(); }
 
   void WriteToPipe(Vector<uint8_t> data) {
-    size_t actually_written_bytes = 0;
-    EXPECT_EQ(
-        data_pipe_producer_->WriteData(data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                       actually_written_bytes),
-        MOJO_RESULT_OK);
-    EXPECT_EQ(actually_written_bytes, data.size());
+    EXPECT_EQ(data_pipe_producer_->WriteAllData(data), MOJO_RESULT_OK);
   }
 
   // Copies the contents of a v8::Value containing a Uint8Array to a Vector.

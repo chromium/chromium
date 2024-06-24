@@ -342,12 +342,8 @@ void TestURLLoaderFactory::SimulateResponse(
     mojo::ScopedDataPipeProducerHandle producer_handle;
     CHECK_EQ(mojo::CreateDataPipe(content.size(), producer_handle, body),
              MOJO_RESULT_OK);
-    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(base::as_byte_span(content),
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                        actually_written_bytes));
-    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
+             producer_handle->WriteAllData(base::as_byte_span(content)));
   }
 
   if ((response_flags & kSendHeadersOnNetworkError) ||

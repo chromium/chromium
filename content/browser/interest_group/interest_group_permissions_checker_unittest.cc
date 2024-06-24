@@ -436,12 +436,8 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
     mojo::ScopedDataPipeConsumerHandle body;
     ASSERT_EQ(mojo::CreateDataPipe(response_body.size(), producer_handle, body),
               MOJO_RESULT_OK);
-    size_t actually_written_bytes = 0;
     ASSERT_EQ(MOJO_RESULT_OK,
-              producer_handle->WriteData(base::as_byte_span(response_body),
-                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                         actually_written_bytes));
-    // `actually_written_bytes` can be ignored because of `...ALL_OR_NONE`.
+              producer_handle->WriteAllData(base::as_byte_span(response_body)));
 
     pending_request.client->OnReceiveResponse(std::move(head), std::move(body),
                                               std::nullopt);

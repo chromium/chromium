@@ -40,6 +40,10 @@ class DataPipeProducerHandle : public Handle {
   // how many bytes (from the beginning of `data`) were actually written into
   // the mojo data pipe (depending on the size of the internal pipe buffer, this
   // may be less than `data.size()`).
+  //
+  // Note that instead of passing specific `flags`, a more direct method can be
+  // used instead:
+  // - `MOJO_WRITE_DATA_FLAG_ALL_OR_NONE` => `WriteAllData`
   MojoResult WriteData(base::span<const uint8_t> data,
                        MojoWriteDataFlags flags,
                        size_t& bytes_written) const {
@@ -62,6 +66,15 @@ class DataPipeProducerHandle : public Handle {
         MojoWriteData(value(), data.data(), &num_bytes_u32, &options);
     bytes_written = size_t{num_bytes_u32};
     return result;
+  }
+
+  MojoResult WriteAllData(base::span<const uint8_t> data) const {
+    // Ok to ignore `bytes_written` because `MOJO_WRITE_DATA_FLAG_ALL_OR_NONE`
+    // means that `MOJO_RESULT_OK` will be returned only if exactly
+    // `data.size()` bytes have been written (i.e. if `data.size() ==
+    // bytes_written`).
+    size_t bytes_written = 0;
+    return WriteData(data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, bytes_written);
   }
 
   // TODO(https://crbug.com/40284755): Remove this deprecated, non-`span`-ified
@@ -183,6 +196,10 @@ class DataPipeConsumerHandle : public Handle {
   // many bytes (at the beginning of `buffer`) were actually read (depending on
   // the size of the internal pipe buffer, this may be less than
   // `buffer.size()`).
+  //
+  // Note that instead of passing specific `flags`, a more direct method can be
+  // used instead:
+  // - `MOJO_READ_DATA_FLAG_DISCARD` => `DiscardData`
   MojoResult ReadData(MojoReadDataFlags flags,
                       base::span<uint8_t> buffer,
                       size_t& bytes_read) const {

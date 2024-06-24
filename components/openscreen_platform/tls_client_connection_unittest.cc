@@ -77,11 +77,8 @@ class FakeSocketStreams {
   // Writes data into the inbound data pipe, which should ultimately result in a
   // TlsClientConnection::Client's OnRead() method being called.
   void SimulateSocketReceive(base::span<const uint8_t> data) {
-    size_t actually_written_bytes = 0;
-    const MojoResult result = inbound_stream_->WriteData(
-        data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
+    const MojoResult result = inbound_stream_->WriteAllData(data);
     ASSERT_EQ(result, MOJO_RESULT_OK);
-    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
   }
 
   // Closes the inbound (or outbound) data pipe to allow the unit tests to check

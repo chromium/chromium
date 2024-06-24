@@ -48,13 +48,7 @@ bool WebSocketAdapter::Write(base::span<const uint8_t> data) {
   }
   socket_remote_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                               data.size());
-  size_t actually_written_bytes = 0;
-  MojoResult result = write_pipe_->WriteData(
-      data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
-
-  // This follows from the `...ALL_OR_NONE` flag.
-  DCHECK(result != MOJO_RESULT_OK || data.size() == actually_written_bytes);
-
+  MojoResult result = write_pipe_->WriteAllData(data);
   return result == MOJO_RESULT_OK;
 }
 

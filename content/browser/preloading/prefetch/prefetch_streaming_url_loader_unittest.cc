@@ -87,11 +87,8 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory {
   void SimulateReceiveData(const std::string& data,
                            bool expected_successful = true) {
     ASSERT_TRUE(producer_handle_);
-    size_t actually_written_bytes = 0;
-    MojoResult write_result = producer_handle_->WriteData(
-        base::as_byte_span(data), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-        actually_written_bytes);
-    // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE`.
+    MojoResult write_result =
+        producer_handle_->WriteAllData(base::as_byte_span(data));
 
     if (expected_successful) {
       EXPECT_EQ(write_result, MOJO_RESULT_OK);

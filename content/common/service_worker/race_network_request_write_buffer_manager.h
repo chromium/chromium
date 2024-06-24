@@ -35,7 +35,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   void CancelWatching();
   MojoResult BeginWriteData();
   MojoResult EndWriteData(uint32_t num_bytes_written);
-  std::tuple<MojoResult, size_t> WriteData(base::span<const char> read_buffer);
+  std::tuple<MojoResult, size_t> WriteData(base::span<const char> buffer);
   void ArmOrNotify();
   size_t buffer_size() const { return buffer_.size(); }
   size_t num_bytes_written() const { return num_bytes_written_; }

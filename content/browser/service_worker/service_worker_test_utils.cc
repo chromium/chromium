@@ -878,12 +878,9 @@ void ServiceWorkerUpdateCheckTestUtils::
     // Create a data pipe which has the new block sent from the network.
     ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, *out_body_handle,
                                                    network_consumer));
-    size_t written_size = 0;
-    ASSERT_EQ(MOJO_RESULT_OK,
-              (*out_body_handle)
-                  ->WriteData(base::as_byte_span(diff_data_block),
-                              MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, written_size));
-    ASSERT_EQ(diff_data_block.size(), written_size);
+    ASSERT_EQ(
+        MOJO_RESULT_OK,
+        (*out_body_handle)->WriteAllData(base::as_byte_span(diff_data_block)));
     base::RunLoop().RunUntilIdle();
 
     // Read the data to make a pending buffer.

@@ -155,12 +155,8 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
 void AppendDataToDataPipe(std::string_view data,
                           mojo::ScopedDataPipeProducerHandle& producer_handle) {
-  size_t actually_written_bytes = 0;
-  MojoResult result = producer_handle->WriteData(
-      base::as_byte_span(data), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-      actually_written_bytes);
+  MojoResult result = producer_handle->WriteAllData(base::as_byte_span(data));
   EXPECT_EQ(result, MOJO_RESULT_OK);
-  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
 
   // In case the mojo datapipe is being read on the main thread, we need to
   // spin the event loop to allow the watcher to post its "data received"
@@ -1770,9 +1766,8 @@ TEST_F(BackgroundResourceScriptStreamerTest,
     const std::string function_line = base::StrCat(
         {kFunctionScript,
          std::string(kDataPipeSize - kFunctionScript.size(), '/')});
-    size_t data_len = function_line.size();
-    MojoResult result = producer_handle_->WriteData(
-        function_line.data(), &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+    MojoResult result =
+        producer_handle_->WriteAllData(base::as_byte_span(function_line));
     EXPECT_EQ(result, MOJO_RESULT_OK);
     // Busyloop until the parser thread reads the `function_line` form the data
     // pipe.

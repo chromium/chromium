@@ -105,20 +105,19 @@ void RaceNetworkRequestWriteBufferManager::ArmOrNotify() {
 }
 
 std::tuple<MojoResult, size_t> RaceNetworkRequestWriteBufferManager::WriteData(
-    base::span<const char> read_buffer) {
-  // In order to use |MOJO_WRITE_DATA_FLAG_ALL_OR_NONE| flag to write data, the
-  // read buffer data size should be smaller than the write buffer size.
-  // Otherwise we can't finish the write operation and `WriteData()` always
-  // returns |MOJO_RESULT_OUT_OF_RANGE|.
-  read_buffer = read_buffer.first(
-      std::min(read_buffer.size(), size_t{data_pipe_buffer_size_}));
-  size_t actually_written_bytes = 0;
-  MojoResult result = producer_->WriteData(base::as_bytes(read_buffer),
-                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                           actually_written_bytes);
-  num_bytes_written_ += actually_written_bytes;
+    base::span<const char> buffer) {
+  // In order to use `WriteAllData` method to write data, the read buffer data
+  // size should be smaller than the write buffer size.  Otherwise we can't
+  // finish the write operation and `WriteData()` always returns
+  // |MOJO_RESULT_OUT_OF_RANGE|.
+  buffer =
+      buffer.first(std::min(buffer.size(), size_t{data_pipe_buffer_size_}));
+  MojoResult result = producer_->WriteAllData(base::as_bytes(buffer));
+  if (result == MOJO_RESULT_OK) {
+    num_bytes_written_ += buffer.size();
+  }
 
-  return {result, actually_written_bytes};
+  return {result, buffer.size()};
 }
 
 size_t RaceNetworkRequestWriteBufferManager::CopyAndCompleteWriteData(

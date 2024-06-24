@@ -630,10 +630,8 @@ TEST_F(TCPSocketTest, SocketClosed) {
   // Send pipe should be closed.
   while (true) {
     base::RunLoop().RunUntilIdle();
-    size_t actually_written_bytes = 0;
-    MojoResult r = client_socket_send_handle->WriteData(
-        base::as_byte_span(kTestMsg), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-        actually_written_bytes);
+    MojoResult r =
+        client_socket_send_handle->WriteAllData(base::as_byte_span(kTestMsg));
     if (r == MOJO_RESULT_SHOULD_WAIT)
       continue;
     if (r == MOJO_RESULT_FAILED_PRECONDITION)

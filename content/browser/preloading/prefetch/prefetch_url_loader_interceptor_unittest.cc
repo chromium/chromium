@@ -1156,11 +1156,8 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(base::as_byte_span(content),
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                        actually_written_bytes));
+             producer_handle->WriteAllData(base::as_byte_span(content)));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
         std::nullopt);
@@ -1532,11 +1529,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(base::as_byte_span(content),
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                        actually_written_bytes));
+             producer_handle->WriteAllData(base::as_byte_span(content)));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
         std::nullopt);
@@ -1607,11 +1601,8 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(
         mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
-    size_t actually_written_bytes = 0;
     CHECK_EQ(MOJO_RESULT_OK,
-             producer_handle->WriteData(base::as_byte_span(content),
-                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                        actually_written_bytes));
+             producer_handle->WriteAllData(base::as_byte_span(content)));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
         std::nullopt);

@@ -305,12 +305,8 @@ void TestRead(V8TestingScope& scope,
               BidirectionalStream* bidirectional_stream) {
   mojo::ScopedDataPipeProducerHandle& input_producer =
       scoped_web_transport->Stub()->InputProducer();
-  constexpr std::string_view input = "B";
-  size_t actually_written_bytes = 0;
-  MojoResult mojo_result = input_producer->WriteData(
-      base::as_byte_span(input), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-      actually_written_bytes);
-  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
+  MojoResult mojo_result =
+      input_producer->WriteAllData(base::as_byte_span(std::string_view("B")));
 
   ASSERT_EQ(mojo_result, MOJO_RESULT_OK);
 

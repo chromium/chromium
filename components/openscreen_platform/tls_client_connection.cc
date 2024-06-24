@@ -60,11 +60,7 @@ bool TlsClientConnection::Send(openscreen::ByteView data) {
     return false;
   }
 
-  base::span<const uint8_t> span(data.data(), data.size());
-  size_t actually_written_bytes = 0;
-  const MojoResult result = send_stream_->WriteData(
-      span, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
-  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
+  const MojoResult result = send_stream_->WriteAllData(data);
   mojo::HandleSignalsState state = send_stream_->QuerySignalsState();
   return ProcessMojoResult(result, state.peer_closed()
                                        ? Error::Code::kSocketClosedFailure

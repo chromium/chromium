@@ -806,11 +806,8 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     mojo::ScopedDataPipeProducerHandle producer;
     EXPECT_EQ(MOJO_RESULT_OK,
               mojo::CreateDataPipe(&options, producer, consumer));
-    size_t actually_written_bytes = 0;
     EXPECT_EQ(MOJO_RESULT_OK,
-              producer->WriteData(base::as_byte_span(body_from_net),
-                                  MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                  actually_written_bytes));
+              producer->WriteAllData(base::as_byte_span(body_from_net)));
     // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE`.
     request->client->OnReceiveResponse(std::move(head), std::move(consumer),
                                        std::nullopt);

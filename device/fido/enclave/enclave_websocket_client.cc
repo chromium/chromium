@@ -149,10 +149,7 @@ void EnclaveWebSocketClient::InternalWrite(base::span<const uint8_t> data) {
 
   websocket_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                           data.size());
-  size_t actually_written_bytes = 0;
-  MojoResult result = writable_->WriteData(
-      data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, actually_written_bytes);
-  CHECK(result != MOJO_RESULT_OK || data.size() == actually_written_bytes);
+  MojoResult result = writable_->WriteAllData(data);
   if (result != MOJO_RESULT_OK) {
     FIDO_LOG(ERROR) << "Failed to write to WebSocket.";
     ClosePipe(SocketStatus::kError);

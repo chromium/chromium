@@ -124,10 +124,8 @@ class MockNetwork {
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
     CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, producer, consumer));
-    size_t actually_written_bytes = 0;
-    MojoResult result = producer->WriteData(base::as_byte_span(response.body),
-                                            MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                            actually_written_bytes);
+    MojoResult result =
+        producer->WriteAllData(base::as_byte_span(response.body));
     CHECK_EQ(MOJO_RESULT_OK, result);
     client->OnReceiveResponse(std::move(response_head), std::move(consumer),
                               std::nullopt);

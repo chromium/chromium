@@ -184,15 +184,11 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
       mojo::CreateDataPipe(payload.size(), producer_handle, consumer_handle),
       MOJO_RESULT_OK);
 
-  size_t actually_written_bytes = 0;
   CHECK_EQ(MOJO_RESULT_OK,
-           producer_handle->WriteData(base::as_byte_span(payload),
-                                      MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                      actually_written_bytes));
+           producer_handle->WriteAllData(base::as_byte_span(payload)));
 
   network::URLLoaderCompletionStatus status(net::OK);
-  status.decoded_body_length =
-      base::checked_cast<int64_t>(actually_written_bytes);
+  status.decoded_body_length = base::checked_cast<int64_t>(payload.size());
   new_client->OnComplete(status);
 
   mojo::PendingRemote<network::mojom::URLLoader> original_loader;

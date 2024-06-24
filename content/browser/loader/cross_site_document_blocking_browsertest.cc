@@ -319,12 +319,8 @@ class RequestInterceptor {
       original_client_->OnReceiveResponse(
           std::move(response_head), std::move(consumer_handle), std::nullopt);
 
-      size_t actually_written_bytes = 0;
-      EXPECT_EQ(MOJO_RESULT_OK,
-                producer_handle->WriteData(base::as_byte_span(response_body),
-                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
-                                           actually_written_bytes));
-      // `actually_written_bytes` can be ignored because of `...ALL_OR_NONE`.
+      EXPECT_EQ(MOJO_RESULT_OK, producer_handle->WriteAllData(
+                                    base::as_byte_span(response_body)));
     }
     original_client_->OnComplete(status);
 
