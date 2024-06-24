@@ -99,6 +99,13 @@ export class CaptureCandidatePreferrer {
           LocalStorageKey.PREF_DEVICE_PHOTO_ASPECT_RATIO_SET);
 
   /**
+   * Map saving prioritized photo aspect ratio order. Keys are device IDs and
+   * values are the corresponding arrays of aspect ratio sets.
+   */
+  private prioritizedPhotoAspectRatioOrderMap:
+      Record<string, AspectRatioSet[]> = {};
+
+  /**
    * Map saving preference that each of its key as device id and value to be
    * preferred video resolution level.
    */
@@ -131,8 +138,6 @@ export class CaptureCandidatePreferrer {
 
   private readonly videoResolutionOptionListeners:
       VideoResolutionOptionListener[] = [];
-
-  private preferPhotoAspectRatioOrder: AspectRatioSet[] = [];
 
   /**
    * Adds `listener` for photo resolution options.
@@ -529,11 +534,13 @@ export class CaptureCandidatePreferrer {
             (ratio) => resolutions.some(
                 (r) => toAspectRatioSet(r) === ratio && r.height >= 720)) ??
         aspectRatioSetPreferOrder[0];
-    this.preferPhotoAspectRatioOrder = [
+    const prioritizedAspectRatioOrder = [
       prioritizedAspectRatioSet,
       ...aspectRatioSetPreferOrder.filter(
           (ratio) => ratio !== prioritizedAspectRatioSet),
     ];
+    this.prioritizedPhotoAspectRatioOrderMap[deviceId] =
+        prioritizedAspectRatioOrder;
 
     /**
      * Categorizes the photo resolutions according to their aspect ratio and
@@ -555,9 +562,9 @@ export class CaptureCandidatePreferrer {
     }
 
     const resolutionGroups =
-        groupResolutions(resolutions, this.preferPhotoAspectRatioOrder);
+        groupResolutions(resolutions, prioritizedAspectRatioOrder);
     const options = new Map<AspectRatioSet, PhotoResolutionOption[]>();
-    for (const aspectRatioSet of this.preferPhotoAspectRatioOrder) {
+    for (const aspectRatioSet of prioritizedAspectRatioOrder) {
       const resolutionGroup = resolutionGroups.get(aspectRatioSet);
       assert(resolutionGroup !== undefined);
       if (resolutionGroup.length > 0) {
@@ -716,7 +723,8 @@ export class CaptureCandidatePreferrer {
     } else {
       return prefAspectRatioSet ??
           getFallbackAspectRatioSet(
-                 aspectRatioOptionsMap, this.preferPhotoAspectRatioOrder);
+                 aspectRatioOptionsMap,
+                 this.prioritizedPhotoAspectRatioOrderMap[deviceId]);
     }
   }
 
