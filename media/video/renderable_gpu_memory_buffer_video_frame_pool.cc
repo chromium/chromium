@@ -223,7 +223,7 @@ bool FrameResources::Initialize() {
   gpu_memory_buffer_->SetColorSpace(color_space_);
 #endif
 
-  constexpr uint32_t kSharedImageUsage =
+  constexpr gpu::SharedImageUsageSet kSharedImageUsage =
 #if BUILDFLAG(IS_MAC)
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
 #endif

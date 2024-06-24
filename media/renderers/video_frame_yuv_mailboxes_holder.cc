@@ -147,8 +147,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
   // These SharedImages will be written to (and later read from) via the raster
   // interface. The full usage depends on whether raster is OOP or is going
   // over the GLES2 interface.
-  uint32_t mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  gpu::SharedImageUsageSet mailbox_usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   auto& caps = provider_->ContextCapabilities();
   if (caps.gpu_rasterization) {
     mailbox_usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
