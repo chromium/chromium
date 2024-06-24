@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller_delegate.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_view_controller_delegate.h"
 
 // This coordinator presents unit conversion sheet to the user.
 @interface UnitConversionCoordinator
@@ -27,4 +27,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_COORDINATOR_H_

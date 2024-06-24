@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_consumer.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_consumer.h"
 
 @protocol UnitConversionMutator;
 @protocol UnitConversionViewControllerDelegate;
@@ -39,4 +39,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_VIEW_CONTROLLER_H_

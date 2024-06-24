@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_constants.h"
 
 NSString* const kUnitConversionTableViewIdentifier =
     @"UnitConversionTableViewIdentifier";

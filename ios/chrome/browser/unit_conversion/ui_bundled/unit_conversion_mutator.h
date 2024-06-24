@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_MUTATOR_H_
-#define IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_MUTATOR_H_
+#ifndef IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_MUTATOR_H_
+#define IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_MUTATOR_H_
 #import "ios/public/provider/chrome/browser/unit_conversion/unit_conversion_api.h"
 
 @protocol UnitConversionMutator <NSObject>
@@ -36,4 +36,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_MUTATOR_H_
+#endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_UI_BUNDLED_UNIT_CONVERSION_MUTATOR_H_

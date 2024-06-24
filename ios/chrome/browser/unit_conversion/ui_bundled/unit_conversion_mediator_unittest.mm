@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_consumer.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_constants.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_consumer.h"
 #import "ios/chrome/test/providers/unit_conversion/test_unit_conversion.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

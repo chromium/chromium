@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_app_interface.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_app_interface.h"
 
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/test/app/chrome_test_util.h"

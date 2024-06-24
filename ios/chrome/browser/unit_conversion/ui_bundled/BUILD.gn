@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("unit_conversion") {
+source_set("coordinator") {
   sources = [
     "unit_conversion_coordinator.h",
     "unit_conversion_coordinator.mm",
@@ -11,7 +11,7 @@ source_set("unit_conversion") {
   ]
   deps = [
     ":constants",
-    ":unit_conversion_ui",
+    ":ui",
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -30,7 +30,7 @@ source_set("unit_conversion") {
   ]
 }
 
-source_set("unit_conversion_ui") {
+source_set("ui") {
   sources = [
     "unit_conversion_consumer.h",
     "unit_conversion_mutator.h",
@@ -69,8 +69,8 @@ source_set("unit_tests") {
   sources = [ "unit_conversion_mediator_unittest.mm" ]
   deps = [
     ":constants",
-    ":unit_conversion",
-    ":unit_conversion_ui",
+    ":coordinator",
+    ":ui",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/test/providers/unit_conversion",

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_app_interface.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_app_interface.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"

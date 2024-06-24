@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_view_controller.h"
 
 #import <vector>
 
@@ -12,11 +12,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/crash/core/common/crash_key.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mutator.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_type_cell.h"
-#import "ios/chrome/browser/ui/unit_conversion/unit_type_value_field_cell.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_constants.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mutator.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_view_controller_delegate.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_type_cell.h"
+#import "ios/chrome/browser/unit_conversion/ui_bundled/unit_type_value_field_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
