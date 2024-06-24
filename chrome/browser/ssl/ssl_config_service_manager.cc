@@ -129,6 +129,11 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
   post_quantum_enabled_.Init(prefs::kPostQuantumKeyAgreementEnabled,
                              local_state, local_state_callback);
+#if BUILDFLAG(IS_CHROMEOS)
+  device_post_quantum_enabled_.Init(
+      prefs::kDevicePostQuantumKeyAgreementEnabled, local_state,
+      local_state_callback);
+#endif
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
 
@@ -161,6 +166,10 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   // Default value for these prefs don't matter since they are only used when
   // managed.
   registry->RegisterBooleanPref(prefs::kPostQuantumKeyAgreementEnabled, false);
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled,
+                                true);
+#endif
 }
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
@@ -224,13 +233,19 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
 
   config->ech_enabled = ech_enabled_.GetValue();
 
+  config->post_quantum_override = network::mojom::OptionalBool::kUnset;
   if (post_quantum_enabled_.IsManaged()) {
     config->post_quantum_override = post_quantum_enabled_.GetValue()
                                         ? network::mojom::OptionalBool::kTrue
                                         : network::mojom::OptionalBool::kFalse;
-  } else {
-    config->post_quantum_override = network::mojom::OptionalBool::kUnset;
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (device_post_quantum_enabled_.IsManaged()) {
+    config->post_quantum_override = device_post_quantum_enabled_.GetValue()
+                                        ? network::mojom::OptionalBool::kTrue
+                                        : network::mojom::OptionalBool::kFalse;
+  }
+#endif
 
   return config;
 }

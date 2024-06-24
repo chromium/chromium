@@ -2692,6 +2692,10 @@ inline constexpr char kHSTSPolicyBypassList[] =
 // If false, disable post-quantum key agreement in TLS connections.
 inline constexpr char kPostQuantumKeyAgreementEnabled[] =
     "ssl.post_quantum_enabled";
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kDevicePostQuantumKeyAgreementEnabled[] =
+    "ssl.device_post_quantum_enabled";
+#endif
 
 // If false, disable Encrypted ClientHello (ECH) in TLS connections.
 inline constexpr char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";

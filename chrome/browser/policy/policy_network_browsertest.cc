@@ -71,6 +71,13 @@ class SSLPolicyTest : public PolicyTest {
     return g_browser_process->local_state()->GetBoolean(pref_name);
   }
 
+  std::optional<bool> GetManagedBooleanPref(const std::string& pref_name) {
+    if (g_browser_process->local_state()->IsManagedPreference(pref_name)) {
+      return GetBooleanPref(pref_name);
+    }
+    return std::nullopt;
+  }
+
   LoadResult LoadPage(std::string_view path) {
     return LoadPage(https_server_.GetURL(path));
   }
@@ -116,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
 
   // Should be able to load a page from the test server because policy is in
   // the default state and feature is enabled.
-  EXPECT_FALSE(GetBooleanPref(prefs::kPostQuantumKeyAgreementEnabled));
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            std::nullopt);
   LoadResult result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
@@ -129,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // Page loads should now fail.
-  EXPECT_FALSE(GetBooleanPref(prefs::kPostQuantumKeyAgreementEnabled));
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            false);
   result = LoadPage("/title3.html");
   EXPECT_FALSE(result.success);
 
@@ -141,11 +150,104 @@ IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // Page load should now succeed.
-  EXPECT_TRUE(GetBooleanPref(prefs::kPostQuantumKeyAgreementEnabled));
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            true);
   result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, DevicePostQuantumEnabledPolicy) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_X25519Kyber768Draft00};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should be able to load a page from the test server because policy is in
+  // the default state and feature is enabled.
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            std::nullopt);
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+            std::nullopt);
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  {
+    // Disable the device policy.
+    PolicyMap policies;
+    SetPolicy(&policies, key::kDevicePostQuantumKeyAgreementEnabled,
+              base::Value(false));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page loads should now fail.
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            std::nullopt);
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+            false);
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
+
+  {
+    // Try enabling the non-device policy, while the device policy is disabled.
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPostQuantumKeyAgreementEnabled,
+              base::Value(true));
+    SetPolicy(&policies, key::kDevicePostQuantumKeyAgreementEnabled,
+              base::Value(false));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page loads should still fail since the device policy takes precedence.
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            true);
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+            false);
+  result = LoadPage("/title3.html");
+  EXPECT_FALSE(result.success);
+
+  {
+    // Enable the device policy.
+    PolicyMap policies;
+    SetPolicy(&policies, key::kDevicePostQuantumKeyAgreementEnabled,
+              base::Value(true));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now succeed.
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            std::nullopt);
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+            true);
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  {
+    // Try disabling the non-device policy, while the device policy is enabled.
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPostQuantumKeyAgreementEnabled,
+              base::Value(false));
+    SetPolicy(&policies, key::kDevicePostQuantumKeyAgreementEnabled,
+              base::Value(true));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should still succeed since the device policy takes precedence.
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+            false);
+  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+            true);
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ECHPolicyTest : public SSLPolicyTest {
  public:

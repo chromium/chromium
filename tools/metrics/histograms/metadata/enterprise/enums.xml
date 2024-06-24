@@ -2139,6 +2139,7 @@ chromium-metrics-reviews@google.com.
   <int value="1273" label="KioskBrowserPermissionsAllowedForOrigins"/>
   <int value="1274" label="LensOnGalleryEnabled"/>
   <int value="1275" label="HistorySearchSettings"/>
+  <int value="1276" label="DevicePostQuantumKeyAgreementEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

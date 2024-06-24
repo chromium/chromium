@@ -64,6 +64,9 @@ class SSLConfigServiceManager {
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
   BooleanPrefMember post_quantum_enabled_;
+#if BUILDFLAG(IS_CHROMEOS)
+  BooleanPrefMember device_post_quantum_enabled_;
+#endif
   BooleanPrefMember ech_enabled_;
 
   // The cached list of disabled SSL cipher suites.

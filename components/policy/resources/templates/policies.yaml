@@ -1274,6 +1274,7 @@ policies:
   1273: KioskBrowserPermissionsAllowedForOrigins
   1274: LensOnGalleryEnabled
   1275: HistorySearchSettings
+  1276: DevicePostQuantumKeyAgreementEnabled
 
 atomic_groups:
   1: Homepage
