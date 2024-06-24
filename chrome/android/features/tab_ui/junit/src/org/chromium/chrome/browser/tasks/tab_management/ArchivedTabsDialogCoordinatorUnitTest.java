@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -69,6 +70,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
+    private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -96,6 +98,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                 .when(mArchivedTabModelOrchestrator)
                 .getTabModelSelector();
         doReturn(mArchivedTabModel).when(mArchivedTabModelSelector).getModel(false);
+        doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
 
         doReturn(mTabListEditorController).when(mTabListEditorCoordinator).getController();
     }
@@ -119,26 +122,24 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Test
     public void testAddRemoveTab() {
         mCoordinator.show();
-        verify(mArchivedTabModel).addObserver(mTabModelObserverCaptor.capture());
-        TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         // First add a tab
         doReturn(1).when(mArchivedTabModel).getCount();
-        observer.willAddTab(null, 0);
+        mTabCountSupplier.set(1);
         verify(mTabListEditorController).setToolbarTitle("1 inactive tab");
 
         // Then a second
         doReturn(2).when(mArchivedTabModel).getCount();
-        observer.willAddTab(null, 0);
+        mTabCountSupplier.set(2);
         verify(mTabListEditorController).setToolbarTitle("2 inactive tabs");
 
         // Then close bloth
         doReturn(1).when(mArchivedTabModel).getCount();
-        observer.tabRemoved(null);
+        mTabCountSupplier.set(1);
         verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
 
         doReturn(0).when(mArchivedTabModel).getCount();
-        observer.tabRemoved(null);
+        mTabCountSupplier.set(0);
         verify(mRootView).removeView(any());
     }
 }

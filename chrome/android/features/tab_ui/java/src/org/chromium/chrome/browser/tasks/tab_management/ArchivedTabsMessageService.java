@@ -17,17 +17,14 @@ import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
-import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -63,7 +60,7 @@ public class ArchivedTabsMessageService extends MessageService
                     mArchivedTabModelOrchestrator.removeObserver(this);
 
                     mArchivedTabModel = archivedTabModel;
-                    mArchivedTabModel.addObserver(mArchivedTabModelObserver);
+                    mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
                     mCustomCardView =
                             LayoutInflater.from(mContext)
@@ -79,26 +76,13 @@ public class ArchivedTabsMessageService extends MessageService
                 }
             };
 
-    private final TabModelObserver mArchivedTabModelObserver =
-            new TabModelObserver() {
-                @Override
-                public void didAddTab(
-                        Tab tab,
-                        @TabLaunchType int type,
-                        @TabCreationState int creationState,
-                        boolean markedForSelection) {
-                    updateModelProperties();
-                    if (mArchivedTabModel.getCount() > 0) {
-                        maybeSendMessageToQueue();
-                    }
-                }
-
-                @Override
-                public void tabRemoved(Tab tab) {
-                    updateModelProperties();
-                    if (mArchivedTabModel.getCount() <= 0) {
-                        maybeInvalidatePreviouslySentMessage();
-                    }
+    private final Callback<Integer> mTabCountObserver =
+            (count) -> {
+                updateModelProperties();
+                if (count > 0) {
+                    maybeSendMessageToQueue();
+                } else {
+                    maybeInvalidatePreviouslySentMessage();
                 }
             };
 
@@ -252,12 +236,12 @@ public class ArchivedTabsMessageService extends MessageService
         return mArchivedTabModelOrchestratorObserver;
     }
 
-    TabModelObserver getArchivedTabModelObserverForTesting() {
-        return mArchivedTabModelObserver;
-    }
-
     void setArchivedTabsDialogCoordiantorForTesting(
             ArchivedTabsDialogCoordinator archivedTabsDialogCoordinator) {
         mArchivedTabsDialogCoordinator = archivedTabsDialogCoordinator;
+    }
+
+    Callback<Integer> getTabCountObserverForTesting() {
+        return mTabCountObserver;
     }
 }

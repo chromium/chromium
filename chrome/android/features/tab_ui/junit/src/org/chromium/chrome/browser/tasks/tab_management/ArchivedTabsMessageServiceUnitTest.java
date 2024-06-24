@@ -32,6 +32,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -70,6 +71,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     private Activity mActivity;
     private ViewGroup mRootView;
     private ArchivedTabsMessageService mArchivedTabsMessageService;
+    private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() throws Exception {
@@ -78,6 +80,7 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         doReturn(TIME_DELTA_HOURS).when(mTabArchiveSettings).getArchiveTimeDeltaHours();
         doReturn(mTabArchiveSettings).when(mArchivedTabModelOrchestrator).getTabArchiveSettings();
+        doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
 
         mArchivedTabsMessageService =
                 new ArchivedTabsMessageService(
@@ -103,18 +106,14 @@ public class ArchivedTabsMessageServiceUnitTest {
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
 
         doReturn(1).when(mArchivedTabModel).getCount();
-        // Note: The params don't matter here.
-        mArchivedTabsMessageService
-                .getArchivedTabModelObserverForTesting()
-                .didAddTab(null, 0, 0, false);
+        mTabCountSupplier.set(1);
         assertEquals(1, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
 
         doReturn(0).when(mArchivedTabModel).getCount();
-        // Note: The params don't matter here.
-        mArchivedTabsMessageService.getArchivedTabModelObserverForTesting().tabRemoved(null);
+        mTabCountSupplier.set(0);
         assertEquals(0, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
@@ -126,20 +125,14 @@ public class ArchivedTabsMessageServiceUnitTest {
                 mArchivedTabsMessageService.getCustomCardModelForTesting();
 
         doReturn(12).when(mArchivedTabModel).getCount();
-        // Note: The params don't matter here.
-        mArchivedTabsMessageService
-                .getArchivedTabModelObserverForTesting()
-                .didAddTab(null, 0, 0, false);
+        mTabCountSupplier.set(12);
         assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
 
         doReturn(8).when(mArchivedTabModel).getCount();
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
-        // Note: The params don't matter here.
-        mArchivedTabsMessageService
-                .getArchivedTabModelObserverForTesting()
-                .didAddTab(null, 0, 0, false);
+        mTabCountSupplier.set(8);
         assertEquals(8, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
         assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         // Sending another message to the queue should exit early without sending a message.

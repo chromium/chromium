@@ -12,16 +12,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
@@ -81,22 +80,13 @@ public class ArchivedTabsDialogCoordinator {
                 }
             };
 
-    private final TabModelObserver mTabModelObserver =
-            new TabModelObserver() {
-                @Override
-                public void tabRemoved(Tab tab) {
-                    if (mArchivedTabModel.getCount() <= 0) {
-                        hide();
-                        return;
-                    }
-
-                    updateTitle();
+    private final Callback<Integer> mTabCountObserver =
+            (count) -> {
+                if (count <= 0) {
+                    hide();
+                    return;
                 }
-
-                @Override
-                public void willAddTab(Tab tab, @TabLaunchType int type) {
-                    updateTitle();
-                }
+                updateTitle();
             };
 
     private final @NonNull Context mContext;
@@ -156,7 +146,7 @@ public class ArchivedTabsDialogCoordinator {
             createTabListEditorCoordinator();
         }
 
-        mArchivedTabModel.addObserver(mTabModelObserver);
+        mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
         mRootView.addView(mView);
         List<Tab> archivedTabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
@@ -179,7 +169,7 @@ public class ArchivedTabsDialogCoordinator {
     public void hide() {
         mTabListEditorCoordinator.getController().hide();
         mRootView.removeView(mView);
-        mArchivedTabModel.removeObserver(mTabModelObserver);
+        mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
     }
 
     void moveToState(@TabActionState int tabActionState) {
