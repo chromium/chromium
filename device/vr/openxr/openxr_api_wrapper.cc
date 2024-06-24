@@ -695,6 +695,10 @@ XrSpace OpenXrApiWrapper::GetReferenceSpace(
 // Based on the capabilities of the system and runtime, determine whether
 // to use shared images to draw into OpenXR swap chain buffers.
 bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
+  if (!HasSession()) {
+    return false;
+  }
+
   // TODO(crbug.com/40917171): Investigate moving the remaining Windows-
   // only checks out of this class and into the GraphicsBinding.
 #if BUILDFLAG(IS_WIN)
