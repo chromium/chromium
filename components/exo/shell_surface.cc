@@ -963,6 +963,8 @@ void ShellSurface::OnLayerRecreated(ui::Layer* old_layer) {
   } else {
     old_layer->SetName(old_layer->name() + "-old-no-surface");
   }
+  CHECK(old_layer->parent());
+  CHECK(host_window()->layer()->parent());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
