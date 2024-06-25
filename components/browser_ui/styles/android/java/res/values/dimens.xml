@@ -24,6 +24,7 @@ found in the LICENSE file.
 
     <!-- Alpha values for various things -->
     <item name="icon_animated_faded_alpha" format="float" type="dimen">0.3</item>
+    <item name="iph_highlight_alpha" format="float" type="dimen">0.08</item>
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
     <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
     <item name="filled_button_bg_disabled_alpha" format="float" type="dimen">0.12</item>

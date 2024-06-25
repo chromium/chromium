@@ -471,7 +471,6 @@ public class GoogleServicesSettingsTest {
                                         GoogleServicesSettings.PREF_PASSWORDS_ACCOUNT_STORAGE);
         @Nullable Integer backgroundColor = toggle.getBackgroundColor();
         Assert.assertNotNull(backgroundColor);
-        Assert.assertTrue(backgroundColor.equals(R.color.iph_highlight_blue));
     }
 
     private boolean isPasswordSyncEnabled() {

@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.SignoutButtonPreference;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -288,7 +289,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
             if (getArguments() != null
                     && getArguments().getBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT)) {
-                passwordsToggle.setBackgroundColor(R.color.iph_highlight_blue);
+                passwordsToggle.setBackgroundColor(
+                        ChromeSemanticColorUtils.getIphHighlightColor(getContext()));
             }
             mSyncTypeSwitchPreferencesMap.put(
                     UserSelectableType.PAYMENTS,

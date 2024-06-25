@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
@@ -900,7 +901,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                             return true;
                         });
                 if (info.getContentSettingType() == mHighlightedPermission) {
-                    preference.setBackgroundColor(mHighlightColor);
+                    preference.setBackgroundColor(
+                            AppCompatResources.getColorStateList(getContext(), mHighlightColor)
+                                    .getDefaultColor());
                 }
 
                 preference.setOrder(++mMaxPermissionOrder);
@@ -1084,7 +1087,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         if (contentType == mHighlightedPermission) {
-            switchPreference.setBackgroundColor(mHighlightColor);
+            switchPreference.setBackgroundColor(
+                    AppCompatResources.getColorStateList(getContext(), mHighlightColor)
+                            .getDefaultColor());
         }
     }
 
