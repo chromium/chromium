@@ -109,7 +109,6 @@
 #include "services/network/is_browser_initiated.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/network_service.h"
-#include "services/network/network_service_memory_cache.h"
 #include "services/network/network_service_network_delegate.h"
 #include "services/network/network_service_proxy_delegate.h"
 #include "services/network/oblivious_http_request_handler.h"
@@ -737,9 +736,6 @@ NetworkContext::NetworkContext(
 #endif
   resource_scheduler_ = std::make_unique<ResourceScheduler>();
 
-  if (base::FeatureList::IsEnabled(features::kNetworkServiceMemoryCache))
-    memory_cache_ = std::make_unique<NetworkServiceMemoryCache>(this);
-
   if (params_->http_auth_static_network_context_params) {
     http_auth_merged_preferences_.SetAllowDefaultCredentials(
         params_->http_auth_static_network_context_params
@@ -1245,10 +1241,6 @@ void NetworkContext::ClearHttpCache(base::Time start_time,
       url_request_context_, std::move(filter), start_time, end_time,
       base::BindOnce(&NetworkContext::OnHttpCacheCleared,
                      base::Unretained(this), std::move(callback))));
-
-  NetworkServiceMemoryCache* memory_cache = GetMemoryCache();
-  if (memory_cache)
-    memory_cache->Clear();
 }
 
 void NetworkContext::ComputeHttpCacheSize(
@@ -2309,10 +2301,6 @@ void NetworkContext::LookupProxyAuthCredentials(
 
 const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
   return &http_auth_merged_preferences_;
-}
-
-NetworkServiceMemoryCache* NetworkContext::GetMemoryCache() {
-  return memory_cache_.get();
 }
 
 size_t NetworkContext::NumOpenWebTransports() const {

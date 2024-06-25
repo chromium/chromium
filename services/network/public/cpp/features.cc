@@ -318,10 +318,6 @@ BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              "CorsNonWildcardRequestHeadersSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNetworkServiceMemoryCache,
-             "NetworkServiceMemoryCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Do not send TLS client certificates in CORS preflight. Omit all client certs
 // and continue the handshake without sending one if requested.
 BASE_FEATURE(kOmitCorsClientCert,

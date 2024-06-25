@@ -606,7 +606,6 @@ class PrivateNetworkAccessBrowserTestBlockFromPrivate
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -622,7 +621,6 @@ class PrivateNetworkAccessBrowserTestBlockFromUnknown
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromUnknown,
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -638,7 +636,6 @@ class PrivateNetworkAccessBrowserTestForNavigations
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -660,7 +657,6 @@ class PrivateNetworkAccessBrowserTestNoPreflights
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
-                network::features::kNetworkServiceMemoryCache,
             },
             {
                 features::kPrivateNetworkAccessSendPreflights,
@@ -677,7 +673,6 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResults
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessRespectPreflightResults,
-                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -691,7 +686,6 @@ class PrivateNetworkAccessBrowserTestForWorkers
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessForWorkers,
-                network::features::kNetworkServiceMemoryCache,
             },
             {
                 features::kPrivateNetworkAccessForWorkersWarningOnly,
@@ -709,7 +703,6 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 features::kPrivateNetworkAccessForWorkers,
-                network::features::kNetworkServiceMemoryCache,
             },
             {
                 features::kPrivateNetworkAccessForWorkersWarningOnly,
@@ -729,7 +722,6 @@ class
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 features::kPrivateNetworkAccessForWorkers,
                 features::kPrivateNetworkAccessForWorkersWarningOnly,
-                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -747,7 +739,6 @@ class PrivateNetworkAccessBrowserTestNoBlocking
                 features::kPrivateNetworkAccessForNavigations,
                 features::kPrivateNetworkAccessForWorkers,
                 features::kPrivateNetworkAccessSendPreflights,
-                network::features::kNetworkServiceMemoryCache,
             }) {}
 };
 

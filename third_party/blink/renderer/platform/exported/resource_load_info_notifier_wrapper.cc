@@ -184,8 +184,6 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceLoadCompleted(
                        status.error_code);
 
   resource_load_info_->was_cached = status.exists_in_cache;
-  resource_load_info_->was_in_network_service_memory_cache =
-      status.exists_in_memory_cache;
   resource_load_info_->net_error = status.error_code;
   resource_load_info_->total_received_bytes = status.encoded_data_length;
   resource_load_info_->raw_body_bytes = status.encoded_body_length;

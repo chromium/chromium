@@ -321,10 +321,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   raw_ptr<const mojom::ClientSecurityState> factory_client_security_state_ =
       nullptr;
 
-  // True when `network_loader_` is bound to a URLLoader that serves response
-  // from `memory_cache_`.
-  bool memory_cache_was_used_ = false;
-
   // Observer for this request and any preflight requests we send ahead of it.
   // Owned by the parent `CorsURLLoaderFactory`, never nullptr - though the
   // pointee remote itself may be unbound.

@@ -377,9 +377,6 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       params_->cookie_setting_overrides, std::move(attribution_request_helper),
       resource_request.shared_storage_writable_eligible);
 
-  if (context_->GetMemoryCache())
-    loader->SetMemoryCache(context_->GetMemoryCache()->GetWeakPtr());
-
   cors_url_loader_factory_->OnURLLoaderCreated(std::move(loader));
 }
 

@@ -118,7 +118,6 @@ class HostResolver;
 class MdnsResponderManager;
 class MojoBackendFileOperationsFactory;
 class NetworkService;
-class NetworkServiceMemoryCache;
 class NetworkServiceNetworkDelegate;
 class P2PSocketManager;
 class PendingTrustTokenStore;
@@ -639,9 +638,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return shared_dictionary_manager_.get();
   }
 
-  // May return null if the in-memory cache is disabled.
-  NetworkServiceMemoryCache* GetMemoryCache();
-
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
   // network::mojom::NetworkContext::SetCorsOriginAccessListsForOrigin.
@@ -959,8 +955,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // Each network context holds its own WebBundleManager, which
   // manages the lifetiem of a WebBundleURLLoaderFactory object.
   WebBundleManager web_bundle_manager_;
-
-  std::unique_ptr<NetworkServiceMemoryCache> memory_cache_;
 
   // The ohttp_handler_ needs to be destroyed before cookie_manager_, since it
   // depends on it indirectly through this context.

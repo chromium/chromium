@@ -71,7 +71,6 @@
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
-#include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/orb/orb_impl.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
@@ -1173,8 +1172,6 @@ void URLLoader::FollowRedirect(
   // also calls the devtools observer.
   seen_raw_request_headers_ = false;
 
-  memory_cache_writer_.reset();
-
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
   if (!AreRequestHeadersSafe(modified_headers) ||
@@ -1300,7 +1297,6 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
                            const net::TransportInfo& info,
                            net::CompletionOnceCallback callback) {
   DCHECK_EQ(url_request, url_request_.get());
-  transport_info_ = info;
 
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
@@ -1455,9 +1451,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   mojom::URLResponseHeadPtr response = BuildResponseHead();
   DispatchOnRawResponse();
   ReportFlaggedResponseCookies(false);
-
-  if (memory_cache_)
-    memory_cache_->OnRedirect(url_request_.get(), request_destination_);
 
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
   const CrossOriginEmbedderPolicy kEmptyCoep;
@@ -1714,11 +1707,6 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
     return;
   }
 
-  if (memory_cache_) {
-    memory_cache_writer_ = memory_cache_->MaybeCreateWriter(
-        url_request_.get(), request_destination_, transport_info_, response_);
-  }
-
   ProcessInboundAttributionInterceptorOnResponseStarted();
 }
 
@@ -1901,8 +1889,7 @@ void URLLoader::ReadMore() {
         CHECK(!pending_write_);
         // SlopBucket is incompatible with the network service memory cache,
         // so don't use it if the memory cache is in use.
-        if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_ &&
-            !memory_cache_) {
+        if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_) {
           slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
         }
         if (slop_bucket_ && !slop_bucket_->read_in_progress() &&
@@ -1990,16 +1977,6 @@ void URLLoader::DidRead(int num_bytes,
                         bool into_slop_bucket) {
   DCHECK(read_in_progress_ || into_slop_bucket);
   read_in_progress_ = false;
-
-  if (memory_cache_writer_ && pending_write_ && num_bytes > 0) {
-    CHECK(!into_slop_bucket);
-    CHECK(!discard_buffer_);
-    if (!memory_cache_writer_->OnDataRead(
-            pending_write_->buffer() + pending_write_buffer_offset_,
-            num_bytes)) {
-      memory_cache_writer_.reset();
-    }
-  }
 
   size_t new_data_offset = pending_write_buffer_offset_;
   if (num_bytes > 0) {
@@ -2374,9 +2351,6 @@ void URLLoader::NotifyCompleted(int error_code) {
       status.ssl_info = url_request_->ssl_info();
     }
 
-    if (memory_cache_writer_)
-      memory_cache_writer_->OnCompleted(status);
-
     url_loader_client_.Get()->OnComplete(status);
   }
 
@@ -2712,14 +2686,11 @@ void URLLoader::CompleteBlockedResponse(
   status.should_report_orb_blocking = should_report_orb_blocking;
   status.blocked_by_response_reason = reason;
 
-  if (memory_cache_writer_)
-    memory_cache_writer_->OnCompleted(status);
   url_loader_client_.Get()->OnComplete(status);
 
   // Reset the connection to the URLLoaderClient.  This helps ensure that we
   // won't accidentally leak any data to the renderer from this point on.
   url_loader_client_.Reset();
-  memory_cache_writer_.reset();
 }
 
 URLLoader::BlockResponseForOrbResult URLLoader::BlockResponseForOrb() {

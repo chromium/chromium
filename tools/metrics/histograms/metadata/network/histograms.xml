@@ -5035,7 +5035,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.NetworkLoaderCompletionTime.{Source}"
+<histogram name="NetworkService.NetworkLoaderCompletionTime2.{Source}"
     units="ms" expires_after="2024-12-08">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -5043,14 +5043,12 @@ chromium-metrics-reviews@google.com.
     The time taken to finish a network URLLoader to complete. A network
     URLLoader is a URLLoader that a CorsURLLoader used internally to load an
     HTTP response from the underlying layer. The underlying layer serves the
-    response from one of the followings: the network service in-memory cache, a
-    disk cache backend, or the network.
+    response from either the disk cache backend or the network.
 
     This histogram is recorded for {Source}.
   </summary>
   <token key="Source">
     <variant name="DiskCache"/>
-    <variant name="MemoryCache"/>
     <variant name="Network"/>
   </token>
 </histogram>
