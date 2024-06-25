@@ -59,6 +59,13 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   return grey_accessibilityID(kPasswordPickerViewID);
 }
 
+// TODO(crbug.com/348484044): Re-enable the test suite on ipad on iOS 17.
+#define DISABLE_ON_IPAD_WITH_IOS_17                            \
+  if (@available(iOS 17.0, *)) {                               \
+    if ([ChromeEarlGrey isIPadIdiom]) {                        \
+      EARL_GREY_TEST_DISABLED(@"Disabled for iPad on iOS 17"); \
+    }                                                          \
+  }
 }  // namespace
 
 // Test case for the Password Sharing flow.
@@ -182,6 +189,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityWithSharingDisabled {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -190,6 +198,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityWithSharingEnabled {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -198,6 +207,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityForSignedOutUser {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
@@ -205,6 +215,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityForUserOptedInToAccountStorage {
+  DISABLE_ON_IPAD_WITH_IOS_17
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fake_identity];
 
@@ -215,6 +226,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testShareButtonVisibilityWithSharingPolicyDisabled {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey
       setBoolValue:NO
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
@@ -234,6 +246,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPickerCancelFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -253,6 +266,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordPickerCancelFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
@@ -271,6 +285,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPickerSwipeToDismissFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -287,6 +302,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPromoSwipeToDismissFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -310,6 +326,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordPickerSwipeToDismissFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
@@ -325,6 +342,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testSharingStatusSwipeToDismissFlow {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -348,6 +366,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFetchingRecipientsNoFamilyStatus {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -382,6 +401,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingGotItInFamilyPromoInviteMembersView {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -419,6 +439,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFetchingRecipientsError {
+  DISABLE_ON_IPAD_WITH_IOS_17
   // Override family status with `FetchFamilyMembersRequestStatus::kUnknown`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
@@ -447,6 +468,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordSharingSuccess {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -499,6 +521,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testNavigationBetweenPasswordAndFamilyPicker {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
@@ -532,6 +555,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingFamilyPickerIneligibleRecipientInfoPopup {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -563,6 +587,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingCancelInFirstRunExperienceView {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
@@ -591,6 +616,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingShareInFirstRunExperienceView {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
@@ -624,6 +650,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFirstRunExperienceViewDismissedForAuthentication {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
@@ -649,6 +676,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testFamilyPickerViewDismissedForAuthentication {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
@@ -671,6 +699,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testPasswordPickerViewDismissedForAuthentication {
+  DISABLE_ON_IPAD_WITH_IOS_17
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
