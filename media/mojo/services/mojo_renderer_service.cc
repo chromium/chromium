@@ -21,7 +21,7 @@
 namespace media {
 
 // Time interval to update media time.
-constexpr auto kTimeUpdateInterval = base::Milliseconds(50);
+constexpr auto kTimeUpdateInterval = base::Milliseconds(125);
 
 // static
 mojo::SelfOwnedReceiverRef<mojom::Renderer> MojoRendererService::Create(
