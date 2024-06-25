@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_input_performActionsCancelsDragging[websocket0]
+# name: test_input_performActionsCancelsDragging
   dict({
     'result': dict({
       'type': 'array',
@@ -369,7 +369,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsDoesNotCancelDraggingWithAlt[websocket0]
+# name: test_input_performActionsDoesNotCancelDraggingWithAlt
   dict({
     'result': dict({
       'type': 'array',
@@ -659,7 +659,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsClickCountsByButton[websocket0]
+# name: test_input_performActionsEmitsClickCountsByButton
   dict({
     'result': dict({
       'type': 'array',
@@ -951,7 +951,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsDragging[websocket0]
+# name: test_input_performActionsEmitsDragging
   dict({
     'result': dict({
       'type': 'array',
@@ -1321,7 +1321,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsKeyboardEvents[websocket0]
+# name: test_input_performActionsEmitsKeyboardEvents
   dict({
     'result': dict({
       'type': 'array',
@@ -1451,7 +1451,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsPointerEvents[websocket0]
+# name: test_input_performActionsEmitsPointerEvents
   dict({
     'result': dict({
       'type': 'array',
@@ -1602,7 +1602,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_performActionsEmitsWheelEvents[websocket0]
+# name: test_input_performActionsEmitsWheelEvents
   dict({
     'result': dict({
       'type': 'array',
@@ -1739,7 +1739,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_setFiles[websocket0]
+# name: test_input_setFiles
   dict({
     'result': dict({
       'type': 'array',
@@ -1773,10 +1773,10 @@
     'type': 'success',
   })
 # ---
-# name: test_input_setFiles_noSuchElement[websocket0]
+# name: test_input_setFiles_noSuchElement
   'no such node'
 # ---
-# name: test_input_setFiles_twice[websocket0]
+# name: test_input_setFiles_twice
   dict({
     'result': dict({
       'type': 'array',
@@ -1810,7 +1810,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_setFiles_twice[websocket0].1
+# name: test_input_setFiles_twice.1
   dict({
     'result': dict({
       'type': 'array',
@@ -1868,7 +1868,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_setFiles_twice_same[websocket0]
+# name: test_input_setFiles_twice_same
   dict({
     'result': dict({
       'type': 'array',
@@ -1902,7 +1902,7 @@
     'type': 'success',
   })
 # ---
-# name: test_input_setFiles_twice_same[websocket0].1
+# name: test_input_setFiles_twice_same.1
   dict({
     'result': dict({
       'type': 'array',
@@ -1960,6 +1960,6 @@
     'type': 'success',
   })
 # ---
-# name: test_input_setFiles_unableToSetFileInput[websocket0]
+# name: test_input_setFiles_unableToSetFileInput
   'unable to set file input'
 # ---

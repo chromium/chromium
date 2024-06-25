@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_scriptEvaluate_dedicated_worker[websocket0]
+# name: test_scriptEvaluate_dedicated_worker
   dict({
     'result': dict({
       'type': 'string',

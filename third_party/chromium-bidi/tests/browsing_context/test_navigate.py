@@ -514,13 +514,15 @@ async def test_browsingContext_navigationStarted_sameDocumentNavigation(
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_navigateBadSsl_notNavigated(
-        websocket, context_id, bad_ssl_url):
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'unknown error',
-                           'message': 'net::ERR_CERT_AUTHORITY_INVALID'
-                       })):
+@pytest.mark.parametrize('capabilities', [{
+    'acceptInsecureCerts': True
+}, {
+    'acceptInsecureCerts': False
+}],
+                         indirect=True)
+async def test_browsingContext_acceptInsecureCertsCapability_respected(
+        websocket, context_id, bad_ssl_url, capabilities):
+    async def navigate():
         await execute_command(
             websocket, {
                 'method': "browsingContext.navigate",
@@ -531,22 +533,12 @@ async def test_browsingContext_navigateBadSsl_notNavigated(
                 }
             })
 
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize('websocket', [{
-    'capabilities': {
-        'acceptInsecureCerts': True
-    }
-}],
-                         indirect=['websocket'])
-async def test_browsingContext_navigateBadSslAndAcceptInsecureCerts_navigated(
-        websocket, context_id, bad_ssl_url):
-    await execute_command(
-        websocket, {
-            'method': "browsingContext.navigate",
-            'params': {
-                'url': bad_ssl_url,
-                'wait': 'complete',
-                'context': context_id
-            }
-        })
+    if capabilities['acceptInsecureCerts']:
+        await navigate()
+    else:
+        with pytest.raises(Exception,
+                           match=str({
+                               'error': 'unknown error',
+                               'message': 'net::ERR_CERT_AUTHORITY_INVALID'
+                           })):
+            await navigate()

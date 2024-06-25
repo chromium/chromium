@@ -67,24 +67,34 @@ async def test_headless_mode():
                                                 ] else "new"
 
 
-@pytest_asyncio.fixture(params=[{"capabilities": {}}])
-async def websocket(request, _websocket_connection, test_headless_mode):
+@pytest_asyncio.fixture
+async def capabilities(request):
+    if not hasattr(request, 'param') or request.param is None:
+        return {}
+    return request.param
+
+
+@pytest_asyncio.fixture
+async def websocket(_websocket_connection, test_headless_mode, capabilities):
     """Return a websocket with an active BiDi session."""
-    capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
+    session_capabilities = {"webSocketUrl": True, "goog:chromeOptions": {}}
     maybe_browser_bin = os.getenv("BROWSER_BIN")
     if maybe_browser_bin:
-        capabilities["goog:chromeOptions"]["binary"] = maybe_browser_bin
+        session_capabilities["goog:chromeOptions"][
+            "binary"] = maybe_browser_bin
 
     if test_headless_mode != "false":
         if test_headless_mode == "old":
-            capabilities["goog:chromeOptions"]["args"] = [
+            session_capabilities["goog:chromeOptions"]["args"] = [
                 "--headless=old", '--hide-scrollbars', '--mute-audio'
             ]
         else:
             # Default to new headless mode.
-            capabilities["goog:chromeOptions"]["args"] = ["--headless=new"]
+            session_capabilities["goog:chromeOptions"]["args"] = [
+                "--headless=new"
+            ]
 
-    capabilities.update(request.param['capabilities'])
+    session_capabilities.update(capabilities)
 
     await execute_command(
         _websocket_connection,
@@ -92,7 +102,7 @@ async def websocket(request, _websocket_connection, test_headless_mode):
             "method": "session.new",
             "params": {
                 "capabilities": {
-                    "alwaysMatch": capabilities
+                    "alwaysMatch": session_capabilities
                 }
             }
         },

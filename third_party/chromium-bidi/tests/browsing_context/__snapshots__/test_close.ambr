@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: test_browsingContext_close_prompt[websocket0]
+# name: test_browsingContext_close_prompt
   dict({
     'method': 'browsingContext.contextDestroyed',
     'params': dict({
