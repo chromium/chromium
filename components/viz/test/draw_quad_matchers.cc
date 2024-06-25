@@ -79,10 +79,6 @@ testing::Matcher<const DrawQuad*> IsTextureQuad() {
   return IsQuadType(DrawQuad::Material::kTextureContent);
 }
 
-testing::Matcher<const DrawQuad*> IsYuvVideoQuad() {
-  return IsQuadType(DrawQuad::Material::kYuvVideoContent);
-}
-
 testing::Matcher<const DrawQuad*> IsSurfaceQuad() {
   return IsQuadType(DrawQuad::Material::kSurfaceContent);
 }

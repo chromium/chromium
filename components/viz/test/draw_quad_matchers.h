@@ -41,9 +41,6 @@ testing::Matcher<const DrawQuad*> IsSolidColorQuad(SkColor4f expected_color);
 // Matches a TextureDrawQuad.
 testing::Matcher<const DrawQuad*> IsTextureQuad();
 
-// Matches a YuvVideoDrawQuad.
-testing::Matcher<const DrawQuad*> IsYuvVideoQuad();
-
 // Matches a SurfaceDrawQuad.
 testing::Matcher<const DrawQuad*> IsSurfaceQuad();
 
