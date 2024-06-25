@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(KIOSK_VISION) TelemetryProcessor
   // `DetectionProcessor` implementation.
   void OnFrameProcessed(
       const cros::mojom::KioskVisionDetection& detection) override;
+  void OnTrackCompleted(const cros::mojom::KioskVisionTrack& track) override;
   void OnError(cros::mojom::KioskVisionError error) override;
 
   base::circular_deque<int> latest_ids_processed_;

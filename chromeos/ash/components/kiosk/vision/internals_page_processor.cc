@@ -29,10 +29,10 @@ mojom::BoxPtr ToPageBox(const cros::mojom::KioskVisionBoundingBox& box) {
                          /*height=*/box.height);
 }
 
-std::vector<mojom::BoxPtr> DetectionToBoxes(
-    const cros::mojom::KioskVisionDetection& detection) {
+std::vector<mojom::BoxPtr> ToBoxes(
+    const std::vector<cros::mojom::KioskVisionAppearancePtr>& appearances) {
   std::vector<mojom::BoxPtr> boxes;
-  for (const auto& appearance : detection.appearances) {
+  for (const auto& appearance : appearances) {
     if (appearance->face) {
       boxes.push_back(ToPageBox(*appearance->face->box));
     }
@@ -53,7 +53,13 @@ InternalsPageProcessor::~InternalsPageProcessor() = default;
 void InternalsPageProcessor::OnFrameProcessed(
     const cros::mojom::KioskVisionDetection& detection) {
   NotifyStateChange(
-      NewState(mojom::Status::kRunning, DetectionToBoxes(detection)));
+      NewState(mojom::Status::kRunning, ToBoxes(detection.appearances)));
+}
+
+void InternalsPageProcessor::OnTrackCompleted(
+    const cros::mojom::KioskVisionTrack& track) {
+  NotifyStateChange(
+      NewState(mojom::Status::kRunning, ToBoxes(track.appearances)));
 }
 
 void InternalsPageProcessor::OnError(cros::mojom::KioskVisionError error) {

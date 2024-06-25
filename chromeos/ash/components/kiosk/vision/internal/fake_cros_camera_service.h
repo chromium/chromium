@@ -49,6 +49,10 @@ class FakeCrosCameraService
   // been previously bound with `StartKioskVisionDetection`.
   void EmitFakeDetection(cros::mojom::KioskVisionDetectionPtr detection);
 
+  // Emits a fake track completed event to `observer_remote_`. An observer must
+  // have been previously bound with `StartKioskVisionDetection`.
+  void EmitFakeTrack(cros::mojom::KioskVisionTrackPtr track);
+
   // Emits a fake error event to `observer_remote_`. An observer must have been
   // previously bound with `StartKioskVisionDetection`.
   void EmitFakeError(cros::mojom::KioskVisionError error);

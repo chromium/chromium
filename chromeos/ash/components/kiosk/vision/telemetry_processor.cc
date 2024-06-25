@@ -62,6 +62,12 @@ void TelemetryProcessor::OnFrameProcessed(
   CapToMaxSize(latest_ids_processed_);
 }
 
+void TelemetryProcessor::OnTrackCompleted(
+    const cros::mojom::KioskVisionTrack& track) {
+  latest_ids_processed_.push_back(track.appearances[0]->person_id);
+  CapToMaxSize(latest_ids_processed_);
+}
+
 void TelemetryProcessor::OnError(cros::mojom::KioskVisionError error) {
   latest_errors_.push_back(error);
   CapToMaxSize(latest_errors_);

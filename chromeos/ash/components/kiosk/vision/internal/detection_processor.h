@@ -32,6 +32,8 @@ class DetectionProcessor {
   virtual void OnFrameProcessed(
       const cros::mojom::KioskVisionDetection& detection) = 0;
 
+  virtual void OnTrackCompleted(const cros::mojom::KioskVisionTrack& track) = 0;
+
   virtual void OnError(cros::mojom::KioskVisionError error) = 0;
 };
 

@@ -62,16 +62,20 @@ enum CameraAutoFramingState {
   ON_MULTI = 2,
 };
 
-// Interface called by CrosCameraService to notify Ash of Kiosk Vision events.
-// The data being transferred and the processes involved are trusted.
+// Interface called by CrosCameraService to notify Chrome of Kiosk Vision
+// events. The data being transferred and the processes involved are trusted.
 //
-// Next method ID: 2
+// Next method ID: 3
 interface KioskVisionObserver {
   // Notifies the observer that a new detection has happened.
   OnFrameProcessed@0(KioskVisionDetection detection);
 
+  // Notifies the observer that a track has completed. Emitted when a previously
+  // detected person goes undetected long enough and the tracker forgets them.
+  OnTrackCompleted@1(KioskVisionTrack track);
+
   // Notifies the observer that an error has happened.
-  OnError@1(KioskVisionError error);
+  OnError@2(KioskVisionError error);
 };
 
 // Output detection of the Kiosk Vision graph.
@@ -79,6 +83,19 @@ struct KioskVisionDetection {
   // The timestamp in microseconds of this detection.
   int64 timestamp_in_us;
   // The persons detected.
+  array<KioskVisionAppearance> appearances;
+};
+
+// A track is the full sequence of appearances of a given person.
+struct KioskVisionTrack {
+  // The ID of the person in this track.
+  int32 person_id;
+  // The timestamp in microseconds for when this track started.
+  int64 start_timestamp_in_us;
+  // The timestamp in microseconds for when this track ended.
+  int64 end_timestamp_in_us;
+  // The appearances in this track. Must be non-empty. All appearances must have
+  // the same `person_id`. Appearances are sorted by `timestamp_in_us`.
   array<KioskVisionAppearance> appearances;
 };
 

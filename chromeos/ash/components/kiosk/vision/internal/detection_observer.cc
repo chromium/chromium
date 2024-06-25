@@ -4,8 +4,10 @@
 
 #include "chromeos/ash/components/kiosk/vision/internal/detection_observer.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -25,11 +27,43 @@ int64_t CurrentTimestampInMicroseconds() {
   return base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
 
-void Validate(const cros::mojom::KioskVisionDetection& detection) {
+bool IsSortedByTimestamp(
+    const std::vector<cros::mojom::KioskVisionAppearancePtr>& appearances) {
+  for (size_t i = 1; i < appearances.size(); i++) {
+    if (appearances[i - 1]->timestamp_in_us > appearances[i]->timestamp_in_us) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void ValidateDetection(const cros::mojom::KioskVisionDetection& detection) {
   bool face_or_body_are_present = base::ranges::all_of(
       detection.appearances, [](auto& a) { return a->face || a->body; });
   CHECK(face_or_body_are_present)
       << "Appearances must have either a face or body or both";
+}
+
+void ValidateTrack(const cros::mojom::KioskVisionTrack& track) {
+  CHECK(track.appearances.size() > 0)
+      << "A track's list of appearances must not be empty";
+
+  bool is_same_person = base::ranges::all_of(
+      track.appearances,
+      [&](auto id) { return track.appearances[0]->person_id == id; },
+      [](const auto& a) { return a->person_id; });
+  CHECK(is_same_person) << "A track's appearances must all have the same id";
+
+  bool face_or_body_are_present = base::ranges::all_of(
+      track.appearances, [](auto& a) { return a->face || a->body; });
+  CHECK(face_or_body_are_present)
+      << "Appearances must have either a face or body or both";
+
+  CHECK(track.start_timestamp_in_us <= track.end_timestamp_in_us)
+      << "A track's start time must not be later than its end time";
+
+  CHECK(IsSortedByTimestamp(track.appearances))
+      << "A track's appearances must be sorted by time";
 }
 
 }  // namespace
@@ -54,9 +88,17 @@ DetectionObserver::~DetectionObserver() = default;
 
 void DetectionObserver::OnFrameProcessed(
     cros::mojom::KioskVisionDetectionPtr detection) {
-  Validate(*detection);
+  ValidateDetection(*detection);
   for (const auto& processor : processors_) {
     processor->OnFrameProcessed(*detection);
+  }
+}
+
+void DetectionObserver::OnTrackCompleted(
+    cros::mojom::KioskVisionTrackPtr track) {
+  ValidateTrack(*track);
+  for (const auto& processor : processors_) {
+    processor->OnTrackCompleted(*track);
   }
 }
 

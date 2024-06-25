@@ -29,6 +29,7 @@ class DetectionObserver : public cros::mojom::KioskVisionObserver {
   // `cros::mojom::KioskVisionObserver` implementations.
   void OnFrameProcessed(
       cros::mojom::KioskVisionDetectionPtr detection) override;
+  void OnTrackCompleted(cros::mojom::KioskVisionTrackPtr track) override;
   void OnError(cros::mojom::KioskVisionError error) override;
 
  private:

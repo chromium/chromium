@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(KIOSK_VISION) InternalsPageProcessor
   // `DetectionProcessor` implementation.
   void OnFrameProcessed(
       const cros::mojom::KioskVisionDetection& detection) override;
+  void OnTrackCompleted(const cros::mojom::KioskVisionTrack& track) override;
   void OnError(cros::mojom::KioskVisionError error) override;
 
   // Calls `Observer::OnStateChange` with `new_state` on all `observers_`.

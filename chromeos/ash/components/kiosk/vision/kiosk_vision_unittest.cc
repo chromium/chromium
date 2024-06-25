@@ -89,20 +89,38 @@ bool IsKioskVisionDlcInstalled(FakeDlcserviceClient& service) {
   });
 }
 
+cros::mojom::KioskVisionAppearancePtr NewFakeAppearance(int person_id) {
+  auto appearance = cros::mojom::KioskVisionAppearance::New();
+  appearance->person_id = person_id;
+  appearance->face = cros::mojom::KioskVisionFaceDetection::New();
+  appearance->face->box = cros::mojom::KioskVisionBoundingBox::New();
+  return appearance;
+}
+
 cros::mojom::KioskVisionDetectionPtr NewFakeDetectionOfPersons(
     std::vector<int> person_ids) {
   constexpr int64_t kFakeTimestamp = 1718727537817601;
 
   std::vector<cros::mojom::KioskVisionAppearancePtr> appearances;
   for (int person_id : person_ids) {
-    auto appearance = cros::mojom::KioskVisionAppearance::New();
-    appearance->person_id = person_id;
-    appearance->face = cros::mojom::KioskVisionFaceDetection::New();
-    appearance->face->box = cros::mojom::KioskVisionBoundingBox::New();
-    appearances.push_back(std::move(appearance));
+    appearances.emplace_back(NewFakeAppearance(person_id));
   }
+
   return cros::mojom::KioskVisionDetection::New(kFakeTimestamp,
                                                 std::move(appearances));
+}
+
+cros::mojom::KioskVisionTrackPtr NewFakeTrackOfPerson(int person_id,
+                                                      int count) {
+  constexpr int64_t kFakeTimestamp = 1719215767226132;
+
+  std::vector<cros::mojom::KioskVisionAppearancePtr> appearances;
+  for (int i = 0; i < count; i++) {
+    appearances.emplace_back(NewFakeAppearance(person_id));
+  }
+
+  return cros::mojom::KioskVisionTrack::New(
+      person_id, kFakeTimestamp, kFakeTimestamp, std::move(appearances));
 }
 
 media::VideoCaptureFormat CreateCaptureFormat(const gfx::Size& frame_size,
@@ -293,6 +311,23 @@ TEST_F(KioskVisionTest, TelemetryProcessorReceivesDetections) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(processor.TakeIdsProcessed(), ElementsAreArray({123, 45}));
+  EXPECT_THAT(processor.TakeErrors(), IsEmpty());
+}
+
+TEST_F(KioskVisionTest, TelemetryProcessorReceivesTracks) {
+  EnableKioskVisionTelemetryPref(local_state_);
+
+  KioskVision vision(&local_state_);
+
+  ASSERT_TRUE(fake_cros_camera_service_.WaitForObserver());
+
+  auto& processor = CHECK_DEREF(vision.GetTelemetryProcessor());
+
+  fake_cros_camera_service_.EmitFakeTrack(
+      NewFakeTrackOfPerson(123, /*count=*/3));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_THAT(processor.TakeIdsProcessed(), ElementsAreArray({123}));
   EXPECT_THAT(processor.TakeErrors(), IsEmpty());
 }
 
