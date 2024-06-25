@@ -174,7 +174,7 @@ jobs:
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
       - name: Run WPT interop tests (${{matrix.kind}}, ${{matrix.head}})
-        timeout-minutes: 60
+        if: ${{ matrix.kind == 'chromedriver' }}
         run: >
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/interop/"

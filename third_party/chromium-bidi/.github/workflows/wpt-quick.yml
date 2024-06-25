@@ -109,6 +109,20 @@ jobs:
           UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
+      - name: Run WPT interop tests
+        if: ${{matrix.kind == 'chromedriver'}}
+        run: >
+          xvfb-run --auto-servernum
+          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
+        env:
+          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          THIS_CHUNK: ${{ matrix.this_chunk }}
+          TOTAL_CHUNKS: ${{ matrix.total_chunks }}
+          UPDATE_EXPECTATIONS: false
+          VERBOSE: ${{ github.event.inputs.verbose }}
+          WPT_REPORT: out/wptreport-interop.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
@@ -180,6 +194,21 @@ jobs:
         run: >
           find ./wpt_artifacts/
           -name "wptreport.${{ matrix.kind }}-${{ matrix.head }}*.json"
+          -exec npm run wpt -- --wpt-report {} \;
+      - name: Update interop expectations
+        if: ${{ matrix.kind == 'chromedriver' }}
+        env:
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          # Do not run tests, only update expectations.
+          RUN_TESTS: false
+          UPDATE_EXPECTATIONS: true
+          VERBOSE: true
+        # Find all the reports for the given configuration and update the
+        # expectations with each report one-by-one.
+        run: >
+          find ./wpt_artifacts/
+          -name "wptreport-interop.${{ matrix.kind }}-${{ matrix.head }}*.json"
           -exec npm run wpt -- --wpt-report {} \;
       - name: Move updated expectations
         # Move the expectations from the current config to a separate directory to
