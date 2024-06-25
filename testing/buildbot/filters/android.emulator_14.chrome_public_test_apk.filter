@@ -1,14 +1,6 @@
 # crbug.com/1515446
 -org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
 
-# crbug.com/1193745
--org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
--org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
-
-# crbug.com/1231227
--org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
--org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
-
 # crbug.com/1036556
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
 

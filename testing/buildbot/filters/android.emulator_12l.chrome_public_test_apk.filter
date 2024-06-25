@@ -1,7 +1,3 @@
-# crbug.com/1193745
--org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
--org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
-
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
@@ -13,10 +9,6 @@
 
 # crbug.com/1225754
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
-
-# crbug.com/1231227
--org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
--org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
 
 # crbug.com/1231652
 -org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter

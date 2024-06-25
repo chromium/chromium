@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.Lis
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build.VERSION_CODES;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -550,18 +551,21 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1225709")
     public void testSaveDataUrl() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("dataUrlIcon", R.id.contextmenu_save_image, FILENAME_GIF);
     }
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1225709")
     public void testSaveImage() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("testImage", R.id.contextmenu_save_image, FILENAME_PNG);
     }
 
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1225709")
     public void testSaveVideo() throws TimeoutException, SecurityException, IOException {
         saveMediaFromContextMenu("videoDOMElement", R.id.contextmenu_save_video, FILENAME_WEBM);
     }
