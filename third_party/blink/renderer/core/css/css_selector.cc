@@ -80,6 +80,49 @@ struct SameSizeAsCSSSelector {
 
 ASSERT_SIZE(CSSSelector, SameSizeAsCSSSelector);
 
+CSSSelector::CSSSelector(MatchType match_type,
+                         const QualifiedName& attribute,
+                         AttributeMatchType case_sensitivity)
+    : bits_(
+          RelationField::encode(kSubSelector) | MatchField::encode(match_type) |
+          PseudoTypeField::encode(kPseudoUnknown) |
+          IsLastInSelectorListField::encode(false) |
+          IsLastInComplexSelectorField::encode(false) |
+          HasRareDataField::encode(false) | IsForPageField::encode(false) |
+          IsImplicitlyAddedField::encode(false) |
+          IsCoveredByBucketingField::encode(false) |
+          SignalField::encode(static_cast<unsigned>(Signal::kNone)) |
+          IsInvisibleField::encode(false) |
+          AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
+          IsCaseSensitiveAttributeField::encode(
+              HTMLDocument::IsCaseSensitiveAttribute(attribute))),
+      data_(attribute) {
+  DCHECK_EQ(match_type, kAttributeSet);
+}
+
+CSSSelector::CSSSelector(MatchType match_type,
+                         const QualifiedName& attribute,
+                         AttributeMatchType case_sensitivity,
+                         const AtomicString& value)
+    : bits_(
+          RelationField::encode(kSubSelector) |
+          MatchField::encode(static_cast<unsigned>(match_type)) |
+          PseudoTypeField::encode(kPseudoUnknown) |
+          IsLastInSelectorListField::encode(false) |
+          IsLastInComplexSelectorField::encode(false) |
+          HasRareDataField::encode(true) | IsForPageField::encode(false) |
+          IsImplicitlyAddedField::encode(false) |
+          IsCoveredByBucketingField::encode(false) |
+          SignalField::encode(static_cast<unsigned>(Signal::kNone)) |
+          IsInvisibleField::encode(false) |
+          AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
+          IsCaseSensitiveAttributeField::encode(
+              HTMLDocument::IsCaseSensitiveAttribute(attribute))),
+      data_(MakeGarbageCollected<RareData>(value)) {
+  DCHECK(IsAttributeSelector());
+  data_.rare_data_->attribute_ = attribute;
+}
+
 void CSSSelector::CreateRareData() {
   DCHECK_NE(Match(), kTag);
   if (HasRareData()) {
@@ -1290,15 +1333,6 @@ String CSSSelector::SimpleSelectorTextForDebug() const {
     SerializeSimpleSelector(builder);
   }
   return builder.ToString();
-}
-
-void CSSSelector::SetAttribute(const QualifiedName& value,
-                               AttributeMatchType match_type) {
-  CreateRareData();
-  data_.rare_data_->attribute_ = value;
-  data_.rare_data_->bits_.attr_.attribute_match_ = match_type;
-  data_.rare_data_->bits_.attr_.is_case_sensitive_attribute_ =
-      HTMLDocument::IsCaseSensitiveAttribute(value);
 }
 
 void CSSSelector::SetArgument(const AtomicString& value) {

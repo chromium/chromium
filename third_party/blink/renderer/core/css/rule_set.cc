@@ -322,10 +322,13 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           break;
       }
       break;
+    case CSSSelector::kAttributeSet:
+      attr_name = selector->Attribute().LocalName();
+      attr_value = g_empty_atom;
+      break;
     case CSSSelector::kAttributeExact:
       is_exact_attr = true;
       [[fallthrough]];
-    case CSSSelector::kAttributeSet:
     case CSSSelector::kAttributeHyphen:
     case CSSSelector::kAttributeList:
     case CSSSelector::kAttributeContain:

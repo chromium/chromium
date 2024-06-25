@@ -683,6 +683,7 @@ static bool AnyAttributeMatches(Element& element,
   // localName().
   element.SynchronizeAttribute(selector_attr.LocalName());
 
+  // NOTE: For kAttributeSet, this is a bogus pointer but never used.
   const AtomicString& selector_value = selector.Value();
   TextCaseSensitivity case_sensitivity =
       (selector.AttributeMatch() ==

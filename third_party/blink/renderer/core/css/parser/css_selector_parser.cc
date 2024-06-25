@@ -1498,30 +1498,29 @@ bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenStream& stream) {
           : QualifiedName(namespace_prefix, attribute_name, namespace_uri);
 
   if (stream.AtEnd()) {
-    CSSSelector selector;
-    selector.SetAttribute(qualified_name,
-                          CSSSelector::AttributeMatchType::kCaseSensitive);
-    selector.SetMatch(CSSSelector::kAttributeSet);
+    CSSSelector selector(CSSSelector::kAttributeSet, qualified_name,
+                         CSSSelector::AttributeMatchType::kCaseSensitive);
     output_.push_back(std::move(selector));
     context_->Count(WebFeature::kHasIDClassTagAttribute);
     return true;
   }
 
-  CSSSelector selector;
-  selector.SetMatch(ConsumeAttributeMatch(stream));
+  CSSSelector::MatchType match_type = ConsumeAttributeMatch(stream);
 
-  const CSSParserToken& attribute_value = stream.Peek();
+  CSSParserToken attribute_value = stream.Peek();
   if (attribute_value.GetType() != kIdentToken &&
       attribute_value.GetType() != kStringToken) {
     return false;
   }
-  selector.SetValue(attribute_value.Value().ToAtomicString());
   stream.ConsumeIncludingWhitespace();
-  selector.SetAttribute(qualified_name, ConsumeAttributeFlags(stream));
-
+  CSSSelector::AttributeMatchType case_sensitivity =
+      ConsumeAttributeFlags(stream);
   if (!stream.AtEnd()) {
     return false;
   }
+
+  CSSSelector selector(match_type, qualified_name, case_sensitivity,
+                       attribute_value.Value().ToAtomicString());
   output_.push_back(std::move(selector));
   context_->Count(WebFeature::kHasIDClassTagAttribute);
   return true;
