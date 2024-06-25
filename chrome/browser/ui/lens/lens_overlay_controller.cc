@@ -68,6 +68,9 @@
 
 namespace {
 
+// The radius of the blur to use for the underlying tab contents.
+constexpr int kBlurRadiusPixels = 200;
+
 // Timeout for the fadeout animation. This is purposely set to be twice the
 // duration of the fade out animation on the WebUI JS because there is a delay
 // between us notifying the WebUI, and the WebUI receiving our event.
@@ -1594,12 +1597,11 @@ void LensOverlayController::AddBackgroundBlur() {
   // overflow. Clipping the rect breaks on linux, so gating the change to MacOS
   // until a fix to cc allows for a universal solution. See b/328294684.
   gfx::Rect web_contents_rect = tab_->GetContents()->GetContainerBounds();
-  ui_layer->SetClipRect(
-      gfx::Rect(0, lens::features::GetLensOverlayLivePageBlurRadiusPixels() - 2,
-                web_contents_rect.width(), web_contents_rect.height()));
+  ui_layer->SetClipRect(gfx::Rect(0, kBlurRadiusPixels - 2,
+                                  web_contents_rect.width(),
+                                  web_contents_rect.height()));
 #endif  // BUILDFLAG(IS_MAC)
-  ui_layer->SetLayerBlur(
-      lens::features::GetLensOverlayLivePageBlurRadiusPixels() / 3);
+  ui_layer->SetLayerBlur(kBlurRadiusPixels / 3);
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {

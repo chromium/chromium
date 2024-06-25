@@ -450,10 +450,6 @@ extern int GetLensOverlayServerRequestTimeout();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlayEnableErrorPage();
 
-// The radius of the live page / underlying tab contents blur in pixels.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetLensOverlayLivePageBlurRadiusPixels();
-
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
