@@ -324,45 +324,37 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
   model_type_state_.mutable_progress_marker()->clear_gc_directive();
 
   if (!model_type_state_.invalidations().empty()) {
-    if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
-      if (static_cast<size_t>(model_type_state_.invalidations_size()) >
-          kMaxPendingInvalidations) {
-        DVLOG(1) << "Cleaning invalidations in |model_type_state_| due to "
-                    "invalidations overflow.";
-        model_type_state_.clear_invalidations();
-      }
-      // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
-      // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync
-      // cycle has to be triggered right after we loaded persisted
-      // invalidations.
-      for (int i = 0; i < model_type_state_.invalidations_size(); ++i) {
-        pending_invalidations_.emplace_back(
-            std::make_unique<SyncInvalidationAdapter>(
-                model_type_state_.invalidations(i).hint(),
-                model_type_state_.invalidations(i).has_version()
-                    ? std::optional<int64_t>(
-                          model_type_state_.invalidations(i).version())
-                    : std::nullopt),
-            false);
-      }
+    if (static_cast<size_t>(model_type_state_.invalidations_size()) >
+        kMaxPendingInvalidations) {
+      DVLOG(1) << "Cleaning invalidations in |model_type_state_| due to "
+                  "invalidations overflow.";
+      model_type_state_.clear_invalidations();
+    }
+    // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
+    // ModelTypeWorker::ctor(), but sync cycle is not scheduled. New sync
+    // cycle has to be triggered right after we loaded persisted
+    // invalidations.
+    for (int i = 0; i < model_type_state_.invalidations_size(); ++i) {
+      pending_invalidations_.emplace_back(
+          std::make_unique<SyncInvalidationAdapter>(
+              model_type_state_.invalidations(i).hint(),
+              model_type_state_.invalidations(i).has_version()
+                  ? std::optional<int64_t>(
+                        model_type_state_.invalidations(i).version())
+                  : std::nullopt),
+          false);
+    }
 
-      bool is_version_order_correct = true;
-      for (size_t i = 1; i < pending_invalidations_.size(); ++i) {
-        is_version_order_correct &= (SyncInvalidation::LessThanByVersion(
-            *pending_invalidations_[i - 1].pending_invalidation,
-            *pending_invalidations_[i].pending_invalidation));
-      }
-      if (!is_version_order_correct) {
-        DVLOG(1) << "Cleaning invalidations in |model_type_state| due to "
-                    "incorrect version order.";
-        pending_invalidations_.clear();
-        model_type_state_.clear_invalidations();
-      }
-    } else {
-      // In case the feature was enabled in previous session, some invalidations
-      // might be loaded to |model_type_state_| from storage. As feature is
-      // disabled now, invalidations in |model_type_state_| and
-      // |pending_invalidations_| should be in sync.
+    bool is_version_order_correct = true;
+    for (size_t i = 1; i < pending_invalidations_.size(); ++i) {
+      is_version_order_correct &= (SyncInvalidation::LessThanByVersion(
+          *pending_invalidations_[i - 1].pending_invalidation,
+          *pending_invalidations_[i].pending_invalidation));
+    }
+    if (!is_version_order_correct) {
+      DVLOG(1) << "Cleaning invalidations in |model_type_state| due to "
+                  "incorrect version order.";
+      pending_invalidations_.clear();
       model_type_state_.clear_invalidations();
     }
   }
@@ -776,9 +768,7 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
         ++it;
       }
     }
-    if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
-      UpdateModelTypeStateInvalidations();
-    }
+    UpdateModelTypeStateInvalidations();
 
     has_dropped_invalidation_ = false;
 
@@ -1320,9 +1310,7 @@ void ModelTypeWorker::RecordRemoteInvalidation(
     pending_invalidations_.erase(pending_invalidations_.begin());
   }
   nudge_handler_->SetHasPendingInvalidations(type_, HasPendingInvalidations());
-  if (base::FeatureList::IsEnabled(kSyncPersistInvalidations)) {
-    SendPendingInvalidationsToProcessor();
-  }
+  SendPendingInvalidationsToProcessor();
 }
 
 void ModelTypeWorker::CollectPendingInvalidations(
@@ -1350,8 +1338,6 @@ bool ModelTypeWorker::HasPendingInvalidations() const {
 }
 
 void ModelTypeWorker::SendPendingInvalidationsToProcessor() {
-  DCHECK(base::FeatureList::IsEnabled(kSyncPersistInvalidations));
-
   CHECK(model_type_processor_);
   DVLOG(1) << "Storing pending invalidations for "
            << ModelTypeToDebugString(type_);
@@ -1363,7 +1349,6 @@ void ModelTypeWorker::SendPendingInvalidationsToProcessor() {
 }
 
 void ModelTypeWorker::UpdateModelTypeStateInvalidations() {
-  DCHECK(base::FeatureList::IsEnabled(kSyncPersistInvalidations));
   model_type_state_.clear_invalidations();
   for (const auto& inv : pending_invalidations_) {
     SyncInvalidation* invalidation = inv.pending_invalidation.get();

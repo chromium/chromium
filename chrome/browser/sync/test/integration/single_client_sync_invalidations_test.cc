@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
@@ -261,9 +260,6 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
 class SingleClientSyncInvalidationsTest : public SyncTest {
  public:
   SingleClientSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kSyncPersistInvalidations},
-        /*disabled_features=*/{});
   }
 
   // Injects a test DeviceInfo entity to the fake server.
@@ -291,9 +287,6 @@ class SingleClientSyncInvalidationsTest : public SyncTest {
         GetClient(0)->GetGaiaIdHashForPrimaryAccount());
     return prefs.GetCacheGuid();
   }
-
- private:
-  base::test::ScopedFeatureList override_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,

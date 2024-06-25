@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -2896,9 +2895,6 @@ TEST_F(ModelTypeWorkerPasswordsTest,
 
 // Verifies persisting invalidations load from the ModelTypeProcessor.
 TEST_F(ModelTypeWorkerTest, LoadInvalidations) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(kSyncPersistInvalidations);
-
   InitializeWithInvalidations();
 
   sync_pb::GetUpdateTriggers gu_trigger_1;
@@ -2909,9 +2905,6 @@ TEST_F(ModelTypeWorkerTest, LoadInvalidations) {
 
 // Verifies StorePendingInvalidations() calls for every incoming invalidation.
 TEST_F(ModelTypeWorkerTest, StoreInvalidationsCallCount) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(kSyncPersistInvalidations);
-
   NormalInitialize();
   for (size_t i = 0; i < ModelTypeWorker::kMaxPendingInvalidations + 2u; ++i) {
     worker()->RecordRemoteInvalidation(BuildInvalidation(i + 1, "hint"));
@@ -2951,9 +2944,6 @@ TEST_F(ModelTypeWorkerTest, HintCoalescing) {
 
 // Verifies the management of pending invalidations and ModelTypeState.
 TEST_F(ModelTypeWorkerTest, ModelTypeStateAfterApplyUpdates) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(kSyncPersistInvalidations);
-
   NormalInitialize();
 
   worker()->RecordRemoteInvalidation(BuildInvalidation(1, "bm_hint_1"));
