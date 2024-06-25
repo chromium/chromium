@@ -8,9 +8,6 @@
 # There is no need to specify template arguments:
 #     my_namespace::my_subnamespace::MyTemplate::my_field_
 
-# Populated manually - double implicit-cast required.
-PaintManager::instance_
-
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
 extensions::GlobalShortcutListenerX11::x_display_
