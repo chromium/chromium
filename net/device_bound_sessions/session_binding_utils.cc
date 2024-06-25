@@ -12,7 +12,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -55,7 +54,7 @@ base::Value::Dict CreatePublicKeyInfo(base::span<const uint8_t> pubkey) {
 
 std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::StringPiece schema,
+    std::string_view schema,
     const base::Value::Dict& payload) {
   auto header = base::Value::Dict()
                     .Set("alg", SignatureAlgorithmToString(algorithm))
@@ -109,7 +108,7 @@ std::optional<std::vector<uint8_t>> ConvertDERSignatureToRaw(
 }  // namespace
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
-    base::StringPiece challenge,
+    std::string_view challenge,
     const GURL& registration_url,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,
@@ -131,10 +130,10 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
 std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,
-    base::StringPiece client_id,
-    base::StringPiece challenge,
+    std::string_view client_id,
+    std::string_view challenge,
     const GURL& destination_url,
-    base::StringPiece name_space) {
+    std::string_view name_space) {
   auto payload = base::Value::Dict()
                      .Set("sub", client_id)
                      .Set("aud", destination_url.spec())
@@ -147,7 +146,7 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
 }
 
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
-    base::StringPiece header_and_payload,
+    std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> signature) {
   std::optional<std::vector<uint8_t>> signature_holder;
