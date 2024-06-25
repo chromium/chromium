@@ -27,7 +27,7 @@ class GameControllerDataFetcherMac : public GamepadDataFetcher {
  private:
   int NextUnusedPlayerIndex();
 
-  bool connected_[Gamepads::kItemsLengthCap];
+  bool connected_[Gamepads::kItemsLengthCap] = {};
 };
 
 }  // namespace device
