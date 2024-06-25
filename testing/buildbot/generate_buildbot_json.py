@@ -885,7 +885,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       result['shard_level_retries_on_ctp'] = (
           tester_config.get('shard_level_retries_on_ctp')
           or result.get('shard_level_retries_on_ctp'))
-    else:
+    elif result.get('experiment_percentage') != 100:
       result['shard_level_retries_on_ctp'] = 1
 
     result = self.apply_common_transformations(waterfall,
