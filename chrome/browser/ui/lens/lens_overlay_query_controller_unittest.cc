@@ -93,12 +93,9 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
  public:
   explicit LensOverlayQueryControllerMock(
       LensOverlayFullImageResponseCallback full_image_callback,
-      base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>
-          url_callback,
-      base::RepeatingCallback<void(lens::proto::LensOverlayInteractionResponse)>
-          interaction_data_callback,
-      base::RepeatingCallback<void(const std::string&)>
-          thumbnail_created_callback,
+      LensOverlayUrlResponseCallback url_callback,
+      LensOverlayInteractionResponseCallback interaction_data_callback,
+      LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
       signin::IdentityManager* identity_manager,
       lens::LensOverlayInvocationSource invocation_source,
@@ -208,7 +205,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
 
 TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
+                         lens::mojom::TextPtr, bool>
       full_image_response_future;
   LensOverlayQueryControllerMock query_controller(
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
@@ -258,7 +255,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
 TEST_F(LensOverlayQueryControllerTest,
        FetchRegionSearchInteraction_ReturnsResponses) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
+                         lens::mojom::TextPtr, bool>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
@@ -359,7 +356,7 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        FetchRegionSearchInteractionWithBytes_ReturnsResponse) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
+                         lens::mojom::TextPtr, bool>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
@@ -477,7 +474,7 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        FetchMultimodalSearchInteraction_ReturnsResponses) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
+                         lens::mojom::TextPtr, bool>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
@@ -585,7 +582,7 @@ TEST_F(LensOverlayQueryControllerTest,
       lens::features::kLensOverlay,
       {{"use-search-context-for-text-only-requests", "true"}});
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
+                         lens::mojom::TextPtr, bool>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
@@ -636,7 +633,7 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        FetchInteraction_StartsNewQueryFlowAfterTimeout) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr>
+                         lens::mojom::TextPtr, bool>
       full_image_response_future;
   base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
       url_response_future;
