@@ -4287,6 +4287,140 @@ TEST_F(AuctionRunnerTest, BidderThreadPoolExpanded) {
   EXPECT_EQ(auction_worklet_service->AuctionV8HelpersForTesting().size(), 21u);
 }
 
+// Regression test for crbug.com/349067504: partial reset of the per-process
+// bidder thread pool, with subsequent reuse of the reset entry. Expect
+// successful execution.
+//
+// Steps:
+// 1. Start Worklet Service 1, load a Bidder Worklet (requesting 2 threads).
+// 2. Start Worklet Service 2, load a Bidder Worklet (requesting 1 thread).
+// 3. Destroy Worklet Service 1.
+// 4. Start Worklet Service 3, load a Bidder Worklet (requesting 2 threads).
+TEST_F(AuctionRunnerTest, BidderThreadPoolPartiallyResetAndSubsequentlyReused) {
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_remote1;
+  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_receiver1 =
+          auction_worklet_service_remote1.InitWithNewPipeAndPassReceiver();
+
+  auto auction_worklet_service1 =
+      auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+          std::move(auction_worklet_service_receiver1));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+
+  auction_worklet::TestAuctionNetworkEventsHandler
+      auction_network_events_handler;
+
+  mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet1;
+  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+      worklet_receiver1 = bidder_worklet1.BindNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory1;
+  test_url_loader_factory.Clone(
+      url_loader_factory1.InitWithNewPipeAndPassReceiver());
+
+  std::vector<
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts1(2);
+
+  auction_worklet_service1->LoadBidderWorklet(
+      std::move(worklet_receiver1), std::move(shared_storage_hosts1),
+      /*should_pause_on_start=*/false, std::move(url_loader_factory1),
+      auction_network_events_handler.CreateRemote(),
+      /*script_source_url=*/GURL("https://ad1.com"),
+      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*trusted_bidding_signals_slot_size_param=*/{},
+      /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
+          /*private_aggregation_allowed=*/false,
+          /*shared_storage_allowed=*/false),
+      /*experiment_group_id=*/{});
+
+  // There are 2 bidder threads and 1 seller thread.
+  EXPECT_EQ(auction_worklet_service1->AuctionV8HelpersForTesting().size(), 3u);
+
+  mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet2;
+  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+      worklet_receiver2 = bidder_worklet2.BindNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory2;
+  test_url_loader_factory.Clone(
+      url_loader_factory2.InitWithNewPipeAndPassReceiver());
+
+  std::vector<
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts2(1);
+
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_remote2;
+  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_receiver2 =
+          auction_worklet_service_remote2.InitWithNewPipeAndPassReceiver();
+
+  auto auction_worklet_service2 =
+      auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+          std::move(auction_worklet_service_receiver2));
+
+  auction_worklet_service2->LoadBidderWorklet(
+      std::move(worklet_receiver2), std::move(shared_storage_hosts2),
+      /*should_pause_on_start=*/false, std::move(url_loader_factory2),
+      auction_network_events_handler.CreateRemote(),
+      /*script_source_url=*/GURL("https://ad1.com"),
+      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*trusted_bidding_signals_slot_size_param=*/{},
+      /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
+          /*private_aggregation_allowed=*/false,
+          /*shared_storage_allowed=*/false),
+      /*experiment_group_id=*/{});
+
+  // There are 1 bidder thread and 1 seller thread.
+  EXPECT_EQ(auction_worklet_service2->AuctionV8HelpersForTesting().size(), 2u);
+
+  // Reset Worklet Service 1, resetting the second entry in the thread pool
+  // while preserving the first entry.
+  auction_worklet_service1.reset();
+
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_remote3;
+  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_receiver3 =
+          auction_worklet_service_remote3.InitWithNewPipeAndPassReceiver();
+
+  auto auction_worklet_service3 =
+      auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+          std::move(auction_worklet_service_receiver3));
+
+  mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet3;
+  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+      worklet_receiver3 = bidder_worklet3.BindNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory3;
+  test_url_loader_factory.Clone(
+      url_loader_factory3.InitWithNewPipeAndPassReceiver());
+
+  std::vector<
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+      shared_storage_hosts3(2);
+
+  auction_worklet_service3->LoadBidderWorklet(
+      std::move(worklet_receiver3), std::move(shared_storage_hosts3),
+      /*should_pause_on_start=*/false, std::move(url_loader_factory3),
+      auction_network_events_handler.CreateRemote(),
+      /*script_source_url=*/GURL("https://ad1.com"),
+      /*bidding_wasm_helper_url=*/{}, /*trusted_bidding_signals_url=*/{},
+      /*trusted_bidding_signals_slot_size_param=*/{},
+      /*top_window_origin=*/url::Origin::Create(GURL("https://ad1.com")),
+      auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
+          /*private_aggregation_allowed=*/false,
+          /*shared_storage_allowed=*/false),
+      /*experiment_group_id=*/{});
+
+  // There are 2 bidder threads and 1 seller thread.
+  EXPECT_EQ(auction_worklet_service3->AuctionV8HelpersForTesting().size(), 3u);
+}
+
 TEST_F(AuctionRunnerTest, PauseBidder) {
   pause_worklet_url_ = kBidder2Url;
 

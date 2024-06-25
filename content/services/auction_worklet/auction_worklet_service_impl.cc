@@ -69,6 +69,11 @@ class AuctionWorkletServiceImpl::V8HelperHolder
                              /*thread_index=*/g_bidder_instances->size()));
     }
 
+    if (!g_bidder_instances->at(thread_index)) {
+      g_bidder_instances->at(thread_index) =
+          new V8HelperHolder(process_model, WorkletType::kBidder, thread_index);
+    }
+
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         g_bidder_instances->at(thread_index)->sequence_checker_);
 
@@ -86,6 +91,11 @@ class AuctionWorkletServiceImpl::V8HelperHolder
       g_seller_instances->push_back(
           new V8HelperHolder(process_model, WorkletType::kSeller,
                              /*thread_index=*/g_seller_instances->size()));
+    }
+
+    if (!g_seller_instances->at(thread_index)) {
+      g_seller_instances->at(thread_index) =
+          new V8HelperHolder(process_model, WorkletType::kSeller, thread_index);
     }
 
     DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -117,12 +127,6 @@ class AuctionWorkletServiceImpl::V8HelperHolder
         worklet_type_(worklet_type),
         thread_index_(thread_index) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (worklet_type_ == WorkletType::kBidder) {
-      DCHECK_EQ(g_bidder_instances->size(), thread_index_);
-    } else {
-      DCHECK_EQ(g_seller_instances->size(), thread_index_);
-    }
   }
 
   ~V8HelperHolder() {
