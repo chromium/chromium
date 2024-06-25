@@ -35,7 +35,8 @@ enum class PagePropertyFlag {
   kMin = kIsVisible,
   kIsAudible,            // initializes PageNode::IsAudible()
   kHasPictureInPicture,  // initializes PageNode::HasPictureInPicture()
-  kMax = kHasPictureInPicture,
+  kIsOffTheRecord,       // initializes PageNode::IsOffTheRecord()
+  kMax = kIsOffTheRecord,
 };
 using PagePropertyFlags = base::
     EnumSet<PagePropertyFlag, PagePropertyFlag::kMin, PagePropertyFlag::kMax>;
@@ -80,6 +81,7 @@ class PageNodeImpl
   bool IsAudible() const override;
   std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
   bool HasPictureInPicture() const override;
+  bool IsOffTheRecord() const override;
   LoadingState GetLoadingState() const override;
   ukm::SourceId GetUkmSourceID() const override;
   LifecycleState GetLifecycleState() const override;
@@ -328,6 +330,9 @@ class PageNodeImpl
       bool,
       &PageNodeObserver::OnHasPictureInPictureChanged>
       has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+
+  const bool is_off_the_record_;
+
   // The loading state. This is driven by instrumentation in the browser
   // process.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

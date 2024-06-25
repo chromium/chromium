@@ -282,7 +282,7 @@ CpuHealthTracker::FilterForPossibleActionablePages(
 
     const int cpu_usage_percentage =
         cpu_usage * 100 / base::SysInfo::NumberOfProcessors();
-    if (is_tab &&
+    if (is_tab && !page_node->IsOffTheRecord() &&
         cpu_usage_percentage >=
             performance_manager::features::kMinimumActionableTabCPUPercentage
                 .Get()) {

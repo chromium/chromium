@@ -33,7 +33,9 @@ PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
       is_visible_(initial_properties.Has(PagePropertyFlag::kIsVisible)),
       is_audible_(initial_properties.Has(PagePropertyFlag::kIsAudible)),
       has_picture_in_picture_(
-          initial_properties.Has(PagePropertyFlag::kHasPictureInPicture)) {
+          initial_properties.Has(PagePropertyFlag::kHasPictureInPicture)),
+      is_off_the_record_(
+          initial_properties.Has(PagePropertyFlag::kIsOffTheRecord)) {
   // Nodes are created on the UI thread, then accessed on the PM sequence.
   // `weak_this_` can be returned from GetWeakPtrOnUIThread() and dereferenced
   // on the PM sequence.
@@ -110,6 +112,10 @@ std::optional<base::TimeDelta> PageNodeImpl::GetTimeSinceLastAudibleChange()
 bool PageNodeImpl::HasPictureInPicture() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return has_picture_in_picture_.value();
+}
+
+bool PageNodeImpl::IsOffTheRecord() const {
+  return is_off_the_record_;
 }
 
 PageNode::LoadingState PageNodeImpl::GetLoadingState() const {

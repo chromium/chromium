@@ -148,6 +148,10 @@ class PageNode : public TypedNode<PageNode> {
   // window, false otherwise.
   virtual bool HasPictureInPicture() const = 0;
 
+  // Returns true if this page is off the record, false otherwise.
+  // A tab is off the record when it is open in incognito or guest mode.
+  virtual bool IsOffTheRecord() const = 0;
+
   // Returns the page's loading state.
   virtual LoadingState GetLoadingState() const = 0;
 

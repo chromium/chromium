@@ -100,6 +100,9 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->HasPictureInPictureDocument()) {
     initial_property_flags.Put(PagePropertyFlag::kHasPictureInPicture);
   }
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    initial_property_flags.Put(PagePropertyFlag::kIsOffTheRecord);
+  }
 
   // Create the page node.
   page_node_ = PerformanceManagerImpl::CreatePageNode(
