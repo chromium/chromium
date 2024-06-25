@@ -1275,6 +1275,9 @@ policies:
   1274: LensOnGalleryEnabled
   1275: HistorySearchSettings
   1276: DevicePostQuantumKeyAgreementEnabled
+  1277: DefaultJavaScriptOptimizerSetting
+  1278: JavaScriptOptimizerAllowedForSites
+  1279: JavaScriptOptimizerBlockedForSites
 
 atomic_groups:
   1: Homepage

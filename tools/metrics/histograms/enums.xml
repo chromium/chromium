@@ -3130,6 +3130,7 @@ Called by update_net_error_codes.py.-->
   <int value="123" label="Tracking Protection"/>
   <int value="124" label="Top-level 3PCD Origin Trial"/>
   <int value="125" label="Display Media System Audio"/>
+  <int value="126" label="Javascript optimizer"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->

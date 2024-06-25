@@ -437,5 +437,9 @@ enum ContentSettingsType {
   // selection picker if needed. Please note that the setting only works for
   // WebUI.
   DISPLAY_MEDIA_SYSTEM_AUDIO,
+
+  // Whether to use the higher-tier v8 optimizers for running JavaScript on the
+  // page.
+  JAVASCRIPT_OPTIMIZER,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SafetyHubPermissionType)

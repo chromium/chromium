@@ -2140,6 +2140,9 @@ chromium-metrics-reviews@google.com.
   <int value="1274" label="LensOnGalleryEnabled"/>
   <int value="1275" label="HistorySearchSettings"/>
   <int value="1276" label="DevicePostQuantumKeyAgreementEnabled"/>
+  <int value="1277" label="DefaultJavaScriptOptimizerSetting"/>
+  <int value="1278" label="JavaScriptOptimizerAllowedForSites"/>
+  <int value="1279" label="JavaScriptOptimizerBlockedForSites"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

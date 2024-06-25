@@ -700,7 +700,7 @@ public class WebsitePermissionsFetcherTest {
         // Otherwise, just update count in the assert.
         // TODO(https://b/332704817): Add test for Tracking Protection content setting after Android
         // integration.
-        assertEquals(109, ContentSettingsType.MAX_VALUE);
+        assertEquals(110, ContentSettingsType.MAX_VALUE);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
@@ -760,6 +760,13 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.JAVASCRIPT_JIT,
+                        ORIGIN,
+                        ContentSettingValues.DEFAULT,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(
+                        ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                         ORIGIN,
                         ContentSettingValues.DEFAULT,
                         ProviderType.PREF_PROVIDER,
@@ -903,6 +910,11 @@ public class WebsitePermissionsFetcherTest {
                             site.getContentSetting(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     ContentSettingsType.JAVASCRIPT_JIT));
+                    assertEquals(
+                            Integer.valueOf(ContentSettingValues.DEFAULT),
+                            site.getContentSetting(
+                                    UNUSED_BROWSER_CONTEXT_HANDLE,
+                                    ContentSettingsType.JAVASCRIPT_OPTIMIZER));
                     assertEquals(
                             Integer.valueOf(ContentSettingValues.DEFAULT),
                             site.getContentSetting(
