@@ -205,7 +205,7 @@ void CampaignsManagerClientImpl::OnReadyToLogImpression(
   // Records impression UMA metrics.
   // TODO: b/348495965 - Verify group metrics when ready.
   RecordImpression(campaign_id);
-  RecordEvents(growth::CampaignEvent::kImpression, campaign_id, group_id);
+  RecordImpressionEvents(campaign_id, group_id);
 }
 
 void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
@@ -219,7 +219,7 @@ void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
     return;
   }
 
-  RecordEvents(growth::CampaignEvent::kDismissed, campaign_id, group_id);
+  RecordDismissalEvents(campaign_id, group_id);
 }
 
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
@@ -241,7 +241,7 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
     case CampaignButtonId::kClose:
       // Primary, Secondary and close button press will treated as user
       // dismissal.
-      RecordEvents(growth::CampaignEvent::kDismissed, campaign_id, group_id);
+      RecordDismissalEvents(campaign_id, group_id);
       break;
     case CampaignButtonId::kOthers:
       break;
@@ -274,15 +274,28 @@ void CampaignsManagerClientImpl::UpdateConfig(
                         &config_provider_);
 }
 
-void CampaignsManagerClientImpl::RecordEvents(growth::CampaignEvent,
-                                              int campaign_id,
-                                              std::optional<int> group_id) {
+void CampaignsManagerClientImpl::RecordImpressionEvents(
+    int campaign_id,
+    std::optional<int> group_id) {
   campaigns_manager_->RecordEventForTargeting(
       growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
 
   if (group_id) {
     campaigns_manager_->RecordEventForTargeting(
         growth::CampaignEvent::kGroupImpression,
+        base::NumberToString(group_id.value()));
+  }
+}
+
+void CampaignsManagerClientImpl::RecordDismissalEvents(
+    int campaign_id,
+    std::optional<int> group_id) {
+  campaigns_manager_->RecordEventForTargeting(
+      growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+
+  if (group_id) {
+    campaigns_manager_->RecordEventForTargeting(
+        growth::CampaignEvent::kGroupDismissed,
         base::NumberToString(group_id.value()));
   }
 }

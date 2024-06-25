@@ -53,6 +53,13 @@ inline constexpr char kEventDismissalParam[] =
     "name:ChromeOSAshGrowthCampaigns_Campaign%d_Dismissed;comparator:<%d;"
     "window:3650;storage:3650";
 
+inline constexpr char kEventGroupImpressionParam[] =
+    "name:ChromeOSAshGrowthCampaigns_Group%d_Impression;comparator:<%d;"
+    "window:3650;storage:3650";
+inline constexpr char kEventGroupDismissalParam[] =
+    "name:ChromeOSAshGrowthCampaigns_Group%d_Dismissed;comparator:<%d;"
+    "window:3650;storage:3650";
+
 bool MatchPref(const base::Value::List* criterias,
                std::string_view pref_path,
                const PrefService* pref_service) {
@@ -184,6 +191,16 @@ bool IsCampaignValid(const Campaign* campaign) {
   return true;
 }
 
+std::map<std::string, std::string> CreateBasicConditionParams() {
+  std::map<std::string, std::string> conditions_params;
+  // `event_used` and `event_trigger` are required for feature_engagement
+  // config, although they are not used in campaign matching.
+  conditions_params[kEventUsedKey] = kEventUsedParam;
+  conditions_params[kEventTriggerKey] = kEventTriggerParam;
+
+  return conditions_params;
+}
+
 }  // namespace
 
 CampaignsMatcher::CampaignsMatcher(CampaignsManagerClient* client,
@@ -269,7 +286,8 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
     return false;
   }
 
-  if (Matched(targetings, campaign_id.value(), is_prematch)) {
+  if (Matched(targetings, campaign_id.value(), GetCampaignGroupId(campaign),
+              is_prematch)) {
     return true;
   }
 
@@ -524,6 +542,24 @@ bool CampaignsMatcher::MatchOpenedApp(
   return false;
 }
 
+bool CampaignsMatcher::ReachCap(const std::string& cap_event_name,
+                                int id,
+                                std::optional<int> cap) const {
+  if (!cap) {
+    // There is no cap, return false.
+    return false;
+  }
+
+  std::map<std::string, std::string> conditions_params =
+      CreateBasicConditionParams();
+  // Event can be put in any key starting with `event_`.
+  // Please see `components/feature_engagement/README.md#featureconfig`.
+  conditions_params[kEventKey] =
+      base::StringPrintf(cap_event_name.c_str(), id, cap.value());
+
+  return !client_->WouldTriggerHelpUI(conditions_params);
+}
+
 bool CampaignsMatcher::MatchActiveUrlRegexes(
     const std::vector<std::string>& active_url_regrexes) const {
   if (active_url_regrexes.empty()) {
@@ -551,38 +587,32 @@ bool CampaignsMatcher::MatchActiveUrlRegexes(
 }
 
 bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
-                                   int campaign_id) const {
+                                   int campaign_id,
+                                   std::optional<int> group_id) const {
   if (!config) {
     // Campaign is matched if there is no events targeting.
     return true;
   }
 
-  std::map<std::string, std::string> conditions_params;
-  // `event_used` and `event_trigger` are required for feature_engagement
-  // config, although they are not used in campaign matching.
-  conditions_params[kEventUsedKey] = kEventUsedParam;
-  conditions_params[kEventTriggerKey] = kEventTriggerParam;
-
-  // Check impression cap and dismissal cap.
-  int impression_cap = config->GetImpressionCap();
-
-  // Event can be put in any key starting with `event_`.
-  // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] =
-      base::StringPrintf(kEventImpressionParam, campaign_id, impression_cap);
-  if (!client_->WouldTriggerHelpUI(conditions_params)) {
-    // Campaign is not matched if the impression cap condition is not met.
+  // Check group impression cap and dismissal cap.
+  if (group_id && (ReachCap(kEventGroupImpressionParam, /*id=*/group_id.value(),
+                            config->GetGroupImpressionCap()) ||
+                   ReachCap(kEventGroupDismissalParam, /*id=*/group_id.value(),
+                            config->GetGroupDismissalCap()))) {
+    // Reached group impression cap or dismissal cap.
     return false;
   }
 
-  int dismissal_cap = config->GetDismissalCap();
-  conditions_params[kEventKey] =
-      base::StringPrintf(kEventDismissalParam, campaign_id, dismissal_cap);
-  if (!client_->WouldTriggerHelpUI(conditions_params)) {
-    // Campaign is not matched if the dismissal cap condition is not met.
+  // Check campaign impression cap and dismissal cap.
+  if (ReachCap(kEventImpressionParam, /*id=*/campaign_id,
+               config->GetImpressionCap()) ||
+      ReachCap(kEventDismissalParam, /*id=*/campaign_id,
+               config->GetDismissalCap())) {
     return false;
   }
 
+  std::map<std::string, std::string> conditions_params =
+      CreateBasicConditionParams();
   // Here is to handle custom events targeting conditions.
   // The outer loop is AND logic and the inner loop is OR logic.
   const base::Value::List* conditions = config->GetEventsConditions();
@@ -678,8 +708,10 @@ bool CampaignsMatcher::MatchSessionTargeting(
          MatchOwner(targeting.GetIsOwner());
 }
 
-bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
-                                             int campaign_id) const {
+bool CampaignsMatcher::MatchRuntimeTargeting(
+    const RuntimeTargeting& targeting,
+    int campaign_id,
+    std::optional<int> group_id) const {
   if (!targeting.IsValid()) {
     // Campaigns matched if there is no runtime targeting.
     return true;
@@ -689,11 +721,12 @@ bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
          MatchSchedulings(targeting.GetSchedulings()) &&
          MatchOpenedApp(targeting.GetAppsOpened()) &&
          MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes()) &&
-         MatchEvents(targeting.GetEventsConfig(), campaign_id);
+         MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id);
 }
 
 bool CampaignsMatcher::Matched(const Targeting* targeting,
                                int campaign_id,
+                               std::optional<int> group_id,
                                bool is_prematch) const {
   if (!targeting) {
     // Targeting is invalid. Skip the current campaign.
@@ -708,18 +741,20 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
   }
 
   return MatchSessionTargeting(SessionTargeting(targeting)) &&
-         MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id);
+         MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id,
+                               group_id);
 }
 
 bool CampaignsMatcher::Matched(const Targetings* targetings,
                                int campaign_id,
+                               std::optional<int> group_id,
                                bool is_prematch) const {
   if (!targetings || targetings->empty()) {
     return true;
   }
 
   for (const auto& targeting : *targetings) {
-    if (Matched(targeting.GetIfDict(), campaign_id, is_prematch)) {
+    if (Matched(targeting.GetIfDict(), campaign_id, group_id, is_prematch)) {
       return true;
     }
   }

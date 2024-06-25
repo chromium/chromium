@@ -80,6 +80,8 @@ inline constexpr char kOwner[] = "isOwner";
 inline constexpr char kEventsTargetings[] = "events";
 inline constexpr char kImpressionCap[] = "impressionCap";
 inline constexpr char kDismissalCap[] = "dismissalCap";
+inline constexpr char kGroupImpressionCap[] = "groupImpressionCap";
+inline constexpr char kGroupDismissalCap[] = "groupDismissalCap";
 inline constexpr char kEventsConditions[] = "conditions";
 inline constexpr int kImpressionCapDefaultValue = 3;
 inline constexpr int kDismissalCapDefaultValue = 1;
@@ -468,6 +470,14 @@ int EventsTargeting::GetImpressionCap() const {
 int EventsTargeting::GetDismissalCap() const {
   auto cap = config_dict_->FindInt(kDismissalCap);
   return cap.value_or(kDismissalCapDefaultValue);
+}
+
+std::optional<int> EventsTargeting::GetGroupImpressionCap() const {
+  return config_dict_->FindInt(kGroupImpressionCap);
+}
+
+std::optional<int> EventsTargeting::GetGroupDismissalCap() const {
+  return config_dict_->FindInt(kGroupDismissalCap);
 }
 
 const base::Value::List* EventsTargeting::GetEventsConditions() const {

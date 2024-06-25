@@ -66,18 +66,25 @@ class CampaignsMatcher {
       const std::vector<std::string>& active_url_regrexes) const;
   bool MatchSessionTargeting(const SessionTargeting& targeting) const;
   bool MatchRuntimeTargeting(const RuntimeTargeting& targeting,
-                             int campaign_id) const;
+                             int campaign_id,
+                             std::optional<int> group_id) const;
   bool MatchDeviceAge(
       const std::unique_ptr<NumberRangeTargeting>& device_age_in_hours) const;
   bool MatchEvents(std::unique_ptr<EventsTargeting> config,
-                   int campaign_id) const;
+                   int campaign_id,
+                   std::optional<int> group_id) const;
+  bool ReachCap(const std::string& cap_event_name,
+                int id,
+                std::optional<int> cap) const;
   bool MatchMinorUser(std::optional<bool> minor_user_targeting) const;
   bool MatchOwner(std::optional<bool> is_owner) const;
   bool Matched(const Targeting* targeting,
                int campaign_id,
+               std::optional<int> group_id,
                bool is_prematch) const;
   bool Matched(const Targetings* targetings,
                int campaign_id,
+               std::optional<int> group_id,
                bool is_prematch) const;
 
   // Owned by CampaignsManager.

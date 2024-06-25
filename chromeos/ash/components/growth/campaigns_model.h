@@ -349,6 +349,8 @@ class EventsTargeting {
 
   int GetImpressionCap() const;
   int GetDismissalCap() const;
+  std::optional<int> GetGroupImpressionCap() const;
+  std::optional<int> GetGroupDismissalCap() const;
   const base::Value::List* GetEventsConditions() const;
 
  private:

@@ -75,9 +75,8 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
       component_updater::ComponentManagerAsh::Error error,
       const base::FilePath& path);
   void UpdateConfig(const std::map<std::string, std::string>& params);
-  void RecordEvents(growth::CampaignEvent,
-                    int campaign_id,
-                    std::optional<int> group_id);
+  void RecordImpressionEvents(int campaign_id, std::optional<int> group_id);
+  void RecordDismissalEvents(int campaign_id, std::optional<int> group_id);
 
   growth::CampaignsConfigurationProvider config_provider_;
   std::unique_ptr<growth::CampaignsManager> campaigns_manager_;
