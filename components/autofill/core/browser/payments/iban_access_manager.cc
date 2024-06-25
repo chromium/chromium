@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -112,9 +113,10 @@ void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
 void IbanAccessManager::OnUnmaskResponseReceived(
     OnIbanFetchedCallback on_iban_fetched,
     base::TimeTicks unmask_request_timestamp,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const std::u16string& value) {
-  bool is_successful = result == AutofillClient::PaymentsRpcResult::kSuccess;
+  bool is_successful =
+      result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
   autofill_metrics::LogServerIbanUnmaskLatency(
       base::TimeTicks::Now() - unmask_request_timestamp, is_successful);
   autofill_metrics::LogServerIbanUnmaskStatus(is_successful);

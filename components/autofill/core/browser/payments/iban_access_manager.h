@@ -11,11 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
+class AutofillClient;
 struct Suggestion;
 
 // This class provides functionality to return a full (non-masked) IBAN value
@@ -57,10 +58,11 @@ class IbanAccessManager {
  private:
   // Called when an UnmaskIban call is completed. The full IBAN value will be
   // returned via `value`.
-  void OnUnmaskResponseReceived(OnIbanFetchedCallback on_iban_fetched,
-                                base::TimeTicks unmask_request_timestamp,
-                                AutofillClient::PaymentsRpcResult result,
-                                const std::u16string& value);
+  void OnUnmaskResponseReceived(
+      OnIbanFetchedCallback on_iban_fetched,
+      base::TimeTicks unmask_request_timestamp,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::u16string& value);
 
   void OnServerIbanUnmaskCancelled();
 

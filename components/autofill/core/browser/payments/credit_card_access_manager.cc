@@ -51,11 +51,11 @@
 #endif
 
 namespace autofill {
-
 namespace {
 
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 
 // Timeout to wait for unmask details from Google Payments.
 constexpr auto kUnmaskDetailsResponseTimeout = base::Seconds(3);
@@ -107,8 +107,9 @@ bool CreditCardAccessManager::UnmaskedCardCacheIsEmpty() {
 std::vector<const CachedServerCardInfo*>
 CreditCardAccessManager::GetCachedUnmaskedCards() const {
   std::vector<const CachedServerCardInfo*> unmasked_cards;
-  for (const auto& [key, card_info] : unmasked_card_cache_)
+  for (const auto& [key, card_info] : unmasked_card_cache_) {
     unmasked_cards.push_back(&card_info);
+  }
   return unmasked_cards;
 }
 
@@ -132,8 +133,9 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
 
   // Do not make a preflight call if unnecessary, such as if one is already in
   // progress or a recently-returned call should be currently used.
-  if (!can_fetch_unmask_details_)
+  if (!can_fetch_unmask_details_) {
     return;
+  }
   // As we may now be making a GetUnmaskDetails call, disallow further calls
   // until the current preflight call has been used or has timed out.
   can_fetch_unmask_details_ = false;
@@ -237,7 +239,7 @@ void CreditCardAccessManager::LogMetricsAndFillFormForServerUnmaskFlows(
 }
 
 void CreditCardAccessManager::OnDidGetUnmaskDetails(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
   // Log latency for preflight call.
   if (preflight_call_timestamp_.has_value()) {
@@ -654,9 +656,10 @@ void CreditCardAccessManager::Authenticate(
 #if !BUILDFLAG(IS_IOS)
 CreditCardFidoAuthenticator*
 CreditCardAccessManager::GetOrCreateFidoAuthenticator() {
-  if (!fido_authenticator_)
+  if (!fido_authenticator_) {
     fido_authenticator_ = std::make_unique<CreditCardFidoAuthenticator>(
         &manager_->driver(), &autofill_client());
+  }
   return fido_authenticator_.get();
 }
 #endif
@@ -987,8 +990,9 @@ bool CreditCardAccessManager::ShouldRegisterCardWithFido(
   // Card authorization token is required in order to call
   // CreditCardFidoAuthenticator::Authorize(), so if we do not have a card
   // authorization token populated we immediately return false.
-  if (response.card_authorization_token.empty())
+  if (response.card_authorization_token.empty()) {
     return false;
+  }
 
 #if !BUILDFLAG(IS_IOS)
   // `unmask_auth_flow_type_` is kCvcThenFido, and there are valid FIDO request
@@ -1345,12 +1349,12 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
 
 void CreditCardAccessManager::
     OnVirtualCardRiskBasedAuthenticationResponseReceived(
-        AutofillClient::PaymentsRpcResult result,
+        PaymentsRpcResult result,
         const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
             response_details) {
   selected_challenge_option_ = nullptr;
   virtual_card_unmask_response_details_ = response_details;
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
       // If the real pan is not empty, then complete card information has been
       // fetched from the server (this is ensured in PaymentsNetworkInterface).
@@ -1392,10 +1396,8 @@ void CreditCardAccessManager::
       .Run(CreditCardFetchResult::kTransientError, nullptr);
 
   autofill_metrics::ServerCardUnmaskResult unmask_result;
-  if (result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
-      result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+  if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
     unmask_result =
         autofill_metrics::ServerCardUnmaskResult::kVirtualCardRetrievalError;
   } else {
@@ -1421,7 +1423,7 @@ void CreditCardAccessManager::
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/result ==
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+            PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   }
   Reset();
 }
