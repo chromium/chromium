@@ -18,6 +18,7 @@ source_set("view_controller") {
     "lens_overlay_selection_placeholder_view_controller.mm",
   ]
   deps = [
+    ":lens_overlay_accessibility_identifier_constants",
     ":protocols",
     "//base",
     "//components/strings",
@@ -30,6 +31,26 @@ source_set("view_controller") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("lens_overlay_accessibility_identifier_constants") {
+  sources = [
+    "lens_overlay_accessibility_identifier_constants.h",
+    "lens_overlay_accessibility_identifier_constants.mm",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "lens_overlay_container_egtest.mm" ]
+  deps = [
+    ":lens_overlay_accessibility_identifier_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
   frameworks = [ "UIKit.framework" ]
 }

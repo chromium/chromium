@@ -41,6 +41,7 @@ void LensOverlayTabHelper::WasHidden(web::WebState* web_state) {
 
 void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state, web_state_);
+
   [commands_handler_ destroyLensUI:NO];
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;

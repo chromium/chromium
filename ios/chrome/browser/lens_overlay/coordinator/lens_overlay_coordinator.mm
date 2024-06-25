@@ -59,7 +59,8 @@
   if (_containerViewController) {
     return;
   }
-  _containerViewController = [[LensOverlayContainerViewController alloc] init];
+  _containerViewController = [[LensOverlayContainerViewController alloc]
+      initWithLensOverlayCommandsHandler:self];
   _containerViewController.modalPresentationStyle =
       UIModalPresentationOverFullScreen;
   _containerViewController.modalTransitionStyle =
@@ -74,7 +75,8 @@
 }
 
 - (LensOverlayTabHelper*)tabHelper {
-  if (!self.browser) {
+  if (!self.browser || !self.browser->GetWebStateList() ||
+      self.browser->GetWebStateList()->GetActiveWebState()) {
     return nullptr;
   }
 
