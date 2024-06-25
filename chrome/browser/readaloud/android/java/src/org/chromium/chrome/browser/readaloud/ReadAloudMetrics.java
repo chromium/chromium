@@ -111,6 +111,14 @@ public class ReadAloudMetrics {
         }
     }
 
+    public static void recordSeekForwardTapped() {
+        RecordUserAction.record("ReadAloud.SeekForward");
+    }
+
+    public static void recordSeekBackwardTapped() {
+        RecordUserAction.record("ReadAloud.SeekBackward");
+    }
+
     public static void recordIsPageReadable(boolean successful) {
         RecordHistogram.recordBooleanHistogram(IS_READABLE, successful);
     }

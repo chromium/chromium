@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.readaloud.player;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +29,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNO
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +47,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
@@ -79,6 +84,7 @@ public class PlayerMediatorUnitTest {
     private ObservableSupplierImpl<String> mSelectedVoiceIdSupplier;
     private ObservableSupplierImpl<Boolean> mHighlightingEnabledSupplier;
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
+    public UserActionTester mUserActionTester;
 
     private PropertyModel mModel;
     private FakeClock mClock;
@@ -178,6 +184,12 @@ public class PlayerMediatorUnitTest {
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
         mMediator.setClockForTesting(mClock);
         mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -409,6 +421,18 @@ public class PlayerMediatorUnitTest {
         mMediator.setPlayback(mPlayback);
         mMediator.onSeekBackClick();
         verify(mPlayback).seekRelative(-10 * 1_000_000_000L);
+    }
+
+    @Test
+    public void testBackClickActionRecords() {
+        mMediator.onSeekBackClick();
+        assertThat(mUserActionTester.getActions(), hasItems("ReadAloud.SeekBackward"));
+    }
+
+    @Test
+    public void testForwardClickActionRecords() {
+        mMediator.onSeekForwardClick();
+        assertThat(mUserActionTester.getActions(), hasItems("ReadAloud.SeekForward"));
     }
 
     @Test

@@ -227,11 +227,13 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onSeekBackClick() {
+        ReadAloudMetrics.recordSeekBackwardTapped();
         maybeSeekRelative(SEEK_BACK_NANOS);
     }
 
     @Override
     public void onSeekForwardClick() {
+        ReadAloudMetrics.recordSeekForwardTapped();
         maybeSeekRelative(SEEK_FORWARD_NANOS);
     }
 

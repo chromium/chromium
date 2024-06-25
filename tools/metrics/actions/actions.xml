@@ -31349,6 +31349,24 @@ should be able to be added at any place in this file.
   <description>The user started a Read Aloud playback.</description>
 </action>
 
+<action name="ReadAloud.SeekBackward">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <description>
+    The user tapped the seek backwards button on the Read Aloud expanded player.
+    Logged for each UI interaction whether it was handled successfully or not.
+  </description>
+</action>
+
+<action name="ReadAloud.SeekForward">
+  <owner>sanaakbani@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <description>
+    The user tapped the seek forwards button on the Read Aloud expanded player.
+    Logged for each UI interaction whether it was handled successfully or not.
+  </description>
+</action>
+
 <action name="ReadingList.Dialog.AddCurrentPage">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
