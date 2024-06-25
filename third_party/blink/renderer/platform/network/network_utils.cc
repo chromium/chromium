@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "net/base/data_url.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -11,6 +12,7 @@
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -63,6 +65,22 @@ String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
     const KURL& url,
     const String& method) {
+  absl::Cleanup record_times = [start = base::TimeTicks::Now(), &url] {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start;
+    base::UmaHistogramMicrosecondsTimes("Blink.Network.ParseDataURLTime",
+                                        elapsed);
+    size_t length = url.GetString().length();
+    if (length >= 0 && length < 1000) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Network.ParseDataURLTime.Under1000Char", elapsed);
+    } else if (length >= 1000 && length < 100000) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Network.ParseDataURLTime.Under100000Char", elapsed);
+    } else {
+      base::UmaHistogramMicrosecondsTimes(
+          "Blink.Network.ParseDataURLTime.Over100000Char", elapsed);
+    }
+  };
   std::string utf8_mime_type;
   std::string utf8_charset;
   std::string data_string;

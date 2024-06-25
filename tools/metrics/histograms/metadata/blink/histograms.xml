@@ -3607,6 +3607,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Network.ParseDataURLTime{CharacterCount}"
+    units="microseconds" expires_after="2024-09-21">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The total microseconds spent in network_utils::ParseDataURL and is recorded
+    per resource request for {CharacterCount} when the parsing is completed.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="CharacterCount">
+    <variant name="" summary="all data URLs"/>
+    <variant name=".Over100000Char"
+        summary="data URLs of over 100000 characters"/>
+    <variant name=".Under1000Char" summary="data URLs of 0 to 1000 characters"/>
+    <variant name=".Under100000Char"
+        summary="data URLs of 1000 to 100000 characters"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.NotificationManager.GetPermissionStatusTime" units="ms"
     expires_after="2024-01-21">
   <owner>cduvall@chromium.org</owner>
