@@ -2182,12 +2182,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                 };
         runTabRemovalAnimation(tab, listener);
 
-        // 3. Attempt to select the next expanded tab now. If none exists, we'll default to the
-        // normal auto-selection behavior (i.e. selecting the closest collapsed tab, or opening the
-        // GTS if none exist).
-        int nextIndex = getNearbyExpandedTabIndex();
-        if (nextIndex != TabModel.INVALID_TAB_INDEX) {
-            TabModelUtils.setIndex(mModel, nextIndex, /* skipLoadingTab= */ false);
+        // 3. If we're closing the selected tab, attempt to select the next expanded tab now. If
+        // none exists, we'll default to the normal auto-selection behavior (i.e. selecting the
+        // closest collapsed tab, or opening the GTS if none exist).
+        if (getSelectedTabId() == tab.getId()) {
+            int nextIndex = getNearbyExpandedTabIndex();
+            if (nextIndex != TabModel.INVALID_TAB_INDEX) {
+                TabModelUtils.setIndex(mModel, nextIndex, /* skipLoadingTab= */ false);
+            }
         }
     }
 
