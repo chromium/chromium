@@ -99,11 +99,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       OpenSettingsAudioPageCallback open_settings_audio_page_callback);
 
   // Handles the situation when a hotplugged device which triggers the
-  // notification has been removed, or has been activated by users via settings
-  // or quick settings, rather than via the switch button on notification body.
-  // Remove the notification in these cases.
-  void RemoveNotificationIfNecessary(
-      const AudioDeviceList& removed_or_activated_devices);
+  // notification has been activated by users via settings or quick settings,
+  // rather than via the switch button on notification body. Remove the
+  // notification in this case.
+  void RemoveNotificationIfHotpluggedDeviceActivated(
+      const AudioDeviceList& activated_devices);
+
+  // Handles the situation when a hotplugged device which triggers the
+  // notification has been removed. Remove the notification in this case.
+  void RemoveNotificationIfHotpluggedDeviceDisconnected(
+      bool is_input,
+      const AudioDeviceList& current_devices);
 
  private:
   // Grant friend access for comprehensive testing of private/protected members.

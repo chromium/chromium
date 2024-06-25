@@ -727,14 +727,14 @@ TEST_F(AudioSelectionNotificationHandlerTest,
 
   // If a non related device is removed, notification should stay.
   const AudioDevice output_device = AudioDevice(NewOutputNode("USB"));
-  audio_selection_notification_handler().RemoveNotificationIfNecessary(
-      {output_device});
+  audio_selection_notification_handler()
+      .RemoveNotificationIfHotpluggedDeviceActivated({output_device});
   EXPECT_EQ(1u, GetNotificationCount());
 
   // If the device that triggers the notification is removed, notification
   // should be removed too.
-  audio_selection_notification_handler().RemoveNotificationIfNecessary(
-      {input_device});
+  audio_selection_notification_handler()
+      .RemoveNotificationIfHotpluggedDeviceActivated({input_device});
   EXPECT_EQ(0u, GetNotificationCount());
 }
 
@@ -763,14 +763,14 @@ TEST_F(AudioSelectionNotificationHandlerTest,
 
   // If a non related device is removed, notification should stay.
   const AudioDevice input_device = AudioDevice(NewInputNode("USB"));
-  audio_selection_notification_handler().RemoveNotificationIfNecessary(
-      {input_device});
+  audio_selection_notification_handler()
+      .RemoveNotificationIfHotpluggedDeviceActivated({input_device});
   EXPECT_EQ(1u, GetNotificationCount());
 
   // If the device that triggers the notification is removed, notification
   // should be removed too.
-  audio_selection_notification_handler().RemoveNotificationIfNecessary(
-      {output_device});
+  audio_selection_notification_handler()
+      .RemoveNotificationIfHotpluggedDeviceActivated({output_device});
   EXPECT_EQ(0u, GetNotificationCount());
 }
 

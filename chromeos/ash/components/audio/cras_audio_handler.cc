@@ -1239,8 +1239,8 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
       // Remove notification if the hotplugged device that triggered the
       // notification has already been activated by user via settings or quick
       // settings.
-      audio_selection_notification_handler_.RemoveNotificationIfNecessary(
-          {active_device});
+      audio_selection_notification_handler_
+          .RemoveNotificationIfHotpluggedDeviceActivated({active_device});
     }
   }
 
@@ -2430,6 +2430,12 @@ void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(
   }
 }
 
+void CrasAudioHandler::HandleRemoveNotification(bool is_input) {
+  audio_selection_notification_handler_
+      .RemoveNotificationIfHotpluggedDeviceDisconnected(
+          is_input, GetSimpleUsageAudioDevices(audio_devices_, is_input));
+}
+
 void CrasAudioHandler::UpdateDevicesAndSwitchActive(
     const AudioNodeList& nodes) {
   AudioDeviceList output_devices;
@@ -2448,13 +2454,20 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
                       &removed_input_devices, &active_input_removed);
 
   if (!removed_input_devices.empty()) {
-    audio_selection_notification_handler_.RemoveNotificationIfNecessary(
-        removed_input_devices);
+    // Add grace period in case the USB device is not firmly plugged, making
+    // it disconnected and reconnected in a short period of time. In this case,
+    // the notification should not be removed.
+    remove_notification_timer_for_input_.Start(
+        FROM_HERE, kRemoveNotificationDelay,
+        base::BindOnce(&CrasAudioHandler::HandleRemoveNotification,
+                       weak_ptr_factory_.GetWeakPtr(), /*is_input=*/true));
   }
 
   if (!removed_output_devices.empty()) {
-    audio_selection_notification_handler_.RemoveNotificationIfNecessary(
-        removed_output_devices);
+    remove_notification_timer_for_output_.Start(
+        FROM_HERE, kRemoveNotificationDelay,
+        base::BindOnce(&CrasAudioHandler::HandleRemoveNotification,
+                       weak_ptr_factory_.GetWeakPtr(), /*is_input=*/false));
   }
 
   // Record consecutive devices change metrics.

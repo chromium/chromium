@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
@@ -1303,6 +1304,7 @@ TEST_P(CrasAudioHandlerTest,
 
   // Verify that the notification is removed because the hotplugged HDMI output
   // is disconnected.
+  FastForwardBy(CrasAudioHandler::kRemoveNotificationDelay);
   EXPECT_EQ(0u, GetNotificationCount());
 }
 
@@ -1466,6 +1468,7 @@ TEST_P(CrasAudioHandlerTest,
 
   // Verify that the notification is removed because the hotplugged USB output
   // is disconnected.
+  FastForwardBy(CrasAudioHandler::kRemoveNotificationDelay);
   EXPECT_EQ(0u, GetNotificationCount());
 }
 
@@ -1592,6 +1595,7 @@ TEST_P(CrasAudioHandlerTest,
 
   // Verify that the notification is removed because the hotplugged USB output
   // is disconnected.
+  FastForwardBy(CrasAudioHandler::kRemoveNotificationDelay);
   EXPECT_EQ(0u, GetNotificationCount());
 }
 
@@ -7710,6 +7714,80 @@ TEST_P(
   // Manually activate the kUSBHeadphone1, expect that notification is removed.
   cras_audio_handler_->SwitchToDevice(usb_headphone_device, true,
                                       DeviceActivateType::kActivateByUser);
+  EXPECT_EQ(0u, GetNotificationCount());
+}
+
+// Tests that notification is not removed if the hot plugged device that
+// triggered the notification was disconnected and reconnected within grace
+// period.
+TEST_P(
+    CrasAudioHandlerTest,
+    DoNotRemoveNotificationIfHotPluggedDeviceWasDiconnectedAndReconnectedQuickly_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Initialize with internal speaker.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/std::nullopt,
+      /*expected_has_alternative_output=*/false);
+
+  // Expect that notification is not displayed since there is only one output
+  // device connected.
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug in a usb headphone.
+  AudioNodeList audio_nodes;
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+  AudioNode usb_headphone_1 = GenerateAudioNode(kUSBHeadphone1);
+  audio_nodes.push_back(usb_headphone_1);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify the active output device is not switched because the new connected
+  // device is not seen before.
+  EXPECT_EQ(0, test_observer_->active_output_node_changed_count());
+  ExpectActiveDevice(/*is_input=*/false,
+                     /*expected_active_device=*/kInternalSpeaker,
+                     /*has_alternative_device=*/true);
+
+  // Verify notification is displayed.
+  FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Disconnect the usb headphone.
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_speaker);
+  ChangeAudioNodes(audio_nodes);
+
+  // Notification still shows within grace period.
+  FastForwardBy(base::Milliseconds(2000));
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Reconnect the usb headphone within grace period.
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_speaker);
+  audio_nodes.push_back(usb_headphone_1);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify that notification still displays.
+  FastForwardBy(base::Milliseconds(2000));
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Verify that notification after grace period.
+  FastForwardBy(CrasAudioHandler::kRemoveNotificationDelay);
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // Remove the usb headphone again.
+  audio_nodes.clear();
+  audio_nodes.push_back(internal_speaker);
+  ChangeAudioNodes(audio_nodes);
+
+  // Notification is removed after grace period.
+  FastForwardBy(CrasAudioHandler::kRemoveNotificationDelay);
   EXPECT_EQ(0u, GetNotificationCount());
 }
 

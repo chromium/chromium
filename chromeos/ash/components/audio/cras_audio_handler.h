@@ -130,6 +130,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   static constexpr int32_t kSystemAecGroupIdNotAvailable = -1;
 
+  // Grace period for removing notification.
+  static constexpr base::TimeDelta kRemoveNotificationDelay =
+      base::Milliseconds(5000);
+
   enum class InputMuteChangeMethod {
     kKeyboardButton,
     kPhysicalShutter,
@@ -1012,6 +1016,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // set.
   void HandleHotPlugDeviceWithNotification(const AudioDevice& hotplug_device);
 
+  // Handles the audio selection notification being removed.
+  void HandleRemoveNotification(bool is_input);
+
   // Handles the system boots or restarts case.
   // - If the device boots with only one device, activate it automatically.
   // - If the device set was seen before, activate the preferred one.
@@ -1053,6 +1060,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Handles creation and display of audio selection notification.
   AudioSelectionNotificationHandler audio_selection_notification_handler_;
+
+  // Timer for remove notification.
+  base::OneShotTimer remove_notification_timer_for_input_;
+  base::OneShotTimer remove_notification_timer_for_output_;
 
   // Audio data and state.
   AudioDeviceMap audio_devices_;
