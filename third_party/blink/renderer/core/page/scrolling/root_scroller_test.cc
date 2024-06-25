@@ -2373,22 +2373,22 @@ TEST_F(ImplicitRootScrollerSimTest, BottomFixedAffectedByTopControls) {
       To<HTMLFrameOwnerElement>(container1)->contentDocument();
   Document* child2_document =
       To<HTMLFrameOwnerElement>(container2)->contentDocument();
-  LayoutObject* fixed =
+  LayoutObject* fixed_layout =
       GetDocument().getElementById(AtomicString("fixed"))->GetLayoutObject();
-  LayoutObject* fixed1 =
+  LayoutObject* fixed_layout1 =
       child1_document->getElementById(AtomicString("fixed"))->GetLayoutObject();
-  LayoutObject* fixed2 =
+  LayoutObject* fixed_layout2 =
       child2_document->getElementById(AtomicString("fixed"))->GetLayoutObject();
 
-  EXPECT_TRUE(fixed->FirstFragment()
+  EXPECT_TRUE(fixed_layout->FirstFragment()
                   .PaintProperties()
                   ->PaintOffsetTranslation()
                   ->IsAffectedByOuterViewportBoundsDelta());
-  EXPECT_TRUE(fixed1->FirstFragment()
+  EXPECT_TRUE(fixed_layout1->FirstFragment()
                   .PaintProperties()
                   ->PaintOffsetTranslation()
                   ->IsAffectedByOuterViewportBoundsDelta());
-  EXPECT_FALSE(fixed2->FirstFragment()
+  EXPECT_FALSE(fixed_layout2->FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation()
                    ->IsAffectedByOuterViewportBoundsDelta());
