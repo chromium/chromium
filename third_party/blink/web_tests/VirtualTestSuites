@@ -2577,6 +2577,8 @@
     "platforms": ["Linux","Mac", "Win"],
     "bases": [
       "external/wpt/webnn/validation_tests",
+      "external/wpt/webnn/idlharness.https.any.html",
+      "external/wpt/webnn/idlharness.https.any.worker.html",
       "external/wpt/webnn/conformance_tests/add.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/add.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?cpu",
@@ -2693,7 +2695,6 @@
     "prefix": "webnn-service-on-npu",
     "platforms": ["Mac", "Win"],
     "bases": [
-      "external/wpt/webnn/validation_tests",
       "external/wpt/webnn/conformance_tests/add.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/add.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?npu",
