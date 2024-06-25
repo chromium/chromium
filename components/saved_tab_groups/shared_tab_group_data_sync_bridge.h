@@ -9,9 +9,11 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
+#include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -31,7 +33,8 @@ namespace tab_groups {
 class SavedTabGroupModel;
 
 // Sync bridge implementation for SHARED_TAB_GROUP_DATA model type.
-class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
+class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
+                                     public SavedTabGroupModelObserver {
  public:
   SharedTabGroupDataSyncBridge(
       SavedTabGroupModel* model,
@@ -66,6 +69,17 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
+
+  // SavedTabGroupModelObserver overrides.
+  void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
+  // TODO(crbug.com/319521964): implement the following methods.
+  // void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group)
+  // override; void SavedTabGroupUpdatedLocally(
+  //     const base::Uuid& group_guid,
+  //     const std::optional<base::Uuid>& tab_guid) override;
+  // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid)
+  // override; void SavedTabGroupReorderedLocally() override; void
+  // SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
 
  private:
   // Loads the data already stored in the ModelTypeStore.
@@ -105,6 +119,18 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
       const std::string& storage_key,
       syncer::ModelTypeStore::WriteBatch* write_batch);
 
+  // Inform the processor of a new or updated Shared Tab Group or Tab.
+  void SendToSync(sync_pb::SharedTabGroupDataSpecifics specific,
+                  const std::string& collaboration_id,
+                  syncer::MetadataChangeList* metadata_change_list);
+
+  // Updates or adds the `specifics` into the `store_` and populates it to the
+  // processor.
+  void UpsertEntitySpecific(
+      const sync_pb::SharedTabGroupDataSpecifics& specifics,
+      const std::string& collaboration_id,
+      syncer::ModelTypeStore::WriteBatch* write_batch);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // In charge of actually persisting changes to disk, or loading previous data.
@@ -113,6 +139,10 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
   // The Model used to represent the current state of saved and shared tab
   // groups.
   raw_ptr<SavedTabGroupModel> model_;
+
+  // Observes changes to the `model_`.
+  base::ScopedObservation<SavedTabGroupModel, SavedTabGroupModelObserver>
+      observation_{this};
 
   // Allows safe temporary use of the SharedTabGroupDataSyncBridge object if it
   // exists at the time of use.

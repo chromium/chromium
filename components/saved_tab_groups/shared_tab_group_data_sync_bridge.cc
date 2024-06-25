@@ -21,6 +21,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
 
 namespace tab_groups {
@@ -205,6 +206,10 @@ SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
     PrefService* pref_service)
     : syncer::ModelTypeSyncBridge(std::move(change_processor)), model_(model) {
   CHECK(model_);
+
+  // It's safe to start observing changes to the model because they are ignored
+  // until the bridge is initialized.
+  observation_.Observe(model_);
   std::move(create_store_callback)
       .Run(syncer::SHARED_TAB_GROUP_DATA,
            base::BindOnce(&SharedTabGroupDataSyncBridge::OnStoreCreated,
@@ -448,6 +453,45 @@ bool SharedTabGroupDataSyncBridge::IsEntityDataValid(
   return true;
 }
 
+void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
+    const base::Uuid& guid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!store_ || !model_->is_loaded()) {
+    // Ignore any changes before the model is successfully initialized.
+    VLOG(2) << "SavedTabGroupAddedLocally called while not initialized";
+    return;
+  }
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  const SavedTabGroup* group = model_->Get(guid);
+  CHECK(group);
+  if (!group->is_shared_tab_group()) {
+    // Ignore changes for non-shared tab groups.
+    return;
+  }
+
+  CHECK(group->collaboration_id().has_value());
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      SharedTabGroupToSpecifics(*group);
+
+  UpsertEntitySpecific(std::move(group_specifics),
+                       group->collaboration_id().value(), write_batch.get());
+  for (size_t i = 0; i < group->saved_tabs().size(); ++i) {
+    sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+        SharedTabGroupTabToSpecifics(group->saved_tabs()[i]);
+    // TODO(crbug.com/319521964): handle tab positions.
+    UpsertEntitySpecific(std::move(tab_specifics),
+                         group->collaboration_id().value(), write_batch.get());
+  }
+
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&SharedTabGroupDataSyncBridge::OnDatabaseSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void SharedTabGroupDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {
@@ -602,6 +646,33 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
     model_->RemoveTabFromGroupFromSync(group.saved_guid(), guid);
     return;
   }
+}
+
+void SharedTabGroupDataSyncBridge::SendToSync(
+    sync_pb::SharedTabGroupDataSpecifics specific,
+    const std::string& collaboration_id,
+    syncer::MetadataChangeList* metadata_change_list) {
+  CHECK(metadata_change_list);
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityData(std::move(specific), collaboration_id);
+
+  // Copy because our key is the name of `entity_data`.
+  std::string storage_key = GetStorageKey(*entity_data);
+  change_processor()->Put(storage_key, std::move(entity_data),
+                          metadata_change_list);
+}
+
+void SharedTabGroupDataSyncBridge::UpsertEntitySpecific(
+    const sync_pb::SharedTabGroupDataSpecifics& specifics,
+    const std::string& collaboration_id,
+    syncer::ModelTypeStore::WriteBatch* write_batch) {
+  // TODO(crbug.com/319521964): use different proto to store data locally.
+  write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
+  SendToSync(specifics, collaboration_id, write_batch->GetMetadataChangeList());
 }
 
 }  // namespace tab_groups

@@ -40,6 +40,7 @@ using testing::Invoke;
 using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
+using testing::WithArg;
 
 MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
@@ -154,6 +155,10 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
         syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), &pref_service_);
     task_environment_.RunUntilIdle();
+
+    // The model should be initialized by this time, do that explicitly while
+    // loading from the disk is not implemented yet.
+    saved_tab_group_model_.LoadStoredEntries({}, {});
   }
 
   size_t GetNumEntriesInStore() {
@@ -171,8 +176,8 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   SharedTabGroupDataSyncBridge* bridge() { return bridge_.get(); }
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
-    return &processor_;
+  testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
+    return processor_;
   }
   SavedTabGroupModel* model() { return &saved_tab_group_model_; }
   testing::NiceMock<MockTabGroupModelObserver>& mock_model_observer() {
@@ -203,7 +208,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnClientTag) {
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldCallModelReadyToSync) {
-  EXPECT_CALL(*mock_processor(), ModelReadyToSync).WillOnce(Invoke([]() {}));
+  EXPECT_CALL(mock_processor(), ModelReadyToSync).WillOnce(Invoke([]() {}));
 
   // This already invokes RunUntilIdle, so the call above is expected to happen.
   InitializeBridge();
@@ -620,6 +625,51 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
           HasTabEntityData("tab 1", "http://google.com/1", "collaboration"),
           HasGroupEntityData("title", sync_pb::SharedTabGroup_Color_GREY,
                              "collaboration")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab2);
+
+  std::vector<syncer::EntityData> entity_data_list;
+  EXPECT_CALL(mock_processor(), Put)
+      .Times(3)
+      .WillRepeatedly(WithArg<1>(Invoke(
+          [&entity_data_list](std::unique_ptr<syncer::EntityData> entity_data) {
+            entity_data_list.push_back(std::move(*entity_data));
+          })));
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  EXPECT_THAT(
+      entity_data_list,
+      UnorderedElementsAre(
+          HasTabEntityData("tab 2", "http://google.com/2", "collaboration"),
+          HasTabEntityData("tab 1", "http://google.com/1", "collaboration"),
+          HasGroupEntityData("title", sync_pb::SharedTabGroup_Color_GREY,
+                             "collaboration")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldIgnoreNewNonSharedGroups) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
 }
 
 }  // namespace
