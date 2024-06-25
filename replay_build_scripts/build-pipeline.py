@@ -25,7 +25,10 @@ def generate_buildkite_pipeline(backend_commit_hash):
             {
                 "trigger": "chromium-build",
                 "build": {
-                    "env": {"DRIVER_REVISION": driver_revision},
+                    "env": {
+                        "DRIVER_REVISION": driver_revision,
+                        "REPLAY_BACKEND_REV": backend_commit_hash,
+                    },
                     "message": "${BUILDKITE_MESSAGE}",
                     "branch": "${BUILDKITE_BRANCH}",
                     "commit": "${BUILDKITE_COMMIT}",

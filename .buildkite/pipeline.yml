@@ -206,6 +206,8 @@ steps:
 
   - label: "📝 Command Tests (macos-arm64)"
     trigger: "runtime-command-tests"
+    build:
+      commit: "${REPLAY_BACKEND_REV}"
     depends_on:
       - "build-chromium-mac-arm64"
 
