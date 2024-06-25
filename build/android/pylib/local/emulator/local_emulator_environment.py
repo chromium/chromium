@@ -13,8 +13,7 @@ from devil.utils import timeout_retry
 from pylib.local.device import local_device_environment
 from pylib.local.emulator import avd
 
-# TODO(crbug.com/348470234): Fix the pylint import-error
-from lib.proto import exception_recorder  # pylint: disable=import-error
+from lib.proto import exception_recorder
 
 # Mirroring https://bit.ly/2OjuxcS#23
 _MAX_ANDROID_EMULATORS = 16

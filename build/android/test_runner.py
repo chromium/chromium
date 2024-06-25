@@ -56,9 +56,8 @@ from pylib.utils import test_filter
 
 from py_utils import contextlib_ext
 
-# TODO(crbug.com/348470234): Fix the pylint import-error
-from lib.proto import exception_recorder  # pylint: disable=import-error
-from lib.results import result_sink  # pylint: disable=import-error
+from lib.proto import exception_recorder
+from lib.results import result_sink
 
 _DEVIL_STATIC_CONFIG_FILE = os.path.abspath(os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'devil_config.json'))

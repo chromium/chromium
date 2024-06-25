@@ -25,8 +25,7 @@ from pylib.base import test_exception
 from pylib.base import test_run
 from pylib.local.device import local_device_environment
 
-# TODO(crbug.com/348470234): Fix the pylint import-error
-from lib.proto import exception_recorder  # pylint: disable=import-error
+from lib.proto import exception_recorder
 
 
 _SIGTERM_TEST_LOG = (

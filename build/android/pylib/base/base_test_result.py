@@ -10,7 +10,7 @@ import re
 import sys
 import threading
 
-from lib.results import result_types  # pylint: disable=import-error
+from lib.results import result_types
 
 # This must match the source adding the suffix: bit.ly/3Zmwwyx
 MULTIPROCESS_SUFFIX = '__multiprocess_mode'
