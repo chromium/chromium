@@ -24,14 +24,18 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -43,6 +47,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -139,17 +144,21 @@ void WaitUntilUiUpdateReceived(MahiUiUpdateType target_type) {
 
 }  // namespace
 
-class MahiUiBrowserTest : public InProcessBrowserTest {
+class MahiUiBrowserTest : public SystemWebAppBrowserTestBase {
  protected:
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 
  private:
-  // InProcessBrowserTest:
+  // SystemWebAppBrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    SystemWebAppBrowserTestBase::SetUpCommandLine(command_line);
+
     command_line->AppendSwitch(chromeos::switches::kUseFakeMahiManager);
   }
 
   void SetUpOnMainThread() override {
+    SystemWebAppBrowserTestBase::SetUpOnMainThread();
+
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         Shell::GetPrimaryRootWindow());
   }
@@ -160,6 +169,86 @@ class MahiUiBrowserTest : public InProcessBrowserTest {
       ash::switches::SetIgnoreMahiSecretKeyForTest();
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
+
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
+  EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+
+  // Have both the mahi menu and mahi panel open.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  const views::View* const summary_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSummaryButton);
+  ASSERT_TRUE(summary_button);
+  event_generator().MoveMouseTo(
+      summary_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  auto* mahi_panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(mahi_menu_widget);
+  ASSERT_TRUE(mahi_panel_widget);
+
+  // Expect the mahi menu widget to be in the top-most window compared to the
+  // mahi panel widget.
+  EXPECT_EQ(window_util::GetTopMostWindow(
+                {mahi_menu_widget->GetNativeWindow()->parent(),
+                 mahi_panel_widget->GetNativeWindow()->parent()}),
+            mahi_menu_widget->GetNativeWindow()->parent());
+}
+
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
+  // Ensure the Settings app installed.
+  WaitForTestSystemAppInstall();
+
+  // Open the Mahi menu by mouse right click on the web contents.
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_menu_widget);
+
+  const views::View* const settings_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSettingsButton);
+  ASSERT_TRUE(settings_button);
+
+  // Mouse click `settings_button` of the Mahi menu.
+  event_generator().MoveMouseTo(
+      settings_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  {
+    // Wait until the Settings app finishes loading.
+    ui_test_utils::AllBrowserTabAddedWaiter waiter;
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        browser()->profile());
+    auto* const web_contents = waiter.Wait();
+    ASSERT_TRUE(web_contents);
+    content::WaitForLoadStop(web_contents);
+  }
+
+  // Verify that the Settings page is opened in a new window.
+  const Browser* const settings_browser =
+      chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
+          browser()->profile());
+  ASSERT_TRUE(settings_browser);
+  EXPECT_NE(browser(), settings_browser);
+  EXPECT_EQ(
+      GURL(chrome::GetOSSettingsUrl(std::string())),
+      settings_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
 
 IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
@@ -231,43 +320,5 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   ASSERT_TRUE(data);
   EXPECT_EQ(data->text(), base::UTF16ToASCII(summary_text));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MahiMenuZOrder) {
-  EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
-
-  // Have both the mahi menu and mahi panel open.
-  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
-                                    ->GetViewBounds()
-                                    .CenterPoint());
-  event_generator().ClickRightButton();
-  views::Widget* mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
-      chromeos::mahi::MahiMenuView::GetWidgetName());
-  const views::View* const summary_button =
-      mahi_menu_widget->GetContentsView()->GetViewByID(
-          chromeos::mahi::ViewID::kSummaryButton);
-  ASSERT_TRUE(summary_button);
-  event_generator().MoveMouseTo(
-      summary_button->GetBoundsInScreen().CenterPoint());
-  event_generator().ClickLeftButton();
-  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
-                                    ->GetViewBounds()
-                                    .CenterPoint());
-  event_generator().ClickRightButton();
-  mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
-      chromeos::mahi::MahiMenuView::GetWidgetName());
-  auto* mahi_panel_widget =
-      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
-  ASSERT_TRUE(mahi_menu_widget);
-  ASSERT_TRUE(mahi_panel_widget);
-
-  // Expect the mahi menu widget to be in the top-most window compared to the
-  // mahi panel widget.
-  EXPECT_EQ(window_util::GetTopMostWindow(
-                {mahi_menu_widget->GetNativeWindow()->parent(),
-                 mahi_panel_widget->GetNativeWindow()->parent()}),
-            mahi_menu_widget->GetNativeWindow()->parent());
-}
-#endif
 
 }  // namespace ash
