@@ -565,8 +565,6 @@ wgpu::TextureUsage SupportedDawnTextureUsage(
            wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
   }
 
-  // TODO(crbug.com/40270683): Use read/write intent instead of format to get
-  // correct usages.
   if (!is_yuv_plane) {
     return usage | wgpu::TextureUsage::RenderAttachment |
            wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
