@@ -13,12 +13,15 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
 
 @interface AccountMenuCoordinator () <
-    AccountMenuViewControllerPresentationDelegate>
+    AccountMenuViewControllerPresentationDelegate,
+    UIAdaptivePresentationControllerDelegate,
+    UINavigationControllerDelegate>
 @end
 
 @implementation AccountMenuCoordinator {
@@ -44,6 +47,7 @@
   _viewController.delegate = self;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
+  _navigationController.delegate = self;
 
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
   if (idiom == UIUserInterfaceIdiomPad) {
@@ -74,6 +78,7 @@
   _authenticationService = nil;
   _viewController.delegate = nil;
   _viewController = nil;
+  _navigationController.delegate = nil;
   _navigationController = nil;
   [super stop];
 }
@@ -108,6 +113,13 @@
 
 - (void)viewControllerWantsToBeClosed {
   [self stop];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate acountMenuCoordinatorShouldStop:self];
 }
 
 #pragma mark - Private

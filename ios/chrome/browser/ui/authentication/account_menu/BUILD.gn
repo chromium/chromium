@@ -8,6 +8,7 @@ source_set("account_menu") {
   sources = [
     "account_menu_coordinator.h",
     "account_menu_coordinator.mm",
+    "account_menu_coordinator_delegate.h",
   ]
   deps = [
     ":account_menu_ui",
@@ -37,6 +38,7 @@ source_set("account_menu_ui") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",

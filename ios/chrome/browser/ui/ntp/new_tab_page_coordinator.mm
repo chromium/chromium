@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
@@ -117,7 +118,8 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface NewTabPageCoordinator () <AppStateObserver,
+@interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
+                                     AppStateObserver,
                                      AuthenticationServiceObserving,
                                      BooleanObserver,
                                      ContentSuggestionsDelegate,
@@ -257,7 +259,7 @@
 @implementation NewTabPageCoordinator {
   // Coordinator in charge of handling sharing use cases.
   SharingCoordinator* _sharingCoordinator;
-  // Coordinator in charge of fast account switching menu.
+  // Coordinator in charge of fast account menu.
   AccountMenuCoordinator* _accountMenuCoordinator;
 }
 
@@ -429,8 +431,7 @@
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
 
-  [_accountMenuCoordinator stop];
-  _accountMenuCoordinator = nil;
+  [self stopAccountMenuCoordinator];
 
   self.started = NO;
 }
@@ -846,6 +847,7 @@
       _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
+      _accountMenuCoordinator.delegate = self;
       _accountMenuCoordinator.anchorView = identityDisc;
       // TODO(crbug.com/336719423): Record signin metrics based on the selected
       // action from the account switcher.
@@ -1457,6 +1459,13 @@
 
 #pragma mark - Private
 
+// Stops the account switcher.
+- (void)stopAccountMenuCoordinator {
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator.delegate = nil;
+  _accountMenuCoordinator = nil;
+}
+
 // Updates the feed visibility or content based on the supervision state
 // of the account defined in `value`.
 - (void)updateFeedWithIsSupervisedUser:(BOOL)value {
@@ -1713,6 +1722,13 @@
 // necessary.
 - (void)restoreNTPState {
   [self.NTPMediator restoreNTPStateForWebState:self.webState];
+}
+
+#pragma mark - AccountMenuCoordinatorDelegate
+
+- (void)acountMenuCoordinatorShouldStop:(AccountMenuCoordinator*)coordinator {
+  CHECK_EQ(coordinator, _accountMenuCoordinator);
+  [self stopAccountMenuCoordinator];
 }
 
 @end

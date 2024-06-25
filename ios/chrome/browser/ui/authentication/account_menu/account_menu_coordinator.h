@@ -9,12 +9,17 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol AccountMenuCoordinatorDelegate;
+
 // Coordinator to display the fast account menu view controller.
 @interface AccountMenuCoordinator : ChromeCoordinator
 
 // Clicked view, used to anchor the menu to it when using
 // UIModalPresentationPopover mode.
 @property(nonatomic, strong) UIView* anchorView;
+
+// Delegate for the coordinator.
+@property(nonatomic, weak) id<AccountMenuCoordinatorDelegate> delegate;
 
 @end
 
