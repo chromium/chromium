@@ -81,6 +81,7 @@ export class NetworkRequest {
     url?: string;
     method?: string;
     headers?: Network.Header[];
+    bodySize?: number;
   };
 
   #response: {
@@ -438,6 +439,7 @@ export class NetworkRequest {
       url: overrides.url,
       method: overrides.method,
       headers: overrides.headers,
+      bodySize: getSizeFromBiDiBytesValue(overrides.body),
     };
   }
 
@@ -758,8 +760,8 @@ export class NetworkRequest {
       headers,
       cookies,
       headersSize: computeHeadersSize(headers),
-      // TODO: implement.
-      bodySize: 0,
+      // TODO: Add size for non intercepted requests
+      bodySize: this.#requestOverrides?.bodySize ?? 0,
       timings: this.#getTimings(),
     };
   }
@@ -903,4 +905,13 @@ function getCdpBodyFromBiDiBytesValue(
     parsedBody = body.value;
   }
   return parsedBody;
+}
+
+function getSizeFromBiDiBytesValue(body?: Network.BytesValue): number {
+  if (body?.type === 'string') {
+    return body.value.length;
+  } else if (body?.type === 'base64') {
+    return atob(body.value).length;
+  }
+  return 0;
 }
