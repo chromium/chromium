@@ -12,7 +12,6 @@ aggregate_vector_icons("plus_addresses_vector_icons") {
     sources += [
       "internal/plus_address_logo_large.icon",
       "internal/plus_address_logo_small.icon",
-      "internal/plus_addresses_logo.icon",
     ]
   }
 }
