@@ -19,6 +19,7 @@
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/openxr/openxr_util.h"
 
 namespace device {
 
@@ -184,12 +185,29 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   XrResult result = xrCreateInstance(&instance_create_info, instance);
   if (XR_SUCCEEDED(result)) {
     xr_instance_ = *instance;
+    UpdateExtensionFactorySupport();
   } else {
     DLOG(ERROR) << __func__ << " Failed to create instance: " << result;
     OnInstanceCreateFailure();
   }
 
   return result;
+}
+
+void OpenXrPlatformHelper::UpdateExtensionFactorySupport() {
+  CHECK(xr_instance_ != XR_NULL_HANDLE);
+  auto* extension_enumeration = GetExtensionEnumeration();
+
+  // If we can't get the System, then the worst case here is that any extensions
+  // that need XrSystemProperties will just stay disabled and that can be
+  // handled later.
+  XrSystemId system;
+  OpenXrApiWrapper::GetSystem(xr_instance_, &system);
+
+  for (auto* extension_factory : GetExtensionHandlerFactories()) {
+    extension_factory->ProcessSystemProperties(extension_enumeration,
+                                               xr_instance_, system);
+  }
 }
 
 XrResult OpenXrPlatformHelper::DestroyInstance(XrInstance& instance) {

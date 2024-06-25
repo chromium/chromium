@@ -139,6 +139,12 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
   OPENXR_LOAD_FN(xrCreateLightEstimatorANDROID);
   OPENXR_LOAD_FN(xrDestroyLightEstimatorANDROID);
   OPENXR_LOAD_FN(xrGetLightEstimateANDROID);
+
+  OPENXR_LOAD_FN(xrCreateDepthSwapchainANDROID);
+  OPENXR_LOAD_FN(xrDestroyDepthSwapchainANDROID);
+  OPENXR_LOAD_FN(xrEnumerateDepthSwapchainImagesANDROID);
+  OPENXR_LOAD_FN(xrEnumerateDepthResolutionsANDROID);
+  OPENXR_LOAD_FN(xrAcquireDepthSwapchainImagesANDROID);
 #endif
 }
 
@@ -147,6 +153,7 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
   const auto* extension_enum = ExtensionEnumeration();
   switch (feature) {
     case device::mojom::XRSessionFeature::ANCHORS:
+    case device::mojom::XRSessionFeature::DEPTH:
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
@@ -181,6 +188,25 @@ std::unique_ptr<OpenXrAnchorManager> OpenXrExtensionHelper::CreateAnchorManager(
       [this, session,
        base_space](const OpenXrExtensionHandlerFactory& factory) {
         return factory.CreateAnchorManager(*this, session, base_space);
+      });
+}
+
+std::unique_ptr<OpenXrDepthSensor> OpenXrExtensionHelper::CreateDepthSensor(
+    XrSession session,
+    XrSpace base_space,
+    const mojom::XRDepthOptions& depth_options) const {
+  return CreateExtensionHandler<OpenXrDepthSensor>(
+      ExtensionEnumeration(),
+      [this, session, base_space,
+       depth_options](const OpenXrExtensionHandlerFactory& factory)
+          -> std::unique_ptr<OpenXrDepthSensor> {
+        auto sensor = factory.CreateDepthSensor(*this, session, base_space,
+                                                depth_options);
+        if (sensor && XR_SUCCEEDED(sensor->Initialize())) {
+          return sensor;
+        }
+
+        return nullptr;
       });
 }
 

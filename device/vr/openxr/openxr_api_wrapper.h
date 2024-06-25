@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_depth_sensor.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_light_estimator.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -114,6 +115,9 @@ class OpenXrApiWrapper {
       const OpenXrExtensionHelper& extension_helper);
   OpenXRSceneUnderstandingManager* GetOrCreateSceneUnderstandingManager(
       const OpenXrExtensionHelper& extension_helper);
+
+  // Gets the depth sensor if one exists for this session.
+  OpenXrDepthSensor* GetDepthSensor();
 
   void OnContextProviderCreated(
       scoped_refptr<viz::ContextProvider> context_provider);
@@ -231,6 +235,7 @@ class OpenXrApiWrapper {
       secondary_view_configs_;
 
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
+  std::unique_ptr<OpenXrDepthSensor> depth_sensor_;
   std::unique_ptr<OpenXrLightEstimator> light_estimator_;
   std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;

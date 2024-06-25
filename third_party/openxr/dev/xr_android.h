@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "third_party/openxr/src/include/openxr/openxr.h"
-
 #include "third_party/openxr/src/include/openxr/openxr_platform_defines.h"
 
 #ifndef XR_ANDROID_trackables
@@ -56,8 +55,7 @@ enum XrPlaneTypeANDROID {
 typedef struct XrTrackableTrackerCreateInfoANDROID {
   XrStructureType type;
   const void* next;
-  XrTrackableTypeANDROID
-      trackableType;
+  XrTrackableTypeANDROID trackableType;
 } XrTrackableTrackerCreateInfoANDROID;
 
 typedef struct XrTrackableGetInfoANDROID {
@@ -71,34 +69,31 @@ typedef struct XrTrackableGetInfoANDROID {
 typedef struct XrTrackablePlaneANDROID {
   XrStructureType type;
   void* next;
-  XrTrackingStateANDROID
-      trackingState;
+  XrTrackingStateANDROID trackingState;
   XrPosef centerPose;
   XrExtent2Df extents;
-  XrPlaneTypeANDROID
-      planeType;
-  uint32_t
-      deprecated;
-  XrTrackableANDROID
-      subsumedByPlane;
+  XrPlaneTypeANDROID planeType;
+  uint32_t deprecated;
+  XrTrackableANDROID subsumedByPlane;
   XrTime lastUpdatedTime;
-  uint32_t
-      vertexCapacityInput;
-  uint32_t*
-      vertexCountOutput;
+  uint32_t vertexCapacityInput;
+  uint32_t* vertexCountOutput;
   XrVector2f* vertices;
 } XrTrackablePlaneANDROID;
 
 typedef XrResult(XRAPI_PTR* PFN_xrCreateTrackableTrackerANDROID)(
-    XrSession session, const XrTrackableTrackerCreateInfoANDROID* createInfo,
+    XrSession session,
+    const XrTrackableTrackerCreateInfoANDROID* createInfo,
     XrTrackableTrackerANDROID* trackableTracker);
 
 typedef XrResult(XRAPI_PTR* PFN_xrDestroyTrackableTrackerANDROID)(
     XrTrackableTrackerANDROID trackableTracker);
 
 typedef XrResult(XRAPI_PTR* PFN_xrGetAllTrackablesANDROID)(
-    XrTrackableTrackerANDROID trackableTracker, uint32_t trackableCapacityInput,
-    uint32_t* trackableCountOutput, XrTrackableANDROID* trackablesOutput);
+    XrTrackableTrackerANDROID trackableTracker,
+    uint32_t trackableCapacityInput,
+    uint32_t* trackableCountOutput,
+    XrTrackableANDROID* trackablesOutput);
 
 typedef XrResult(XRAPI_PTR* PFN_xrGetTrackablePlaneANDROID)(
     XrTrackableTrackerANDROID trackableTracker,
@@ -121,9 +116,10 @@ typedef struct XrAnchorStateANDROID {
 } XrAnchorStateANDROID;
 
 typedef XrResult(XRAPI_PTR* PFN_xrCreateAnchorSpaceANDROID)(
-    XrSession session, const XrAnchorSpaceCreateInfoANDROID* createInfo,
+    XrSession session,
+    const XrAnchorSpaceCreateInfoANDROID* createInfo,
     XrSpace* anchorOutput);
-#endif // XR_ANDROID_trackables
+#endif  // XR_ANDROID_trackables
 
 #ifndef XR_ANDROID_raycast
 #define XR_ANDROID_raycast 1
@@ -154,29 +150,31 @@ typedef struct XrRaycastHitResultANDROID {
 typedef struct XrRaycastHitResultsANDROID {
   XrStructureType type;
   void* next;
-  uint32_t
-      resultsCapacityInput;
-  uint32_t
-      resultsCountOutput;
+  uint32_t resultsCapacityInput;
+  uint32_t resultsCountOutput;
   XrRaycastHitResultANDROID* results;
 } XrRaycastHitResultsANDROID;
 
 typedef XrResult(XRAPI_PTR* PFN_xrRaycastANDROID)(
-    XrSession session, const XrRaycastInfoANDROID* rayInfo,
+    XrSession session,
+    const XrRaycastInfoANDROID* rayInfo,
     XrRaycastHitResultsANDROID* results);
-#endif // XR_ANDROID_raycast
+#endif  // XR_ANDROID_raycast
 
 #ifndef XR_ANDROID_unbounded_reference_space
 #define XR_ANDROID_unbounded_reference_space 1
 #define XR_ANDROID_unbounded_reference_space_SPEC_VERSION 1
-#define XR_ANDROID_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME "XR_ANDROID_unbounded_reference_space"
-#define XR_REFERENCE_SPACE_TYPE_UNBOUNDED_ANDROID ((XrReferenceSpaceType) 1000467000U)
+#define XR_ANDROID_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME \
+  "XR_ANDROID_unbounded_reference_space"
+#define XR_REFERENCE_SPACE_TYPE_UNBOUNDED_ANDROID \
+  ((XrReferenceSpaceType)1000467000U)
 #endif /* XR_ANDROID_unbounded_reference_space */
 
 #ifndef XR_ANDROID_reference_space_bounds_polygon
 #define XR_ANDROID_reference_space_bounds_polygon 1
 #define XR_ANDROID_reference_space_bounds_polygon_SPEC_VERSION 1
-#define XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME "XR_ANDROID_reference_space_bounds_polygon"
+#define XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME \
+  "XR_ANDROID_reference_space_bounds_polygon"
 typedef XrResult(XRAPI_PTR* PFN_xrGetReferenceSpaceBoundsPolygonANDROID)(
     XrSession session,
     XrReferenceSpaceType referenceSpaceType,
@@ -270,46 +268,53 @@ typedef XrResult(XRAPI_PTR* PFN_xrGetLightEstimateANDROID)(
 
 #ifndef XR_ANDROID_depth_texture
 #define XR_ANDROID_depth_texture 1
-XR_DEFINE_HANDLE(XrDepthTrackerANDROID)
 XR_DEFINE_HANDLE(XrDepthSwapchainANDROID)
 #define XR_ANDROID_depth_texture_SPEC_VERSION 1
 #define XR_ANDROID_DEPTH_TEXTURE_EXTENSION_NAME "XR_ANDROID_depth_texture"
-#define XR_TYPE_DEPTH_TRACKER_CREATE_INFO_ANDROID ((XrStructureType)1000702000U)
 #define XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID \
-  ((XrStructureType)1000702001U)
-#define XR_TYPE_DEPTH_VIEW_ANDROID ((XrStructureType)1000702002U)
-#define XR_TYPE_DEPTH_ACQUIRE_INFO_ANDROID ((XrStructureType)1000702003U)
-#define XR_TYPE_DEPTH_ACQUIRE_RESULT_ANDROID ((XrStructureType)1000702004U)
-#define XR_ERROR_DEPTH_NOT_AVAIALABLE_ANDROID ((XrResult)-1000702000U)
-#define XR_ERROR_UNEXPECTED_DEPTH_TRACKER_STATE_ANDROID ((XrResult)-1000702001U)
-#define XR_OBJECT_TYPE_DEPTH_TRACKER_ANDROID ((XrObjectType)1000702000U)
+  ((XrStructureType)1000702000U)
+#define XR_TYPE_DEPTH_VIEW_ANDROID ((XrStructureType)1000702001U)
+#define XR_TYPE_DEPTH_ACQUIRE_INFO_ANDROID ((XrStructureType)1000702002U)
+#define XR_TYPE_DEPTH_ACQUIRE_RESULT_ANDROID ((XrStructureType)1000702003U)
+#define XR_TYPE_SYSTEM_DEPTH_TRACKING_PROPERTIES_ANDROID \
+  ((XrStructureType)1000702004U)
+#define XR_TYPE_DEPTH_SWAPCHAIN_IMAGE_ANDROID ((XrStructureType)1000702005U)
+#define XR_ERROR_DEPTH_NOT_AVAILABLE_ANDROID ((XrResult)-1000702000U)
 #define XR_OBJECT_TYPE_DEPTH_SWAPCHAIN_ANDROID ((XrObjectType)1000702001U)
 
-typedef enum XrCameraResolutionANDROID {
-  XR_CAMERA_RESOLUTION_80x80_ANDROID = 0,
-  XR_CAMERA_RESOLUTION_160x160_ANDROID = 1,
-  XR_CAMERA_RESOLUTION_320x320_ANDROID = 2,
-  XR_CAMERA_RESOLUTION_MAX_ENUM_ANDROID = 0x7FFFFFFF
-} XrCameraResolutionANDROID;
+typedef enum XrDepthCameraResolutionANDROID {
+  XR_DEPTH_CAMERA_RESOLUTION_80x80_ANDROID = 0,
+  XR_DEPTH_CAMERA_RESOLUTION_160x160_ANDROID = 1,
+  XR_DEPTH_CAMERA_RESOLUTION_320x320_ANDROID = 2,
+  XR_DEPTH_CAMERA_RESOLUTION_MAX_ENUM_ANDROID = 0x7FFFFFFF
+} XrDepthCameraResolutionANDROID;
 typedef XrFlags64 XrDepthSwapchainCreateFlagsANDROID;
 
 // Flag bits for XrDepthSwapchainCreateFlagsANDROID
 static const XrDepthSwapchainCreateFlagsANDROID
-    XR_DEPTH_SWAPCHAIN_CREATE_DEPTH_IMAGE_BIT_ANDROID = 0x00000001;
+    XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_DEPTH_IMAGE_BIT_ANDROID = 0x00000001;
 static const XrDepthSwapchainCreateFlagsANDROID
-    XR_DEPTH_SWAPCHAIN_CREATE_CONFIDENCE_IMAGE_BIT_ANDROID = 0x00000002;
-
-typedef struct XrDepthTrackerCreateInfoANDROID {
-  XrStructureType type;
-  const void* XR_MAY_ALIAS next;
-} XrDepthTrackerCreateInfoANDROID;
+    XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_CONFIDENCE_IMAGE_BIT_ANDROID = 0x00000002;
+static const XrDepthSwapchainCreateFlagsANDROID
+    XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID = 0x00000004;
+static const XrDepthSwapchainCreateFlagsANDROID
+    XR_DEPTH_SWAPCHAIN_CREATE_RAW_CONFIDENCE_IMAGE_BIT_ANDROID = 0x00000008;
 
 typedef struct XrDepthSwapchainCreateInfoANDROID {
   XrStructureType type;
   const void* XR_MAY_ALIAS next;
-  XrCameraResolutionANDROID resolution;
+  XrDepthCameraResolutionANDROID resolution;
   XrDepthSwapchainCreateFlagsANDROID createFlags;
 } XrDepthSwapchainCreateInfoANDROID;
+
+typedef struct XrDepthSwapchainImageANDROID {
+  XrStructureType type;
+  void* XR_MAY_ALIAS next;
+  const float* rawDepthImage;
+  const uint8_t* rawDepthConfidenceImage;
+  const float* smoothDepthImage;
+  const uint8_t* smoothDepthConfidenceImage;
+} XrDepthSwapchainImageANDROID;
 
 typedef struct XrDepthAcquireInfoANDROID {
   XrStructureType type;
@@ -330,8 +335,6 @@ typedef struct XrDepthAcquireResultANDROID {
   const void* next;
   uint32_t acquiredIndex;
   XrTime exposureTimestamp;
-  float nearZ;
-  float farZ;
   XrDepthViewANDROID views[2];
 } XrDepthAcquireResultANDROID;
 
@@ -342,18 +345,8 @@ typedef struct XrSystemDepthTrackingPropertiesANDROID {
   XrBool32 supportsDepthTracking;
 } XrSystemDepthTrackingPropertiesANDROID;
 
-typedef XrResult(XRAPI_PTR* PFN_xrCreateDepthTrackerANDROID)(
-    XrSession session,
-    const XrDepthTrackerCreateInfoANDROID* createInfo,
-    XrDepthTrackerANDROID* depthTracker);
-typedef XrResult(XRAPI_PTR* PFN_xrDestroyDepthTrackerANDROID)(
-    XrDepthTrackerANDROID depthTracker);
-typedef XrResult(XRAPI_PTR* PFN_xrStartDepthTrackerANDROID)(
-    XrDepthTrackerANDROID depthTracker);
-typedef XrResult(XRAPI_PTR* PFN_xrStopDepthTrackerANDROID)(
-    XrDepthTrackerANDROID depthTracker);
 typedef XrResult(XRAPI_PTR* PFN_xrCreateDepthSwapchainANDROID)(
-    XrDepthTrackerANDROID depthTracker,
+    XrSession session,
     const XrDepthSwapchainCreateInfoANDROID* createInfo,
     XrDepthSwapchainANDROID* swapchain);
 typedef XrResult(XRAPI_PTR* PFN_xrDestroyDepthSwapchainANDROID)(
@@ -362,12 +355,16 @@ typedef XrResult(XRAPI_PTR* PFN_xrEnumerateDepthSwapchainImagesANDROID)(
     XrDepthSwapchainANDROID depthSwapchain,
     uint32_t depthImageCapacityInput,
     uint32_t* depthImageCountOutput,
-    XrSwapchainImageBaseHeader* depthImages,
-    XrSwapchainImageBaseHeader* confidenceImages);
+    XrDepthSwapchainImageANDROID* depthImages);
+typedef XrResult(XRAPI_PTR* PFN_xrEnumerateDepthResolutionsANDROID)(
+    XrSession session,
+    uint32_t resolutionCapacityInput,
+    uint32_t* resolutionCountOutput,
+    XrDepthCameraResolutionANDROID* resolutions);
 typedef XrResult(XRAPI_PTR* PFN_xrAcquireDepthSwapchainImagesANDROID)(
     XrDepthSwapchainANDROID depthSwapchain,
     const XrDepthAcquireInfoANDROID* acquireInfo,
     XrDepthAcquireResultANDROID* acquireResult);
 #endif  // XR_ANDROID_depth_texture
 
-#endif // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_
+#endif  // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_

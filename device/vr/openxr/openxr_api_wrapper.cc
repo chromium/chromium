@@ -5,6 +5,7 @@
 #include "device/vr/openxr/openxr_api_wrapper.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -24,6 +25,7 @@
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/test/test_hook.h"
@@ -45,34 +47,6 @@ namespace device {
 
 namespace {
 
-// The primary view configuration is always enabled and active in OpenXR. We
-// currently only support the stereo view configuration.
-static constexpr XrViewConfigurationType kPrimaryViewConfiguration =
-    XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-// Secondary view configurations that we currently support. The OpenXR runtime
-// must also support these for them to be enabled. There can be an arbitrary
-// number of secondary views enabled.
-static constexpr std::array<XrViewConfigurationType, 1>
-    kSecondaryViewConfigurations = {
-        XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT,
-};
-
-// The number of views in the primary view configuration. Each frame must
-// return at least this number of views, in addition to any secondary views
-// that are enabled and active.
-static constexpr uint32_t kNumPrimaryViews = 2;
-
-// Per the OpenXR 1.0 spec for the XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO
-// view configuration: View index 0 must represent the left eye and view index
-// 1 must represent the right eye.
-static constexpr uint32_t kLeftView = 0;
-static constexpr uint32_t kRightView = 1;
-// Since kNumPrimaryViews is used to size a vector that uses
-// kLeftView/kRightView as indices, ensure that kNumPrimaryViews is greater
-// than the largest index.
-static_assert(kRightView < kNumPrimaryViews,
-              "kNumPrimaryViews must be greater than kRightView");
-
 // We can get into a state where frames are not requested, such as when the
 // visibility state is hidden. Since OpenXR events are polled at the beginning
 // of a frame, polling would not occur in this state. To ensure events are
@@ -80,16 +54,6 @@ static_assert(kRightView < kNumPrimaryViews,
 // events if significant time has elapsed since the last time events were
 // polled.
 constexpr base::TimeDelta kTimeBetweenPollingEvents = base::Seconds(1);
-
-mojom::XREye GetEyeFromIndex(int i) {
-  if (i == kLeftView) {
-    return mojom::XREye::kLeft;
-  } else if (i == kRightView) {
-    return mojom::XREye::kRight;
-  } else {
-    return mojom::XREye::kNone;
-  }
-}
 
 const char* GetXrSessionStateName(XrSessionState state) {
   switch (state) {
@@ -174,6 +138,9 @@ OpenXrApiWrapper::~OpenXrApiWrapper() {
 void OpenXrApiWrapper::Reset() {
   SetXrSessionState(XR_SESSION_STATE_UNKNOWN);
   anchor_manager_.reset();
+  depth_sensor_.reset();
+  light_estimator_.reset();
+  scene_understanding_manager_.reset();
   unbounded_space_provider_.reset();
   unbounded_space_ = XR_NULL_HANDLE;
   local_space_ = XR_NULL_HANDLE;
@@ -472,6 +439,10 @@ OpenXrApiWrapper::GetOrCreateSceneUnderstandingManager(
   return scene_understanding_manager_.get();
 }
 
+OpenXrDepthSensor* OpenXrApiWrapper::GetDepthSensor() {
+  return depth_sensor_.get();
+}
+
 void OpenXrApiWrapper::EnableSupportedFeatures(
     const OpenXrExtensionHelper& extension_helper,
     device::mojom::XRSessionMode mode,
@@ -575,6 +546,17 @@ XrResult OpenXrApiWrapper::InitSession(
   if (unbounded_space_provider_) {
     RETURN_IF_XR_FAILED(
         unbounded_space_provider_->CreateSpace(session_, &unbounded_space_));
+  }
+
+  if (base::Contains(enabled_features_, mojom::XRSessionFeature::DEPTH) &&
+      session_options_->depth_options) {
+    depth_sensor_ = extension_helper.CreateDepthSensor(
+        session_, local_space_, *session_options_->depth_options);
+    if (!depth_sensor_ && base::Contains(session_options_->required_features,
+                                         mojom::XRSessionFeature::DEPTH)) {
+      DVLOG(1) << __func__ << " Required Feature Depth Initialization failed";
+      return XR_ERROR_RUNTIME_FAILURE;
+    }
   }
 
   EnsureEventPolling();
@@ -1042,11 +1024,7 @@ mojom::XRViewPtr OpenXrApiWrapper::CreateView(
   view->eye = eye;
   view->mojo_from_view = XrPoseToGfxTransform(xr_view.pose);
 
-  view->field_of_view = mojom::VRFieldOfView::New();
-  view->field_of_view->up_degrees = base::RadToDeg(xr_view.fov.angleUp);
-  view->field_of_view->down_degrees = base::RadToDeg(-xr_view.fov.angleDown);
-  view->field_of_view->left_degrees = base::RadToDeg(-xr_view.fov.angleLeft);
-  view->field_of_view->right_degrees = base::RadToDeg(xr_view.fov.angleRight);
+  view->field_of_view = XrFovToMojomFov(xr_view.fov);
 
   view->viewport =
       gfx::Rect(x_offset, 0, view_config.Properties()[view_index].Width(),

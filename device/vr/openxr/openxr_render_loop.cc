@@ -365,6 +365,10 @@ void OpenXrRenderLoop::StartRuntimeFinish(
   session->device_config->enable_anti_aliasing =
       openxr_->CanEnableAntiAliasing();
   session->device_config->views = openxr_->GetDefaultViews();
+  if (auto* depth = openxr_->GetDepthSensor(); depth) {
+    session->device_config->depth_configuration = depth->GetDepthConfig();
+  }
+
   session->enviroment_blend_mode =
       openxr_->PickEnvironmentBlendModeForSession(options->mode);
   session->interaction_mode = device::mojom::XRInteractionMode::kWorldSpace;
@@ -631,8 +635,9 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     frame_data->buffer_sync_token = swap_chain_info.sync_token;
   }
 
-  frame_data->time_delta =
-      base::Nanoseconds(openxr_->GetPredictedDisplayTime());
+  const XrTime frame_time = openxr_->GetPredictedDisplayTime();
+
+  frame_data->time_delta = base::Nanoseconds(frame_time);
   frame_data->views = openxr_->GetViews();
   frame_data->input_state = openxr_->GetInputState();
 
@@ -649,7 +654,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     if (anchor_manager) {
       frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
           openxr_.get(), current_stage_parameters_,
-          frame_data->input_state.value(), openxr_->GetPredictedDisplayTime());
+          frame_data->input_state.value(), frame_time);
     }
 
     OpenXrLightEstimator* light_estimator =
@@ -657,7 +662,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
     if (light_estimator) {
       frame_data->light_estimation_data =
-          light_estimator->GetLightEstimate(openxr_->GetPredictedDisplayTime());
+          light_estimator->GetLightEstimate(frame_time);
     }
   }
 
@@ -666,14 +671,18 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   if (scene_understanding_manager && frame_data->mojo_from_viewer->position &&
       frame_data->mojo_from_viewer->orientation) {
-    scene_understanding_manager->OnFrameUpdate(
-        openxr_->GetPredictedDisplayTime());
+    scene_understanding_manager->OnFrameUpdate(frame_time);
     device::Pose mojo_from_viewer(*frame_data->mojo_from_viewer->position,
                                   *frame_data->mojo_from_viewer->orientation);
     // Get results for hit test subscriptions.
     frame_data->hit_test_subscription_results =
         scene_understanding_manager->GetHitTestResults(
             mojo_from_viewer.ToTransform(), frame_data->input_state.value());
+  }
+
+  OpenXrDepthSensor* depth_sensor = openxr_->GetDepthSensor();
+  if (depth_sensor) {
+    depth_sensor->PopulateDepthData(frame_time, frame_data->views);
   }
 
   return frame_data;

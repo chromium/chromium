@@ -122,6 +122,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   std::unique_ptr<OpenXrExtensionEnumeration> extension_enumeration_;
 
  private:
+  void UpdateExtensionFactorySupport();
+
   bool initialized_ = false;
 };
 

@@ -180,6 +180,8 @@ if (enable_vr) {
         "openxr/openxr_controller.h",
         "openxr/openxr_debug_util.cc",
         "openxr/openxr_debug_util.h",
+        "openxr/openxr_depth_sensor.cc",
+        "openxr/openxr_depth_sensor.h",
         "openxr/openxr_device.cc",
         "openxr/openxr_device.h",
         "openxr/openxr_extension_handle.h",
@@ -248,6 +250,8 @@ if (enable_vr) {
         sources += [
           "openxr/android/openxr_anchor_manager_android.cc",
           "openxr/android/openxr_anchor_manager_android.h",
+          "openxr/android/openxr_depth_sensor_android.cc",
+          "openxr/android/openxr_depth_sensor_android.h",
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
           "openxr/android/openxr_light_estimator_android.cc",
@@ -379,7 +383,7 @@ if (enable_openxr) {
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",
         "//device/vr/public/mojom:test_mojom",
-        "//device/vr/public/mojom:vr_public_typemaps",
+        "//device/vr/public/mojom:vr_service",
         "//third_party/openxr:openxr_headers",
       ]
 

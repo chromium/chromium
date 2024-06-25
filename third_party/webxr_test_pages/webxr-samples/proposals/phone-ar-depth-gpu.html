@@ -133,8 +133,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // Requests an immersive session with environment integration.
 
         let options = {
-          requiredFeatures: ['depth-sensing', 'dom-overlay'],
-          optionalFeatures: [],
+          requiredFeatures: ['depth-sensing'],
+          optionalFeatures: ['dom-overlay'],
           domOverlay: { root: textOverlayElement },
           depthSensing: {
             usagePreference: ["cpu-optimized"],
@@ -330,10 +330,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
               renderDepthInformationGPU(depthData, view, viewport);
             } else {
+              console.error("Depth data unavailable in the current frame!");
               textInfoElement.innerHTML = "Depth data unavailable in the current frame!";
             }
           }
         } else {
+              console.error("Pose unavailable in the current frame!");
           textInfoElement.innerHTML = "Pose unavailable in the current frame!";
         }
       }

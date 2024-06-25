@@ -89,6 +89,7 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::HIT_TEST);
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LIGHT_ESTIMATION);
+    device_data.supported_features.emplace_back(mojom::XRSessionFeature::DEPTH);
   }
 
   SetDeviceData(std::move(device_data));

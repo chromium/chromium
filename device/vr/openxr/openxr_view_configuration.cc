@@ -7,9 +7,20 @@
 #include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+mojom::XREye GetEyeFromIndex(int i) {
+  if (i == kLeftView) {
+    return mojom::XREye::kLeft;
+  } else if (i == kRightView) {
+    return mojom::XREye::kRight;
+  } else {
+    return mojom::XREye::kNone;
+  }
+}
 
 OpenXrViewProperties::OpenXrViewProperties(
     XrViewConfigurationView xr_properties,
