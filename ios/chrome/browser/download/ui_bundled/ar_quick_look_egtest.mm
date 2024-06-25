@@ -88,9 +88,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey tapWebStateElementWithID:@"good"];
 
   // Verify QLPreviewControllerView is presented.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"QLPreviewControllerView")]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_kindOfClassName(@"QLPreviewControllerView")];
 }
 
 - (void)testDownloadUnauthorized {
