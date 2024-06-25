@@ -25,7 +25,7 @@ export function getHtml(this: ThemeHueSliderDialogElement) {
       @pointerup="${this.updateSelectedHueValue_}"
       @keyup="${this.updateSelectedHueValue_}"
       .style="--hue-gradient_: ${this.hueGradient_}; --knob-hue_: ${this.knobHue_}"
-      aria-labelledby="title">
+      aria-label="${this.i18n('hueSliderAriaLabel', this.minHue_, this.maxHue_)}">
   </cr-slider>
 </dialog>`;
   // clang-format on

@@ -321,6 +321,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"cancelButton", IDS_CANCEL},
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
       {"hueSliderTitle", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE},
+      {"hueSliderAriaLabel", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_ARIA_LABEL},
       {"customBackgroundDisabled",
        IDS_NTP_CUSTOMIZE_MENU_BACKGROUND_DISABLED_LABEL},
       {"customizeButton", IDS_NTP_CUSTOMIZE_BUTTON_LABEL},

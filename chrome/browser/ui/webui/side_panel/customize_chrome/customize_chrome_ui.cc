@@ -104,6 +104,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"defaultColorName", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
       {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
       {"hueSliderTitle", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE},
+      {"hueSliderAriaLabel", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_ARIA_LABEL},
       {"hueSliderDeleteTitle", IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_TITLE},
       {"hueSliderDeleteA11yLabel",
        IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_A11Y_LABEL},

@@ -7931,6 +7931,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_TITLE" desc="The label for the hue slider in the customization menu on the New Tab Page that allows a user to pick a color for their theme">
         Color picker
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_ARIA_LABEL" desc="The accessibile label for the hue slider in the customization menu on the New Tab Page that allows a user to pick a color for their theme">
+        Hue slider from <ph name="MIN_VALUE">$1<ex>0</ex></ph> to <ph name="MAX_VALUE">$2<ex>359</ex></ph>
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_COLOR_HUE_SLIDER_DELETE_TITLE" desc="The tooltip for the delete button in the hue slider that unselects the currently selected hue.">
         Unselect
       </message>
