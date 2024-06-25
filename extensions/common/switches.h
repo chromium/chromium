@@ -88,6 +88,12 @@ extern const char kEnableCrxHashCheck[];
 // Mute extension errors while working with new manifest version.
 extern const char kAllowFutureManifestVersion[];
 
+// Allow the chrome.test API to be exposed on web page contexts for testing.
+// TODO(tjudkins): This will need to be added to the list of flags that get
+// copied from the browser to the renderer in ChromeContentBrowserClient to
+// actually use it in browser tests.
+extern const char kExtensionTestApiOnWebPages[];
+
 }  // namespace extensions::switches
 
 #endif  // EXTENSIONS_COMMON_SWITCHES_H_

@@ -742,8 +742,8 @@
   "test": [{
     "channel": "stable",
     "extension_types": "all",
-    // Everything except web pages and WebUI. WebUI is declared in a separate
-    // rule to keep the "matches" property isolated.
+    // Everything except web pages and WebUI. WebUI and web pages are declared
+    // in separate rules to keep the "matches" properties isolated.
     "contexts": [
       "privileged_extension",
       "privileged_web_page",
@@ -766,6 +766,12 @@
     "channel": "stable",
     "contexts": [ "webui_untrusted" ],
     "matches": [ "chrome-untrusted://api-test/*" ]
+  }, {
+    // This also depends on a special check in the NativeExtensionBindingsSystem
+    // that only exposes it if an associated command line flag is set.
+    "channel": "stable",
+    "contexts": ["web_page"],
+    "matches": ["<all_urls>"]
   }],
   "types": {
     "internal": true,

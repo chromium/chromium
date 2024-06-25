@@ -75,10 +75,10 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
 
 // Tests that webstorePrivate, management and runtime are exposed to the
 // webstore domain, but not to a non-webstore domain.
-// Note: Although we don't explicitly provide runtime to the webstore domain,
-// it is granted implicitly by the NativeExtensionBindingsSystem due to other
-// extension APIs (webstorePrivate and management) being exposed to the web
-// page.
+// Note: Although we don't explicitly provide runtime to the webstore domain in
+// the case of it being a "web page" context, it is granted implicitly by the
+// NativeExtensionBindingsSystem due to other extension APIs (webstorePrivate
+// and management) being exposed to the web page.
 IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
   const GURL webstore_url = GetParam().Resolve("/webstore/mock_store.html");
   const GURL not_webstore_url = GURL(kNonWebstoreURL1).Resolve("/empty.html");

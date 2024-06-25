@@ -29,6 +29,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/switches.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_bridge.h"
@@ -384,10 +385,10 @@ std::string GetContextOwner(v8::Local<v8::Context> context) {
              : url::Origin::Create(script_context->url()).GetURL().spec();
 }
 
-// Returns true if the `context` will need runtime for messaging APIs. This is
-// different than just checking features because runtime's availability depends
-// on the installed extensions and the active URL (in the case of extensions
-// communicating with external websites).
+// Returns true if the specified `context` needs runtime for messaging APIs.
+// This is different than just checking features because runtime's availability
+// depends on the installed extensions and the active URL (in the case of
+// extensions communicating with external websites).
 bool DoesContextNeedMessagingApis(ScriptContext* context) {
   // TODO(devlin): This doesn't seem thread-safe with ServiceWorkers?
   for (const auto& extension :
@@ -404,7 +405,8 @@ bool DoesContextNeedMessagingApis(ScriptContext* context) {
 // The APIs that could potentially be available to webpage-like contexts.
 // This is the list of possible features; most web pages will not have access
 // to these APIs.
-// Note: `runtime` is not included here, since it's handled specially above.
+// Note: `runtime` and `test` may also be available, but are handled specially
+// in UpdateBindingsForContext.
 const char* const kWebAvailableFeatures[] = {
     "app",
     "dashboardPrivate",
@@ -583,11 +585,23 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       }
     }
 
+    // The chrome.test API has a special case for web page contexts, where it is
+    // available if the "--ExtensionTestApiOnWebPages" command line flag has
+    // been used.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kExtensionTestApiOnWebPages) &&
+        context->GetAvailability("test").is_available()) {
+      is_any_feature_available_to_page = true;
+      if (!set_accessor("test")) {
+        LOG(ERROR) << "Failed to create API on Chrome object.";
+      }
+    }
+
     // Runtime is special and needs to be provided in two cases:
     //  - If any extensions have specified themselves as externally connectable
     //  from this web page's URL.
     //  - If any features (other than app) were made available from the above
-    //  check. We need do do this in order to have runtime.lastError provided
+    //  checks. We need do do this in order to have runtime.lastError provided
     //  for reporting errors to API callbacks.
     if (DoesContextNeedMessagingApis(context) ||
         is_any_feature_available_to_page) {

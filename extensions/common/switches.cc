@@ -42,5 +42,6 @@ const char kShowComponentExtensionOptions[] =
 const char kTraceAppSource[] = "enable-trace-app-source";
 const char kEnableCrxHashCheck[] = "enable-crx-hash-check";
 const char kAllowFutureManifestVersion[] = "allow-future-manifest-version";
+const char kExtensionTestApiOnWebPages[] = "extension-test-api-on-web-pages";
 
 }  // namespace extensions::switches

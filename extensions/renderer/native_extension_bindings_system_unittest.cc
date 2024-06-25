@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/switches.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
@@ -654,76 +656,6 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   check_properties_inequal(context_a, context_b, "chrome.idle.onStateChanged");
 }
 
-// Tests that API methods and events that are conditionally available based on
-// context are properly present or absent from the API object.
-TEST_F(NativeExtensionBindingsSystemUnittest,
-       CheckRestrictedFeaturesBasedOnContext) {
-  scoped_refptr<const Extension> connectable_extension;
-  {
-    auto manifest = base::Value::Dict()
-                        .Set("name", "connectable")
-                        .Set("manifest_version", 2)
-                        .Set("version", "0.1")
-                        .Set("description", "test extension");
-    base::Value::Dict connectable;
-    connectable.Set("matches", base::Value::List().Append("*://example.com/*"));
-    manifest.Set("externally_connectable", std::move(connectable));
-    connectable_extension =
-        ExtensionBuilder()
-            .SetManifest(std::move(manifest))
-            .SetLocation(mojom::ManifestLocation::kInternal)
-            .SetID(crx_file::id_util::GenerateId("connectable"))
-            .Build();
-  }
-
-  RegisterExtension(connectable_extension);
-
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> privileged_context = MainContext();
-  v8::Local<v8::Context> connectable_webpage_context = AddContext();
-  v8::Local<v8::Context> nonconnectable_webpage_context = AddContext();
-
-  // Create two contexts - a privileged extension context and a normal web page
-  // context.
-  ScriptContext* privileged_script_context =
-      CreateScriptContext(privileged_context, connectable_extension.get(),
-                          mojom::ContextType::kPrivilegedExtension);
-  privileged_script_context->set_url(connectable_extension->url());
-  bindings_system()->UpdateBindingsForContext(privileged_script_context);
-
-  ScriptContext* connectable_webpage_script_context = CreateScriptContext(
-      connectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
-  connectable_webpage_script_context->set_url(GURL("http://example.com"));
-  bindings_system()->UpdateBindingsForContext(
-      connectable_webpage_script_context);
-
-  ScriptContext* nonconnectable_webpage_script_context = CreateScriptContext(
-      nonconnectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
-  nonconnectable_webpage_script_context->set_url(GURL("http://notexample.com"));
-  bindings_system()->UpdateBindingsForContext(
-      nonconnectable_webpage_script_context);
-
-  // Check that properties are correctly restricted. The privileged context
-  // should have access to the whole runtime API, the connectable webpage should
-  // only have access to sendMessage, and the nonconnectable webpage should not
-  // have access to any of the API.
-  const char kRuntime[] = "chrome.runtime";
-  const char kSendMessage[] = "chrome.runtime.sendMessage";
-  const char kGetUrl[] = "chrome.runtime.getURL";
-  const char kOnMessage[] = "chrome.runtime.onMessage";
-  ASSERT_TRUE(PropertyExists(privileged_context, kRuntime));
-  EXPECT_TRUE(PropertyExists(privileged_context, kSendMessage));
-  EXPECT_TRUE(PropertyExists(privileged_context, kGetUrl));
-  EXPECT_TRUE(PropertyExists(privileged_context, kOnMessage));
-
-  ASSERT_TRUE(PropertyExists(connectable_webpage_context, kRuntime));
-  EXPECT_TRUE(PropertyExists(connectable_webpage_context, kSendMessage));
-  EXPECT_FALSE(PropertyExists(connectable_webpage_context, kGetUrl));
-  EXPECT_FALSE(PropertyExists(connectable_webpage_context, kOnMessage));
-
-  EXPECT_FALSE(PropertyExists(nonconnectable_webpage_context, kRuntime));
-}
-
 // Tests behavior when script sets window.chrome to be various things.
 TEST_F(NativeExtensionBindingsSystemUnittest, TestUsingOtherChromeObjects) {
   scoped_refptr<const Extension> extension =
@@ -1332,6 +1264,125 @@ TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     SignatureValidationNativeExtensionBindingsSystemUnittest,
+    testing::Bool());
+
+class FeatureAvailabilityNativeExtensionBindingsSystemUnittest
+    : public NativeExtensionBindingsSystemUnittest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FeatureAvailabilityNativeExtensionBindingsSystemUnittest() = default;
+
+  FeatureAvailabilityNativeExtensionBindingsSystemUnittest(
+      const FeatureAvailabilityNativeExtensionBindingsSystemUnittest&) = delete;
+  FeatureAvailabilityNativeExtensionBindingsSystemUnittest& operator=(
+      const FeatureAvailabilityNativeExtensionBindingsSystemUnittest&) = delete;
+
+  ~FeatureAvailabilityNativeExtensionBindingsSystemUnittest() override =
+      default;
+
+  void SetUp() override {
+    if (TestApiExposedOnWebPages()) {
+      base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+      command_line->AppendSwitch(switches::kExtensionTestApiOnWebPages);
+    }
+    NativeExtensionBindingsSystemUnittest::SetUp();
+  }
+
+  bool TestApiExposedOnWebPages() { return GetParam(); }
+};
+
+// Tests that API methods and events that are conditionally available based on
+// context are properly present or absent from the API object.
+TEST_P(FeatureAvailabilityNativeExtensionBindingsSystemUnittest,
+       CheckRestrictedFeaturesBasedOnContext) {
+  scoped_refptr<const Extension> connectable_extension;
+  {
+    auto manifest = base::Value::Dict()
+                        .Set("name", "connectable")
+                        .Set("manifest_version", 2)
+                        .Set("version", "0.1")
+                        .Set("description", "test extension");
+    base::Value::Dict connectable;
+    connectable.Set("matches", base::Value::List().Append("*://example.com/*"));
+    manifest.Set("externally_connectable", std::move(connectable));
+    connectable_extension =
+        ExtensionBuilder()
+            .SetManifest(std::move(manifest))
+            .SetLocation(mojom::ManifestLocation::kInternal)
+            .SetID(crx_file::id_util::GenerateId("connectable"))
+            .Build();
+  }
+
+  RegisterExtension(connectable_extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> privileged_context = MainContext();
+  v8::Local<v8::Context> connectable_webpage_context = AddContext();
+  v8::Local<v8::Context> nonconnectable_webpage_context = AddContext();
+
+  // Create three contexts - a privileged extension context, an externally
+  // connectable web page context and a normal non-connectable web page context.
+  ScriptContext* privileged_script_context =
+      CreateScriptContext(privileged_context, connectable_extension.get(),
+                          mojom::ContextType::kPrivilegedExtension);
+  privileged_script_context->set_url(connectable_extension->url());
+  bindings_system()->UpdateBindingsForContext(privileged_script_context);
+
+  ScriptContext* connectable_webpage_script_context = CreateScriptContext(
+      connectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
+  connectable_webpage_script_context->set_url(GURL("http://example.com"));
+  bindings_system()->UpdateBindingsForContext(
+      connectable_webpage_script_context);
+
+  ScriptContext* nonconnectable_webpage_script_context = CreateScriptContext(
+      nonconnectable_webpage_context, nullptr, mojom::ContextType::kWebPage);
+  nonconnectable_webpage_script_context->set_url(GURL("http://notexample.com"));
+  bindings_system()->UpdateBindingsForContext(
+      nonconnectable_webpage_script_context);
+
+  // Check that properties are correctly restricted. The privileged context
+  // should have access to the whole runtime API, the connectable webpage should
+  // only have access to sendMessage in runtime, and the non-connectable webpage
+  // should only have access to runtime if it gets it from also having access to
+  // the test API. The test API should be available to all the webpage contexts
+  // (not the privileged evetension context), but only if the associated
+  // commandline flag has been set.
+  const char kRuntime[] = "chrome.runtime";
+  const char kSendMessage[] = "chrome.runtime.sendMessage";
+  const char kGetUrl[] = "chrome.runtime.getURL";
+  const char kOnMessage[] = "chrome.runtime.onMessage";
+  const char kTest[] = "chrome.test";
+
+  ASSERT_TRUE(PropertyExists(privileged_context, kRuntime));
+  EXPECT_TRUE(PropertyExists(privileged_context, kSendMessage));
+  EXPECT_TRUE(PropertyExists(privileged_context, kGetUrl));
+  EXPECT_TRUE(PropertyExists(privileged_context, kOnMessage));
+  EXPECT_FALSE(PropertyExists(privileged_context, kTest));
+
+  ASSERT_TRUE(PropertyExists(connectable_webpage_context, kRuntime));
+  EXPECT_TRUE(PropertyExists(connectable_webpage_context, kSendMessage));
+  EXPECT_FALSE(PropertyExists(connectable_webpage_context, kGetUrl));
+  EXPECT_FALSE(PropertyExists(connectable_webpage_context, kOnMessage));
+  EXPECT_EQ(TestApiExposedOnWebPages(),
+            PropertyExists(connectable_webpage_context, kTest));
+
+  EXPECT_EQ(TestApiExposedOnWebPages(),
+            PropertyExists(nonconnectable_webpage_context, kRuntime));
+  // If runtime was exposed to the page because of the test API, it will only
+  // get access to sendMessage, as that is the only one exposed to web page
+  // contexts.
+  if (TestApiExposedOnWebPages()) {
+    EXPECT_TRUE(PropertyExists(nonconnectable_webpage_context, kSendMessage));
+    EXPECT_FALSE(PropertyExists(nonconnectable_webpage_context, kGetUrl));
+    EXPECT_FALSE(PropertyExists(nonconnectable_webpage_context, kOnMessage));
+  }
+  EXPECT_EQ(TestApiExposedOnWebPages(),
+            PropertyExists(nonconnectable_webpage_context, kTest));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FeatureAvailabilityNativeExtensionBindingsSystemUnittest,
     testing::Bool());
 
 }  // namespace extensions
