@@ -1,10 +1,10 @@
 dpapad@chromium.org
 
 # Happiness Tracking Surveys (HaTS)
-per-file hats_browser_proxy.ts=sauski@google.com
+per-file hats_browser_proxy.ts=fjacky@google.com
 
 # Metrics browser proxy
-per-file metrics_browser_proxy.ts=sauski@google.com,rainhard@chromium.org,msramek@chromium.org
+per-file metrics_browser_proxy.ts=rainhard@chromium.org,msramek@chromium.org
 
 # Two-column description style
 per-file settings_columned_section.css=rainhard@chromium.org
