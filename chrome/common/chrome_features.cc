@@ -1089,7 +1089,7 @@ BASE_FEATURE(kSafetyCheckExtensions,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
              "SafetyHubExtensionsUwSTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables extensions that do not display proper privacy practices in the
 // Safety Hub Extension Reivew Panel.
 BASE_FEATURE(kSafetyHubExtensionsNoPrivacyPracticesTrigger,
@@ -1099,7 +1099,7 @@ BASE_FEATURE(kSafetyHubExtensionsNoPrivacyPracticesTrigger,
 // review panel.
 BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
              "SafetyHubExtensionsOffStoreTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables Safety Hub feature.
