@@ -5,6 +5,7 @@
 #include "ash/wm/window_restore/pine_controller.h"
 
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -16,12 +17,12 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/toast_manager_impl.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -85,6 +86,11 @@ PrefService* GetActivePrefService() {
 // Returns true if this is the first time login and we should show the informed
 // restore onboarding message.
 bool ShouldStartInformedRestoreOnboarding() {
+  // This dialog is modal and can interfere with some browser tests that aren't
+  // expecting it. Do not show it by default.
+  if (Shell::Get()->shell_delegate()->IsNoFirstRunSwitchOn()) {
+    return false;
+  }
   PrefService* prefs = GetActivePrefService();
   return prefs && prefs->GetBoolean(prefs::kShowInformedRestoreOnboarding);
 }
@@ -221,7 +227,7 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 
 void PineController::MaybeStartPineOverviewSession(
     std::unique_ptr<InformedRestoreContentsData> contents_data) {
-  CHECK(IsForestFeatureEnabled());
+  CHECK(features::IsForestFeatureEnabled());
 
   if (OverviewController::Get()->InOverviewSession()) {
     return;
@@ -296,7 +302,7 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   // In multi-user scenario, forest may have been available for the user that
   // started overview, but not for the current user. (Switching users ends
   // overview.)
-  if (!IsForestFeatureEnabled()) {
+  if (!features::IsForestFeatureEnabled()) {
     return;
   }
 

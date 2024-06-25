@@ -494,3 +494,8 @@ void ChromeShellDelegate::OpenMultitaskingSettings() {
       ProfileManager::GetActiveUserProfile(), sub_page_path,
       chromeos::settings::mojom::Setting::kSnapWindowSuggestions);
 }
+
+bool ChromeShellDelegate::IsNoFirstRunSwitchOn() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kNoFirstRun);
+}

@@ -8,7 +8,6 @@
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_constants.h"
@@ -587,7 +586,7 @@ TEST_F(OverviewWindowDragControllerDesksPortraitTabletTest,
   const gfx::Rect desk_bar_bounds = desks_bar_view->GetBoundsInScreen();
   const gfx::Rect first_item_bounds =
       gfx::ToEnclosedRect(overview_grid()->window_list()[0]->target_bounds());
-  if (IsForestFeatureEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     // With forest, a little overlap is ok since the desk bar is transparent.
     // TODO(sammiequon|zxdan): Check if this gap is okay.
     EXPECT_NEAR(desk_bar_bounds.bottom(), first_item_bounds.y(), 20);

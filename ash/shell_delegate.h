@@ -225,6 +225,10 @@ class ASH_EXPORT ShellDelegate {
 
   // Opens the Multitasking OS Settings page.
   virtual void OpenMultitaskingSettings() = 0;
+
+  // Checks if the command line contains "no-first-run". Some UI's can interfere
+  // with browser tests, which have "no-first-run" on by default.
+  virtual bool IsNoFirstRunSwitchOn() const;
 };
 
 }  // namespace ash

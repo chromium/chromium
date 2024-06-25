@@ -49,7 +49,6 @@
 #include "ash/touch/touch_hud_debug.h"
 #include "ash/touch/touch_hud_projection.h"
 #include "ash/touch/touch_observer_hud.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/container_finder.h"
@@ -841,7 +840,7 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
                                            ui::MenuSourceType source_type) {
   // Show birch bar context menu for the primary user in clamshell mode Overview
   // without a partial split screen.
-  if (IsForestFeatureEnabled() &&
+  if (features::IsForestFeatureEnabled() &&
       Shell::Get()->session_controller()->IsUserPrimary() &&
       OverviewController::Get()->InOverviewSession() &&
       !split_view_overview_session_) {
@@ -1209,7 +1208,7 @@ void RootWindowController::CreateContainers() {
                   non_lock_screen_containers);
 
   aura::Window* shutdown_screenshot_container = non_lock_screen_containers;
-  if (IsForestFeatureFlagEnabled()) {
+  if (features::IsForestFeatureEnabled()) {
     shutdown_screenshot_container = CreateContainer(
         kShellWindowId_ShutdownScreenshotContainer,
         "ShutdownScreenshotContainer", non_lock_screen_containers);

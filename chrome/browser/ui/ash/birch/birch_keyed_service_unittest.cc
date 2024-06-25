@@ -11,7 +11,6 @@
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -337,8 +336,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
         fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
 
   void SetUp() override {
-    switches::SetIgnoreForestSecretKeyForTest(true);
-
     feature_list_.InitWithFeatures(
         {features::kForestFeature,
          ash::features::kReleaseNotesNotificationAllChannels},
@@ -399,7 +396,6 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     release_notes_storage_ = nullptr;
     favicon_service_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
-    switches::SetIgnoreForestSecretKeyForTest(false);
   }
 
   void LogIn(const std::string& email) override {

@@ -2609,8 +2609,6 @@ component("ash") {
     "utility/cropping_util.h",
     "utility/cursor_setter.cc",
     "utility/cursor_setter.h",
-    "utility/forest_util.cc",
-    "utility/forest_util.h",
     "utility/layer_copy_animator.cc",
     "utility/layer_copy_animator.h",
     "utility/layer_util.cc",
@@ -3155,9 +3153,6 @@ component("ash") {
     "//chromeos/ui/vector_icons",
     "//components/discardable_memory/public/mojom",
     "//components/version_info:channel",
-
-    # TODO(http://b/333952534): Remove this once we no longer need gaia API.
-    "//google_apis",
     "//google_apis/calendar",
     "//google_apis/common",
     "//google_apis/tasks",

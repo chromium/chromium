@@ -251,6 +251,12 @@ INSTANTIATE_TEST_SUITE_P(UseDriveRecents,
 // suggest cache is empty.
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        QueryWithEmptyCache) {
+  // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
+  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
+                    "Recents disabled.";
+  }
+
   base::HistogramTester histogram_tester;
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
@@ -303,6 +309,11 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 // the item suggest cache correctly.
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        RespondToItemSuggestCacheUpdate) {
+  // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
+  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
+                    "Recents disabled.";
+  }
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -428,6 +439,12 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 // the item suggest cache correctly when item fetch fails.
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        RespondToItemSuggestCacheInvalidUpdate) {
+  // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
+  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
+                    "Recents disabled.";
+  }
+
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();
@@ -503,6 +520,12 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 // the item suggest cache correctly if some item fetches fail.
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        RespondToItemSuggestCachePartiallyInvalidUpdate) {
+  // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
+  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+    GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
+                    "Recents disabled.";
+  }
+
   base::HistogramTester histogram_tester;
 
   Profile* profile = browser()->profile();

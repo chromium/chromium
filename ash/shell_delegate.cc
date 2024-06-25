@@ -44,4 +44,8 @@ DeskProfilesDelegate* ShellDelegate::GetDeskProfilesDelegate() {
   return nullptr;
 }
 
+bool ShellDelegate::IsNoFirstRunSwitchOn() const {
+  return false;
+}
+
 }  // namespace ash

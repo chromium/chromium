@@ -147,9 +147,6 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
 
   setup_called_ = true;
 
-  // TODO(http://b/338414459): Remove this once the secret key is removed.
-  switches::SetIgnoreForestSecretKeyForTest(true);
-
   AshTestHelper::InitParams params;
   params.start_session = start_session_;
   params.create_global_cras_audio_handler = create_global_cras_audio_handler_;
@@ -205,9 +202,6 @@ void AshTestBase::TearDown() {
 
   // Tests can add devices, so reset the lists for future tests.
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
-
-  // TODO(http://b/338414459): Remove this once the secret key is removed.
-  switches::SetIgnoreForestSecretKeyForTest(false);
 }
 
 // static

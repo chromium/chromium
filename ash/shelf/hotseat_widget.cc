@@ -22,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/utility/forest_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/i18n/rtl.h"
@@ -521,7 +520,8 @@ void HotseatWidget::DelegateView::Init(
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   if (overview_controller) {
     overview_controller->AddObserver(this);
-    if (overview_controller->InOverviewSession() && !IsForestFeatureEnabled()) {
+    if (overview_controller->InOverviewSession() &&
+        !features::IsForestFeatureEnabled()) {
       ++blur_lock_;
     }
   }
@@ -609,7 +609,7 @@ SkColor HotseatWidget::DelegateView::GetBackgroundColor() {
   CHECK(widget);
   aura::Window* window = widget->GetNativeWindow();
   // A forest session uses system-on-base.
-  if (IsForestFeatureEnabled() &&
+  if (features::IsForestFeatureEnabled() &&
       OverviewController::Get()->InOverviewSession() &&
       !SplitViewController::Get(window)->InSplitViewMode()) {
     return widget->GetColorProvider()->GetColor(
@@ -722,7 +722,7 @@ bool HotseatWidget::DelegateView::CanActivate() const {
 
 void HotseatWidget::DelegateView::OnOverviewModeWillStart() {
   // Forest uses background blur in overview.
-  was_forest_on_overview_enter_ = IsForestFeatureEnabled();
+  was_forest_on_overview_enter_ = features::IsForestFeatureEnabled();
   if (*was_forest_on_overview_enter_) {
     return;
   }
