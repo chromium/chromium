@@ -1110,6 +1110,8 @@ component("ash") {
     "picker/views/picker_style.h",
     "picker/views/picker_submenu_controller.cc",
     "picker/views/picker_submenu_controller.h",
+    "picker/views/picker_submenu_view.cc",
+    "picker/views/picker_submenu_view.h",
     "picker/views/picker_symbol_item_view.cc",
     "picker/views/picker_symbol_item_view.h",
     "picker/views/picker_traversable_item_container.h",
