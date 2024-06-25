@@ -366,6 +366,9 @@ void SnapGroup::OnPostWindowStateTypeChange(
     // adjust snapped window state post-event to include divider.
     ApplyPrimarySnapRatio(*new_window1_snap_ratio);
 
+    base::RecordAction(
+        base::UserMetricsAction("SnapGroups_DoubleTapWindowSwapSuccess"));
+
     swapping_windows_ = false;
   }
 }
@@ -424,6 +427,9 @@ void SnapGroup::SwapWindows() {
   const WindowSnapWMEvent primary_snap_event(WM_EVENT_SNAP_PRIMARY,
                                              *window2_snap_ratio);
   window2_state->OnWMEvent(&primary_snap_event);
+
+  base::RecordAction(
+      base::UserMetricsAction("SnapGroups_DoubleTapWindowSwapAttempts"));
 }
 
 gfx::Rect SnapGroup::GetSnappedWindowBoundsInScreen(

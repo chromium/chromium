@@ -37866,6 +37866,29 @@ should be able to be added at any place in this file.
   <description>Recorded when a snap group is added.</description>
 </action>
 
+<action name="SnapGroups_DoubleTapWindowSwapAttempts">
+  <owner>michelefan@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Tracks the number of times users attempt to swap windows within a Snap Group
+    via double tap.
+  </description>
+</action>
+
+<action name="SnapGroups_DoubleTapWindowSwapSuccess">
+  <owner>michelefan@chromium.org</owner>
+  <owner>cros-snap-groups@google.com</owner>
+  <description>
+    Recorded when two windows in a Snap Group are successfully swapped via
+    double tap.
+  </description>
+</action>
+
+<action name="SnapGroups_DoubleTapWindowSwapTriggered">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="SnapGroups_MoveSnapGroupToDesk">
   <owner>sophiewen@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>

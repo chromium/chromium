@@ -9308,6 +9308,7 @@ class SnapGroupMetricsTest : public SnapGroupTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 };
 
 // Tests that the pipeline to get snap action source info all the way to be
@@ -9598,7 +9599,6 @@ TEST_F(SnapGroupMetricsTest, KeyboardshortcutToCreateSnapGroupHistogram) {
 
 TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
   UpdateDisplay("800x600");
-  base::UserActionTester user_action_tester;
 
   // Add a snap group, which will incidentally start partial overview.
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -9607,8 +9607,8 @@ TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
   auto* snap_group_controller = SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
   EXPECT_EQ(
-      user_action_tester.GetActionCount("SnapGroups_StartPartialOverview"), 1);
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_AddSnapGroup"), 1);
+      user_action_tester_.GetActionCount("SnapGroups_StartPartialOverview"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_AddSnapGroup"), 1);
 
   // Snap to replace.
   std::unique_ptr<aura::Window> w3(CreateAppWindow());
@@ -9616,7 +9616,7 @@ TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w3.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_SnapToReplace"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_SnapToReplace"), 1);
 
   // Resize `w3` to be < 1/3 so the snap ratio gap exceeds the threshold.
   auto* event_generator = GetEventGenerator();
@@ -9625,7 +9625,7 @@ TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
   event_generator->DragMouseTo(150, resize_point.y());
 
   // Snap via the window layout menu with a ratio >
-  // kSnapToReplaceRatioDiffThreshold to directly snap on top.
+  // `kSnapToReplaceRatioDiffThreshold` to directly snap on top.
   std::unique_ptr<aura::Window> w4(CreateAppWindow());
   SnapOneTestWindow(w4.get(), WindowStateType::kPrimarySnapped,
                     chromeos::kTwoThirdSnapRatio,
@@ -9633,17 +9633,17 @@ TEST_F(SnapGroupMetricsTest, SnapGroupUserActions) {
   ASSERT_GT(GetSnapRatioGap(w4.get(), w2.get()),
             kSnapToReplaceRatioDiffThreshold);
   ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w4.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_SnapDirect"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_SnapDirect"), 1);
 
   // Remove the snap group.
   w3.reset();
   ASSERT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w3.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RemoveSnapGroup"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_RemoveSnapGroup"),
+            1);
 }
 
 TEST_F(SnapGroupMetricsTest, RecallSnapGroupUserAction) {
   UpdateDisplay("800x600");
-  base::UserActionTester user_action_tester;
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -9656,7 +9656,8 @@ TEST_F(SnapGroupMetricsTest, RecallSnapGroupUserAction) {
   // recall the group.
   std::unique_ptr<aura::Window> w3(CreateAppWindow(work_area_bounds()));
   wm::ActivateWindow(w1.get());
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_RecallSnapGroup"),
+            1);
 
   // Enter overview, then click the overview group item to recall the group.
   ToggleOverview();
@@ -9667,26 +9668,28 @@ TEST_F(SnapGroupMetricsTest, RecallSnapGroupUserAction) {
   ASSERT_TRUE(overview_group_item);
   GetOverviewSession()->SelectWindow(overview_group_item);
   ASSERT_TRUE(wm::IsActiveWindow(w1.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_RecallSnapGroup"),
+            2);
 
   // Activate `w3`, then window cycle to `w1` to recall the group.
   wm::ActivateWindow(w3.get());
   CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
   CompleteWindowCycling();
   ASSERT_TRUE(wm::IsActiveWindow(w1.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_RecallSnapGroup"),
+            3);
 
   // Window cycle to `w2`. Test we don't record since the other `w1` was
   // previously active.
   CycleWindow(WindowCyclingDirection::kForward, /*steps=*/1);
   CompleteWindowCycling();
   ASSERT_TRUE(wm::IsActiveWindow(w2.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_RecallSnapGroup"), 3);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_RecallSnapGroup"),
+            3);
 }
 
 TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
   UpdateDisplay("800x600");
-  base::UserActionTester user_action_tester;
 
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -9695,7 +9698,7 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
   PressAndReleaseKey(ui::VKEY_OEM_4, ui::EF_ALT_DOWN);
   EXPECT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
-  EXPECT_EQ(user_action_tester.GetActionCount(
+  EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);
 
@@ -9704,7 +9707,7 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowStateRestore);
   ASSERT_FALSE(IsInOverviewSession());
-  EXPECT_EQ(user_action_tester.GetActionCount(
+  EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);
 
@@ -9714,7 +9717,7 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
   VerifySplitViewOverviewSession(w1.get());
   PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   ASSERT_FALSE(IsInOverviewSession());
-  EXPECT_EQ(user_action_tester.GetActionCount(
+  EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);
 
@@ -9724,12 +9727,12 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
                     chromeos::kDefaultSnapRatio);
   VerifySplitViewOverviewSession(w1.get());
   ClickOverviewItem(GetEventGenerator(), w2.get());
-  EXPECT_EQ(user_action_tester.GetActionCount(
+  EXPECT_EQ(user_action_tester_.GetActionCount(
                 "SnapGroups_SkipFormSnapGroupAfterSnapping"),
             0);
   auto* snap_group_controller = SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_AddSnapGroup"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_AddSnapGroup"), 1);
 
   // Drag out `w1` from the group, which will break the group, then re-snap it.
   // This will create a new snap group.
@@ -9741,7 +9744,52 @@ TEST_F(SnapGroupMetricsTest, SkipFormSnapGroupAfterSnapping) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  EXPECT_EQ(user_action_tester.GetActionCount("SnapGroups_AddSnapGroup"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("SnapGroups_AddSnapGroup"), 2);
+}
+
+// Verifies that the "double tap to swap windows" user action metrics are
+// recorded accurately.
+TEST_F(SnapGroupMetricsTest, DoubleTapDividerUserAction) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  auto* divider_view = divider->divider_view_for_testing();
+  ASSERT_TRUE(divider_view);
+  auto* handler_view = divider_view->handler_view_for_testing();
+  ASSERT_TRUE(handler_view);
+
+  auto* event_generator = GetEventGenerator();
+  const auto divider_center_point =
+      snap_group_divider_bounds_in_screen().CenterPoint();
+  event_generator->set_current_screen_location(divider_center_point);
+  event_generator->DoubleClickLeftButton();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Verify that the correct user action metrics are recorded after a
+  // successful window swap triggered by double-click on the divider.
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SnapGroups_DoubleTapWindowSwapAttempts"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SnapGroups_DoubleTapWindowSwapSuccess"),
+            1);
+
+  // Verify that after a successful window swap initiated by a double-tap on the
+  // divider, the corresponding user action metrics are incremented.
+  event_generator->GestureTapAt(divider_center_point);
+  event_generator->GestureTapAt(divider_center_point);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SnapGroups_DoubleTapWindowSwapAttempts"),
+            2);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "SnapGroups_DoubleTapWindowSwapSuccess"),
+            2);
 }
 
 }  // namespace ash
