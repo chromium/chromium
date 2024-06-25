@@ -80,7 +80,7 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidget) {
   views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
 }
 
-TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorIsDestroyed) {
+TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorWidgetIsDestroyed) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
@@ -90,6 +90,36 @@ TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorIsDestroyed) {
   anchor_widget->CloseNow();
 
   EXPECT_EQ(controller.widget_for_testing(), nullptr);
+}
+
+TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsDestroyed) {
+  PickerSubmenuController controller;
+  auto anchor_widget = CreateFramelessTestWidget();
+  auto* contents_view =
+      anchor_widget->SetContentsView(std::make_unique<views::View>());
+  auto* anchor_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  anchor_widget->Show();
+  controller.Show(anchor_view, {});
+
+  contents_view->RemoveAllChildViews();
+
+  views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
+}
+
+TEST_F(PickerSubmenuControllerTest, ClosesWidgetWhenAnchorViewIsHidden) {
+  PickerSubmenuController controller;
+  auto anchor_widget = CreateFramelessTestWidget();
+  auto* contents_view =
+      anchor_widget->SetContentsView(std::make_unique<views::View>());
+  auto* anchor_view =
+      contents_view->AddChildView(std::make_unique<views::View>());
+  anchor_widget->Show();
+  controller.Show(anchor_view, {});
+
+  contents_view->SetVisible(false);
+
+  views::test::WidgetDestroyedWaiter(controller.widget_for_testing()).Wait();
 }
 
 TEST_F(PickerSubmenuControllerTest, TriggersCallbackWhenClickingOnItem) {

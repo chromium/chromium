@@ -131,6 +131,18 @@ PickerSubmenuController::PickerSubmenuController() = default;
 
 PickerSubmenuController::~PickerSubmenuController() = default;
 
+void PickerSubmenuController::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  if (!observed_view->IsDrawn()) {
+    Close();
+  }
+}
+
+void PickerSubmenuController::OnViewIsDeleting(views::View* observed_view) {
+  Close();
+}
+
 void PickerSubmenuController::Show(
     views::View* anchor_view,
     std::vector<std::unique_ptr<PickerItemView>> items) {
@@ -140,6 +152,8 @@ void PickerSubmenuController::Show(
   views::Widget::ReparentNativeView(widget_->GetNativeWindow(),
                                     anchor_view->GetWidget()->GetNativeView());
   widget_->Show();
+  anchor_view_observation_.Reset();
+  anchor_view_observation_.Observe(anchor_view);
 
   // This forces the Widget to reposition itself based on the anchor.
   widget_->OnRootViewLayoutInvalidated();
@@ -149,6 +163,7 @@ void PickerSubmenuController::Close() {
   if (widget_) {
     widget_->Close();
   }
+  anchor_view_observation_.Reset();
 }
 
 }  // namespace ash

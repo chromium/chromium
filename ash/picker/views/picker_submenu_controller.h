@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/scoped_observation.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
@@ -18,12 +20,17 @@ namespace ash {
 
 class PickerItemView;
 
-class ASH_EXPORT PickerSubmenuController {
+class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
  public:
   PickerSubmenuController();
   PickerSubmenuController(const PickerSubmenuController&) = delete;
   PickerSubmenuController& operator=(const PickerSubmenuController&) = delete;
-  ~PickerSubmenuController();
+  ~PickerSubmenuController() override;
+
+  // ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // Shows the submenu with `items`, anchoring it to `anchor_view`.
   // If this submenu is already showing, then it is closed first before showing
@@ -38,6 +45,9 @@ class ASH_EXPORT PickerSubmenuController {
 
  private:
   views::UniqueWidgetPtr widget_;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      anchor_view_observation_{this};
 };
 
 }  // namespace ash
