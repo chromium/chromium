@@ -8,10 +8,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Notification;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipData.Item;
 import android.content.ClipDescription;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -144,10 +141,5 @@ public final class ApiHelperForO {
             Handler scheduler,
             int flags) {
         return context.registerReceiver(receiver, filter, permission, scheduler, flags);
-    }
-
-    /** See {@link ClipData#addItem(ContentResolver, Item)}. */
-    public static void addItem(ClipData clipData, ContentResolver contentResolver, Item item) {
-        clipData.addItem(contentResolver, item);
     }
 }

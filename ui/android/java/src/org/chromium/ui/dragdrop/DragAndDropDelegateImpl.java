@@ -253,17 +253,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 if (cachedUri == null) {
                     return null;
                 }
-                ClipData clipData =
-                        ClipData.newUri(
-                                ContextUtils.getApplicationContext().getContentResolver(),
-                                null,
-                                cachedUri);
-                if (dropData.hasLink()) {
-                    clipData.addItem(
-                            ContextUtils.getApplicationContext().getContentResolver(),
-                            new Item(dropData.gurl.getSpec()));
-                }
-                return clipData;
+                return ClipData.newUri(
+                        ContextUtils.getApplicationContext().getContentResolver(), null, cachedUri);
             case DragTargetType.LINK:
                 if (mDragAndDropBrowserDelegate != null) {
                     Intent intent =

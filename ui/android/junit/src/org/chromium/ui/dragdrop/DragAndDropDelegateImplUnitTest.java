@@ -491,11 +491,8 @@ public class DragAndDropDelegateImplUnitTest {
 
         ClipData clipData = mDragAndDropDelegateImpl.buildClipData(dropData);
         Assert.assertEquals(
-                "Image ClipData should include image and URL info.", 2, clipData.getItemCount());
-        Assert.assertEquals(
-                "Image URL info should match.",
-                JUnitTestGURLs.EXAMPLE_URL.getSpec(),
-                clipData.getItemAt(1).getText());
+                "Image ClipData should only include image.", 1, clipData.getItemCount());
+        Assert.assertNotNull("Image Uri should exist.", clipData.getItemAt(0).getUri());
     }
 
     @Test

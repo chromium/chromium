@@ -43,11 +43,8 @@ ScopedJavaLocalRef<jobject> ToJavaDropData(const DropData& drop_data) {
 
   // If file_contents is not empty, user is trying to drag image out of the
   // web contents. If the image contains a link, the link URL, represented by
-  // |jgurl|, will be added to the image clip data.
-  // drop_data.file_contents_source_url represents the image source URL;
-  // drop_data.url represents the URL that is linked to the image, which may not
-  // necessarily be the image source URL and is the desired URL to be added to
-  // the image clip data.
+  // |jgurl|, will be ignored.
+  // drop_data.file_contents_source_url represents the image source URL.
   ScopedJavaLocalRef<jbyteArray> jimage_bytes;
   ScopedJavaLocalRef<jstring> jimage_extension;
   ScopedJavaLocalRef<jstring> jimage_filename;
