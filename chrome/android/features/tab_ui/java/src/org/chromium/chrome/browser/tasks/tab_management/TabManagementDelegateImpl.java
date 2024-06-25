@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
 import java.util.function.DoubleConsumer;
@@ -62,7 +61,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
             ViewGroup rootView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager,
@@ -78,7 +76,6 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 tabModelSelector,
                 tabContentManager,
                 rootView,
-                dynamicResourceLoaderSupplier,
                 tabCreatorManager,
                 layoutStateProviderSupplier,
                 snackbarManager,

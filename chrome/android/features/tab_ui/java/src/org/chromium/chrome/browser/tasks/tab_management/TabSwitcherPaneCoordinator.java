@@ -284,9 +284,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             ProfileProvider profileProvider = mProfileProviderSupplier.get();
             assert profileProvider != null;
             Profile originalProfile = profileProvider.getOriginalProfile();
-
-            mTabListCoordinator.initWithNative(originalProfile, /* dynamicResourceLoader= */ null);
-
+            mTabListCoordinator.initWithNative(originalProfile);
             mMultiThumbnailCardProvider.initWithNative(originalProfile);
         }
     }

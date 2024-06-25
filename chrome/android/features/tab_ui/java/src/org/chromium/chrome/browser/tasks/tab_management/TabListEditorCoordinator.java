@@ -390,9 +390,8 @@ class TabListEditorCoordinator {
                         mRootView,
                         null);
 
-        // Note: The TabListEditorCoordinator is always created after native is
-        // initialized.
-        mTabListCoordinator.initWithNative(regularProfile, null);
+        // Note: The TabListEditorCoordinator is always created after native is initialized.
+        mTabListCoordinator.initWithNative(regularProfile);
 
         mTabListCoordinator.registerItemType(
                 TabProperties.UiType.DIVIDER,

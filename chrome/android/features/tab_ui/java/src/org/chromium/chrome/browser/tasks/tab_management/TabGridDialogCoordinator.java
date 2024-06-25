@@ -237,8 +237,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             .get()
                             .getTabModel()
                             .getProfile()
-                            .getOriginalProfile(),
-                    null);
+                            .getOriginalProfile());
         }
     }
 

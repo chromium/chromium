@@ -1679,7 +1679,6 @@ public class ToolbarManager
                                 mTabModelSelector,
                                 mTabContentManager,
                                 mCompositorViewHolder,
-                                mCompositorViewHolder::getDynamicResourceLoader,
                                 mTabCreatorManager,
                                 mLayoutStateProviderSupplier,
                                 mSnackbarManager,

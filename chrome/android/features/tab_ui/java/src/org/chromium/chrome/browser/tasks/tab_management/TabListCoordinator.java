@@ -55,7 +55,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 import java.lang.annotation.Retention;
@@ -503,8 +502,7 @@ public class TabListCoordinator
         mRecyclerView.setRecyclerViewPosition(recyclerViewPosition);
     }
 
-    void initWithNative(
-            @NonNull Profile profile, @Nullable DynamicResourceLoader dynamicResourceLoader) {
+    void initWithNative(@NonNull Profile profile) {
         if (mIsInitialized) return;
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
@@ -512,9 +510,6 @@ public class TabListCoordinator
 
             assert !profile.isOffTheRecord() : "Expecting a non-incognito profile.";
             mMediator.initWithNative(profile);
-            if (dynamicResourceLoader != null) {
-                mRecyclerView.createDynamicView(dynamicResourceLoader);
-            }
         }
     }
 
@@ -749,7 +744,6 @@ public class TabListCoordinator
 
     void postHiding() {
         unregisterLayoutChangeListener();
-        mRecyclerView.postHiding();
         mMediator.postHiding();
     }
 
@@ -776,14 +770,11 @@ public class TabListCoordinator
         }
     }
 
-    int getResourceId() {
-        return mRecyclerView.getResourceId();
-    }
-
     /**
      * Register a new view type for the component.
+     *
      * @see MVCListAdapter#registerType(int, MVCListAdapter.ViewBuilder,
-     *         PropertyModelChangeProcessor.ViewBinder).
+     *     PropertyModelChangeProcessor.ViewBinder).
      */
     <T extends View> void registerItemType(
             @UiType int typeId,

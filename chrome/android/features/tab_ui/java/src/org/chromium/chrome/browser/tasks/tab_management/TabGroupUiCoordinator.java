@@ -37,7 +37,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.util.List;
 
@@ -65,7 +64,6 @@ public class TabGroupUiCoordinator
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final SnackbarManager mSnackbarManager;
     private final TabCreatorManager mTabCreatorManager;
-    private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
     private PropertyModelChangeProcessor mModelChangeProcessor;
@@ -87,7 +85,6 @@ public class TabGroupUiCoordinator
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
             @NonNull ViewGroup rootView,
-            @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager,
@@ -111,7 +108,6 @@ public class TabGroupUiCoordinator
             mRootView = rootView;
             mSnackbarManager = snackbarManager;
             mTabCreatorManager = tabCreatorManager;
-            mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
             mTabContentManager = tabContentManager;
             mModalDialogManager = modalDialogManager;
             parentView.addView(mToolbarView);
@@ -175,9 +171,7 @@ public class TabGroupUiCoordinator
                             COMPONENT_NAME,
                             mRootView,
                             onModelTokenChange);
-            mTabStripCoordinator.initWithNative(
-                    mTabModelSelector.getModel(false).getProfile(),
-                    mDynamicResourceLoaderSupplier.get());
+            mTabStripCoordinator.initWithNative(mTabModelSelector.getModel(false).getProfile());
 
             mModelChangeProcessor =
                     PropertyModelChangeProcessor.create(
