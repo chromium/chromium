@@ -691,7 +691,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.loadImages_();
     }
 
-
+    container.scrollTop = 0;
     this.hasContent_ = true;
     container.appendChild(node);
     this.updateImages();
