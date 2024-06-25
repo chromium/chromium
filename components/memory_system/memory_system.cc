@@ -316,15 +316,6 @@ void MemorySystem::Impl::InitializeDispatcher(
 #endif
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-  allocation_recording_.recorder =
-      new base::debug::tracer::AllocationTraceRecorder();
-
-  // Always initialize the crash client. This way it is always present in the
-  // crashpad report. The actual content will depend on further inclusion into
-  // the dispatcher.
-  allocation_recorder::crash_client::RegisterRecorderWithCrashpad(
-      *allocation_recording_.recorder);
-
   const bool include_allocation_recorder =
       DispatcherIncludesAllocationTraceRecorder(dispatcher_parameters);
 
@@ -333,25 +324,27 @@ void MemorySystem::Impl::InitializeDispatcher(
   base::debug::SetCrashKeyString(
       crash_key, include_allocation_recorder ? "enabled" : "disabled");
 
-  base::debug::tracer::AllocationTraceRecorder* allocation_recorder_to_include =
-      nullptr;
-
   if (include_allocation_recorder) {
-    allocation_recorder_to_include = allocation_recording_.recorder;
+    allocation_recording_.recorder =
+        new base::debug::tracer::AllocationTraceRecorder();
+
+    allocation_recorder::crash_client::RegisterRecorderWithCrashpad(
+        *allocation_recording_.recorder);
+
 #if BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
     allocation_recording_.reporting = {
         *allocation_recording_.recorder, dispatcher_parameters.process_type,
         base::Seconds(15), logging::LOGGING_ERROR};
 #endif
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 
   base::allocator::dispatcher::CreateInitializer()
 #if HEAP_PROFILING_SUPPORTED
       .AddOptionalObservers(poisson_allocation_sampler)
 #endif
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-      .AddOptionalObservers(allocation_recorder_to_include)
+      .AddOptionalObservers(allocation_recording_.recorder.get())
 #endif
       .DoInitialize(base::allocator::dispatcher::Dispatcher::GetInstance());
 }
