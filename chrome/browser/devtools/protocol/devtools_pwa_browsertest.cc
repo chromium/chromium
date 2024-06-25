@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -231,6 +233,20 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
     return SendCommandSync(
         "Target.attachToTarget",
         base::Value::Dict{}.Set("targetId", ids->front().GetString()));
+  }
+
+  using AppUserSettings =
+      std::tuple<web_app::proto::LinkCapturingUserPreference,
+                 web_app::mojom::UserDisplayMode>;
+
+  AppUserSettings GetAppUserSettings(const ManifestId& manifest_id) {
+    auto* provider = WebAppProvider::GetForTest(browser()->profile());
+    CHECK(provider);
+    const auto* web_app = provider->registrar_unsafe().GetAppById(
+        web_app::GenerateAppIdFromManifestId(manifest_id));
+    CHECK(web_app);
+    return {web_app->user_link_capturing_preference(),
+            web_app->user_display_mode()};
   }
 
  private:
@@ -1057,5 +1073,131 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest, OpenCurrentPageInApp_NoShortcut) {
   ASSERT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, ChangeAppUserSettings_ChangeNothing) {
+  InstallFromUrl();
+  auto user_settings_before_change =
+      GetAppUserSettings(InstallableWebAppManifestId());
+  ASSERT_TRUE(
+      SendCommandSync("PWA.changeAppUserSettings",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+  EXPECT_EQ(user_settings_before_change,
+            GetAppUserSettings(InstallableWebAppManifestId()));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Setting linkCapturing on ChromeOS is not supported yet.
+// TODO(crbug.com/339453269): Implement setting linkCapturing on ChromeOS.
+#define DISABLE_ON_CHROMEOS(x) DISABLED_##x
+#else
+#define DISABLE_ON_CHROMEOS(x) x
+#endif
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       DISABLE_ON_CHROMEOS(ChangeAppUserSettings_NoApp)) {
+  ASSERT_FALSE(SendCommandSync(
+      "PWA.changeAppUserSettings",
+      base::Value::Dict{}
+          .Set("manifestId", InstallableWebAppManifestId().spec())
+          .Set("linkCapturing", true)
+          .Set("displayMode", "standalone")));
+  EXPECT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+}
+
+// Unlike the NoApp test above, even without changes, the API should check the
+// existence of the app and returns an error.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, ChangeAppUserSettings_NoAppNoChange) {
+  ASSERT_FALSE(
+      SendCommandSync("PWA.changeAppUserSettings",
+                      base::Value::Dict{}.Set(
+                          "manifestId", InstallableWebAppManifestId().spec())));
+  EXPECT_TRUE(ErrorMessageContains({InstallableWebAppManifestId().spec()}));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PWAProtocolTest,
+    DISABLE_ON_CHROMEOS(
+        ChangeAppUserSettings_ChangeLinkCapturingAndDisplayMode)) {
+  InstallFromUrl();
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.changeAppUserSettings",
+      base::Value::Dict{}
+          .Set("manifestId", InstallableWebAppManifestId().spec())
+          .Set("linkCapturing", true)
+          .Set("displayMode", "standalone")));
+  EXPECT_EQ(
+      GetAppUserSettings(InstallableWebAppManifestId()),
+      std::make_tuple(
+          web_app::proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS,
+          web_app::mojom::UserDisplayMode::kStandalone));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       ChangeAppUserSettings_ChangeToStandaloneDisplayMode) {
+  InstallFromUrl();
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.changeAppUserSettings",
+      base::Value::Dict{}
+          .Set("manifestId", InstallableWebAppManifestId().spec())
+          .Set("displayMode", "standalone")));
+  EXPECT_EQ(std::get<web_app::mojom::UserDisplayMode>(
+                GetAppUserSettings(InstallableWebAppManifestId())),
+            web_app::mojom::UserDisplayMode::kStandalone);
+}
+
+// Even though supporting on ChromeOS hasn't been implemented, it should not
+// crash.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, ChangeAppUserSettings_NotCrash) {
+  InstallFromUrl();
+  SendCommandSync("PWA.changeAppUserSettings",
+                  base::Value::Dict{}
+                      .Set("manifestId", InstallableWebAppManifestId().spec())
+                      .Set("linkCapturing", true)
+                      .Set("displayMode", "standalone"));
+}
+
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
+                       ChangeAppUserSettings_UnknownDisplayMode) {
+  InstallFromUrl();
+  auto user_settings_before_change =
+      GetAppUserSettings(InstallableWebAppManifestId());
+  ASSERT_FALSE(SendCommandSync(
+      "PWA.changeAppUserSettings",
+      base::Value::Dict{}
+          .Set("manifestId", InstallableWebAppManifestId().spec())
+          .Set("linkCapturing", true)
+          .Set("displayMode", "hello")));
+  EXPECT_TRUE(ErrorMessageContains(
+      {InstallableWebAppManifestId().spec(), "displayMode", "hello"}));
+  EXPECT_EQ(user_settings_before_change,
+            GetAppUserSettings(InstallableWebAppManifestId()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PWAProtocolTest,
+    DISABLE_ON_CHROMEOS(ChangeAppUserSettings_DoNotCapture)) {
+  InstallFromUrl();
+  ASSERT_TRUE(SendCommandSync(
+      "PWA.changeAppUserSettings",
+      base::Value::Dict{}
+          .Set("manifestId", InstallableWebAppManifestId().spec())
+          .Set("linkCapturing", false)));
+  EXPECT_EQ(std::get<web_app::proto::LinkCapturingUserPreference>(
+                GetAppUserSettings(InstallableWebAppManifestId())),
+            web_app::proto::LinkCapturingUserPreference::
+                DO_NOT_CAPTURE_SUPPORTED_LINKS);
+}
+
+// This scenario does not reach the handler itself, but it's worth ensuring that
+// running PWA.changeAppUserSettings without manifestId would always fail.
+// The same concept applies to other APIs, but since they are using same
+// implementation, the test won't be repeated.
+IN_PROC_BROWSER_TEST_F(PWAProtocolTest, ChangeAppUserSettings_NoManifestId) {
+  InstallFromUrl();
+  ASSERT_FALSE(
+      SendCommandSync("PWA.changeAppUserSettings", base::Value::Dict{}));
+  EXPECT_TRUE(error());
+}
 
 }  // namespace

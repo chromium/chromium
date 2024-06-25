@@ -56,6 +56,12 @@ class PWAHandler final : public protocol::PWA::Backend {
   protocol::Response OpenCurrentPageInApp(
       const std::string& in_manifest_id) override;
 
+  void ChangeAppUserSettings(
+      const std::string& in_manifest_id,
+      protocol::Maybe<bool> in_link_capturing,
+      protocol::Maybe<protocol::PWA::DisplayMode> in_display_mode,
+      std::unique_ptr<ChangeAppUserSettingsCallback> callback) override;
+
   /// Implementation details ///
 
   // Installs from only the manifest id; requires a WebContents.

@@ -57,7 +57,7 @@
             },
             {
                 "domain": "PWA",
-                "async": [ "getOsAppState", "install", "launch", "launchFilesInApp", "uninstall" ]
+                "async": [ "changeAppUserSettings", "getOsAppState", "install", "launch", "launchFilesInApp", "uninstall" ]
             }
         ]
     },
