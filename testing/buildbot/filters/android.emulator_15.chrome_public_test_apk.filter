@@ -3,7 +3,6 @@
 
 # TODO(rnanjappan):Create separate bugs once trybot is setup for fyi
 -org.chromium.chrome.browser.app.appmenu.TabbedAppMenuTest.*
--org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.*
 
 -org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testAreMultipleChromeInstancesRunningFirstInstanceKilledFirst
 -org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testAreMultipleChromeInstancesRunningSecondInstanceKilledFirst

@@ -277,7 +277,7 @@ public class PriceAlertsMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1500162")
+    @DisabledTest(message = "crbug.com/1500162, crbug.com/1374103")
     public void testSwipeMessage() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -397,7 +397,7 @@ public class PriceAlertsMessageCardTest {
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({BASE_PARAMS})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisabledTest(message = "crbug.com/1463032")
+    @DisabledTest(message = "crbug.com/1463032, crbug.com/1441681")
     public void testRenderMessageCard_Landscape_AppNotificationsEnabled() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(true);
@@ -416,7 +416,7 @@ public class PriceAlertsMessageCardTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1463032")
+    @DisabledTest(message = "crbug.com/1463032, crbug.com/1441681")
     public void testRenderMessageCard_Landscape_AppNotificationsDisabled() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         mMockNotificationManager.setNotificationsEnabled(false);

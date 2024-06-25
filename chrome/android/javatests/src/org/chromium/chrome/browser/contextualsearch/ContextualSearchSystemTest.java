@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
+import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
 
 import androidx.test.filters.SmallTest;
@@ -23,6 +24,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -185,6 +187,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug.com/1441680")
     public void testAppMenuSuppressedWhenMaximized() throws Exception {
         triggerPanelPeek();
         maximizePanel();
