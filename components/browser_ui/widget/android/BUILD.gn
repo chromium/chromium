@@ -313,6 +313,7 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescriptionTest.java",
     "java/src/org/chromium/components/browser_ui/widget/DualControlLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/MoreProgressButtonTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/NumberRollViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/PromoDialogRenderTest.java",
     "java/src/org/chromium/components/browser_ui/widget/PromoDialogTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonLayoutTest.java",

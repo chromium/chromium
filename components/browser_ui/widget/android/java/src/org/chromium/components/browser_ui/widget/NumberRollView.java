@@ -101,6 +101,10 @@ public class NumberRollView extends FrameLayout {
      */
     public void setStringForZero(String stringForZero) {
         mStringForZero = stringForZero;
+        int number = (int) mNumber;
+        if (number == 0) {
+            setNumberRoll(mNumber);
+        }
     }
 
     /** Gets the current number roll position. */
