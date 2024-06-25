@@ -104,10 +104,10 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
   enableSubmit: boolean;
   isConfirmStep: boolean;
 
-  private pinKeyboardValue_: string;
   private initialPin_: string;
-  private problemMessage_: string;
   private isSetPinCallPending_: boolean;
+  private pinKeyboardValue_: string;
+  private problemMessage_: string;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
@@ -216,6 +216,14 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     this.isSetPinCallPending_ = false;
 
     this.dispatchEvent(new Event('set-app-pin-done', {composed: true}));
+  }
+
+  private hasError_(): boolean {
+    return this.problemMessage_ === this.i18n(MessageType.MISMATCH);
+  }
+
+  private getErrorClass_(): string {
+    return this.hasError_() ? 'error' : '';
   }
 }
 

@@ -1,4 +1,9 @@
 <style include="settings-shared">
+  .error {
+    color: var(--cros-text-color-alert);
+    display: inline-block;
+  }
+
   #problemDiv {
     align-items: center;
     display: flex;
@@ -18,8 +23,10 @@
 <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
     on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
     disabled="[[isSetPinCallPending_]]"
-    aria-label="[[ariaLabel]]">
-  <div id="problemDiv" invisible$="[[!problemMessage_]]">
+    aria-label="[[ariaLabel]]"
+    has-error="[[hasError_(problemMessage_)]]">
+  <div id="problemDiv" invisible$="[[!problemMessage_]]"
+       class$="[[getErrorClass_(problemMessage_)]]">
     <span aria-live="assertive">
       [[problemMessage_]]
     </span>
