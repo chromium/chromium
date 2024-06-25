@@ -238,6 +238,26 @@ void ClickOnView(views::View* target_view) {
   event_generator.ClickLeftButton();
 }
 
+// Disables all data type prefs except the one given.
+void DisableAllDataTypePrefsExcept(const char* exception) {
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(pref_service);
+  const char* kDataPrefs[] = {
+      prefs::kBirchUseCalendar,    prefs::kBirchUseFileSuggest,
+      prefs::kBirchUseRecentTabs,  prefs::kBirchUseLastActive,
+      prefs::kBirchUseMostVisited, prefs::kBirchUseSelfShare,
+      prefs::kBirchUseLostMedia,   prefs::kBirchUseReleaseNotes,
+      prefs::kBirchUseWeather,
+  };
+  for (const char* pref : kDataPrefs) {
+    if (strcmp(pref, exception)) {
+      // This isn't the exception pref, so set it to false.
+      pref_service->SetBoolean(pref, false);
+    }
+  }
+}
+
 class BirchBrowserTest : public InProcessBrowserTest {
  public:
   BirchBrowserTest() {
@@ -290,16 +310,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
 
   // Disable the prefs for data providers other than weather. This ensures the
   // data is fresh once the weather provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseWeather);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -338,16 +349,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
 
   // Disable the prefs for data providers other than calendar. This ensures the
   // data is fresh once the calendar provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseCalendar);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -385,17 +387,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
 
   // Disable the prefs for data providers other than file suggest. This ensures
   // the data is fresh once the calendar provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseFileSuggest);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -434,16 +426,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
 
   // Disable the prefs for data providers other than this one. This ensures
   // the data is fresh once the test provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseRecentTabs);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -486,16 +469,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
 
   // Disable the prefs for data providers other than last active. This ensures
   // the data is fresh once the last active provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseLastActive);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -539,17 +513,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
 
   // Disable the prefs for data providers other than most visited. This ensures
   // the data is fresh once the most visited provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseMostVisited);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -588,17 +552,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
 
   // Disable the prefs for data providers other than self share. This ensures
   // the data is fresh once the self share provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseSelfShare);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -637,17 +591,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LostMediaChip) {
 
   // Disable the prefs for data providers other than lost media. This ensures
   // the data is fresh once the lost media provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseLostMedia);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.
@@ -686,17 +630,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {
 
   // Disable the prefs for data providers other than release notes. This
   // ensures the data is fresh once the release notes provider replies.
-  PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  ASSERT_TRUE(prefs);
-  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
-  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
-  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
-  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
-  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
-  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
-  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
-  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+  DisableAllDataTypePrefsExcept(prefs::kBirchUseReleaseNotes);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
   // complete.

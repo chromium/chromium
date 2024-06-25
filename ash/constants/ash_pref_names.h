@@ -2330,6 +2330,8 @@ inline constexpr char kBirchShowSuggestions[] = "ash.birch.show_suggestions";
 // suggestion.
 inline constexpr char kBirchUseCelsius[] = "ash.birch.use_celsius";
 
+// LINT.IfChange
+
 // A boolean pref indicating whether Birch should use Google Calendar data.
 inline constexpr char kBirchUseCalendar[] = "ash.birch.use_calendar";
 
@@ -2356,6 +2358,8 @@ inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
 
 // A boolean pref indicating whether Birch should use release notes data.
 inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
+
+// LINT.ThenChange(/chrome/browser/ui/ash/birch/birch_browsertest.cc)
 
 // A boolean pref that holds whether the user dismissed the extended updates
 // notification.
