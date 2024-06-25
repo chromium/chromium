@@ -129,6 +129,16 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& expected);
 
+  // This function is similar to `WaitForElementTextContains()` except it
+  // supports non-unique elements. For more info see
+  // `FindElementWithTextAndDoAction()`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  WaitForAnyElementTextContains(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& root,
+      const WebContentsInteractionTestUtil::DeepQuery& selectors,
+      const std::string& expected);
+
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and have attribute
   // `attribute`.
@@ -158,6 +168,15 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       const DeepQuery& query);
 
+  // This function is similar to `ClickElement()` except it supports non-unique
+  // elements. For more info see `FindElementWithTextAndDoAction()`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  ClickAnyElementTextContains(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& root,
+      const WebContentsInteractionTestUtil::DeepQuery& selectors,
+      const std::string& expected);
+
   // Waits for an element identified by `query` to exist in the DOM of an
   // instrumented WebUI identified by `element_id`. This function expects the
   // element to be a drop-down and will directly update the selected option
@@ -167,11 +186,9 @@ class InteractiveAshTest
                               const DeepQuery& query,
                               const std::string& option);
 
-  // Sends the given text to the element as individual key press commands.
-  //
-  // This handles uppercase and lowercase ASCII letters and numbers, plus maps
-  // "\n" to return, but no symbols or other shifted things.
-  //
+  // Sends an instrumented WebUI identified by `element_id` the key presses
+  // needed to input the provided text `text`. This function can handle ASCII
+  // letters, numbers, the newline character, and a subset of symbols.
   // TODO(crbug.com/40286410) have a more supported way to do this and remove
   // this function.
   ui::test::internal::InteractiveTestPrivate::MultiStep SendTextAsKeyEvents(
@@ -179,6 +196,17 @@ class InteractiveAshTest
       const std::string& text);
 
  private:
+  // Waits for an element identified by `root` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id`. When found, this function
+  // will search for elements matching `selectors` and will execute `action` on
+  // each element until `action` returns a truthy value.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  FindElementWithTextAndDoAction(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& root,
+      const WebContentsInteractionTestUtil::DeepQuery& selectors,
+      const std::string& action);
+
   // Helper function that navigates to a top-level page of the Settings app.
   // This function expects the Settings app to already be open. The `path`
   // parameter should correspond to a top-level menu item.

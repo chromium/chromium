@@ -35,33 +35,6 @@
 namespace ash {
 namespace {
 
-constexpr char kBluetoothPairingDeviceWithNameExistsJS[] = R"(
-(el) => {
-  const elements =
-      el.shadowRoot.querySelectorAll('bluetooth-pairing-device-item');
-  for (let i = 0; i < elements.length; i++) {
-    const div = elements[i].shadowRoot.querySelector('div#deviceName');
-    if (div && div.innerText.indexOf('%s') >= 0) {
-      return true;
-    }
-  }
-  return false;
-})";
-
-constexpr char kClickBluetoothPairingDeviceWithNameJS[] = R"(
-(el) => {
-  const elements =
-      el.shadowRoot.querySelectorAll('bluetooth-pairing-device-item');
-  for (let i = 0; i < elements.length; i++) {
-    const div = elements[i].shadowRoot.querySelector('div#deviceName');
-    if (div && div.innerText.indexOf('%s') >= 0) {
-      div.click();
-      return true;
-    }
-  }
-  return false;
-})";
-
 class BluetoothInteractiveUITest : public InteractiveAshTest {
  protected:
   BluetoothInteractiveUITest() {
@@ -89,23 +62,12 @@ class BluetoothInteractiveUITest : public InteractiveAshTest {
     InteractiveAshTest::TearDownOnMainThread();
   }
 
- protected:
-  ui::test::internal::InteractiveTestPrivate::MultiStep
-  WaitForBluetoothPairingDeviceWithName(const ui::ElementIdentifier& element_id,
-                                        const std::string& name) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
-        kBluetoothPairingDeviceWithNameFound);
-
-    WebContentsInteractionTestUtil::StateChange state_change;
-    state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
-        kExistsAndConditionTrue;
-    state_change.where = webui::bluetooth::PairingDialogDeviceSelectionPage();
-    state_change.test_function = base::StringPrintf(
-        kBluetoothPairingDeviceWithNameExistsJS, name.c_str());
-    state_change.event = kBluetoothPairingDeviceWithNameFound;
-    return WaitForStateChange(element_id, state_change);
+  WebContentsInteractionTestUtil::DeepQuery BluetoothPairingDeviceItem() {
+    return WebContentsInteractionTestUtil::DeepQuery(
+        {"bluetooth-pairing-device-item", "div#deviceName"});
   }
 
+ protected:
   ui::test::internal::InteractiveTestPrivate::MultiStep
   CheckBluetoothDevicePairedState(const std::string& path, bool paired) {
     return Steps(Do([this, path, paired]() {
@@ -172,8 +134,11 @@ IN_PROC_BROWSER_TEST_F(BluetoothInteractiveUITest,
 
       Log(base::StringPrintf("Waiting for Bluetooth device '%s' to be found",
                              bluez::FakeBluetoothDeviceClient::kJustWorksName)),
-      WaitForBluetoothPairingDeviceWithName(
+
+      WaitForAnyElementTextContains(
           kBluetoothPairingDialogElementId,
+          webui::bluetooth::PairingDialogDeviceSelectionPage(),
+          BluetoothPairingDeviceItem(),
           bluez::FakeBluetoothDeviceClient::kJustWorksName),
 
       Log("Checking that the device is not paired"),
@@ -183,11 +148,11 @@ IN_PROC_BROWSER_TEST_F(BluetoothInteractiveUITest,
 
       Log("Clicking the device"),
 
-      CheckJsResultAt(
+      ClickAnyElementTextContains(
           kBluetoothPairingDialogElementId,
           webui::bluetooth::PairingDialogDeviceSelectionPage(),
-          base::StringPrintf(kClickBluetoothPairingDeviceWithNameJS,
-                             bluez::FakeBluetoothDeviceClient::kJustWorksName)),
+          BluetoothPairingDeviceItem(),
+          bluez::FakeBluetoothDeviceClient::kJustWorksName),
 
       Log("Waiting for pairing dialog to close"),
 

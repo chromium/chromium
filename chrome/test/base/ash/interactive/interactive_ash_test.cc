@@ -11,9 +11,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_switches.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -48,6 +50,69 @@ constexpr char kSelectDropdownElementOptionJs[] = R"(
     }
     return false;
   })";
+
+// This JavaScript defines a function "action" that returns `true` if `el`
+// contains the expected inner text.
+constexpr char kFindElementWithTextActionJs[] = R"(
+  function action(el) {
+    return el && el.innerText.indexOf(%s) >= 0;
+  })";
+
+// This JavaScript defines a function "action" that returns `true` if `el`
+// contains the expected inner text. Before returning `el` is clicked.
+constexpr char kClickElementWithTextActionJs[] = R"(
+  function action(el) {
+    if (el && el.innerText.indexOf(%s) >= 0) {
+      el.click();
+      return true;
+    }
+    return false;
+  })";
+
+// This JavaScript is used to search for an element in the DOM. The element is
+// described in terms of a root element and the relative path provided via an
+// array of selectors, and the element will be considered "found" if it matches
+// the entire array of selectors AND meets an arbitrary criteria.
+//
+// This JavaScript should be formatted with two strings: a JavaScript function
+// and a list of selectors. The JavaScript function should be named "action",
+// accept a single element parameter, and return `true` if the element parameter
+// meets the desired criteria. The list of selectors should define the path from
+// `el` to the desired element. The function will only be called on each element
+// that matches the list of selectors.
+constexpr char kFindElementAndDoActionJs[] = R"(
+  (el) => {
+    %s;
+
+    function findElement(root, index, selectors) {
+      const elements = root.shadowRoot.querySelectorAll(selectors[index]);
+      for (let el of elements) {
+        if (index < selectors.length - 1) {
+          if (findElement(el, index + 1, selectors)) {
+            return true;
+          }
+          continue;
+        }
+        if (action(el)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return findElement(el, 0, %s);
+  })";
+
+std::string DeepQueryToSelectors(
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
+  // Safely convert the selector list in `where` to a JSON/JS list.
+  base::Value::List selector_list;
+  for (const auto& selector : query) {
+    selector_list.Append(selector);
+  }
+  std::string selectors;
+  CHECK(base::JSONWriter::Write(selector_list, &selectors));
+  return selectors;
+}
 
 }  // namespace
 
@@ -238,6 +303,18 @@ InteractiveAshTest::WaitForElementTextContains(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForAnyElementTextContains(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& root,
+    const WebContentsInteractionTestUtil::DeepQuery& selectors,
+    const std::string& expected) {
+  return FindElementWithTextAndDoAction(
+      element_id, root, selectors,
+      base::StringPrintf(kFindElementWithTextActionJs,
+                         base::GetQuotedJSONString(expected).c_str()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementHasAttribute(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element,
@@ -290,6 +367,18 @@ InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::ClickAnyElementTextContains(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& root,
+    const WebContentsInteractionTestUtil::DeepQuery& selectors,
+    const std::string& expected) {
+  return FindElementWithTextAndDoAction(
+      element_id, root, selectors,
+      base::StringPrintf(kClickElementWithTextActionJs,
+                         base::GetQuotedJSONString(expected).c_str()));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::SelectDropdownElementOption(
     const ui::ElementIdentifier& element_id,
     const DeepQuery& query,
@@ -311,6 +400,25 @@ InteractiveAshTest::NavigateSettingsToPage(
         base::StringPrintf("os-settings-menu-item[path=\"%s\"]", path)}});
   return Steps(ScrollIntoView(element_id, menu_item),
                MoveMouseTo(element_id, menu_item), ClickMouse());
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::FindElementWithTextAndDoAction(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& root,
+    const WebContentsInteractionTestUtil::DeepQuery& selectors,
+    const std::string& action) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementWithTextFound);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
+      kExistsAndConditionTrue;
+  state_change.where = root;
+  state_change.test_function =
+      base::StringPrintf(kFindElementAndDoActionJs, action.c_str(),
+                         DeepQueryToSelectors(selectors).c_str());
+  state_change.event = kElementWithTextFound;
+  return WaitForStateChange(element_id, state_change);
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
