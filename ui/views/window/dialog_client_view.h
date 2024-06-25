@@ -141,8 +141,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   // (which must be pointed to by `member`).  Which action is chosen is based on
   // whether DialogDelegate::GetDialogButtons() includes `type`, and whether
   // `member` points to a button that already exists.
-  void UpdateDialogButton(raw_ptr<MdTextButton, DanglingUntriaged>* member,
-                          ui::DialogButton type);
+  void UpdateDialogButton(raw_ptr<MdTextButton>* member, ui::DialogButton type);
 
   void ButtonPressed(ui::DialogButton type, const ui::Event& event);
 
@@ -178,8 +177,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   gfx::Size minimum_size_;
 
   // The dialog buttons.
-  raw_ptr<MdTextButton, DanglingUntriaged> ok_button_ = nullptr;
-  raw_ptr<MdTextButton, DanglingUntriaged> cancel_button_ = nullptr;
+  raw_ptr<MdTextButton> ok_button_ = nullptr;
+  raw_ptr<MdTextButton> cancel_button_ = nullptr;
 
   // The extra view shown in the row of buttons; may be nullptr.
   raw_ptr<View> extra_view_ = nullptr;
