@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
@@ -443,7 +444,9 @@ void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {
     // bytes
     base::UmaHistogramPercentage(
         "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
-        (available_bytes + (info.file_backed * 1024)) * 100 / total_bytes);
+        (available_bytes +
+         (base::checked_cast<uint64_t>(info.file_backed) * 1024u)) *
+            100u / total_bytes);
   }
 #endif
 }
