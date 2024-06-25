@@ -265,9 +265,9 @@ void PickerSessionMetrics::SetOutcome(SessionOutcome outcome) {
   }
 }
 
-void PickerSessionMetrics::SetAction(PickerCategory action) {
-  if (!action_.has_value()) {
-    action_ = action;
+void PickerSessionMetrics::SetSelectedCategory(PickerCategory category) {
+  if (!last_category_.has_value()) {
+    last_category_ = category;
   }
 }
 
@@ -298,7 +298,7 @@ void PickerSessionMetrics::OnFinishSession() {
   metrics::structured::StructuredMetricsClient::Record(
       cros_events::Picker_FinishSession()
           .SetOutcome(ConvertToCrosEventSessionOutcome(outcome_))
-          .SetAction(ConvertToCrosEventAction(action_))
+          .SetAction(ConvertToCrosEventAction(last_category_))
           .SetResultSource(GetResultSource(std::move(inserted_result_)))
           .SetResultType(GetResultType(std::move(inserted_result_)))
           .SetTotalEdits(search_query_total_edits_)

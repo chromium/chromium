@@ -140,7 +140,7 @@ TEST_F(PickerSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
 TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
   {
     PickerSessionMetrics metrics;
-    metrics.SetAction(PickerCategory::kDatesTimes);
+    metrics.SetSelectedCategory(PickerCategory::kDatesTimes);
     metrics.UpdateSearchQuery(u"abc");
     metrics.UpdateSearchQuery(u"abcdef");
     metrics.UpdateSearchQuery(u"abcde");
@@ -169,7 +169,7 @@ TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
 TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForCaseTransform) {
   {
     PickerSessionMetrics metrics;
-    metrics.SetAction(PickerCategory::kUpperCase);
+    metrics.SetSelectedCategory(PickerCategory::kUpperCase);
     metrics.SetInsertedResult(
         PickerSearchResult::Text(
             u"primary", PickerSearchResult::TextData::Source::kCaseTransform),

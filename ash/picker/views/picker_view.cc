@@ -279,7 +279,7 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
 
 void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
-  session_metrics.SetAction(PickerCategory::kExpressions);
+  session_metrics.SetSelectedCategory(PickerCategory::kExpressions);
 
   if (auto* widget = GetWidget()) {
     widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
@@ -416,7 +416,7 @@ void PickerView::SelectCategory(PickerCategory category) {
 void PickerView::SelectCategoryWithQuery(PickerCategory category,
                                          std::u16string_view query) {
   PickerSessionMetrics& session_metrics = delegate_->GetSessionMetrics();
-  session_metrics.SetAction(category);
+  session_metrics.SetSelectedCategory(category);
   selected_category_ = category;
 
   if (category == PickerCategory::kExpressions) {
