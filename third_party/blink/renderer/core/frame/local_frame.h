@@ -749,8 +749,7 @@ class CORE_EXPORT LocalFrame final
       const gfx::Point& viewport_position,
       const gfx::Size& max_size,
       int max_area,
-      base::OnceCallback<void(const gfx::ImageSkia&, const gfx::Rect&)>
-          callback);
+      base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback);
 
   // Handle the request as a download. If the request is for a blob: URL,
   // a BlobURLToken should be provided as |blob_url_token| to ensure the

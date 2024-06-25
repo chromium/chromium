@@ -4632,9 +4632,9 @@ void RenderViewContextMenu::MediaPlayerAction(
 
 // TODO(b/344600237): Use `region_bounds` for Lens overlay.
 void RenderViewContextMenu::SearchForVideoFrame(
-    const gfx::ImageSkia& image,
+    const SkBitmap& bitmap,
     const gfx::Rect& /*region_bounds*/) {
-  if (image.isNull()) {
+  if (bitmap.isNull()) {
     return;
   }
 
@@ -4644,12 +4644,14 @@ void RenderViewContextMenu::SearchForVideoFrame(
     return;
   }
 
+  auto image =
+      gfx::Image(gfx::ImageSkia::CreateFromBitmap(bitmap, /*scale=*/1));
+
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
     core_tab_helper->SearchWithLens(
-        gfx::Image(image),
-        lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM);
+        image, lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM);
   } else {
-    core_tab_helper->SearchByImage(gfx::Image(image));
+    core_tab_helper->SearchByImage(image);
   }
 }
 

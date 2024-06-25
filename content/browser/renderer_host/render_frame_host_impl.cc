@@ -2582,8 +2582,7 @@ void RenderFrameHostImpl::RequestVideoFrameAtWithBoundsDiagnostics(
     const gfx::Point& location,
     const gfx::Size& max_size,
     int max_area,
-    base::OnceCallback<void(const gfx::ImageSkia&, const gfx::Rect&)>
-        callback) {
+    base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback) {
   gfx::PointF point_in_view = GetView()->TransformRootPointToViewCoordSpace(
       gfx::PointF(location.x(), location.y()));
   GetAssociatedLocalFrame()->RequestVideoFrameAtWithBoundsDiagnostics(

@@ -917,8 +917,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const gfx::Point& location,
       const gfx::Size& max_size,
       int max_area,
-      base::OnceCallback<void(const gfx::ImageSkia&, const gfx::Rect&)>
-          callback) = 0;
+      base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback) = 0;
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|.
   //
