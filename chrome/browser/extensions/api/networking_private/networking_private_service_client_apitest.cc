@@ -159,8 +159,9 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateServiceClientApiTest,
   EXPECT_TRUE(RunNetworkingSubtest("getManagedProperties")) << message_;
 }
 
+// TODO(b/349276078): This test is flaky.
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateServiceClientApiTest,
-                       OnNetworksChangedEventConnect) {
+                       DISABLED_OnNetworksChangedEventConnect) {
   EXPECT_TRUE(RunNetworkingSubtest("onNetworksChangedEventConnect"))
       << message_;
 }
