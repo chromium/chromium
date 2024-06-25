@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
@@ -351,12 +352,15 @@ public class SigninAndHistoryOptInCoordinator
 
                             if (!coreAccountInfos.isEmpty()) {
                                 showSigninBottomSheet();
+                                SigninMetricsUtils.logSigninStartAccessPoint(mSigninAccessPoint);
                                 return;
                             }
 
                             switch (mNoAccountSigninMode) {
                                 case NoAccountSigninMode.BOTTOM_SHEET:
                                     showSigninBottomSheet();
+                                    SigninMetricsUtils.logSigninStartAccessPoint(
+                                            mSigninAccessPoint);
                                     break;
                                 case NoAccountSigninMode.ADD_ACCOUNT:
                                     addAccount();

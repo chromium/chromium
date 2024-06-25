@@ -47,6 +47,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -536,6 +537,12 @@ public class SigninAndHistoryOptInIntegrationTest {
     }
 
     private void verifyCollapsedBottomSheetAndSignin(CoreAccountInfo accountInfo) {
+        HistogramWatcher signinStartedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Started", mSigninAccessPoint);
+        HistogramWatcher signinAccessPointWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninStartedAccessPoint", mSigninAccessPoint);
         // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
         onView(
                         allOf(
@@ -543,12 +550,20 @@ public class SigninAndHistoryOptInIntegrationTest {
                                 withParent(withId(R.id.account_picker_state_collapsed)),
                                 isCompletelyDisplayed()))
                 .perform(click());
+        signinStartedWatcher.assertExpected();
+        signinAccessPointWatcher.assertExpected();
 
         // Verify signed-in state.
         mSigninTestRule.waitForSignin(accountInfo);
     }
 
     private void verifyNoAccountBottomSheetAndSignin() {
+        HistogramWatcher signinStartedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Started", mSigninAccessPoint);
+        HistogramWatcher signinAccessPointWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninStartedAccessPoint", mSigninAccessPoint);
         mSigninTestRule.setResultForNextAddAccountFlow(
                 Activity.RESULT_OK,
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail(),
@@ -560,6 +575,8 @@ public class SigninAndHistoryOptInIntegrationTest {
                                 withParent(withId(R.id.account_picker_state_no_account)),
                                 isCompletelyDisplayed()))
                 .perform(click());
+        signinStartedWatcher.assertExpected();
+        signinAccessPointWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
     }
