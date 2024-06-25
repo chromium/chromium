@@ -193,7 +193,7 @@ Browser* OpenNewBrowser(Profile* profile) {
   creator.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
                  /*restore_tabbed_browser=*/true);
   Browser* new_browser = new_browser_observer.Wait();
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
   return new_browser;
 }
 
@@ -3439,18 +3439,26 @@ class StartupBrowserCreatorInfobarsWithoutStartupWindowTest
     command_line->AppendSwitch(switches::kKeepAliveForTest);
   }
 
-  infobars::ContentInfoBarManager* LaunchBrowserAndGetCreatedInfoBarManager() {
+  std::pair<Browser*, infobars::ContentInfoBarManager*>
+  LaunchBrowserAndGetCreatedInfoBarManager() {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
 
+    ui_test_utils::BrowserChangeObserver new_browser_observer(
+        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IsFirstRun::kNo);
     launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
                   /*restore_tabbed_browser=*/true);
-    Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+    Browser* new_browser = new_browser_observer.Wait();
+    if (!new_browser) {
+      return std::make_pair(nullptr, nullptr);
+    }
+    ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
 
-    return infobars::ContentInfoBarManager::FromWebContents(
-        new_browser->tab_strip_model()->GetWebContentsAt(0));
+    return std::make_pair(
+        new_browser, infobars::ContentInfoBarManager::FromWebContents(
+                         new_browser->tab_strip_model()->GetWebContentsAt(0)));
   }
 
   const StartupBrowserCreatorFlagTypeValue flag_type_;
@@ -3466,20 +3474,24 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsWithoutStartupWindowTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(flag_type_.flag);
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-  infobars::ContentInfoBarManager* infobar_manager =
-      LaunchBrowserAndGetCreatedInfoBarManager();
+  auto [browser, infobar_manager] = LaunchBrowserAndGetCreatedInfoBarManager();
+  EXPECT_TRUE(browser);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_TRUE(infobar_manager);
   EXPECT_TRUE(HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
 
   // Now close and reopen the browser again - and re-check if the infobar is
   // there.
-  CloseBrowserSynchronously(BrowserList::GetInstance()->GetLastActive());
+  CloseBrowserSynchronously(browser);
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
-  infobar_manager = LaunchBrowserAndGetCreatedInfoBarManager();
-  ASSERT_TRUE(infobar_manager);
+  auto [browser2, infobar_manager2] =
+      LaunchBrowserAndGetCreatedInfoBarManager();
+  EXPECT_TRUE(browser2);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_TRUE(infobar_manager2);
   EXPECT_EQ(flag_type_.is_global_infobar,
-            HasInfoBar(infobar_manager, flag_type_.infobar_identifier));
+            HasInfoBar(infobar_manager2, flag_type_.infobar_identifier));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -4000,9 +4012,11 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerInfobarTest,
     profile = profile_manager->GetLastUsedProfile();
   }
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   OpenProfileFromPicker(profile->GetPath(), false);
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
-
+  Browser* new_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(
           new_browser->tab_strip_model()->GetWebContentsAt(0));

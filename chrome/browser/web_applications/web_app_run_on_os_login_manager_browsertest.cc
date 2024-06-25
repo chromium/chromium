@@ -489,10 +489,10 @@ IN_PROC_BROWSER_TEST_P(WebAppRunOnOsLoginNotificationBrowserTest,
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                       kRunOnOsLoginNotificationId, std::nullopt,
                                       std::nullopt);
-  ui_test_utils::WaitForBrowserSetLastActive(browser());
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
 
   content::WebContents* active_contents =
-      chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
+      browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
   EXPECT_EQ(GURL(chrome::kChromeUIManagementURL), active_contents->GetURL());
 }
