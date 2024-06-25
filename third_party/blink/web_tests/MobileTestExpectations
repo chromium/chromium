@@ -7,15 +7,15 @@
 # Web Platform Tests.
 
 # pointerevents tests
-crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?mouse [ Timeout Pass ]
+crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?mouse [ Pass Timeout ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?pen [ Pass Timeout ]
-crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Timeout Pass ]
+crbug.com/349397104 [ Android ] external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html?touch [ Pass Timeout ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/compat/pointerevent_touch-action_two-finger_interaction.html [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_after_target_appended.html?pen [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_attributes.html?mouse-right-nonstandard [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_attributes.html?pen-right [ Failure Pass ]
 crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?mouse [ Pass Timeout ]
-crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure Timeout Pass ]
+crbug.com/349397104 [ Android ] external/wpt/pointerevents/pointerevent_click_is_a_pointerevent_multiple_clicks.html?touch [ Failure Pass Timeout ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/compat/pointerevent_mouseevent_key_pressed.html [ Failure ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointer-events-none-skip-scroll-will-change-in-iframe.html [ Failure Pass ]
 crbug.com/349397104 [ Webview ] external/wpt/pointerevents/pointerevent_after_target_appended_interleaved.tentative.html?mouse [ Pass Timeout ]
