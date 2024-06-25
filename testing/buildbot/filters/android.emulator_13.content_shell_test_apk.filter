@@ -2,10 +2,6 @@
 -org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
 -org.chromium.net.NetworkChangeNotifierTest.testVpnAccessibleDoesNotLeak
 
-# https://crbug.com/1189804
--org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
--org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
-
 # https://crbug.com/1233309
 -org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
 
