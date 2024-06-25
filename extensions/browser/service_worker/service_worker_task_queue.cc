@@ -648,6 +648,9 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
+  if (g_test_observer) {
+    g_test_observer->OnWorkerRegistered(context_id.extension_id);
+  }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.extension_id;
@@ -709,6 +712,17 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
     bool success) {
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "DeactivateExtension",
+      success);
+
+  if (g_test_observer) {
+    g_test_observer->WorkerUnregistered(extension_id);
+  }
+
   // Extension run with |activation_token| was already deactivated.
   if (!IsCurrentActivation(extension_id, activation_token)) {
     return;

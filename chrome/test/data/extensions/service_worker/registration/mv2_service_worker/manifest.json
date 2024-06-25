@@ -1,0 +1,8 @@
+{
+  "name": "MV2 extension with service worker",
+  "version": "1",
+  "manifest_version": 2,
+  "background": {
+    "service_worker": "background.js"
+  }
+}

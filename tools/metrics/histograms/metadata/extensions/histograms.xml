@@ -4799,6 +4799,32 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}"
+    enum="Boolean" expires_after="2024-12-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The success (true) or failure (false) of attempting to unregister the worker
+    for the extension. It is only emitted for extensions that have service
+    worker backgrounds or when a worker has been registered for the extension
+    via the web API (MV2).
+
+    This can be emitted at two times when the worker is being unregistered: 1)
+    due to an update requiring the old worker to be unregistered or 2) due to
+    the extension being deactivated (due to disable, uninstall, or terminate)
+
+    {UnregistrationType}
+  </summary>
+  <token key="UnregistrationType">
+    <variant name="_AddExtension"
+        summary="This metric is only emitted in the #1 (update) scenario."/>
+    <variant name="_DeactivateExtension"
+        summary="This metric is only emitted in the #2 (deactivate extension)
+                 scenario."/>
+  </token>
+</histogram>
+
+<histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
     enum="SettingsOverriddenDialogResult" expires_after="2024-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>

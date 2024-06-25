@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
@@ -536,6 +537,13 @@ void ExtensionRegistrar::UnregisterServiceWorkerWithRootScope(
 void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     const ExtensionId& extension_id,
     bool success) {
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
+      "AddExtension",
+      success);
+
   if (!success) {
     // TODO(crbug.com/346732739): Handle this case.
     LOG(ERROR) << "Failed to unregister service worker for extension "

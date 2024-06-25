@@ -261,6 +261,14 @@ class ServiceWorkerTaskQueue
     // `extension_id` has notified the task queue that the render worker thread
     // is preparing to terminate.
     virtual void DidStopServiceWorkerContext(const ExtensionId& extension_id) {}
+
+    // Called when a service worker registered for the extension with the
+    // `extension_id` has been unregistered in the //content layer.
+    virtual void WorkerUnregistered(const ExtensionId& extension_id) {}
+
+    // Called when a service worker registered for the extension with the
+    // `extension_id` has been registered in the //content layer.
+    virtual void OnWorkerRegistered(const ExtensionId& extension_id) {}
   };
 
   void StopObservingContextForTest(
