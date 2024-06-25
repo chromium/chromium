@@ -903,15 +903,6 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
       chunk_to_layer_mapper_.MapVisualRect(InfiniteIntRect()));
 }
 
-const TransformPaintPropertyNode* ParentScrollTranslation(
-    const TransformPaintPropertyNode& scroll_translation) {
-  DCHECK(scroll_translation.ScrollNode());
-  if (const auto* parent = scroll_translation.UnaliasedParent()) {
-    return &parent->NearestScrollTranslationNode();
-  }
-  return nullptr;
-}
-
 template <>
 ScrollTranslationAction
 ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
@@ -927,7 +918,7 @@ ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
   }
 
   if (current_scroll_translation_ ==
-      ParentScrollTranslation(target_scroll_translation)) {
+      target_scroll_translation.ParentScrollTranslationNode()) {
     // We need to enter a new level of scroll translation. If a PaintChunk
     // enters multiple levels of scroll translations at once, this function
     // will be called for each level of overflow clip before it's called for

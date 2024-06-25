@@ -53,6 +53,8 @@ class PropertyTreeManagerClient {
       CompositorElementId& mask_effect_id) = 0;
   virtual bool NeedsCompositedScrolling(
       const TransformPaintPropertyNode& scroll_translation) const = 0;
+  virtual bool ShouldForceMainThreadRepaint(
+      const TransformPaintPropertyNode& scroll_translation) const = 0;
 };
 
 // Mutates a cc property tree to reflect Blink paint property tree
@@ -323,6 +325,9 @@ class PropertyTreeManager {
                              const TransformPaintPropertyNode&);
 
   void UpdatePixelMovingFilterClipExpanders();
+
+  uint32_t NonCompositedMainThreadScrollingReasons(
+      const TransformPaintPropertyNode& scroll_translation) const;
 
   PropertyTreeManagerClient& client_;
 

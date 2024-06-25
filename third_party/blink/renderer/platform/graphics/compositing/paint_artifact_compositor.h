@@ -299,9 +299,15 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   bool NeedsCompositedScrolling(
       const TransformPaintPropertyNode& scroll_translation) const final;
+  bool ShouldForceMainThreadRepaint(
+      const TransformPaintPropertyNode& scroll_translation) const final;
+
   bool ComputeNeedsCompositedScrolling(
       const PaintArtifact&,
       PaintChunks::const_iterator chunk_cursor) const;
+  void UpdatePaintedScrollTranslationsBeforeLayerization(
+      const PaintArtifact&,
+      PaintChunks::const_iterator chunk_cursor);
   PendingLayer::CompositingType ChunkCompositingType(const PaintArtifact&,
                                                      const PaintChunk&) const;
 
@@ -339,12 +345,15 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
 
-  // Scroll translation nodes of the PaintArtifact that are painted.
-  // This member variable is only used in PaintArtifactCompositor::Update.
   struct ScrollTranslationInfo {
     gfx::Rect scrolling_contents_cull_rect;
-    bool is_composited;
+    bool is_composited = false;
+    bool force_main_thread_repaint = false;
   };
+  // Scroll translation nodes associated with content or ScrollHitTest that has
+  // been encountered during layerization. This includes every kind of scroll
+  // translation, include those for composited scrolling and non-composited
+  // scrolling (including raster-inducing and main-thread repainted).
   HashMap<const TransformPaintPropertyNode*, ScrollTranslationInfo>
       painted_scroll_translations_;
 

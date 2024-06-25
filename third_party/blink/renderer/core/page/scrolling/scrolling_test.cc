@@ -45,6 +45,8 @@
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -1145,7 +1148,7 @@ TEST_P(ScrollingTest, WheelEventRegions) {
   EXPECT_EQ(region, expected_region);
 }
 
-TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
+TEST_P(ScrollingTest, WheelEventRegionOnScrollWithoutDrawableContents) {
   SetPreferCompositingToLCDText(false);
   LoadHTML(R"HTML(
     <style>
@@ -1155,8 +1158,6 @@ TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
         overflow: auto;
         position: absolute;
         top: 50px;
-        background: white;
-        box-shadow: 10px 10px black inset;
       }
       #content {
         width: 100%;
@@ -1182,6 +1183,9 @@ TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
   const auto* cc_layer = MainFrameScrollingContentsLayer();
   cc::Region region = cc_layer->wheel_event_region();
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 100));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 
   Element* scrollable_element =
       GetFrame()->GetDocument()->getElementById(AtomicString("noncomposited"));
@@ -1193,6 +1197,284 @@ TEST_P(ScrollingTest, WheelEventRegionUpdatedOnSubscrollerScrollChange) {
   ForceFullCompositingUpdate();
   region = cc_layer->wheel_event_region();
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 90));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+}
+
+TEST_P(ScrollingTest, WheelEventRegionOnScrollWithDrawableContents) {
+  SetPreferCompositingToLCDText(false);
+  LoadHTML(R"HTML(
+    <style>
+      #noncomposited {
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+        position: absolute;
+        top: 50px;
+      }
+      #content {
+        width: 100%;
+        height: 1000px;
+        background: yellow;
+      }
+      .region {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="noncomposited">
+      <div id="region" class="region"></div>
+      <div id="content"></div>
+    </div>
+    <script>
+      document.getElementById("region").addEventListener('wheel', (e) => {
+        e.preventDefault();
+      }, {passive: false});
+    </script>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = MainFrameScrollingContentsLayer();
+  cc::Region region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 100));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  Element* scrollable_element =
+      GetFrame()->GetDocument()->getElementById(AtomicString("noncomposited"));
+  ASSERT_TRUE(scrollable_element);
+
+  scrollable_element->setScrollTop(10.0);
+  ForceFullCompositingUpdate();
+  region = cc_layer->wheel_event_region();
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 90));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+}
+
+TEST_P(ScrollingTest, TouchActionRegionOnScrollWithoutDrawableContents) {
+  SetPreferCompositingToLCDText(false);
+  LoadHTML(R"HTML(
+    <style>
+      #noncomposited {
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+        position: absolute;
+        top: 50px;
+      }
+      #content {
+        width: 100%;
+        height: 1000px;
+      }
+      .region {
+        width: 100px;
+        height: 100px;
+        touch-action: none;
+      }
+    </style>
+    <div id="noncomposited">
+      <div id="region" class="region"></div>
+      <div id="content"></div>
+    </div>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = MainFrameScrollingContentsLayer();
+  cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 100));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  Element* scrollable_element =
+      GetFrame()->GetDocument()->getElementById(AtomicString("noncomposited"));
+  DCHECK(scrollable_element);
+
+  // Change scroll position and verify that blocking wheel handler region is
+  // updated accordingly.
+  scrollable_element->setScrollTop(10.0);
+  ForceFullCompositingUpdate();
+  region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 90));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+}
+
+TEST_P(ScrollingTest, TouchActionRegionOnScrollWithDrawableContents) {
+  SetPreferCompositingToLCDText(false);
+  LoadHTML(R"HTML(
+    <style>
+      #noncomposited {
+        width: 200px;
+        height: 200px;
+        overflow: auto;
+        position: absolute;
+        top: 50px;
+      }
+      #content {
+        width: 100%;
+        height: 1000px;
+        background: yellow;
+      }
+      .region {
+        width: 100px;
+        height: 100px;
+        touch-action: none;
+      }
+    </style>
+    <div id="noncomposited">
+      <div id="region" class="region"></div>
+      <div id="content"></div>
+    </div>
+  )HTML");
+  ForceFullCompositingUpdate();
+
+  const auto* cc_layer = MainFrameScrollingContentsLayer();
+  cc::Region region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 100));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  Element* scrollable_element =
+      GetFrame()->GetDocument()->getElementById(AtomicString("noncomposited"));
+  ASSERT_TRUE(scrollable_element);
+
+  scrollable_element->setScrollTop(10.0);
+  ForceFullCompositingUpdate();
+  region = cc_layer->touch_action_region().GetRegionForTouchAction(
+      TouchAction::kNone);
+  EXPECT_EQ(region.bounds(), gfx::Rect(8, 50, 100, 90));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("noncomposited"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+}
+
+TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithCaptureRegion) {
+  SetPreferCompositingToLCDText(false);
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="composited" style="width: 200px; height: 200px; overflow: scroll;
+                                background: white">
+      <div id="middle" style="width: 150px; height: 300px; overflow: scroll">
+        <div id="inner" style="width: 100px; height: 400px; overflow: scroll">
+          <div id="capture" style="width: 50px; height: 500px"></div>
+          <div style="height: 1000px"></div>
+        </div>
+        <div style="height: 1000px"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto crop_id = base::Token::CreateRandom();
+  Document& document = *GetFrame()->GetDocument();
+  document.getElementById(AtomicString("capture"))
+      ->SetRegionCaptureCropId(std::make_unique<RegionCaptureCropId>(crop_id));
+  ForceFullCompositingUpdate();
+
+  const cc::Layer* cc_layer =
+      ScrollingContentsLayerByDOMElementId("composited");
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 300),
+            cc_layer->capture_bounds().bounds().at(crop_id));
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("middle"))->setScrollTop(200);
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 200),
+            cc_layer->capture_bounds().bounds().at(crop_id));
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("inner"))->setScrollTop(200);
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(gfx::Rect(0, 0, 50, 100),
+            cc_layer->capture_bounds().bounds().at(crop_id));
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+}
+
+TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithLayerSelection) {
+  SetPreferCompositingToLCDText(false);
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="composited" style="width: 200px; height: 200px; overflow: scroll;
+                                background: white">
+      <div id="middle" style="width: 150px; height: 300px; overflow: scroll">
+        <div id="inner" style="width: 100px; height: 400px; overflow: scroll">
+          <div style="height: 150px"></div>
+          <div id="text">TEXT</div>
+          <div style="height: 1000px"></div>
+        </div>
+        <div style="height: 1000px"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Document& document = *GetFrame()->GetDocument();
+  document.GetPage()->GetFocusController().SetActive(true);
+  document.GetPage()->GetFocusController().SetFocused(true);
+  GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .SelectAllChildren(*document.getElementById(AtomicString("text")))
+          .Build(),
+      SetSelectionOptions());
+  GetFrame()->Selection().SetHandleVisibleForTesting();
+  ForceFullCompositingUpdate();
+
+  EXPECT_EQ(gfx::Point(0, 150), LayerTreeHost()->selection().start.edge_start);
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("middle"))->setScrollTop(50);
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(gfx::Point(0, 100), LayerTreeHost()->selection().start.edge_start);
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+
+  document.getElementById(AtomicString("inner"))->setScrollTop(50);
+  ForceFullCompositingUpdate();
+  EXPECT_EQ(gfx::Point(0, 50), LayerTreeHost()->selection().start.edge_start);
+  ASSERT_COMPOSITED(ScrollNodeByDOMElementId("composited"));
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("middle"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+  ASSERT_NOT_COMPOSITED(
+      ScrollNodeByDOMElementId("inner"),
+      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
 // Box shadow is not hit testable and should not be included in wheel region.

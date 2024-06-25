@@ -235,6 +235,11 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   const TransformPaintPropertyNode& NearestScrollTranslationNode() const {
     return GetTransformCache().nearest_scroll_translation();
   }
+  // Similar to the above, but excludes this node.
+  const TransformPaintPropertyNode* ParentScrollTranslationNode() const {
+    const auto* parent = UnaliasedParent();
+    return parent ? &parent->NearestScrollTranslationNode() : nullptr;
+  }
 
   // This is different from NearestScrollTranslationNode in that for a
   // fixed-position paint offset translation, this returns

@@ -195,6 +195,14 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
   return it->value.is_composited;
 }
 
+bool PaintArtifactCompositor::ShouldForceMainThreadRepaint(
+    const TransformPaintPropertyNode& scroll_translation) const {
+  DCHECK(!NeedsCompositedScrolling(scroll_translation));
+  auto it = painted_scroll_translations_.find(&scroll_translation);
+  return it != painted_scroll_translations_.end() &&
+         it->value.force_main_thread_repaint;
+}
+
 bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
     const PaintArtifact& artifact,
     PaintChunks::const_iterator chunk_cursor) const {
@@ -205,10 +213,6 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
   const auto& scroll_translation =
       *chunk_cursor->hit_test_data->scroll_translation;
   DCHECK(scroll_translation.ScrollNode());
-  // This function should be called before scroll_translation is inserted into
-  // painted_scroll_translations_.
-  DCHECK(!painted_scroll_translations_.Contains(&scroll_translation));
-
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
   }
@@ -248,6 +252,82 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
                scroll_translation.ScrollNode()->ContentsRect());
   }
   return true;
+}
+
+void PaintArtifactCompositor::UpdatePaintedScrollTranslationsBeforeLayerization(
+    const PaintArtifact& artifact,
+    PaintChunks::const_iterator chunk_cursor) {
+  const PaintChunk& chunk = *chunk_cursor;
+  const HitTestData* hit_test_data = chunk.hit_test_data.get();
+  if (hit_test_data && hit_test_data->scroll_translation) {
+    const auto& scroll_translation = *hit_test_data->scroll_translation;
+    bool is_composited =
+        ComputeNeedsCompositedScrolling(artifact, chunk_cursor);
+    auto it = painted_scroll_translations_.find(&scroll_translation);
+    if (it == painted_scroll_translations_.end()) {
+      painted_scroll_translations_.insert(
+          &scroll_translation,
+          ScrollTranslationInfo{.scrolling_contents_cull_rect =
+                                    hit_test_data->scrolling_contents_cull_rect,
+                                .is_composited = is_composited});
+    } else {
+      // The node was added in the second half of this function before.
+      // Update the is_composited field now.
+      it->value.scrolling_contents_cull_rect =
+          hit_test_data->scrolling_contents_cull_rect;
+      if (is_composited) {
+        it->value.is_composited = true;
+        it->value.force_main_thread_repaint = false;
+      } else {
+        CHECK(!it->value.is_composited);
+      }
+    }
+  }
+
+  // Touch action region, wheel event region, region capture and selection
+  // under a non-composited scroller depend on the scroll offset so need to
+  // force main-thread repaint. Non-fast scrollable region doesn't matter
+  // because that of a nested non-composited scroller is always covered by
+  // that of the parent non-composited scroller.
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
+      ((hit_test_data &&
+        (!hit_test_data->touch_action_rects.empty() ||
+         !hit_test_data->wheel_event_rects.empty() ||
+         // HitTestData of these types induce touch action regions.
+         chunk.id.type == DisplayItem::Type::kScrollbarHitTest ||
+         chunk.id.type == DisplayItem::Type::kResizerScrollHitTest)) ||
+       chunk.region_capture_data || chunk.layer_selection_data)) {
+    const auto& transform = chunk.properties.Transform().Unalias();
+    // Mark all non-composited scroll ancestors within the same direct
+    // compositing boundary (ideally we should check for both direct and
+    // indirect compositing boundaries but that's impossible before full
+    // layerization) also needing main thread repaint.
+    const auto* composited_ancestor =
+        transform.NearestDirectlyCompositedAncestor();
+    for (const auto* scroll_translation =
+             &transform.NearestScrollTranslationNode();
+         scroll_translation;
+         scroll_translation =
+             scroll_translation->ParentScrollTranslationNode()) {
+      if (scroll_translation->NearestDirectlyCompositedAncestor() !=
+          composited_ancestor) {
+        break;
+      }
+      auto it = painted_scroll_translations_.find(scroll_translation);
+      if (it == painted_scroll_translations_.end()) {
+        // The paint chunk appears before the ScrollHitTest of the scroll
+        // translation. We'll complete the data when we see the ScrollHitTest.
+        painted_scroll_translations_.insert(
+            scroll_translation,
+            ScrollTranslationInfo{.force_main_thread_repaint = true});
+      } else {
+        if (it->value.is_composited || it->value.force_main_thread_repaint) {
+          break;
+        }
+        it->value.force_main_thread_repaint = true;
+      }
+    }
+  }
 }
 
 PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
@@ -543,18 +623,7 @@ void PaintArtifactCompositor::LayerizeGroup(
     // C. The next chunk belongs to some subgroup of the current group.
     const auto& chunk_effect = chunk_cursor->properties.Effect().Unalias();
     if (&chunk_effect == &current_group) {
-      // Track painted ScrollTranslation nodes and their composited scrolling
-      // status. With ScrollUnification enabled, Update() also uses this to
-      // know which ScrollTranslation nodes we need to create composited
-      // Transform nodes for.
-      if (chunk_cursor->hit_test_data &&
-          chunk_cursor->hit_test_data->scroll_translation) {
-        painted_scroll_translations_.insert(
-            chunk_cursor->hit_test_data->scroll_translation.get(),
-            ScrollTranslationInfo{
-                chunk_cursor->hit_test_data->scrolling_contents_cull_rect,
-                ComputeNeedsCompositedScrolling(artifact, chunk_cursor)});
-      }
+      UpdatePaintedScrollTranslationsBeforeLayerization(artifact, chunk_cursor);
       pending_layers_.emplace_back(
           artifact, *chunk_cursor,
           ChunkCompositingType(artifact, *chunk_cursor));

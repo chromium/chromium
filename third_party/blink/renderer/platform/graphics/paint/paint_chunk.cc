@@ -69,9 +69,11 @@ size_t PaintChunk::MemoryUsageInBytes() const {
     total_size += hit_test_data->touch_action_rects.CapacityInBytes();
     total_size += hit_test_data->wheel_event_rects.CapacityInBytes();
   }
-  total_size += sizeof(region_capture_data);
   if (region_capture_data) {
     total_size += sizeof(*region_capture_data);
+  }
+  if (layer_selection_data) {
+    total_size += sizeof(*layer_selection_data);
   }
   return total_size;
 }

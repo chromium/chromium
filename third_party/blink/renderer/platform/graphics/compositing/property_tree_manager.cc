@@ -229,13 +229,14 @@ void PropertyTreeManager::DropCompositorScrollDeltaNextCommit(
   host.DropActiveScrollDeltaNextCommit(element_id);
 }
 
-static uint32_t NonCompositedMainThreadScrollingReasons(
-    const ScrollPaintPropertyNode& scroll) {
-  if (scroll.GetCompositedScrollingPreference() ==
+uint32_t PropertyTreeManager::NonCompositedMainThreadScrollingReasons(
+    const TransformPaintPropertyNode& scroll_translation) const {
+  if (scroll_translation.ScrollNode()->GetCompositedScrollingPreference() ==
       CompositedScrollingPreference::kNotPreferred) {
     return cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
   }
-  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled() &&
+      !client_.ShouldForceMainThreadRepaint(scroll_translation)) {
     return cc::MainThreadScrollingReason::kNotScrollingOnMain;
   }
   return cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
@@ -512,7 +513,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
         client_.NeedsCompositedScrolling(transform_node);
     if (!scroll_node->is_composited) {
       scroll_node->main_thread_scrolling_reasons |=
-          NonCompositedMainThreadScrollingReasons(*transform_node.ScrollNode());
+          NonCompositedMainThreadScrollingReasons(transform_node);
     }
   }
 
