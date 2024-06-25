@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_MAGIC_BOOST_PUBLIC_CPP_MAGIC_BOOST_STATE_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 
 namespace chromeos {
@@ -60,6 +61,13 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // a write is completed. Reading consent status and/or enabled state
   // immediately after the write can read a stale value.
   virtual void AsyncWriteHMREnabled(bool enabled) = 0;
+
+  // Whether Orca should be included in the Magic Boost opt-in flow.
+  virtual void ShouldIncludeOrcaInOptIn(
+      base::OnceCallback<void(bool)> callback) = 0;
+
+  // Marks Orca consent status as rejected and disable the feature.
+  virtual void DisableOrcaFeature() = 0;
 
   std::optional<bool> hmr_enabled() const { return hmr_enabled_; }
 

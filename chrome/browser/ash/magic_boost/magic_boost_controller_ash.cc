@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 
 #include "ash/system/magic_boost/magic_boost_disclaimer_view.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 
 namespace ash {
@@ -27,16 +30,52 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(
     return;
   }
 
-  // TODO(b/341832244): Pass in the correct callback to set the feature state.
   disclaimer_widget_ = MagicBoostDisclaimerView::CreateWidget(
       display_id,
-      /*press_accept_button_callback*/ base::DoNothing(),
-      /*press_decline_button_callback*/ base::DoNothing());
+      /*press_accept_button_callback=*/
+      base::BindRepeating(
+          &MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed,
+          weak_ptr_factory_.GetWeakPtr()),
+      /*press_decline_button_callback=*/
+      base::BindRepeating(
+          &MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed,
+          weak_ptr_factory_.GetWeakPtr()));
   disclaimer_widget_->Show();
 }
 
 void MagicBoostControllerAsh::CloseDisclaimerUi() {
   disclaimer_widget_.reset();
+}
+
+void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed() {
+  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(
+      base::BindOnce([](bool should_include_orca) {
+        auto* magic_boost_state =
+            static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
+        if (should_include_orca) {
+          magic_boost_state->EnableOrcaFeature();
+        }
+        magic_boost_state->AsyncWriteConsentStatus(
+            chromeos::HMRConsentStatus::kApproved);
+        magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/true);
+      }));
+
+  CloseDisclaimerUi();
+}
+
+void MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed() {
+  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(
+      base::BindOnce([](bool should_include_orca) {
+        auto* magic_boost_state = chromeos::MagicBoostState::Get();
+        if (should_include_orca) {
+          magic_boost_state->DisableOrcaFeature();
+        }
+        magic_boost_state->AsyncWriteConsentStatus(
+            chromeos::HMRConsentStatus::kDeclined);
+        magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
+      }));
+
+  CloseDisclaimerUi();
 }
 
 }  // namespace ash

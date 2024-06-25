@@ -54,6 +54,20 @@ void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kHmrEnabled, enabled);
 }
 
+void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
+    base::OnceCallback<void(bool)> callback) {
+  // TODO(b/340688577): Complete this function.
+  std::move(callback).Run(true);
+}
+
+void MagicBoostStateAsh::DisableOrcaFeature() {
+  // TODO(b/340688577): Complete this function.
+}
+
+void MagicBoostStateAsh::EnableOrcaFeature() {
+  // TODO(b/340688577): Complete this function.
+}
+
 void MagicBoostStateAsh::OnShellDestroying() {
   session_observation_.Reset();
   shell_observation_.Reset();

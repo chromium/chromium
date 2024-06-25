@@ -341,7 +341,6 @@ source_set("crosapi") {
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/cert_provisioning",
-    "//chrome/browser/ash/magic_boost:magic_boost_ash",
     "//chrome/browser/ash/mahi:mahi_ash",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/smart_reader",

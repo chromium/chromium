@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_ASH_H_
 #define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_ASH_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -33,10 +34,22 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
       crosapi::mojom::MagicBoostController::TransitionAction action) override;
   void CloseDisclaimerUi() override;
 
+  views::Widget* disclaimer_widget_for_test() {
+    return disclaimer_widget_.get();
+  }
+
  private:
+  friend class MagicBoostControllerAshTest;
+
+  // Callbacks for clicking on disclaimer widget's buttons.
+  void OnDisclaimerAcceptButtonPressed();
+  void OnDisclaimerDeclineButtonPressed();
+
   mojo::ReceiverSet<crosapi::mojom::MagicBoostController> receivers_;
 
   views::UniqueWidgetPtr disclaimer_widget_;
+
+  base::WeakPtrFactory<MagicBoostControllerAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
