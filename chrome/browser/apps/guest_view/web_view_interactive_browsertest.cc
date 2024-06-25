@@ -783,8 +783,14 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_BlurEvent) {
 }
 
 // Tests that a <webview> can't steal focus from the embedder.
+// TODO(crbug.com/349299938): Flaky on mac14-arm64-rel
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_FrameInGuestWontStealFocus DISABLED_FrameInGuestWontStealFocus
+#else
+#define MAYBE_FrameInGuestWontStealFocus FrameInGuestWontStealFocus
+#endif
 IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
-                       FrameInGuestWontStealFocus) {
+                       MAYBE_FrameInGuestWontStealFocus) {
   LoadAndLaunchPlatformApp("web_view/simple", "WebViewTest.LAUNCHED");
 
   content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
