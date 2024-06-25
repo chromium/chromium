@@ -60,10 +60,19 @@ class FileSystemAccessObserverObservation
  private:
   void OnReceiverDisconnect();
 
-  // Called repeatedly by `observation_`.
+  // Called repeatedly by `observation_` whenever there are file changes. It
+  // processes the received change data and sends a file change event via mojo
+  // pipe.
   void OnChanges(
-      const std::list<FileSystemAccessWatcherManager::Observation::Change>&
-          changes);
+      const std::optional<
+          std::list<FileSystemAccessWatcherManager::Observation::Change>>&
+          changes_or_error);
+
+  // Invoked if an error occurred while watching file changes. It sends a file
+  // change event with `kErrored` type and destroys this observation so that
+  // it is no longer observing. Currently, an error indicates that this
+  // observation is in a non-recoverable state.
+  void HandleError();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -57,6 +57,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       // Copyable and movable.
       Change(const Change&);
       Change(Change&&) noexcept;
+      Change& operator=(const Change&);
+      Change& operator=(Change&&) noexcept;
 
       storage::FileSystemURL url;
       FileSystemAccessChangeSource::ChangeInfo change_info;
@@ -66,8 +68,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       }
     };
 
-    using OnChangesCallback =
-        base::RepeatingCallback<void(const std::list<Change>& changes)>;
+    using OnChangesCallback = base::RepeatingCallback<void(
+        const std::optional<std::list<Change>>& changes_or_error)>;
     Observation(FileSystemAccessWatcherManager* watcher_manager,
                 FileSystemAccessWatchScope scope,
                 base::PassKey<FileSystemAccessWatcherManager> pass_key);
@@ -80,7 +82,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     const FileSystemAccessWatchScope& scope() const { return scope_; }
 
     void NotifyOfChanges(
-        const std::list<Change>& changes,
+        const std::optional<std::list<Change>>& changes_or_error,
         base::PassKey<FileSystemAccessWatcherManager> pass_key);
 
    private:

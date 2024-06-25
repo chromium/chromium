@@ -50,6 +50,13 @@ FileSystemAccessWatcherManager::Observation::Change::Change(
 FileSystemAccessWatcherManager::Observation::Change::Change(
     FileSystemAccessWatcherManager::Observation::Change&&) noexcept = default;
 
+FileSystemAccessWatcherManager::Observation::Change&
+FileSystemAccessWatcherManager::Observation::Change::operator=(
+    const FileSystemAccessWatcherManager::Observation::Change&) = default;
+FileSystemAccessWatcherManager::Observation::Change&
+FileSystemAccessWatcherManager::Observation::Change::operator=(
+    FileSystemAccessWatcherManager::Observation::Change&&) noexcept = default;
+
 FileSystemAccessWatcherManager::Observation::Observation(
     FileSystemAccessWatcherManager* watcher_manager,
     FileSystemAccessWatchScope scope,
@@ -68,11 +75,11 @@ void FileSystemAccessWatcherManager::Observation::SetCallback(
 }
 
 void FileSystemAccessWatcherManager::Observation::NotifyOfChanges(
-    const std::list<Change>& changes,
+    const std::optional<std::list<Change>>& changes_or_error,
     base::PassKey<FileSystemAccessWatcherManager> pass_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (on_change_callback_) {
-    on_change_callback_.Run(std::move(changes));
+    on_change_callback_.Run(std::move(changes_or_error));
   }
 }
 
@@ -149,19 +156,14 @@ void FileSystemAccessWatcherManager::OnRawChange(
     return;
   }
 
-  if (error) {
-    // TODO(crbug.com/40105284): Instead of filtering an errored change,
-    // invoke the change callback with the error type, and set the observation
-    // with errored state so that no more callbacks are fired for any recurring
-    // future errors.
-    return;
-  }
-
-  const std::list<Observation::Change> changes = {{changed_url, change_info}};
+  const std::optional<std::list<Observation::Change>> changes_or_error =
+      error ? std::nullopt
+            : std::make_optional(
+                  std::list<Observation::Change>({{changed_url, change_info}}));
   for (auto& observation : observations_) {
     if (observation.scope().Contains(changed_url)) {
       observation.NotifyOfChanges(
-          changes, base::PassKey<FileSystemAccessWatcherManager>());
+          changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
     }
   }
 }

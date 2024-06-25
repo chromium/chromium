@@ -95,9 +95,20 @@ class ChangeAccumulator {
   ChangeAccumulator& operator=(const ChangeAccumulator&) = delete;
   ~ChangeAccumulator() = default;
 
-  void OnChanges(const std::list<Change>& changes) {
+  void OnChanges(const std::optional<std::list<Change>>& changes_or_error) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    for (const auto& change : changes) {
+
+    if (has_error_) {
+      return;
+    }
+
+    if (!changes_or_error.has_value()) {
+      received_changes_.clear();
+      has_error_ = true;
+      return;
+    }
+
+    for (const auto& change : changes_or_error.value()) {
       received_changes_.push_back(change);
     }
   }
@@ -105,6 +116,11 @@ class ChangeAccumulator {
   Observation* observation() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return observation_.get();
+  }
+
+  bool has_error() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return has_error_;
   }
 
   const std::list<Change>& changes() const {
@@ -119,6 +135,8 @@ class ChangeAccumulator {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::list<Change> received_changes_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::WeakPtrFactory<ChangeAccumulator> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
@@ -695,9 +713,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErroredChange) {
 
   source.Signal(/*relative_path=*/base::FilePath(), /*error=*/true);
 
-  // TODO(crbug.com/40105284): For now, errored events are not reported.
-  // Once we update to report the first error (but not subsequent ones), update
-  // this expectation.
+  EXPECT_THAT(accumulator.has_error(), testing::IsTrue());
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
 }
 
@@ -800,9 +816,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErrorTakesPrecedenceOverChangeType) {
   ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kCreated, path);
   source.Signal(/*relative_path=*/path, /*error=*/true, change_info);
 
-  // TODO(crbug.com/40105284): For now, errored events are not reported.
-  // Once we update to report the first error (but not subsequent ones), update
-  // this expectation.
+  EXPECT_THAT(accumulator.has_error(), testing::IsTrue());
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
 }
 
