@@ -434,13 +434,13 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
 
   // If a page was missing from `page_metadata` (its location was not updated),
   // then that means it got deleted. Set its page number to 0.
-  for (const auto& [page_id, _] : page_metadata_) {
+  for (auto& [page_id, page_info] : page_metadata_) {
     if (!page_id_updated.contains(page_id)) {
       // Since `pages_` and `page_metadata_` are both populated from untrusted
       // code, mitigate potential security issues by never mutating the size of
-      // these twocontainers. So when a page is 'deleted' by the user, keep it
+      // these two containers. So when a page is 'deleted' by the user, keep it
       // in memory.
-      page_metadata_[page_id].page_num = 0;
+      page_info.page_num = 0;
     }
   }
   UpdateDocumentTree();
