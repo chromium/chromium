@@ -172,6 +172,9 @@ constexpr base::FeatureParam<int> kLensOverlaySignificantRegionMinArea{
 constexpr base::FeatureParam<int> kLensOverlayMaxSignificantRegions{
     &kLensOverlay, "max-significant-regions", 100};
 
+constexpr base::FeatureParam<int> kLensOverlayLivePageBlurRadiusPixels{
+    &kLensOverlay, "live-page-blur-radius-pixels", 200};
+
 constexpr base::FeatureParam<double>
     kLensOverlayPostSelectionComparisonThreshold{
         &kLensOverlay, "post-selection-comparison-threshold", 0.005};
@@ -512,6 +515,10 @@ int GetLensOverlayServerRequestTimeout() {
 
 bool GetLensOverlayEnableErrorPage() {
   return kLensOverlayEnableErrorPage.Get();
+}
+
+int GetLensOverlayLivePageBlurRadiusPixels() {
+  return kLensOverlayLivePageBlurRadiusPixels.Get();
 }
 
 }  // namespace lens::features
