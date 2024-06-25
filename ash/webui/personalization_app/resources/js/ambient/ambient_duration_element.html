@@ -10,11 +10,11 @@
   }
 </style>
 <div class="ambient-toggle-row">
-  <h3 class="ambient-subpage-element-title">
+  <h3 class="ambient-subpage-element-title" id="ambientDurationTitle">
     $i18n{ambientModeDurationTitle}
   </h3>
   <select id="durationOptions" class="md-select"
-      on-change="onOptionChanged_">
+      on-change="onOptionChanged_" aria-labelledby="ambientDurationTitle">
     <template is="dom-repeat" items="[[options_]]" as="option">
       <option value="[[option]]"
           selected="[[isEqual_(option, selectedDuration_)]]">
