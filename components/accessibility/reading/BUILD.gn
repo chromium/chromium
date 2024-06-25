@@ -5,10 +5,13 @@
 import("//build/config/features.gni")
 
 source_set("reading") {
-  sources = [
-    "distillable_urls.cc",
-    "distillable_urls.h",
-  ]
+  sources = [ "distillable_urls.h" ]
+
+  if (is_chrome_branded) {
+    sources += [ "../internal/reading/distillable_urls.cc" ]
+  } else {
+    sources += [ "distillable_urls.cc" ]
+  }
 
   deps = [
     "//base",
