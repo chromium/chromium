@@ -644,20 +644,22 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
   if (download->IsTransient()) {
     if (download_path.empty() && download->GetMimeType() == pdf::kPDFMimeType &&
         !download->IsMustDownload()) {
-      base::FilePath generated_filename = net::GenerateFileName(
-          download->GetURL(), download->GetContentDisposition(),
-          profile_->GetPrefs()->GetString(prefs::kDefaultCharset),
-          download->GetSuggestedFilename(), download->GetMimeType(),
-          l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
-      if (profile_->IsOffTheRecord()) {
+      if (profile_->IsOffTheRecord() && download->GetDownloadFile() &&
+          download->GetDownloadFile()->IsMemoryFile()) {
         download_path = download->GetDownloadFile()->FullPath();
+        action = DownloadPathReservationTracker::OVERWRITE;
       } else {
+        base::FilePath generated_filename = net::GenerateFileName(
+            download->GetURL(), download->GetContentDisposition(),
+            profile_->GetPrefs()->GetString(prefs::kDefaultCharset),
+            download->GetSuggestedFilename(), download->GetMimeType(),
+            l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
         base::FilePath cache_dir;
         base::android::GetCacheDirectory(&cache_dir);
         download_path =
             cache_dir.Append(kPdfDirName).Append(generated_filename);
+        action = DownloadPathReservationTracker::UNIQUIFY;
       }
-      action = DownloadPathReservationTracker::UNIQUIFY;
     } else {
       action = DownloadPathReservationTracker::OVERWRITE;
     }

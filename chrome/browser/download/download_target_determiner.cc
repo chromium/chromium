@@ -1127,6 +1127,10 @@ void DownloadTargetDeterminer::ScheduleCallbackAndDeleteSelf(
   // If |virtual_path_| is content URI, there is no need to prompt the user.
   if (local_path_.IsContentUri() && !virtual_path_.IsContentUri()) {
     target_info.display_name = virtual_path_.BaseName();
+  } else if (download_->GetDownloadFile() &&
+             download_->GetDownloadFile()->IsMemoryFile()) {
+    // Memory file doesn't have a proper display name. Generate one here.
+    target_info.display_name = GenerateFileName();
   }
 #endif
   target_info.mime_type = mime_type_;
