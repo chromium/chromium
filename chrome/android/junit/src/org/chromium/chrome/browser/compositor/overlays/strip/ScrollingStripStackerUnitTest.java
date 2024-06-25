@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -15,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link ScrollingStripStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -33,6 +36,7 @@ public final class ScrollingStripStackerUnitTest {
 
     @Before
     public void setUp() {
+        LocalizationUtils.setRtlForTesting(false);
         MockitoAnnotations.initMocks(this);
         mInput = new StripLayoutTab[] {mTab1, mTab2, mTab3, mTab4, mTab5};
         float ideal_x = 0;
@@ -48,22 +52,7 @@ public final class ScrollingStripStackerUnitTest {
         }
     }
 
-    @Test
-    public void testSetTabOffsets() {
-        mTarget.setViewOffsets(mInput, false, false, CACHED_TAB_WIDTH);
-
-        float expected_x = 0;
-        for (StripLayoutTab tab : mInput) {
-            verify(tab).setDrawX(expected_x);
-            verify(tab).setDrawY(TAB_OFFSET_Y);
-            expected_x += TAB_WIDTH;
-        }
-    }
-
-    @Test
-    public void testSetTabOffsets_tabCreating() {
-        mTarget.setViewOffsets(mInput, true, false, CACHED_TAB_WIDTH);
-
+    private void verifySetTabOffsets(boolean tabClosing) {
         float expected_x = 0;
         for (StripLayoutTab tab : mInput) {
             verify(tab).getIdealX();
@@ -71,9 +60,50 @@ public final class ScrollingStripStackerUnitTest {
             verify(tab).setDrawX(expected_x);
             verify(tab).setDrawY(TAB_OFFSET_Y);
             verify(tab).getOffsetY();
+            if (LocalizationUtils.isLayoutRtl() && !tabClosing) {
+                verify(tab, times(2)).setDrawX(anyFloat());
+                verify(tab).getDrawX();
+                verify(tab).getWidth();
+            }
             verifyNoMoreInteractions(tab);
             expected_x += TAB_WIDTH;
         }
+    }
+
+    @Test
+    public void testSetTabOffsets() {
+        boolean tabClosing = false;
+        mTarget.setViewOffsets(
+                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        verifySetTabOffsets(tabClosing);
+    }
+
+    @Test
+    public void testSetTabOffsets_TabClosing() {
+        boolean tabClosing = true;
+        mTarget.setViewOffsets(
+                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        verifySetTabOffsets(tabClosing);
+    }
+
+    @Test
+    public void testSetTabOffsets_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+
+        boolean tabClosing = false;
+        mTarget.setViewOffsets(
+                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        verifySetTabOffsets(tabClosing);
+    }
+
+    @Test
+    public void testSetTabOffsets_TabClosing_RTL() {
+        LocalizationUtils.setRtlForTesting(true);
+
+        boolean tabClosing = true;
+        mTarget.setViewOffsets(
+                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        verifySetTabOffsets(tabClosing);
     }
 
     @Test

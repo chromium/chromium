@@ -137,11 +137,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private static final int ANIM_TAB_CLOSED_MS = 150;
     private static final int ANIM_TAB_RESIZE_MS = 250;
     private static final int ANIM_TAB_DRAW_X_MS = 250;
-    private static final int ANIM_TAB_SELECTION_DELAY = 150;
     private static final int ANIM_TAB_MOVE_MS = 125;
     private static final int ANIM_TAB_SLIDE_OUT_MS = 250;
     private static final int ANIM_BUTTONS_FADE_MS = 150;
-    private static final int NEW_TAB_BUTTON_OFFSET_MOVE_MS = 250;
     private static final int SCROLL_DISTANCE_SHORT = 960;
     private static final int SCROLL_DISTANCE_MEDIUM = 1920;
     private static final long INVALID_TIME = 0L;
@@ -440,7 +438,6 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     private boolean mTabGroupMarginAnimRunning;
     private boolean mTabResizeAnimRunning;
     private boolean mGroupTitleSliding;
-    private boolean mTabCreating;
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
     // tab metadata.
@@ -1301,21 +1298,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         0f,
                         ANIM_TAB_CREATED_MS));
 
-        mTabCreating = true;
-        startAnimationList(
-                animationList,
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mTabCreating = false;
-                    }
-                });
+        startAnimationList(animationList, /* listener= */ null);
     }
 
     /**
      * Set the relevant tab model metadata prior to the tab state initialization.
+     *
      * @param activeTabIndexOnStartup What the active tab index should be after tabs finish
-     *                                restoring.
+     *     restoring.
      * @param tabCountOnStartup What the tab count should be after tabs finish restoring.
      * @param createdTabOnStartup If an additional tab was created on startup (e.g. through intent).
      */
@@ -2233,11 +2223,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         }
 
         // 4. Add new tab button offset animation.
-        if (mStripTabs[mStripTabs.length - 1].isClosed()) {
-            tabStripAnimators.add(getLastTabClosedNtbAnimator());
-        } else {
-            mNewTabButtonAnimRunning = false;
-        }
+        tabStripAnimators.add(getLastTabClosedNtbAnimator());
 
         // 5. Add animation completion listener and start animations.
         startAnimationList(
@@ -2246,6 +2232,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mMultiStepTabCloseAnimRunning = false;
+                        mNewTabButtonAnimRunning = false;
                     }
                 });
     }
@@ -3185,7 +3172,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         // 3. Calculate the tab stacking and ensure that tabs are sized correctly.
         mStripStacker.setViewOffsets(
-                mStripViews, mTabCreating, mGroupTitleSliding, mCachedTabWidth);
+                mStripViews, mMultiStepTabCloseAnimRunning, mGroupTitleSliding, mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
@@ -3326,14 +3313,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                         StripLayoutView.DRAW_X,
                         mNewTabButton.getDrawX(),
                         offset,
-                        NEW_TAB_BUTTON_OFFSET_MOVE_MS);
-        animator.addListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mNewTabButtonAnimRunning = false;
-                    }
-                });
+                        ANIM_TAB_RESIZE_MS);
         return animator;
     }
 

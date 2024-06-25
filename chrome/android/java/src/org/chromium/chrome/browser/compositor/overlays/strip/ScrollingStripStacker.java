@@ -15,7 +15,7 @@ public class ScrollingStripStacker extends StripStacker {
     @Override
     public void setViewOffsets(
             StripLayoutView[] indexOrderedViews,
-            boolean tabCreating,
+            boolean tabClosing,
             boolean groupTitleSlidingAnimRunning,
             float cachedTabWidth) {
         for (int i = 0; i < indexOrderedViews.length; i++) {
@@ -26,9 +26,9 @@ public class ScrollingStripStacker extends StripStacker {
                 view.setDrawX(view.getIdealX() + view.getOffsetX());
 
                 // Properly animate container slide-out in RTL.
-                if (view instanceof StripLayoutTab tab
-                        && tabCreating
-                        && LocalizationUtils.isLayoutRtl()) {
+                if (LocalizationUtils.isLayoutRtl()
+                        && !tabClosing
+                        && view instanceof StripLayoutTab tab) {
                     tab.setDrawX(tab.getDrawX() + cachedTabWidth - tab.getWidth());
                 }
             }
