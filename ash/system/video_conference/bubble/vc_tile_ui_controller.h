@@ -118,9 +118,10 @@ class ASH_EXPORT VcTileUiController : public DlcserviceClient::Observer {
   VcEffectId effect_id_;
 
   // Information about the associated video conferencing effect needed to
-  // display the UI of the tile controlled by this controller.
-  raw_ptr<const VcEffectState> effect_state_ = nullptr;
-  raw_ptr<const VcHostedEffect> effect_ = nullptr;
+  // display the UI of the tile controlled by this controller. WeakPtr's are
+  // saved because the `VcTileUiController` may outlive its dependencies.
+  base::WeakPtr<const VcEffectState> effect_state_;
+  base::WeakPtr<const VcHostedEffect> effect_;
 
   // A list of ids for the DLCs associated with the tile managed by this
   // controller. This is empty for tiles not associated with any DLC.

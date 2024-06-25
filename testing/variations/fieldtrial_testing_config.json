@@ -24034,6 +24034,21 @@
             ]
         }
     ],
+    "VideoConferenceDLCUIRollout": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VcDlcUi"
+                    ]
+                }
+            ]
+        }
+    ],
     "VideoConferenceRollout": [
         {
             "platforms": [

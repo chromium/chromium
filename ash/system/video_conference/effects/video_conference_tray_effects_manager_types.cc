@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
@@ -46,6 +47,15 @@ int VcHostedEffect::GetNumStates() const {
 const VcEffectState* VcHostedEffect::GetState(int index) const {
   DCHECK(index >= 0 && index < (int)states_.size());
   return states_[index].get();
+}
+
+base::WeakPtr<const VcEffectState> VcHostedEffect::GetWeakState(
+    int index) const {
+  const auto* state = GetState(index);
+  if (!state) {
+    return {};
+  }
+  return state->get_weak_state();
 }
 
 }  // namespace ash

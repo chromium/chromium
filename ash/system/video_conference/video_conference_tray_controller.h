@@ -293,11 +293,11 @@ class ASH_EXPORT VideoConferenceTrayController
   // current session.
   int speak_on_mute_nudge_shown_count_ = 0;
 
-  // video_conference_manager_ should be valid after initialized_.
-  // Currently, VideoConferenceTrayController is destroyed inside
-  // ChromeBrowserMainParts::PostMainMessageLoopRun() as a chrome_extra_part;
-  // VideoConferenceManagerAsh is destroyed inside crosapi_manager_.reset()
-  // which is after VideoConferenceTrayController.
+  // `video_conference_manager_` should be valid after `initialized_`.
+  // Currently, `VideoConferenceTrayController` is destroyed inside
+  // `ChromeBrowserMainParts::PostMainMessageLoopRun()` as a chrome_extra_part;
+  // `VideoConferenceManagerAsh` is destroyed inside crosapi_manager_.reset()
+  // which is after `VideoConferenceTrayController`.
   raw_ptr<VideoConferenceManagerBase> video_conference_manager_ = nullptr;
   bool initialized_ = false;
 
