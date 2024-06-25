@@ -1,7 +1,6 @@
 # primary reviewers.
-curtismcmullan@chromium.org
+file://chromeos/ash/components/input_method/OWNERS
 yhanada@chromium.org
-shend@chromium.org
 
 # For Windows.
 yukawa@chromium.org
