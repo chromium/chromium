@@ -38,9 +38,11 @@
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using crx_file::id_util::GenerateId;
 using testing::ElementsAre;
+using testing::ElementsAreArray;
 using ItemTestApi = ChromeAppListItem::TestApi;
 
 namespace app_list {
@@ -3851,6 +3853,139 @@ TEST_F(AppListSyncableServiceTest,
 
   EXPECT_NE(youtube_sync_item->item_ordinal,
             youtube_item->CalculateDefaultPositionIfApplicable());
+}
+
+TEST_F(AppListSyncableServiceTest, LauncherOrdering) {
+  const std::map<apps::LauncherItem, syncer::StringOrdinal>& ordinals =
+      app_list_syncable_service()->GetDefaultOrdinalsForTest();
+  auto ordinals_to_string = [&]() {
+    std::vector<std::pair<apps::LauncherItem, syncer::StringOrdinal>> ordered;
+    std::copy(ordinals.begin(), ordinals.end(), std::back_inserter(ordered));
+    std::sort(
+        ordered.begin(), ordered.end(),
+        [](std::pair<apps::LauncherItem, syncer::StringOrdinal> const& lhs,
+           std::pair<apps::LauncherItem, syncer::StringOrdinal> const& rhs) {
+          return lhs.second.LessThan(rhs.second);
+        });
+    std::vector<std::string> result;
+    for (const auto& item : ordered) {
+      std::string first =
+          absl::holds_alternative<std::string>(item.first)
+              ? absl::get<std::string>(item.first)
+              : absl::get<apps::PackageId>(item.first).ToString();
+      result.push_back(first + "=" + item.second.ToDebugString());
+    }
+    return result;
+  };
+
+  // Validate default order.
+  EXPECT_THAT(
+      ordinals_to_string(),
+      ElementsAreArray({
+          "chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf=n",
+          "system:lacros-chrome=t",
+          "chromeapp:cnbgggchhmkkdmeppjobngjoejnihlei=w",
+          "system:file_manager=x",
+          "web:https://mail.google.com/mail/?usp=installed_webapp=y",
+          "web:https://docs.google.com/document/?usp=installed_webapp=yn",
+          "web:https://docs.google.com/presentation/?usp=installed_webapp=z",
+          "web:https://docs.google.com/spreadsheets/?usp=installed_webapp=zm",
+          "web:https://drive.google.com/?lfhs=2=zs",
+          "web:https://www.youtube.com/?feature=ytca=zv",
+          "system:camera=zx",
+          "system:settings=zy",
+          "system:help=zyn",
+          "system:app_mall=zz",
+          "system:media=zzm",
+          "system:projector=zzs",
+          "system:print_management=zzv",
+          "system:scanning=zzx",
+          "system:shortcut_customization=zzy",
+          "system:terminal=zzyn",
+      }));
+  EXPECT_EQ(app_list_syncable_service()->GetOemFolderNameForTest(),
+            "OEM folder");
+
+  // App Preload Server ordering should be merged into defaults.
+  auto p = [](std::string s) { return *apps::PackageId::FromString(s); };
+  auto type_chrome =
+      apps::proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_CHROME;
+  auto type_app =
+      apps::proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_APP;
+  auto type_oem_folder =
+      apps::proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_FOLDER_OEM;
+  auto type_folder =
+      apps::proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_FOLDER;
+  apps::LauncherOrdering ordering;
+  std::string empty_root_folder_name;
+  ordering[empty_root_folder_name] = apps::LauncherItemMap({
+      // app1 should come before chrome.
+      {p("chromeapp:app1"), {type_app, 1}},
+      {p("chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf"), {type_chrome, 2}},
+      {p("system:lacros-chrome"), {type_chrome, 2}},
+      // OEM folder name should get set as 'aps-oem-folder'.
+      // aps-oem-folder, aps-folder, and app2 should come after chrome.
+      {"aps-oem-folder", {type_oem_folder, 3}},
+      {"aps-folder", {type_folder, 4}},
+      {p("chromeapp:app2"), {type_app, 5}},
+      {p("system:settings"), {type_app, 6}},
+      // app3 should come after settings.
+      {p("chromeapp:app3"), {type_app, 7}},
+      // file_manager should remain unchanged before settings.
+      {p("system:file_manager"), {type_app, 8}},
+      // app4 should be after app3, not after file-manager.
+      {p("chromeapp:app4"), {type_app, 9}},
+      {p("system:terminal"), {type_app, 10}},
+      // app4 should come after terminal and be the last item.
+      {p("chromeapp:app5"), {type_app, 11}},
+  });
+  ordering["aps-oem-folder"] = apps::LauncherItemMap({
+      {p("chromeapp:oem1"), {type_app, 1}},
+      {p("chromeapp:oem2"), {type_app, 2}},
+  });
+  ordering["aps-folder"] = apps::LauncherItemMap({
+      {p("chromeapp:folderapp1"), {type_app, 1}},
+      {p("chromeapp:folderapp2"), {type_app, 2}},
+  });
+
+  app_list_syncable_service()->OnGetLauncherOrdering(ordering);
+  EXPECT_THAT(
+      ordinals_to_string(),
+      ElementsAreArray({
+          "chromeapp:app1=h",  // app1 before chrome.
+          "chromeapp:folderapp1=n",
+          "chromeapp:oem1=n",
+          "chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf=n",
+          "system:lacros-chrome=t",
+          "chromeapp:oem2=t",
+          "chromeapp:folderapp2=t",
+          "aps-oem-folder=u",  // folders and app2 after chrome.
+          "aps-folder=v",
+          "chromeapp:app2=vn",
+          "chromeapp:cnbgggchhmkkdmeppjobngjoejnihlei=w",
+          "system:file_manager=x",  // file-manager unchanged.
+          "web:https://mail.google.com/mail/?usp=installed_webapp=y",
+          "web:https://docs.google.com/document/?usp=installed_webapp=yn",
+          "web:https://docs.google.com/presentation/?usp=installed_webapp=z",
+          "web:https://docs.google.com/spreadsheets/?usp=installed_webapp=zm",
+          "web:https://drive.google.com/?lfhs=2=zs",
+          "web:https://www.youtube.com/?feature=ytca=zv",
+          "system:camera=zx",
+          "system:settings=zy",
+          "chromeapp:app3=zyg",  // app3 after settings.
+          "chromeapp:app4=zyj",  // app4 after settings, not after file_manager.
+          "system:help=zyn",
+          "system:app_mall=zz",
+          "system:media=zzm",
+          "system:projector=zzs",
+          "system:print_management=zzv",
+          "system:scanning=zzx",
+          "system:shortcut_customization=zzy",
+          "system:terminal=zzyn",
+          "chromeapp:app5=zzz",  // app5 after terminal, last item.
+      }));
+  EXPECT_EQ(app_list_syncable_service()->GetOemFolderNameForTest(),
+            "aps-oem-folder");
 }
 
 // Base class for tests of `AppListSyncableService::OnFirstSync()` parameterized

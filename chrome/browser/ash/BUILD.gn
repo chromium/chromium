@@ -3861,6 +3861,7 @@ source_set("ash") {
     "//chrome/browser:resources",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/app_discovery_service",
+    "//chrome/browser/apps/app_preload_service",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:util",

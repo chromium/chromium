@@ -50,6 +50,9 @@ BASE_DECLARE_FEATURE(kAppPreloadServiceEnableArcApps);
 // Feature to allow apps to be pinned to the shelf.
 BASE_DECLARE_FEATURE(kAppPreloadServiceEnableShelfPin);
 
+// Feature to allow ordering of apps in launcher.
+BASE_DECLARE_FEATURE(kAppPreloadServiceEnableLauncherOrder);
+
 // Feature to allow App Preload Service to run for all user types.
 BASE_DECLARE_FEATURE(kAppPreloadServiceAllUserTypes);
 
@@ -76,6 +79,10 @@ class AppPreloadService : public KeyedService {
   // `pin_apps` and other default-installed apps such as chrome to show were the
   // new apps are to be pinned.
   void GetPinApps(GetPinAppsCallback callback);
+
+  // Returns the launcher ordering.  Callback is invoked immediately if data is
+  // ready, or when data is received.
+  void GetLauncherOrdering(base::OnceCallback<void(const LauncherOrdering&)>);
 
   using PreloadStatusCallback = base::OnceCallback<void(bool)>;
 
@@ -124,6 +131,9 @@ class AppPreloadService : public KeyedService {
   std::vector<PackageId> pin_apps_;
   std::vector<PackageId> pin_order_;
   std::vector<GetPinAppsCallback> get_pin_apps_callbacks_;
+  LauncherOrdering launcher_ordering_;
+  std::vector<base::OnceCallback<void(const LauncherOrdering&)>>
+      get_launcher_ordering_callbacks_;
 
   // For testing
   PreloadStatusCallback installation_complete_callback_;

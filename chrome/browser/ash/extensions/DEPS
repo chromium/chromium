@@ -16,6 +16,7 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/app",
   "+chrome/browser/app_mode",
+  "+chrome/browser/apps/app_preload_service",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps/api/media_galleries",
   "+chrome/browser/ash/accessibility",

@@ -7,6 +7,7 @@
 #include <set>
 
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
@@ -74,6 +75,7 @@ AppListSyncableServiceFactory::AppListSyncableServiceFactory()
   dependent_factories.insert(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   dependent_factories.insert(ArcAppListPrefsFactory::GetInstance());
+  dependent_factories.insert(apps::AppPreloadServiceFactory::GetInstance());
   dependent_factories.insert(apps::AppServiceProxyFactory::GetInstance());
   dependent_factories.insert(
       ash::FileSuggestKeyedServiceFactory::GetInstance());

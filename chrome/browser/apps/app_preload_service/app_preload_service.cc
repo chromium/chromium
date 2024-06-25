@@ -86,6 +86,10 @@ BASE_FEATURE(kAppPreloadServiceEnableShelfPin,
              "AppPreloadServiceEnableShelfPin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppPreloadServiceEnableLauncherOrder,
+             "AppPreloadServiceEnableLauncherOrder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAppPreloadServiceAllUserTypes,
              "AppPreloadServiceAllUserTypes",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -130,6 +134,15 @@ void AppPreloadService::GetPinApps(GetPinAppsCallback callback) {
     std::move(callback).Run(pin_apps_, pin_order_);
   } else {
     get_pin_apps_callbacks_.push_back(std::move(callback));
+  }
+}
+
+void AppPreloadService::GetLauncherOrdering(
+    base::OnceCallback<void(const LauncherOrdering&)> callback) {
+  if (data_ready_) {
+    std::move(callback).Run(launcher_ordering_);
+  } else {
+    get_launcher_ordering_callbacks_.push_back(std::move(callback));
   }
 }
 
@@ -217,6 +230,15 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     std::move(callback).Run(pin_apps_, pin_order_);
   }
   get_pin_apps_callbacks_.clear();
+
+  if (base::FeatureList::IsEnabled(
+          apps::kAppPreloadServiceEnableLauncherOrder)) {
+    launcher_ordering_ = launcher_ordering;
+  }
+  for (auto& callback : get_launcher_ordering_callbacks_) {
+    std::move(callback).Run(launcher_ordering_);
+  }
+  get_launcher_ordering_callbacks_.clear();
 
   const auto install_barrier_callback = base::BarrierCallback<bool>(
       apps_to_install.size(),

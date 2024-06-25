@@ -52,6 +52,8 @@ inline constexpr char kFirmwareUpdateAppId[] =
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://mail.google.com/mail/?usp=installed_webapp"))
 inline constexpr char kGmailAppId[] = "fmgjjmmmlfnkbppncabfkddbjimcfncm";
+inline constexpr char kGmailManifestId[] =
+    "https://mail.google.com/mail/?usp=installed_webapp";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://calendar.google.com/calendar/r"))
@@ -70,10 +72,14 @@ inline constexpr char kGoogleClassroomAppId[] =
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://docs.google.com/document/?usp=installed_webapp"))
 inline constexpr char kGoogleDocsAppId[] = "mpnpojknpmmopombnjdcgaaiekajbnjb";
+inline constexpr char kGoogleDocsManifestId[] =
+    "https://docs.google.com/document/?usp=installed_webapp";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://drive.google.com/?lfhs=2"))
 inline constexpr char kGoogleDriveAppId[] = "aghbiahbpaijignceidepookljebhfak";
+inline constexpr char kGoogleDriveManifestId[] =
+    "https://drive.google.com/?lfhs=2";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://keep.google.com/?usp=installed_webapp"))
@@ -98,10 +104,14 @@ inline constexpr char kGoogleNewsAppId[] = "kfgapjallbhpciobgmlhlhokknljkgho";
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://docs.google.com/spreadsheets/?usp=installed_webapp"))
 inline constexpr char kGoogleSheetsAppId[] = "fhihpiojkbmbpdjeoajapmgkhlnakfjf";
+inline constexpr char kGoogleSheetsManifestId[] =
+    "https://docs.google.com/spreadsheets/?usp=installed_webapp";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://docs.google.com/presentation/?usp=installed_webapp"))
 inline constexpr char kGoogleSlidesAppId[] = "kefjledonklijopmnomlcbpllchaibag";
+inline constexpr char kGoogleSlidesManifestId[] =
+    "https://docs.google.com/presentation/?usp=installed_webapp";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "chrome://help-app/"))
@@ -187,6 +197,8 @@ inline constexpr char kShowtimeAppId[] = "eoccpgmpiempcflglfokeengliildkag";
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://www.youtube.com/?feature=ytca"))
 inline constexpr char kYoutubeAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
+inline constexpr char kYoutubeManifestId[] =
+    "https://www.youtube.com/?feature=ytca";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "https://music.youtube.com/?source=pwa"))

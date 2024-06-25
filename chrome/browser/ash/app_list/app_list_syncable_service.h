@@ -21,6 +21,7 @@
 #include "base/one_shot_event.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -300,6 +301,16 @@ class AppListSyncableService : public syncer::SyncableService,
     return oem_folder_name_;
   }
 
+  // Receives launcher ordering when AppPreloadService is ready, and merges with
+  // `preload_service_ordinals_` to precalculate the ordinals for any of the
+  // default apps to be installed by APS.
+  void OnGetLauncherOrdering(const apps::LauncherOrdering& launcher_ordering);
+
+  const std::map<apps::LauncherItem, syncer::StringOrdinal>&
+  GetDefaultOrdinalsForTest() const {
+    return preload_service_ordinals_;
+  }
+
   void PopulateSyncItemsForTest(std::vector<std::unique_ptr<SyncItem>>&& items);
 
   virtual const SyncItemMap& sync_items() const;
@@ -447,6 +458,14 @@ class AppListSyncableService : public syncer::SyncableService,
   bool UpdateSyncItemFromAppItem(const ChromeAppListItem* app_item,
                                  AppListSyncableService::SyncItem* sync_item);
 
+  // Returns position from AppPreloadServer `launcher_ordering_` if found.
+  syncer::StringOrdinal GetPositionFromAppPreloadService(
+      const ChromeAppListItem* new_item) const;
+
+  // Sets OEM folder name if any OEM folder is specified in the root folder.
+  void SetOemFolderNameFromAppPreloadService(
+      const apps::LauncherOrdering& launcher_ordering);
+
   // Initializes `new_item`'s position. This function should be called before
   // adding `new_item` to `model_updater_`.
   void InitNewItemPosition(ChromeAppListItem* new_item);
@@ -521,6 +540,12 @@ class AppListSyncableService : public syncer::SyncableService,
   // users only. `IsAppDefaultPositionedForNewUsersOnly()` will return true for
   // this app.
   std::optional<std::string> app_default_positioned_for_new_users_only_;
+
+  // Launcher ordering from AppPreloadService.
+  apps::LauncherOrdering preload_service_order_;
+
+  // Map of ordinals for AppPreloadService ordering.
+  std::map<apps::LauncherItem, syncer::StringOrdinal> preload_service_ordinals_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

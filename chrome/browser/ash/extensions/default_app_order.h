@@ -10,7 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/synchronization/waitable_event.h"
+#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
 namespace chromeos {
 namespace default_app_order {
@@ -47,6 +49,11 @@ class ExternalLoader {
 
 // Gets the ordered list of app ids.
 void Get(std::vector<std::string>* app_ids);
+
+// Gets the default ordered list of LauncherItems (PackageIds or folders) to be
+// used with AppPreloadService when apps::kAppPreloadServiceEnableLauncherOrder
+// is enabled.
+base::span<const apps::LauncherItem> GetAppPreloadServiceDefaults();
 
 // Get the name of OEM apps folder in app launcher.
 std::string GetOemAppsFolderName();
