@@ -49,7 +49,6 @@ class ASH_EXPORT WindowRestoreTracker {
             base::OnceClosure on_all_window_shown,
             base::OnceClosure on_all_window_presented);
 
-  int NumberOfWindows() const;
   void AddWindow(int window_id, const std::string& app_id);
   void OnCreated(int window_id);
   void OnShown(int window_id, ui::Compositor* compositor);
@@ -149,13 +148,13 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
     return login_animation_throughput_reporter_.get();
   }
 
-  // This is called when the list of session windows gets completed. Note that
-  // this can be called multiple times when session restore is attempted
-  // multiple times, e.g. due to errors.
-  void BrowserSessionRestoreDataLoaded(std::vector<RestoreWindowID> window_ids);
-
-  // This is called when the list of full restore windows, e.g. Lacros windows.
-  void FullSessionRestoreDataLoaded(std::vector<RestoreWindowID> window_ids);
+  // This is called when the list of restore windows is ready. `window_ids`
+  // includes session window ids for browser windows that were created in the
+  // previous session. `restore_automatically` is true if session restore will
+  // start immediately after this call. More specifically, it will be true if
+  // the apps restore settings is set to "Always restore" in the OS settings.
+  void FullSessionRestoreDataLoaded(std::vector<RestoreWindowID> window_ids,
+                                    bool restore_automatically);
 
   // Records that ARC has finished booting.
   void ArcUiAvailableAfterLogin();
@@ -186,8 +185,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   void OnPostLoginDeferredTaskTimerFired();
 
-  void MaybeRestoreDataLoaded();
-
   void OnAllWindowsCreated();
   void OnAllWindowsShown();
   void OnAllWindowsPresented();
@@ -202,12 +199,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   bool user_logged_in_ = false;
 
-  // Session restore data comes from chrome::SessionRestore and ash::FullRestore
-  // independently.
-
-  // This flag is true after SessionRestore has finished loading its data.
-  bool browser_session_restore_data_loaded_ = false;
-
   // This flag is true after FullRestore has finished loading its data.
   bool full_session_restore_data_loaded_ = false;
 
@@ -217,7 +208,7 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   // i.e. there is no pending icon on shelf after shelf is initialized.
   bool shelf_icons_loaded_ = false;
 
-  bool dcheck_shelf_animation_end_scheduled_ = false;
+  bool shelf_animation_end_scheduled_ = false;
 
   bool shelf_animation_finished_ = false;
 

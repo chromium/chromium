@@ -132,30 +132,6 @@ bool HasSingleNewTabPage(Browser* browser) {
 std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void NotifyAshOfSessionRestoreData(
-    const Profile* profile,
-    const std::vector<std::unique_ptr<sessions::SessionWindow>>& windows) {
-  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
-    return;
-  }
-
-  // Ash is not always initialized in unit tests.
-  if (!ash::Shell::HasInstance()) {
-    return;
-  }
-
-  std::vector<ash::LoginUnlockThroughputRecorder::RestoreWindowID> ids;
-  for (const auto& w : windows) {
-    if (w->type == sessions::SessionWindow::TYPE_NORMAL) {
-      ids.emplace_back(w->window_id.id(), w->app_name);
-    }
-  }
-
-  ash::Shell::Get()
-      ->login_unlock_throughput_recorder()
-      ->BrowserSessionRestoreDataLoaded(std::move(ids));
-}
-
 void ReportRestoredWindowCreated(aura::Window* window) {
   // Ash is not always initialized in unit tests.
   if (!ash::Shell::HasInstance())
@@ -528,10 +504,6 @@ class SessionRestoreImpl : public BrowserListObserver {
     // start restoring windows.
     if (!got_all_sessions)
       return;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    NotifyAshOfSessionRestoreData(profile_, windows_);
-#endif
 
     SortWindowsByWindowId();
 

@@ -22,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
@@ -112,13 +111,11 @@ void WindowRestoreTracker::Init(base::OnceClosure on_all_window_created,
   on_presented_ = std::move(on_all_window_presented);
 }
 
-int WindowRestoreTracker::NumberOfWindows() const {
-  return windows_.size();
-}
-
 void WindowRestoreTracker::AddWindow(int window_id, const std::string& app_id) {
   DCHECK(window_id);
-  if (app_id.empty() || app_id == app_constants::kLacrosAppId) {
+  DCHECK(!app_id.empty());
+  if (app_id == app_constants::kChromeAppId ||
+      app_id == app_constants::kLacrosAppId) {
     windows_.emplace(window_id, State::kNotCreated);
   }
 }
@@ -391,8 +388,8 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
     return;
   }
 
-  DCHECK(!dcheck_shelf_animation_end_scheduled_);
-  dcheck_shelf_animation_end_scheduled_ = true;
+  DCHECK(!shelf_animation_end_scheduled_);
+  shelf_animation_end_scheduled_ = true;
 
   scoped_throughput_reporter_blocker_.reset();
 
@@ -450,45 +447,31 @@ void LoginUnlockThroughputRecorder::OnAllExpectedShelfIconsLoaded() {
   ScheduleWaitForShelfAnimationEndIfNeeded();
 }
 
-void LoginUnlockThroughputRecorder::BrowserSessionRestoreDataLoaded(
-    std::vector<RestoreWindowID> window_ids) {
-  if (login_finished_reported_) {
-    return;
-  }
-
-  if (browser_session_restore_data_loaded_) {
-    // This may be called twice after login but before
-    // `login_finished_reported_` for some reasons (e.g. errors.) Normally in
-    // that case, the set of windows should be the same as the first one. So, we
-    // only track the first set of windows.
-    //
-    // In some tests, session restore seems to be performed multiple times with
-    // different sets of windows, but we also ignore such cases because those
-    // tests are not very related to login performance.
-    return;
-  }
-
-  for (const auto& w : window_ids) {
-    window_restore_tracker_.AddWindow(w.session_window_id, w.app_name);
-  }
-
-  browser_session_restore_data_loaded_ = true;
-  MaybeRestoreDataLoaded();
-}
-
 void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded(
-    std::vector<RestoreWindowID> window_ids) {
+    std::vector<RestoreWindowID> window_ids,
+    bool restore_automatically) {
   if (login_finished_reported_) {
     return;
-  }
-
-  for (const auto& w : window_ids) {
-    window_restore_tracker_.AddWindow(w.session_window_id, w.app_name);
   }
 
   DCHECK(!full_session_restore_data_loaded_);
   full_session_restore_data_loaded_ = true;
-  MaybeRestoreDataLoaded();
+
+  if (window_ids.empty()) {
+    shelf_tracker_.IgnoreBrowserIcon();
+
+    DCHECK(!window_restore_done_);
+    window_restore_done_ = true;
+    ScheduleWaitForShelfAnimationEndIfNeeded();
+  } else {
+    // TODO(b/343001594): Handle the case where `restore_automatically` is
+    // false. If `restore_automatically` is false, we should report the metrics
+    // with different names.
+
+    for (const auto& w : window_ids) {
+      window_restore_tracker_.AddWindow(w.session_window_id, w.app_name);
+    }
+  }
 }
 
 void LoginUnlockThroughputRecorder::ArcUiAvailableAfterLogin() {
@@ -535,22 +518,6 @@ void LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired() {
   }
 
   post_login_deferred_task_runner_->Start();
-}
-
-void LoginUnlockThroughputRecorder::MaybeRestoreDataLoaded() {
-  if (!browser_session_restore_data_loaded_ ||
-      !full_session_restore_data_loaded_) {
-    return;
-  }
-
-  // Now the set of the windows to be restored should be fixed. If no window is
-  // added to the tracker so far, we consider window restore has been done.
-  if (window_restore_tracker_.NumberOfWindows() == 0) {
-    DCHECK(!window_restore_done_);
-    window_restore_done_ = true;
-    shelf_tracker_.IgnoreBrowserIcon();
-    ScheduleWaitForShelfAnimationEndIfNeeded();
-  }
 }
 
 void LoginUnlockThroughputRecorder::OnAllWindowsCreated() {

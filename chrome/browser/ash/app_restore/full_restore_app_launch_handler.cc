@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/metrics/login_unlock_throughput_recorder.h"
-#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,7 +22,6 @@
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -465,20 +462,11 @@ void FullRestoreAppLaunchHandler::RecordLaunchBrowserResult() {
 }
 
 void FullRestoreAppLaunchHandler::LogRestoreData() {
-  LoginUnlockThroughputRecorder* throughput_recorder =
-      (Shell::HasInstance() && ProfileHelper::IsPrimaryProfile(profile()))
-          ? Shell::Get()->login_unlock_throughput_recorder()
-          : nullptr;
-
   if (!restore_data() || restore_data()->app_id_to_launch_list().empty()) {
     VLOG(1) << "There is no restore data from " << profile()->GetPath();
-    if (throughput_recorder) {
-      throughput_recorder->FullSessionRestoreDataLoaded({});
-    }
     return;
   }
 
-  std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
   int arc_app_count = 0;
   int other_app_count = 0;
   for (const auto& it : restore_data()->app_id_to_launch_list()) {
@@ -490,17 +478,9 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
       continue;
     }
 
-    for (const auto& window : it.second) {
-      int window_id = window.first;
-      const std::string& app_name = it.first;
-      app_restore_ids.emplace_back(window_id, app_name);
-    }
     ++other_app_count;
   }
-  if (throughput_recorder) {
-    throughput_recorder->FullSessionRestoreDataLoaded(
-        std::move(app_restore_ids));
-  }
+
   VLOG(1) << "There is restore data: Browser("
           << (::full_restore::HasAppTypeBrowser(profile()->GetPath())
                   ? " has app type browser "

@@ -4,11 +4,18 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/shell.h"
 #include "ash/utility/forest_util.h"
@@ -51,11 +58,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
+#include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/app_restore_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/restore_data.h"
+#include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user.h"
@@ -104,6 +114,41 @@ void MaybeInitiateAdminTemplateAutoLaunch() {
   if (auto* saved_desk_controller = ash::SavedDeskController::Get()) {
     saved_desk_controller->InitiateAdminTemplateAutoLaunch(base::DoNothing());
   }
+}
+
+// Collects window id and app id of normal browser windows.
+// Note that this collects both Lacros and Ash browser windows.
+std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
+CollectRestoreIDsForNormalBrowserWindows(
+    ::app_restore::RestoreData* restore_data) {
+  if (!restore_data || restore_data->app_id_to_launch_list().empty()) {
+    return {};
+  }
+
+  std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
+  for (const auto& [app_id, launch_list] :
+       restore_data->app_id_to_launch_list()) {
+    const bool is_browser = app_id == app_constants::kChromeAppId ||
+                            app_id == app_constants::kLacrosAppId;
+    // We are only interested in Ash or Lacros browsers.
+    if (!is_browser) {
+      continue;
+    }
+
+    for (const auto& [window_id, app_restore_data] : launch_list) {
+      if (app_id == app_constants::kChromeAppId) {
+        // Ignore app type browsers.
+        const bool app_type_browser =
+            app_restore_data->browser_extra_info.app_type_browser.value_or(
+                false);
+        if (app_type_browser) {
+          continue;
+        }
+      }
+      app_restore_ids.emplace_back(window_id, app_id);
+    }
+  }
+  return app_restore_ids;
 }
 
 }  // namespace
@@ -315,11 +360,12 @@ void FullRestoreService::Init(bool& show_notification) {
       prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
 
+  ::app_restore::RestoreData* restore_data =
+      app_launch_handler_->restore_data();
+
   // Record the window count from the full restore file, unless the option is do
   // not restore.
   if (restore_pref != RestoreOption::kDoNotRestore) {
-    ::app_restore::RestoreData* restore_data =
-        app_launch_handler_->restore_data();
     if (!restore_data) {
       base::UmaHistogramCounts100(kFullRestoreWindowCountHistogramName, 0);
     } else {
@@ -328,6 +374,17 @@ void FullRestoreService::Init(bool& show_notification) {
       base::UmaHistogramCounts100(kFullRestoreWindowCountHistogramName,
                                   window_count);
     }
+  }
+
+  // LoginUnlockThroughputRecorder needs to track when session
+  // restore is done. Here we notify it of the set of normal browser windows.
+  if (ProfileHelper::IsPrimaryProfile(profile_) && Shell::HasInstance() &&
+      Shell::Get()->login_unlock_throughput_recorder()) {
+    Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->FullSessionRestoreDataLoaded(
+            CollectRestoreIDsForNormalBrowserWindows(restore_data),
+            /*restore_automatically=*/restore_pref == RestoreOption::kAlways);
   }
 
   switch (restore_pref) {
