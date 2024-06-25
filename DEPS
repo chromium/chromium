@@ -4501,7 +4501,7 @@ deps = {
 
   'src/chromeos/assistant/internal': {
       'url': Var('chrome_git') + '/chrome/assistant.git' + '@' +
-        '5885da7fd3b1622325506bc2d4468cd95195366f',
+        '99deb76682f8bf5fb1d0b7229f18ef110dbba92d',
       'condition': 'checkout_src_internal and checkout_chromeos',
     },
 
