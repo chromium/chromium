@@ -431,7 +431,7 @@ BASE_FEATURE(kMlUrlPiecewiseMappedSearchBlending,
 // cache in order to speed up the overall scoring process.
 BASE_FEATURE(kMlUrlScoreCaching,
              "MlUrlScoreCaching",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
