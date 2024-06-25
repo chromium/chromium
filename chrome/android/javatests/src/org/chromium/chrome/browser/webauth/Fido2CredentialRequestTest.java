@@ -140,7 +140,6 @@ public class Fido2CredentialRequestTest {
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private PublicKeyCredentialRequestOptions mRequestOptions;
-    private static final String GOOGLE_PLAY_SERVICES_PACKAGE = "com.google.android.gms";
     private static final String FILLER_ERROR_MSG = "Error Error";
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private long mStartTimeMs;
