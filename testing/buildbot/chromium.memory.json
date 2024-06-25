@@ -10681,7 +10681,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "expiration": 36000,
           "hard_timeout": 10800,
@@ -10716,7 +10716,7 @@
         "results_handler": "layout tests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "expiration": 36000,
           "hard_timeout": 10800,
