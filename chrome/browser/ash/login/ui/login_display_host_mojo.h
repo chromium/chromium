@@ -198,6 +198,8 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void ScheduleStartAuthHubInLoginMode();
   void StartAuthHubInLoginMode(bool is_cryptohome_available);
 
+  base::ObserverList<LoginDisplayHost::Observer> observers_;
+
   // State associated with a pending authentication attempt.
   struct AuthState {
     AuthState(AccountId account_id, base::OnceCallback<void(bool)> callback);
@@ -253,8 +255,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       scoped_activity_observation_{this};
-
-  base::ObserverList<LoginDisplayHost::Observer> observers_;
 
   base::WeakPtrFactory<LoginDisplayHostMojo> weak_factory_{this};
 };
