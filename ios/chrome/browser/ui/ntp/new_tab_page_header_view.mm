@@ -634,6 +634,18 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                    completion:nil];
 }
 
+- (void)hideFakeboxButtons {
+  self.separator.alpha = 0;
+  self.voiceSearchButton.alpha = 0;
+  self.lensButton.alpha = 0;
+}
+
+- (void)showFakeboxButtons {
+  self.separator.alpha = 1;
+  self.voiceSearchButton.alpha = 1;
+  self.lensButton.alpha = 1;
+}
+
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {

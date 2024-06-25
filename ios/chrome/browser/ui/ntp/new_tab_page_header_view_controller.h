@@ -110,6 +110,9 @@
 // Returns the height of the entire header.
 - (CGFloat)headerHeight;
 
+// Shows the fakebox.
+- (void)omniboxDidResignFirstResponder;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_

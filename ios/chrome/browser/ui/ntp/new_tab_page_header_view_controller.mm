@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -313,6 +314,25 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   _allowFontScaleAnimation = allowFontScaleAnimation;
   self.headerView.allowFontScaleAnimation = allowFontScaleAnimation;
 }
+
+- (void)omniboxDidResignFirstResponder {
+  // Return early if the view is already showing.
+  if (self.view.alpha == 1) {
+    return;
+  }
+  [self.headerView hideFakeboxButtons];
+  self.view.alpha = 1;
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kMaterialDuration6
+                        delay:0.0
+                      options:UIViewAnimationOptionCurveEaseOut
+                   animations:^{
+                     [weakSelf.headerView showFakeboxButtons];
+                   }
+                   completion:nil];
+}
+
 #pragma mark - Private
 
 // Initialize and add a search field tap target and a voice search button.

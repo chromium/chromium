@@ -787,7 +787,7 @@ const CGFloat kModuleMinMargin = 16;
   // Do not trigger defocus animation if the user is already navigating away
   // from the NTP.
   if (self.NTPVisible) {
-    self.headerViewController.view.alpha = 1;
+    [self.headerViewController omniboxDidResignFirstResponder];
     [self shiftTilesDownForOmniboxDefocus];
   }
 }

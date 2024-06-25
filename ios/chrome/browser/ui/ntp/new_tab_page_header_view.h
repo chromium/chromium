@@ -84,6 +84,12 @@
 // Highlights the fake omnibox.
 - (void)setFakeboxHighlighted:(BOOL)highlighted;
 
+// Hides the buttons within the fakebox.
+- (void)hideFakeboxButtons;
+
+// Shows the buttons within the fakebox.
+- (void)showFakeboxButtons;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_H_
