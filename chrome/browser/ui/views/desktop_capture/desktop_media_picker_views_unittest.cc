@@ -470,6 +470,40 @@ TEST_P(DesktopMediaPickerViewsTest, OkButtonEnabledDuringAcceptSpecific) {
   EXPECT_EQ(fake_id, WaitForPickerDone());
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_P(DesktopMediaPickerViewsTest, OnPermissionUpdateWithPermissions) {
+  test_api_.OnPermissionUpdate(true);
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+}
+
+TEST_P(DesktopMediaPickerViewsTest, OnPermissionUpdateWithoutPermissions) {
+  test_api_.OnPermissionUpdate(false);
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  EXPECT_FALSE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_TRUE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  EXPECT_FALSE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_TRUE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_TRUE(test_api_.GetActivePane()->IsContentPaneVisible());
+  EXPECT_FALSE(test_api_.GetActivePane()->IsPermissionPaneVisible());
+}
+#endif
+
 class DesktopMediaPickerViewsPerTypeTest
     : public DesktopMediaPickerViewsTestBase,
       public testing::WithParamInterface<
