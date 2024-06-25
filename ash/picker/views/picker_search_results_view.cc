@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
@@ -98,7 +99,9 @@ views::View* PickerSearchResultsView::GetItemAbove(views::View* item) {
       return item_above;
     }
   }
-  return GetNextItem(item, TraversalDirection::kBackward);
+  views::View* prev_item = GetNextPickerPseudoFocusableView(
+      item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+  return Contains(prev_item) ? prev_item : nullptr;
 }
 
 views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
@@ -112,7 +115,9 @@ views::View* PickerSearchResultsView::GetItemBelow(views::View* item) {
       return item_below;
     }
   }
-  return GetNextItem(item, TraversalDirection::kForward);
+  views::View* next_item = GetNextPickerPseudoFocusableView(
+      item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+  return Contains(next_item) ? next_item : nullptr;
 }
 
 views::View* PickerSearchResultsView::GetItemLeftOf(views::View* item) {
@@ -127,18 +132,6 @@ views::View* PickerSearchResultsView::GetItemRightOf(views::View* item) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
-}
-
-views::View* PickerSearchResultsView::GetNextItem(
-    views::View* item,
-    TraversalDirection direction) {
-  if (!Contains(item) || GetFocusManager() == nullptr) {
-    return nullptr;
-  }
-  views::View* next_item = GetFocusManager()->GetNextFocusableView(
-      item, GetWidget(), direction == TraversalDirection::kBackward,
-      /*dont_loop=*/true);
-  return Contains(next_item) ? next_item : nullptr;
 }
 
 bool PickerSearchResultsView::ContainsItem(views::View* item) {

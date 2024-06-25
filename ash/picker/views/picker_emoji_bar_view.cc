@@ -13,6 +13,7 @@
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
@@ -210,22 +211,15 @@ views::View* PickerEmojiBarView::GetItemBelow(views::View* item) {
 }
 
 views::View* PickerEmojiBarView::GetItemLeftOf(views::View* item) {
-  return GetNextItem(item, TraversalDirection::kBackward);
+  views::View* item_left_of = GetNextPickerPseudoFocusableView(
+      item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+  return Contains(item_left_of) ? item_left_of : nullptr;
 }
 
 views::View* PickerEmojiBarView::GetItemRightOf(views::View* item) {
-  return GetNextItem(item, TraversalDirection::kForward);
-}
-
-views::View* PickerEmojiBarView::GetNextItem(views::View* item,
-                                             TraversalDirection direction) {
-  if (!Contains(item) || GetFocusManager() == nullptr) {
-    return nullptr;
-  }
-  views::View* next_item = GetFocusManager()->GetNextFocusableView(
-      item, GetWidget(), direction == TraversalDirection::kBackward,
-      /*dont_loop=*/true);
-  return Contains(next_item) ? next_item : nullptr;
+  views::View* item_right_of = GetNextPickerPseudoFocusableView(
+      item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+  return Contains(item_right_of) ? item_right_of : nullptr;
 }
 
 bool PickerEmojiBarView::ContainsItem(views::View* item) {

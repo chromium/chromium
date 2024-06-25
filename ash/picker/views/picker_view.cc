@@ -337,16 +337,8 @@ bool PickerView::AdvancePseudoFocus(PickerPseudoFocusDirection direction) {
   if (pseudo_focused_view_ == nullptr) {
     return false;
   }
-  if (views::View* next_item = active_item_container_->GetNextItem(
-          pseudo_focused_view_,
-          direction == PickerPseudoFocusDirection::kForward
-              ? PickerTraversableItemContainer::TraversalDirection::kForward
-              : PickerTraversableItemContainer::TraversalDirection::
-                    kBackward)) {
-    SetPseudoFocusedView(next_item);
-  } else {
-    AdvanceActiveItemContainer(direction);
-  }
+  SetPseudoFocusedView(GetNextPickerPseudoFocusableView(
+      pseudo_focused_view_, direction, /*should_loop=*/true));
   return true;
 }
 
@@ -555,6 +547,16 @@ void PickerView::AdvanceActiveItemContainer(
 void PickerView::SetPseudoFocusedView(views::View* view) {
   if (pseudo_focused_view_ == view) {
     return;
+  }
+
+  if (emoji_bar_view_ != nullptr && emoji_bar_view_->Contains(view)) {
+    active_item_container_ = emoji_bar_view_;
+  } else {
+    // TODO: b/347103427 - There are cases where `view` might not be in either
+    // the emoji bar or the active page, e.g. the back button in the search
+    // field. Properly handle these cases, e.g. by making the main container a
+    // PickerTraversableItemContainer.
+    active_item_container_ = main_container_view_->active_page();
   }
 
   RemovePickerPseudoFocusFromView(pseudo_focused_view_);

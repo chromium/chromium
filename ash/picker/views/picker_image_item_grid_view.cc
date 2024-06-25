@@ -152,13 +152,6 @@ views::View* PickerImageItemGridView::GetItemRightOf(views::View* item) {
   return ItemInColumnWithIndexClosestTo(right_column, item_index);
 }
 
-views::View* PickerImageItemGridView::GetNextItem(
-    views::View* item,
-    TraversalDirection direction) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
-}
-
 bool PickerImageItemGridView::ContainsItem(views::View* item) {
   return Contains(item);
 }

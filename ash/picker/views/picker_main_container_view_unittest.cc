@@ -39,10 +39,6 @@ class MockPickerPageView : public PickerPageView {
   views::View* GetItemBelow(views::View* item) override { return nullptr; }
   views::View* GetItemLeftOf(views::View* item) override { return nullptr; }
   views::View* GetItemRightOf(views::View* item) override { return nullptr; }
-  views::View* GetNextItem(views::View* item,
-                           TraversalDirection direction) override {
-    return nullptr;
-  }
   bool ContainsItem(views::View* item) override { return true; }
 };
 

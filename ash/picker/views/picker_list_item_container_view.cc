@@ -61,17 +61,6 @@ views::View* PickerListItemContainerView::GetItemRightOf(views::View* item) {
   return nullptr;
 }
 
-views::View* PickerListItemContainerView::GetNextItem(
-    views::View* item,
-    TraversalDirection direction) {
-  switch (direction) {
-    case TraversalDirection::kForward:
-      return GetItemBelow(item);
-    case TraversalDirection::kBackward:
-      return GetItemAbove(item);
-  }
-}
-
 bool PickerListItemContainerView::ContainsItem(views::View* item) {
   return Contains(item);
 }

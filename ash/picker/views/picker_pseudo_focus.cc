@@ -13,6 +13,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -89,6 +91,26 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
                          ui::DomCode::ENTER, ui::EF_NONE);
   view->OnKeyEvent(&key_event);
   return key_event.handled();
+}
+
+views::View* GetNextPickerPseudoFocusableView(
+    views::View* view,
+    PickerPseudoFocusDirection direction,
+    bool should_loop) {
+  if (view == nullptr || view->GetFocusManager() == nullptr) {
+    return nullptr;
+  }
+  views::View* next_view = view->GetFocusManager()->GetNextFocusableView(
+      view, view->GetWidget(),
+      direction == PickerPseudoFocusDirection::kBackward, !should_loop);
+
+  // Skip the textfield.
+  if (views::IsViewClass<views::Textfield>(next_view)) {
+    next_view = view->GetFocusManager()->GetNextFocusableView(
+        next_view, view->GetWidget(),
+        direction == PickerPseudoFocusDirection::kBackward, !should_loop);
+  }
+  return next_view;
 }
 
 }  // namespace ash

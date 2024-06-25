@@ -303,54 +303,6 @@ TEST_F(PickerSearchResultsViewTest, GetsItemBelow) {
       DoPickerPseudoFocusedActionOnView(view.GetItemBelow(view.GetTopItem())));
 }
 
-TEST_F(PickerSearchResultsViewTest, GetsNextItem) {
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  widget->SetFullscreen(true);
-  MockSearchResultsViewDelegate mock_delegate;
-  MockPickerAssetFetcher asset_fetcher;
-  auto* view =
-      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          &mock_delegate, kPickerWidth, &asset_fetcher));
-  view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kClipboard),
-        PickerSearchResult::Category(PickerCategory::kDriveFiles)}},
-      /*has_more_results=*/false));
-  ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
-
-  EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
-                                 PickerCategory::kDriveFiles)));
-
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(view->GetNextItem(
-      view->GetTopItem(),
-      PickerTraversableItemContainer::TraversalDirection::kForward)));
-}
-
-TEST_F(PickerSearchResultsViewTest, GetsPreviousItem) {
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  widget->SetFullscreen(true);
-  MockSearchResultsViewDelegate mock_delegate;
-  MockPickerAssetFetcher asset_fetcher;
-  auto* view =
-      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          &mock_delegate, kPickerWidth, &asset_fetcher));
-  view->AppendSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kCategories,
-      {{PickerSearchResult::Category(PickerCategory::kClipboard),
-        PickerSearchResult::Category(PickerCategory::kDriveFiles)}},
-      /*has_more_results=*/false));
-  ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
-
-  EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
-                                 PickerCategory::kClipboard)));
-
-  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(view->GetNextItem(
-      view->GetBottomItem(),
-      PickerTraversableItemContainer::TraversalDirection::kBackward)));
-}
-
 TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);

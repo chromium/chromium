@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
@@ -43,7 +44,6 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
@@ -159,7 +159,9 @@ views::View* PickerZeroStateView::GetItemAbove(views::View* item) {
       return item_above;
     }
   }
-  return GetNextItem(item, TraversalDirection::kBackward);
+  views::View* prev_item = GetNextPickerPseudoFocusableView(
+      item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+  return Contains(prev_item) ? prev_item : nullptr;
 }
 
 views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
@@ -173,7 +175,9 @@ views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
       return item_below;
     }
   }
-  return GetNextItem(item, TraversalDirection::kForward);
+  views::View* next_item = GetNextPickerPseudoFocusableView(
+      item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+  return Contains(next_item) ? next_item : nullptr;
 }
 
 views::View* PickerZeroStateView::GetItemLeftOf(views::View* item) {
@@ -188,17 +192,6 @@ views::View* PickerZeroStateView::GetItemRightOf(views::View* item) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
-}
-
-views::View* PickerZeroStateView::GetNextItem(views::View* item,
-                                              TraversalDirection direction) {
-  if (!Contains(item) || GetFocusManager() == nullptr) {
-    return nullptr;
-  }
-  views::View* next_item = GetFocusManager()->GetNextFocusableView(
-      item, GetWidget(), direction == TraversalDirection::kBackward,
-      /*dont_loop=*/true);
-  return Contains(next_item) ? next_item : nullptr;
 }
 
 bool PickerZeroStateView::ContainsItem(views::View* item) {

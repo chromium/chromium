@@ -117,31 +117,5 @@ TEST_F(PickerListItemContainerViewTest, NoItemRightOf) {
   EXPECT_EQ(container.GetItemRightOf(item2), nullptr);
 }
 
-TEST_F(PickerListItemContainerViewTest, GetsNextItem) {
-  PickerListItemContainerView container;
-
-  PickerListItemView* item1 = container.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
-  PickerListItemView* item2 = container.AddListItem(
-      std::make_unique<PickerListItemView>(base::DoNothing()));
-
-  EXPECT_EQ(
-      container.GetNextItem(
-          item1, PickerTraversableItemContainer::TraversalDirection::kForward),
-      item2);
-  EXPECT_EQ(
-      container.GetNextItem(
-          item1, PickerTraversableItemContainer::TraversalDirection::kBackward),
-      nullptr);
-  EXPECT_EQ(
-      container.GetNextItem(
-          item2, PickerTraversableItemContainer::TraversalDirection::kForward),
-      nullptr);
-  EXPECT_EQ(
-      container.GetNextItem(
-          item2, PickerTraversableItemContainer::TraversalDirection::kBackward),
-      item1);
-}
-
 }  // namespace
 }  // namespace ash

@@ -53,8 +53,6 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   views::View* GetItemBelow(views::View* item) override;
   views::View* GetItemLeftOf(views::View* item) override;
   views::View* GetItemRightOf(views::View* item) override;
-  views::View* GetNextItem(views::View* item,
-                           TraversalDirection direction) override;
   bool ContainsItem(views::View* item) override;
 
   // Clears the search results.
