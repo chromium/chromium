@@ -198,21 +198,21 @@ targets.mixin(
 
 targets.mixin(
     name = "15-x64-emulator",
-    description = "Run with android_v_google_apis_x64",
+    description = "Run with android_35_google_apis_x64",
     args = [
-        "--avd-config=../../tools/android/avd/proto/android_v_google_apis_x64.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "android_v_google_apis_x64",
+                "caches": "android_35_google_apis_x64",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "android_v_google_apis_x64",
-                path = ".android_emulator/android_v_google_apis_x64",
+                name = "android_35_google_apis_x64",
+                path = ".android_emulator/android_35_google_apis_x64",
             ),
         ],
     ),

@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android 15 Beta AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "fS1J2VhqKvbfzOX-30B8DEbVTfSF-CR5G0epjSFDa_QC"  # 34.2.15 (Stable)
+  dest_path: "android_35_google_apis_x64"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis/x86_64"
+  version: "MuX_PNfiK9HPzjMevEKUEPiRC3CSljouzTYcj3lABAUC"  # AP31.240517.001
+  dest_path: "android_35_google_apis_x64"
+}
+system_image_name: "system-images;android-35;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-35/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8744219893269401521
+  # Patched gmscore version 24.22.13 in https://crrev.com/c/5621345
+  version: "kDsJQUblZVWQDVbXZaRDCnYxDybcs3_FeO_kKbMGfJ8C"
+  dest_path: "android_35_google_apis_x64"
+}
+avd_name: "android_35_google_apis_x64"
