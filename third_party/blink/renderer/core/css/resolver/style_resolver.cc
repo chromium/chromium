@@ -148,6 +148,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
   // descendants of elements with anchor queries as well.
   return (style_recalc_context.container ||
           state.StyleBuilder().HasAnchorFunctions() ||
+          state.StyleBuilder().PositionAnchor() ||
           state.StyleBuilder().GetPositionTryOptions() != nullptr) &&
          state.CanAffectAnimations();
 }
