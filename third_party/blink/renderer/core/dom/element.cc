@@ -4111,8 +4111,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
             .SetContainerQueryEvaluator(nullptr);
       } else if (old_style) {
         evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
-        if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
-          switch (evaluator->ApplyScrollSnapshot()) {
+        if (RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled() ||
+            RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
+          switch (evaluator->ApplyScrollState()) {
             case ContainerQueryEvaluator::Change::kNone:
               break;
             case ContainerQueryEvaluator::Change::kNearestContainer:

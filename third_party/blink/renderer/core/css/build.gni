@@ -663,6 +663,8 @@ blink_core_sources_css = [
   "selector_statistics.h",
   "shadow_tree_style_sheet_collection.cc",
   "shadow_tree_style_sheet_collection.h",
+  "snapped_query_scroll_snapshot.cc",
+  "snapped_query_scroll_snapshot.h",
   "stuck_query_scroll_snapshot.cc",
   "stuck_query_scroll_snapshot.h",
   "style_attribute_mutation_scope.cc",

@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/css/snapped_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -304,14 +306,40 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
   return change;
 }
 
-ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollSnapshot() {
-  if (stuck_snapshot_) {
-    return StickyContainerChanged(stuck_snapshot_->StuckHorizontal(),
-                                  stuck_snapshot_->StuckVertical());
+void ContainerQueryEvaluator::SetPendingSnappedStateFromScrollSnapshot(
+    const SnappedQueryScrollSnapshot& snapshot) {
+  Element* container = ContainerElement();
+  bool is_horizontal = snapshot.IsHorizontalWritingMode();
+  pending_snapped_ =
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
+  if (snapshot.GetSnappedTargetX() == container) {
+    pending_snapped_ |= static_cast<ContainerSnappedFlags>(
+        is_horizontal ? ContainerSnapped::kInline : ContainerSnapped::kBlock);
   }
-  // TODO(crbug.com/40279568): Call SnapContainerChanged() based on snapshot for
-  // scroll snapping.
-  return ContainerQueryEvaluator::Change::kNone;
+  if (snapshot.GetSnappedTargetY() == container) {
+    pending_snapped_ |= static_cast<ContainerSnappedFlags>(
+        is_horizontal ? ContainerSnapped::kBlock : ContainerSnapped::kInline);
+  }
+
+  if (pending_snapped_ != snapped_) {
+    // TODO(crbug.com/40279568): The kLocalStyleChange is not necessary for the
+    // container itself, but it is a way to reach reach ApplyScrollState() in
+    // Element::RecalcOwnStyle() for the next lifecycle update.
+    container->SetNeedsStyleRecalc(kLocalStyleChange,
+                                   StyleChangeReasonForTracing::Create(
+                                       style_change_reason::kScrollTimeline));
+  }
+}
+
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollState() {
+  Change change = Change::kNone;
+  if (stuck_snapshot_) {
+    change = StickyContainerChanged(stuck_snapshot_->StuckHorizontal(),
+                                    stuck_snapshot_->StuckVertical());
+  }
+  Change snap_change = SnapContainerChanged(pending_snapped_);
+  change = std::max(change, snap_change);
+  return change;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::StickyContainerChanged(
