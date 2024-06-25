@@ -3,6 +3,3 @@
 
 # crbug.com/337932321
 -org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingInfoBar
-
-# crbug.com/339496718
--org.chromium.chrome.browser.signin.UpgradePromoIntegrationTest.testUserAlreadySignedIn_onlyShowsHistorySync

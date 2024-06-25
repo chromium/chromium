@@ -1,18 +1,6 @@
 # crbug.com/337932321
 -org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingInfoBar
 
-# crbug.com/339034032
--org.chromium.chrome.browser.toolbar.top.ToolbarPhoneTest.testToolbarBackgroundChangedWhenSearchEngineHasNoLogo
-
-# crbug.com/339493123
--org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testPreferenceInTab
-
-# crbug.com/339496718
--org.chromium.chrome.browser.signin.UpgradePromoIntegrationTest.testUserAlreadySignedIn_onlyShowsHistorySync
-
-# crbug.com/339502391
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
-
 # crbug.com/341168292
 -org.chromium.chrome.browser.quick_delete.QuickDeleteControllerTest.*
 -org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawableRenderTest.*

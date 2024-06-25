@@ -43,7 +43,6 @@
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testRecordHistogramHomeButtonClick_Ntp
 
 # crbug.com/1416433
--org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentToSelf
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithEmptySchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
