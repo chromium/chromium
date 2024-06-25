@@ -20,6 +20,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
@@ -147,6 +149,7 @@ public class TabUmaTest {
     @Test
     @MediumTest
     @Feature({"Uma"})
+    @DisableIf.Build(sdk_is_greater_than = 32, message = "https://crbug.com/339658545")
     public void testTabStatusWhenSwitchedToLazyLoads() throws ExecutionException {
         final Tab tab = createLazilyLoadedTab(/* show= */ false);
 
@@ -175,6 +178,7 @@ public class TabUmaTest {
     @Test
     @MediumTest
     @Feature({"Uma"})
+    @DisabledTest(message = "Flakey on most bots https://crbug.com/41486308")
     public void testNoCreationStateNoTabUma() throws Exception {
         String switchFgStatus = "Tab.StatusWhenSwitchedBackToForeground";
 

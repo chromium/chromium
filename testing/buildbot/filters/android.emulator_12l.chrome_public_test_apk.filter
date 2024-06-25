@@ -183,10 +183,6 @@
 # crbug.com/1513740
 -org.chromium.chrome.browser.signin.SigninManagerIntegrationTest.testUpdateAccountListTwoAccountsThenRemoveAll
 
-# crbug.com/1513741
--org.chromium.chrome.browser.tab.TabUmaTest.testNoCreationStateNoTabUma
--org.chromium.chrome.browser.tab.TabUmaTest.testTabStatusWhenSwitchedToLazyLoads
-
 # crbug.com/1515446
 -org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
 
