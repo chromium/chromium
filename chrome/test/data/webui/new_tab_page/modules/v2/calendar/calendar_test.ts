@@ -51,6 +51,6 @@ suite('NewTabPageModulesCalendarTest', () => {
     const anchor = element.$.seeMore.querySelector<HTMLAnchorElement>('a');
     assertTrue(!!anchor);
     assertEquals(anchor!.href, 'https://foo.com/');
-    assertEquals(anchor!.innerText, 'See More');
+    assertEquals(anchor!.innerText, 'See more');
   });
 });

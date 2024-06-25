@@ -8454,7 +8454,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         In <ph name="NUM_HR">$1<ex>5</ex></ph> hr
       </message>
       <message name="IDS_NTP_MODULES_CALENDAR_SEE_MORE" desc="Text for a link to the user's calendar." meaning="Click here to view more of the calendar.">
-        See More
+        See more
       </message>
       <message name="IDS_NTP_MODULES_PHOTOS_TITLE" desc="Title shown in the header of the photos module.">
         From your Google Photos
