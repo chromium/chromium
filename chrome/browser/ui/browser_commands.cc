@@ -610,6 +610,12 @@ Browser* OpenEmptyWindow(Profile* profile,
       Browser::CreationStatus::kOk) {
     return nullptr;
   }
+
+  // Don't create a new window when the profile is shutting down.
+  if (profile->ShutdownStarted()) {
+    return nullptr;
+  }
+
   Browser::CreateParams params =
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true);
   params.should_trigger_session_restore = should_trigger_session_restore;

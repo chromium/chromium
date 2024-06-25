@@ -628,6 +628,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
   DCHECK(params->initiating_profile);
 
+  if (params->initiating_profile->ShutdownStarted()) {
+    // Don't navigate when the profile is shutting down.
+    return nullptr;
+  }
+
   if (source_browser &&
       platform_util::IsBrowserLockedFullscreen(source_browser)) {
     // Block any navigation requests in locked fullscreen mode.
