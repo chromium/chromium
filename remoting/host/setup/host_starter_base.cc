@@ -22,7 +22,7 @@
 #include "base/values.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/google_api_keys.h"
-#include "remoting/base/hostname.h"
+#include "remoting/base/fqdn.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/pin_hash.h"
@@ -47,7 +47,7 @@ void HostStarterBase::StartHost(Params params, CompletionCallback on_done) {
   start_host_params_ = std::move(params);
   if (start_host_params_.name.empty()) {
     // Use the FQDN if a name was not provided via the command line.
-    start_host_params_.name = GetHostname();
+    start_host_params_.name = GetFqdn();
   }
   // |auth_code| and |redirect_url| must match and either be populated or empty.
   DCHECK(start_host_params_.auth_code.empty() ==

@@ -20,7 +20,7 @@
 #include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/hostname.h"
+#include "remoting/base/fqdn.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -370,9 +370,9 @@ HeartbeatSender::CreateHeartbeatRequest() {
 
   // Only set the hostname if the user's email is @google.com.
   if (is_googler_) {
-    std::string hostname = GetHostname();
-    if (!hostname.empty()) {
-      heartbeat->set_hostname(hostname);
+    std::string fqdn = GetFqdn();
+    if (!fqdn.empty()) {
+      heartbeat->set_hostname(fqdn);
     }
   }
 
