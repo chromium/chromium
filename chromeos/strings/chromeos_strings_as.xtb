@@ -29,7 +29,7 @@
 <translation id="1145018782460575098">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰ আপডে’ট কৰা ৱিণ্ড’খন খোলা আছে। <ph name="NUM_UPDATES" /> টা আপডে’ট উপলব্ধ।</translation>
 <translation id="1145516343487477149">Chromebook সম্পৰ্কীয় সহায়ক প্ৰবন্ধ আৰু সাধাৰণ প্ৰশ্নসমূহৰ উত্তৰ বিচাৰক</translation>
 <translation id="1154390310959620237">আপুনি মাত্ৰ ৫ টা শ্বৰ্টকাট কাষ্টমাইজ কৰিব পাৰে। নতুন এটা যোগ কৰিবলৈ এটা শ্বৰ্টকাট মচক।</translation>
-<translation id="1155154308031262006">এটা প্ৰম্প্‌ট দিয়ক</translation>
+<translation id="1155154308031262006">এটা প্ৰ’ম্পট্‌ দিয়ক</translation>
 <translation id="115705039208660697">আনাৰস</translation>
 <translation id="1164939766849482256">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে দেখুওৱা স্ক্ৰীন ছেভাৰ</translation>
 <translation id="1167755866710282443">কীসমূহ কাষ্টমাইজ কৰিবলৈ মেনু খোলক। মেনু স্থানান্তৰ কৰিবলৈ টানি আনি এৰক।</translation>
@@ -347,8 +347,8 @@
 <translation id="2875812231449496375">এই ৱালপেপাৰখনৰ সৈতে শ্ৰেষ্ঠ ফলাফল পাবলৈ এইটো অন কৰক। আপুনি যিকোনো সময়তে এই ছেটিংটো অফ কৰিব পাৰে।</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="2880569433548999039">ডাৱৰৰ প্ৰবাহৰ স্ক্ৰীন ছেভাৰ</translation>
-<translation id="2882230315487799269">AI প্ৰম্প্‌ট কাষ্টমাইজ কৰক</translation>
-<translation id="2888298276507578975">"ধন্যবাদসূচক টোকা লিখক"ৰ দৰে প্ৰম্প্‌ট দিয়ক</translation>
+<translation id="2882230315487799269">AI প্ৰ’ম্পট্‌ কাষ্টমাইজ কৰক</translation>
+<translation id="2888298276507578975">"ধন্যবাদসূচক টোকা লিখক"ৰ দৰে প্ৰ’ম্পট্‌ দিয়ক</translation>
 <translation id="2890557891229184386">গ্ৰীষ্মমণ্ডলীয় দ্বীপ</translation>
 <translation id="2895772081848316509">গাঢ়</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
@@ -384,7 +384,7 @@
 <translation id="3170673040743561620">আপোনাৰ নথি স্কেনাৰটোত ৰাখক</translation>
 <translation id="3174321110679064523">কাহিলি পুৱাৰ পৰা আন্ধাৰ হোৱালৈকে দেখুওৱা ৱালপেপাৰ</translation>
 <translation id="3178532070248519384">আভাণ্ট-গাৰ্ড</translation>
-<translation id="3182676044300231689">"এইটো অধিক আত্মবিশ্বাসী যেন লগা কৰক"ৰ দৰে এটা প্ৰম্প্‌ট দিয়ক</translation>
+<translation id="3182676044300231689">"এইটো অধিক আত্মবিশ্বাসী যেন লগা কৰক"ৰ দৰে এটা প্ৰ’ম্পট্‌ দিয়ক</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="319101249942218879">অৱতাৰৰ প্ৰতিচ্ছবি সলনি হৈছে</translation>
 <translation id="3192947282887913208">অডিঅ’ ফাইল</translation>
@@ -1065,7 +1065,7 @@
           অধিক অদ্বিতীয় আৰু বৈচিত্ৰময় AI প্ৰতিচ্ছবিৰ বিকল্পসমূহ লাভ কৰিবলৈ "মোক অনুপ্ৰাণিত কৰক" বাছনি কৰক।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          যেতিয়া আপুনি AIৰ জৰিয়তে সৃষ্টি কৰে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ৰ অধীনত প্ৰতিচ্ছবি সৃষ্টি আৰু প্ৰ’ডাক্ট উন্নত কৰিবলৈ প্ৰম্প্‌টটো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়।
+          যেতিয়া আপুনি AIৰ জৰিয়তে সৃষ্টি কৰে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ৰ অধীনত প্ৰতিচ্ছবি সৃষ্টি আৰু প্ৰ’ডাক্ট উন্নত কৰিবলৈ প্ৰ’ম্পট্‌টো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generative AI সম্পৰীক্ষামূলক, বিকাশৰ প্ৰাৰম্ভিক স্থিতিত আছে আৰু বৰ্তমান ইয়াৰ উপলব্ধতা সীমিত।</translation>
