@@ -77,15 +77,6 @@
 # crbug.com/1432785
 -org.chromium.chrome.browser.ContentViewFocusTest.testHideSelectionOnPhoneTabSwiping
 
-# crbug.com/1511801
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyBookmarkFolder
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testEmptyReadingListFolder
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveDownMenuItem
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveUpMenuItem
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testOpenBookmarkManagerFolder
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testPartnerFolderDraggability
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testShowInFolder_NoScroll
-
 # crbug.com/1511804
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_BookmarkActionSingleTab
 -org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo

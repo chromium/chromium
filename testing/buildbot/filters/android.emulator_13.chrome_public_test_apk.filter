@@ -21,9 +21,6 @@
 # crbug.com/339502391
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 
-# crbug.com/339893726
--org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testMoveButtonsGoneForPartnerBookmarks
-
 # crbug.com/339896162
 -org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testContinueButtonWithAnAccountOtherThanTheSignedInAccount
 
