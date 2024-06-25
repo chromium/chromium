@@ -769,7 +769,8 @@ export class RealboxElement extends RealboxElementBase {
   }
 
   private computePlaceholderText_(): string {
-    return this.showThumbnail ? '' : this.i18n('searchBoxHint');
+    return this.showThumbnail ? this.i18n('searchBoxHintMultimodal') :
+                                this.i18n('searchBoxHint');
   }
 
   /**
