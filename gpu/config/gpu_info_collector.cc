@@ -427,7 +427,12 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
   adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
-  adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  if (gl_display) {
+    adapter_options_get_gl_proc.display = gl_display->GetDisplay();
+  } else {
+    adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+  }
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
 
@@ -916,7 +921,12 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
   adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
-  adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  if (gl_display) {
+    adapter_options_get_gl_proc.display = gl_display->GetDisplay();
+  } else {
+    adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+  }
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
 #endif
