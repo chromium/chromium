@@ -2079,6 +2079,8 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
 // Tests that the owning form of a form control element in light DOM is its
 // associated form (i.e. the form explicitly set via form attribute or its
 // closest ancestor).
+// Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
+// every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
   LoadHTML(R"(
     <html>
@@ -2092,13 +2094,21 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDom) {
     </html>)");
   WebDocument doc = GetMainFrame()->GetDocument();
   WebFormElement f = GetFormElementById(doc, "f");
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t1")), f);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t2")), f);
-  EXPECT_TRUE(GetOwningForm(GetFormControlElementById(doc, "t3")).IsNull());
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(doc, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(doc, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(doc, "t3");
+  EXPECT_EQ(GetOwningForm(t1), f);
+  EXPECT_EQ(GetOwningForm(t2), f);
+  EXPECT_EQ(GetOwningForm(t3), f_unowned);
+  EXPECT_THAT(GetFormControlElements(doc, f), ElementsAre(t1, t2));
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t3));
 }
 
 // Tests that explicit association overrules DOM ancestry when determining the
 // owning form.
+// Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
+// every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
   LoadHTML(R"(
     <html>
@@ -2110,24 +2120,51 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInLightDomWithExplicitAssociation) {
         <form id=f2>
           <input id=t3>
           <input id=t4 form=f1>
+          <input id=t5 form=f_unowned>
         </form>
-        <input id=t5 form=f1>
-        <input id=t6 form=f2>
+        <input id=t6 form=f1>
+        <input id=t7 form=f2>
+        <input id=t8>
       </body>
     </html>)");
   WebDocument doc = GetMainFrame()->GetDocument();
   WebFormElement f1 = GetFormElementById(doc, "f1");
   WebFormElement f2 = GetFormElementById(doc, "f2");
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t1")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t2")), f2);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t3")), f2);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t4")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t5")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t6")), f2);
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(doc, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(doc, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(doc, "t3");
+  WebFormControlElement t4 = GetFormControlElementById(doc, "t4");
+  WebFormControlElement t5 = GetFormControlElementById(doc, "t5");
+  WebFormControlElement t6 = GetFormControlElementById(doc, "t6");
+  WebFormControlElement t7 = GetFormControlElementById(doc, "t7");
+  WebFormControlElement t8 = GetFormControlElementById(doc, "t8");
+
+  EXPECT_EQ(GetOwningForm(t1), f1);
+  EXPECT_EQ(GetOwningForm(t2), f2);
+  EXPECT_EQ(GetOwningForm(t3), f2);
+  EXPECT_EQ(GetOwningForm(t4), f1);
+  // TODO: crbug.com/348835230 - If `AutofillIncludeFormElementsInShadowDom` is
+  // enabled, the owner of `t5` changes from `f_unowned` to `f2`. That
+  // contradicts its association. Some options we have are:
+  // - Let `f_unowned` own `t5` so that "ownership == association" for
+  //   light DOM forms.
+  // - Let `f2` own `t5` and accept "ownership != association" in the light DOM.
+  // - Let `f2` own `t5` and change Blink so that `t5` is associated with `f2`.
+  //   https://html.spec.whatwg.org/#reset-the-form-owner seems to allow this.
+  EXPECT_EQ(GetOwningForm(t5), f_unowned);
+  EXPECT_EQ(GetOwningForm(t6), f1);
+  EXPECT_EQ(GetOwningForm(t7), f2);
+  EXPECT_EQ(GetOwningForm(t8), f_unowned);
+  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t4, t6));
+  EXPECT_THAT(GetFormControlElements(doc, f2), ElementsAre(t2, t3, t7));
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), ElementsAre(t5, t8));
 }
 
 // Tests that input elements in shadow DOM whose closest ancestor is in the
 // light DOM are extracted correctly.
+// Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
+// every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
   LoadHTML(R"(
     <html>
@@ -2151,15 +2188,24 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithoutFormInShadowDom) {
   WebNode shadow_root1 = GetElementById(doc, "host1").ShadowRoot();
   WebNode shadow_root2 = GetElementById(doc, "host2").ShadowRoot();
   WebFormElement f1 = GetFormElementById(doc, "f1");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(doc, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root2, "t3");
 
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(doc, "t2")), f1);
-  EXPECT_TRUE(
-      GetOwningForm(GetFormControlElementById(shadow_root2, "t3")).IsNull());
+  EXPECT_EQ(GetOwningForm(t1), f1);
+  EXPECT_EQ(GetOwningForm(t2), f1);
+  EXPECT_EQ(GetOwningForm(t3), f_unowned);
+  // TODO: crbug.com/349121116 - `t3` should not be owned by `f1`.
+  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3));
+  // TODO: crbug.com/40204601 - `t3` should be owned by `f_unowned`.
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form of a form control element is the furthest
 // shadow-including ancestor form element (in absence of explicit associations).
+// Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
+// every form f that owns some t.
 TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
   base::test::ScopedFeatureList feature_list{
       blink::features::kAutofillIncludeFormElementsInShadowDom};
@@ -2191,14 +2237,24 @@ TEST_F(FormAutofillUtilsTest, GetOwningFormInShadowDomWithFormInShadowDom) {
   WebNode shadow_root2 = GetElementById(doc, "host2").ShadowRoot();
   WebFormElement f1 = GetFormElementById(doc, "f1");
   WebFormElement f3 = GetFormElementById(shadow_root2, "f3");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(shadow_root1, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root2, "t3");
 
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t2")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t3")), f3);
+  EXPECT_EQ(GetOwningForm(t1), f1);
+  EXPECT_EQ(GetOwningForm(t2), f1);
+  EXPECT_EQ(GetOwningForm(t3), f3);
+  // TODO: crbug.com/349121116 - `t3` should not be owned by `f1`.
+  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3));
+  EXPECT_THAT(GetFormControlElements(doc, f3), ElementsAre(t3));
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is returned correctly even if there are multiple
 // levels of Shadow DOM.
+// Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
+// every form f that owns some t.
 TEST_F(FormAutofillUtilsTest,
        GetOwningFormInShadowDomWithFormInShadowDomWithMultipleLevels) {
   base::test::ScopedFeatureList feature_list{
@@ -2232,16 +2288,26 @@ TEST_F(FormAutofillUtilsTest,
   WebNode shadow_root1 = GetElementById(doc, "host1").ShadowRoot();
   WebNode shadow_root2 = GetElementById(shadow_root1, "host2").ShadowRoot();
   WebFormElement f1 = GetFormElementById(doc, "f1");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(shadow_root2, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root2, "t3");
+  WebFormControlElement t4 = GetFormControlElementById(shadow_root1, "t4");
+  WebFormControlElement t5 = GetFormControlElementById(shadow_root1, "t5");
 
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t2")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t3")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t4")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t5")), f1);
+  EXPECT_EQ(GetOwningForm(t1), f1);
+  EXPECT_EQ(GetOwningForm(t2), f1);
+  EXPECT_EQ(GetOwningForm(t3), f1);
+  EXPECT_EQ(GetOwningForm(t4), f1);
+  EXPECT_EQ(GetOwningForm(t5), f1);
+  EXPECT_THAT(GetFormControlElements(doc, f1), ElementsAre(t1, t2, t3, t4, t5));
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
 }
 
 // Tests that the owning form is computed correctly for form control elements
 // inside the shadow DOM that have explicit form attributes.
+// Also tests that GetFormControlElements(f) == {t | GetOwningForm(t) == f} for
+// every form f that owns some t.
 TEST_F(FormAutofillUtilsTest,
        GetOwningFormInShadowDomWithFormInShadowDomAndExplicitAssociation) {
   base::test::ScopedFeatureList feature_list{
@@ -2280,14 +2346,27 @@ TEST_F(FormAutofillUtilsTest,
   WebNode shadow_root2 = GetElementById(doc, "host2").ShadowRoot();
   WebFormElement f1 = GetFormElementById(doc, "f1");
   WebFormElement f4 = GetFormElementById(shadow_root2, "f4");
+  WebFormElement f_unowned = WebFormElement();
+  WebFormControlElement t1 = GetFormControlElementById(shadow_root1, "t1");
+  WebFormControlElement t2 = GetFormControlElementById(shadow_root1, "t2");
+  WebFormControlElement t3 = GetFormControlElementById(shadow_root1, "t3");
+  WebFormControlElement t4 = GetFormControlElementById(shadow_root1, "t4");
+  WebFormControlElement t5 = GetFormControlElementById(shadow_root1, "t5");
+  WebFormControlElement t6 = GetFormControlElementById(shadow_root1, "t6");
+  WebFormControlElement t7 = GetFormControlElementById(shadow_root2, "t7");
 
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t1")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t2")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t3")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t4")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t5")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root1, "t6")), f1);
-  EXPECT_EQ(GetOwningForm(GetFormControlElementById(shadow_root2, "t7")), f4);
+  EXPECT_EQ(GetOwningForm(t1), f1);
+  EXPECT_EQ(GetOwningForm(t2), f1);
+  EXPECT_EQ(GetOwningForm(t3), f1);
+  EXPECT_EQ(GetOwningForm(t4), f1);
+  EXPECT_EQ(GetOwningForm(t5), f1);
+  EXPECT_EQ(GetOwningForm(t6), f1);
+  EXPECT_EQ(GetOwningForm(t7), f4);
+  // TODO: crbug.com/349121116 - `t7` should not be owned by `f1`.
+  EXPECT_THAT(GetFormControlElements(doc, f1),
+              ElementsAre(t1, t2, t3, t4, t5, t6, t7));
+  EXPECT_THAT(GetFormControlElements(doc, f4), ElementsAre(t7));
+  EXPECT_THAT(GetFormControlElements(doc, f_unowned), IsEmpty());
 }
 
 }  // namespace
