@@ -163,7 +163,9 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                     @Override
                     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
                         @BrowserControlsState int constraints = getConstraints();
-                        if (isInteractable && !isStateForced(constraints)) {
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                                && isInteractable
+                                && !isStateForced(constraints)) {
                             updateOffsetTags(OffsetTag.createRandom(), constraints);
                         }
                     }
@@ -212,7 +214,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
     }
 
     /** Unregister all OffsetTags (for now, only the top controls have an OffsetTag.) */
-    public void unregisterOffsetTags() {
+    private void unregisterOffsetTags() {
         updateOffsetTags(null, getConstraints());
     }
 
