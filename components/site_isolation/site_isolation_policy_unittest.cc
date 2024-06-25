@@ -133,7 +133,12 @@ class OriginKeyedProcessesByDefaultSiteIsolationPolicyTest
 TEST_F(OriginKeyedProcessesByDefaultSiteIsolationPolicyTest,
        RequiresStrictSiteIsolation) {
   SetEnableStrictSiteIsolation(false);
-  EXPECT_FALSE(
+  // Even though we've disabled ShouldEnableStrictSiteIsolation via the test
+  // ContentBrowserClient, if this test runs on a bot where --site-per-process
+  // is specified on the command line, UseDedicatedProcessesForAllSites() will
+  // still be true, which will enable AreOriginKeyedProcessesEnabledByDefault().
+  EXPECT_EQ(
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
       content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
   SetEnableStrictSiteIsolation(true);
   // When this runs on Android, the return value from
