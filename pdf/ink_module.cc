@@ -79,8 +79,8 @@ void InkModule::Draw(SkCanvas& canvas) {
     }
   }
 
-  auto in_progress_stroke = CreateInProgressStrokeFromInputs();
-  if (in_progress_stroke) {
+  auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
+  if (!in_progress_stroke.empty()) {
     DrawingStrokeState& state = drawing_stroke_state();
     // TODO(crbug.com/335524380): Draw `in_progress_stroke` with InkSkiaRenderer
     // using the canonical-to-screen rendering transform.
@@ -208,11 +208,15 @@ bool InkModule::StartInkStroke(const gfx::PointF& position) {
   CHECK(!state.ink_start_time.has_value());
   state.ink_start_time = base::Time::Now();
   state.ink_page_index = page_index;
-  state.ink_inputs.push_back({
+
+  // Start of the first segment of a stroke.
+  StrokeInputSegment segment;
+  segment.push_back({
       .position_x = page_position.x(),
       .position_y = page_position.y(),
       .elapsed_time_seconds = 0,
   });
+  state.ink_inputs.push_back(std::move(segment));
 
   // Invalidate area around this one point.
   client_->Invalidate(state.ink_brush->GetInvalidateArea(position, position));
@@ -235,22 +239,19 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
 
   int page_index = client_->VisiblePageIndexFromPoint(position);
   if (page_index != state.ink_page_index) {
-    // Stroke has left the page.  Treat event as handled, but do not add an
-    // input point.
-    // TODO(crbug.com/335517469):  The stroke should be broken into segments,
-    // to avoid having an extra line connecting where this point to where a
-    // stroke might re-enter the page.
+    // Stroke has left the page.  Do not add this input point.
+    if (!state.ink_inputs.back().empty()) {
+      // Create a new segment to collect any further points.
+      state.ink_inputs.push_back(StrokeInputSegment());
 
-    // Invalidate area covering a straight line between this position and the
-    // previous one.
-    CHECK(state.ink_input_last_event_position.has_value());
-    client_->Invalidate(state.ink_brush->GetInvalidateArea(
-        position, state.ink_input_last_event_position.value()));
-    // TODO(crbug.com/335517469):  The invalidation should not need to update
-    // `ink_input_last_event_position` once segments are supported, since a new
-    // segment would only need to invalidate around a single point, similar to
-    // `StartInkStroke()`.
-    state.ink_input_last_event_position = position;
+      // Even if the last event position was not on the page boundary, no
+      // further points are captured in the stroke from that position to this
+      // new out-of-bounds position.  So there is no need to invalidate further
+      // from it, just drop it since it is now stale for any new points.
+      state.ink_input_last_event_position.reset();
+    }
+
+    // Treat event as handled.
     return true;
   }
 
@@ -259,18 +260,27 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
       ConvertEventPositionToCanonicalPosition(position, state.ink_page_index);
 
   base::TimeDelta time_diff = base::Time::Now() - state.ink_start_time.value();
-  state.ink_inputs.push_back({
+  state.ink_inputs.back().push_back({
       .position_x = page_position.x(),
       .position_y = page_position.y(),
       .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
   });
 
-  // Invalidate area covering a straight line between this position and the
-  // previous one.  Update last location to support invalidating from here to
+  if (state.ink_inputs.back().size() == 1u) {
+    // This is the start of a new segment, so only invalidate around this point.
+    CHECK(!state.ink_input_last_event_position.has_value());
+    client_->Invalidate(state.ink_brush->GetInvalidateArea(position, position));
+  } else {
+    // Invalidate area covering a straight line between this position and the
+    // previous one.  Update last location to support invalidating from here to
+    // the next position.
+    CHECK(state.ink_input_last_event_position.has_value());
+    client_->Invalidate(state.ink_brush->GetInvalidateArea(
+        position, state.ink_input_last_event_position.value()));
+  }
+
+  // Update last location to support invalidating from here to
   // the next position.
-  CHECK(state.ink_input_last_event_position.has_value());
-  client_->Invalidate(state.ink_brush->GetInvalidateArea(
-      position, state.ink_input_last_event_position.value()));
   state.ink_input_last_event_position = position;
 
   return true;
@@ -285,13 +295,15 @@ bool InkModule::FinishInkStroke() {
   }
 
   // TODO(crbug.com/335524380): Add this method's caller's `event` to
-  // `ink_inputs_` before creating `in_progress_stroke`?
-  auto in_progress_stroke = CreateInProgressStrokeFromInputs();
-  if (in_progress_stroke) {
+  // `ink_inputs` before creating `in_progress_stroke_segments`?
+  auto in_progress_stroke_segments = CreateInProgressStrokeSegmentsFromInputs();
+  if (!in_progress_stroke_segments.empty()) {
     CHECK_GE(state.ink_page_index, 0);
-    size_t id = stroke_id_generator_.GetIdAndAdvance();
-    ink_strokes_[state.ink_page_index].push_back(
-        FinishedStrokeState(in_progress_stroke->CopyToStroke(), id));
+    for (const auto& segment : in_progress_stroke_segments) {
+      size_t id = stroke_id_generator_.GetIdAndAdvance();
+      ink_strokes_[state.ink_page_index].push_back(
+          FinishedStrokeState(segment->CopyToStroke(), id));
+    }
   }
 
   // Reset input fields.
@@ -381,33 +393,42 @@ void InkModule::HandleSetAnnotationModeMessage(
   enabled_ = message.FindBool("enable").value();
 }
 
-std::unique_ptr<InkInProgressStroke>
-InkModule::CreateInProgressStrokeFromInputs() const {
+std::vector<std::unique_ptr<InkInProgressStroke>>
+InkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   if (!is_drawing_stroke()) {
-    return nullptr;
+    return {};
   }
 
   const DrawingStrokeState& state = drawing_stroke_state();
-  if (state.ink_inputs.empty()) {
-    return nullptr;
+  std::vector<std::unique_ptr<InkInProgressStroke>> stroke_segments;
+  stroke_segments.reserve(state.ink_inputs.size());
+  for (size_t segment_number = 0; const auto& segment : state.ink_inputs) {
+    ++segment_number;
+    if (segment.empty()) {
+      // Only the last segment can possibly be empty, if the stroke left the
+      // page but never returned back in.
+      CHECK_EQ(segment_number, state.ink_inputs.size());
+      break;
+    }
+
+    auto stroke = InkInProgressStroke::Create();
+    // TODO(crbug.com/339682315): This should not fail with the wrapper.
+    if (!stroke) {
+      return {};
+    }
+
+    auto input_batch = InkStrokeInputBatch::Create(segment);
+    CHECK(input_batch);
+
+    stroke->Start(state.ink_brush->GetInkBrush());
+    bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
+    CHECK(enqueue_results);
+    stroke->FinishInputs();
+    bool update_results = stroke->UpdateShape(0);
+    CHECK(update_results);
+    stroke_segments.push_back(std::move(stroke));
   }
-
-  auto stroke = InkInProgressStroke::Create();
-  // TODO(crbug.com/339682315): This should not fail with the wrapper.
-  if (!stroke) {
-    return nullptr;
-  }
-
-  auto input_batch = InkStrokeInputBatch::Create(state.ink_inputs);
-  CHECK(input_batch);
-
-  stroke->Start(state.ink_brush->GetInkBrush());
-  bool enqueue_results = stroke->EnqueueInputs(input_batch.get(), nullptr);
-  CHECK(enqueue_results);
-  stroke->FinishInputs();
-  bool update_results = stroke->UpdateShape(0);
-  CHECK(update_results);
-  return stroke;
+  return stroke_segments;
 }
 
 gfx::PointF InkModule::ConvertEventPositionToCanonicalPosition(

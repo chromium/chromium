@@ -121,6 +121,8 @@ class InkModule {
       RenderTransformCallback callback);
 
  private:
+  using StrokeInputSegment = std::vector<InkStrokeInput>;
+
   struct DrawingStrokeState {
     DrawingStrokeState();
     DrawingStrokeState(const DrawingStrokeState&) = delete;
@@ -141,10 +143,12 @@ class InkModule {
     // started, to support invalidation.
     std::optional<gfx::PointF> ink_input_last_event_position;
 
-    // The points that make up the current stroke. Coordinates for each
-    // `InkStrokeInput` are stored in a canonical format specified in
-    // pdf_ink_transform.h.
-    std::vector<InkStrokeInput> ink_inputs;
+    // The points that make up the current stroke, divided into
+    // StrokeInputSegments.  A new segment will be necessary each time the input
+    // leaves the page during collection and then returns back into the original
+    // starting page.  The coordinates added into each segment are stored in a
+    // canonical format specified in pdf_ink_transform.h.
+    std::vector<StrokeInputSegment> ink_inputs;
   };
 
   // A stroke that has been completed, its ID, and whether it should be drawn
@@ -224,11 +228,12 @@ class InkModule {
     return absl::get<DrawingStrokeState>(current_tool_state_);
   }
 
-  // Converts `current_tool_state_` into an InkInProgressStroke. Requires
-  // `current_tool_state_` to hold a `DrawingStrokeState`. If there is no
-  // `DrawingStrokeState`, or the state currently has no inputs, then return
-  // nullptr.
-  std::unique_ptr<InkInProgressStroke> CreateInProgressStrokeFromInputs() const;
+  // Converts `current_tool_state_` into segments of `InkInProgressStroke`.
+  // Requires `current_tool_state_` to hold a `DrawingStrokeState`. If there is
+  // no `DrawingStrokeState`, or the state currently has no inputs, then the
+  // segments will be empty.
+  std::vector<std::unique_ptr<InkInProgressStroke>>
+  CreateInProgressStrokeSegmentsFromInputs() const;
 
   // Wrapper around EventPositionToCanonicalPosition(). `page_index` is the page
   // that `position` is on. The page must be visible.

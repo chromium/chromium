@@ -563,6 +563,39 @@ TEST_F(InkModuleStrokeTest, StrokeAcrossPages) {
               ElementsAre(Pair(0, testing::SizeIs(1))));
 }
 
+TEST_F(InkModuleStrokeTest, StrokePageExitAndRentry) {
+  EXPECT_TRUE(
+      ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
+
+  client().set_page_layouts(kVerticalLayout2Pages);
+  client().set_page_visibility(0, true);
+  client().set_page_visibility(1, true);
+
+  // Start out without any strokes.
+  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+
+  // A stroke that starts in first page, leaves the bounds of that page, but
+  // then moves back into the page results in one stroke with two segments.
+  constexpr gfx::PointF kStrokeMoves[] = {
+      gfx::PointF(10.0f, 5.0f), gfx::PointF(10.0f, 0.0f),
+      gfx::PointF(15.0f, 0.0f), gfx::PointF(15.0f, 5.0f),
+      gfx::PointF(15.0f, 10.0f)};
+  ApplyInkStrokeWithMousePoints(kTwoPageVerticalLayoutPoint1InsidePage0,
+                                kStrokeMoves,
+                                kTwoPageVerticalLayoutPoint3InsidePage0,
+                                /*expect_mouse_events_handled=*/true);
+
+  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetInkStrokesInputPositionsForTesting();
+  const InkModule::InkStrokeInputPoints kSegment1 = {gfx::PointF(5.0f, 5.0f),
+                                                     gfx::PointF(5.0f, 0.0f)};
+  const InkModule::InkStrokeInputPoints kSegment2 = {gfx::PointF(10.0f, 0.0f),
+                                                     gfx::PointF(10.0f, 5.0f)};
+  EXPECT_THAT(document_strokes_positions,
+              ElementsAre(Pair(0, InkModule::PageInkStrokeInputPoints{
+                                      {kSegment1, kSegment2}})));
+}
+
 }  // namespace
 
 }  // namespace chrome_pdf
