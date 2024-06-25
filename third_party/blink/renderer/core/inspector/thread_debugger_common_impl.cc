@@ -132,12 +132,13 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
     const String& error_message,
     v8::Local<v8::Value> exception,
     std::unique_ptr<SourceLocation> location) {
-  const String default_message = "Uncaught (in promise)";
+  const StringView default_message = "Uncaught (in promise)";
   String message = error_message;
-  if (message.empty())
-    message = default_message;
-  else if (message.StartsWith("Uncaught "))
-    message = message.Substring(0, 8) + " (in promise)" + message.Substring(8);
+  if (message.empty()) {
+    message = "Uncaught (in promise)";
+  } else if (message.StartsWith("Uncaught ")) {
+    message = "Uncaught (in promise)" + StringView(message, 8);
+  }
 
   ReportConsoleMessage(
       ToExecutionContext(context), mojom::ConsoleMessageSource::kJavaScript,

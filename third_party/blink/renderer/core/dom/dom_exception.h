@@ -73,18 +73,14 @@ class CORE_EXPORT DOMException : public ScriptWrappable {
   static String GetErrorMessage(DOMExceptionCode);
 
   uint16_t code() const { return legacy_code_; }
-  String name() const { return name_; }
+  const String& name() const { return name_; }
 
   // This is the message that's exposed to JavaScript: never return unsanitized
   // data.
-  String message() const { return sanitized_message_; }
+  const String& message() const { return sanitized_message_; }
 
   // This is the message that's exposed to the console: if an unsanitized
   // message is present, we prefer it.
-  String MessageForConsole() const {
-    return !unsanitized_message_.empty() ? unsanitized_message_
-                                         : sanitized_message_;
-  }
   String ToStringForConsole() const;
 
  private:

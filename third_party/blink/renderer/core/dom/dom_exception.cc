@@ -272,7 +272,12 @@ DOMException::DOMException(uint16_t legacy_code,
 }
 
 String DOMException::ToStringForConsole() const {
-  return name() + ": " + MessageForConsole();
+  // If an unsanitized message is present, we prefer it.
+  const String& message_for_console =
+      !unsanitized_message_.empty() ? unsanitized_message_ : sanitized_message_;
+  return message_for_console.empty()
+             ? String()
+             : "Uncaught " + name() + ": " + message_for_console;
 }
 
 }  // namespace blink

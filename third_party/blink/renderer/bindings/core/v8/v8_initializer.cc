@@ -116,16 +116,14 @@ bool FilterETWSessionByURLCallback(v8::Local<v8::Context> context,
                                    const std::string& json_payload);
 #endif  // BUILDFLAG(IS_WIN)
 
-static String ExtractMessageForConsole(v8::Isolate* isolate,
-                                       v8::Local<v8::Value> data) {
+namespace {
+
+String ExtractMessageForConsole(v8::Isolate* isolate,
+                                v8::Local<v8::Value> data) {
   DOMException* exception = V8DOMException::ToWrappable(isolate, data);
-  if (exception && !exception->MessageForConsole().empty()) {
-    return exception->ToStringForConsole();
-  }
-  return g_empty_string;
+  return exception ? exception->ToStringForConsole() : String();
 }
 
-namespace {
 mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
   mojom::ConsoleMessageLevel level = mojom::ConsoleMessageLevel::kError;
   switch (error_level) {
@@ -199,7 +197,7 @@ void V8Initializer::MessageHandlerInMainThread(v8::Local<v8::Message> message,
 
   String message_for_console = ExtractMessageForConsole(isolate, data);
   if (!message_for_console.empty())
-    event->SetUnsanitizedMessage("Uncaught " + message_for_console);
+    event->SetUnsanitizedMessage(message_for_console);
 
   context->DispatchErrorEvent(event, sanitize_script_errors);
 }
@@ -297,8 +295,9 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
 
   String message_for_console =
       ExtractMessageForConsole(isolate, data.GetValue());
-  if (!message_for_console.empty())
-    error_message = "Uncaught " + message_for_console;
+  if (!message_for_console.empty()) {
+    error_message = std::move(message_for_console);
+  }
 
   rejected_promises.RejectedWithNoHandler(script_state, data, error_message,
                                           std::move(location),
