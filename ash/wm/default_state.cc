@@ -389,7 +389,8 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     return;
   }
 
-  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY) {
+  if ((type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY) &&
+      window_state->CanSnap()) {
     HandleWindowSnapping(window_state, type,
                          event->AsSnapEvent()->snap_action_source());
   }

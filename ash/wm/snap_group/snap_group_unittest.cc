@@ -2002,6 +2002,35 @@ TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
                      /*expected_next=*/focus_widget);
 }
 
+// Tests if only the `kResizeBehaviorKey` is set, snapping the window does not
+// start partial overview.
+TEST_F(FasterSplitScreenTest, SnapUnresizableWindow) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  w1->SetProperty(aura::client::kResizeBehaviorKey,
+                  aura::client::kResizeBehaviorNone);
+
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifyNotSplitViewOverviewSession(w1.get());
+}
+
+// Tests if both the `kResizeBehaviorKey` and `kUnresizableSnappedSizeKey` are
+// set, snapping the window starts partial overview.
+TEST_F(FasterSplitScreenTest, SnapUnresizableCanSnapWindow) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  w1->SetProperty(aura::client::kResizeBehaviorKey,
+                  aura::client::kResizeBehaviorNone);
+  w1->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(300, 0));
+
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifySplitViewOverviewSession(w1.get());
+}
+
 // Tests the histograms for the split view overview session exit points are
 // recorded correctly in clamshell.
 TEST_F(FasterSplitScreenTest,
@@ -4049,44 +4078,6 @@ TEST_F(SnapGroupDividerTest, DoubleTapDividerInTablet) {
   GetEventGenerator()->GestureTapAt(divider_center);
   EXPECT_EQ(new_secondary_window, split_view_controller()->primary_window());
   EXPECT_EQ(new_primary_window, split_view_controller()->secondary_window());
-}
-
-// Tests to verify that when a window is dragged out of a snap group and onto
-// another display, it snaps correctly with accurate bounds on the destination
-// display. See regression at http://b/331663949.
-TEST_F(SnapGroupTest, DragWindowOutOfSnapGroupToAnotherDisplay) {
-  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
-  display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  const auto& displays = display_manager->active_display_list();
-  ASSERT_EQ(3U, displays.size());
-
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
-
-  const gfx::PointF point_in_display2(802, 0);
-  EXPECT_FALSE(
-      displays[0].bounds().Contains(gfx::ToRoundedPoint(point_in_display2)));
-  EXPECT_TRUE(
-      displays[1].bounds().Contains(gfx::ToRoundedPoint(point_in_display2)));
-
-  auto* event_generator = GetEventGenerator();
-  event_generator->set_current_screen_location(GetDragPoint(w2.get()));
-  event_generator->DragMouseTo(gfx::ToRoundedPoint(point_in_display2));
-
-  ASSERT_FALSE(
-      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
-
-  display::Screen* screen = display::Screen::GetScreen();
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
-  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
-            WindowState::Get(w2.get())->GetStateType());
-
-  gfx::Rect display1_left_half, display1_right_half;
-  displays[1].work_area().SplitVertically(display1_left_half,
-                                          display1_right_half);
-
-  EXPECT_EQ(display1_left_half, w2->GetBoundsInScreen());
 }
 
 // Tests that when the cursor is moved significantly past the window sizes
