@@ -6,12 +6,10 @@
 
 #import <memory>
 
-#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
@@ -84,13 +82,10 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   pref_service_ = chrome_browser_state_->GetPrefs();
   EXPECT_TRUE(pref_service_);
 
-  if (wait_for_initialization_ &&
-      base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
+  if (wait_for_initialization_) {
     // Some tests exercise account bookmarks. Make sure their permanent
     // folders exist.
-    ios::BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
-        chrome_browser_state_.get())
+    ios::BookmarkModelFactory::GetForBrowserState(chrome_browser_state_.get())
         ->CreateAccountPermanentFolders();
   }
 

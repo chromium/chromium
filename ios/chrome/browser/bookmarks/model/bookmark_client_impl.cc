@@ -52,16 +52,6 @@ void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
 void BookmarkClientImpl::RequiredRecoveryToLoad(
     const std::multimap<int64_t, int64_t>&
         local_or_syncable_reassigned_ids_per_old_id) {
-  if (!account_bookmark_sync_service_) {
-    // `account_bookmark_sync_service_` being null means `this` does NOT deal
-    // with two BookmarkSyncService instances. This implies there must be two
-    // BookmarkClientImpl instances (one per BookmarkSyncService) and therefore
-    // two BookmarkModel instances too. Do nothing in that case, as the
-    // migration in this function is primarily about the case where this client
-    // transitioned from having two BookmarkModel instances to having one.
-    return;
-  }
-
   if (browser_state_->GetPrefs()) {
     MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
         browser_state_->GetPrefs(),
@@ -144,18 +134,6 @@ std::string BookmarkClientImpl::EncodeLocalOrSyncableBookmarkSyncMetadata() {
 }
 
 std::string BookmarkClientImpl::EncodeAccountBookmarkSyncMetadata() {
-  if (!account_bookmark_sync_service_) {
-    CHECK(!base::FeatureList::IsEnabled(
-        syncer::kSyncEnableBookmarksInTransportMode));
-
-    // On iOS, for historic reasons and before rolling out
-    // `syncer::kSyncEnableBookmarksInTransportMode`, a dedicated
-    // BookmarkModel is used for account bookmarks and, counter-intuitively, the
-    // local-or-syncable nodes within are used to represent account data. The
-    // same is true for sync metadata, so account sync metadata remains unused.
-    return std::string();
-  }
-
   return account_bookmark_sync_service_->EncodeBookmarkSyncMetadata();
 }
 
@@ -171,12 +149,10 @@ void BookmarkClientImpl::DecodeLocalOrSyncableBookmarkSyncMetadata(
 void BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
-  if (account_bookmark_sync_service_) {
-    account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
-        metadata_str, schedule_save_closure,
-        std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
-            model_));
-  }
+  account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
+      metadata_str, schedule_save_closure,
+      std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
+          model_));
 }
 
 void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(

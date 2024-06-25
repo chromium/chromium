@@ -32,7 +32,6 @@
 #import "components/query_parser/query_parser.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -180,11 +179,7 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
 
 bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
                                        LegacyBookmarkModel* account_model) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
-    return account_model->mobile_node() != nullptr;
-  }
-  return IsAccountBookmarkStorageOptedIn(sync_service);
+  return account_model->mobile_node() != nullptr;
 }
 
 #pragma mark - Updating Bookmarks

@@ -28,13 +28,6 @@ class LocalOrSyncableBookmarkModelFactory
   static LegacyBookmarkModel* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
-  // Returns a dedicated BookmarkModel instance for `browser_state` that is
-  // guaranteed to not be shared with other factories. Callers must ensure that
-  // `syncer::kSyncEnableBookmarksInTransportMode` is disabled.
-  static bookmarks::BookmarkModel*
-  GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-      ChromeBrowserState* browser_state);
-
   LocalOrSyncableBookmarkModelFactory(
       const LocalOrSyncableBookmarkModelFactory&) = delete;
   LocalOrSyncableBookmarkModelFactory& operator=(
@@ -52,8 +45,6 @@ class LocalOrSyncableBookmarkModelFactory
   ~LocalOrSyncableBookmarkModelFactory() override;
 
   // BrowserStateKeyedServiceFactory implementation.
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(

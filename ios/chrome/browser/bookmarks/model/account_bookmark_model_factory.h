@@ -26,13 +26,6 @@ class AccountBookmarkModelFactory : public BrowserStateKeyedServiceFactory {
   static LegacyBookmarkModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
-  // Returns a dedicated BookmarkModel instance for `browser_state` that is
-  // guaranteed to not be shared with other factories. Callers must ensure that
-  // `syncer::kSyncEnableBookmarksInTransportMode` is disabled.
-  static bookmarks::BookmarkModel*
-  GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-      ChromeBrowserState* browser_state);
-
   static AccountBookmarkModelFactory* GetInstance();
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();

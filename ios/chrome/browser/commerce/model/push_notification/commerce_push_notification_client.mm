@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
 #import "base/base64.h"
-#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/run_loop.h"
@@ -16,9 +15,7 @@
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/optimization_guide/core/hints_manager.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -129,14 +126,8 @@ CommercePushNotificationClient::GetShoppingService() {
 }
 
 bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
-  return base::FeatureList::IsEnabled(
-             syncer::kSyncEnableBookmarksInTransportMode)
-             ? ios::BookmarkModelFactory::
-                   GetModelForBrowserStateIfUnificationEnabledOrDie(
-                       GetLastUsedBrowserState())
-             : ios::LocalOrSyncableBookmarkModelFactory::
-                   GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-                       GetLastUsedBrowserState());
+  return ios::BookmarkModelFactory::GetForBrowserState(
+      GetLastUsedBrowserState());
 }
 
 void CommercePushNotificationClient::HandleNotificationInteraction(

@@ -8,30 +8,21 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+// TODO(crbug.com/346918509): Use forward declaration instead once
+// CoreBookmarkModel is removed. In the meantime, it is useful to avoid multiple
+// files having to include bookmark_model.h temporarily.
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;
-
-namespace bookmarks {
-class BookmarkModel;
-class CoreBookmarkModel;
-}  // namespace bookmarks
 
 namespace ios {
 
 class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/346918509): Return BookmarkModel, once the other two
-  // factories are deleted.
-  static bookmarks::CoreBookmarkModel* GetForBrowserState(
+  static bookmarks::BookmarkModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  static bookmarks::CoreBookmarkModel* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
-
-  // Alternative getter that exposes the whole BookmarkModel API. Callers must
-  // ensure that `syncer::kSyncEnableBookmarksInTransportMode` is enabled.
-  static bookmarks::BookmarkModel*
-  GetModelForBrowserStateIfUnificationEnabledOrDie(
+  static bookmarks::BookmarkModel* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
 
   static BookmarkModelFactory* GetInstance();

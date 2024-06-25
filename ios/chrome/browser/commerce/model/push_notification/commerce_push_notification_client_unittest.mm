@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/commerce/model/push_notification/commerce_push_notification_client.h"
 
 #import "base/base64.h"
-#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -25,12 +24,9 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "components/session_proto_db/session_proto_db.h"
-#import "components/sync/base/features.h"
 #import "components/sync_bookmarks/bookmark_sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -167,9 +163,6 @@ class CommercePushNotificationClientTest : public PlatformTest {
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
-        ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
-        ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
-    builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
@@ -203,16 +196,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     commerce_push_notification_client_.SetLastUsedChromeBrowserStateForTesting(
         chrome_browser_state_.get());
-    if (base::FeatureList::IsEnabled(
-            syncer::kSyncEnableBookmarksInTransportMode)) {
-      bookmark_model_ = ios::BookmarkModelFactory::
-          GetModelForBrowserStateIfUnificationEnabledOrDie(
-              chrome_browser_state_.get());
-    } else {
-      bookmark_model_ = ios::LocalOrSyncableBookmarkModelFactory::
-          GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-              chrome_browser_state_.get());
-    }
+    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
+        chrome_browser_state_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     // Pretend sync is on and bookmarks have been downloaded from the server,
     // required for price tracking.

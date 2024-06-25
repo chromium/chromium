@@ -4,14 +4,12 @@
 
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model_with_shared_underlying_model.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -78,8 +76,6 @@ class LegacyBookmarkModelWithSharedUnderlyingModelTest : public testing::Test {
   const std::u16string kAccountTitle2 = u"AccountTitle2";
   const std::u16string kAccountTitle3 = u"AccountTitle3";
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<bookmarks::BookmarkModel> shared_model_;
   LegacyBookmarkModelWithSharedUnderlyingModel local_view_;
   LegacyBookmarkModelWithSharedUnderlyingModel account_view_;

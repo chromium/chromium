@@ -18,7 +18,6 @@ static_library("push_notification") {
     "//components/commerce/core:shopping_service",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/sync/base:features",
     "//components/variations/service",
     "//components/variations/service:service",
     "//ios/chrome/browser/bookmarks/model:model",

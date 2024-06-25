@@ -9,12 +9,10 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/core_bookmark_model.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/bookmark_constants.h"
-#include "components/sync/base/features.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
@@ -53,27 +51,13 @@ const base::FilePath& GetTestDataDir() {
 
 }  // namespace
 
-class BookmarkModelFactoryTest : public BookmarkIOSUnitTestSupport,
-                                 public ::testing::WithParamInterface<bool> {
+class BookmarkModelFactoryTest : public BookmarkIOSUnitTestSupport {
  public:
-  BookmarkModelFactoryTest() {
-    if (GetSyncEnableBookmarksInTransportModeTestParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kSyncEnableBookmarksInTransportMode);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          syncer::kSyncEnableBookmarksInTransportMode);
-    }
-  }
-
-  bool GetSyncEnableBookmarksInTransportModeTestParam() const {
-    return GetParam();
-  }
-
+  BookmarkModelFactoryTest() = default;
   ~BookmarkModelFactoryTest() override = default;
 };
 
-TEST_P(BookmarkModelFactoryTest, IsBookmarked) {
+TEST_F(BookmarkModelFactoryTest, IsBookmarked) {
   const GURL kUrl1("https://foo.com/");
   const GURL kUrl2("https://bar.com/");
   const GURL kUrl3("https://baz.com/");
@@ -99,7 +83,7 @@ TEST_P(BookmarkModelFactoryTest, IsBookmarked) {
   EXPECT_FALSE(bookmark_model_->IsBookmarked(kUrl3));
 }
 
-TEST_P(BookmarkModelFactoryTest, GetUniqueUrls) {
+TEST_F(BookmarkModelFactoryTest, GetUniqueUrls) {
   const GURL kUrl1("https://foo.com/");
   const GURL kUrl2("https://bar.com/");
   const GURL kUrl3("https://baz.com/");
@@ -121,10 +105,6 @@ TEST_P(BookmarkModelFactoryTest, GetUniqueUrls) {
       bookmark_model_->GetUniqueUrls(),
       UnorderedElementsAre(HasUrl(kUrl1), HasUrl(kUrl2), HasUrl(kUrl3)));
 }
-
-INSTANTIATE_TEST_SUITE_P(UnifiedBookmarkModel,
-                         BookmarkModelFactoryTest,
-                         testing::Bool());
 
 class BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest
     : public BookmarkModelFactoryTest {
@@ -152,7 +132,7 @@ class BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest
   base::HistogramTester histogram_tester_;
 };
 
-TEST_P(BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest,
+TEST_F(BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest,
        ReassignIdsAndLogMetrics) {
   histogram_tester_.ExpectUniqueSample(kAccountIdsReassignedMetricName,
                                        /*sample=*/false,
@@ -161,11 +141,6 @@ TEST_P(BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest,
                                        /*sample=*/true,
                                        /*expected_bucket_count=*/1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    UnifiedBookmarkModel,
-    BookmarkModelFactoryWithIdCollisionsWithinOneFileOnDiskTest,
-    testing::Bool());
 
 class BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest
     : public BookmarkModelFactoryTest {
@@ -194,22 +169,15 @@ class BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest
   base::HistogramTester histogram_tester_;
 };
 
-TEST_P(BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest,
+TEST_F(BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest,
        ReassignIdsAndLogMetrics) {
   histogram_tester_.ExpectUniqueSample(kAccountIdsReassignedMetricName,
                                        /*sample=*/false,
                                        /*expected_bucket_count=*/1);
-  // If and only if a single BookmarkModel instance is used, the ID collisions
-  // across two files are detected and reassigned.
-  histogram_tester_.ExpectUniqueSample(
-      kLocalOrSyncableIdsReassignedMetricName,
-      /*sample=*/GetSyncEnableBookmarksInTransportModeTestParam(),
-      /*expected_bucket_count=*/1);
+  // The ID collisions across two files are detected and reassigned.
+  histogram_tester_.ExpectUniqueSample(kLocalOrSyncableIdsReassignedMetricName,
+                                       /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    UnifiedBookmarkModel,
-    BookmarkModelFactoryWithIdCollisionsAcrossTwoFilesOnDiskTest,
-    testing::Bool());
 
 }  // namespace ios

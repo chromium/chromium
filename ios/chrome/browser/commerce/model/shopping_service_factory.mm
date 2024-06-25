@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 
-#import "base/feature_list.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #import "components/commerce/core/proto/parcel_tracking_db_content.pb.h"
@@ -13,11 +12,8 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/prefs/pref_service.h"
-#import "components/sync/base/features.h"
 #import "components/variations/service/variations_service_utils.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -59,15 +55,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
           "ShoppingService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
-    DependsOn(ios::BookmarkModelFactory::GetInstance());
-  } else {
-    DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
-    DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
-  }
-
+  DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(SessionProtoDBFactory<
@@ -85,26 +73,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(state);
   PrefService* pref_service = chrome_state ? chrome_state->GetPrefs() : nullptr;
 
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model = nullptr;
-  bookmarks::BookmarkModel* account_bookmark_model = nullptr;
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncEnableBookmarksInTransportMode)) {
-    local_or_syncable_bookmark_model = ios::BookmarkModelFactory::
-        GetModelForBrowserStateIfUnificationEnabledOrDie(chrome_state);
-    // No second instance is injected in this case. ShoppingService is capable
-    // of dealing with the coexistence of account bookmarks and local bookmarks
-    // in the same BookmarkModel instance.
-    account_bookmark_model = nullptr;
-  } else {
-    local_or_syncable_bookmark_model =
-        ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
-            ->GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-                chrome_state);
-    account_bookmark_model = ios::AccountBookmarkModelFactory::
-        GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-            chrome_state);
-  }
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model =
+      ios::BookmarkModelFactory::GetForBrowserState(chrome_state);
 
   if (IsIOSParcelTrackingEnabled()) {
     RecordParcelTrackingOptInStatus(pref_service);
@@ -113,7 +83,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       GetApplicationContext()->GetApplicationLocale(),
-      local_or_syncable_bookmark_model, account_bookmark_model,
+      local_or_syncable_bookmark_model, /*account_bookmark_model=*/nullptr,
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
       SyncServiceFactory::GetForBrowserState(chrome_state),
