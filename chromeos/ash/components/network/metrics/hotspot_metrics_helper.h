@@ -90,6 +90,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringNetworkSetupFailure);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, DisableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           EnableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           AbortEnableTethering);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           ShillOperationFailureWhileAborting);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           EnableTetheringReadinessCheckFailure);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           EnableTetheringNetworkSetupFailure);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           DisableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotConfigurationHandlerTest,
                            SetAndGetHotspotConfig);
   FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,

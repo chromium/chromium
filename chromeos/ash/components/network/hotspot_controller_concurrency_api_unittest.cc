@@ -1,11 +1,10 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/hotspot_controller.h"
-
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -13,6 +12,7 @@
 #include "chromeos/ash/components/network/enterprise_managed_metadata_store.h"
 #include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
+#include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
 #include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
@@ -61,8 +61,36 @@ class TestObserver : public HotspotController::Observer {
 
 }  // namespace
 
-class HotspotControllerTest : public ::testing::Test {
+class HotspotControllerConcurrencyApiTest : public ::testing::Test {
  public:
+  // This struct is used to simplify checking the metrics associated with the
+  // tests below.
+  struct ExpectedHistogramState {
+    size_t success_initial_count = 0u;
+    size_t success_retry_count = 0u;
+    size_t inhibit_failed_initial_count = 0u;
+    size_t inhibit_failed_retry_count = 0u;
+    size_t hermes_install_failed_initial_count = 0u;
+    size_t hermes_install_failed_retry_count = 0u;
+    size_t smds_scan_profile_total_count = 0u;
+    size_t smds_scan_profile_sum = 0u;
+    size_t no_available_profiles_via_smdp_count = 0u;
+    size_t no_available_profiles_via_smds_count = 0u;
+    size_t install_method_via_smdp_count = 0u;
+    size_t install_method_via_smds_count = 0u;
+    size_t scan_duration_other_success_count = 0u;
+    size_t scan_duration_other_failure_count = 0u;
+    size_t scan_duration_android_success_count = 0u;
+    size_t scan_duration_android_failure_count = 0u;
+    size_t scan_duration_gsma_success_count = 0u;
+    size_t scan_duration_gsma_failure_count = 0u;
+  };
+
+  HotspotControllerConcurrencyApiTest() {
+    feature_list_.InitAndEnableFeature(features::kWifiConcurrency);
+  }
+  ~HotspotControllerConcurrencyApiTest() override = default;
+
   void SetUp() override {
     enterprise_managed_metadata_store_ =
         std::make_unique<EnterpriseManagedMetadataStore>();
@@ -102,12 +130,6 @@ class HotspotControllerTest : public ::testing::Test {
   void SetHotspotAllowed() {
     hotspot_capabilities_provider_->SetHotspotAllowStatus(
         hotspot_config::mojom::HotspotAllowStatus::kAllowed);
-  }
-
-  void SetPolicyAllowHotspot(bool allow_hotspot) {
-    base::RunLoop run_loop;
-    hotspot_controller_->SetPolicyAllowHotspot(allow_hotspot);
-    run_loop.RunUntilIdle();
   }
 
   void SetHotspotStateInShill(const std::string& state) {
@@ -175,6 +197,12 @@ class HotspotControllerTest : public ::testing::Test {
     return prepare_success;
   }
 
+  void SetPolicyAllowHotspot(bool allow_hotspot) {
+    base::RunLoop run_loop;
+    hotspot_controller_->SetPolicyAllowHotspot(allow_hotspot);
+    run_loop.RunUntilIdle();
+  }
+
   void EnableAndAbortHotspot(
       hotspot_config::mojom::HotspotControlResult& enable_result,
       hotspot_config::mojom::HotspotControlResult& disable_result) {
@@ -201,6 +229,7 @@ class HotspotControllerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<EnterpriseManagedMetadataStore>
       enterprise_managed_metadata_store_;
   std::unique_ptr<HotspotController> hotspot_controller_;
@@ -213,7 +242,7 @@ class HotspotControllerTest : public ::testing::Test {
   TestObserver observer_;
 };
 
-TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
+TEST_F(HotspotControllerConcurrencyApiTest, EnableTetheringSuccess) {
   SetHotspotAllowed();
   AddActiveCellularService();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
@@ -253,7 +282,7 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
       1);
 }
 
-TEST_F(HotspotControllerTest, AbortEnableTethering) {
+TEST_F(HotspotControllerConcurrencyApiTest, AbortEnableTethering) {
   SetHotspotAllowed();
   AddActiveCellularService();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
@@ -272,7 +301,8 @@ TEST_F(HotspotControllerTest, AbortEnableTethering) {
       HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
 }
 
-TEST_F(HotspotControllerTest, ShillOperationFailureWhileAborting) {
+TEST_F(HotspotControllerConcurrencyApiTest,
+       ShillOperationFailureWhileAborting) {
   SetHotspotAllowed();
   AddActiveCellularService();
   base::RunLoop().RunUntilIdle();
@@ -294,7 +324,8 @@ TEST_F(HotspotControllerTest, ShillOperationFailureWhileAborting) {
       HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
 }
 
-TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
+TEST_F(HotspotControllerConcurrencyApiTest,
+       EnableTetheringReadinessCheckFailure) {
   // Setup the hotspot capabilities so that the initial hotspot allowance
   // status is allowed.
   SetHotspotAllowed();
@@ -338,7 +369,8 @@ TEST_F(HotspotControllerTest, EnableTetheringReadinessCheckFailure) {
       1);
 }
 
-TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
+TEST_F(HotspotControllerConcurrencyApiTest,
+       EnableTetheringNetworkSetupFailure) {
   // Setup the hotspot capabilities so that the initial hotspot allowance
   // status is allowed.
   SetHotspotAllowed();
@@ -387,7 +419,7 @@ TEST_F(HotspotControllerTest, EnableTetheringNetworkSetupFailure) {
       1);
 }
 
-TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
+TEST_F(HotspotControllerConcurrencyApiTest, DisableTetheringSuccess) {
   EXPECT_EQ(hotspot_config::mojom::HotspotControlResult::kAlreadyFulfilled,
             DisableHotspot());
   histogram_tester_.ExpectTotalCount(
@@ -409,23 +441,7 @@ TEST_F(HotspotControllerTest, DisableTetheringSuccess) {
       HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kSuccess, 1);
 }
 
-TEST_F(HotspotControllerTest, PrepareEnableWifi) {
-  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
-  SetHotspotStateInShill(shill::kTetheringStateActive);
-  EXPECT_TRUE(PrepareEnableWifi());
-  EXPECT_EQ(1u, observer_.hotspot_turned_off_count());
-  EXPECT_EQ(hotspot_config::mojom::DisableReason::kWifiEnabled,
-            observer_.last_disable_reason());
-
-  SetHotspotStateInShill(shill::kTetheringStateActive);
-  network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
-      FakeShillSimulatedResult::kSuccess,
-      shill::kTetheringEnableResultNetworkSetupFailure);
-  EXPECT_FALSE(PrepareEnableWifi());
-}
-
-TEST_F(HotspotControllerTest, SetPolicyAllowHotspot) {
+TEST_F(HotspotControllerConcurrencyApiTest, SetPolicyAllowHotspot) {
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
   SetHotspotStateInShill(shill::kTetheringStateActive);
@@ -444,7 +460,7 @@ TEST_F(HotspotControllerTest, SetPolicyAllowHotspot) {
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
 }
 
-TEST_F(HotspotControllerTest, RestoreWiFiStatus) {
+TEST_F(HotspotControllerConcurrencyApiTest, RestoreWiFiStatus) {
   SetHotspotAllowed();
   AddActiveCellularService();
   // Verify Wifi is on before turning on hotspot.

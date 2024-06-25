@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/hotspot_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_util.h"
 #include "chromeos/ash/components/network/metrics/hotspot_feature_usage_metrics.h"
@@ -161,12 +162,30 @@ void HotspotController::PerformSetTetheringEnabled(bool enabled) {
         hotspot_config::mojom::HotspotControlResult::kAborted);
     return;
   }
-  ShillManagerClient::Get()->SetTetheringEnabled(
-      enabled,
+
+  auto set_tethering_enabled_success_callback =
       base::BindOnce(&HotspotController::OnSetTetheringEnabledSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), enabled),
+                     weak_ptr_factory_.GetWeakPtr(), enabled);
+  auto set_tethering_enabled_failure_callback =
       base::BindOnce(&HotspotController::OnSetTetheringEnabledFailure,
-                     weak_ptr_factory_.GetWeakPtr(), enabled));
+                     weak_ptr_factory_.GetWeakPtr(), enabled);
+  if (!features::IsWifiConcurrencyEnabled()) {
+    ShillManagerClient::Get()->SetTetheringEnabled(
+        enabled, std::move(set_tethering_enabled_success_callback),
+        std::move(set_tethering_enabled_failure_callback));
+    return;
+  }
+
+  if (enabled) {
+    ShillManagerClient::Get()->EnableTethering(
+        shill::WiFiInterfacePriority::USER_ASSERTED,
+        std::move(set_tethering_enabled_success_callback),
+        std::move(set_tethering_enabled_failure_callback));
+  } else {
+    ShillManagerClient::Get()->DisableTethering(
+        std::move(set_tethering_enabled_success_callback),
+        std::move(set_tethering_enabled_failure_callback));
+  }
 }
 
 void HotspotController::OnSetTetheringEnabledSuccess(

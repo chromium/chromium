@@ -353,6 +353,7 @@ source_set("unit_tests") {
     "hotspot_allowed_flag_handler_unittest.cc",
     "hotspot_capabilities_provider_unittest.cc",
     "hotspot_configuration_handler_unittest.cc",
+    "hotspot_controller_concurrency_api_unittest.cc",
     "hotspot_controller_unittest.cc",
     "hotspot_enabled_state_notifier_unittest.cc",
     "hotspot_state_handler_unittest.cc",
