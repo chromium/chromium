@@ -41,6 +41,7 @@ import {
   cdpToBiDiCookie,
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
+  bidiBodySizeFromCdpPostDataEntries,
 } from './NetworkUtils.js';
 
 const REALM_REGEX = /(?<=realm=").*(?=")/;
@@ -752,6 +753,14 @@ export class NetworkRequest {
         ),
       ];
     }
+    let bodySize: number = 0;
+    if (typeof this.#requestOverrides?.bodySize === 'number') {
+      bodySize = this.#requestOverrides.bodySize;
+    } else {
+      bodySize = bidiBodySizeFromCdpPostDataEntries(
+        this.#request.info?.request.postDataEntries ?? []
+      );
+    }
 
     return {
       request: this.#id,
@@ -760,8 +769,7 @@ export class NetworkRequest {
       headers,
       cookies,
       headersSize: computeHeadersSize(headers),
-      // TODO: Add size for non intercepted requests
-      bodySize: this.#requestOverrides?.bodySize ?? 0,
+      bodySize,
       timings: this.#getTimings(),
     };
   }

@@ -300,3 +300,14 @@ export function matchUrlPattern(
       return new URLPattern(urlPattern).test(url);
   }
 }
+
+export function bidiBodySizeFromCdpPostDataEntries(
+  entries: Protocol.Network.PostDataEntry[]
+): number {
+  let size = 0;
+  for (const entry of entries) {
+    size += atob(entry.bytes ?? '').length;
+  }
+
+  return size;
+}
