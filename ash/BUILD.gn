@@ -1048,8 +1048,6 @@ component("ash") {
     "picker/views/picker_badge_view.h",
     "picker/views/picker_bubble_event_filter.cc",
     "picker/views/picker_bubble_event_filter.h",
-    "picker/views/picker_caps_nudge_view.cc",
-    "picker/views/picker_caps_nudge_view.h",
     "picker/views/picker_category_type.cc",
     "picker/views/picker_category_type.h",
     "picker/views/picker_contents_view.cc",
