@@ -1428,6 +1428,17 @@ TEST(HlsTagsTest, ParseXKeyTag) {
   ErrorTest<XKeyTag>("METHOD=AES-128,IV=0xf4d52cf0dc2329c3ad6578744590658",
                      dict, subs, ParseStatusCode::kMalformedTag);
 
+  // Not allowed certain methods with clearkey or widevine
+  ErrorTest<XKeyTag>(
+      "METHOD=AES-128,FORMAT=\"org.w3.clearkey\",IV="
+      "0xf4d52cf0dc02329c3ad6578744590658",
+      dict, subs, ParseStatusCode::kMalformedTag);
+  // Not allowed certain methods with clearkey or widevine
+  ErrorTest<XKeyTag>(
+      "METHOD=AES-256,FORMAT=\"org.w3.clearkey\",IV="
+      "0xf4d52cf0dc02329c3ad6578744590658",
+      dict, subs, ParseStatusCode::kMalformedTag);
+
   {
     auto result = OkTest<XKeyTag>("METHOD=NONE", dict, subs);
     EXPECT_EQ(result.tag.method, XKeyTagMethod::kNone);
@@ -1484,6 +1495,18 @@ TEST(HlsTagsTest, ParseXKeyTag) {
     EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
     EXPECT_FALSE(result.tag.iv.has_value());
     EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"org.w3.clearkey\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_TRUE(result.tag.uri.has_value());
+    EXPECT_EQ(result.tag.uri.value().Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kClearKey);
     EXPECT_FALSE(result.tag.keyformat_versions.has_value());
   }
 }

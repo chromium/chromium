@@ -1525,37 +1525,121 @@ ParseStatus::Or<TypedAttributeMap<Attrs>> RequireNonEmptyMap(
   return map;
 }
 
-ParseStatus::Or<XKeyTag> XKeyTag::Parse(
-    TagItem tag,
-    const VariableDictionary& vars,
-    VariableDictionary::SubstitutionBuffer& subs) {
-  DCHECK(tag.GetName() == ToTagName(XKeyTag::kName));
+namespace {
+
+constexpr char const* kMethodNone = "NONE";
+constexpr char const* kMethodAES128 = "AES-128";
+constexpr char const* kMethodAES256 = "AES-256";
+constexpr char const* kMethodSampleAES = "SAMPLE-AES";
+constexpr char const* kMethodSampleAESCTR = "SAMPLE-AES-CTR";
+constexpr char const* kMethodSampleAESCENC = "SAMPLE-AES-CENC";
+constexpr char const* kMethodISO230017 = "ISO-23001-7";
+
+constexpr char const* kFmtClearkey = "org.w3.clearkey";
+constexpr char const* kFmtWidevine =
+    "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
+constexpr char const* kFmtIdentity = "identity";
+
+ParseStatus::Or<XKeyTagMethod> RecognizeMethod(SourceString content) {
+  if (content.Str() == kMethodNone) {
+    return XKeyTagMethod::kNone;
+  }
+  if (content.Str() == kMethodAES128) {
+    return XKeyTagMethod::kAES128;
+  } else if (content.Str() == kMethodAES256) {
+    return XKeyTagMethod::kAES256;
+  } else if (content.Str() == kMethodSampleAES) {
+    return XKeyTagMethod::kSampleAES;
+  } else if (content.Str() == kMethodSampleAESCTR) {
+    return XKeyTagMethod::kSampleAESCTR;
+  } else if (content.Str() == kMethodSampleAESCENC) {
+    return XKeyTagMethod::kSampleAESCENC;
+  } else if (content.Str() == kMethodISO230017) {
+    return XKeyTagMethod::kISO230017;
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+}
+
+ParseStatus::Or<XKeyTagKeyFormat> RecognizeFormat(
+    std::optional<ResolvedSourceString> content) {
+  if (!content.has_value()) {
+    return XKeyTagKeyFormat::kIdentity;
+  } else if (content->Str() == kFmtClearkey) {
+    return XKeyTagKeyFormat::kClearKey;
+  } else if (content->Str() == kFmtWidevine) {
+    return XKeyTagKeyFormat::kWidevine;
+  } else if (content->Str() == kFmtIdentity) {
+    return XKeyTagKeyFormat::kIdentity;
+  } else {
+    return XKeyTagKeyFormat::kUnsupported;
+  }
+}
+
+template <typename T>
+ParseStatus::Or<T> ValidateKeyTag(
+    XKeyTagMethod method,
+    ResolvedSourceString uri,
+    std::optional<XKeyTag::IVHex::Container> iv,
+    XKeyTagKeyFormat keyformat,
+    std::optional<ResolvedSourceString> keyformat_versions) {
+  // Check for incompatible fields. Some methods _must not_ have an IV
+  // present, while some formats only have a specific set of allowable
+  // methods.
+  if (iv.has_value()) {
+    switch (method) {
+      case XKeyTagMethod::kSampleAESCTR:
+      case XKeyTagMethod::kSampleAESCENC:
+      case XKeyTagMethod::kISO230017:
+        return ParseStatusCode::kMalformedTag;
+      default:
+        break;
+    }
+  }
+  switch (keyformat) {
+    case XKeyTagKeyFormat::kIdentity:
+    case XKeyTagKeyFormat::kUnsupported:
+      break;  // Identity and others always are ok.
+    case XKeyTagKeyFormat::kClearKey:
+    case XKeyTagKeyFormat::kWidevine:
+      switch (method) {
+        case XKeyTagMethod::kSampleAES:
+        case XKeyTagMethod::kSampleAESCTR:
+        case XKeyTagMethod::kSampleAESCENC:
+        case XKeyTagMethod::kISO230017:
+          break;  // Acceptable methods for widevine and clearkey
+        case XKeyTagMethod::kNone:
+        case XKeyTagMethod::kAES128:
+        case XKeyTagMethod::kAES256:
+          return ParseStatusCode::kMalformedTag;
+      }
+      break;
+  }
+
+  return T{.method = method,
+           .uri = std::move(uri),
+           .iv = std::move(iv),
+           .keyformat = keyformat,
+           .keyformat_versions = std::move(keyformat_versions)};
+}
+
+template <typename T>
+ParseStatus::Or<T> ParseKeyTag(TagItem tag,
+                               const VariableDictionary& vars,
+                               VariableDictionary::SubstitutionBuffer& subs) {
   return RequireNonEmptyMap<XKeyTagAttribute>(tag.GetContent())
-      .MapValue([&](auto map) -> ParseStatus::Or<XKeyTag> {
-        auto enc_method = ParseField<XKeyTagMethod>(
-            XKeyTagAttribute::kMethod, map,
-            [](SourceString content) -> ParseStatus::Or<XKeyTagMethod> {
-              if (content.Str() == "NONE") {
-                return XKeyTagMethod::kNone;
-              } else if (content.Str() == "AES-128") {
-                return XKeyTagMethod::kAES128;
-              } else if (content.Str() == "SAMPLE-AES") {
-                return XKeyTagMethod::kSampleAES;
-              } else if (content.Str() == "SAMPLE-AES-CTR") {
-                return XKeyTagMethod::kSampleAESCTR;
-              } else {
-                return ParseStatusCode::kMalformedTag;
-              }
-            });
+      .MapValue([&](auto map) -> ParseStatus::Or<T> {
+        auto enc_method = ParseField<XKeyTagMethod>(XKeyTagAttribute::kMethod,
+                                                    map, &RecognizeMethod);
         RETURN_IF_ERROR(enc_method);
 
-        // If the encryption method is NONE, other attributes MUST NOT be
-        // present.
-        if (*enc_method == XKeyTagMethod::kNone) {
-          if (map.Size() != 1) {
-            return ParseStatusCode::kMalformedTag;
+        if constexpr (T::kAllowEmptyMethod) {
+          if (*enc_method == XKeyTagMethod::kNone) {
+            if (map.Size() != 1) {
+              return ParseStatusCode::kMalformedTag;
+            }
+            return T{.method = *enc_method};
           }
-          return XKeyTag{.method = *enc_method};
         }
 
         auto enc_uri = ParseField<ResolvedSourceString>(
@@ -1570,28 +1654,12 @@ ParseStatus::Or<XKeyTag> XKeyTag::Parse(
             &XKeyTag::IVHex::ParseWithoutSubstitution);
         RETURN_IF_ERROR(enc_iv);
 
-        if (*enc_method == XKeyTagMethod::kSampleAESCTR &&
-            (*enc_iv).has_value()) {
-          // The IV attribute MUST NOT be present for Sample-AES-CTR content.
-          // The IV attribute MAY be present for other encryption schemes.
-          return ParseStatusCode::kMalformedTag;
-        }
-
         auto enc_keyformat =
             ParseField<std::optional<ResolvedSourceString>>(
                 XKeyTagAttribute::kKeyFormat, map,
                 &types::parsing::Quoted<
                     types::parsing::RawStr>::ParseWithoutSubstitution)
-                .MapValue(
-                    [](auto formatstr) -> ParseStatus::Or<XKeyTagKeyFormat> {
-                      if (!formatstr.has_value()) {
-                        return XKeyTagKeyFormat::kIdentity;
-                      }
-                      if (formatstr.value().Str() == "identity") {
-                        return XKeyTagKeyFormat::kIdentity;
-                      }
-                      return XKeyTagKeyFormat::kUnsupported;
-                    });
+                .MapValue(&RecognizeFormat);
         RETURN_IF_ERROR(enc_keyformat);
 
         auto enc_keyformat_versions =
@@ -1600,14 +1668,19 @@ ParseStatus::Or<XKeyTag> XKeyTag::Parse(
                 &types::parsing::RawStr::ParseWithoutSubstitution);
         RETURN_IF_ERROR(enc_keyformat_versions);
 
-        return XKeyTag{
-            .method = *enc_method,
-            .uri = std::move(enc_uri).value(),
-            .iv = std::move(enc_iv).value(),
-            .keyformat = std::move(enc_keyformat).value(),
-            .keyformat_versions = std::move(enc_keyformat_versions).value(),
-        };
+        return ValidateKeyTag<T>(*enc_method, *enc_uri, *enc_iv, *enc_keyformat,
+                                 *enc_keyformat_versions);
       });
+}
+
+}  // namespace
+
+ParseStatus::Or<XKeyTag> XKeyTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XKeyTag::kName));
+  return ParseKeyTag<XKeyTag>(tag, vars, subs);
 }
 
 ParseStatus::Or<XSessionKeyTag> XSessionKeyTag::Parse(
@@ -1615,73 +1688,7 @@ ParseStatus::Or<XSessionKeyTag> XSessionKeyTag::Parse(
     const VariableDictionary& vars,
     VariableDictionary::SubstitutionBuffer& subs) {
   DCHECK(tag.GetName() == ToTagName(XSessionKeyTag::kName));
-  return RequireNonEmptyMap<XKeyTagAttribute>(tag.GetContent())
-      .MapValue([&](auto map) -> ParseStatus::Or<XSessionKeyTag> {
-        auto enc_method = ParseField<XKeyTagMethod>(
-            XKeyTagAttribute::kMethod, map,
-            [](SourceString content) -> ParseStatus::Or<XKeyTagMethod> {
-              if (content.Str() == "AES-128") {
-                return XKeyTagMethod::kAES128;
-              } else if (content.Str() == "SAMPLE-AES") {
-                return XKeyTagMethod::kSampleAES;
-              } else if (content.Str() == "SAMPLE-AES-CTR") {
-                return XKeyTagMethod::kSampleAESCTR;
-              } else {
-                return ParseStatusCode::kMalformedTag;
-              }
-            });
-        RETURN_IF_ERROR(enc_method);
-
-        auto enc_uri = ParseField<ResolvedSourceString>(
-            XKeyTagAttribute::kUri, map,
-            &types::parsing::Quoted<
-                types::parsing::RawStr>::ParseWithSubstitution,
-            vars, subs);
-        RETURN_IF_ERROR(enc_uri);
-
-        auto enc_ = ParseField<std::optional<XKeyTag::IVHex::Container>>(
-            XKeyTagAttribute::kIv, map,
-            &XKeyTag::IVHex::ParseWithoutSubstitution);
-        RETURN_IF_ERROR(enc_);
-
-        if (*enc_method == XKeyTagMethod::kSampleAESCTR &&
-            (*enc_).has_value()) {
-          // The IV attribute MUST NOT be present for Sample-AES-CTR content.
-          // The IV attribute MAY be present for other encryption schemes.
-          return ParseStatusCode::kMalformedTag;
-        }
-
-        auto enc_keyformat =
-            ParseField<std::optional<ResolvedSourceString>>(
-                XKeyTagAttribute::kKeyFormat, map,
-                &types::parsing::Quoted<
-                    types::parsing::RawStr>::ParseWithoutSubstitution)
-                .MapValue(
-                    [](auto formatstr) -> ParseStatus::Or<XKeyTagKeyFormat> {
-                      if (!formatstr.has_value()) {
-                        return XKeyTagKeyFormat::kIdentity;
-                      }
-                      if (formatstr.value().Str() == "identity") {
-                        return XKeyTagKeyFormat::kIdentity;
-                      }
-                      return XKeyTagKeyFormat::kUnsupported;
-                    });
-        RETURN_IF_ERROR(enc_keyformat);
-
-        auto enc_keyformat_versions =
-            ParseField<std::optional<ResolvedSourceString>>(
-                XKeyTagAttribute::kKeyFormatVersions, map,
-                &types::parsing::RawStr::ParseWithoutSubstitution);
-        RETURN_IF_ERROR(enc_keyformat_versions);
-
-        return XSessionKeyTag{
-            .method = *enc_method,
-            .uri = std::move(enc_uri).value(),
-            .iv = std::move(enc_).value(),
-            .keyformat = std::move(enc_keyformat).value(),
-            .keyformat_versions = std::move(enc_keyformat_versions).value(),
-        };
-      });
+  return ParseKeyTag<XSessionKeyTag>(tag, vars, subs);
 }
 
 #undef RETURN_IF_ERROR

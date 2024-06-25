@@ -454,8 +454,9 @@ enum class XKeyTagMethod {
   // Public-Key Cryptography Standards #7 (PKCS7) padding [RFC5652].
   // CBC is restarted on each segment boundary, using either the
   // Initialization Vector (IV) attribute value or the Media Sequence
-  // Number as the IV
+  // Number as the IV. Sometimes AES-256 is used as well.
   kAES128,
+  kAES256,
 
   // With Sample Encryption, only media sample data - such as audio
   // packets or video frames - is encrypted. The rest of the Media
@@ -470,10 +471,17 @@ enum class XKeyTagMethod {
   // Segment formats is not defined for SAMPLE-AES-CTR.  The IV
   // attribute MUST NOT be present
   kSampleAESCTR,
+  kSampleAESCENC,
+
+  // TODO: document why and when this is used. This shows up in some sample
+  // manifests I've seen.
+  kISO230017,
 };
 
 enum class XKeyTagKeyFormat {
   kIdentity,
+  kClearKey,
+  kWidevine,
   kUnsupported,
 };
 
@@ -481,6 +489,7 @@ struct MEDIA_EXPORT XKeyTag {
   using IVHex = types::parsing::HexRepr<128>;
 
   static constexpr auto kName = MediaPlaylistTagName::kXKey;
+  static constexpr bool kAllowEmptyMethod = true;
   static ParseStatus::Or<XKeyTag> Parse(
       TagItem,
       const VariableDictionary&,
@@ -519,6 +528,7 @@ struct MEDIA_EXPORT XKeyTag {
 
 struct MEDIA_EXPORT XSessionKeyTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXSessionKey;
+  static constexpr bool kAllowEmptyMethod = false;
   static ParseStatus::Or<XSessionKeyTag> Parse(
       TagItem,
       const VariableDictionary&,
