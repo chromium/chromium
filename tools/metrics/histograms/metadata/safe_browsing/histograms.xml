@@ -74,6 +74,17 @@ chromium-metrics-reviews@google.com.
   <variant name=".Enterprise" summary="Applies only to enterprise checks."/>
 </variants>
 
+<variants name="ThreatSources">
+  <variant name=""/>
+  <variant name=".AndroidSafeBrowsing"/>
+  <variant name=".AndroidSafeBrowsingRealTime"/>
+  <variant name=".LocalPVer4"/>
+  <variant name=".NativePVer5RealTime"/>
+  <variant name=".Remote"/>
+  <variant name=".Unknown"/>
+  <variant name=".UrlRealTimeCheck"/>
+</variants>
+
 <histogram name="SafeBrowsing.AdvancedProtection.Enabled"
     enum="AdvancedProtectionEnabledStatus" expires_after="2024-02-04">
   <owner>meacer@chromium.org</owner>
@@ -420,16 +431,19 @@ chromium-metrics-reviews@google.com.
     there are other conditions that must apply for an unsafe threat type to show
     a warning.
   </summary>
-  <token key="ThreatSource">
-    <variant name=""/>
-    <variant name=".AndroidSafeBrowsing"/>
-    <variant name=".AndroidSafeBrowsingRealTime"/>
-    <variant name=".LocalPVer4"/>
-    <variant name=".NativePVer5RealTime"/>
-    <variant name=".Remote"/>
-    <variant name=".Unknown"/>
-    <variant name=".UrlRealTimeCheck"/>
-  </token>
+  <token key="ThreatSource" variants="ThreatSources"/>
+</histogram>
+
+<histogram name="SafeBrowsing.CheckUrl.FirstRequestTimedOut{ThreatSource}"
+    enum="BooleanTimedOut" expires_after="2024-11-17">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the whether the first request to Safe Browsing timed out, split by
+    the source of the threat type. This is logged whenever the first request
+    completes.
+  </summary>
+  <token key="ThreatSource" variants="ThreatSources"/>
 </histogram>
 
 <histogram name="SafeBrowsing.CheckUrl.IsDocumentCheckPrefetch"

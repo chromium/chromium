@@ -70,7 +70,8 @@ std::string GetPerformedCheckSuffix(
 }
 
 void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
-                                    std::optional<ThreatSource> threat_source) {
+                                    std::optional<ThreatSource> threat_source,
+                                    bool timed_out) {
   static bool is_first_request = true;
 
   if (!is_first_request) {
@@ -114,6 +115,12 @@ void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
   base::UmaHistogramEnumeration(
       "SafeBrowsing.CheckUrl.FirstRequestThreatType2." + threat_source_name,
       threat_type);
+
+  base::UmaHistogramBoolean("SafeBrowsing.CheckUrl.FirstRequestTimedOut",
+                            timed_out);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.CheckUrl.FirstRequestTimedOut." + threat_source_name,
+      timed_out);
 }
 
 }  // namespace
@@ -319,7 +326,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   DCHECK_EQ(urls_[next_index_].url, url);
   DCHECK(threat_source.has_value() || threat_type == SB_THREAT_TYPE_SAFE);
 
-  MaybeRecordFirstRequestMetrics(threat_type, threat_source);
+  MaybeRecordFirstRequestMetrics(threat_type, threat_source, timed_out);
   RecordCheckUrlTimeout(timed_out);
   TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
                                   TRACE_ID_LOCAL(this), "url", url.spec());
@@ -463,7 +470,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 
     if (result.start_check_result.is_safe_synchronously) {
       MaybeRecordFirstRequestMetrics(SBThreatType::SB_THREAT_TYPE_SAFE,
-                                     result.start_check_result.threat_source);
+                                     result.start_check_result.threat_source,
+                                     /*timed_out=*/false);
       lookup_mechanism_runner_.reset();
       RecordCheckUrlTimeout(/*timed_out=*/false);
 
