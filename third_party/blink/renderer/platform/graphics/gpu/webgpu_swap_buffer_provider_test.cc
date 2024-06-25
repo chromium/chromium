@@ -725,8 +725,8 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyZeroSizeRejects) {
 TEST_F(WebGPUSwapBufferProviderTest,
        GetLastWebGPUMailboxTextureAndSizeReturnsEmptyWithoutSwapBuffer) {
   auto mailbox_texture_size = provider_->GetLastWebGPUMailboxTextureAndSize();
-  CHECK_EQ(mailbox_texture_size.mailbox_texture, nullptr);
-  CHECK_EQ(mailbox_texture_size.size, gfx::Size());
+  EXPECT_EQ(mailbox_texture_size.mailbox_texture, nullptr);
+  EXPECT_EQ(mailbox_texture_size.size, gfx::Size());
 }
 
 // Verifies that GetLastWebGPUMailboxTextureAndSize() returns a
@@ -743,16 +743,16 @@ TEST_F(WebGPUSwapBufferProviderTest,
   provider_->GetNewTexture(kSize);
 
   auto mailbox_texture_size = provider_->GetLastWebGPUMailboxTextureAndSize();
-  CHECK_NE(mailbox_texture_size.mailbox_texture, nullptr);
-  CHECK_EQ(mailbox_texture_size.size, kSize);
+  EXPECT_NE(mailbox_texture_size.mailbox_texture, nullptr);
+  EXPECT_EQ(mailbox_texture_size.size, kSize);
 
   auto texture = mailbox_texture_size.mailbox_texture->GetTexture();
-  CHECK_EQ(texture.GetUsage(), kUsage);
-  CHECK_EQ(texture.GetFormat(), kFormat);
-  CHECK_EQ(texture.GetDepthOrArrayLayers(), 1u);
-  CHECK_EQ(texture.GetDimension(), wgpu::TextureDimension::e2D);
-  CHECK_EQ(texture.GetMipLevelCount(), 1u);
-  CHECK_EQ(texture.GetSampleCount(), 1u);
+  EXPECT_EQ(texture.GetUsage(), kUsage);
+  EXPECT_EQ(texture.GetFormat(), kFormat);
+  EXPECT_EQ(texture.GetDepthOrArrayLayers(), 1u);
+  EXPECT_EQ(texture.GetDimension(), wgpu::TextureDimension::e2D);
+  EXPECT_EQ(texture.GetMipLevelCount(), 1u);
+  EXPECT_EQ(texture.GetSampleCount(), 1u);
 }
 
 }  // namespace blink
