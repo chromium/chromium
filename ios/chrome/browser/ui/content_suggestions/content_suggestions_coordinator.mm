@@ -456,9 +456,10 @@
     UISheetPresentationControllerDetent.largeDetent
   ];
   presentationController.preferredCornerRadius = 16;
-  [self.viewController presentViewController:_setUpListShowMoreViewController
-                                    animated:YES
-                                  completion:nil];
+  [_magicStackCollectionView
+      presentViewController:_setUpListShowMoreViewController
+                   animated:YES
+                 completion:nil];
 }
 
 #pragma mark - ContentSuggestionsViewControllerAudience
@@ -494,9 +495,9 @@
     UISheetPresentationControllerDetent.mediumDetent,
     UISheetPresentationControllerDetent.largeDetent
   ];
-  [self.viewController presentViewController:navViewController
-                                    animated:YES
-                                  completion:nil];
+  [_magicStackCollectionView presentViewController:navViewController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)showMagicStackParcelList {
@@ -517,9 +518,9 @@
     UISheetPresentationControllerDetent.mediumDetent,
     UISheetPresentationControllerDetent.largeDetent
   ];
-  [self.viewController presentViewController:navViewController
-                                    animated:YES
-                                  completion:nil];
+  [_magicStackCollectionView presentViewController:navViewController
+                                          animated:YES
+                                        completion:nil];
 }
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {
