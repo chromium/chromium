@@ -196,15 +196,18 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Initialize video processing (for scaling).
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
-  // Scales `input_texture` to size `input_visible_size_`. On success, the
-  // result is stored in `scaled_d3d11_texture_`.
-  HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
+  // Scales visible subrect of `input_texture` to size of
+  // `scaled_d3d11_texture_`. On success, the result is stored in
+  // `scaled_d3d11_texture_`.
+  HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture,
+                            const gfx::Rect& visible_rect);
 
   // Initializes the video copying operation by making sure
   // `copied_d3d11_texture_` exists and that its size matches `input_texture`.
   HRESULT InitializeD3DCopying(ID3D11Texture2D* input_texture);
   // Copies `input_texture` to `copied_d3d11_texture_`.
-  HRESULT PerformD3DCopy(ID3D11Texture2D* input_texture);
+  HRESULT PerformD3DCopy(ID3D11Texture2D* input_texture,
+                         const gfx::Rect& visible_rect);
 
   // Used to post tasks from the IMFMediaEvent::Invoke() method.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

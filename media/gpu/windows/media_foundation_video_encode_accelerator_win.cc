@@ -1775,12 +1775,12 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
   // Check if we need to scale the input texture
   D3D11_TEXTURE2D_DESC input_desc = {};
   input_texture->GetDesc(&input_desc);
-
+  gfx::Size texture_size(input_desc.Width, input_desc.Height);
   ComD3D11Texture2D sample_texture;
-  if (input_desc.Width != static_cast<uint32_t>(input_visible_size_.width()) ||
-      input_desc.Height !=
-          static_cast<uint32_t>(input_visible_size_.height())) {
-    hr = PerformD3DScaling(input_texture.Get());
+  if (texture_size != input_visible_size_ ||
+      frame.visible_rect().size() != input_visible_size_ ||
+      !frame.visible_rect().origin().IsOrigin()) {
+    hr = PerformD3DScaling(input_texture.Get(), frame.visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
   } else {
@@ -1851,14 +1851,9 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
 
   // Check if we need to scale the input texture
-  D3D11_TEXTURE2D_DESC input_desc = {};
-  input_texture->GetDesc(&input_desc);
-
   ComD3D11Texture2D sample_texture;
-  if (input_desc.Width != static_cast<uint32_t>(input_visible_size_.width()) ||
-      input_desc.Height !=
-          static_cast<uint32_t>(input_visible_size_.height())) {
-    hr = PerformD3DScaling(input_texture.Get());
+  if (frame->visible_rect().size() != input_visible_size_) {
+    hr = PerformD3DScaling(input_texture.Get(), frame->visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
   } else if (!base::FeatureList::IsEnabled(kMediaFoundationZeroCopyEncoding)) {
@@ -1867,7 +1862,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     // is preferred over holding a keyed mutex for the duration of the encode
     // operation since that can take a significant amount of time and mutex
     // acquisitions (necessary even for read-only operations) are blocking.
-    hr = PerformD3DCopy(input_texture.Get());
+    hr = PerformD3DCopy(input_texture.Get(), frame->visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
     sample_texture = copied_d3d11_texture_;
   } else {
@@ -2297,7 +2292,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
-    ID3D11Texture2D* input_texture) {
+    ID3D11Texture2D* input_texture,
+    const gfx::Rect& visible_rect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HRESULT hr = InitializeD3DVideoProcessing(input_texture);
   RETURN_ON_HR_FAILURE(hr, "Couldn't initialize D3D video processing", hr);
@@ -2355,8 +2351,10 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
 
     D3D11_TEXTURE2D_DESC input_texture_desc = {};
     input_texture->GetDesc(&input_texture_desc);
-    RECT source_rect = {0, 0, static_cast<LONG>(input_texture_desc.Width),
-                        static_cast<LONG>(input_texture_desc.Height)};
+    RECT source_rect = {static_cast<LONG>(visible_rect.x()),
+                        static_cast<LONG>(visible_rect.y()),
+                        static_cast<LONG>(visible_rect.right()),
+                        static_cast<LONG>(visible_rect.bottom())};
     video_context_->VideoProcessorSetStreamSourceRect(video_processor_.Get(), 0,
                                                       TRUE, &source_rect);
 
@@ -2417,7 +2415,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DCopying(
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
-    ID3D11Texture2D* input_texture) {
+    ID3D11Texture2D* input_texture,
+    const gfx::Rect& visible_rect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HRESULT hr = InitializeD3DCopying(input_texture);
   RETURN_ON_HR_FAILURE(hr, "Couldn't initialize D3D copying", hr);
@@ -2447,8 +2446,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DCopy(
       release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
     }
 
+    D3D11_BOX src_box = {static_cast<UINT>(visible_rect.x()),
+                         static_cast<UINT>(visible_rect.y()),
+                         0,
+                         static_cast<UINT>(visible_rect.right()),
+                         static_cast<UINT>(visible_rect.bottom()),
+                         1};
     device_context->CopySubresourceRegion(copied_d3d11_texture_.Get(), 0, 0, 0,
-                                          0, input_texture, 0, nullptr);
+                                          0, input_texture, 0, &src_box);
   }
   return S_OK;
 }
