@@ -177,6 +177,8 @@ DataControlsDialog::DataControlsDialog(
     case Type::kClipboardCopyBlock:
       DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL);
       DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+      DialogDelegate::SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
+                                     ui::ButtonStyle::kProminent);
       DialogDelegate::SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                                      l10n_util::GetStringUTF16(IDS_OK));
       break;
@@ -185,6 +187,8 @@ DataControlsDialog::DataControlsDialog(
       DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL |
                                  ui::DIALOG_BUTTON_OK);
       DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+      DialogDelegate::SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
+                                     ui::ButtonStyle::kProminent);
       DialogDelegate::SetButtonLabel(
           ui::DIALOG_BUTTON_CANCEL,
           l10n_util::GetStringUTF16(
@@ -199,6 +203,8 @@ DataControlsDialog::DataControlsDialog(
       DialogDelegate::SetButtons(ui::DIALOG_BUTTON_CANCEL |
                                  ui::DIALOG_BUTTON_OK);
       DialogDelegate::SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+      DialogDelegate::SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
+                                     ui::ButtonStyle::kProminent);
       DialogDelegate::SetButtonLabel(
           ui::DIALOG_BUTTON_CANCEL,
           l10n_util::GetStringUTF16(IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON));
