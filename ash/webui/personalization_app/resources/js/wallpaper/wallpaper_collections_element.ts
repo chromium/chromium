@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
-import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {isSeaPenEnabled, isSeaPenTextInputEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
 import {isImageDataUrl, isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -38,13 +38,15 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 const kGooglePhotosCollectionId = 'google_photos_';
 const kLocalCollectionId = 'local_';
 const kSeaPenId = 'sea_pen_';
+const kSeaPenPromptingId = 'sea_pen_prompting_';
 
 enum TileType {
   IMAGE_GOOGLE_PHOTOS = 'image_google_photos',
   IMAGE_LOCAL = 'image_local',
   IMAGE_ONLINE = 'image_online',
   LOADING = 'loading',
-  SEA_PEN = 'sea_pen',
+  SEA_PEN_TEMPLATES = 'sea_pen_templates',
+  SEA_PEN_PROMPTING = 'sea_pen_prompting',
 }
 
 interface LoadingTile {
@@ -60,12 +62,20 @@ interface GooglePhotosTile {
   preview: [Url];
 }
 
-interface SeaPenTile {
+interface SeaPenPromptingTile {
+  disabled: boolean;
+  id: typeof kSeaPenPromptingId;
+  name: string;
+  preview: [Url];
+  type: TileType.SEA_PEN_PROMPTING;
+}
+
+interface SeaPenTemplatesTile {
   disabled: boolean;
   id: typeof kSeaPenId;
   name: string;
   preview: [Url];
-  type: TileType.SEA_PEN;
+  type: TileType.SEA_PEN_TEMPLATES;
 }
 
 interface LocalTile {
@@ -87,7 +97,8 @@ interface OnlineTile {
   type: TileType.IMAGE_ONLINE;
 }
 
-type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile|SeaPenTile;
+type Tile = LoadingTile|GooglePhotosTile|LocalTile|OnlineTile|
+    SeaPenPromptingTile|SeaPenTemplatesTile;
 
 // "regular" backdrop collections are displayed differently than the special
 // "timeOfDay" wallpaper collection. Split them to make them easier to handle.
@@ -219,12 +230,25 @@ function getOnlineTile(
   };
 }
 
-function getSeaPenTile(): SeaPenTile {
+function getSeaPenPromptingTile(): SeaPenPromptingTile {
+  return {
+    disabled: false,
+    id: kSeaPenPromptingId,
+    name: 'Sea Pen Prompting',
+    type: TileType.SEA_PEN_PROMPTING,
+    preview: [{
+      url:
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+    }],
+  };
+}
+
+function getSeaPenTemplatesTile(): SeaPenTemplatesTile {
   return {
     disabled: !isManagedSeaPenEnabled(),
     id: kSeaPenId,
     name: 'Sea Pen',
-    type: TileType.SEA_PEN,
+    type: TileType.SEA_PEN_TEMPLATES,
     preview: [{
       url:
           'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
@@ -314,8 +338,13 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
       promotedTiles_: {
         type: Array,
         value() {
-          const tiles =
-              [{type: TileType.LOADING, id: kSeaPenId} as LoadingTile];
+          const tiles = [];
+          if (isSeaPenTextInputEnabled()) {
+            tiles.push(
+                {type: TileType.LOADING, id: kSeaPenPromptingId} as
+                LoadingTile);
+          }
+          tiles.push({type: TileType.LOADING, id: kSeaPenId} as LoadingTile);
           if (isTimeOfDayWallpaperEnabled()) {
             tiles.push({
               type: TileType.LOADING,
@@ -441,7 +470,8 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     if (isGooglePhotosIntegrationEnabled()) {
       fetchGooglePhotosEnabled(getWallpaperProvider(), this.getStore());
     }
-    this.setSeaPenTile_();
+    this.setSeaPenPromptingTile_();
+    this.setSeaPenTemplatesTile_();
   }
 
   /**
@@ -643,11 +673,22 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     }
   }
 
-  private setSeaPenTile_() {
+  private setSeaPenPromptingTile_() {
+    if (!isSeaPenTextInputEnabled()) {
+      return;
+    }
+    const tile = getSeaPenPromptingTile();
+    const index =
+        this.promotedTiles_.findIndex(tile => tile.id === kSeaPenPromptingId);
+    assert(index >= 0, `${kSeaPenPromptingId} not found`);
+    this.set(`promotedTiles_.${index}`, tile);
+  }
+
+  private setSeaPenTemplatesTile_() {
     if (!isSeaPenEnabled()) {
       return;
     }
-    const tile = getSeaPenTile();
+    const tile = getSeaPenTemplatesTile();
     const index = this.promotedTiles_.findIndex(tile => tile.id === kSeaPenId);
     assert(index >= 0, `${kSeaPenId} not found`);
     this.set(`promotedTiles_.${index}`, tile);
@@ -703,6 +744,9 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
         PersonalizationRouterElement.instance().goToRoute(
             Paths.SEA_PEN_COLLECTION);
         return;
+      case kSeaPenPromptingId:
+        // TODO(b/347323749): add the correct routing path.
+        return;
       default:
         assert(
             isNonEmptyArray(this.collections_), 'collections array required');
@@ -722,8 +766,12 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return !!item && item.type === TileType.IMAGE_LOCAL;
   }
 
-  private isSeaPenTile_(item: Tile|null): item is SeaPenTile {
-    return !!item && item.type === TileType.SEA_PEN;
+  private isSeaPenPromptingTile_(item: Tile|null): item is SeaPenPromptingTile {
+    return !!item && item.type === TileType.SEA_PEN_PROMPTING;
+  }
+
+  private isSeaPenTemplatesTile_(item: Tile|null): item is SeaPenTemplatesTile {
+    return !!item && item.type === TileType.SEA_PEN_TEMPLATES;
   }
 
   private isOnlineTile_(item: Tile|null): item is OnlineTile {
@@ -747,6 +795,11 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     return this.isOnlineTile_(item) && isTimeOfDay(item);
   }
 
+  private getOuterContainerClass_(): string {
+    return isSeaPenTextInputEnabled() ? 'outer-container-with-prompting' :
+                                        'outer-container';
+  }
+
   private getAriaIndex_(index: number): number {
     return index + 1;
   }
@@ -754,6 +807,12 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
   private getSeaPenTileTagLabel_(item: Tile|null): string {
     return this.isSelectableTile_(item) ? this.i18n('seaPenExperimentLabel') :
                                           this.i18n('seaPenUnavailableLabel');
+  }
+
+  private getSeaPenTemplatesTileLabel_(): string {
+    // TODO(b/345856242): update the final string.
+    return isSeaPenTextInputEnabled() ? 'AI Templates' :
+                                        this.i18n('seaPenLabel');
   }
 
   private getOnlineTileSecondaryText_(item: Tile): string {

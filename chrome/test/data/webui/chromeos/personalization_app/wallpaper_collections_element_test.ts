@@ -534,8 +534,11 @@ suite('WallpaperCollectionsElementTest', function() {
   });
 
   test('shows promoted tiles section with SeaPen', async () => {
-    loadTimeData.overrideValues(
-        {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: true});
+    loadTimeData.overrideValues({
+      isSeaPenEnabled: true,
+      isSeaPenTextInputEnabled: false,
+      isTimeOfDayWallpaperEnabled: true,
+    });
     wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
@@ -561,8 +564,11 @@ suite('WallpaperCollectionsElementTest', function() {
   });
 
   test('shows single promoted tile section for SeaPen', async () => {
-    loadTimeData.overrideValues(
-        {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: false});
+    loadTimeData.overrideValues({
+      isSeaPenEnabled: true,
+      isSeaPenTextInputEnabled: false,
+      isTimeOfDayWallpaperEnabled: false,
+    });
     wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
@@ -583,10 +589,45 @@ suite('WallpaperCollectionsElementTest', function() {
         promotedTiles[0]!.hasAttribute('data-sea-pen'),
         'expected sea pen promoted tile');
 
-    const experimentTag =
-        wallpaperCollectionsElement.shadowRoot!.getElementById('experimentTag');
-    assertTrue(!!experimentTag, 'expected experiment tag for Sea Pen tile');
+    const templatesTileTag =
+        wallpaperCollectionsElement.shadowRoot!.getElementById(
+            'templatesTileTag');
+    assertTrue(
+        !!templatesTileTag, 'expected tile tag for Sea Pen templates tile');
   });
+
+  test(
+      'shows two promoted tiles for SeaPen prompting and templates',
+      async () => {
+        loadTimeData.overrideValues({
+          isSeaPenEnabled: true,
+          isSeaPenTextInputEnabled: true,
+          isTimeOfDayWallpaperEnabled: false,
+        });
+        wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+        await waitAfterNextRender(wallpaperCollectionsElement);
+
+        const loadingTiles =
+            wallpaperCollectionsElement.shadowRoot!
+                .querySelectorAll<WallpaperGridItemElement>(
+                    `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+        assertEquals(
+            2, loadingTiles.length, 'expected two Sea Pen loading tiles');
+
+        await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ false);
+
+        const promotedTiles =
+            wallpaperCollectionsElement.shadowRoot!
+                .querySelectorAll<WallpaperGridItemElement>(
+                    `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+        assertEquals(2, promotedTiles.length, 'expected two promoted tiles');
+        assertTrue(
+            promotedTiles[0]!.hasAttribute('data-sea-pen-freeform'),
+            'expected 1st tile a sea pen freeform promoted tile');
+        assertTrue(
+            promotedTiles[1]!.hasAttribute('data-sea-pen'),
+            'expected 2nd tile a sea pen templates promoted tile');
+      });
 
   test('shows time of day tile once', async () => {
     loadTimeData.overrideValues(
@@ -623,9 +664,10 @@ suite('WallpaperCollectionsElementTest', function() {
                 WallpaperGridItemElement.is}[data-is-time-of-day-collection]`);
     assertTrue(!!timeOfDayTile, 'time of day tile is shown');
 
-    const experimentTag =
-        wallpaperCollectionsElement.shadowRoot!.getElementById('experimentTag');
-    assertFalse(!!experimentTag, 'no experiment tag displayed');
+    const templatesTileTag =
+        wallpaperCollectionsElement.shadowRoot!.getElementById(
+            'templatesTileTag');
+    assertFalse(!!templatesTileTag, 'no templates tile tag displayed');
   });
 
   test(
@@ -633,6 +675,7 @@ suite('WallpaperCollectionsElementTest', function() {
       async () => {
         loadTimeData.overrideValues({
           isSeaPenEnabled: true,
+          isSeaPenTextInputEnabled: false,
           isManagedSeaPenEnabled: false,
           isTimeOfDayWallpaperEnabled: false,
         });

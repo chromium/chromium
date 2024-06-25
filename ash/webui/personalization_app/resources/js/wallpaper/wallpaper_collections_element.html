@@ -4,7 +4,8 @@
     opacity: 0.3;
   }
 
-  wallpaper-grid-item[aria-disabled='true'][data-sea-pen]::part(image) {
+  wallpaper-grid-item[aria-disabled='true'][data-sea-pen]::part(image),
+  wallpaper-grid-item[aria-disabled='true'][data-sea-pen-freeform]::part(image) {
     opacity: 0.38;
   }
 
@@ -39,7 +40,8 @@
     justify-content: center;
   }
 
-  wallpaper-grid-item[data-sea-pen] .secondary-text {
+  wallpaper-grid-item[data-sea-pen] .secondary-text,
+  wallpaper-grid-item[data-sea-pen-freeform] .secondary-text {
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -55,14 +57,20 @@
     margin-inline-end: 8px;
   }
 
-  wallpaper-grid-item[data-sea-pen] #tooltipIcon {
+  wallpaper-grid-item .tooltip-icon {
     --cr-tooltip-icon-fill-color: white;
     --cr-icon-size: 16px;
     display: none;
     margin-inline-end: 8px;
   }
 
-  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] #tooltipIcon {
+  wallpaper-grid-item[aria-disabled='true'] .tooltip-icon {
+    display: block;
+  }
+
+  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] iron-icon[icon^='personalization:managed'],
+  wallpaper-grid-item[data-sea-pen-freeform][aria-disabled='true'] iron-icon[icon^='personalization:managed'] {
+    --iron-icon-fill-color: white;
     display: block;
   }
 
@@ -87,7 +95,8 @@
     margin: 0;
   }
 
-  .outer-container {
+  .outer-container,
+  #promoted .outer-container-with-prompting {
     height: calc(var(--personalization-app-grid-item-height) +
       var(--personalization-app-grid-item-spacing));
     /* Media queries in trusted and untrusted code will resize to 25% at
@@ -147,7 +156,7 @@
     top: 20px;
   }
 
-  #experimentTag {
+  .tile-tag {
     background-color: var(--cros-sys-complement_variant);
     border-radius: 36px;
     color: var(--cros-sys-on_surface);
@@ -178,7 +187,7 @@
         items="[[promotedTiles_]]"
         role="listbox">
       <template>
-        <div class="outer-container">
+        <div class$="[[getOuterContainerClass_()]]">
           <template is="dom-if" if="[[isLoadingTile_(item)]]" restamp>
             <wallpaper-grid-item
                 aria-label="$i18n{ariaLabelLoading}"
@@ -190,16 +199,17 @@
                 tabindex$="[[tabIndex]]">
             </wallpaper-grid-item>
           </template>
-          <template is="dom-if" if="[[isSeaPenTile_(item)]]">
+          <template is="dom-if" if="[[isSeaPenPromptingTile_(item)]]" restamp>
+            <!-- TODO(345856242) update the real string for primary-text -->
             <wallpaper-grid-item
-                data-sea-pen
+                data-sea-pen-freeform
                 data-is-promoted-tile
-                aria-describedby="experimentTag"
+                aria-describedby="freeformTileTag"
                 aria-posinset$="[[getAriaIndex_(index)]]"
                 disabled="[[!isSelectableTile_(item)]]"
                 index="[[index]]"
                 on-wallpaper-grid-item-selected="onCollectionSelected_"
-                primary-text="$i18n{seaPenLabel}"
+                primary-text="AI Prompting"
                 secondary-text="$i18n{seaPenPoweredByGoogleAi}"
                 role="option"
                 src="[[item.preview]]"
@@ -207,7 +217,7 @@
               <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
                 <div slot="secondaryText" class="secondary-text">
                   <cr-tooltip-icon
-                      id="tooltipIcon"
+                      class="tooltip-icon"
                       icon-class="personalization:managed"
                       tooltip-text="$i18n{managedSetting}"
                       icon-aria-label="$i18n{managedSetting}">
@@ -216,7 +226,35 @@
                 </div>
               </template>
             </wallpaper-grid-item>
-            <div id="experimentTag">[[getSeaPenTileTagLabel_(item)]]</div>
+            <div id="freeformTileTag" class="tile-tag">[[getSeaPenTileTagLabel_(item)]]</div>
+          </template>
+          <template is="dom-if" if="[[isSeaPenTemplatesTile_(item)]]" restamp>
+            <wallpaper-grid-item
+                data-sea-pen
+                data-is-promoted-tile
+                aria-describedby="templatesTileTag"
+                aria-posinset$="[[getAriaIndex_(index)]]"
+                disabled="[[!isSelectableTile_(item)]]"
+                index="[[index]]"
+                on-wallpaper-grid-item-selected="onCollectionSelected_"
+                primary-text="[[getSeaPenTemplatesTileLabel_()]]"
+                secondary-text="$i18n{seaPenPoweredByGoogleAi}"
+                role="option"
+                src="[[item.preview]]"
+                tabindex$="[[tabIndex]]">
+              <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
+                <div slot="secondaryText" class="secondary-text">
+                  <cr-tooltip-icon
+                      class="tooltip-icon"
+                      icon-class="personalization:managed"
+                      tooltip-text="$i18n{managedSetting}"
+                      icon-aria-label="$i18n{managedSetting}">
+                  </cr-tooltip-icon>
+                  <p title$="$i18n{seaPenManagedLabel}">$i18n{seaPenManagedLabel}</p>
+                </div>
+              </template>
+            </wallpaper-grid-item>
+            <div id="templatesTileTag" class="tile-tag">[[getSeaPenTileTagLabel_(item)]]</div>
           </template>
           <template is="dom-if" if="[[isOnlineTile_(item)]]">
             <wallpaper-grid-item aria-posinset$="[[getAriaIndex_(index)]]"
