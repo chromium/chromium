@@ -21,9 +21,6 @@
 # crbug.com/339502391
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 
-# crbug.com/339896162
--org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.testContinueButtonWithAnAccountOtherThanTheSignedInAccount
-
 # crbug.com/341168292
 -org.chromium.chrome.browser.quick_delete.QuickDeleteControllerTest.*
 -org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawableRenderTest.*
