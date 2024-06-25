@@ -20,9 +20,6 @@ cast_channel::CastTransportTest::logger_
 content::IndexedDBDispatcherHost::indexed_db_context_
 ServiceProcessState::state_
 
-# Populated manually - requires a rewrite in a generated file
-gpu::MockTransferBuffer::ExpectedMemoryInfo::ptr
-
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
 
