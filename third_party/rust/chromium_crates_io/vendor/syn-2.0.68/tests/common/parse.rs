@@ -15,13 +15,10 @@ pub fn librustc_expr(input: &str) -> Option<P<ast::Expr>> {
     match panic::catch_unwind(|| {
         let locale_resources = rustc_driver::DEFAULT_LOCALE_RESOURCES.to_vec();
         let sess = ParseSess::new(locale_resources);
-        let e = parse::new_parser_from_source_str(
-            &sess,
-            FileName::Custom("test_precedence".to_string()),
-            input.to_string(),
-        )
-        .parse_expr();
-        match e {
+        let name = FileName::Custom("test_precedence".to_string());
+        let mut parser = parse::new_parser_from_source_str(&sess, name, input.to_string()).unwrap();
+        let presult = parser.parse_expr();
+        match presult {
             Ok(expr) => Some(expr),
             Err(diagnostic) => {
                 diagnostic.emit();

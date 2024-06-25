@@ -24,20 +24,24 @@ mod macros;
 mod repo;
 
 use std::fs;
+use std::path::Path;
 use std::time::{Duration, Instant};
 
 #[cfg(not(syn_only))]
 mod tokenstream_parse {
     use proc_macro2::TokenStream;
+    use std::path::Path;
     use std::str::FromStr;
 
-    pub fn bench(content: &str) -> Result<(), ()> {
+    pub fn bench(_path: &Path, content: &str) -> Result<(), ()> {
         TokenStream::from_str(content).map(drop).map_err(drop)
     }
 }
 
 mod syn_parse {
-    pub fn bench(content: &str) -> Result<(), ()> {
+    use std::path::Path;
+
+    pub fn bench(_path: &Path, content: &str) -> Result<(), ()> {
         syn::parse_file(content).map(drop).map_err(drop)
     }
 }
@@ -52,14 +56,16 @@ mod librustc_parse {
     extern crate rustc_session;
     extern crate rustc_span;
 
+    use crate::repo;
     use rustc_data_structures::sync::Lrc;
     use rustc_error_messages::FluentBundle;
     use rustc_errors::{emitter::Emitter, translation::Translate, DiagCtxt, DiagInner};
     use rustc_session::parse::ParseSess;
     use rustc_span::source_map::{FilePathMapping, SourceMap};
-    use rustc_span::{edition::Edition, FileName};
+    use rustc_span::FileName;
+    use std::path::Path;
 
-    pub fn bench(content: &str) -> Result<(), ()> {
+    pub fn bench(path: &Path, content: &str) -> Result<(), ()> {
         struct SilentEmitter;
 
         impl Emitter for SilentEmitter {
@@ -78,16 +84,16 @@ mod librustc_parse {
             }
         }
 
-        rustc_span::create_session_if_not_set_then(Edition::Edition2018, |_| {
+        let edition = repo::edition(path).parse().unwrap();
+        rustc_span::create_session_if_not_set_then(edition, |_| {
             let source_map = Lrc::new(SourceMap::new(FilePathMapping::empty()));
             let emitter = Box::new(SilentEmitter);
             let handler = DiagCtxt::new(emitter);
             let sess = ParseSess::with_dcx(handler, source_map);
-            if let Err(diagnostic) = rustc_parse::parse_crate_from_source_str(
-                FileName::Custom("bench".to_owned()),
-                content.to_owned(),
-                &sess,
-            ) {
+            let name = FileName::Custom("bench".to_owned());
+            let mut parser =
+                rustc_parse::new_parser_from_source_str(&sess, name, content.to_owned()).unwrap();
+            if let Err(diagnostic) = parser.parse_crate_mod() {
                 diagnostic.cancel();
                 return Err(());
             };
@@ -98,13 +104,15 @@ mod librustc_parse {
 
 #[cfg(not(syn_only))]
 mod read_from_disk {
-    pub fn bench(content: &str) -> Result<(), ()> {
+    use std::path::Path;
+
+    pub fn bench(_path: &Path, content: &str) -> Result<(), ()> {
         let _ = content;
         Ok(())
     }
 }
 
-fn exec(mut codepath: impl FnMut(&str) -> Result<(), ()>) -> Duration {
+fn exec(mut codepath: impl FnMut(&Path, &str) -> Result<(), ()>) -> Duration {
     let begin = Instant::now();
     let mut success = 0;
     let mut total = 0;
@@ -123,7 +131,7 @@ fn exec(mut codepath: impl FnMut(&str) -> Result<(), ()>) -> Duration {
                 return;
             }
             let content = fs::read_to_string(path).unwrap();
-            let ok = codepath(&content).is_ok();
+            let ok = codepath(path, &content).is_ok();
             success += ok as usize;
             total += 1;
             if !ok {
@@ -143,7 +151,7 @@ fn main() {
             [
                 $(
                     $(#[$cfg])*
-                    (stringify!($name), $name::bench as fn(&str) -> Result<(), ()>),
+                    (stringify!($name), $name::bench as fn(&Path, &str) -> Result<(), ()>),
                 )*
             ]
         };
@@ -153,7 +161,7 @@ fn main() {
     {
         let mut lines = 0;
         let mut files = 0;
-        exec(|content| {
+        exec(|_path, content| {
             lines += content.lines().count();
             files += 1;
             Ok(())

@@ -113,6 +113,7 @@ use proc_macro2::TokenStream;
 
 // Not public API.
 #[doc(hidden)]
+#[track_caller]
 pub fn parse<T: ParseQuote>(token_stream: TokenStream) -> T {
     let parser = T::parse;
     match parser.parse2(token_stream) {

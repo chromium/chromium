@@ -249,7 +249,7 @@
 //!   dynamic library libproc_macro from rustc toolchain.
 
 // Syn types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/syn/2.0.66")]
+#![doc(html_root_url = "https://docs.rs/syn/2.0.68")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_op_in_unsafe_fn)]
 #![allow(non_camel_case_types)]
@@ -536,6 +536,7 @@ mod verbatim;
 #[cfg(all(feature = "parsing", feature = "full"))]
 mod whitespace;
 
+#[rustfmt::skip] // https://github.com/rust-lang/rustfmt/issues/6176
 mod gen {
     /// Syntax tree traversal to transform the nodes of an owned syntax tree.
     ///

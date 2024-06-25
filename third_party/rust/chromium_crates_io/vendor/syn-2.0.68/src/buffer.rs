@@ -20,8 +20,9 @@ enum Entry {
     Ident(Ident),
     Punct(Punct),
     Literal(Literal),
-    // End entries contain the offset (negative) to the start of the buffer.
-    End(isize),
+    // End entries contain the offset (negative) to the start of the buffer, and
+    // offset (negative) to the matching Group entry.
+    End(isize, isize),
 }
 
 /// A buffer that can be efficiently traversed multiple times, unlike
@@ -42,12 +43,15 @@ impl TokenBuffer {
                 TokenTree::Literal(literal) => entries.push(Entry::Literal(literal)),
                 TokenTree::Group(group) => {
                     let group_start_index = entries.len();
-                    entries.push(Entry::End(0)); // we replace this below
+                    entries.push(Entry::End(0, 0)); // we replace this below
                     Self::recursive_new(entries, group.stream());
                     let group_end_index = entries.len();
-                    entries.push(Entry::End(-(group_end_index as isize)));
-                    let group_end_offset = group_end_index - group_start_index;
-                    entries[group_start_index] = Entry::Group(group, group_end_offset);
+                    let group_offset = group_end_index - group_start_index;
+                    entries.push(Entry::End(
+                        -(group_end_index as isize),
+                        -(group_offset as isize),
+                    ));
+                    entries[group_start_index] = Entry::Group(group, group_offset);
                 }
             }
         }
@@ -66,7 +70,7 @@ impl TokenBuffer {
     pub fn new2(stream: TokenStream) -> Self {
         let mut entries = Vec::new();
         Self::recursive_new(&mut entries, stream);
-        entries.push(Entry::End(-(entries.len() as isize)));
+        entries.push(Entry::End(-(entries.len() as isize), 0));
         Self {
             entries: entries.into_boxed_slice(),
         }
@@ -111,7 +115,7 @@ impl<'a> Cursor<'a> {
         // object in global storage.
         struct UnsafeSyncEntry(Entry);
         unsafe impl Sync for UnsafeSyncEntry {}
-        static EMPTY_ENTRY: UnsafeSyncEntry = UnsafeSyncEntry(Entry::End(0));
+        static EMPTY_ENTRY: UnsafeSyncEntry = UnsafeSyncEntry(Entry::End(0, 0));
 
         Cursor {
             ptr: &EMPTY_ENTRY.0,
@@ -128,7 +132,7 @@ impl<'a> Cursor<'a> {
         // past it, unless `ptr == scope`, which means that we're at the edge of
         // our cursor's scope. We should only have `ptr != scope` at the exit
         // from None-delimited groups entered with `ignore_none`.
-        while let Entry::End(_) = unsafe { &*ptr } {
+        while let Entry::End(..) = unsafe { &*ptr } {
             if ptr == scope {
                 break;
             }
@@ -300,7 +304,7 @@ impl<'a> Cursor<'a> {
             Entry::Literal(literal) => (literal.clone().into(), 1),
             Entry::Ident(ident) => (ident.clone().into(), 1),
             Entry::Punct(punct) => (punct.clone().into(), 1),
-            Entry::End(_) => return None,
+            Entry::End(..) => return None,
         };
 
         let rest = unsafe { Cursor::create(self.ptr.add(len), self.scope) };
@@ -309,13 +313,20 @@ impl<'a> Cursor<'a> {
 
     /// Returns the `Span` of the current token, or `Span::call_site()` if this
     /// cursor points to eof.
-    pub fn span(self) -> Span {
+    pub fn span(mut self) -> Span {
         match self.entry() {
             Entry::Group(group, _) => group.span(),
             Entry::Literal(literal) => literal.span(),
             Entry::Ident(ident) => ident.span(),
             Entry::Punct(punct) => punct.span(),
-            Entry::End(_) => Span::call_site(),
+            Entry::End(_, offset) => {
+                self.ptr = unsafe { self.ptr.offset(*offset) };
+                if let Entry::Group(group, _) = self.entry() {
+                    group.span_close()
+                } else {
+                    Span::call_site()
+                }
+            }
         }
     }
 
@@ -325,23 +336,6 @@ impl<'a> Cursor<'a> {
     pub(crate) fn prev_span(mut self) -> Span {
         if start_of_buffer(self) < self.ptr {
             self.ptr = unsafe { self.ptr.offset(-1) };
-            if let Entry::End(_) = self.entry() {
-                // Locate the matching Group begin token.
-                let mut depth = 1;
-                loop {
-                    self.ptr = unsafe { self.ptr.offset(-1) };
-                    match self.entry() {
-                        Entry::Group(group, _) => {
-                            depth -= 1;
-                            if depth == 0 {
-                                return group.span();
-                            }
-                        }
-                        Entry::End(_) => depth += 1,
-                        Entry::Literal(_) | Entry::Ident(_) | Entry::Punct(_) => {}
-                    }
-                }
-            }
         }
         self.span()
     }
@@ -354,7 +348,7 @@ impl<'a> Cursor<'a> {
         self.ignore_none();
 
         let len = match self.entry() {
-            Entry::End(_) => return None,
+            Entry::End(..) => return None,
 
             // Treat lifetimes as a single tt for the purposes of 'skip'.
             Entry::Punct(punct) if punct.as_char() == '\'' && punct.spacing() == Spacing::Joint => {
@@ -409,7 +403,7 @@ pub(crate) fn same_buffer(a: Cursor, b: Cursor) -> bool {
 fn start_of_buffer(cursor: Cursor) -> *const Entry {
     unsafe {
         match &*cursor.scope {
-            Entry::End(offset) => cursor.scope.offset(*offset),
+            Entry::End(offset, _) => cursor.scope.offset(*offset),
             _ => unreachable!(),
         }
     }
@@ -422,13 +416,6 @@ pub(crate) fn cmp_assuming_same_buffer(a: Cursor, b: Cursor) -> Ordering {
 pub(crate) fn open_span_of_group(cursor: Cursor) -> Span {
     match cursor.entry() {
         Entry::Group(group, _) => group.span_open(),
-        _ => cursor.span(),
-    }
-}
-
-pub(crate) fn close_span_of_group(cursor: Cursor) -> Span {
-    match cursor.entry() {
-        Entry::Group(group, _) => group.span_close(),
         _ => cursor.span(),
     }
 }

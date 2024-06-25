@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.61"
 name = "syn"
-version = "2.0.66"
+version = "2.0.68"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 include = [
@@ -63,20 +63,24 @@ path = "src/lib.rs"
 doc-scrape-examples = false
 
 [[test]]
-name = "test_meta"
-path = "tests/test_meta.rs"
-
-[[test]]
-name = "test_stmt"
-path = "tests/test_stmt.rs"
-
-[[test]]
-name = "test_receiver"
-path = "tests/test_receiver.rs"
-
-[[test]]
 name = "regression"
 path = "tests/regression.rs"
+
+[[test]]
+name = "test_asyncness"
+path = "tests/test_asyncness.rs"
+
+[[test]]
+name = "test_attribute"
+path = "tests/test_attribute.rs"
+
+[[test]]
+name = "test_derive_input"
+path = "tests/test_derive_input.rs"
+
+[[test]]
+name = "test_expr"
+path = "tests/test_expr.rs"
 
 [[test]]
 name = "test_generics"
@@ -87,28 +91,8 @@ name = "test_grouping"
 path = "tests/test_grouping.rs"
 
 [[test]]
-name = "test_parse_stream"
-path = "tests/test_parse_stream.rs"
-
-[[test]]
-name = "test_round_trip"
-path = "tests/test_round_trip.rs"
-
-[[test]]
-name = "test_derive_input"
-path = "tests/test_derive_input.rs"
-
-[[test]]
-name = "test_visibility"
-path = "tests/test_visibility.rs"
-
-[[test]]
-name = "test_pat"
-path = "tests/test_pat.rs"
-
-[[test]]
-name = "zzz_stable"
-path = "tests/zzz_stable.rs"
+name = "test_ident"
+path = "tests/test_ident.rs"
 
 [[test]]
 name = "test_item"
@@ -119,69 +103,85 @@ name = "test_iterators"
 path = "tests/test_iterators.rs"
 
 [[test]]
-name = "test_path"
-path = "tests/test_path.rs"
-
-[[test]]
 name = "test_lit"
 path = "tests/test_lit.rs"
 
 [[test]]
-name = "test_ident"
-path = "tests/test_ident.rs"
-
-[[test]]
-name = "test_parse_quote"
-path = "tests/test_parse_quote.rs"
-
-[[test]]
-name = "test_size"
-path = "tests/test_size.rs"
-
-[[test]]
-name = "test_ty"
-path = "tests/test_ty.rs"
-
-[[test]]
-name = "test_shebang"
-path = "tests/test_shebang.rs"
-
-[[test]]
-name = "test_attribute"
-path = "tests/test_attribute.rs"
-
-[[test]]
-name = "test_asyncness"
-path = "tests/test_asyncness.rs"
-
-[[test]]
-name = "test_expr"
-path = "tests/test_expr.rs"
-
-[[test]]
-name = "test_token_trees"
-path = "tests/test_token_trees.rs"
+name = "test_meta"
+path = "tests/test_meta.rs"
 
 [[test]]
 name = "test_parse_buffer"
 path = "tests/test_parse_buffer.rs"
 
 [[test]]
+name = "test_parse_quote"
+path = "tests/test_parse_quote.rs"
+
+[[test]]
+name = "test_parse_stream"
+path = "tests/test_parse_stream.rs"
+
+[[test]]
+name = "test_pat"
+path = "tests/test_pat.rs"
+
+[[test]]
+name = "test_path"
+path = "tests/test_path.rs"
+
+[[test]]
 name = "test_precedence"
 path = "tests/test_precedence.rs"
 
+[[test]]
+name = "test_receiver"
+path = "tests/test_receiver.rs"
+
+[[test]]
+name = "test_round_trip"
+path = "tests/test_round_trip.rs"
+
+[[test]]
+name = "test_shebang"
+path = "tests/test_shebang.rs"
+
+[[test]]
+name = "test_size"
+path = "tests/test_size.rs"
+
+[[test]]
+name = "test_stmt"
+path = "tests/test_stmt.rs"
+
+[[test]]
+name = "test_token_trees"
+path = "tests/test_token_trees.rs"
+
+[[test]]
+name = "test_ty"
+path = "tests/test_ty.rs"
+
+[[test]]
+name = "test_visibility"
+path = "tests/test_visibility.rs"
+
+[[test]]
+name = "zzz_stable"
+path = "tests/zzz_stable.rs"
+
 [[bench]]
-name = "rust"
-path = "benches/rust.rs"
-harness = false
+name = "file"
+path = "benches/file.rs"
 required-features = [
     "full",
     "parsing",
 ]
 
 [[bench]]
-name = "file"
-path = "benches/file.rs"
+name = "rust"
+path = "benches/rust.rs"
+harness = false
 required-features = [
     "full",
     "parsing",
@@ -205,21 +205,11 @@ version = "1"
 [dev-dependencies.automod]
 version = "1"
 
-[dev-dependencies.flate2]
-version = "1"
-
 [dev-dependencies.insta]
-version = "1"
-
-[dev-dependencies.rayon]
 version = "1"
 
 [dev-dependencies.ref-cast]
 version = "1"
-
-[dev-dependencies.reqwest]
-version = "0.12"
-features = ["blocking"]
 
 [dev-dependencies.rustversion]
 version = "1"
@@ -227,14 +217,8 @@ version = "1"
 [dev-dependencies.syn-test-suite]
 version = "0"
 
-[dev-dependencies.tar]
-version = "0.4.16"
-
 [dev-dependencies.termcolor]
 version = "1"
-
-[dev-dependencies.walkdir]
-version = "2.3.2"
 
 [features]
 clone-impls = []
@@ -258,3 +242,19 @@ proc-macro = [
 test = ["syn-test-suite/all-features"]
 visit = []
 visit-mut = []
+
+[target."cfg(not(miri))".dev-dependencies.flate2]
+version = "1"
+
+[target."cfg(not(miri))".dev-dependencies.rayon]
+version = "1"
+
+[target."cfg(not(miri))".dev-dependencies.reqwest]
+version = "0.12"
+features = ["blocking"]
+
+[target."cfg(not(miri))".dev-dependencies.tar]
+version = "0.4.16"
+
+[target."cfg(not(miri))".dev-dependencies.walkdir]
+version = "2.3.2"

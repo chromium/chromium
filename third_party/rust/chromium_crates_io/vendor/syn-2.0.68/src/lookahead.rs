@@ -3,7 +3,7 @@ use crate::error::{self, Error};
 use crate::sealed::lookahead::Sealed;
 use crate::span::IntoSpans;
 use crate::token::Token;
-use proc_macro2::{Delimiter, Span};
+use proc_macro2::Span;
 use std::cell::RefCell;
 
 /// Support for checking the next token in a stream to decide how to parse.
@@ -160,10 +160,6 @@ impl<S> IntoSpans<S> for TokenMarker {
     fn into_spans(self) -> S {
         match self {}
     }
-}
-
-pub(crate) fn is_delimiter(cursor: Cursor, delimiter: Delimiter) -> bool {
-    cursor.group(delimiter).is_some()
 }
 
 impl<F: Copy + FnOnce(TokenMarker) -> T, T: Token> Sealed for F {}

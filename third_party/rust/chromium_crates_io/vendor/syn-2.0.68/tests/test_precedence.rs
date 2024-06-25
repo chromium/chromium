@@ -300,9 +300,10 @@ fn librustc_parenthesize(mut librustc_expr: P<ast::Expr>) -> P<ast::Expr> {
                         constness: BoundConstness::Maybe(_),
                         ..
                     },
-                ) => {}
+                )
+                | GenericBound::Outlives(..)
+                | GenericBound::Use(..) => {}
                 GenericBound::Trait(ty, _modifier) => self.visit_poly_trait_ref(ty),
-                GenericBound::Outlives(_lifetime) => {}
             }
         }
 

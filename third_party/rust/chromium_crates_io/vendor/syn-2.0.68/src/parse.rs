@@ -743,10 +743,12 @@ impl<'a> ParseBuffer<'a> {
         Punctuated::parse_terminated_with(self, parser)
     }
 
-    /// Returns whether there are tokens remaining in this stream.
+    /// Returns whether there are no more tokens remaining to be parsed from
+    /// this stream.
     ///
-    /// This method returns true at the end of the content of a set of
-    /// delimiters, as well as at the very end of the complete macro input.
+    /// This method returns true upon reaching the end of the content within a
+    /// set of delimiters, as well as at the end of the tokens provided to the
+    /// outermost parsing entry point.
     ///
     /// # Example
     ///
