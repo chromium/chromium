@@ -18,14 +18,24 @@ action("make_generated_static_table_fourcc") {
 }
 
 config("libdrm_config") {
+  # TODO(thomasanderson): Remove this hack once
+  # https://patchwork.kernel.org/patch/10545295/ lands.
+  defines = [ "typeof(x)=__typeof__(x)" ]
+
   include_dirs = [
     "src",
     "src/include",
     "src/include/drm",
   ]
 
+  # libdrm uses macros defined by <sys/types.h> which are being moved to
+  # <sys/sysmacros.h>.  GLIBC headers give a pragma warning in this case.
+  # Suppress this warning for now.  This may be removed once
+  # https://patchwork.kernel.org/patch/9628231/ lands.
+  cflags = [ "-Wno-#pragma-messages" ]
+
   # glibc version >= 2.25 explicitly include <sys/sysmacros.h>
-  cflags = [ "-DMAJOR_IN_SYSMACROS=1" ]
+  cflags += [ "-DMAJOR_IN_SYSMACROS=1" ]
 
   if (is_clang) {
     cflags += [
@@ -57,6 +67,12 @@ static_library("libdrm") {
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  cflags = [
+    # xf86drm.c uses readdir_r, which has been deprecated as of
+    # glibc-2.24.  This causes a build error when using the Debian
+    # Stretch sysroot.
+    "-Wno-deprecated-declarations",
+  ]
 
   public_configs = [ ":libdrm_config" ]
 }
