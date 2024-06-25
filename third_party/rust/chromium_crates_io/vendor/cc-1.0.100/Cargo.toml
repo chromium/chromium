@@ -10,11 +10,8 @@
 
 [package]
 name = "cc"
-version = "1.0.99"
+version = "1.0.100"
 
 [features]
-"jobserver" = []
-"libc" = []
-"once_cell" = []
 "parallel" = []
 
