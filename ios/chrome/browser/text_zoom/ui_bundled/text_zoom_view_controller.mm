@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/text_zoom/text_zoom_view_controller.h"
+#import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/text_zoom/text_zoom_constants.h"
+#import "ios/chrome/browser/text_zoom/ui_bundled/text_zoom_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
