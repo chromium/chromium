@@ -77,6 +77,10 @@ BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 // Feature flag to remove the UnsafeRestore code path.
 BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
 
+// Feature flag to enable detecting destroyed NavigationContexts. This is
+// intended to be used as a kill switch.
+BASE_DECLARE_FEATURE(kDetectDestroyedNavigationContexts);
+
 // Feature flag to enable intent detection in viewport only.
 BASE_DECLARE_FEATURE(kEnableViewportIntents);
 
