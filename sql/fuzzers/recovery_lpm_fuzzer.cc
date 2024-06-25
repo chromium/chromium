@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <ios>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -32,6 +33,7 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"
@@ -40,22 +42,44 @@
 #include "sql/fuzzers/sql_disk_corruption.pb.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
-#include "testing/libfuzzer/libfuzzer_exports.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_proto_to_string.h"
 
 namespace {
 
+std::optional<base::CommandLine> GetCommandLine() {
+  char* additional_args = std::getenv("LPM_ADDITIONAL_ARGS");
+  if (additional_args == nullptr) {
+    return std::nullopt;
+  }
+  std::vector<std::string> argv = base::SplitString(
+      additional_args, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+#if BUILDFLAG(IS_WIN)
+  std::vector<std::wstring> wargv(argv.size());
+  base::ranges::transform(
+      argv.begin(), argv.end(), wargv.begin(),
+      [](std::string str) { return std::wstring(str.begin(), str.end()); });
+  return base::CommandLine::FromArgvWithoutProgram(wargv);
+#else
+  return base::CommandLine::FromArgvWithoutProgram(argv);
+#endif
+}
+
 // Initializes and manages state shared between fuzzer iterations. Use this to
 // interact with global variables, environment variables, the filesystem, etc.
 class Environment {
  public:
   Environment()
-      : temp_dir_(MakeTempDir()), db_path_(GetTempFilePath("db.sqlite")) {
-    base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    should_dump_input_ = command_line.HasSwitch("dump_input") ||
-                         std::getenv("LPM_DUMP_NATIVE_INPUT") != nullptr;
+      : temp_dir_(MakeTempDir()),
+        db_path_(GetTempFilePath("db.sqlite")),
+        should_dump_input_(std::getenv("LPM_DUMP_NATIVE_INPUT") != nullptr) {
+    auto command_line = GetCommandLine();
+    if (command_line) {
+      should_dump_input_ =
+          should_dump_input_ || command_line->HasSwitch("dump_input");
+    }
+
     // Logging must be initialized before `ScopedLoggingSettings`. See
     // <https://crbug.com/331909454>.
     logging::InitLogging(logging::LoggingSettings{
@@ -303,13 +327,6 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   env.DeleteDbFiles();
   // Ensure that no unexpected files were created in the temp directory.
   env.AssertTempDirIsEmpty();
-}
-
-// One-time early initialization at process startup.
-extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
-  // Parse command line arguments
-  base::CommandLine::Init(*argc, *argv);
-  return 0;
 }
 
 namespace {
