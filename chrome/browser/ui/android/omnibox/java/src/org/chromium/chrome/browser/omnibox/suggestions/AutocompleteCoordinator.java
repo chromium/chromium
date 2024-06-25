@@ -28,21 +28,8 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
-import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
-import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionView;
-import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorView;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
-import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -53,7 +40,6 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -171,11 +157,12 @@ public class AutocompleteCoordinator
                 viewProvider,
                 SuggestionListViewBinder::bind);
 
+        BaseSuggestionViewBinder.resetCachedResources();
+
         mProfileSupplier = profileObservableSupplier;
         mProfileChangeCallback = this::setAutocompleteProfile;
         mProfileSupplier.addObserver(mProfileChangeCallback);
-
-        mAdapter = createAdapter(listItems);
+        mAdapter = new OmniboxSuggestionsDropdownAdapter(listItems);
 
         if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
             mRecycledViewPool = Optional.of(new PreWarmingRecycledViewPool(mAdapter, context));
@@ -250,75 +237,6 @@ public class AutocompleteCoordinator
                 mCallbacks.add(callback);
             }
         };
-    }
-
-    private OmniboxSuggestionsDropdownAdapter createAdapter(ModelList listItems) {
-        BaseSuggestionViewBinder.resetCachedResources();
-        OmniboxSuggestionsDropdownAdapter adapter =
-                new OmniboxSuggestionsDropdownAdapter(listItems);
-
-        // Register a view type for a default omnibox suggestion.
-        adapter.registerType(
-                OmniboxSuggestionUiType.DEFAULT,
-                parent ->
-                        new BaseSuggestionView<View>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
-                parent -> new EditUrlSuggestionView(parent.getContext()),
-                new EditUrlSuggestionViewBinder());
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.ANSWER_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<View>(
-                                parent.getContext(), R.layout.omnibox_answer_suggestion),
-                new BaseSuggestionViewBinder<View>(AnswerSuggestionViewBinder::bind));
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.ENTITY_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<View>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<View>(EntitySuggestionViewBinder::bind));
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.TAIL_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<TailSuggestionView>(
-                                new TailSuggestionView(parent.getContext())),
-                new BaseSuggestionViewBinder<TailSuggestionView>(TailSuggestionViewBinder::bind));
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<View>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<View>(SuggestionViewViewBinder::bind));
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-                BaseCarouselSuggestionItemViewBuilder::createView,
-                BaseCarouselSuggestionViewBinder::bind);
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.HEADER,
-                parent -> new HeaderView(parent.getContext()),
-                HeaderViewBinder::bind);
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.GROUP_SEPARATOR,
-                parent -> new GroupSeparatorView(parent.getContext()),
-                (m, v, p) -> {});
-
-        adapter.registerType(
-                OmniboxSuggestionUiType.QUERY_TILES,
-                BaseCarouselSuggestionItemViewBuilder::createView,
-                BaseCarouselSuggestionViewBinder::bind);
-
-        return adapter;
     }
 
     @Override

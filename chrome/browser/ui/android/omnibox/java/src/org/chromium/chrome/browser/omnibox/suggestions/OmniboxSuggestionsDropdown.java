@@ -240,6 +240,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         // By default RecyclerViews come with item animators.
         setItemAnimator(null);
+        addItemDecoration(new SuggestionHorizontalDivider(context));
 
         mLayoutScrollListener = new SuggestionLayoutScrollListener(context);
         setLayoutManager(mLayoutScrollListener);
