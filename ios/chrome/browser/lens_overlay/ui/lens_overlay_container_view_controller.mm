@@ -89,12 +89,14 @@ const CGFloat closeButtonTrailingPadding = 16.0;
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:16
+      configurationWithPointSize:20
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleLarge];
 
-  configuration.image = DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                                       symbolConfiguration);
+  configuration.image = SymbolWithPalette(
+      DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                     symbolConfiguration),
+      @[ UIColor.whiteColor, [UIColor colorWithWhite:0 alpha:0.2] ]);
   _closeButton.configuration = configuration;
 
   [_closeButton addTarget:self
