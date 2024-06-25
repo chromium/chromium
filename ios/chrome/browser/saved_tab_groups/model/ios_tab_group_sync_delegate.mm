@@ -19,10 +19,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -36,11 +34,8 @@ using tab_groups::utils::LocalTabGroupInfo;
 
 namespace tab_groups {
 
-IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {
-  CHECK(!browser_state_->IsOffTheRecord());
-}
+IOSTabGroupSyncDelegate::IOSTabGroupSyncDelegate(BrowserList* browser_list)
+    : browser_list_(browser_list) {}
 
 void IOSTabGroupSyncDelegate::SetTabGroupSyncService(
     TabGroupSyncService* sync_service) {
@@ -60,7 +55,7 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
   }
 
   LocalTabGroupInfo tab_group_info =
-      GetLocalTabGroupInfo(browser_state_, saved_tab_group);
+      GetLocalTabGroupInfo(browser_list_, saved_tab_group);
   if (tab_group_info.tab_group) {
     // This group already exists locally.
     return;
@@ -109,7 +104,7 @@ void IOSTabGroupSyncDelegate::CreateLocalTabGroup(
 void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
     const LocalTabGroupID& local_tab_group_id) {
   LocalTabGroupInfo tab_group_info =
-      GetLocalTabGroupInfo(browser_state_, local_tab_group_id);
+      GetLocalTabGroupInfo(browser_list_, local_tab_group_id);
   if (!tab_group_info.tab_group) {
     // The group is closed locally.
     return;
@@ -123,7 +118,7 @@ void IOSTabGroupSyncDelegate::CloseLocalTabGroup(
 void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
     const SavedTabGroup& saved_tab_group) {
   LocalTabGroupInfo tab_group_info =
-      GetLocalTabGroupInfo(browser_state_, saved_tab_group);
+      GetLocalTabGroupInfo(browser_list_, saved_tab_group);
   if (!tab_group_info.tab_group) {
     // The group is closed locally.
     return;
@@ -215,10 +210,7 @@ void IOSTabGroupSyncDelegate::UpdateLocalTabGroup(
 }
 
 Browser* IOSTabGroupSyncDelegate::GetMostActiveSceneBrowser() {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
-  std::set<Browser*> all_browsers = browser_list->AllRegularBrowsers();
-  CHECK(all_browsers.size() > 0);
+  std::set<Browser*> all_browsers = browser_list_->AllRegularBrowsers();
 
   Browser* browser = nullptr;
   for (Browser* browser_to_check : all_browsers) {

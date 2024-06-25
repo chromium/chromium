@@ -5,12 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_IOS_TAB_GROUP_SYNC_DELEGATE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/saved_tab_groups/tab_group_sync_delegate.h"
 #import "components/saved_tab_groups/types.h"
 
 class Browser;
-class ChromeBrowserState;
+class BrowserList;
 class TabGroup;
 class TabInsertionBrowserAgent;
 
@@ -32,7 +33,7 @@ namespace tab_groups {
 // IOS Subclass of the TabGroupSyncDelegate.
 class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
  public:
-  explicit IOSTabGroupSyncDelegate(ChromeBrowserState* browser_state);
+  explicit IOSTabGroupSyncDelegate(BrowserList* browser_list);
 
   IOSTabGroupSyncDelegate(const IOSTabGroupSyncDelegate&) = delete;
   IOSTabGroupSyncDelegate& operator=(const IOSTabGroupSyncDelegate&) = delete;
@@ -77,8 +78,8 @@ class IOSTabGroupSyncDelegate : public TabGroupSyncDelegate {
   void UpdateLocalGroupVisualData(utils::LocalTabGroupInfo tab_group_info,
                                   const SavedTabGroup& saved_tab_group);
 
-  ChromeBrowserState* browser_state_ = nil;
-  TabGroupSyncService* sync_service_ = nil;
+  raw_ptr<BrowserList> browser_list_ = nullptr;
+  raw_ptr<TabGroupSyncService> sync_service_ = nullptr;
 };
 
 }  // namespace tab_groups

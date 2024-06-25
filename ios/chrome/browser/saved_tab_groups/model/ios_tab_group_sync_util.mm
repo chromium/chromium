@@ -10,8 +10,6 @@
 #import "components/saved_tab_groups/types.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
@@ -21,22 +19,20 @@ namespace tab_groups {
 namespace utils {
 
 LocalTabGroupInfo GetLocalTabGroupInfo(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     const tab_groups::SavedTabGroup& saved_tab_group) {
   if (!saved_tab_group.local_group_id().has_value() ||
       saved_tab_group.saved_tabs().size() == 0) {
     return LocalTabGroupInfo{};
   }
 
-  return GetLocalTabGroupInfo(browser_state,
+  return GetLocalTabGroupInfo(browser_list,
                               saved_tab_group.local_group_id().value());
 }
 
 LocalTabGroupInfo GetLocalTabGroupInfo(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     const tab_groups::LocalTabGroupID& tab_group_id) {
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
   for (Browser* browser : browser_list->AllRegularBrowsers()) {
     WebStateList* web_state_list = browser->GetWebStateList();
     for (const TabGroup* group : web_state_list->GetGroups()) {

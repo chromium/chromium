@@ -13,7 +13,7 @@ class SavedTabGroup;
 }  // namespace tab_groups
 
 class Browser;
-class ChromeBrowserState;
+class BrowserList;
 
 namespace tab_groups {
 namespace utils {
@@ -28,13 +28,13 @@ struct LocalTabGroupInfo {
 // Find the `tab_group` and the `web_state_list` corresponding to
 // the `saved_tab_group`.
 LocalTabGroupInfo GetLocalTabGroupInfo(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     const tab_groups::SavedTabGroup& saved_tab_group);
 
 // Find the `tab_group` and the `web_state_list` corresponding to
 // the `tab_group_id`.
 LocalTabGroupInfo GetLocalTabGroupInfo(
-    ChromeBrowserState* browser_state,
+    BrowserList* browser_list,
     const tab_groups::LocalTabGroupID& tab_group_id);
 
 }  // namespace utils

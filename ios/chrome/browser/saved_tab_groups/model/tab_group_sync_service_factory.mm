@@ -18,6 +18,7 @@
 #import "components/sync/model/model_type_store_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
@@ -67,6 +68,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   auto model = std::make_unique<SavedTabGroupModel>();
   ChromeBrowserState* browser_state = static_cast<ChromeBrowserState*>(context);
+  CHECK(!browser_state->IsOffTheRecord());
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(browser_state);
 
   std::unique_ptr<TabGroupStoreDelegate> tab_group_store_delegate =
@@ -89,7 +91,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
           std::move(migrated_android_local_ids), std::move(metrics_logger));
 
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate =
-      std::make_unique<IOSTabGroupSyncDelegate>(browser_state);
+      std::make_unique<IOSTabGroupSyncDelegate>(
+          BrowserListFactory::GetForBrowserState(browser_state));
   delegate->SetTabGroupSyncService(service.get());
 
   service->SetCoordinator(std::make_unique<TabGroupSyncCoordinator>(

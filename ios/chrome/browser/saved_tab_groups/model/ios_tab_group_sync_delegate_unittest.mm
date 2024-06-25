@@ -103,7 +103,7 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     browser_list_->AddBrowser(browser_);
     browser_list_->AddBrowser(browser_same_browser_state_);
 
-    delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(browser_state_.get());
+    delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(browser_list_);
     delegate_->SetTabGroupSyncService(mock_service_);
   }
 
