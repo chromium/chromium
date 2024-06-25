@@ -799,7 +799,9 @@ suite('TabSearchAppTest', () => {
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
     keyDownOn(tabSearchPage.getSearchInput(), 0, [], 'Enter');
-    await testProxy.whenCalled('switchToTab');
+    // Assert switchToTab() was called appropriately for an unfiltered tab list.
+    const [tabInfo] = await testProxy.whenCalled('switchToTab');
+    assertEquals(1, tabInfo.tabId);
   });
 
   test('KeyPressOnItemTriggersActions', async () => {
@@ -811,6 +813,8 @@ suite('TabSearchAppTest', () => {
         tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
 
     keyDownOn(tabSearchItem, 0, [], 'Enter');
-    await testProxy.whenCalled('switchToTab');
+    // Assert switchToTab() was called appropriately for an unfiltered tab list.
+    const [tabInfo] = await testProxy.whenCalled('switchToTab');
+    assertEquals(1, tabInfo.tabId);
   });
 });
