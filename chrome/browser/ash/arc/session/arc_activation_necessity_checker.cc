@@ -31,20 +31,13 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
   // If ARC is running in a container, it's already started on the login screen
   // as a mini instance. In that case, just activate it.
   if (!IsArcVmEnabled()) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  // If ARC on Demand is not enabled for unmanaged user.
-  if (!policy_util::IsAccountManaged(profile_) &&
-      !base::FeatureList::IsEnabled(kArcOnDemandV2)) {
-    std::move(callback).Run(true);
+    OnChecked(std::move(callback), true);
     return;
   }
 
   // Activate ARC if the package list held by ArcAppListPrefs is not up to date.
   if (!profile_->GetPrefs()->GetBoolean(arc::prefs::kArcPackagesIsUpToDate)) {
-    std::move(callback).Run(true);
+    OnChecked(std::move(callback), true);
     return;
   }
 
@@ -55,7 +48,7 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
   for (const auto& package_name : package_names) {
     auto package = app_list->GetPackage(package_name);
     if (package && !package->preinstalled) {
-      std::move(callback).Run(true);
+      OnChecked(std::move(callback), true);
       return;
     }
   }
@@ -63,7 +56,21 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
   // If ADB sideloading is enabled, activate ARC. Otherwise, no need to
   // activate.
   adb_sideloading_availability_delegate_->CanChangeAdbSideloading(
-      std::move(callback));
+      base::BindOnce(&ArcActivationNecessityChecker::OnChecked,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
+                                              bool result) {
+  base::UmaHistogramBoolean("Arc.ArcOnDemandV2.ActivationShouldBeDelayed",
+                            !result);
+  // If V2 flag is disabled, always activate ARC for unmanaged users.
+  // Setting result to true means ARC should be activated.
+  if (!base::FeatureList::IsEnabled(kArcOnDemandV2) &&
+      !policy_util::IsAccountManaged(profile_)) {
+    result = true;
+  }
+  std::move(callback).Run(result);
 }
 
 }  // namespace arc

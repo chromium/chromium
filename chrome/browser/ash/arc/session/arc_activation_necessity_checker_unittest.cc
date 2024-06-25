@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
+
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
@@ -15,10 +17,10 @@
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/arc/session/arc_activation_necessity_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -124,45 +126,61 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 };
 
 TEST_F(ArcActivationNecessityCheckerTest, NotARCVM) {
+  base::HistogramTester histogram_tester;
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       ash::switches::kEnableArcVm);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserEnabled) {
+  base::HistogramTester histogram_tester;
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kArcOnDemandV2);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", true, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, UnmanagedUserDisabled) {
+  base::HistogramTester histogram_tester;
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", true, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, AdbSideloadingIsAvailable) {
+  base::HistogramTester histogram_tester;
   adb_sideloading_availability_delegate_.set_result(true);
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, PacakgeListIsNotUpToDate) {
+  base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kArcPackagesIsUpToDate, false);
 
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, AppIsInstalled) {
+  base::HistogramTester histogram_tester;
   auto package_info = mojom::ArcPackageInfo::New();
   package_info->package_name = "com.example.third_party_app";
   app_instance_->SendPackageAdded(std::move(package_info));
@@ -170,12 +188,17 @@ TEST_F(ArcActivationNecessityCheckerTest, AppIsInstalled) {
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", false, 1);
 }
 
 TEST_F(ArcActivationNecessityCheckerTest, NoNeedToActivate) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_FALSE(future.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", true, 1);
 }
 
 }  // namespace

@@ -32,9 +32,11 @@ class ArcActivationNecessityChecker {
   void Check(CheckCallback callback);
 
  private:
+  void OnChecked(CheckCallback callback, bool result);
   const raw_ptr<Profile> profile_;
   const raw_ptr<AdbSideloadingAvailabilityDelegate>
       adb_sideloading_availability_delegate_;  // Owned by ArcSessionManager.
+  base::WeakPtrFactory<ArcActivationNecessityChecker> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

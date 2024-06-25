@@ -638,12 +638,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ArcOnDemand.ActivationIsDelayed" enum="Boolean"
-    expires_after="2025-01-26">
+    expires_after="2025-05-31">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>
     Records whether ARC activation is delayed by ARC on Demand or not. Recorded
     on a regular boot.
+  </summary>
+</histogram>
+
+<histogram name="Arc.ArcOnDemandV2.ActivationShouldBeDelayed" enum="Boolean"
+    expires_after="2025-05-31">
+  <owner>yuholong@google.com</owner>
+  <owner>arcvm-eng@google.com</owner>
+  <summary>
+    Recorded during every regular boot, regardless of feature flag. Returns
+    whether the ArcOnDemandV2 triggering condition is met (ARC should be
+    activated later in an on-demand manner). This is different from
+    ActivationIsDelayed as this focuses on the triggering conditions without
+    taking into acccount the feature flag.
   </summary>
 </histogram>
 
