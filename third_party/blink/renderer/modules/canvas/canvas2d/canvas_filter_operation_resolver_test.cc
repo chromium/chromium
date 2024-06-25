@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/callback.h"  // IWYU pragma: keep (needed by GarbageCollectedIs)
 #include "base/strings/stringprintf.h"
@@ -200,10 +201,9 @@ using FilterArrayTest = TestWithParam<FilterTestParams>;
 TEST_P(FilterArrayTest, CreatesFilterOperationsFromObjectArray) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  CHECK_DEREF(scope.GetExecutionContext());
+  CHECK(scope.GetExecutionContext());
   HeapVector<ScriptValue> filters =
       CHECK_DEREF(ParseFilter(scope, GetParam().filter)).GetAsObjectArray();
-  CHECK_DEREF(scope.GetExecutionContext());
   EXPECT_THAT(CanvasFilterOperationResolver::CreateFilterOperationsFromList(
                   filters, CHECK_DEREF(scope.GetExecutionContext()),
                   scope.GetExceptionState())

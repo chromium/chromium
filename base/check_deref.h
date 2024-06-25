@@ -32,7 +32,10 @@ namespace logging {
   ::logging::CheckDeref(ptr, #ptr " != nullptr", __FILE__, __LINE__)
 
 template <typename T>
-T& CheckDeref(T* ptr, const char* message, const char* file, int line) {
+[[nodiscard]] T& CheckDeref(T* ptr,
+                            const char* message,
+                            const char* file,
+                            int line) {
   // Note: we can't just call `CHECK_NE(ptr, nullptr)` here, as that would
   // cause the error to be reported from this header, and we want the error
   // to be reported at the file and line of the caller.

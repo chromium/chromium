@@ -622,7 +622,7 @@ TEST(CheckTest, CheckDerefOfPointer) {
 TEST(CheckDeathTest, CheckDerefOfNullPointer) {
   std::string* null_pointer = nullptr;
   EXPECT_CHECK("Check failed: null_pointer != nullptr. ",
-               CHECK_DEREF(null_pointer));
+               std::ignore = CHECK_DEREF(null_pointer));
 }
 
 // Test CHECK_DEREF of `const T*`
@@ -640,7 +640,7 @@ TEST(CheckTest, CheckDerefOfConstPointer) {
 TEST(CheckDeathTest, CheckDerefOfConstNullPointer) {
   std::string* const_null_pointer = nullptr;
   EXPECT_CHECK("Check failed: const_null_pointer != nullptr. ",
-               CHECK_DEREF(const_null_pointer));
+               std::ignore = CHECK_DEREF(const_null_pointer));
 }
 
 TEST(CheckDeathTest, CheckNotFatalUntil) {
