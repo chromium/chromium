@@ -37,7 +37,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
  public:
   ServiceWorkerMainResourceHandle(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-      ServiceWorkerAccessedCallback on_service_worker_accessed);
+      ServiceWorkerAccessedCallback on_service_worker_accessed,
+      base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
+          nullptr);
 
   ServiceWorkerMainResourceHandle(const ServiceWorkerMainResourceHandle&) =
       delete;
@@ -54,12 +56,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
       ScopedServiceWorkerClient scoped_service_worker_client);
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client();
-
-  void set_parent_service_worker_client(
-      base::WeakPtr<ServiceWorkerClient> service_worker_client) {
-    DCHECK(!parent_service_worker_client_);
-    parent_service_worker_client_ = std::move(service_worker_client);
-  }
 
   base::WeakPtr<ServiceWorkerClient> parent_service_worker_client() {
     return parent_service_worker_client_;
@@ -80,12 +76,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
  private:
   std::unique_ptr<ScopedServiceWorkerClient> scoped_service_worker_client_;
 
-  // Only used for workers with a blob URL.
-  base::WeakPtr<ServiceWorkerClient> parent_service_worker_client_;
+  // Only set and used for workers with a blob URL.
+  const base::WeakPtr<ServiceWorkerClient> parent_service_worker_client_;
 
-  ServiceWorkerAccessedCallback service_worker_accessed_callback_;
+  const ServiceWorkerAccessedCallback service_worker_accessed_callback_;
 
-  scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
+  const scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceHandle> weak_factory_{this};
 };

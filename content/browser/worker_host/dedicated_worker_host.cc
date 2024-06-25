@@ -290,22 +290,22 @@ void DedicatedWorkerHost::StartScriptLoad(
   // used for subresource loading on the worker.
   file_url_support_ = creator_origin_.scheme() == url::kFileScheme;
 
-  service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
-      storage_partition_impl->GetServiceWorkerContext(), base::DoNothing());
-
   // For blob URL workers, inherit the controller from the worker's parent.
   // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
   // Also, we need the worker's parent to set FetchEvent::client_id.
+  base::WeakPtr<ServiceWorkerClient> parent_service_worker_client;
   if (creator_render_frame_host) {
     // The creator of this worker is a frame.
-    service_worker_handle_->set_parent_service_worker_client(
-        creator_render_frame_host->GetLastCommittedServiceWorkerClient());
+    parent_service_worker_client =
+        creator_render_frame_host->GetLastCommittedServiceWorkerClient();
   } else {
-    base::WeakPtr<ServiceWorkerClient> creator_service_worker_client =
+    parent_service_worker_client =
         creator_worker->service_worker_handle()->service_worker_client();
-    service_worker_handle_->set_parent_service_worker_client(
-        creator_service_worker_client);
   }
+
+  service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
+      storage_partition_impl->GetServiceWorkerContext(), base::DoNothing(),
+      std::move(parent_service_worker_client));
 
   network::mojom::ClientSecurityStatePtr client_security_state;
   if (creator_render_frame_host) {
