@@ -602,6 +602,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesTabResumptionSentence", IDS_NTP_MODULES_TAB_RESUMPTION_SENTENCE},
       {"modulesTabResumptionDevicePrefix",
        IDS_NTP_MODULES_TAB_RESUMPTION_DEVICE_PREFIX},
+      {"modulesMostRelevantTabResumptionTitle",
+       IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE},
+      {"modulesMostRelevantTabResumptionSeeMore",
+       IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_SEE_MORE},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},
