@@ -315,18 +315,20 @@ void GlanceableTrayBubbleView::OnDidApplyDisplayChanges() {
 }
 
 void GlanceableTrayBubbleView::OnExpandStateChanged(GlanceablesContext context,
-                                                    bool is_expanded) {
+                                                    bool is_expanded,
+                                                    bool expand_by_overscroll) {
   // If one of the `GlanceablesTimeManagementBubbleView` is expanded, collapse
   // the other.
   if (context == GlanceablesContext::kClassroom && tasks_bubble_view_) {
-    tasks_bubble_view_->SetExpandState(!is_expanded);
+    tasks_bubble_view_->SetExpandState(!is_expanded, expand_by_overscroll);
     SetLastExpandedGlanceables(is_expanded ? GlanceablesContext::kClassroom
                                            : GlanceablesContext::kTasks);
     return;
   }
 
   if (context == GlanceablesContext::kTasks && classroom_bubble_student_view_) {
-    classroom_bubble_student_view_->SetExpandState(!is_expanded);
+    classroom_bubble_student_view_->SetExpandState(!is_expanded,
+                                                   expand_by_overscroll);
     SetLastExpandedGlanceables(is_expanded ? GlanceablesContext::kTasks
                                            : GlanceablesContext::kClassroom);
     return;

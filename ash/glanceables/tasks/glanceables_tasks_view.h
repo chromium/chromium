@@ -70,7 +70,7 @@ class ASH_EXPORT GlanceablesTasksView
   // Creates `this` view's own background and updates layout accordingly.
   void CreateElevatedBackground();
 
-  void SetExpandState(bool is_expanded);
+  void SetExpandState(bool is_expanded, bool expand_by_overscroll = false);
   void EndResizeAnimationForTest();
 
  private:

@@ -392,12 +392,13 @@ void GlanceablesTasksView::CreateElevatedBackground() {
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   expand_button_->SetVisible(true);
   expand_button_->SetExpanded(is_expanded_);
-  content_scroll_view_->SetOnOverscrollCallback(
-      base::BindRepeating(&GlanceablesTasksView::SetExpandState,
-                          base::Unretained(this), /*is_expanded=*/false));
+  content_scroll_view_->SetOnOverscrollCallback(base::BindRepeating(
+      &GlanceablesTasksView::SetExpandState, base::Unretained(this),
+      /*is_expanded=*/false, /*expand_by_overscroll=*/true));
 }
 
-void GlanceablesTasksView::SetExpandState(bool is_expanded) {
+void GlanceablesTasksView::SetExpandState(bool is_expanded,
+                                          bool expand_by_overscroll) {
   if (is_expanded_ == is_expanded) {
     return;
   }
@@ -409,6 +410,14 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded) {
   content_scroll_view_->SetVisible(is_expanded_);
   task_list_combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
+
+  if (is_expanded) {
+    if (expand_by_overscroll) {
+      content_scroll_view_->LockScroll();
+    } else {
+      content_scroll_view_->UnlockScroll();
+    }
+  }
 
   // Move the `kScrollViewBottomMargin` to the interior margin when the tasks is
   // collapsed to keep the bottom margin that was used in the scroll view.
@@ -423,7 +432,8 @@ void GlanceablesTasksView::SetExpandState(bool is_expanded) {
   SetInteriorMargin(target_interior_margin);
 
   for (auto& observer : observers_) {
-    observer.OnExpandStateChanged(Context::kTasks, is_expanded_);
+    observer.OnExpandStateChanged(Context::kTasks, is_expanded_,
+                                  expand_by_overscroll);
   }
 
   AnimateResize(ResizeAnimation::Type::kContainerExpandStateChanged);

@@ -81,7 +81,7 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // Creates `this` view's own background and updates layout accordingly.
   void CreateElevatedBackground();
 
-  void SetExpandState(bool is_expanded);
+  void SetExpandState(bool is_expanded, bool expand_by_overscroll = false);
 
  private:
   // Triggers classroom bubble resize animation to new preferred size, if an

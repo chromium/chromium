@@ -31,7 +31,12 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
 
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnExpandStateChanged(Context context, bool is_expanded) = 0;
+    // Called when the bubble view expand state change to `is_expanded`.
+    // `expand_by_overscroll` is set to true if the bubble view is expanded by
+    // overscroll. Details can be found in `GlanceablesContentsScrollView`.
+    virtual void OnExpandStateChanged(Context context,
+                                      bool is_expanded,
+                                      bool expand_by_overscroll) = 0;
   };
 
   GlanceablesTimeManagementBubbleView();

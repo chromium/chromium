@@ -78,7 +78,8 @@ class ASH_EXPORT GlanceableTrayBubbleView
   // GlanceablesTimeManagementBubbleView::Observer:
   void OnExpandStateChanged(
       GlanceablesTimeManagementBubbleView::Context context,
-      bool is_expanded) override;
+      bool is_expanded,
+      bool expand_by_overscroll) override;
 
  private:
   // Creates classroom student view if needed (if the corresponding

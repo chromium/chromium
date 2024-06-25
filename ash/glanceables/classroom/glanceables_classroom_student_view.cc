@@ -322,14 +322,15 @@ void GlanceablesClassroomStudentView::CreateElevatedBackground() {
   expand_button_->SetVisible(true);
   expand_button_->SetExpanded(is_expanded_);
 
-  if (content_scroll_view_) {
-    content_scroll_view_->SetOnOverscrollCallback(
-        base::BindRepeating(&GlanceablesClassroomStudentView::SetExpandState,
-                            base::Unretained(this), /*is_expanded=*/false));
-  }
+  content_scroll_view_->SetOnOverscrollCallback(
+      base::BindRepeating(&GlanceablesClassroomStudentView::SetExpandState,
+                          base::Unretained(this), /*is_expanded=*/false,
+                          /*expand_by_overscroll=*/true));
 }
 
-void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
+void GlanceablesClassroomStudentView::SetExpandState(
+    bool is_expanded,
+    bool expand_by_overscroll) {
   if (is_expanded_ == is_expanded) {
     return;
   }
@@ -337,14 +338,21 @@ void GlanceablesClassroomStudentView::SetExpandState(bool is_expanded) {
   is_expanded_ = is_expanded;
   expand_button_->SetExpanded(is_expanded);
 
-  if (content_scroll_view_) {
-    content_scroll_view_->SetVisible(is_expanded_);
-  }
+  content_scroll_view_->SetVisible(is_expanded_);
   combo_box_view_->SetVisible(is_expanded_);
   combobox_replacement_label_->SetVisible(!is_expanded_);
 
+  if (is_expanded) {
+    if (expand_by_overscroll) {
+      content_scroll_view_->LockScroll();
+    } else {
+      content_scroll_view_->UnlockScroll();
+    }
+  }
+
   for (auto& observer : observers_) {
-    observer.OnExpandStateChanged(Context::kClassroom, is_expanded_);
+    observer.OnExpandStateChanged(Context::kClassroom, is_expanded_,
+                                  expand_by_overscroll);
   }
 
   AnimateResize();

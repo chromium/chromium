@@ -624,6 +624,77 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
+TEST_F(GlanceablesTasksAndClassroomTest, ScrollLockAfterOverscroll) {
+  // Increase the number of tasks and assignments to ensure the scroll contents
+  // overflow.
+  classroom_client()->SetAssignmentsCount(10);
+  PopulateTasks(10);
+
+  auto* const tasks_view = GetTasksView();
+  auto* const classroom_view = GetClassroomView();
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the scroll view is scrollable.
+  auto* const tasks_scroll_bar = GetTasksScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(tasks_scroll_bar->GetVisible());
+  const gfx::Point tasks_scroll_view_center =
+      GetTasksScrollView()->GetBoundsInScreen().CenterPoint();
+
+  // Set the distance that we want to scroll to the amount that is greater than
+  // the scrollable length of the scroll view.
+  const int distance_to_scroll = tasks_scroll_bar->GetMaxPosition() -
+                                 tasks_scroll_bar->GetMinPosition() + 30;
+
+  // Expand Classroom by scrolling.
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
+  const int tasks_scroll_bar_end_pos = tasks_scroll_bar->GetPosition();
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Make sure the classroom scroll view stays at its min position after
+  // overscroll.
+  const auto* const classroom_scroll_bar =
+      GetClassroomScrollView()->vertical_scroll_bar();
+  EXPECT_TRUE(classroom_scroll_bar->GetVisible());
+  EXPECT_EQ(classroom_scroll_bar->GetPosition(),
+            classroom_scroll_bar->GetMinPosition());
+
+  // After the scroll lock timer fires, the scroll view can scroll as usual.
+  const gfx::Point classroom_scroll_view_center =
+      GetClassroomScrollView()->GetBoundsInScreen().CenterPoint();
+  views::AsViewClass<GlanceablesContentsScrollView>(GetClassroomScrollView())
+      ->FireScrollLockTimerForTest();
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
+  EXPECT_GT(classroom_scroll_bar->GetPosition(),
+            classroom_scroll_bar->GetMinPosition());
+
+  // Expand Tasks by scrolling.
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                              distance_to_scroll);
+  GenerateTrackpadScrollEvent(classroom_scroll_view_center, /*upward=*/true,
+                              distance_to_scroll);
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+  // Make sure the tasks scroll view stays at its max position after overscroll.
+  EXPECT_EQ(tasks_scroll_bar->GetPosition(), tasks_scroll_bar_end_pos);
+
+  // After the scroll lock timer fires, the scroll view can scroll as usual.
+  views::AsViewClass<GlanceablesContentsScrollView>(GetTasksScrollView())
+      ->FireScrollLockTimerForTest();
+  GenerateTrackpadScrollEvent(tasks_scroll_view_center, /*upward=*/false,
+                              distance_to_scroll);
+  EXPECT_LT(classroom_scroll_bar->GetPosition(), tasks_scroll_bar_end_pos);
+}
+
 TEST_F(GlanceablesTasksAndClassroomTest,
        NonScrollableGlanceablesCanStillScrollToToggleExpand) {
   // Set a bigger display to fit classroom items.

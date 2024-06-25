@@ -23,6 +23,7 @@ namespace ash {
 namespace {
 
 constexpr base::TimeDelta kMouseWheelOverscrollDelay = base::Milliseconds(150);
+constexpr base::TimeDelta kScrollLockDelay = base::Milliseconds(400);
 
 }  // namespace
 
@@ -268,7 +269,13 @@ BEGIN_METADATA(GlanceablesContentsScrollView, ScrollBar)
 END_METADATA
 
 GlanceablesContentsScrollView::GlanceablesContentsScrollView(
-    TimeManagementContext context) {
+    TimeManagementContext context)
+    : scroll_lock_timer_(
+          FROM_HERE,
+          kScrollLockDelay,
+          base::BindRepeating(
+              &GlanceablesContentsScrollView::OnScrollLockTimerFired,
+              base::Unretained(this))) {
   auto unique_scroll_bar = std::make_unique<ScrollBar>(context);
   scroll_bar_ = unique_scroll_bar.get();
   SetVerticalScrollBar(std::move(unique_scroll_bar));
@@ -288,6 +295,25 @@ void GlanceablesContentsScrollView::SetOnOverscrollCallback(
   scroll_bar_->SetOnOverscrollCallback(std::move(callback));
 }
 
+void GlanceablesContentsScrollView::LockScroll() {
+  if (scroll_lock_) {
+    return;
+  }
+
+  scroll_lock_ = true;
+  scroll_lock_timer_.Reset();
+}
+
+void GlanceablesContentsScrollView::UnlockScroll() {
+  scroll_lock_ = false;
+  scroll_lock_timer_.Stop();
+}
+
+void GlanceablesContentsScrollView::FireScrollLockTimerForTest() {
+  scroll_lock_timer_.Stop();
+  OnScrollLockTimerFired();
+}
+
 void GlanceablesContentsScrollView::FireMouseWheelTimerForTest() {
   scroll_bar_->FireMouseWheelTimerForTest();  // IN-TEST
 }
@@ -300,9 +326,17 @@ void GlanceablesContentsScrollView::OnScrollEvent(ui::ScrollEvent* event) {
     event->SetHandled();
     event->StopPropagation();
   }
+
+  // Not handling `scroll_lock_` as unhandled scroll event will be transferred
+  // to a mouse wheel event in `Widget`.
 }
 
 bool GlanceablesContentsScrollView::OnMouseWheel(const ui::MouseWheelEvent& e) {
+  if (scroll_lock_ && scroll_bar_->GetVisible()) {
+    // Lock the scrolling by returning true without processing the event.
+    return true;
+  }
+
   // Always pass the event to `scroll_bar_` to check the overscroll.
   return scroll_bar_->OnMouseWheel(e);
 }
@@ -328,6 +362,10 @@ void GlanceablesContentsScrollView::OnGestureEvent(ui::GestureEvent* event) {
 void GlanceablesContentsScrollView::ChildPreferredSizeChanged(
     views::View* view) {
   PreferredSizeChanged();
+}
+
+void GlanceablesContentsScrollView::OnScrollLockTimerFired() {
+  scroll_lock_ = false;
 }
 
 BEGIN_METADATA(GlanceablesContentsScrollView)
