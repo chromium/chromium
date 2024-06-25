@@ -849,6 +849,7 @@ src/webgpu/shader/validation/expression/unary/address_of_and_indirection.spec.ts
 src/webgpu/shader/validation/expression/unary/arithmetic_negation.spec.ts
 src/webgpu/shader/validation/expression/unary/bitwise_complement.spec.ts
 src/webgpu/shader/validation/expression/unary/logical_negation.spec.ts
+src/webgpu/shader/validation/extension/dual_source_blending.spec.ts
 src/webgpu/shader/validation/extension/pointer_composite_access.spec.ts
 src/webgpu/shader/validation/extension/readonly_and_readwrite_storage_textures.spec.ts
 src/webgpu/shader/validation/functions/alias_analysis.spec.ts
