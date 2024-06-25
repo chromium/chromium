@@ -6,7 +6,10 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -23,6 +26,79 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 
 namespace enterprise_data_protection {
+
+namespace {
+
+enterprise_connectors::ContentAnalysisDelegate* test_delegate_ = nullptr;
+
+constexpr char kScanId[] = "scan_id";
+
+enterprise_connectors::ContentAnalysisResponse::Result CreateResult(
+    enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+        Action action) {
+  enterprise_connectors::ContentAnalysisResponse::Result result;
+  result.set_tag("dlp");
+  result.set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+
+  if (action != enterprise_connectors::ContentAnalysisResponse::Result::
+                    TriggeredRule::ACTION_UNSPECIFIED) {
+    auto* rule = result.add_triggered_rules();
+    rule->set_rule_name("paste_rule_name");
+    rule->set_action(action);
+  }
+  return result;
+}
+
+enterprise_connectors::ContentAnalysisResponse CreateResponse(
+    enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+        Action action) {
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+
+  auto* result = response.add_results();
+  *result = CreateResult(action);
+  return response;
+}
+
+class PasteTestContentAnalysisDelegate
+    : public enterprise_connectors::ContentAnalysisDelegate {
+ public:
+  PasteTestContentAnalysisDelegate(
+      enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+          Action action,
+      content::WebContents* contents,
+      ContentAnalysisDelegate::Data data,
+      ContentAnalysisDelegate::CompletionCallback callback)
+      : ContentAnalysisDelegate(contents,
+                                std::move(data),
+                                std::move(callback),
+                                safe_browsing::DeepScanAccessPoint::PASTE),
+        action_(action) {}
+
+  static std::unique_ptr<enterprise_connectors::ContentAnalysisDelegate> Create(
+      enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+          Action action,
+      content::WebContents* contents,
+      ContentAnalysisDelegate::Data data,
+      ContentAnalysisDelegate::CompletionCallback callback) {
+    auto delegate = std::make_unique<PasteTestContentAnalysisDelegate>(
+        action, contents, std::move(data), std::move(callback));
+    test_delegate_ = delegate.get();
+    return delegate;
+  }
+
+ private:
+  void UploadTextForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    StringRequestCallback(safe_browsing::BinaryUploadService::Result::SUCCESS,
+                          CreateResponse(action_));
+  }
+
+  enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::Action
+      action_;
+};
 
 class PasteAllowedRequestTest : public testing::Test {
  public:
@@ -90,6 +166,40 @@ class PasteAllowedRequestTest : public testing::Test {
   std::unique_ptr<content::WebContents> main_web_contents_;
   std::unique_ptr<content::WebContents> secondary_web_contents_;
 };
+
+class PasteAllowedRequestScanningTest : public PasteAllowedRequestTest {
+ public:
+  PasteAllowedRequestScanningTest() {
+    enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
+  }
+
+  void SetUp() override {
+    PasteAllowedRequestTest::SetUp();
+
+    helper_ = std::make_unique<
+        enterprise_connectors::test::EventReportValidatorHelper>(profile_);
+
+    enterprise_connectors::test::SetAnalysisConnector(
+        profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
+        R"({
+          "service_provider": "google",
+          "block_until_verdict": 1,
+          "minimum_data_size": 1,
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ]
+        })");
+  }
+
+ protected:
+  std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
+      helper_;
+};
+
+}  // namespace
 
 TEST_F(PasteAllowedRequestTest, AddCallbacksAndComplete) {
   PasteAllowedRequest request;
@@ -163,9 +273,7 @@ TEST_F(PasteAllowedRequestTest, SameDestinationSource) {
   ASSERT_TRUE(future.Get());
   ASSERT_EQ(future.Get()->text, kText);
 
-  // When the same document writes and then reads from the clipboard, content
-  // checks should be skipped.
-  EXPECT_EQ(0u, PasteAllowedRequest::requests_count_for_testing());
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
 
 TEST_F(PasteAllowedRequestTest, SameDestinationSource_AfterReplacement) {
@@ -220,9 +328,7 @@ TEST_F(PasteAllowedRequestTest, SameDestinationSource_AfterReplacement) {
   ASSERT_EQ(paste_future.Get()->text, kText);
   ASSERT_TRUE(paste_future.Get()->html.empty());
 
-  // When the same document writes and then reads from the clipboard, content
-  // checks should be skipped.
-  EXPECT_EQ(0u, PasteAllowedRequest::requests_count_for_testing());
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
 
 TEST_F(PasteAllowedRequestTest, DifferentDestinationSource) {
@@ -392,9 +498,7 @@ TEST_F(PasteAllowedRequestTest, EmptyData_SameSourceReplaced) {
   ASSERT_TRUE(future.Get());
   ASSERT_EQ(future.Get()->text, kText);
 
-  // When the same document writes and then reads from the clipboard, content
-  // checks should be skipped.
-  EXPECT_EQ(0u, PasteAllowedRequest::requests_count_for_testing());
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
 
 TEST_F(PasteAllowedRequestTest, EmptyData_DifferentSourceReplaced) {
@@ -472,6 +576,86 @@ TEST_F(PasteAllowedRequestTest, CleanupObsoleteScanRequests) {
       base::Microseconds(1));
   PasteAllowedRequest::CleanupObsoleteRequests();
   EXPECT_EQ(0u, PasteAllowedRequest::requests_count_for_testing());
+}
+
+TEST_F(PasteAllowedRequestScanningTest, SameDestinationSource) {
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PasteTestContentAnalysisDelegate::Create,
+                          enterprise_connectors::ContentAnalysisResponse::
+                              Result::TriggeredRule::BLOCK));
+
+  auto validator = helper_->CreateValidator();
+  validator.ExpectNoReport();
+
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  main_rfh().MarkClipboardOwner(seqno);
+
+  const std::u16string kText = u"text";
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = kText;
+
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ main_endpoint(), /*destination*/ main_endpoint(),
+      {.seqno = seqno}, clipboard_paste_data, future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  ASSERT_EQ(future.Get()->text, kText);
+
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
+}
+
+TEST_F(PasteAllowedRequestScanningTest, DifferentDestinationSource) {
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&PasteTestContentAnalysisDelegate::Create,
+                          enterprise_connectors::ContentAnalysisResponse::
+                              Result::TriggeredRule::BLOCK));
+
+  auto validator = helper_->CreateValidator();
+  validator.ExpectSensitiveDataEvent(
+      /*url*/
+      "",
+      /*tab_url*/ "",
+      /*source*/ "https://google.com/",
+      /*destination*/ "",
+      /*filename*/ "Text data",
+      /*sha*/ "",
+      /*trigger*/ "WEB_CONTENT_UPLOAD",
+      /*dlp_verdict*/
+      CreateResult(enterprise_connectors::ContentAnalysisResponse::Result::
+                       TriggeredRule::BLOCK),
+      /*mimetype*/
+      []() {
+        static std::set<std::string> set = {"text/plain"};
+        return &set;
+      }(),
+      /*size*/ 4,
+      /*result*/
+      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      /*username*/ "test-user@chromium.org",
+      /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
+      /*scan_id*/ kScanId,
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
+
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  secondary_rfh().MarkClipboardOwner(seqno);
+
+  const std::u16string kText = u"text";
+  content::ClipboardPasteData clipboard_paste_data;
+  clipboard_paste_data.text = kText;
+
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ secondary_endpoint(), /*destination*/ main_endpoint(),
+      {.seqno = seqno}, clipboard_paste_data, future.GetCallback());
+
+  ASSERT_TRUE(future.Get());
+  ASSERT_EQ(future.Get()->text, kText);
+
+  EXPECT_EQ(1u, PasteAllowedRequest::requests_count_for_testing());
 }
 
 }  // namespace enterprise_data_protection

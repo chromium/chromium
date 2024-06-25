@@ -196,6 +196,15 @@ void PasteIfAllowedByContentAnalysis(
   DCHECK(web_contents);
   DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
 
+  // Always allow if the source of the last clipboard commit was this host.
+  if (destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
+          metadata.seqno)) {
+    ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno,
+                                                  clipboard_paste_data);
+    std::move(callback).Run(std::move(clipboard_paste_data));
+    return;
+  }
+
   Profile* profile = Profile::FromBrowserContext(destination.browser_context());
   if (!profile) {
     std::move(callback).Run(std::move(clipboard_paste_data));
