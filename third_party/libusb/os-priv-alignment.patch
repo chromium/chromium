@@ -1,0 +1,43 @@
+diff --git a/third_party/libusb/src/libusb/libusbi.h b/third_party/libusb/src/libusb/libusbi.h
+index 289d43fd2911c..970d2491acdb8 100644
+--- a/third_party/libusb/src/libusb/libusbi.h
++++ b/third_party/libusb/src/libusb/libusbi.h
+@@ -39,6 +39,20 @@
+ #include "libusb.h"
+ #include "version.h"
+ 
++/* Attribute to ensure that a structure member is aligned to a natural
++ * pointer alignment. Used for os_priv member. */
++#if defined(_MSC_VER)
++#if defined(_WIN64)
++#define PTR_ALIGNED __declspec(align(8))
++#else
++#define PTR_ALIGNED __declspec(align(4))
++#endif
++#elif defined(__GNUC__)
++#define PTR_ALIGNED __attribute__((aligned(sizeof(void *))))
++#else
++#define PTR_ALIGNED
++#endif
++
+ /* Inside the libusbx code, mark all public functions as follows:
+  *   return_type API_EXPORTED function_name(params) { ... }
+  * But if the function returns a pointer, mark it as follows:
+@@ -308,7 +322,7 @@ struct libusb_device {
+ 	struct libusb_device_descriptor device_descriptor;
+ 	int attached;
+ 
+-	unsigned char os_priv
++	PTR_ALIGNED unsigned char os_priv
+ #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+ 	[] /* valid C99 code */
+ #else
+@@ -325,7 +339,7 @@ struct libusb_device_handle {
+ 	struct list_head list;
+ 	struct libusb_device *dev;
+ 	int auto_detach_kernel_driver;
+-	unsigned char os_priv
++	PTR_ALIGNED unsigned char os_priv
+ #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+ 	[] /* valid C99 code */
+ #else

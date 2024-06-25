@@ -30,3 +30,5 @@ Local Modifications:
   https://android.googlesource.com/platform/external/libusb/+/1e05092aa98d60c717929629ac16590595e08431
   as the 10.12 branch works fine on all previous OSes.
 - cherry-picked upstream 8d7616886e062
+- os-priv-alignment.patch has been applied, which is a backport of upstream's
+  ef8776ddea18ad5d2bf0a9d994c4cbfb6cc6f94d
