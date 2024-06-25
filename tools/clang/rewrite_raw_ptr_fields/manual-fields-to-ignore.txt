@@ -20,9 +20,6 @@ cast_channel::CastTransportTest::logger_
 content::IndexedDBDispatcherHost::indexed_db_context_
 ServiceProcessState::state_
 
-# Populated manually - conflicting types in an initializer list
-WebUITabStripContainerView::tab_counter_
-
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
 extensions::GlobalShortcutListenerX11::x_display_

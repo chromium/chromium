@@ -159,9 +159,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   const raw_ptr<views::WebView> web_view_;
   const raw_ptr<views::View> top_container_;
   raw_ptr<views::View> tab_contents_container_;
-  // This field is not a raw_ptr<> because of conflicting types in an
-  // initializer list.
-  RAW_PTR_EXCLUSION views::View* tab_counter_ = nullptr;
+  raw_ptr<views::View> tab_counter_ = nullptr;
 
 #if BUILDFLAG(IS_WIN)
   // If the user interacts with Windows in a way that changes the width of the

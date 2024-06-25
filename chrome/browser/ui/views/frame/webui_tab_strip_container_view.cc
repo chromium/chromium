@@ -469,7 +469,7 @@ WebUITabStripContainerView::~WebUITabStripContainerView() {
   DeinitializeWebView();
   // The TabCounter button uses |this| as a listener. We need to make
   // sure we outlive it.
-  delete tab_counter_;
+  tab_counter_.ClearAndDelete();
 }
 
 // static
