@@ -203,7 +203,7 @@ void OnNetworkPrepareRequest(const blink::Document* document, const blink::Resou
 
   std::string requestId = RecordReplayNetworkRequestId(request.InspectorId());
 
-  if (recordreplay::IsReplaying()) {
+  if (recordreplay::DependencyGraphEnabled()) {
     base::Value::Dict info;
     info.Set("kind", "networkRequest");
     info.Set("requestId", requestId);
@@ -311,7 +311,7 @@ void OnNetworkReceiveData(uint64_t inspector_id, const char* data, int length) {
 
   std::string requestId = RecordReplayNetworkRequestId(inspector_id);
 
-  if (recordreplay::IsReplaying()) {
+  if (recordreplay::DependencyGraphEnabled()) {
     base::Value::Dict info;
     info.Set("kind", "networkReceiveData");
     info.Set("requestId", requestId);
@@ -345,7 +345,7 @@ void OnNetworkFinishLoading(uint64_t inspector_id,
 
   std::string requestId = RecordReplayNetworkRequestId(inspector_id);
 
-  if (recordreplay::IsReplaying()) {
+  if (recordreplay::DependencyGraphEnabled()) {
     base::Value::Dict info;
     info.Set("kind", "networkFinishLoading");
     info.Set("requestId", requestId);
@@ -368,7 +368,7 @@ void OnNetworkFail(uint64_t inspector_id, const blink::WebURLError& error) {
 
   std::string requestId = RecordReplayNetworkRequestId(inspector_id);
 
-  if (recordreplay::IsReplaying()) {
+  if (recordreplay::DependencyGraphEnabled()) {
     base::Value::Dict info;
     info.Set("kind", "networkFail");
     info.Set("requestId", requestId);

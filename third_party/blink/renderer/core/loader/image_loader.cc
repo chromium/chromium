@@ -476,12 +476,14 @@ void ImageLoader::DoUpdateFromElement(
     bool force_blocking) {
   absl::optional<recordreplay::AutoDependencyExecution> execute;
   if (recordreplay::DependencyGraphEnabled()) {
-    recordreplay::AutoDisallowEvents disallow("ImageLoader::DoUpdateFromElement");
-    base::Value::Dict info;
-    info.Set("kind", "imageUpdateFromElement");
-    info.Set("url", element_->ImageSourceURL().GetString().Utf8());
     std::string json;
-    base::JSONWriter::Write(info, &json);
+    {
+      recordreplay::AutoDisallowEvents disallow("ImageLoader::DoUpdateFromElement");
+      base::Value::Dict info;
+      info.Set("kind", "imageUpdateFromElement");
+      info.Set("url", element_->ImageSourceURL().GetString().Utf8());
+      base::JSONWriter::Write(info, &json);
+    }
     int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
     recordreplay::AddDependencyGraphEdge(
       record_replay_created_node_id_, node_id,
@@ -983,12 +985,14 @@ void ImageLoader::DispatchPendingLoadEvent(
 
   absl::optional<recordreplay::AutoDependencyExecution> execute;
   if (recordreplay::DependencyGraphEnabled()) {
-    recordreplay::AutoDisallowEvents disallow("ImageLoader::DispatchPendingLoadEvent");
-    base::Value::Dict info;
-    info.Set("kind", "imageLoaded");
-    info.Set("url", element_->ImageSourceURL().GetString().Utf8());
     std::string json;
-    base::JSONWriter::Write(info, &json);
+    {
+      recordreplay::AutoDisallowEvents disallow("ImageLoader::DispatchPendingLoadEvent");
+      base::Value::Dict info;
+      info.Set("kind", "imageLoaded");
+      info.Set("url", element_->ImageSourceURL().GetString().Utf8());
+      base::JSONWriter::Write(info, &json);
+    }
     int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
     recordreplay::AddDependencyGraphEdge(
       record_replay_created_node_id_, node_id,

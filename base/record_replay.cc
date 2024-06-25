@@ -32,6 +32,7 @@ namespace recordreplay {
   Macro(V8RecordReplayAreEventsPassedThrough,                           \
         (const char* why), (why), bool, false)                          \
   Macro(V8RecordReplayHasDivergedFromRecording, (), (), bool, false)    \
+  Macro(V8RecordReplayUpdateDependencyGraph, (), (), bool, false)       \
   Macro(V8RecordReplayNewDependencyGraphNode,                           \
         (const char* json), (json), int, 0)                             \
   Macro(V8RecordReplayAllowSideEffects, (), (), bool, true)             \
@@ -506,7 +507,7 @@ AutoUnlockMaybeEventsDisallowed::~AutoUnlockMaybeEventsDisallowed() {
 }
 
 bool DependencyGraphEnabled() {
-  return IsReplaying() && FeatureEnabled("dependency-graph", "chromium");
+  return V8RecordReplayUpdateDependencyGraph();
 }
 
 int NewDependencyGraphNode(const char* json) {
@@ -526,7 +527,7 @@ void EndDependencyExecution() {
 }
 
 AutoMarkerDependencyExecution::AutoMarkerDependencyExecution(const char* reason, const char* name) {
-  if (IsReplaying()) {
+  if (DependencyGraphEnabled()) {
     base::Value::Dict info;
     info.Set("kind", "marker");
     info.Set("reason", reason);
@@ -539,7 +540,7 @@ AutoMarkerDependencyExecution::AutoMarkerDependencyExecution(const char* reason,
 }
 
 AutoMarkerDependencyExecution::~AutoMarkerDependencyExecution() {
-  if (IsReplaying())
+  if (DependencyGraphEnabled())
     EndDependencyExecution();
 }
 
