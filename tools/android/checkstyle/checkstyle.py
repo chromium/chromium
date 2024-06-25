@@ -16,7 +16,7 @@ import xml.dom.minidom
 _SELF_DIR = os.path.dirname(__file__)
 CHROMIUM_SRC = os.path.normpath(os.path.join(_SELF_DIR, '..', '..', '..'))
 _CHECKSTYLE_ROOT = os.path.join(CHROMIUM_SRC, 'third_party', 'checkstyle',
-                                'checkstyle-all.jar')
+                                'cipd', 'checkstyle-all.jar')
 _JAVA_PATH = os.path.join(CHROMIUM_SRC, 'third_party', 'jdk', 'current', 'bin',
                           'java')
 _STYLE_FILE = os.path.join(_SELF_DIR, 'chromium-style-5.0.xml')
