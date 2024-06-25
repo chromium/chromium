@@ -55,6 +55,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
@@ -1680,6 +1681,10 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       CanIntentionallyDeferSpeculativeRFHForRequest(
           request, current_site_instance->GetBrowserContext(),
           frame_tree_node_)) {
+    if (features::kWarmupSpareProcessCreationWhenDeferRFH.Get()) {
+      SpareRenderProcessHostManager::GetInstance().WarmupSpareRenderProcessHost(
+          dest_site_instance->GetBrowserContext());
+    }
     AppendReason(reason, "GetFrameHostForNavigation / intentional-defer");
     return base::unexpected(GetFrameHostForNavigationFailed::kIntentionalDefer);
   }

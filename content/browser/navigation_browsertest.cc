@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -9097,15 +9098,69 @@ class DeferSpeculativeRFHCreationTest : public NavigationBrowserTest {
   base::test::ScopedFeatureList render_document_feature_;
 };
 
+class DeferSpeculativeRFHCreationRenderProcessTest
+    : public NavigationBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DeferSpeculativeRFHCreationRenderProcessTest()
+      : warmup_spare_render_process_(GetParam()) {
+    always_spare_render_process_feature_list_.InitAndDisableFeature(
+        features::kSpareRendererForSitePerProcess);
+    std::map<std::string, std::string> parameters = {
+        {"warmup_spare_process", GetParam() ? "true" : "false"},
+    };
+    defer_rfh_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeferSpeculativeRFHCreation, parameters);
+    InitAndEnableRenderDocumentFeature(
+        &render_document_feature_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
+  }
+
+  bool warmup_spare_render_process() { return warmup_spare_render_process_; }
+
+  void SpareRenderProcessHostChanged(RenderProcessHost* render_process_host) {
+    spare_render_process_host_ = render_process_host;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  RenderProcessHost* spare_render_process_host() {
+    return spare_render_process_host_;
+  }
+
+  void WaitForSpareRenderProcessCreation() {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitClosure();
+    if (!spare_render_process_host_) {
+      loop.Run();
+    }
+  }
+
+ private:
+  raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
+  bool warmup_spare_render_process_;
+  base::OnceClosure quit_closure_;
+  base::test::ScopedFeatureList always_spare_render_process_feature_list_;
+  base::test::ScopedFeatureList defer_rfh_feature_list_;
+  base::test::ScopedFeatureList render_document_feature_;
+};
+
 // Verify the common flow for with DeferSpeculativeRFHCreation feature.
 // The creation of the speculative RFH will be deferred until the network
 // request is sent.
-IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
+IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
                        SpeculativeRFHCreationDeferred) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
+  SpareRenderProcessHostManager::GetInstance().CleanupSpareRenderProcessHost();
+  base::CallbackListSubscription subscription =
+      RenderProcessHost::RegisterSpareRenderProcessHostChangedCallback(
+          base::BindRepeating(&DeferSpeculativeRFHCreationRenderProcessTest::
+                                  SpareRenderProcessHostChanged,
+                              base::Unretained(this)));
 
   GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
   TestNavigationManager nav_manager(web_contents, url);
@@ -9115,6 +9170,11 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
   NavigationRequest* navigation_request =
       NavigationRequest::From(nav_manager.GetNavigationHandle());
+  if (warmup_spare_render_process()) {
+    WaitForSpareRenderProcessCreation();
+  }
+  RenderProcessHost* created_process = spare_render_process_host();
+  ASSERT_EQ(!!created_process, warmup_spare_render_process());
   ASSERT_TRUE(navigation_request);
   // The navigation manager pauses the navigation in the WillStartRequest
   // throttle. The speculative RFH will be created after the throttle completes
@@ -9138,6 +9198,10 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   ASSERT_TRUE(speculative_rfh);
   ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
             NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  if (warmup_spare_render_process()) {
+    ASSERT_EQ(speculative_rfh->GetSiteInstance()->GetProcess(),
+              created_process);
+  }
   // The speculative RFH shall become the primary RFH when the navigation is
   // committed.
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
@@ -9145,6 +9209,10 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   ASSERT_EQ(main_frame()->render_manager()->current_frame_host(),
             speculative_rfh.get());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeferSpeculativeRFHCreationRenderProcessTest,
+                         ::testing::Bool());
 
 // Verify that navigating from a crashed page will create a speculative
 // RFH at once.

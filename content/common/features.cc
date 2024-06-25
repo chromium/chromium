@@ -124,6 +124,11 @@ BASE_FEATURE(kDataUrlsHaveStableNonce,
 BASE_FEATURE(kDeferSpeculativeRFHCreation,
              "DeferSpeculativeRFHCreation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// When enabled, the browser will create the render process if necessary even
+// if the speculative render frame host creation is deferred by feature
+// DeferSpeculativeRFHCreation.
+const base::FeatureParam<bool> kWarmupSpareProcessCreationWhenDeferRFH{
+    &kDeferSpeculativeRFHCreation, "warmup_spare_process", false};
 
 // When enabled, main frame data: URLs use the serialized nonce from the origin
 // as the site URL. Otherwise, use the entire data: URL as the site URL.
