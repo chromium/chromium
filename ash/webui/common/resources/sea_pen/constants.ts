@@ -75,4 +75,13 @@ export const SEA_PEN_SUGGESTIONS: string[] = [
   'black',
   'green',
   'purple',
+  'red',
+  'yellow',
+  'gray',
+  'brown',
+  'white',
+  'teal',
+  'olive',
+  'cerulean',
+  'beige',
 ];
