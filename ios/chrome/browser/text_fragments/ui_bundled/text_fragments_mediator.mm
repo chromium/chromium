@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/text_fragments/text_fragments_mediator.h"
+#import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_mediator.h"
 
 #import <memory>
 

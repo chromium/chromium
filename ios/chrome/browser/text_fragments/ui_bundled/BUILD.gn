@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("text_fragments") {
+source_set("ui_bundled") {
   sources = [
     "text_fragments_coordinator.h",
     "text_fragments_coordinator.mm",

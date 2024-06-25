@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
+#import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h"
 
 #import <memory>
 
@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
-#import "ios/chrome/browser/ui/text_fragments/text_fragments_mediator.h"
+#import "ios/chrome/browser/text_fragments/ui_bundled/text_fragments_mediator.h"
 #import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"

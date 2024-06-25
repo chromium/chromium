@@ -50,6 +50,7 @@ include_rules = [
   "+ios/chrome/browser/sync/model/sync_error_browser_agent.h",
   "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
+  "+ios/chrome/browser/text_fragments/ui_bundled/text_fragments_coordinator.h",
   "+ios/chrome/browser/text_zoom/ui_bundled/text_zoom_coordinator.h",
   "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/ui",
