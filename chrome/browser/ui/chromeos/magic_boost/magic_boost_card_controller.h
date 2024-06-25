@@ -67,21 +67,6 @@ class MagicBoostCardController : public ReadWriteCardController {
   // in UI or not.
   virtual bool ShouldShowHmrOptIn();
 
-  // Enables or disables all the features (including Quick Answers, Orca, and
-  // Mahi).
-  virtual void SetAllFeaturesState(bool enabled);
-
-  // Enables or disables Quick Answers and Mahi.
-  virtual void SetQuickAnswersAndMahiFeaturesState(bool enabled);
-
-  // Enables or disables Orca.
-  void SetOrcaFeatureState(bool enabled) {}
-
-  bool is_orca_included() { return is_orca_included_; }
-
-  // For testing.
-  void SetIsOrcaIncludedForTest(bool include);
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void BindMagicBoostControllerCrosapiForTesting(
       mojo::PendingRemote<crosapi::mojom::MagicBoostController> pending_remote);

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -45,7 +46,7 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
         &crosapi_controller_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-    magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>();
+    magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
   }
 
   void TearDown() override {
@@ -54,7 +55,7 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
   }
 
  protected:
-  std::unique_ptr<ash::MagicBoostStateAsh> magic_boost_state_;
+  std::unique_ptr<ash::MockMagicBoostState> magic_boost_state_;
   MagicBoostCardController card_controller_;
   testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{

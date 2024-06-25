@@ -77,8 +77,7 @@ const gfx::FontList kTitleTextFontList =
 
 // MagicBoostOptInCard --------------------------------------------------------
 
-MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
-                                         const bool include_orca)
+MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller)
     : controller_(controller) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -148,31 +147,28 @@ MagicBoostOptInCard::MagicBoostOptInCard(MagicBoostCardController* controller,
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kUnbounded,
                                        /*adjust_height_for_width=*/true))
-          .AddChildren(
-              views::Builder<views::Label>()
-                  .SetText(l10n_util::GetStringUTF16(
-                      include_orca
-                          ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE
-                          : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE))
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetEnabledColorId(ui::kColorSysOnSurface)
-                  .SetAutoColorReadabilityEnabled(false)
-                  .SetSubpixelRenderingEnabled(false)
-                  .SetFontList(kTitleTextFontList)
-                  .SetMultiLine(true)
-                  .SetMaxLines(kTitleLabelMaxLines),
-              views::Builder<views::Label>()
-                  .SetText(l10n_util::GetStringUTF16(
-                      include_orca
-                          ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY
-                          : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY))
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetEnabledColorId(ui::kColorSysOnSurface)
-                  .SetAutoColorReadabilityEnabled(false)
-                  .SetSubpixelRenderingEnabled(false)
-                  .SetFontList(kBodyTextFontList)
-                  .SetMultiLine(true)
-                  .SetMaxLines(kBodyLabelMaxLines))
+          .AddChildren(views::Builder<views::Label>()
+                           .CopyAddressTo(&title_label_)
+                           .SetText(l10n_util::GetStringUTF16(
+                               IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE))
+                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                           .SetEnabledColorId(ui::kColorSysOnSurface)
+                           .SetAutoColorReadabilityEnabled(false)
+                           .SetSubpixelRenderingEnabled(false)
+                           .SetFontList(kTitleTextFontList)
+                           .SetMultiLine(true)
+                           .SetMaxLines(kTitleLabelMaxLines),
+                       views::Builder<views::Label>()
+                           .CopyAddressTo(&body_label_)
+                           .SetText(l10n_util::GetStringUTF16(
+                               IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY))
+                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                           .SetEnabledColorId(ui::kColorSysOnSurface)
+                           .SetAutoColorReadabilityEnabled(false)
+                           .SetSubpixelRenderingEnabled(false)
+                           .SetFontList(kBodyTextFontList)
+                           .SetMultiLine(true)
+                           .SetMaxLines(kBodyLabelMaxLines))
           .Build());
 
   // Create buttons container that holds two buttons.
@@ -213,8 +209,7 @@ MagicBoostOptInCard::~MagicBoostOptInCard() = default;
 // static
 views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
     MagicBoostCardController* controller,
-    const gfx::Rect& anchor_view_bounds,
-    const bool include_orca) {
+    const gfx::Rect& anchor_view_bounds) {
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
@@ -228,7 +223,7 @@ views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
   MagicBoostOptInCard* magic_boost_opt_in_card = widget->SetContentsView(
-      std::make_unique<MagicBoostOptInCard>(controller, include_orca));
+      std::make_unique<MagicBoostOptInCard>(controller));
   magic_boost_opt_in_card->UpdateWidgetBounds(anchor_view_bounds);
 
   return widget;
@@ -251,6 +246,18 @@ void MagicBoostOptInCard::RequestFocus() {
   secondary_button_->RequestFocus();
 }
 
+void MagicBoostOptInCard::SetIncludeOrca(bool include_orca) {
+  include_orca_ = include_orca;
+
+  title_label_->SetText(l10n_util::GetStringUTF16(
+      include_orca_ ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_TITLE
+                    : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_TITLE));
+
+  body_label_->SetText(l10n_util::GetStringUTF16(
+      include_orca ? IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_BODY
+                   : IDS_ASH_MAGIC_BOOST_OPT_IN_CARD_NO_ORCA_BODY));
+}
+
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
   controller_->CloseOptInUi();
 
@@ -263,11 +270,18 @@ void MagicBoostOptInCard::OnPrimaryButtonPressed() {
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   controller_->CloseOptInUi();
-// TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
-// is pressed. We should also use `MagicBoostState::Get()` here instead when
-// it is available.
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  MagicBoostState::Get()->AsyncWriteHMREnabled(false);
+  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(
+      base::BindOnce([](bool should_include_orca) {
+        auto* magic_boost_state = chromeos::MagicBoostState::Get();
+        if (should_include_orca) {
+          magic_boost_state->DisableOrcaFeature();
+        }
+        magic_boost_state->AsyncWriteConsentStatus(
+            chromeos::HMRConsentStatus::kDeclined);
+        magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/false);
+      }));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

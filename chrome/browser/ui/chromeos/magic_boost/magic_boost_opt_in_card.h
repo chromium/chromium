@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
+class Label;
 class MdTextButton;
 class UniqueWidgetPtr;
 }  // namespace views
@@ -25,8 +26,7 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
                   chromeos::editor_menu::PreTargetHandlerView)
 
  public:
-  MagicBoostOptInCard(MagicBoostCardController* controller,
-                      const bool include_orca);
+  explicit MagicBoostOptInCard(MagicBoostCardController* controller);
   MagicBoostOptInCard(const MagicBoostOptInCard&) = delete;
   MagicBoostOptInCard& operator=(const MagicBoostOptInCard&) = delete;
   ~MagicBoostOptInCard() override;
@@ -35,8 +35,7 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // given `anchor_view_bounds`.
   static views::UniqueWidgetPtr CreateWidget(
       MagicBoostCardController* controller,
-      const gfx::Rect& anchor_view_bounds,
-      const bool include_orca);
+      const gfx::Rect& anchor_view_bounds);
 
   // Returns the host widget's name.
   static const char* GetWidgetName();
@@ -47,13 +46,23 @@ class MagicBoostOptInCard : public chromeos::editor_menu::PreTargetHandlerView {
   // views::View:
   void RequestFocus() override;
 
+  // Sets the value of `include_orca_` and change the UI of the opt-in card
+  // according to this.
+  void SetIncludeOrca(bool include_orca);
+
  private:
   // Button callbacks.
   void OnPrimaryButtonPressed();
   void OnSecondaryButtonPressed();
 
+  // True if the opt-in flow includes opting in or out of the Orca feature.
+  bool include_orca_ = false;
+
   raw_ptr<MagicBoostCardController> controller_ = nullptr;
 
+  // Owned by the views hierarchy.
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> body_label_ = nullptr;
   raw_ptr<views::MdTextButton> secondary_button_ = nullptr;
 
   base::WeakPtrFactory<MagicBoostOptInCard> weak_ptr_factory_{this};

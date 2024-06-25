@@ -4615,6 +4615,8 @@ static_library("test_support") {
     "login/users/fake_chrome_user_manager.h",
     "login/version_updater/mock_version_updater_delegate.cc",
     "login/version_updater/mock_version_updater_delegate.h",
+    "magic_boost/mock_magic_boost_state.cc",
+    "magic_boost/mock_magic_boost_state.h",
     "nearby/fake_quick_start_connectivity_service.cc",
     "nearby/fake_quick_start_connectivity_service.h",
     "net/network_portal_detector_test_utils.cc",

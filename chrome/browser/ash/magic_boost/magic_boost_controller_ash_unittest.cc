@@ -8,6 +8,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -15,28 +16,6 @@
 #include "ui/lottie/resource.h"
 
 namespace ash {
-
-namespace {
-
-class MockMagicBoostState : public MagicBoostStateAsh {
- public:
-  MockMagicBoostState() = default;
-
-  MockMagicBoostState(const MockMagicBoostState&) = delete;
-  MockMagicBoostState& operator=(const MockMagicBoostState&) = delete;
-
-  ~MockMagicBoostState() override = default;
-
-  // chromeos::MagicBoostState:
-  MOCK_METHOD(void,
-              ShouldIncludeOrcaInOptIn,
-              (base::OnceCallback<void(bool)>),
-              (override));
-  MOCK_METHOD(void, EnableOrcaFeature, (), (override));
-  MOCK_METHOD(void, DisableOrcaFeature, (), (override));
-};
-
-}  // namespace
 
 class MagicBoostControllerAshTest : public AshTestBase {
  public:

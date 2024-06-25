@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
@@ -18,10 +19,6 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -64,15 +61,15 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 
-    // Instantiates `MagicBoostStateAsh` (the real one is created in
+    // Instantiates `MockMagicBoostState` (the real one is created in
     // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
     // the unit tests).
-    magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>();
+    mock_magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDown() override {
-    magic_boost_state_.reset();
+    mock_magic_boost_state_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -81,7 +78,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
   testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};
-  std::unique_ptr<MagicBoostState> magic_boost_state_;
+  std::unique_ptr<ash::MockMagicBoostState> mock_magic_boost_state_;
 };
 
 TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
@@ -103,6 +100,11 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
 }
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
+  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
+      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(false);
+      });
+
   // Show the opt-in UI card.
   EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
@@ -110,16 +112,47 @@ TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
   ASSERT_TRUE(opt_in_widget);
 
   // Test that pressing the secondary button closes the card and sets the pref
-  // so the card won't be able to show again.
+  // using `MagicBoostState`. Orca functions shouldn't be called.
+  EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature).Times(0);
+  EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature).Times(0);
+
   auto* secondary_button = GetSecondaryButton(opt_in_widget);
   ASSERT_TRUE(secondary_button);
   LeftClickOn(secondary_button);
-  ASSERT_FALSE(card_controller_.opt_in_widget_for_test());
 
-  // Attempt re-showing the opt-in UI card. It should not show again since the
-  // user declined before.
-  // TODO(b/341158134): Implement can show opt-in UI pref to test that the card
-  // won't show again.
+  EXPECT_EQ(chromeos::HMRConsentStatus::kDeclined,
+            mock_magic_boost_state_->hmr_consent_status());
+  EXPECT_FALSE(mock_magic_boost_state_->hmr_enabled().value());
+
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
+}
+
+TEST_F(MagicBoostOptInCardTest, SecondaryButtonActionsIncludeOrca) {
+  ON_CALL(*mock_magic_boost_state_, ShouldIncludeOrcaInOptIn)
+      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+
+  // Show the opt-in UI card.
+  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
+  auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
+  ASSERT_TRUE(opt_in_widget);
+
+  // Test that pressing the secondary button closes the card and sets the pref
+  // using `MagicBoostState`. Disable Orca function should be called.
+  EXPECT_CALL(*mock_magic_boost_state_, EnableOrcaFeature).Times(0);
+  EXPECT_CALL(*mock_magic_boost_state_, DisableOrcaFeature);
+
+  auto* secondary_button = GetSecondaryButton(opt_in_widget);
+  ASSERT_TRUE(secondary_button);
+  LeftClickOn(secondary_button);
+
+  EXPECT_EQ(chromeos::HMRConsentStatus::kDeclined,
+            mock_magic_boost_state_->hmr_consent_status());
+  EXPECT_FALSE(mock_magic_boost_state_->hmr_enabled().value());
+
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 }
 
 }  // namespace chromeos

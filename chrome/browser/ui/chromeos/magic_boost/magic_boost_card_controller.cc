@@ -93,8 +93,18 @@ void MagicBoostCardController::ShowOptInUi(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   opt_in_widget_ = MagicBoostOptInCard::CreateWidget(
-      /*controller=*/this, anchor_view_bounds, is_orca_included_);
+      /*controller=*/this, anchor_view_bounds);
   opt_in_widget_->ShowInactive();
+
+  MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(base::BindOnce(
+      [](MagicBoostOptInCard* opt_in_card, bool should_include_orca) {
+        // The card might be closed already.
+        if (opt_in_card) {
+          opt_in_card->SetIncludeOrca(should_include_orca);
+        }
+      },
+      views::AsViewClass<MagicBoostOptInCard>(
+          opt_in_widget_->GetContentsView())));
 }
 
 void MagicBoostCardController::CloseOptInUi() {
@@ -115,24 +125,6 @@ bool MagicBoostCardController::ShouldShowHmrOptIn() {
   auto consent_status = MagicBoostState::Get()->hmr_consent_status();
   return consent_status ? consent_status.value() == HMRConsentStatus::kUnset
                         : false;
-}
-
-void MagicBoostCardController::SetAllFeaturesState(bool enabled) {
-  SetQuickAnswersAndMahiFeaturesState(enabled);
-  SetOrcaFeatureState(enabled);
-}
-
-void MagicBoostCardController::SetQuickAnswersAndMahiFeaturesState(
-    bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  MagicBoostState::Get()->AsyncWriteHMREnabled(enabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // TODO(b/339043693): Enable/disable Quick Answers.
-}
-
-void MagicBoostCardController::SetIsOrcaIncludedForTest(bool include) {
-  is_orca_included_ = include;
 }
 
 base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {
