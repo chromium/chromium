@@ -214,7 +214,7 @@ class CONTENT_EXPORT PrefetchService {
   // determined. If its eligible, then the prefetch will continue, otherwise it
   // is stopped.
   void OnGotEligibilityResultForRedirect(
-      const net::RedirectInfo& redirect_info,
+      net::RedirectInfo redirect_info,
       network::mojom::URLResponseHeadPtr redirect_head,
       base::WeakPtr<PrefetchContainer> prefetch_container,
       PreloadingEligibility eligibility);

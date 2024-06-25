@@ -823,7 +823,7 @@ void PrefetchService::OnGotEligibilityResult(
 }
 
 void PrefetchService::OnGotEligibilityResultForRedirect(
-    const net::RedirectInfo& redirect_info,
+    net::RedirectInfo redirect_info,
     network::mojom::URLResponseHeadPtr redirect_head,
     base::WeakPtr<PrefetchContainer> prefetch_container,
     PreloadingEligibility eligibility) {
