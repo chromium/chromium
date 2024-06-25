@@ -5,6 +5,8 @@
 #ifndef PDF_INK_MODULE_H_
 #define PDF_INK_MODULE_H_
 
+#include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -142,9 +144,10 @@ class InkModule {
     std::vector<InkStrokeInput> ink_inputs;
   };
 
-  // A stroke that has been completed and whether it should be drawn or not.
+  // A stroke that has been completed, its ID, and whether it should be drawn
+  // or not.
   struct FinishedStrokeState {
-    explicit FinishedStrokeState(std::unique_ptr<InkStroke> stroke);
+    FinishedStrokeState(std::unique_ptr<InkStroke> stroke, size_t id);
     FinishedStrokeState(const FinishedStrokeState&) = delete;
     FinishedStrokeState& operator=(const FinishedStrokeState&) = delete;
     FinishedStrokeState(FinishedStrokeState&&) noexcept;
@@ -154,15 +157,33 @@ class InkModule {
     // Coordinates for each stroke are stored in a canonical format specified in
     // pdf_ink_transform.h.
     std::unique_ptr<InkStroke> stroke;
+
+    // A unique ID to identify this stroke.
+    size_t id;
+
     bool should_draw = true;
   };
 
   // Each page of a document can have many strokes.  Each stroke is restricted
   // to just one page.
+  // The elements are stored with IDs in an increasing order.
   using PageInkStrokes = std::vector<FinishedStrokeState>;
 
   // Mapping of a 0-based page index to the ink strokes for that page.
   using DocumentInkStrokesMap = std::map<int, PageInkStrokes>;
+
+  class StrokeIdGenerator {
+   public:
+    StrokeIdGenerator();
+    ~StrokeIdGenerator();
+
+    // Returns an available ID and advance the next available ID internally.
+    size_t GetIdAndAdvance();
+
+   private:
+    // The next available ID for use in FinishedStrokeState.
+    size_t next_stroke_id_ = 0;
+  };
 
   // No state, so just use a placeholder enum type.
   enum class EraserState { kIsEraser };
@@ -209,6 +230,9 @@ class InkModule {
   const raw_ref<Client> client_;
 
   bool enabled_ = false;
+
+  // Generates IDs for use in FinishedStrokeState and PdfInkUndoRedoModel.
+  StrokeIdGenerator stroke_id_generator_;
 
   // The state of the current tool that is in use.
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;

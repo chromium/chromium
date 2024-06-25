@@ -4,6 +4,9 @@
 
 #include "pdf/ink_module.h"
 
+#include <stddef.h>
+
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -295,8 +298,9 @@ bool InkModule::FinishInkStroke() {
   auto in_progress_stroke = CreateInProgressStrokeFromInputs();
   if (in_progress_stroke) {
     CHECK_GE(state.ink_page_index, 0);
+    size_t id = stroke_id_generator_.GetIdAndAdvance();
     ink_strokes_[state.ink_page_index].push_back(
-        FinishedStrokeState(in_progress_stroke->CopyToStroke()));
+        FinishedStrokeState(in_progress_stroke->CopyToStroke(), id));
   }
 
   // Reset input fields.
@@ -420,8 +424,9 @@ InkModule::DrawingStrokeState::DrawingStrokeState() = default;
 InkModule::DrawingStrokeState::~DrawingStrokeState() = default;
 
 InkModule::FinishedStrokeState::FinishedStrokeState(
-    std::unique_ptr<InkStroke> stroke)
-    : stroke(std::move(stroke)) {}
+    std::unique_ptr<InkStroke> stroke,
+    size_t id)
+    : stroke(std::move(stroke)), id(id) {}
 
 InkModule::FinishedStrokeState::FinishedStrokeState(
     InkModule::FinishedStrokeState&&) noexcept = default;
@@ -430,5 +435,15 @@ InkModule::FinishedStrokeState& InkModule::FinishedStrokeState::operator=(
     InkModule::FinishedStrokeState&&) noexcept = default;
 
 InkModule::FinishedStrokeState::~FinishedStrokeState() = default;
+
+InkModule::StrokeIdGenerator::StrokeIdGenerator() = default;
+
+InkModule::StrokeIdGenerator::~StrokeIdGenerator() = default;
+
+size_t InkModule::StrokeIdGenerator::GetIdAndAdvance() {
+  // Die intentionally if `next_stroke_id_` is about to overflow.
+  CHECK_NE(next_stroke_id_, std::numeric_limits<size_t>::max());
+  return next_stroke_id_++;
+}
 
 }  // namespace chrome_pdf
