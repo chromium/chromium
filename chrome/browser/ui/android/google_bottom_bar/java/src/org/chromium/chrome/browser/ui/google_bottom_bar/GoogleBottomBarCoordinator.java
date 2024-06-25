@@ -92,8 +92,8 @@ public class GoogleBottomBarCoordinator {
     }
 
     /** Returns the height of the Google Bottom bar in pixels. */
-    public static int getBottomBarHeightInPx(Context context) {
-        return context.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
+    public int getBottomBarHeightInPx() {
+        return mGoogleBottomBarViewCreator.getBottomBarHeightInPx();
     }
 
     /**

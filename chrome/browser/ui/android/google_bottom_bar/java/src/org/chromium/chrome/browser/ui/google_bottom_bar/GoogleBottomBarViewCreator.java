@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.ui.google_bottom_bar;
 
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.DOUBLE_DECKER;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.NO_VARIANT;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER;
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.GoogleBottomBarVariantLayoutType.SINGLE_DECKER_WITH_RIGHT_BUTTONS;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +19,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -24,6 +30,8 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.Go
 
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
+    private static final String TAG = "GbbViewCreator";
+
     private final Context mContext;
     private final BottomBarConfig mConfig;
     private final GoogleBottomBarActionsHandler mActionsHandler;
@@ -66,12 +74,79 @@ public class GoogleBottomBarViewCreator {
      *
      * @return The created and initialized bottom bar view.
      */
-    public View createGoogleBottomBarView() {
-        mRootView =
-                (mConfig.getSpotlightId() != null)
-                        ? createGoogleBottomBarSpotlightLayoutView()
-                        : createGoogleBottomBarEvenLayoutView();
+    View createGoogleBottomBarView() {
+        mRootView = getLayoutRoot();
+
+        maybeAddButtons();
+        maybeAddSearchbox();
+        maybeAddButtonsOnRight();
+
         return mRootView;
+    }
+
+    /** Calculates and returns the height of the bottom bar in pixels. */
+    int getBottomBarHeightInPx() {
+        if (mConfig.getVariantLayoutType() == DOUBLE_DECKER) {
+            return mContext.getResources()
+                    .getDimensionPixelSize(R.dimen.google_bottom_bar_double_decker_height);
+        }
+        return mContext.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
+    }
+
+    private void maybeAddSearchbox() {
+        ViewGroup searchboxContainer = mRootView.findViewById(R.id.bottom_bar_searchbox_container);
+        if (searchboxContainer != null) {
+            searchboxContainer.addView(
+                    LayoutInflater.from(mContext)
+                            .inflate(
+                                    R.layout.google_bottom_bar_searchbox,
+                                    searchboxContainer,
+                                    /* attachToRoot= */ false));
+        }
+    }
+
+    private void maybeAddButtons() {
+        ViewGroup buttonsContainer = mRootView.findViewById(R.id.bottom_bar_buttons_container);
+        if (buttonsContainer != null) {
+            buttonsContainer.addView(
+                    (mConfig.getSpotlightId() != null)
+                            ? createGoogleBottomBarSpotlightLayoutView()
+                            : createGoogleBottomBarEvenLayoutView());
+        }
+    }
+
+    private void maybeAddButtonsOnRight() {
+        LinearLayout buttonsOnRightContainer =
+                mRootView.findViewById(R.id.bottom_bar_buttons_on_right_container);
+        if (buttonsOnRightContainer != null) {
+            for (BottomBarConfig.ButtonConfig buttonConfig : mConfig.getButtonList()) {
+                createButtonAndAddToParent(
+                        buttonsOnRightContainer,
+                        R.layout.bottom_bar_button_non_spotlight_layout,
+                        buttonConfig,
+                        /* addAsFirst= */ false);
+            }
+        }
+    }
+
+    private ViewGroup getLayoutRoot() {
+        int rootLayoutId =
+                switch (mConfig.getVariantLayoutType()) {
+                    case NO_VARIANT -> R.layout.bottom_bar_no_variant_root_layout;
+                    case DOUBLE_DECKER -> R.layout.bottom_bar_double_decker_root_layout;
+                    case SINGLE_DECKER -> R.layout.bottom_bar_single_decker_root_layout;
+                    case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> R.layout
+                            .bottom_bar_single_decker_with_right_buttons_root_layout;
+                    default -> {
+                        Log.e(
+                                TAG,
+                                "Unexpected variant layout type: %s. Fallback to no variant"
+                                        + " layout.",
+                                mConfig.getVariantLayoutType());
+                        yield R.layout.bottom_bar_no_variant_root_layout;
+                    }
+                };
+        return (ViewGroup) LayoutInflater.from(mContext).inflate(rootLayoutId, /* root= */ null);
     }
 
     boolean updateBottomBarButton(@Nullable ButtonConfig buttonConfig) {
@@ -79,9 +154,7 @@ public class GoogleBottomBarViewCreator {
             return false;
         }
         ImageButton button = mRootView.findViewById(buttonConfig.getId());
-        return button == null
-                ? false
-                : updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
+        return button != null && updateButton(button, buttonConfig, /* isFirstTimeShown= */ false);
     }
 
     void logButtons() {
@@ -106,7 +179,7 @@ public class GoogleBottomBarViewCreator {
     private ViewGroup createGoogleBottomBarEvenLayoutView() {
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.EVEN_LAYOUT);
 
-        LinearLayout rootView = getEvenLayoutRoot();
+        LinearLayout rootView = getEvenButtonsLayout();
         for (BottomBarConfig.ButtonConfig buttonConfig : mConfig.getButtonList()) {
             createButtonAndAddToParent(
                     rootView,
@@ -120,7 +193,7 @@ public class GoogleBottomBarViewCreator {
     private ViewGroup createGoogleBottomBarSpotlightLayoutView() {
         GoogleBottomBarLogger.logCreatedEvent(GoogleBottomBarCreatedEvent.SPOTLIGHT_LAYOUT);
 
-        LinearLayout rootView = getSpotlightLayoutRoot();
+        LinearLayout rootView = getSpotlightButtonsLayout();
 
         // Set up Spotlight Button
         createButtonAndAddToParent(
@@ -178,15 +251,21 @@ public class GoogleBottomBarViewCreator {
         updateButton(button, buttonConfig, /* isFirstTimeShown= */ true);
     }
 
-    private LinearLayout getEvenLayoutRoot() {
+    private LinearLayout getEvenButtonsLayout() {
         return (LinearLayout)
                 LayoutInflater.from(mContext)
-                        .inflate(R.layout.google_bottom_bar_even, /* root= */ null);
+                        .inflate(
+                                R.layout.google_bottom_bar_even,
+                                mRootView,
+                                /* attachToRoot= */ false);
     }
 
-    private LinearLayout getSpotlightLayoutRoot() {
+    private LinearLayout getSpotlightButtonsLayout() {
         return (LinearLayout)
                 LayoutInflater.from(mContext)
-                        .inflate(R.layout.google_bottom_bar_spotlight, /* root= */ null);
+                        .inflate(
+                                R.layout.google_bottom_bar_spotlight,
+                                mRootView,
+                                /* attachToRoot= */ false);
     }
 }
