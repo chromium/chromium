@@ -50,10 +50,13 @@
       maxlength="[[maxTextLength_]]"
       placeholder="Describe your wallpaper"
       on-change="onClickInputQuerySearchButton_"
+      on-focus="onFocusChanged_"
       type="text"
       value="{{textValue_}}">
   </cr-input>
-  <sea-pen-suggestions></sea-pen-suggestions>
+  <template is="dom-if" if="[[shouldShowSuggestions_]]">
+    <sea-pen-suggestions></sea-pen-suggestions>
+  </template>
   <div id="searchButtons">
     <template is="dom-if" if="[[thumbnailsLoading_]]">
       <span id="thumbnailsLoadingText" aria-description="{{textValue_}}" aria-live="polite">

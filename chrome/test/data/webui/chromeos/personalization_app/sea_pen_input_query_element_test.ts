@@ -6,8 +6,9 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenInputQueryElement, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
+import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPersonalizationStore} from 'test_personalization_store.js';
 import {TestSeaPenProvider} from 'test_sea_pen_interface_provider.js';
@@ -64,16 +65,102 @@ suite('SeaPenInputQueryElementTest', function() {
     assertEquals('sea-pen:photo-spark', icon!.getAttribute('icon'));
   });
 
-  test('displays suggestions', async () => {
+  test('displays suggestions when text input is entered', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+
+    let seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertFalse(
+        !!seaPenSuggestions, 'suggestions element should be hidden on load');
+
+    // Set input text.
+    inputElement.value = 'Love looks not with the eyes, but with the mind';
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertTrue(
+        !!seaPenSuggestions,
+        'suggestions element should be show after entering text');
+
+    // Remove input text.
+    inputElement.value = '';
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is) as HTMLElement;
+    assertEquals(
+        'none', getComputedStyle(seaPenSuggestions).display,
+        'suggestions element should be hidden after hiding text');
+  });
+
+  test('hide suggestions after clicking create', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+    inputElement.value = 'Love looks not with the eyes, but with the mind';
+    const searchButton =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            '#searchButton');
+
+    searchButton?.click();
     await waitAfterNextRender(seaPenInputQueryElement);
 
     const seaPenSuggestions =
         seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenSuggestionsElement.is);
-
-    assertTrue(!!seaPenSuggestions, 'suggestions element should exist');
+    assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
   });
+
+  test('focusing does not show suggestions', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+
+    inputElement.focus();
+
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertFalse(!!seaPenSuggestions, 'suggestions element should be hidden');
+  });
+
+  test(
+      'focusing shows suggestions if there are thumbnails and text',
+      async () => {
+        personalizationStore.data.wallpaper.seaPen.thumbnails =
+            seaPenProvider.thumbnails;
+        seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+        await waitAfterNextRender(seaPenInputQueryElement);
+        const inputElement =
+            seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+                '#queryInput');
+        assertTrue(!!inputElement, 'textInput should exist');
+        // Set input text.
+        inputElement.value = 'Uneasy lies the head that wears the crown.';
+        await waitAfterNextRender(seaPenInputQueryElement);
+
+        inputElement.focus();
+
+        const seaPenSuggestions =
+            seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+                SeaPenSuggestionsElement.is);
+        assertTrue(!!seaPenSuggestions, 'suggestions element should be shown');
+      });
 
   test('displays prompting guide link', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);

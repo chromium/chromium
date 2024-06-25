@@ -45,7 +45,10 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
   static get properties() {
     return {
-      textValue_: String,
+      textValue_: {
+        type: String,
+        observer: 'onTextValueUpdated_',
+      },
 
       seaPenQuery_: {
         type: Object,
@@ -78,6 +81,11 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
         type: Number,
         value: Math.floor(MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES / 3),
       },
+
+      shouldShowSuggestions_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -87,6 +95,7 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   private thumbnailsLoading_: boolean;
   private searchButtonText_: string|null;
   private searchButtonIcon_: string;
+  private shouldShowSuggestions_: boolean;
 
   override connectedCallback() {
     assert(isSeaPenTextInputEnabled(), 'sea pen text input must be enabled');
@@ -122,6 +131,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     // element, this.onClick_ will be triggered improperly.
     event.preventDefault();
     event.stopPropagation();
+
+    // Hide suggestions when creating thumbnails.
+    this.shouldShowSuggestions_ = false;
   }
 
   private updateSearchButton_(thumbnails: SeaPenThumbnail[]|null) {
@@ -133,6 +145,16 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
       this.searchButtonText_ = this.i18n('seaPenRecreateButton');
       this.searchButtonIcon_ = 'personalization-shared:refresh';
     }
+  }
+
+  private onTextValueUpdated_() {
+    // Show suggestions when there is text input.
+    this.shouldShowSuggestions_ = !!this.textValue_;
+  }
+
+  private onFocusChanged_() {
+    // Show suggestions if there are thumbnails and text  input.
+    this.shouldShowSuggestions_ = !!this.thumbnails_ && !!this.textValue_;
   }
 }
 customElements.define(SeaPenInputQueryElement.is, SeaPenInputQueryElement);
