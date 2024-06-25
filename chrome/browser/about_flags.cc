@@ -3346,34 +3346,6 @@ const FeatureEntry::FeatureVariation
          std::size(kSafetyCheckUnusedSitePermissionsWithDelayParam), nullptr},
 };
 
-const FeatureEntry::FeatureParam kPrivacySandboxSettings4NoticeRequired[] = {
-    {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
-const FeatureEntry::FeatureParam kPrivacySandboxSettings4ConsentRequired[] = {
-    {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4RestrictedNoticeWithNoticeRequired[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName, "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}};
-const FeatureEntry::FeatureParam
-    kPrivacySandboxSettings4RestrictedNoticeWithConsentRequired[] = {
-        {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName, "true"},
-        {privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}};
-
-const FeatureEntry::FeatureVariation kPrivacySandboxSettings4Variations[] = {
-    {"Notice Required", kPrivacySandboxSettings4NoticeRequired,
-     std::size(kPrivacySandboxSettings4NoticeRequired), nullptr},
-    {"Consent Required", kPrivacySandboxSettings4ConsentRequired,
-     std::size(kPrivacySandboxSettings4ConsentRequired), nullptr},
-    {"Restricted With Notice Required",
-     kPrivacySandboxSettings4RestrictedNoticeWithNoticeRequired,
-     std::size(kPrivacySandboxSettings4RestrictedNoticeWithNoticeRequired),
-     nullptr},
-    {"Restricted With Consent Required",
-     kPrivacySandboxSettings4RestrictedNoticeWithConsentRequired,
-     std::size(kPrivacySandboxSettings4RestrictedNoticeWithConsentRequired),
-     nullptr},
-};
-
 const FeatureEntry::FeatureParam kTPCPhaseOutFacilitatedTestingControl1[] = {
     {tpcd::experiment::kForceEligibleForTestingName, "false"},
     {tpcd::experiment::kDisable3PCookiesName, "false"},
@@ -9012,13 +8984,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnablePrivacySandboxAdsApis)},
-
-    {"privacy-sandbox-ads-notice-ui",
-     flag_descriptions::kPrivacySandboxSettings4Name,
-     flag_descriptions::kPrivacySandboxSettings4Description, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(privacy_sandbox::kPrivacySandboxSettings4,
-                                    kPrivacySandboxSettings4Variations,
-                                    "PrivacySandboxSettings4")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-sandbox-ads-notice-cct",

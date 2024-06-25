@@ -3011,10 +3011,6 @@ const char kPrivacySandboxAdsAPIsOverrideDescription[] =
     "Fenced Frames, Shared Storage, Private Aggregation, and their associated "
     "features.";
 
-const char kPrivacySandboxSettings4Name[] = "Privacy Sandbox Ads Notice";
-const char kPrivacySandboxSettings4Description[] =
-    "Enables the Privacy Sandbox Ads Notice & Consent UI";
-
 const char kPrivacySandboxAdsNoticeCCTName[] = "Privacy Sandbox CCT Ads Notice";
 const char kPrivacySandboxAdsNoticeCCTDescription[] =
     "Enables Ads Notice to be displayed when CCTs are open on Android";
