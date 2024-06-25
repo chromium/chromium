@@ -1,9 +1,9 @@
 [package]
 name = "lazy_static"
 # NB: When modifying, also modify html_root_url in lib.rs
-version = "1.4.0"
+version = "1.5.0"
 authors = ["Marvin Löbel <loebel.marvin@gmail.com>"]
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
 
 description = "A macro for declaring lazily evaluated statics in Rust."
 readme = "README.md"
@@ -12,10 +12,12 @@ documentation = "https://docs.rs/lazy_static"
 repository = "https://github.com/rust-lang-nursery/lazy-static.rs"
 keywords = ["macro", "lazy", "static"]
 categories = [ "no-std", "rust-patterns", "memory-management" ]
-exclude = ["/.travis.yml", "/appveyor.yml"]
+exclude = [".github"]
 
 [dependencies.spin]
-version = "0.5.0"
+version = "0.9.8"
+default-features = false
+features = ["once"]
 optional = true
 
 [features]
@@ -23,12 +25,4 @@ spin_no_std = ["spin"]
 
 [dev-dependencies]
 doc-comment = "0.3.1"
-
-[badges]
-appveyor = { repository = "rust-lang-nursery/lazy-static.rs" }
-travis-ci = { repository = "rust-lang-nursery/lazy-static.rs" }
-
-is-it-maintained-issue-resolution = { repository = "rust-lang-nursery/lazy-static.rs" }
-is-it-maintained-open-issues = { repository = "rust-lang-nursery/lazy-static.rs" }
-
-maintenance = { status = "passively-maintained" }
+trybuild = "1"

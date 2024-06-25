@@ -1,8 +1,8 @@
 // Copyright 2016 lazy-static.rs Developers
 //
 // Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
-// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
-// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// https://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// https://opensource.org/licenses/MIT>, at your option. This file may not be
 // copied, modified, or distributed except according to those terms.
 
 /*!
@@ -27,8 +27,8 @@ lazy_static! {
 Attributes (including doc comments) are supported as well:
 
 ```rust
-# #[macro_use]
-# extern crate lazy_static;
+use lazy_static::lazy_static;
+
 # fn main() {
 lazy_static! {
     /// This is an example for using doc comment attributes
@@ -58,9 +58,7 @@ have generally the same properties as regular "static" variables:
 Using the macro:
 
 ```rust
-#[macro_use]
-extern crate lazy_static;
-
+use lazy_static::lazy_static;
 use std::collections::HashMap;
 
 lazy_static! {
@@ -96,23 +94,18 @@ This crate provides one cargo feature:
 
 */
 
-#![doc(html_root_url = "https://docs.rs/lazy_static/1.4.0")]
+#![doc(html_root_url = "https://docs.rs/lazy_static/1.5.0")]
 #![no_std]
 
-#[cfg(not(feature = "spin_no_std"))]
-#[path="inline_lazy.rs"]
-#[doc(hidden)]
-pub mod lazy;
-
-#[cfg(test)]
+#[cfg(doctest)]
 #[macro_use]
 extern crate doc_comment;
 
-#[cfg(test)]
+#[cfg(doctest)]
 doctest!("../README.md");
 
-#[cfg(feature = "spin_no_std")]
-#[path="core_lazy.rs"]
+#[cfg_attr(feature = "spin_no_std", path = "core_lazy.rs")]
+#[cfg_attr(not(feature = "spin_no_std"), path = "inline_lazy.rs")]
 #[doc(hidden)]
 pub mod lazy;
 
@@ -158,6 +151,7 @@ macro_rules! __lazy_static_internal {
         $(#[$attr])*
         $($vis)* struct $N {__private_field: ()}
         #[doc(hidden)]
+        #[allow(non_upper_case_globals)]
         $($vis)* static $N: $N = $N {__private_field: ()};
     };
     () => ()
@@ -195,8 +189,7 @@ pub trait LazyStatic {
 /// Example:
 ///
 /// ```rust
-/// #[macro_use]
-/// extern crate lazy_static;
+/// use lazy_static::lazy_static;
 ///
 /// lazy_static! {
 ///     static ref BUFFER: Vec<u8> = (0..255).collect();

@@ -12,17 +12,17 @@ cargo_crate("lib") {
   crate_name = "lazy_static"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.4.0/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.5.0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.4.0/src/core_lazy.rs",
-    "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.4.0/src/inline_lazy.rs",
-    "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.4.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.5.0/src/core_lazy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.5.0/src/inline_lazy.rs",
+    "//third_party/rust/chromium_crates_io/vendor/lazy_static-1.5.0/src/lib.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2015"
-  cargo_pkg_version = "1.4.0"
+  cargo_pkg_version = "1.5.0"
   cargo_pkg_authors = "Marvin Löbel <loebel.marvin@gmail.com>"
   cargo_pkg_name = "lazy_static"
   cargo_pkg_description =

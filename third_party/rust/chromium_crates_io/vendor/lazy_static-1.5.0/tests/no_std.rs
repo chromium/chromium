@@ -1,5 +1,4 @@
-#![cfg(feature="spin_no_std")]
-
+#![cfg(feature = "spin_no_std")]
 #![no_std]
 
 #[macro_use]

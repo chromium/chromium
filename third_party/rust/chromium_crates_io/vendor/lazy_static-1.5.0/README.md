@@ -8,14 +8,14 @@ executed at runtime in order to be initialized.
 This includes anything requiring heap allocations, like vectors or hash maps,
 as well as anything that requires non-const function calls to be computed.
 
-[![Travis-CI Status](https://travis-ci.com/rust-lang-nursery/lazy-static.rs.svg?branch=master)](https://travis-ci.com/rust-lang-nursery/lazy-static.rs)
+[![Rust](https://github.com/rust-lang-nursery/lazy-static.rs/actions/workflows/rust.yml/badge.svg)](https://github.com/rust-lang-nursery/lazy-static.rs/actions/workflows/rust.yml)
 [![Latest version](https://img.shields.io/crates/v/lazy_static.svg)](https://crates.io/crates/lazy_static)
 [![Documentation](https://docs.rs/lazy_static/badge.svg)](https://docs.rs/lazy_static)
 [![License](https://img.shields.io/crates/l/lazy_static.svg)](https://github.com/rust-lang-nursery/lazy-static.rs#license)
 
 ## Minimum supported `rustc`
 
-`1.27.2+`
+`1.40.0+`
 
 This version is explicitly tested in CI and may only be bumped in new minor versions. Any changes to the supported minimum version will be called out in the release notes.
 
@@ -31,7 +31,7 @@ Add the following dependency to your Cargo manifest...
 
 ```toml
 [dependencies]
-lazy_static = "1.4.0"
+lazy_static = "1.5.0"
 ```
 
 ...and see the [docs](https://docs.rs/lazy_static) for how to use it.
@@ -39,9 +39,7 @@ lazy_static = "1.4.0"
 # Example
 
 ```rust
-#[macro_use]
-extern crate lazy_static;
-
+use lazy_static::lazy_static;
 use std::collections::HashMap;
 
 lazy_static! {
@@ -63,12 +61,40 @@ fn main() {
 }
 ```
 
+# Standard library
+
+It is now possible to easily replicate this crate's functionality in Rust's standard library with [`std::sync::OnceLock`](https://doc.rust-lang.org/std/sync/struct.OnceLock.html). The example above could be also be written as:
+
+```rust
+use std::collections::HashMap;
+use std::sync::OnceLock;
+
+fn hashmap() -> &'static HashMap<u32, &'static str> {
+    static HASHMAP: OnceLock<HashMap<u32, &str>> = OnceLock::new();
+    HASHMAP.get_or_init(|| {
+        let mut m = HashMap::new();
+        m.insert(0, "foo");
+        m.insert(1, "bar");
+        m.insert(2, "baz");
+        m
+    })
+}
+
+fn main() {
+    // First access to `HASHMAP` initializes it
+    println!("The entry for `0` is \"{}\".", hashmap().get(&0).unwrap());
+
+    // Any further access to `HASHMAP` just returns the computed value
+    println!("The entry for `1` is \"{}\".", hashmap().get(&1).unwrap());
+}
+```
+
 ## License
 
 Licensed under either of
 
- * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+ * Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or https://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or https://opensource.org/licenses/MIT)
 
 at your option.
 
