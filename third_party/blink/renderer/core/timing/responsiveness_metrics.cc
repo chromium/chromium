@@ -77,9 +77,10 @@ enum ClickInteractionEvents {
   kPointerClickWithMissingPointerdownOnly = 2,
   kPointerClickWithMissingPointerupOnly = 3,
   kPointerClickWithMissingPointerdownAndPointerup = 4,
-  kPointerClickPointerIdDifferFromLastPointerIdButExistInMap = 5,
-  kPointerClickPointerIdDifferFromLastPointerIdAndNotInMap = 6,
-  kKeyboardClick = 7,
+  kPointerClickPointerIdDifferFromLastPointerIdAndPointerIdExistInMap = 5,
+  kPointerClickPointerIdDifferFromLastPointerIdAndOnlyLastPointerIdInMap = 6,
+  kPointerClickPointerIdDifferFromLastPointerIdAndNeitherInMap = 7,
+  kKeyboardClick = 8,
   kMaxValue = kKeyboardClick,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:EventTimingClickInteractionEvents)
@@ -338,6 +339,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     FlushPointerup();
 
     is_last_pointerup_orphan_ = false;
+    last_pointer_id_ = pointer_id;
 
     // Platforms like Android would create ever-increasing pointer_id for
     // interactions, whereas platforms like linux could reuse the same id for
@@ -380,7 +382,6 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     }
     // Start the timer to flush the entry just created later, if needed.
     pointer_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
-    last_pointer_id_ = pointer_id;
   } else if (event_type == event_type_names::kClick) {
     base::UmaHistogramEnumeration(
         kPageLoadInternalEventTimingClickInteractionEvents,
@@ -405,12 +406,19 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
         base::UmaHistogramEnumeration(
             kPageLoadInternalEventTimingClickInteractionEvents,
             ClickInteractionEvents::
-                kPointerClickPointerIdDifferFromLastPointerIdButExistInMap);
+                kPointerClickPointerIdDifferFromLastPointerIdAndPointerIdExistInMap);
       } else {
-        base::UmaHistogramEnumeration(
-            kPageLoadInternalEventTimingClickInteractionEvents,
-            ClickInteractionEvents::
-                kPointerClickPointerIdDifferFromLastPointerIdAndNotInMap);
+        if (pointer_id_entry_map_.Contains(*last_pointer_id_)) {
+          base::UmaHistogramEnumeration(
+              kPageLoadInternalEventTimingClickInteractionEvents,
+              ClickInteractionEvents::
+                  kPointerClickPointerIdDifferFromLastPointerIdAndOnlyLastPointerIdInMap);
+        } else {
+          base::UmaHistogramEnumeration(
+              kPageLoadInternalEventTimingClickInteractionEvents,
+              ClickInteractionEvents::
+                  kPointerClickPointerIdDifferFromLastPointerIdAndNeitherInMap);
+        }
       }
     }
 
