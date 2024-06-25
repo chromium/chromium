@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator_provider_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
@@ -41,10 +40,6 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // Current page.
-  // TODO(crbug.com/41487637): Remove once the mediator and the view controller
-  // are fully sync.
-  TabGridPage _currentPage;
   // Identity manager providing AccountInfo capabilities.
   raw_ptr<signin::IdentityManager> _identityManager;
   // Observer to track changes to supervision-related capabilities.
@@ -172,7 +167,6 @@
 
 // Notifies mutators if it is the current selected one or not.
 - (void)notifyPageMutatorAboutPage:(TabGridPage)page {
-  _currentPage = page;
   [_currentPageMutator currentlySelectedGrid:NO];
   [self updateCurrentPageMutatorForPage:page];
   [_currentPageMutator currentlySelectedGrid:YES];
@@ -213,12 +207,6 @@
 
 - (void)dragAndDropSessionEnded {
   [self.toolbarsMutator setButtonsEnabled:YES];
-}
-
-#pragma mark - TabGridMediatorProviderWrangler
-
-- (TabGridPage)currentPage {
-  return _currentPage;
 }
 
 @end

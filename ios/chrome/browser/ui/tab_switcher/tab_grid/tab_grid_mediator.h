@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator_provider_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mutator.h"
 
 @protocol GridToolbarsMutator;
@@ -25,8 +24,7 @@ class IdentityManager;
 class PrefService;
 
 // Mediates between model layer and tab grid UI layer.
-@interface TabGridMediator
-    : NSObject <TabGridMediatorProviderWrangler, TabGridMutator>
+@interface TabGridMediator : NSObject <TabGridMutator>
 
 // Mutator for regular Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> regularPageMutator;

@@ -122,10 +122,7 @@ source_set("tab_grid_metrics") {
 }
 
 source_set("tab_grid_page_mutator") {
-  sources = [
-    "tab_grid_mediator_provider_wrangler.h",
-    "tab_grid_page_mutator.h",
-  ]
+  sources = [ "tab_grid_page_mutator.h" ]
   deps = [
     ":tab_grid_paging",
     "//base",
