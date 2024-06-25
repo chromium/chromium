@@ -107,7 +107,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/348588283): Enable on Android.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        SwitchesBetweenTransportAndFeature) {
