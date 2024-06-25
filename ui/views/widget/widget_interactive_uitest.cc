@@ -273,6 +273,17 @@ class DragView : public View, public DragController {
   }
 
   // View:
+
+  // See the comment for `received_drag_event_` for why this is Lacros-only.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    if (event->type() == ui::ET_MOUSE_DRAGGED) {
+      received_drag_event_ = true;
+    }
+    View::OnMouseEvent(event);
+  }
+#endif
+
   bool GetDropFormats(
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override {
@@ -301,11 +312,25 @@ class DragView : public View, public DragController {
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    if (on_mouse_exit_) {
+    // Depending on the initial mouse position and the timing when the OS
+    // informs us about it, we might get an extra mouse exit event that is
+    // unrelated to DnD.
+    if (received_drag_event_ && on_mouse_exit_) {
       std::move(on_mouse_exit_).Run();
     }
   }
 
+  // Whether we've received an ET_MOUSE_DRAGGED event yet.
+  //
+  // This is needed on Lacros, where we sometimes get an ET_MOUSE_EXITED event
+  // that's unrelated to DnD. To prevent that from messing up the test flow, we
+  // ignore all such events until we receive an ET_MOUSE_DRAGGED event.
+  // On all other platforms, initializing it to true disables this workaround.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool received_drag_event_ = false;
+#else
+  bool received_drag_event_ = true;
+#endif
   base::OnceClosure on_drag_enter_, on_drag_exit_, on_capture_lost_,
       on_mouse_exit_;
 };
@@ -2497,16 +2522,8 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
   base::RunLoop drag_wait_loop_;
 };
 
-// TODO(crbug.com/333076102): Re-enable flaky tests
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_CancelShellDrag DISABLED_CancelShellDrag
-#else
-#define MAYBE_CancelShellDrag CancelShellDrag
-#endif
-
 // Cancels a DnD session started by `RunShellDrag()`.
-TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
+TEST_F(DesktopWidgetDragTestInteractive, CancelShellDrag) {
   WidgetAutoclosePtr widget(new Widget);
 
   auto cancel = [&]() {
