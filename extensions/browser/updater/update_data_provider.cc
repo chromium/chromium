@@ -95,8 +95,12 @@ void UpdateDataProvider::GetData(
     if (extension_data.is_corrupt_reinstall) {
       crx_component->version = base::Version("0.0.0.0");
     } else {
-      crx_component->version = extension->version();
-      crx_component->fingerprint = extension->DifferentialFingerprint();
+      crx_component->version =
+          extension_data.pending_version
+              ? base::Version(*extension_data.pending_version)
+              : extension->version();
+      crx_component->fingerprint = extension_data.pending_fingerprint.value_or(
+          extension->DifferentialFingerprint());
     }
     crx_component->allows_background_download = false;
     bool allow_dev = extension_urls::GetWebstoreUpdateUrl() !=

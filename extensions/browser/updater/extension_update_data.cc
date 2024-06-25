@@ -6,7 +6,7 @@
 
 namespace extensions {
 
-ExtensionUpdateData::ExtensionUpdateData() : is_corrupt_reinstall(false) {}
+ExtensionUpdateData::ExtensionUpdateData() = default;
 
 ExtensionUpdateData::ExtensionUpdateData(const ExtensionUpdateData& other) =
     default;

@@ -566,6 +566,35 @@ TEST_F(UpdateDataProviderTest, GetData_InstallImmediately) {
   EXPECT_TRUE(installer2->install_immediately());
 }
 
+TEST_F(UpdateDataProviderTest, GetData_Pending_Version) {
+  scoped_refptr<UpdateDataProvider> data_provider =
+      base::MakeRefCounted<UpdateDataProvider>(browser_context());
+
+  const std::string version = "0.1.2.3";
+  const std::string pending_version = "0.1.2.4";
+  const std::string pending_fingerprint = "fingerprint";
+
+  AddExtension(kExtensionId1, version, true,
+               disable_reason::DisableReason::DISABLE_NONE,
+               ManifestLocation::kInternal);
+
+  ExtensionUpdateDataMap update_data;
+  update_data[kExtensionId1] = {};
+  update_data[kExtensionId1].pending_version = pending_version;
+  update_data[kExtensionId1].pending_fingerprint = pending_fingerprint;
+
+  std::vector<std::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
+
+  ASSERT_EQ(1UL, data.size());
+  EXPECT_EQ(pending_version, data[0]->version.GetString());
+  EXPECT_EQ(pending_fingerprint, data[0]->fingerprint);
+}
+
 }  // namespace
 
 }  // namespace extensions

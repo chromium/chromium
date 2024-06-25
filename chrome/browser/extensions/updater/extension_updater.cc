@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -345,7 +347,8 @@ void ExtensionUpdater::AddToDownloader(
     }
 
     if (CanUseUpdateService(extension_id)) {
-      update_check_params->update_info[extension_id] = ExtensionUpdateData();
+      update_check_params->update_info[extension_id] =
+          GetExtensionUpdateData(extension_id);
     } else if (AddExtensionToDownloader(extension, request_id,
                                         fetch_priority)) {
       request.in_progress_ids.insert(extension_id);
@@ -460,7 +463,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                                            << " is not from the webstore";
         DCHECK(is_corrupt_reinstall) << "Extension with id " << pending_id
                                      << " is not a corrupt reinstall";
-        update_check_params.update_info[pending_id] = ExtensionUpdateData();
+        update_check_params.update_info[pending_id] =
+            GetExtensionUpdateData(pending_id);
       } else if (!Manifest::IsAutoUpdateableLocation(info->install_source())) {
         VLOG(2) << "Extension " << pending_id << " is not auto updateable";
         continue;
@@ -473,6 +477,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       const bool is_high_priority_extension_pending =
           pending_extension_manager->HasHighPriorityPendingExtension();
       if (CanUseUpdateService(pending_id)) {
+        update_check_params.update_info[pending_id] =
+            GetExtensionUpdateData(pending_id);
         update_check_params.update_info[pending_id].is_corrupt_reinstall =
             is_corrupt_reinstall;
         if (is_corrupt_reinstall) {
@@ -520,7 +526,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
           registry_->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
       if (extension) {
         if (CanUseUpdateService(id)) {
-          update_check_params.update_info[id] = ExtensionUpdateData();
+          update_check_params.update_info[id] = GetExtensionUpdateData(id);
         } else if (AddExtensionToDownloader(*extension, request_id,
                                             params.fetch_priority)) {
           request.in_progress_ids.insert(extension->id());
@@ -701,6 +707,20 @@ bool ExtensionUpdater::GetExtensionExistingVersion(const ExtensionId& id,
   else
     *version = extension->VersionString();
   return true;
+}
+
+ExtensionUpdateData ExtensionUpdater::GetExtensionUpdateData(
+    const ExtensionId& id) {
+  ExtensionUpdateData result;
+
+  const Extension* update = service_->GetPendingExtensionUpdate(id);
+
+  if (update) {
+    result.pending_version = update->VersionString();
+    result.pending_fingerprint = update->DifferentialFingerprint();
+  }
+
+  return result;
 }
 
 void ExtensionUpdater::UpdatePingData(const ExtensionId& id,

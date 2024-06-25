@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_UPDATER_EXTENSION_UPDATE_DATA_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -33,7 +34,9 @@ struct ExtensionUpdateData {
   ~ExtensionUpdateData();
 
   std::string install_source;
-  bool is_corrupt_reinstall;
+  bool is_corrupt_reinstall{false};
+  std::optional<std::string> pending_version;
+  std::optional<std::string> pending_fingerprint;
 };
 
 // The basic structure for an extension update check request, which

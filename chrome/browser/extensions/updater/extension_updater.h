@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -271,6 +272,10 @@ class ExtensionUpdater : public ExtensionDownloaderDelegate {
   bool IsExtensionPending(const ExtensionId& id) override;
   bool GetExtensionExistingVersion(const ExtensionId& id,
                                    std::string* version) override;
+
+  // Returns an `ExtensionUpdateData` prepopulated with the `pending_version`
+  // and `pending_fingerprint` if there is a pending extension update.
+  ExtensionUpdateData GetExtensionUpdateData(const ExtensionId& id);
 
   void UpdatePingData(const ExtensionId& id, const PingResult& ping_result);
 
