@@ -7025,9 +7025,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "BothEnabled",
                     "enable_features": [
                         "CoalesceStorageAreaCommits",
+                        "DomStorageSmartFlushing"
+                    ]
+                },
+                {
+                    "name": "CoalescingEnabled",
+                    "enable_features": [
+                        "CoalesceStorageAreaCommits"
+                    ]
+                },
+                {
+                    "name": "CheckpointingEnabled",
+                    "enable_features": [
                         "DomStorageSmartFlushing"
                     ]
                 }
