@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
-#define CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
+#ifndef CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
+#define CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <optional>
@@ -18,7 +18,7 @@ class ModelError;
 class ModelTypeChangeProcessor;
 }  // namespace syncer
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
@@ -42,6 +42,6 @@ class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
   void GetAllDataForDebugging(DataCallback callback) override;
 };
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso
 
-#endif  // CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_
+#endif  // CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SYNC_BRIDGE_H_

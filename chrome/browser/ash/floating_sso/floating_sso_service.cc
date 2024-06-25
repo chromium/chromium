@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_sync_bridge.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/model_type_change_processor.h"
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 FloatingSsoService::FloatingSsoService(
     PrefService* prefs,
@@ -45,4 +45,4 @@ void FloatingSsoService::Shutdown() {
   prefs_ = nullptr;
 }
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso

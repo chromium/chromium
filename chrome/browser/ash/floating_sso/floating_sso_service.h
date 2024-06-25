@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SERVICE_H_
+#define CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SERVICE_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_sync_bridge.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -18,7 +18,7 @@ class ModelTypeChangeProcessor;
 
 class PrefService;
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 class FloatingSsoService : public KeyedService {
  public:
@@ -48,6 +48,6 @@ class FloatingSsoService : public KeyedService {
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso
 
-#endif  // CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SERVICE_H_

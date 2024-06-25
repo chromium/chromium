@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SERVICE_FACTORY_H_
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 
 class Profile;
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 class FloatingSsoService;
 
 class FloatingSsoServiceFactory : public ProfileKeyedServiceFactory {
@@ -36,6 +36,6 @@ class FloatingSsoServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso
 
-#endif  // CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_FLOATING_SSO_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_FLOATING_SSO_FLOATING_SSO_SERVICE_FACTORY_H_

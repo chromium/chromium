@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/enterprise/floating_sso/cookie_sync_conversions.h"
+#include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 
 #include <memory>
 #include <optional>
@@ -19,7 +19,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key.h"
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 namespace {
 
@@ -231,4 +231,4 @@ std::optional<sync_pb::CookieSpecifics> ToSyncProto(
   return proto;
 }
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso

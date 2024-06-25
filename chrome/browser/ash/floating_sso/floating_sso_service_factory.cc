@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_service_factory.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 
 #include <memory>
 
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
@@ -14,7 +14,7 @@
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 // static
 FloatingSsoService* FloatingSsoServiceFactory::GetForProfile(Profile* profile) {
@@ -58,4 +58,4 @@ bool FloatingSsoServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso

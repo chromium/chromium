@@ -8,8 +8,8 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_service.h"
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_service_factory.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,12 +21,7 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// For crosapi::browser_util::IsLacrosEnabled().
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
-
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 class FloatingSsoTest : public policy::PolicyTest {
  public:
@@ -67,14 +62,7 @@ class FloatingSsoTest : public policy::PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FloatingSsoTest, ServiceRegistered) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   ASSERT_TRUE(IsFloatingSsoServiceRegistered());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_NE(crosapi::browser_util::IsLacrosEnabled(),
-            IsFloatingSsoServiceRegistered());
-#else
-  NOTREACHED_NORETURN();
-#endif
 }
 
 // TODO: b/346354327 - this test should check if changing cookies
@@ -92,4 +80,4 @@ IN_PROC_BROWSER_TEST_F(FloatingSsoTest, CanBeEnabledViaPolicy) {
   EXPECT_FALSE(service.is_enabled_for_testing_);
 }
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/enterprise/floating_sso/cookie_sync_conversions.h"
+#include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 
 #include <initializer_list>
 #include <limits>
@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 namespace {
 
@@ -173,4 +173,4 @@ TEST(CookieSyncConversionsTest, NonCanonicalCookieInProto) {
   EXPECT_FALSE(cookie);
 }
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso

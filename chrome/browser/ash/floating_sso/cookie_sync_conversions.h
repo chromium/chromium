@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
-#define CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
+#ifndef CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
+#define CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
 
 #include <memory>
 #include <optional>
@@ -16,7 +16,7 @@ namespace sync_pb {
 class CookieSpecifics;
 }
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 // Returns nullptr if some members of `proto` can't be deserialized or
 // if the cookie saved in `proto` is not canonical.
@@ -27,6 +27,6 @@ std::unique_ptr<net::CanonicalCookie> FromSyncProto(
 std::optional<sync_pb::CookieSpecifics> ToSyncProto(
     const net::CanonicalCookie& cookie);
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso
 
-#endif  // CHROME_BROWSER_CHROMEOS_ENTERPRISE_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_
+#endif  // CHROME_BROWSER_ASH_FLOATING_SSO_COOKIE_SYNC_CONVERSIONS_H_

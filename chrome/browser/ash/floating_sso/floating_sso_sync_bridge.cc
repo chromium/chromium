@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/enterprise/floating_sso/floating_sso_sync_bridge.h"
+#include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 
 #include <memory>
 #include <optional>
@@ -15,7 +15,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
-namespace chromeos::floating_sso {
+namespace ash::floating_sso {
 
 FloatingSsoSyncBridge::FloatingSsoSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
@@ -72,4 +72,4 @@ void FloatingSsoSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   NOTIMPLEMENTED();
 }
 
-}  // namespace chromeos::floating_sso
+}  // namespace ash::floating_sso
