@@ -203,7 +203,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
       elements.end(),
       {{ToolbarController::ElementIdInfo{
             kToolbarChromeLabsButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-            &kChromeLabsChromeRefreshIcon, kToolbarChromeLabsButtonElementId},
+            &kScienceIcon, kToolbarChromeLabsButtonElementId},
         /*is_section_end=*/false, kToolbarChromeLabsBubbleElementId},
        {ToolbarController::ElementIdInfo{
             kToolbarMediaButtonElementId,

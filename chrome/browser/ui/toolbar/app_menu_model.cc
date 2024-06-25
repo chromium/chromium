@@ -882,8 +882,7 @@ void ToolsMenuModel::Build(Browser* browser) {
       if (show_chrome_labs_item.GetValue()) {
         AddSeparator(ui::NORMAL_SEPARATOR);
         AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CHROME_LABS,
-                                         IDS_CHROMELABS,
-                                         kChromeLabsChromeRefreshIcon);
+                                         IDS_CHROMELABS, kScienceIcon);
         SetElementIdentifierAt(
             GetIndexOfCommandId(IDC_SHOW_CHROME_LABS).value(),
             kChromeLabsMenuItem);
