@@ -28,9 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -46,17 +44,11 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
 @Restriction({
     UiRestriction.RESTRICTION_TYPE_PHONE,
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
 public class TabSwitcherThumbnailTest {
-    private static final String BASE_PARAMS =
-            "force-fieldtrial-params="
-                    + "Study.Group:skip-slow-zooming/false"
-                    + "/zooming-min-memory-mb/512/enable_launch_polish/true";
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -89,7 +81,6 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailAspectRatio_point85() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -99,7 +90,6 @@ public class TabSwitcherThumbnailTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
     public void testThumbnail_withSoftCleanup() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");

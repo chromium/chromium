@@ -296,7 +296,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             ChromeSharedPreferences.getInstance(),
                             mIncognitoReauthManager,
                             mSnackbarManager,
-                            () -> TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext),
                             mLifecylceDispatcher);
             mMessageCardProviderCoordinator.subscribeMessageService(
                     mIncognitoReauthPromoMessageService);

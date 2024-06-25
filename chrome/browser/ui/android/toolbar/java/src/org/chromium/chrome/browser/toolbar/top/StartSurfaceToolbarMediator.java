@@ -69,7 +69,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private final Callback<IPHCommandBuilder> mShowIdentityIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
-    private final boolean mIsTabToGtsFadeAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -104,7 +103,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             MenuButtonCoordinator menuButtonCoordinator,
             ButtonDataProvider identityDiscController,
             Supplier<ButtonData> identityDiscButtonSupplier,
-            boolean isTabToGtsFadeAnimationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback,
             boolean shouldFetchDoodle,
@@ -115,7 +113,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
-        mIsTabToGtsFadeAnimationEnabled = isTabToGtsFadeAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mLogoClickedCallback = logoClickedCallback;
         mShouldFetchDoodle = shouldFetchDoodle;
@@ -351,8 +348,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         // Only show cross fade animation when switching between tab and grid tab switcher surface.
         // When switching between Start surface and grid tab switcher, the visibility won't change,
         // so it's shortcut above.
-        boolean shouldShowAnimation =
-                mIsTabToGtsFadeAnimationEnabled && (wasOnGridTabSwitcher || isOnGridTabSwitcher());
+        boolean shouldShowAnimation = wasOnGridTabSwitcher || isOnGridTabSwitcher();
 
         // When animating into the TabSwitcherMode when the GTS supports accessibility then the
         // transition should also be immediate if touch exploration is enabled as the animation

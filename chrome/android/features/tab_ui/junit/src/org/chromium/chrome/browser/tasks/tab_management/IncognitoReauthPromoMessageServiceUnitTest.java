@@ -81,7 +81,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     private SharedPreferencesManager mSharedPreferenceManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
-    private boolean mIsTabToGTSAnimationEnabled;
     private IncognitoReauthManager mIncognitoReauthManager;
     private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
 
@@ -105,7 +104,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
                         mSharedPreferenceManager,
                         mIncognitoReauthManager,
                         mSnackbarManagerMock,
-                        () -> mIsTabToGTSAnimationEnabled,
                         mActivityLifecycleDispatcherMock);
         verify(mActivityLifecycleDispatcherMock, times(1))
                 .register(mLifecycleObserverArgumentCaptor.capture());
@@ -144,15 +142,12 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @Test
     @SmallTest
     public void testDismissMessageWhenGTSEnabled_RecordsCorrectImpressionMetric() {
-        mIsTabToGTSAnimationEnabled = true;
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.IncognitoReauth.PromoImpressionAfterActionCount", 1);
 
         createIncognitoReauthPromoMessageService();
 
-        // Increasing the impression twice, records only one impression when GTS is enabled.
-        mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         mIncognitoReauthPromoMessageService.dismiss();
 
@@ -282,43 +277,7 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     @Test
     @SmallTest
-    public void testPreparePromoMessage_Fails_AfterMaxShowCountReached_TabToGTSEnabled() {
-        mIsTabToGTSAnimationEnabled = true;
-        createIncognitoReauthPromoMessageService();
-        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount == 10
-                : "When animation is enabled, then the max count should be set to 20, because of"
-                        + " double counting.";
-
-        when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
-                .thenReturn(false);
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
-                /* isAvailable= */ true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/* value= */ true);
-
-        // Mocking the maximum limit.
-        final int initialShowCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
-
-        // When TabToGTS is enabled we call the preparePromoMessage twice for each promo.
-        final int maxShowCount = mIncognitoReauthPromoMessageService.mMaxPromoMessageCount * 2;
-        for (int i = initialShowCount; i < maxShowCount; ++i) {
-            assertTrue(
-                    "Promo message should have been prepared as the current count: "
-                            + i
-                            + ", is less than the max count: "
-                            + maxShowCount,
-                    mIncognitoReauthPromoMessageService.preparePromoMessage());
-            mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
-        }
-        assertFalse(
-                "We shouldn't prepare the message since the max limit was reached in the previous"
-                        + " step.",
-                mIncognitoReauthPromoMessageService.preparePromoMessage());
-    }
-
-    @Test
-    @SmallTest
-    public void testPreparePromoMessage_Fails_AfterMaxShowCountReached_TabToGTSDisabled() {
-        mIsTabToGTSAnimationEnabled = false;
+    public void testPreparePromoMessage_Fails_AfterMaxShowCountReached() {
         createIncognitoReauthPromoMessageService();
         assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount == 10
                 : "When animation is disabled, then the max count should be set to 10, as there's"

@@ -47,7 +47,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -81,7 +81,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for {@link StartSurfaceToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class StartSurfaceToolbarMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private StartSurfaceToolbarMediator mMediator;
@@ -233,6 +232,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertTrue(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mFinishedShowingCallback).onResult(true);
 
         mMediator.updateIdentityDisc(mButtonData);
@@ -248,6 +248,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertTrue(mPropertyModel.get(IS_VISIBLE));
 
         mMediator.onStartSurfaceStateChanged(false, LayoutType.BROWSING);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mFinishedShowingCallback).onResult(false);
     }
 
@@ -502,7 +503,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         () ->
                                 mIdentityDiscController.getForStartSurface(
                                         mMediator.getLayoutTypeForTesting()),
-                        /* isTabToGtsFadeAnimationEnabled= */ false,
                         () -> false,
                         /* logoClickedCallback= */ null,
                         /* isRefactorEnabled= */

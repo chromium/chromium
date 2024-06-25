@@ -133,10 +133,6 @@ import java.util.concurrent.ExecutionException;
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
 })
 public class TabSwitcherLayoutTest {
-    private static final String BASE_PARAMS =
-            "force-fieldtrial-params="
-                    + "Study.Group:skip-slow-zooming/false/zooming-min-memory-mb/512";
-
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
     @Rule
@@ -193,8 +189,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForUndoableClosedTab() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         cta.getSnackbarManager().disableForTesting();
@@ -212,8 +206,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 1, null);
@@ -232,7 +224,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_default() {
         prepareTabs(2, 0, "about:blank");
@@ -249,8 +240,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailFetchingResult_jpeg() throws Exception {
         // May be called when setting both grid card size and thumbnail fetcher.
         var histograms =
@@ -279,8 +268,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1297930")
     public void testRecycling_defaultAspectRatio() {
         prepareTabs(10, 0, mUrl);
@@ -291,8 +278,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testCloseTabViaCloseButton() throws Exception {
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
         prepareTabs(1, 0, null);
@@ -308,8 +293,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
     public void testSwipeToDismiss_GTS() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -447,7 +430,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "b/337061378")
     public void verifyTabGroupStateAfterReparenting() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -491,7 +473,6 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     public void testUndoClosure_AccessibilityMode() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));

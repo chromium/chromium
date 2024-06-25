@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_TO_GTS_ANIMATION;
-
 import android.view.ViewGroup;
 
 import androidx.test.espresso.Espresso;
@@ -25,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,7 +43,6 @@ import java.util.List;
 
 /** End-to-end test for closable TabListEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures(TAB_TO_GTS_ANIMATION)
 @Batch(Batch.PER_CLASS)
 public class ClosableTabListEditorTest {
     @ClassRule

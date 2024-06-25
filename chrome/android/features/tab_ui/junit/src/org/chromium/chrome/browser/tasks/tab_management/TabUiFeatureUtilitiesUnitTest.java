@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -48,34 +47,22 @@ public class TabUiFeatureUtilitiesUnitTest {
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_HighEnd() {
         assertFalse(TabUiFeatureUtilities.shouldUseListMode());
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                        ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
         assertFalse(TabUiFeatureUtilities.shouldUseListMode());
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                        ContextUtils.getApplicationContext()));
     }
 
     @Test
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testCacheGridTabSwitcher_LowEnd() {
         assertTrue(TabUiFeatureUtilities.shouldUseListMode());
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                        ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
 
         assertTrue(TabUiFeatureUtilities.shouldUseListMode());
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                        ContextUtils.getApplicationContext()));
     }
 
     @Test

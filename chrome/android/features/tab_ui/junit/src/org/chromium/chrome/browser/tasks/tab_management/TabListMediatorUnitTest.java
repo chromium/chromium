@@ -186,10 +186,7 @@ import java.util.stream.Collectors;
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
 @LooperMode(LooperMode.Mode.LEGACY)
-@EnableFeatures({
-    ChromeFeatureList.TAB_TO_GTS_ANIMATION,
-    ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS
-})
+@EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS})
 @DisableFeatures({START_SURFACE_ANDROID})
 public class TabListMediatorUnitTest {
 

@@ -169,7 +169,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param isIncognitoModeEnabledSupplier A supplier for whether browsing is currently incognito.
-     * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
@@ -211,7 +210,6 @@ public class TopToolbarCoordinator implements Toolbar {
             Supplier<ButtonData> identityDiscButtonSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier,
-            boolean isTabToGtsAnimationEnabled,
             boolean isStartSurfaceEnabled,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
@@ -253,7 +251,6 @@ public class TopToolbarCoordinator implements Toolbar {
                             overviewThemeColorProvider,
                             overviewModeMenuButtonCoordinator,
                             identityDiscButtonSupplier,
-                            isTabToGtsAnimationEnabled,
                             isIncognitoModeEnabledSupplier,
                             startSurfaceLogoClickedCallback,
                             this::onStartSurfaceToolbarTransitionFinished,
@@ -267,7 +264,6 @@ public class TopToolbarCoordinator implements Toolbar {
                     new TabSwitcherModeTTCoordinator(
                             toolbarStub,
                             overviewModeMenuButtonCoordinator,
-                            isTabToGtsAnimationEnabled,
                             isIncognitoModeEnabledSupplier,
                             mToolbarColorObserverManager);
         }

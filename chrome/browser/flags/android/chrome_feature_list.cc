@@ -291,7 +291,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabStripGroupIndicatorsAndroid,
     &kTabStripLayoutOptimization,
     &kTabStripStartupRefactoring,
-    &kTabToGTSAnimation,
     &kTabWindowManagerIndexReassignmentActivityFinishing,
     &kTabWindowManagerIndexReassignmentActivityInSameTask,
     &kTabWindowManagerIndexReassignmentActivityNotInAppTasks,
@@ -918,12 +917,6 @@ BASE_FEATURE(kTabStripLayoutOptimization,
 
 BASE_FEATURE(kTabStripStartupRefactoring,
              "TabStripStartupRefactoring",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled, but often disabled in tests to reduce animation flakes and test
-// low-end device behavior where this animation is disabled.
-BASE_FEATURE(kTabToGTSAnimation,
-             "TabToGTSAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing,

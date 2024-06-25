@@ -43,18 +43,15 @@ class TabSwitcherModeTTCoordinator {
 
     @Nullable private IncognitoTabModelObserver mIncognitoTabModelObserver;
 
-    private final boolean mIsTabToGtsAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
 
     TabSwitcherModeTTCoordinator(
             ViewStub tabSwitcherToolbarStub,
             MenuButtonCoordinator menuButtonCoordinator,
-            boolean isTabToGtsAnimationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mTabSwitcherToolbarStub = tabSwitcherToolbarStub;
         mMenuButtonCoordinator = menuButtonCoordinator;
-        mIsTabToGtsAnimationEnabled = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mToolbarColorObserverManager = toolbarColorObserverManager;
     }
@@ -166,10 +163,7 @@ class TabSwitcherModeTTCoordinator {
      */
     private void initializeToolbar(TabSwitcherModeTopToolbar toolbar, boolean isFullscreenToolbar) {
         toolbar.initialize(
-                isFullscreenToolbar,
-                mIsTabToGtsAnimationEnabled,
-                mIsIncognitoModeEnabledSupplier,
-                mToolbarColorObserverManager);
+                isFullscreenToolbar, mIsIncognitoModeEnabledSupplier, mToolbarColorObserverManager);
         mMenuButtonCoordinator.setMenuButton(toolbar.findViewById(R.id.menu_button_wrapper));
 
         // It's expected that these properties are set by the time the tab switcher is entered.

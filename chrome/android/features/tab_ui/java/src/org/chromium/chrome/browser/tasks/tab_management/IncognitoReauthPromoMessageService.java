@@ -18,7 +18,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -48,14 +47,6 @@ public class IncognitoReauthPromoMessageService extends MessageService
     private static Boolean sTriggerReviewActionWithoutReauthForTesting;
 
     @VisibleForTesting public final int mMaxPromoMessageCount = 10;
-
-    /**
-     * TODO(crbug.com/40731056): Currently every time entering the tab switcher, {@link
-     * ResetHandler.resetWithTabs} will be called twice if {@link
-     * TabUiFeatureUtilities#isTabToGtsAnimationEnabled} returns true, see {@link
-     * TabSwitcherMediator#prepareOverview}.
-     */
-    private final int mTabSwitcherImpressionMultiplier;
 
     /** The re-auth manager that is used to trigger the re-authentication. */
     private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
@@ -118,13 +109,12 @@ public class IncognitoReauthPromoMessageService extends MessageService
      * @param mMessageType The type of the message.
      * @param profile {@link Profile} to use to check the re-auth status.
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to query about re-auth
-     *         promo shared preference.
+     *     promo shared preference.
      * @param incognitoReauthManager The {@link IncognitoReauthManager} to trigger re-auth for the
-     *         review action.
+     *     review action.
      * @param snackbarManager {@link SnackbarManager} to show a snack-bar after a successful review
-     * @param isTabToGtsAnimationEnabledSupplier {@link Supplier<Boolean>} indicating whether tab to
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} dispacther to
-     *         register listening to onResume events.
+     *     register listening to onResume events.
      */
     IncognitoReauthPromoMessageService(
             int mMessageType,
@@ -133,7 +123,6 @@ public class IncognitoReauthPromoMessageService extends MessageService
             @NonNull SharedPreferencesManager sharedPreferencesManager,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull SnackbarManager snackbarManager,
-            @NonNull Supplier<Boolean> isTabToGtsAnimationEnabledSupplier,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         super(mMessageType);
         mProfile = profile;
@@ -141,7 +130,6 @@ public class IncognitoReauthPromoMessageService extends MessageService
         mSharedPreferencesManager = sharedPreferencesManager;
         mIncognitoReauthManager = incognitoReauthManager;
         mSnackBarManager = snackbarManager;
-        mTabSwitcherImpressionMultiplier = isTabToGtsAnimationEnabledSupplier.get() ? 2 : 1;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         activityLifecycleDispatcher.register(this);
     }
@@ -184,10 +172,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
     }
 
     int getPromoShowCount() {
-        // We divide the recorded count by the multiplier to get the number of times
-        // the user has actually seen the promo.
-        return mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0)
-                / mTabSwitcherImpressionMultiplier;
+        return mSharedPreferencesManager.readInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT, 0);
     }
 
     /**

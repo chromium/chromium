@@ -6,12 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -19,21 +15,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 public class TabUiFeatureUtilities {
     private static final String TAG = "TabFeatureUtilities";
 
-    // Field trial parameters:
-    private static final String SKIP_SLOW_ZOOMING_PARAM = "skip-slow-zooming";
-    public static final BooleanCachedFieldTrialParameter SKIP_SLOW_ZOOMING =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_TO_GTS_ANIMATION, SKIP_SLOW_ZOOMING_PARAM, true);
-
-    // Field trial parameter for the minimum physical memory size to enable zooming animation.
-    private static final String MIN_MEMORY_MB_PARAM = "zooming-min-memory-mb";
-    public static final IntCachedFieldTrialParameter ZOOMING_MIN_MEMORY =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_TO_GTS_ANIMATION, MIN_MEMORY_MB_PARAM, 2048);
-
     // Cached and fixed values.
     private static boolean sTabListEditorLongPressEntryEnabled;
-    private static Boolean sIsTabToGtsAnimationEnabled;
 
     /** Set whether the longpress entry for TabListEditor is enabled. Currently only in tests. */
     public static void setTabListEditorLongPressEntryEnabledForTesting(boolean enabled) {
@@ -60,25 +43,6 @@ public class TabUiFeatureUtilities {
     public static boolean shouldUseListMode() {
         // Low-end forces list mode.
         return SysUtils.isLowEndDevice() || ChromeFeatureList.sForceListTabSwitcher.isEnabled();
-    }
-
-    /**
-     * @return Whether the Tab-to-Grid (and Grid-to-Tab) transition animation is enabled.
-     */
-    public static boolean isTabToGtsAnimationEnabled(Context context) {
-        if (sIsTabToGtsAnimationEnabled == null || BuildConfig.IS_FOR_TEST) {
-            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-                sIsTabToGtsAnimationEnabled = false;
-            } else {
-                Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
-                sIsTabToGtsAnimationEnabled =
-                        ChromeFeatureList.sTabToGTSAnimation.isEnabled()
-                                && SysUtils.amountOfPhysicalMemoryKB() / 1024
-                                        >= ZOOMING_MIN_MEMORY.getValue()
-                                && !shouldUseListMode();
-            }
-        }
-        return sIsTabToGtsAnimationEnabled;
     }
 
     /**

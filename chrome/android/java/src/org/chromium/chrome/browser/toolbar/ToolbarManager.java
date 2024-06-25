@@ -123,7 +123,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
@@ -784,8 +783,6 @@ public class ToolbarManager
             mStartSurfaceMenuStateObserver = mOverviewModeMenuButtonCoordinator.getStateObserver();
         }
 
-        boolean isTabToGtsAnimationEnabled =
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivity);
         Callback<LoadUrlParams> startSurfaceLogoClickedCallback =
                 mCallbackController.makeCancelable(
                         (urlParams) -> {
@@ -808,7 +805,6 @@ public class ToolbarManager
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
                         identityDiscController,
-                        isTabToGtsAnimationEnabled,
                         mIsStartSurfaceEnabled,
                         initializeWithIncognitoColors,
                         startSurfaceLogoClickedCallback,
@@ -1401,7 +1397,6 @@ public class ToolbarManager
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             IdentityDiscController identityDiscController,
-            boolean isTabToGtsAnimationEnabled,
             boolean isStartSurfaceEnabled,
             boolean initializeWithIncognitoColors,
             Callback<LoadUrlParams> logoClickedCallback,
@@ -1436,7 +1431,6 @@ public class ToolbarManager
                             return IncognitoUtils.isIncognitoModeEnabled(
                                     mTabModelSelector.getCurrentModel().getProfile());
                         },
-                        isTabToGtsAnimationEnabled,
                         isStartSurfaceEnabled,
                         HistoryManagerUtils::showHistoryManager,
                         PartnerBrowserCustomizations.getInstance()

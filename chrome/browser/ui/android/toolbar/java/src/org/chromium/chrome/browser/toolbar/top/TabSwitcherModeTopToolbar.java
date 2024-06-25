@@ -68,7 +68,6 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private @Nullable ToolbarAlphaInOverviewObserver mToolbarAlphaInOverviewObserver;
 
     private boolean mIsFullscreenToolbar;
-    private boolean mShowZoomingAnimation;
 
     public TabSwitcherModeTopToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -93,11 +92,9 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
     void initialize(
             boolean isFullscreenToolbar,
-            boolean isTabToGtsAnimationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ToolbarColorObserverManager toolbarColorObserverManager) {
         mIsFullscreenToolbar = isFullscreenToolbar;
-        mShowZoomingAnimation = isTabToGtsAnimationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mToolbarAlphaInOverviewObserver = toolbarColorObserverManager;
 
@@ -158,15 +155,12 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         // TODO(twellington): Handle interrupted animations to avoid jumps to 1.0 or 0.f.
         setAlpha(inTabSwitcherMode ? 0.0f : 1.0f);
 
-        long duration =
-                mShowZoomingAnimation
-                        ? TopToolbarCoordinator.TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS
-                        : TopToolbarCoordinator.TAB_SWITCHER_MODE_NORMAL_ANIMATION_DURATION_MS;
+        long duration = TopToolbarCoordinator.TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS;
 
         mVisiblityAnimator =
                 ObjectAnimator.ofFloat(this, View.ALPHA, inTabSwitcherMode ? 1.0f : 0.0f);
         mVisiblityAnimator.setDuration(duration);
-        if (mShowZoomingAnimation && inTabSwitcherMode) mVisiblityAnimator.setStartDelay(duration);
+        if (inTabSwitcherMode) mVisiblityAnimator.setStartDelay(duration);
         mVisiblityAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
 
         mVisiblityAnimator.addListener(
