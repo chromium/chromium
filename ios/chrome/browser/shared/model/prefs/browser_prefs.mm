@@ -1116,4 +1116,8 @@ void MigrateObsoleteUserDefault() {
 
   // Added 05/2024.
   [defaults removeObjectForKey:@"lastSignificantUserEventVideo"];
+
+  // Added 06/2024.
+  [defaults removeObjectForKey:@"TimestampAppLastOpenedViaFirstPartyIntent"];
+  [defaults removeObjectForKey:@"TimestampLastValidURLPasted"];
 }

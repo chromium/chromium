@@ -52,15 +52,6 @@ NSString* const kLastSignificantUserEventAllTabs =
 NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
 
-// Key in storage containing the timestamp of the last time the user opened the
-// app via first-party intent.
-NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
-    @"TimestampAppLastOpenedViaFirstPartyIntent";
-
-// Key in storage containing the timestamp of the last time the user pasted a
-// valid URL into the omnibox.
-NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
-
 // Action string for "Appear" event of the promo.
 const char kAppearAction[] = "Appear";
 
@@ -83,13 +74,6 @@ constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
 
 // Short cool down between promos.
 constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
-
-// Maximum time range between first-party app launches to notify the FET.
-constexpr base::TimeDelta kMaximumTimeBetweenFirstPartyAppLaunches =
-    base::Days(7);
-
-// Maximum time range between valid user URL pastes to notify the FET.
-constexpr base::TimeDelta kMaximumTimeBetweenValidURLPastes = base::Days(7);
 
 // Time threshold for default browser trigger criteria experiment statistics.
 constexpr base::TimeDelta kTriggerCriteriaExperimentStatExpiration =
@@ -475,18 +459,7 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
     return false;
   }
 
-  // We need to ask the FET whether or not we should show this IPH because if
-  // yes, this will automatically notify the other dependent FET features that
-  // their criteria have been met. We then automatically dismiss it. Since it's
-  // just a shadow feature to enable the other two needed for the blue dot
-  // promo, we ignore `ShouldTriggerHelpUI`'s return value.
-  if (tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature)) {
-    tracker->Dismissed(
-        feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature);
-  }
-
-  // Now, we ask the appropriate FET feature if it should trigger, i.e. if we
+  // We ask the appropriate FET feature if it should trigger, i.e. if we
   // should show the blue dot promo badge.
   if (tracker->ShouldTriggerHelpUI(feature)) {
     tracker->Dismissed(feature);
@@ -667,38 +640,6 @@ void LogRemoteTabsUseForCriteriaExperiment() {
   }
 
   StoreCurrentTimestampForKey(kSpecialTabsUseCount);
-}
-
-bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
-  const base::TimeDelta max_session_time = base::Hours(6);
-
-  if (HasRecordedEventForKeyLessThanDelay(
-          kTimestampAppLastOpenedViaFirstPartyIntent,
-          kMaximumTimeBetweenFirstPartyAppLaunches)) {
-    if (HasRecordedEventForKeyMoreThanDelay(
-            kTimestampAppLastOpenedViaFirstPartyIntent, max_session_time)) {
-      SetObjectIntoStorageForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
-                                 [NSDate date]);
-      return YES;
-    }
-
-    return NO;
-  }
-
-  SetObjectIntoStorageForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
-                             [NSDate date]);
-  return NO;
-}
-
-bool HasRecentValidURLPastesAndRecordsCurrentPaste() {
-  if (HasRecordedEventForKeyLessThanDelay(kTimestampLastValidURLPasted,
-                                          kMaximumTimeBetweenValidURLPastes)) {
-    SetObjectIntoStorageForKey(kTimestampLastValidURLPasted, [NSDate date]);
-    return YES;
-  }
-
-  SetObjectIntoStorageForKey(kTimestampLastValidURLPasted, [NSDate date]);
-  return NO;
 }
 
 bool HasRecentTimestampForKey(NSString* eventKey) {

@@ -251,16 +251,6 @@ void LogAutofillUseForCriteriaExperiment();
 // Logs that the user has used remote tabs.
 void LogRemoteTabsUseForCriteriaExperiment();
 
-// Returns YES if the user has opened the app through first-party intent 2
-// times in the last 7 days, but across 2 user sessions (default 6 hours). Also
-// records that a new launch has happened if the last one was more than one
-// session ago.
-bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch();
-
-// Returns YES if the user has pasted a valid URL into the omnibox twice in
-// the last 7 days and records the current paste.
-bool HasRecentValidURLPastesAndRecordsCurrentPaste();
-
 // Returns YES if the last timestamp passed as `eventKey` is part of the current
 // user session (default 6 hours). If not, it records the timestamp.
 bool HasRecentTimestampForKey(NSString* eventKey);

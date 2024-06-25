@@ -20,9 +20,6 @@ namespace {
 // A bit more than a day.
 constexpr base::TimeDelta kMoreThan1Day = base::Days(1) + base::Minutes(1);
 
-// Less than 7 days.
-constexpr base::TimeDelta kLessThan7Days = base::Days(7) - base::Minutes(1);
-
 // More than 7 days.
 constexpr base::TimeDelta kMoreThan7Days = base::Days(7) + base::Minutes(1);
 
@@ -269,72 +266,6 @@ TEST_F(DefaultBrowserUtilsTest, CooldownRefactorFlagDisabled) {
 TEST_F(DefaultBrowserUtilsTest, TailoredPromoDoesNotAppearTwoTimes) {
   LogUserInteractionWithTailoredFullscreenPromo();
   EXPECT_TRUE(HasUserInteractedWithTailoredFullscreenPromoBefore());
-}
-
-// Tests that two recent first party intent launches are less than 6 hours
-// apart, both returning false.
-TEST_F(DefaultBrowserUtilsTest,
-       HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan6Hours) {
-  // Calling this more than once tests different code paths, but should return
-  // false on both calls. This is due to there being less than 6 hours between
-  // each call.
-  EXPECT_FALSE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
-  EXPECT_FALSE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
-}
-
-// Manually tests that two recent first party intent launches are less than 6
-// hours apart.
-TEST_F(
-    DefaultBrowserUtilsTest,
-    ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan6Hours) {
-  ResetStorageAndSetTimestampForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
-                                    (base::Time::Now() - kLessThan6Hours));
-  EXPECT_FALSE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
-}
-
-// Manually tests that two recent first party intent launches are more than 7
-// days apart.
-TEST_F(
-    DefaultBrowserUtilsTest,
-    ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchMoreThan7Days) {
-  ResetStorageAndSetTimestampForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
-                                    (base::Time::Now() - kMoreThan7Days));
-  EXPECT_FALSE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
-}
-
-// Manually tests that two recent first party intent launches are more than 6
-// hours apart, but less than 7 days apart. Returns true.
-TEST_F(
-    DefaultBrowserUtilsTest,
-    ManualHasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunchLessThan7DaysMoreThan6Hours) {
-  ResetStorageAndSetTimestampForKey(kTimestampAppLastOpenedViaFirstPartyIntent,
-                                    (base::Time::Now() - kLessThan7Days));
-  EXPECT_TRUE(HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch());
-}
-
-// Tests two consecutive pastes recorded within 7 days, second call returns
-// true.
-TEST_F(DefaultBrowserUtilsTest, TwoConsecutivePastesUnder7Days) {
-  // Should return false at first, then true since an event has already been
-  // recorded within 7 days when the second one is called.
-  EXPECT_FALSE(HasRecentValidURLPastesAndRecordsCurrentPaste());
-  EXPECT_TRUE(HasRecentValidURLPastesAndRecordsCurrentPaste());
-}
-
-// Manually tests two consecutive pastes recorded within 7 days, should return
-// true.
-TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesUnder7Days) {
-  ResetStorageAndSetTimestampForKey(kTimestampLastValidURLPasted,
-                                    (base::Time::Now() - kLessThan7Days));
-  EXPECT_TRUE(HasRecentValidURLPastesAndRecordsCurrentPaste());
-}
-
-// Manually tests two consecutive pastes recorded with more than 7 days between,
-// should return false.
-TEST_F(DefaultBrowserUtilsTest, ManualTwoConsecutivePastesOver7Days) {
-  ResetStorageAndSetTimestampForKey(kTimestampLastValidURLPasted,
-                                    (base::Time::Now() - kMoreThan7Days));
-  EXPECT_FALSE(HasRecentValidURLPastesAndRecordsCurrentPaste());
 }
 
 // Tests that a recent event timestamp (less than 6 hours) has already been

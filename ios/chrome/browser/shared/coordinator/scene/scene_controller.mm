@@ -536,7 +536,6 @@ void OnListFamilyMembersResponse(
   if (parameters.openedViaFirstPartyScheme) {
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent
         agentFromScene:self.sceneState] logUserEnteredAppViaFirstPartyScheme];
-    [self notifyFETAppOpenedViaFirstParty];
   }
 
   ChromeBrowserState* browserState =
@@ -1241,24 +1240,6 @@ void OnListFamilyMembersResponse(
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         currentBrowser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
-  }
-}
-
-// Notifies the Feature Engagement Tracker that an eligibility criterion has
-// been met for the default browser blue dot promo.
-- (void)notifyFETAppOpenedViaFirstParty {
-  ChromeBrowserState* browserState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  if (!browserState || browserState->IsOffTheRecord()) {
-    return;
-  }
-
-  if (HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch()) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
-
-    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
   }
 }
 

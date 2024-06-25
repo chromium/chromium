@@ -1816,35 +1816,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHiOSDefaultBrowserBadgeEligibilityFeature.name == feature->name) {
-    // A config for a shadow feature that is used to activate two other features
-    // (kIPHiOSDefaultBrowserOverflowMenuBadgeFeature and
-    // kIPHiOSDefaultBrowserSettingsBadgeFeature) which will enable a blue
-    // notification badge to be shown to users at two different locations to
-    // help bring their attention to the default browser settings page. This FET
-    // feature is non-blocking because it is a passive promo that appears
-    // alongside the rest of the UI, and does not interrupt the user's flow.
-
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->trigger = EventConfig("blue_dot_promo_eligibility_met",
-                                  Comparator(EQUAL, 0), 360, 360);
-    config->used = EventConfig("blue_dot_promo_criterion_met",
-                               Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360);
-    config->event_configs.insert(EventConfig("default_browser_promo_shown",
-                                             Comparator(EQUAL, 0), 14, 360));
-    config->event_configs.insert(EventConfig("default_browser_fre_shown",
-                                             Comparator(EQUAL, 0), 14, 360));
-    config->event_configs.insert(EventConfig(
-        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
-    config->blocked_by.type = BlockedBy::Type::NONE;
-    config->blocking.type = Blocking::Type::NONE;
-    return config;
-  }
-
   if (kIPHiOSDefaultBrowserOverflowMenuBadgeFeature.name == feature->name) {
     // A config to allow a user to be shown the blue dot promo on the carousel.
     // It depends on kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed
@@ -1865,15 +1836,15 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig("blue_dot_promo_overflow_menu_shown_new_session",
                     Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
-    config->event_configs.insert(
-        EventConfig("blue_dot_promo_eligibility_met",
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig(
         "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 360, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
@@ -1900,15 +1871,15 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig("blue_dot_promo_settings_shown_new_session",
                     Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
-    config->event_configs.insert(
-        EventConfig("blue_dot_promo_eligibility_met",
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->event_configs.insert(EventConfig(
         "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeOpened,
+                    Comparator(GREATER_THAN_OR_EQUAL, 7), 360, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;

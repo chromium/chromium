@@ -147,14 +147,8 @@ void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker) {
 }
 
 void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker) {
-  // OTR browsers can sometimes pass a null tracker, check for that here.
-  if (!tracker) {
-    return;
-  }
-
-  if (HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-  }
+  // TODO(crbug.com/348230111): Decide if we want to track this event for
+  // non-modal promo.
 }
 
 void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
@@ -179,16 +173,6 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
 
   base::RecordAction(
       base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
-
-  // OTR browsers can sometimes pass a null tracker, check for that here.
-  if (!tracker) {
-    return;
-  }
-
-  // Notify blue dot promo.
-  if (HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
-  }
 }
 
 void NotifyOmniboxTextCopyPasteAndNavigate(

@@ -89,8 +89,6 @@ const char kPasswordManagerWidgetPromoClosed[] =
     "password_manager_widget_promo_closed";
 
 // Default browser blue dot promo.
-const char kBlueDotPromoCriterionMet[] = "blue_dot_promo_criterion_met";
-const char kBlueDotPromoEligibilityMet[] = "blue_dot_promo_eligibility_met";
 const char kBlueDotPromoOverflowMenuShown[] =
     "blue_dot_promo_overflow_menu_shown";
 const char kBlueDotPromoOverflowMenuShownNewSession[] =
