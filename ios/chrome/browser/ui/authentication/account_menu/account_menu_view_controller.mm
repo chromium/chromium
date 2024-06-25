@@ -30,6 +30,13 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
 
 @implementation AccountMenuViewController
 
+#pragma mark - UIViewController
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [self.delegate viewControllerWantsToBeClosed:self];
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
@@ -48,8 +55,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
   if (idiom != UIUserInterfaceIdiomPad) {
     UIBarButtonItem* closeButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                             target:self.delegate
-                             action:@selector(viewControllerWantsToBeClosed)];
+                             target:self
+                             action:@selector(userTappedOnClose)];
     closeButton.accessibilityIdentifier = kAccountMenuCloseButtonId;
     self.navigationItem.rightBarButtonItem = closeButton;
   }
@@ -115,6 +122,10 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
   ];
 }
 
+- (void)userTappedOnClose {
+  [self.delegate viewControllerWantsToBeClosed:self];
+}
+
 #pragma mark - UIResponder
 
 // To always be able to register key commands via -keyCommands, the VC must be
@@ -129,7 +140,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20.0;
 
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction("MobileKeyCommandClose"));
-  [self.delegate viewControllerWantsToBeClosed];
+  [self.delegate viewControllerWantsToBeClosed:self];
 }
 
 @end

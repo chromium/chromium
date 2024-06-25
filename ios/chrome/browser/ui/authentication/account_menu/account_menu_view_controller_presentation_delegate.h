@@ -9,7 +9,8 @@
 @protocol AccountMenuViewControllerPresentationDelegate <NSObject>
 
 // The user tapped the close button.
-- (void)viewControllerWantsToBeClosed;
+- (void)viewControllerWantsToBeClosed:
+    (AccountMenuViewController*)viewController;
 
 // Shows https://myaccount.google.com/ for the account currently signed-in
 // to Chrome. The content is displayed in a new view in the stack, i.e.

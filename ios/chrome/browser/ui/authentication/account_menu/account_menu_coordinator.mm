@@ -111,8 +111,10 @@
   [_accountsCoordinator start];
 }
 
-- (void)viewControllerWantsToBeClosed {
-  [self stop];
+- (void)viewControllerWantsToBeClosed:
+    (AccountMenuViewController*)viewController {
+  CHECK_EQ(_viewController, viewController);
+  [self.delegate acountMenuCoordinatorShouldStop:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
