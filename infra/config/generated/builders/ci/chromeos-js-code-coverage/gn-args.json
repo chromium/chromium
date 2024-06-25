@@ -6,6 +6,7 @@
     "is_debug": false,
     "optimize_webui": false,
     "proprietary_codecs": true,
+    "target_cpu": "x64",
     "target_os": "chromeos",
     "use_javascript_coverage": true,
     "use_remoteexec": true,
