@@ -112,6 +112,7 @@ _DESIRED_VERSIONS = [
     '124.0.6367.47',
     '125.0.6422.3',
     '126.0.6478.16',
+    '127.0.6533.2',
 ]
 
 
@@ -140,6 +141,10 @@ def _EnumerateReports():
       versions = [v for v in versions if _VersionMajor(v) >= 71]
     elif apk == 'TrichromeGoogle':
       versions = [v for v in versions if _VersionMajor(v) >= 88]
+
+    # Switched to high-end only.
+    if cpu == 'arm_64':
+      versions = [v for v in versions if _VersionMajor(v) < 127]
 
     for version in versions:
       yield Report(cpu, apk, version)
