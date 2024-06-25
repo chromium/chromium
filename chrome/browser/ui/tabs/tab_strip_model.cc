@@ -368,8 +368,7 @@ TabStripModel::DetachWebContentsWithReasonAt(
   CHECK_NE(active_index(), kNoTab) << "Activate the TabStripModel by "
                                       "selecting at least one tab before "
                                       "trying to detach web contents.";
-  WebContents* initially_active_web_contents =
-      GetWebContentsAtImpl(active_index());
+  const tabs::TabModel* tab_model = GetTabAtIndex(active_index());
   if (index == active_index() && !closing_all_) {
     GetTabAtIndex(active_index())
         ->WillEnterBackground(base::PassKey<TabStripModel>());
@@ -377,8 +376,7 @@ TabStripModel::DetachWebContentsWithReasonAt(
   GetTabAtIndex(index)->WillDetach(base::PassKey<TabStripModel>(),
                                    RemoveReasonToDetachReason(reason));
 
-  DetachNotifications notifications(initially_active_web_contents,
-                                    selection_model_);
+  DetachNotifications notifications(tab_model->contents(), selection_model_);
   auto dwc = DetachWebContentsImpl(index, index,
                                    /*create_historical_tab=*/false, reason);
   notifications.detached_web_contents.push_back(std::move(dwc));
@@ -415,11 +413,11 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
 
   // Ask the delegate to save an entry for this tab in the historical tab
   // database.
-  WebContents* raw_web_contents =
-      GetWebContentsAtImpl(index_at_time_of_removal);
+  tabs::TabModel* tab = GetTabAtIndex(index_at_time_of_removal);
   std::optional<SessionID> id = std::nullopt;
-  if (create_historical_tab)
-    id = delegate_->CreateHistoricalTab(raw_web_contents);
+  if (create_historical_tab) {
+    id = delegate_->CreateHistoricalTab(tab->contents());
+  }
 
   std::unique_ptr<tabs::TabModel> old_data =
       RemoveTabFromIndexImpl(index_at_time_of_removal);
@@ -625,8 +623,9 @@ tabs::TabModel* TabStripModel::GetActiveTab() const {
 }
 
 WebContents* TabStripModel::GetWebContentsAt(int index) const {
-  if (ContainsIndex(index))
-    return GetWebContentsAtImpl(index);
+  if (ContainsIndex(index)) {
+    return GetTabAtIndex(index)->contents();
+  }
   return nullptr;
 }
 
@@ -641,10 +640,10 @@ int TabStripModel::GetIndexOfWebContents(const WebContents* contents) const {
 
 void TabStripModel::UpdateWebContentsStateAt(int index,
                                              TabChangeType change_type) {
-  WebContents* const web_contents = GetWebContentsAtImpl(index);
+  tabs::TabModel* const tab = GetTabAtIndex(index);
 
   for (auto& observer : observers_) {
-    observer.TabChangedAt(web_contents, index, change_type);
+    observer.TabChangedAt(tab->contents(), index, change_type);
   }
 }
 
@@ -1950,7 +1949,7 @@ bool TabStripModel::IsNewTabAtEndOfTabStrip(WebContents* contents) const {
   const GURL& url = contents->GetLastCommittedURL();
   return url.SchemeIs(content::kChromeUIScheme) &&
          url.host_piece() == chrome::kChromeUINewTabHost &&
-         contents == GetWebContentsAtImpl(count() - 1) &&
+         contents == GetTabAtIndex(count() - 1)->contents() &&
          contents->GetController().GetEntryCount() == 1;
 }
 
@@ -1959,7 +1958,7 @@ std::vector<content::WebContents*> TabStripModel::GetWebContentsesByIndices(
   std::vector<content::WebContents*> items;
   items.reserve(indices.size());
   for (int index : indices)
-    items.push_back(GetWebContentsAtImpl(index));
+    items.push_back(GetTabAtIndex(index)->contents());
   return items;
 }
 
@@ -2145,12 +2144,6 @@ bool TabStripModel::CloseWebContentses(
     notifications->detached_web_contents.push_back(std::move(dwc));
 
   return closed_all;
-}
-
-WebContents* TabStripModel::GetWebContentsAtImpl(int index) const {
-  CHECK(ContainsIndex(index))
-      << "Failed to find: " << index << " in: " << count() << " entries.";
-  return GetTabAtIndex(index)->contents();
 }
 
 TabStripSelectionChange TabStripModel::SetSelection(
@@ -2944,12 +2937,12 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
 }
 
 void TabStripModel::FixOpeners(int index) {
-  WebContents* old_contents = GetWebContentsAtImpl(index);
+  tabs::TabModel* old_tab = GetTabAtIndex(index);
   WebContents* new_opener = GetOpenerOfWebContentsAt(index);
 
   for (int i = 0; i < GetTabCount(); i++) {
     tabs::TabModel* tab = GetTabAtIndex(i);
-    if (tab->opener() != old_contents) {
+    if (tab->opener() != old_tab->contents()) {
       continue;
     }
 
@@ -2957,12 +2950,13 @@ void TabStripModel::FixOpeners(int index) {
     tab->set_opener(new_opener == tab->contents() ? nullptr : new_opener);
   }
 
-  // Sanity check that none of the tabs' openers refer |old_contents| or
+  // Sanity check that none of the tabs' openers refer |old_tab| or
   // themselves.
   DCHECK([&]() {
     for (int i = 0; i < GetTabCount(); ++i) {
       tabs::TabModel* tab = GetTabAtIndex(i);
-      if (tab->opener() == old_contents || tab->opener() == tab->contents()) {
+      if (tab->opener() == old_tab->contents() ||
+          tab->opener() == tab->contents()) {
         return false;
       }
     }

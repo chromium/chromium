@@ -775,9 +775,6 @@ class TabStripModel : public TabGroupController {
                           uint32_t close_types,
                           DetachNotifications* notifications);
 
-  // Gets the WebContents at an index. Does no bounds checking.
-  content::WebContents* GetWebContentsAtImpl(int index) const;
-
   // Returns the WebContentses at the specified indices. This does no checking
   // of the indices, it is assumed they are valid.
   std::vector<content::WebContents*> GetWebContentsesByIndices(
