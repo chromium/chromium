@@ -27,10 +27,44 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace ash {
+
+namespace {
+
+const char* SearchSourceToHistogram(PickerSearchSource source) {
+  switch (source) {
+    case PickerSearchSource::kOmnibox:
+      return "Ash.Picker.Search.OmniboxProvider.QueryTime";
+    case PickerSearchSource::kTenor:
+      return "Ash.Picker.Search.GifProvider.QueryTime";
+    case PickerSearchSource::kEmoji:
+      // Unused.
+      return "Ash.Picker.Search.EmojiProvider.QueryTime";
+    case PickerSearchSource::kDate:
+      return "Ash.Picker.Search.DateProvider.QueryTime";
+    case PickerSearchSource::kCategory:
+      return "Ash.Picker.Search.CategoryProvider.QueryTime";
+    case PickerSearchSource::kLocalFile:
+      return "Ash.Picker.Search.FileProvider.QueryTime";
+    case PickerSearchSource::kDrive:
+      return "Ash.Picker.Search.DriveProvider.QueryTime";
+    case PickerSearchSource::kMath:
+      return "Ash.Picker.Search.MathProvider.QueryTime";
+    case PickerSearchSource::kClipboard:
+      return "Ash.Picker.Search.ClipboardProvider.QueryTime";
+    case PickerSearchSource::kEditorWrite:
+    case PickerSearchSource::kEditorRewrite:
+      return "Ash.Picker.Search.EditorProvider.QueryTime";
+  }
+  NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
+}
+
+}  // namespace
 
 PickerSearchRequest::PickerSearchRequest(
     const std::u16string& query,
@@ -44,12 +78,24 @@ PickerSearchRequest::PickerSearchRequest(
       gif_search_debouncer_(kGifDebouncingDelay) {
   std::string utf8_query = base::UTF16ToUTF8(query);
 
-  if (!category.has_value() || (category == PickerCategory::kLinks ||
-                                category == PickerCategory::kLocalFiles ||
-                                category == PickerCategory::kDriveFiles)) {
+  std::vector<PickerSearchSource> cros_search_sources;
+  cros_search_sources.reserve(3);
+  if (!category.has_value() || category == PickerCategory::kLinks) {
+    cros_search_sources.push_back(PickerSearchSource::kOmnibox);
+  }
+  if (!category.has_value() || category == PickerCategory::kLocalFiles) {
+    cros_search_sources.push_back(PickerSearchSource::kLocalFile);
+  }
+  if (!category.has_value() || category == PickerCategory::kDriveFiles) {
+    cros_search_sources.push_back(PickerSearchSource::kDrive);
+  }
+
+  if (!cros_search_sources.empty()) {
     // TODO: b/326166751 - Use `available_categories_` to decide what searches
     // to do.
-    cros_search_start_ = base::TimeTicks::Now();
+    for (PickerSearchSource source : cros_search_sources) {
+      search_starts_[base::to_underlying(source)] = base::TimeTicks::Now();
+    }
     client_->StartCrosSearch(
         query, category,
         base::BindRepeating(&PickerSearchRequest::HandleCrosSearchResults,
@@ -59,7 +105,8 @@ PickerSearchRequest::PickerSearchRequest(
   if ((!category.has_value() || category == PickerCategory::kClipboard) &&
       base::Contains(available_categories, PickerCategory::kClipboard)) {
     clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
-    clipboard_search_start_ = base::TimeTicks::Now();
+    search_starts_[base::to_underlying(PickerSearchSource::kClipboard)] =
+        base::TimeTicks::Now();
     clipboard_provider_->FetchResults(
         base::BindOnce(&PickerSearchRequest::HandleClipboardSearchResults,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -68,14 +115,16 @@ PickerSearchRequest::PickerSearchRequest(
 
   if ((!category.has_value() || category == PickerCategory::kDatesTimes) &&
       base::Contains(available_categories, PickerCategory::kDatesTimes)) {
-    date_search_start_ = base::TimeTicks::Now();
+    search_starts_[base::to_underlying(PickerSearchSource::kDate)] =
+        base::TimeTicks::Now();
     // Date results is currently synchronous.
     HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
   }
 
   if ((!category.has_value() || category == PickerCategory::kUnitsMaths) &&
       base::Contains(available_categories, PickerCategory::kUnitsMaths)) {
-    math_search_start_ = base::TimeTicks::Now();
+    search_starts_[base::to_underlying(PickerSearchSource::kMath)] =
+        base::TimeTicks::Now();
     // Math results is currently synchronous.
     HandleMathSearchResults(PickerMathSearch(query));
   }
@@ -83,19 +132,22 @@ PickerSearchRequest::PickerSearchRequest(
   // These searches do not have category-specific search.
   if (!category.has_value()) {
     if (base::Contains(available_categories, PickerCategory::kExpressions)) {
+      // TODO: b/348067874 - Add "pending start" to `search_starts_` state.
       gif_search_debouncer_.RequestSearch(
           base::BindOnce(&PickerSearchRequest::StartGifSearch,
                          weak_ptr_factory_.GetWeakPtr(), utf8_query));
     }
 
-    category_search_start_ = base::TimeTicks::Now();
+    search_starts_[base::to_underlying(PickerSearchSource::kCategory)] =
+        base::TimeTicks::Now();
     // Category results are currently synchronous.
     HandleCategorySearchResults(
         PickerCategorySearch(available_categories, query));
 
     if (base::Contains(available_categories, PickerCategory::kEditorWrite)) {
       // Editor results are currently synchronous.
-      editor_search_start_ = base::TimeTicks::Now();
+      search_starts_[base::to_underlying(PickerSearchSource::kEditorWrite)] =
+          base::TimeTicks::Now();
       HandleEditorSearchResults(
           PickerSearchSource::kEditorWrite,
           PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
@@ -104,7 +156,8 @@ PickerSearchRequest::PickerSearchRequest(
 
     if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
       // Editor results are currently synchronous.
-      editor_search_start_ = base::TimeTicks::Now();
+      search_starts_[base::to_underlying(PickerSearchSource::kEditorRewrite)] =
+          base::TimeTicks::Now();
       HandleEditorSearchResults(
           PickerSearchSource::kEditorRewrite,
           PickerEditorSearch(PickerSearchResult::EditorData::Mode::kRewrite,
@@ -122,7 +175,8 @@ PickerSearchRequest::~PickerSearchRequest() {
 }
 
 void PickerSearchRequest::StartGifSearch(const std::string& query) {
-  gif_search_start_ = base::TimeTicks::Now();
+  search_starts_[base::to_underlying(PickerSearchSource::kTenor)] =
+      base::TimeTicks::Now();
   client_->FetchGifSearch(
       query, base::BindOnce(&PickerSearchRequest::HandleGifSearchResults,
                             weak_ptr_factory_.GetWeakPtr(), query));
@@ -140,17 +194,19 @@ void PickerSearchRequest::HandleSearchSourceResults(
   // should - in theory - never be called after `current_callback_` is reset.
   CHECK(!current_callback_.is_null())
       << "Current callback is null in HandleSearchSourceResults";
+  CHECK(search_starts_[base::to_underlying(source)].has_value())
+      << "search_starts_ enum " << base::to_underlying(source)
+      << " was not set";
+
+  base::TimeDelta elapsed =
+      base::TimeTicks::Now() - *search_starts_[base::to_underlying(source)];
+  base::UmaHistogramTimes(SearchSourceToHistogram(source), elapsed);
+
   current_callback_.Run(source, std::move(results), has_more_results);
 }
 
 void PickerSearchRequest::HandleCategorySearchResults(
     std::vector<PickerSearchResult> results) {
-  if (category_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *category_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.CategoryProvider.QueryTime",
-                            elapsed);
-  }
-
   HandleSearchSourceResults(PickerSearchSource::kCategory, std::move(results),
                             /*has_more_results*/ false);
 }
@@ -160,12 +216,6 @@ void PickerSearchRequest::HandleCrosSearchResults(
     std::vector<PickerSearchResult> results) {
   switch (type) {
     case AppListSearchResultType::kOmnibox: {
-      if (cros_search_start_.has_value()) {
-        base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
-        base::UmaHistogramTimes("Ash.Picker.Search.OmniboxProvider.QueryTime",
-                                elapsed);
-      }
-
       size_t results_to_remove = is_category_specific_search_
                                      ? 0
                                      : std::max<size_t>(results.size(), 3) - 3;
@@ -177,11 +227,6 @@ void PickerSearchRequest::HandleCrosSearchResults(
       break;
     }
     case AppListSearchResultType::kDriveSearch: {
-      if (cros_search_start_.has_value()) {
-        base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
-        base::UmaHistogramTimes("Ash.Picker.Search.DriveProvider.QueryTime",
-                                elapsed);
-      }
       size_t files_to_remove = is_category_specific_search_
                                    ? 0
                                    : std::max<size_t>(results.size(), 3) - 3;
@@ -192,11 +237,6 @@ void PickerSearchRequest::HandleCrosSearchResults(
       break;
     }
     case AppListSearchResultType::kFileSearch: {
-      if (cros_search_start_.has_value()) {
-        base::TimeDelta elapsed = base::TimeTicks::Now() - *cros_search_start_;
-        base::UmaHistogramTimes("Ash.Picker.Search.FileProvider.QueryTime",
-                                elapsed);
-      }
       size_t files_to_remove = is_category_specific_search_
                                    ? 0
                                    : std::max<size_t>(results.size(), 3) - 3;
@@ -217,11 +257,6 @@ void PickerSearchRequest::HandleCrosSearchResults(
 void PickerSearchRequest::HandleGifSearchResults(
     std::string query,
     std::vector<PickerSearchResult> results) {
-  if (gif_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *gif_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.GifProvider.QueryTime", elapsed);
-  }
-
   // There are always more GIF results.
   HandleSearchSourceResults(PickerSearchSource::kTenor, std::move(results),
                             /*has_more_results=*/true);
@@ -229,12 +264,6 @@ void PickerSearchRequest::HandleGifSearchResults(
 
 void PickerSearchRequest::HandleDateSearchResults(
     std::vector<PickerSearchResult> results) {
-  if (date_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *date_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.DateProvider.QueryTime",
-                            elapsed);
-  }
-
   // Date results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kDate, std::move(results),
                             /*has_more_results=*/false);
@@ -242,12 +271,6 @@ void PickerSearchRequest::HandleDateSearchResults(
 
 void PickerSearchRequest::HandleMathSearchResults(
     std::optional<PickerSearchResult> result) {
-  if (math_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *math_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.MathProvider.QueryTime",
-                            elapsed);
-  }
-
   std::vector<PickerSearchResult> results;
   if (result.has_value()) {
     results.push_back(*std::move(result));
@@ -260,12 +283,6 @@ void PickerSearchRequest::HandleMathSearchResults(
 
 void PickerSearchRequest::HandleClipboardSearchResults(
     std::vector<PickerSearchResult> results) {
-  if (clipboard_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *clipboard_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.ClipboardProvider.QueryTime",
-                            elapsed);
-  }
-
   // Clipboard results are never truncated.
   HandleSearchSourceResults(PickerSearchSource::kClipboard, std::move(results),
                             /*has_more_results=*/false);
@@ -274,12 +291,6 @@ void PickerSearchRequest::HandleClipboardSearchResults(
 void PickerSearchRequest::HandleEditorSearchResults(
     PickerSearchSource source,
     std::optional<PickerSearchResult> result) {
-  if (editor_search_start_.has_value()) {
-    base::TimeDelta elapsed = base::TimeTicks::Now() - *editor_search_start_;
-    base::UmaHistogramTimes("Ash.Picker.Search.EditorProvider.QueryTime",
-                            elapsed);
-  }
-
   std::vector<PickerSearchResult> results;
   if (result.has_value()) {
     results.push_back(std::move(*result));

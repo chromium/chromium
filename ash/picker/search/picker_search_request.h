@@ -5,6 +5,8 @@
 #ifndef ASH_PICKER_SEARCH_PICKER_SEARCH_REQUEST_H_
 #define ASH_PICKER_SEARCH_PICKER_SEARCH_REQUEST_H_
 
+#include <array>
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <vector>
@@ -20,6 +22,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 
 namespace ash {
@@ -74,14 +77,9 @@ class ASH_EXPORT PickerSearchRequest {
 
   SearchResultsCallback current_callback_;
 
-  std::optional<base::TimeTicks> date_search_start_;
-  std::optional<base::TimeTicks> cros_search_start_;
-  std::optional<base::TimeTicks> gif_search_start_;
-  std::optional<base::TimeTicks> emoji_search_start_;
-  std::optional<base::TimeTicks> category_search_start_;
-  std::optional<base::TimeTicks> math_search_start_;
-  std::optional<base::TimeTicks> clipboard_search_start_;
-  std::optional<base::TimeTicks> editor_search_start_;
+  static constexpr size_t kNumSources =
+      base::to_underlying(PickerSearchSource::kMaxValue) + 1;
+  std::array<std::optional<base::TimeTicks>, kNumSources> search_starts_;
 
   PickerSearchDebouncer gif_search_debouncer_;
 
