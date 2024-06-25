@@ -3599,9 +3599,15 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
         ],
       },
+      'android-14-x64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
+        ],
+      },
       'android-15-x64-fyi-rel': {
-        # TODO(crbug.com/343210417) : Remove once fixed.
-        'experiment_percentage': 100,
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter',
+        ],
       },
       'android-mte-arm64-rel': {
         'args': [
