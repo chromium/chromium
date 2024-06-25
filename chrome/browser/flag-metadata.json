@@ -6736,7 +6736,7 @@
   {
     "name": "one-time-permission",
     "owners": ["fjacky@chromium.org", "permissions-core@google.com"],
-    "expiry_milestone": 127
+    "expiry_milestone": 133
   },
   {
     "name": "only-access-clipboard-async",
