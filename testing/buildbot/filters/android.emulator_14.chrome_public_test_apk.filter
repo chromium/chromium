@@ -1,9 +1,6 @@
 # crbug.com/1036556
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
 
-# crbug.com/1511804
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
-
 # crbug.com/337932321
 -org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingInfoBar
 

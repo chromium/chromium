@@ -30,6 +30,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUP_PARITY_ANDROID;
 
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -58,6 +59,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -472,6 +475,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "crbug.com/1511804")
     public void testUndoToolbarGroup() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareBlankTab(2, false);
@@ -680,6 +684,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1511804")
     public void testToolbarMenuItem_GroupActionAndUndo() throws Exception {
         prepareBlankTabWithThumbnail(2, false);
         prepareBlankTabGroup(3, false);
@@ -802,6 +807,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1511804")
     public void testToolbarMenuItem_ShareActionView() throws IOException {
         Intents.init();
         prepareBlankTab(1, false);
@@ -864,6 +870,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1511804")
     public void testToolbarMenuItem_ShareActionTabsOnly() throws IOException {
         prepareBlankTab(3, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
@@ -902,6 +909,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1511804")
     public void testToolbarMenuItem_ShareActionGroupsOnly() throws IOException {
         ArrayList<String> urls = new ArrayList<String>();
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL));
@@ -950,6 +958,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
+    @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/1511804")
     public void testToolbarMenuItem_ShareActionTabsWithGroups() throws IOException {
         prepareBlankTab(2, false);
 
@@ -1032,6 +1041,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "crbug.com/1511804")
     public void testToolbarMenuItem_BookmarkActionSingleTab() throws Exception {
         prepareBlankTab(1, false);
 

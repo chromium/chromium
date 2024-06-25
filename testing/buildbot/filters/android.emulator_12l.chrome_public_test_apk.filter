@@ -77,15 +77,6 @@
 # crbug.com/1432785
 -org.chromium.chrome.browser.ContentViewFocusTest.testHideSelectionOnPhoneTabSwiping
 
-# crbug.com/1511804
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_BookmarkActionSingleTab
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsOnly
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionView
--org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testUndoToolbarGroup
-
 # crbug.com/1512248
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_PostLongPressClickNoSelectionEditor
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionTabs
