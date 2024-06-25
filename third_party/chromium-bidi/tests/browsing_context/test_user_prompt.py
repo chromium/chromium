@@ -88,7 +88,8 @@ async def test_browsingContext_userPromptClosed_event(websocket, context_id):
         "method": "browsingContext.userPromptClosed",
         "params": {
             "context": context_id,
-            "accepted": True
+            "accepted": True,
+            "type": "alert"
         }
     }
 
