@@ -62,6 +62,7 @@ export const signalNames: Array<keyof Signals> = [
   'siteEngagement',
   'allowedToBeDefaultMatch',
   'searchSuggestRelevance',
+  'isSearchSuggestEntity',
 ];
 
 export function clamp(value: number, min: number, max: number) {

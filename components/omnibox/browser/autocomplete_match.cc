@@ -1947,6 +1947,13 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
         std::max(scoring_signals->search_suggest_relevance(),
                  other.scoring_signals->search_suggest_relevance()));
   }
+
+  // Take the OR result.
+  if (other.scoring_signals->has_is_search_suggest_entity()) {
+    scoring_signals->set_is_search_suggest_entity(
+        scoring_signals->is_search_suggest_entity() ||
+        other.scoring_signals->is_search_suggest_entity());
+  }
 }
 
 bool AutocompleteMatch::TryRichAutocompletion(

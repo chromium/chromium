@@ -541,6 +541,8 @@ void BaseSearchProvider::AddMatchToMap(
   }
 
   match.scoring_signals->set_search_suggest_relevance(result.relevance());
+  match.scoring_signals->set_is_search_suggest_entity(
+      match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
 
   // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.

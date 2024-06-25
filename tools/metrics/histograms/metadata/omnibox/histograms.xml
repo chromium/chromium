@@ -2389,6 +2389,9 @@ chromium-metrics-reviews@google.com.
     <variant name="is_host_only"
         summary="URL points to the root page of a website, i.e., no query,
                  path words, or references after '/'."/>
+    <variant name="is_search_suggest_entity"
+        summary="Whether this match is a Search suggestion that describes an
+                 entity."/>
     <variant name="length_of_url" summary="Length of url."/>
     <variant name="num_bookmarks_of_url"
         summary="Number of bookmarks for this profile with this URL."/>

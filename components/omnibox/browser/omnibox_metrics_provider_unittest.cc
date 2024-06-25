@@ -104,27 +104,35 @@ class OmniboxMetricsProviderTest : public testing::Test {
       // Scoring signals should not be logged when in incognito/off-the-record
       // mode, regardless of result type.
       if (log.is_incognito) {
-        ASSERT_FALSE(suggestion.has_scoring_signals());
+        EXPECT_FALSE(suggestion.has_scoring_signals());
         continue;
       }
 
-      // When not in incognito, scoring signals should only be logged for URL
-      // (not search) types. Check that the signals are logged correctly for URL
-      // types, and not logged at all for search types.
-      if (suggestion.has_result_type() &&
-          suggestion.result_type() !=
-              metrics::
-                  OmniboxEventProto_Suggestion_ResultType_SEARCH_WHAT_YOU_TYPED) {
-        ASSERT_TRUE(suggestion.has_scoring_signals());
-        ASSERT_EQ(
-            expected_scoring_signals.first_bookmark_title_match_position(),
-            suggestion.scoring_signals().first_bookmark_title_match_position());
-        ASSERT_EQ(expected_scoring_signals.allowed_to_be_default_match(),
-                  suggestion.scoring_signals().allowed_to_be_default_match());
-        ASSERT_EQ(expected_scoring_signals.length_of_url(),
-                  suggestion.scoring_signals().length_of_url());
+      // When not in incognito, scoring signals should only be logged for the
+      // proper suggestion types. Check that the signals are logged correctly
+      // for URL types and Search types, while not being logged for any others.
+      if (suggestion.has_result_type()) {
+        EXPECT_TRUE(suggestion.has_scoring_signals());
+
+        if (suggestion.result_type() ==
+            metrics::
+                OmniboxEventProto_Suggestion_ResultType_SEARCH_WHAT_YOU_TYPED) {
+          EXPECT_EQ(suggestion.scoring_signals().search_suggest_relevance(),
+                    expected_scoring_signals.search_suggest_relevance());
+          EXPECT_EQ(suggestion.scoring_signals().is_search_suggest_entity(),
+                    expected_scoring_signals.is_search_suggest_entity());
+        } else {
+          EXPECT_EQ(
+              suggestion.scoring_signals()
+                  .first_bookmark_title_match_position(),
+              expected_scoring_signals.first_bookmark_title_match_position());
+          EXPECT_EQ(suggestion.scoring_signals().allowed_to_be_default_match(),
+                    expected_scoring_signals.allowed_to_be_default_match());
+          EXPECT_EQ(suggestion.scoring_signals().length_of_url(),
+                    expected_scoring_signals.length_of_url());
+        }
       } else {
-        ASSERT_FALSE(suggestion.has_scoring_signals());
+        EXPECT_FALSE(suggestion.has_scoring_signals());
       }
     }
 
@@ -188,10 +196,14 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
 
   // Populate a set of scoring signals with some test values. This will be used
   // to ensure the scoring signals are being propagated correctly.
-  ScoringSignals expected_scoring_signals;
-  expected_scoring_signals.set_first_bookmark_title_match_position(3);
-  expected_scoring_signals.set_allowed_to_be_default_match(true);
-  expected_scoring_signals.set_length_of_url(20);
+  ScoringSignals expected_url_scoring_signals;
+  expected_url_scoring_signals.set_first_bookmark_title_match_position(3);
+  expected_url_scoring_signals.set_allowed_to_be_default_match(true);
+  expected_url_scoring_signals.set_length_of_url(20);
+
+  ScoringSignals expected_search_scoring_signals;
+  expected_search_scoring_signals.set_search_suggest_relevance(1000);
+  expected_search_scoring_signals.set_is_search_suggest_entity(true);
 
   // Create matches and populate the scoring signals. Signals should only be
   // logged for non-search suggestions.
@@ -199,7 +211,9 @@ TEST_F(OmniboxMetricsProviderTest, LogScoringSignals) {
       BuildMatch(AutocompleteMatchType::Type::BOOKMARK_TITLE),
       BuildMatch(AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED)};
   for (auto& match : matches) {
-    match.scoring_signals = expected_scoring_signals;
+    match.scoring_signals = AutocompleteMatch::IsSearchHistoryType(match.type)
+                                ? expected_search_scoring_signals
+                                : expected_url_scoring_signals;
   }
   AutocompleteResult result;
   result.AppendMatches(matches);

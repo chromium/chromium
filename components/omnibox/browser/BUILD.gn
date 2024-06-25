@@ -278,6 +278,8 @@ static_library("browser") {
     "scoring_functor.h",
     "search_provider.cc",
     "search_provider.h",
+    "search_scoring_signals_annotator.cc",
+    "search_scoring_signals_annotator.h",
     "search_suggestion_parser.cc",
     "search_suggestion_parser.h",
     "shortcuts_backend.cc",

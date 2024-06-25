@@ -68,6 +68,7 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
+#include "components/omnibox/browser/search_scoring_signals_annotator.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
 #include "components/omnibox/browser/url_scoring_signals_annotator.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
@@ -195,6 +196,8 @@ void RecordScoringSignalCoverageForProvider(
        scoring_signals.has_allowed_to_be_default_match()},
       {"search_suggest_relevance",
        scoring_signals.has_search_suggest_relevance()},
+      {"is_search_suggest_entity",
+       scoring_signals.has_is_search_suggest_entity()},
   };
 
   const std::string provider_type = provider->GetName();
@@ -561,6 +564,8 @@ AutocompleteController::AutocompleteController(
             provider_client_.get()));
     url_scoring_signals_annotators_.push_back(
         std::make_unique<UrlScoringSignalsAnnotator>());
+    url_scoring_signals_annotators_.push_back(
+        std::make_unique<SearchScoringSignalsAnnotator>());
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
