@@ -1,4 +1,7 @@
 import pytest
+from webdriver.error import TimeoutException
+
+from tests.support.sync import AsyncPoll
 
 pytestmark = pytest.mark.asyncio
 
@@ -44,4 +47,5 @@ async def test_beforeunload(
     assert event == {
         "context": new_tab["context"],
         "accepted": accept,
+        "type": "beforeunload",
     }
