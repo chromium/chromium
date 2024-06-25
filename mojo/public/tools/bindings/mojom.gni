@@ -20,6 +20,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/rust.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/toolchain/kythe.gni")
 import("//components/nacl/features.gni")
@@ -1856,6 +1857,12 @@ template("mojom") {
         # be good to enable include checking for these in the future though.
         check_includes = false
         testonly = true
+
+        # This removes coverage for MojoLPM generated files. Coverage is only
+        # interesting in the code that's actually fuzzed. On big fuzzer, this
+        # might also speed up the fuzzing rate.
+        configs -= fuzzing_engine_remove_configs
+        configs += fuzzing_engine_add_configs
         if (defined(invoker.sources)) {
           # Split the input into generated and non-generated source files. They
           # need to be processed separately.
