@@ -66,7 +66,8 @@ class MagicBoostControllerAshTest : public AshTestBase {
   }
 
   void OnDisclaimerAcceptButtonPressed() {
-    controller.OnDisclaimerAcceptButtonPressed();
+    controller.OnDisclaimerAcceptButtonPressed(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing);
   }
 
   void OnDisclaimerDeclineButtonPressed() {

@@ -52,6 +52,7 @@ source_set("quick_answers") {
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants:constants",
+    "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",
     "//components/account_id",
     "//components/omnibox/browser:vector_icons",

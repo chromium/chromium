@@ -114,6 +114,7 @@ TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
   int expected_display_id = 2;
   auto expected_action =
       crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel;
+  card_controller_.set_transition_action(expected_action);
 
   EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi)
       .WillOnce(
@@ -124,15 +125,14 @@ TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
             EXPECT_EQ(expected_action, action);
           });
 
-  card_controller_.ShowDisclaimerUi(expected_display_id, expected_action);
+  card_controller_.ShowDisclaimerUi(expected_display_id);
 }
 
 TEST_F(MagicBoostCardControllerTest, ShowOptInCardAgain) {
   // Shows the disclaimer view.
   EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
   card_controller_.ShowDisclaimerUi(
-      /*display_id=*/1,
-      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel);
+      /*display_id=*/1);
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 
   // Shows the opt-in widget. It should close the discalimer view.

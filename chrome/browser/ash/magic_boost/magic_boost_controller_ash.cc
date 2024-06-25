@@ -12,6 +12,8 @@
 
 namespace ash {
 
+using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
+
 MagicBoostControllerAsh::MagicBoostControllerAsh() = default;
 
 MagicBoostControllerAsh::~MagicBoostControllerAsh() = default;
@@ -23,9 +25,8 @@ void MagicBoostControllerAsh::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
-void MagicBoostControllerAsh::ShowDisclaimerUi(
-    int64_t display_id,
-    crosapi::mojom::MagicBoostController::TransitionAction action) {
+void MagicBoostControllerAsh::ShowDisclaimerUi(int64_t display_id,
+                                               TransitionAction action) {
   if (disclaimer_widget_) {
     return;
   }
@@ -35,7 +36,7 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(
       /*press_accept_button_callback=*/
       base::BindRepeating(
           &MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed,
-          weak_ptr_factory_.GetWeakPtr()),
+          weak_ptr_factory_.GetWeakPtr(), action),
       /*press_decline_button_callback=*/
       base::BindRepeating(
           &MagicBoostControllerAsh::OnDisclaimerDeclineButtonPressed,
@@ -47,9 +48,10 @@ void MagicBoostControllerAsh::CloseDisclaimerUi() {
   disclaimer_widget_.reset();
 }
 
-void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed() {
-  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(
-      base::BindOnce([](bool should_include_orca) {
+void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
+    TransitionAction action) {
+  chromeos::MagicBoostState::Get()->ShouldIncludeOrcaInOptIn(base::BindOnce(
+      [](TransitionAction action, bool should_include_orca) {
         auto* magic_boost_state =
             static_cast<MagicBoostStateAsh*>(chromeos::MagicBoostState::Get());
         if (should_include_orca) {
@@ -58,7 +60,17 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed() {
         magic_boost_state->AsyncWriteConsentStatus(
             chromeos::HMRConsentStatus::kApproved);
         magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/true);
-      }));
+
+        switch (action) {
+          case TransitionAction::kDoNothing:
+            break;
+          case TransitionAction::kShowEditorPanel:
+            // TODO(b/349152608): Show Editor Panel when opt-in flow is
+            // completed.
+            break;
+        }
+      },
+      action));
 
   CloseDisclaimerUi();
 }

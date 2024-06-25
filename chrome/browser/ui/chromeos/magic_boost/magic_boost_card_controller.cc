@@ -101,15 +101,13 @@ void MagicBoostCardController::CloseOptInUi() {
   opt_in_widget_.reset();
 }
 
-void MagicBoostCardController::ShowDisclaimerUi(
-    int64_t display_id,
-    crosapi::mojom::MagicBoostController::TransitionAction action) {
+void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
   // TODO(b/319735347): Add integration tests to make sure that this function
   // always goes through the crosapi.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  remote_->ShowDisclaimerUi(display_id, action);
+  remote_->ShowDisclaimerUi(display_id, transition_action_);
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, action);
+  GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

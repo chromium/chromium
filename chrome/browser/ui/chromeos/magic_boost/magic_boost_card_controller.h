@@ -37,6 +37,8 @@ class Profile;
 
 namespace chromeos {
 
+using TransitionAction = crosapi::mojom::MagicBoostController::TransitionAction;
+
 // The controller that manages the lifetime of opt-in cards.
 // Some functions in this controller are virtual for testing.
 class MagicBoostCardController : public ReadWriteCardController {
@@ -59,9 +61,7 @@ class MagicBoostCardController : public ReadWriteCardController {
   virtual void CloseOptInUi();
 
   // Shows/closes Magic Boost disclaimer widget.
-  void ShowDisclaimerUi(
-      int64_t display_id,
-      crosapi::mojom::MagicBoostController::TransitionAction action);
+  void ShowDisclaimerUi(int64_t display_id);
 
   // Checks consent status of Help me read to decide if we should show the opt
   // in UI or not.
@@ -92,9 +92,16 @@ class MagicBoostCardController : public ReadWriteCardController {
 
   base::WeakPtr<MagicBoostCardController> GetWeakPtr();
 
+  void set_transition_action(TransitionAction action) {
+    transition_action_ = action;
+  }
+  TransitionAction transition_action_for_test() { return transition_action_; }
+
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
 
  private:
+  TransitionAction transition_action_ = TransitionAction::kDoNothing;
+
   // If Orca feature is included.
   bool is_orca_included_ = false;
 

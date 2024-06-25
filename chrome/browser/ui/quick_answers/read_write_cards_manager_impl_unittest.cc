@@ -272,6 +272,10 @@ TEST_P(ReadWriteCardsManagerImplTest,
             "consent status is unset on unselected text and Mahi is enabled",
             std::vector<ReadWriteCardController*>{
                 magic_boost_card_controller()}));
+
+    EXPECT_EQ(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        magic_boost_card_controller()->transition_action_for_test());
     return;
   }
 
@@ -301,6 +305,10 @@ TEST_P(ReadWriteCardsManagerImplTest,
             "consent status is unset on selected text and Mahi is enabled",
             std::vector<ReadWriteCardController*>{
                 magic_boost_card_controller()}));
+
+    EXPECT_EQ(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        magic_boost_card_controller()->transition_action_for_test());
     return;
   }
 
@@ -329,6 +337,12 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultBlocked) {
                     ReadWriteCardController*>{magic_boost_card_controller()}
               : std::vector<ReadWriteCardController*>{}),
       editor_menu::EditorMode::kBlocked);
+
+  if (IsMahiEnabled()) {
+    EXPECT_EQ(
+        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
+        magic_boost_card_controller()->transition_action_for_test());
+  }
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultPromoCard) {
@@ -342,6 +356,12 @@ TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultPromoCard) {
               : std::vector<
                     ReadWriteCardController*>{editor_menu_controller()}),
       editor_menu::EditorMode::kPromoCard);
+
+  if (IsMahiEnabled()) {
+    EXPECT_EQ(crosapi::mojom::MagicBoostController::TransitionAction::
+                  kShowEditorPanel,
+              magic_boost_card_controller()->transition_action_for_test());
+  }
 }
 
 TEST_P(ReadWriteCardsManagerImplTest, OnGetEditorModeResultWrite) {

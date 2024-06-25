@@ -42,7 +42,8 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
   friend class MagicBoostControllerAshTest;
 
   // Callbacks for clicking on disclaimer widget's buttons.
-  void OnDisclaimerAcceptButtonPressed();
+  void OnDisclaimerAcceptButtonPressed(
+      crosapi::mojom::MagicBoostController::TransitionAction action);
   void OnDisclaimerDeclineButtonPressed();
 
   mojo::ReceiverSet<crosapi::mojom::MagicBoostController> receivers_;

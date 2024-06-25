@@ -254,14 +254,11 @@ void MagicBoostOptInCard::RequestFocus() {
 void MagicBoostOptInCard::OnPrimaryButtonPressed() {
   controller_->CloseOptInUi();
 
-  // TODO(b/344024587): Pass in the correct `action` to these function calls.
   controller_->ShowDisclaimerUi(/*display_id=*/
                                 display::Screen::GetScreen()
                                     ->GetDisplayNearestWindow(
                                         GetWidget()->GetNativeWindow())
-                                    .id(),
-                                crosapi::mojom::MagicBoostController::
-                                    TransitionAction::kDoNothing);
+                                    .id());
 }
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {

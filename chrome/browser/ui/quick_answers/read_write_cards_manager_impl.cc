@@ -21,6 +21,7 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -107,6 +108,14 @@ ReadWriteCardsManagerImpl::GetControllers(
 
   if (magic_boost_card_controller_ && (should_opt_in_hmr_with_magic_boost ||
                                        should_opt_in_orca_with_magic_boost)) {
+    // Show Editor Panel after completing the opt-in flow for Orca.
+    magic_boost_card_controller_->set_transition_action(
+        should_opt_in_orca_with_magic_boost
+            ? crosapi::mojom::MagicBoostController::TransitionAction::
+                  kShowEditorPanel
+            : crosapi::mojom::MagicBoostController::TransitionAction::
+                  kDoNothing);
+
     return {magic_boost_card_controller_->GetWeakPtr()};
   }
 
