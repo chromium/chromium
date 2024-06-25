@@ -182,10 +182,6 @@ extern const char kBottomOmniboxPromoFREDescription[];
 extern const char kBottomOmniboxPromoRegionFilterName[];
 extern const char kBottomOmniboxPromoRegionFilterDescription[];
 
-// Title and description for the flag that enables donation of new intents.
-extern const char kSpotlightDonateNewIntentsName[];
-extern const char kSpotlightDonateNewIntentsDescription[];
-
 // Title and description for the flag to control if initial uploading of crash
 // reports is delayed.
 extern const char kBreakpadNoDelayInitialUploadName[];

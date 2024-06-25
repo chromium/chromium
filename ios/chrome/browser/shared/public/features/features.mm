@@ -227,10 +227,6 @@ BASE_FEATURE(kNotificationSettingsMenuItem,
              "NotificationSettingsMenuItem",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSpotlightDonateNewIntents,
-             "SpotlightDonateNewIntents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_ENABLED_BY_DEFAULT);

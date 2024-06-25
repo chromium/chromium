@@ -214,10 +214,6 @@ const char kBottomOmniboxPromoRegionFilterName[] =
 const char kBottomOmniboxPromoRegionFilterDescription[] =
     "When enabled the bottom omnibox promo is limited to some regions.";
 
-const char kSpotlightDonateNewIntentsName[] = "Donate New Spotlight Intents";
-const char kSpotlightDonateNewIntentsDescription[] =
-    "Donates relevant intents to Siri when corresponding features are used";
-
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
 const char kBreakpadNoDelayInitialUploadDescription[] =

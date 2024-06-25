@@ -238,9 +238,6 @@ extern const base::FeatureParam<int>
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 
-// Enables intent donation for new intent types.
-BASE_DECLARE_FEATURE(kSpotlightDonateNewIntents);
-
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 

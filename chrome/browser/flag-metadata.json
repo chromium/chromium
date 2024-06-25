@@ -8158,14 +8158,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "spotlight-donate-new-intents",
-    "owners": [
-      "bling-flags@google.com",
-      "stkhapugin@chromium.org"
-    ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "spotlight-never-retain-index",
     "owners": [
       "bling-flags@google.com",
