@@ -1926,7 +1926,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         if (fromMouse
                 && !clickedClose
                 && clickedTab != null
-                && (buttons & MotionEvent.BUTTON_TERTIARY) == 0) {
+                && (buttons & MotionEvent.BUTTON_PRIMARY) != 0) {
             startReorderMode(time, x, x);
         }
     }
