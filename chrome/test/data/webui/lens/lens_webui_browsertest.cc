@@ -174,8 +174,4 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelEscapeKey) {
   RunOverlayTest("lens/side_panel/side_panel_escape_key_test.js",
                  "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, ErrorPage) {
-  RunOverlayTest("lens/side_panel/error_page_test.js", "mocha.run()");
-}
 }  // namespace

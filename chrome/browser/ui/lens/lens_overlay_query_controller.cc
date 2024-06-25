@@ -59,6 +59,7 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kStartTimeQueryParameter[] = "qsubts";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
+constexpr base::TimeDelta kServerRequestTimeout = base::Minutes(1);
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("lens_overlay", R"(
@@ -178,6 +179,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     float ui_scale_factor) {
+  DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
   original_screenshot_ = screenshot;
   page_url_ = page_url;
   page_title_ = page_title;
@@ -311,7 +313,7 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
   // Clear the cluster info after its lifetime expires.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&LensOverlayQueryController::ResetRequestClusterInfoState,
+      base::BindOnce(&LensOverlayQueryController::ResetRequestFlowState,
                      weak_ptr_factory_.GetWeakPtr()),
       base::Seconds(
           lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
@@ -327,21 +329,16 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
       base::BindOnce(
           full_image_callback_,
           lens::CreateObjectsMojomArrayFromServerResponse(server_response),
-          lens::CreateTextMojomFromServerResponse(server_response),
-          /*is_error=*/false));
+          lens::CreateTextMojomFromServerResponse(server_response)));
 }
 
 void LensOverlayQueryController::RunFullImageCallbackForError() {
-  ResetRequestClusterInfoState();
-  // Needs to be set to received response so this query can be retried on the
-  // next interaction request.
-  query_controller_state_ =
-      QueryControllerState::kReceivedFullImageErrorResponse;
+  ResetRequestFlowState();
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(full_image_callback_,
-                                std::vector<lens::mojom::OverlayObjectPtr>(),
-                                nullptr, /*is_error=*/true));
+      FROM_HERE,
+      base::BindOnce(full_image_callback_,
+                     std::vector<lens::mojom::OverlayObjectPtr>(), nullptr));
 }
 
 void LensOverlayQueryController::EndQuery() {
@@ -463,9 +460,7 @@ void LensOverlayQueryController::
     // If the cluster info is missing but we have already received a full image
     // response, the query must be restarted.
     if (query_controller_state_ ==
-            QueryControllerState::kReceivedFullImageResponse ||
-        query_controller_state_ ==
-            QueryControllerState::kReceivedFullImageErrorResponse) {
+        QueryControllerState::kReceivedFullImageResponse) {
       PrepareAndFetchFullImageRequest();
     }
   }
@@ -543,6 +538,8 @@ void LensOverlayQueryController::
     // Early exit if this is an old request.
     return;
   }
+  DCHECK_EQ(query_controller_state_,
+            QueryControllerState::kReceivedFullImageResponse);
 
   // The visual search interaction log data should be added as late as possible,
   // so that is_parent_query can be accurately set if the user issues multiple
@@ -576,6 +573,8 @@ void LensOverlayQueryController::
 
 void LensOverlayQueryController::InteractionFetchResponseHandler(
     std::unique_ptr<EndpointResponse> response) {
+  DCHECK_EQ(query_controller_state_,
+            QueryControllerState::kReceivedFullImageResponse);
   // TODO(b/331501820): Add retry logic using a timeout to clear the request
   // flow state.
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
@@ -611,7 +610,7 @@ void LensOverlayQueryController::RunInteractionCallbackForError() {
                                 lens::proto::LensOverlayInteractionResponse()));
 }
 
-void LensOverlayQueryController::ResetRequestClusterInfoState() {
+void LensOverlayQueryController::ResetRequestFlowState() {
   cluster_info_received_callback_.Reset();
   interaction_endpoint_fetcher_.reset();
   cluster_info_ = std::nullopt;
@@ -698,8 +697,7 @@ void LensOverlayQueryController::FetchEndpoint(
           /*url=*/fetch_url,
           /*http_method=*/kHttpMethod,
           /*content_type=*/kContentType,
-          base::Milliseconds(
-              lens::features::GetLensOverlayServerRequestTimeout()),
+          /*timeout=*/kServerRequestTimeout,
           /*post_data=*/request_data_string,
           /*headers=*/headers,
           /*cors_exempt_headers=*/cors_exempt_headers,

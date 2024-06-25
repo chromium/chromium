@@ -37,8 +37,7 @@ namespace lens {
 // Callback type alias for the lens overlay full image response.
 using LensOverlayFullImageResponseCallback =
     base::RepeatingCallback<void(std::vector<lens::mojom::OverlayObjectPtr>,
-                                 lens::mojom::TextPtr,
-                                 bool)>;
+                                 lens::mojom::TextPtr)>;
 // Callback type alias for the lens overlay url response.
 using LensOverlayUrlResponseCallback =
     base::RepeatingCallback<void(lens::proto::LensOverlayUrlResponse)>;
@@ -127,9 +126,6 @@ class LensOverlayQueryController {
     // The full image response has been received and the query controller can
     // send interaction requests.
     kReceivedFullImageResponse = 2,
-    // The full image response has been received and resulted in an error
-    // response.
-    kReceivedFullImageErrorResponse = 3,
   };
 
   // Processes the screenshot and fetches a full image request.
@@ -208,8 +204,8 @@ class LensOverlayQueryController {
       std::optional<lens::ImageCrop> image_crop,
       std::unique_ptr<lens::LensOverlayRequestId> request_id);
 
-  // Resets the request cluster info state.
-  void ResetRequestClusterInfoState();
+  // Resets the request flow state.
+  void ResetRequestFlowState();
 
   // Callback for when the full image endpoint fetcher is created.
   void OnFullImageEndpointFetcherCreated(

@@ -318,8 +318,6 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Sets whether the results frame should show its loading state.
   virtual void SetSidePanelIsLoadingResults(bool is_loading);
-  // Sets whether the side panel should show a full error page.
-  virtual void SetSidePanelShowErrorPage(bool should_show_error_page);
 
   // Called when the lens side panel has been hidden.
   void OnSidePanelHidden();
@@ -670,8 +668,7 @@ class LensOverlayController : public LensSearchboxClient,
   // Handles the response to the Lens start query request.
   void HandleStartQueryResponse(
       std::vector<lens::mojom::OverlayObjectPtr> objects,
-      lens::mojom::TextPtr text,
-      bool is_error);
+      lens::mojom::TextPtr text);
 
   // Handles the URL response to the Lens interaction request.
   void HandleInteractionURLResponse(
@@ -728,10 +725,6 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
-
-  // Whether the pending side panel should open with the error page showing.
-  // This happens when the full image request resulted in an error response.
-  bool pending_side_panel_should_show_error_page_ = false;
 
   // Pending region to search after the overlay loads.
   lens::mojom::CenterRotatedBoxPtr pending_region_;

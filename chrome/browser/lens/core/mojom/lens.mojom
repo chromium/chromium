@@ -170,9 +170,4 @@ interface LensSidePanelPage {
 
   // Sets visibility for back arrow next to the searchbox.
   SetBackArrowVisible(bool visible);
-
-  // Sets whether to show a full error page in the side panel WebUI. This is
-  // used when the user opens the side panel in an offline state or the full
-  // image request times out.
-  SetShowErrorPage(bool should_show_error_page);
 };

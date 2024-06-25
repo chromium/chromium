@@ -530,8 +530,6 @@ void LensOverlayController::BindSidePanel(
     side_panel_page_->LoadResultsInFrame(*pending_side_panel_url_);
     pending_side_panel_url_.reset();
   }
-  side_panel_page_->SetShowErrorPage(
-      pending_side_panel_should_show_error_page_);
 }
 
 void LensOverlayController::SetSearchboxHandler(
@@ -776,16 +774,6 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
   if (side_panel_page_) {
     side_panel_page_->SetIsLoadingResults(is_loading);
   }
-}
-
-void LensOverlayController::SetSidePanelShowErrorPage(
-    bool should_show_error_page) {
-  if (side_panel_page_) {
-    side_panel_page_->SetShowErrorPage(should_show_error_page);
-    return;
-  }
-
-  pending_side_panel_should_show_error_page_ = should_show_error_page;
 }
 
 void LensOverlayController::OnSidePanelHidden() {
@@ -1739,14 +1727,8 @@ void LensOverlayController::IssueSearchBoxRequest(
 
 void LensOverlayController::HandleStartQueryResponse(
     std::vector<lens::mojom::OverlayObjectPtr> objects,
-    lens::mojom::TextPtr text,
-    bool is_error) {
+    lens::mojom::TextPtr text) {
   CHECK(page_);
-
-  // If the full image response fails, the side panel should show the error page
-  // since interaction requests will not work.
-  SetSidePanelShowErrorPage(/*should_show_error_page=*/is_error);
-
   if (!objects.empty()) {
     SendObjects(std::move(objects));
   }

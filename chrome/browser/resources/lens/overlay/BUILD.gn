@@ -33,8 +33,6 @@ build_webui("build_overlay") {
     "lens_overlay.html",
     "side_panel/side_panel.html",
     "sparkles.svg",
-    "side_panel/generic-error-icon.png",
-    "side_panel/generic-error-icon-dark.png",
   ]
 
   if (is_chrome_branded) {

@@ -176,12 +176,6 @@ constexpr base::FeatureParam<double>
     kLensOverlayPostSelectionComparisonThreshold{
         &kLensOverlay, "post-selection-comparison-threshold", 0.005};
 
-constexpr base::FeatureParam<int> kLensOverlayServerRequestTimeout{
-    &kLensOverlay, "server-request-timeout", 10000};
-
-constexpr base::FeatureParam<bool> kLensOverlayEnableErrorPage{
-    &kLensOverlay, "enable-error-page-webui", true};
-
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -504,14 +498,6 @@ int GetLensOverlayMaxSignificantRegions() {
 
 double GetLensOverlayPostSelectionComparisonThreshold() {
   return kLensOverlayPostSelectionComparisonThreshold.Get();
-}
-
-int GetLensOverlayServerRequestTimeout() {
-  return kLensOverlayServerRequestTimeout.Get();
-}
-
-bool GetLensOverlayEnableErrorPage() {
-  return kLensOverlayEnableErrorPage.Get();
 }
 
 }  // namespace lens::features
