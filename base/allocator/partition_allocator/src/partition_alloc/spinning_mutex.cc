@@ -24,21 +24,20 @@
 #include <cerrno>
 #endif  // PA_CONFIG(HAS_LINUX_KERNEL)
 
-#if !PA_CONFIG(HAS_FAST_MUTEX)
+#if !PA_CONFIG(HAS_LINUX_KERNEL) && !PA_BUILDFLAG(IS_WIN) && \
+    !PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(IS_POSIX) &&    \
+    !PA_BUILDFLAG(IS_FUCHSIA)
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 
 #if PA_BUILDFLAG(IS_POSIX)
 #include <sched.h>
-
 #define PA_YIELD_THREAD sched_yield()
-
 #else  // Other OS
-
 #warning "Thread yield not supported on this OS."
 #define PA_YIELD_THREAD ((void)0)
 #endif
 
-#endif  // !PA_CONFIG(HAS_FAST_MUTEX)
+#endif
 
 namespace partition_alloc::internal {
 
@@ -82,8 +81,6 @@ void SpinningMutex::AcquireSpinThenBlock() {
 
   LockSlow();
 }
-
-#if PA_CONFIG(HAS_FAST_MUTEX)
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
 
@@ -162,11 +159,9 @@ void SpinningMutex::LockSlow() {
   sync_mutex_lock(&lock_);
 }
 
-#endif
+#else
 
-#else  // PA_CONFIG(HAS_FAST_MUTEX)
-
-void SpinningMutex::LockSlowSpinLock() {
+void SpinningMutex::LockSlow() {
   int yield_thread_count = 0;
   do {
     if (yield_thread_count < 10) {
@@ -179,9 +174,9 @@ void SpinningMutex::LockSlowSpinLock() {
       // progress.
       base::PlatformThread::Sleep(base::Milliseconds(1));
     }
-  } while (!TrySpinLock());
+  } while (!Try());
 }
 
-#endif  // PA_CONFIG(HAS_FAST_MUTEX)
+#endif
 
 }  // namespace partition_alloc::internal

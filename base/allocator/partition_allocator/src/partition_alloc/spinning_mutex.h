@@ -36,8 +36,8 @@
 
 namespace partition_alloc::internal {
 
-// The behavior of this class depends on whether PA_HAS_FAST_MUTEX is defined.
-// 1. When it is defined:
+// The behavior of this class depends on platform support:
+// 1. When platform supports is available:
 //
 // Simple spinning lock. It will spin in user space a set number of times before
 // going into the kernel to sleep.
@@ -51,18 +51,22 @@ namespace partition_alloc::internal {
 //
 // We don't rely on base::Lock which we could make spin (by calling Try() in a
 // loop), as performance is below a custom spinlock as seen on high-level
-// benchmarks. Instead this implements a simple non-recursive mutex on top of
-// the futex() syscall on Linux, SRWLock on Windows, os_unfair_lock on macOS,
-// and pthread_mutex on POSIX. The main difference between this and a libc
-// implementation is that it only supports the simplest path: private (to a
-// process), non-recursive mutexes with no priority inheritance, no timed waits.
+// benchmarks. Instead this implements a simple non-recursive mutex on top of:
+// - Linux   : futex()
+// - Windows : SRWLock
+// - MacOS   : os_unfair_lock
+// - POSIX   : pthread_mutex_trylock()
+//
+// The main difference between this and a libc implementation is that it only
+// supports the simplest path: private (to a process), non-recursive mutexes
+// with no priority inheritance, no timed waits.
 //
 // As an interesting side-effect to be used in the allocator, this code does not
 // make any allocations, locks are small with a constexpr constructor and no
 // destructor.
 //
 // 2. Otherwise: This is a simple SpinLock, in the sense that it does not have
-// any awareness of other threads' behavior.
+//    any awareness of other threads' behavior.
 class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
  public:
   inline constexpr SpinningMutex();
@@ -74,11 +78,7 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
 
  private:
   PA_NOINLINE void AcquireSpinThenBlock() PA_EXCLUSIVE_LOCK_FUNCTION();
-#if PA_CONFIG(HAS_FAST_MUTEX)
   void LockSlow() PA_EXCLUSIVE_LOCK_FUNCTION();
-#else
-  PA_ALWAYS_INLINE void LockSlow() PA_EXCLUSIVE_LOCK_FUNCTION();
-#endif
 
   // See below, the latency of PA_YIELD_PROCESSOR can be as high as ~150
   // cycles. Meanwhile, sleeping costs a few us. Spinning 64 times at 3GHz would
@@ -87,8 +87,6 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
   // This applies to Linux kernels, on x86_64. On ARM we might want to spin
   // more.
   static constexpr int kSpinCount = 64;
-
-#if PA_CONFIG(HAS_FAST_MUTEX)
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
   void FutexWait();
@@ -107,16 +105,9 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
   pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
 #elif PA_BUILDFLAG(IS_FUCHSIA)
   sync_mutex lock_;
-#endif
-
-#else   // PA_CONFIG(HAS_FAST_MUTEX)
+#else
   std::atomic<bool> lock_{false};
-
-  // Spinlock-like, fallback.
-  PA_ALWAYS_INLINE bool TrySpinLock();
-  PA_ALWAYS_INLINE void ReleaseSpinLock();
-  void LockSlowSpinLock();
-#endif  // PA_CONFIG(HAS_FAST_MUTEX)
+#endif
 };
 
 PA_ALWAYS_INLINE void SpinningMutex::Acquire() {
@@ -132,8 +123,6 @@ PA_ALWAYS_INLINE void SpinningMutex::Acquire() {
 }
 
 inline constexpr SpinningMutex::SpinningMutex() = default;
-
-#if PA_CONFIG(HAS_FAST_MUTEX)
 
 #if PA_CONFIG(HAS_LINUX_KERNEL)
 
@@ -215,9 +204,7 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
   sync_mutex_unlock(&lock_);
 }
 
-#endif
-
-#else  // PA_CONFIG(HAS_FAST_MUTEX)
+#else
 
 PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   // Possibly faster than CAS. The theory is that if the cacheline is shared,
@@ -230,11 +217,7 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
   lock_.store(false, std::memory_order_release);
 }
 
-PA_ALWAYS_INLINE void SpinningMutex::LockSlow() {
-  return LockSlowSpinLock();
-}
-
-#endif  // PA_CONFIG(HAS_FAST_MUTEX)
+#endif
 
 }  // namespace partition_alloc::internal
 
