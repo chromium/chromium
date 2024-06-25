@@ -281,8 +281,16 @@ void WebStateImpl::RealizedWebState::OnNavigationStarted(
     return;
   }
 
-  for (auto& observer : observers())
+  base::WeakPtr<NavigationContextImpl> weak_context = context->GetWeakPtr();
+  for (auto& observer : observers()) {
+    // Observers might cancel this navigation, destroying the context. Guard
+    // against that by checking if the context is still alive.
+    if (!weak_context && base::FeatureList::IsEnabled(
+                             features::kDetectDestroyedNavigationContexts)) {
+      break;
+    }
     observer.DidStartNavigation(owner_, context);
+  }
 }
 
 void WebStateImpl::RealizedWebState::OnNavigationRedirected(

@@ -199,6 +199,10 @@ base::TimeDelta NavigationContextImpl::GetElapsedTimeSinceCreation() const {
   return elapsed_timer_.Elapsed();
 }
 
+base::WeakPtr<NavigationContextImpl> NavigationContextImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 NavigationContextImpl::NavigationContextImpl(WebState* web_state,
                                              const GURL& url,
                                              bool has_user_gesture,
