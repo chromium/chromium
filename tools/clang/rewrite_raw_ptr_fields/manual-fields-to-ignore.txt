@@ -11,9 +11,6 @@
 # Populated manually - double implicit-cast required.
 PaintManager::instance_
 
-# Populated manually - needed for lock annotations
-base::trace_event::TraceLog::OptionalAutoLock::lock_
-
 # Populated manually - templates make it difficult for the rewriter to see that
 # |.get()| needs to be appended.
 blink::xpath::EvaluationContext::node

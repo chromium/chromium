@@ -27,13 +27,15 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/stack_allocated.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -43,6 +45,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/time/time.h"
@@ -53,12 +56,8 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
-
-#include "base/numerics/safe_conversions.h"
-#include "base/run_loop.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/tracing/perfetto_platform.h"
+#include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/tracing/console_interceptor.h"
@@ -429,6 +428,8 @@ class JsonStringOutputWriter
 // A helper class that allows the lock to be acquired in the middle of the scope
 // and unlocks at the end of scope if locked.
 class TraceLog::OptionalAutoLock {
+  STACK_ALLOCATED();
+
  public:
   explicit OptionalAutoLock(Lock* lock) : lock_(lock) {}
 
@@ -450,8 +451,7 @@ class TraceLog::OptionalAutoLock {
   }
 
  private:
-  // This field is not a raw_ptr<> because it is needed for lock annotations.
-  RAW_PTR_EXCLUSION Lock* lock_;
+  Lock* lock_;
   bool locked_ = false;
 };
 
