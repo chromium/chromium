@@ -253,7 +253,15 @@ TEST_F(HotspotControllerTest, EnableTetheringSuccess) {
       1);
 }
 
-TEST_F(HotspotControllerTest, AbortEnableTethering) {
+// TODO(crbug.com/349291155): MemorySanitizer: use-of-uninitialized-value
+// Uninitialized value was created by an allocation of 'disable_result' in the
+// stack frame.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_AbortEnableTethering DISABLED_AbortEnableTethering
+#else
+#define MAYBE_AbortEnableTethering AbortEnableTethering
+#endif
+TEST_F(HotspotControllerTest, MAYBE_AbortEnableTethering) {
   SetHotspotAllowed();
   AddActiveCellularService();
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
@@ -272,7 +280,17 @@ TEST_F(HotspotControllerTest, AbortEnableTethering) {
       HotspotMetricsHelper::HotspotMetricsSetEnabledResult::kAborted, 1);
 }
 
-TEST_F(HotspotControllerTest, ShillOperationFailureWhileAborting) {
+// TODO(crbug.com/349291155): MemorySanitizer: use-of-uninitialized-value
+// Uninitialized value was created by an allocation of 'disable_result' in the
+// stack frame.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ShillOperationFailureWhileAborting \
+  DISABLED_ShillOperationFailureWhileAborting
+#else
+#define MAYBE_ShillOperationFailureWhileAborting \
+  ShillOperationFailureWhileAborting
+#endif
+TEST_F(HotspotControllerTest, MAYBE_ShillOperationFailureWhileAborting) {
   SetHotspotAllowed();
   AddActiveCellularService();
   base::RunLoop().RunUntilIdle();
