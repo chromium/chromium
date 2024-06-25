@@ -21,6 +21,8 @@ constexpr char kApiResponseMusicSectionKey[] = "musicSection";
 constexpr char kApiResponseWidthKey[] = "widthPixels";
 constexpr char kApiResponseHeightKey[] = "heightPixels";
 constexpr char kApiResponseUriKey[] = "uri";
+constexpr char kApiResponsePlaybackReportingTokenKey[] =
+    "playbackReportingToken";
 constexpr char kApiResponseDescriptionKey[] = "description";
 constexpr char kApiResponseItemCountKey[] = "itemCount";
 constexpr char kApiResponseImagesKey[] = "images";
@@ -292,6 +294,8 @@ Stream::~Stream() = default;
 void Stream::RegisterJSONConverter(JSONValueConverter<Stream>* converter) {
   converter->RegisterCustomField<GURL>(kApiResponseUriKey, &Stream::url_,
                                        &ConvertToGurl);
+  converter->RegisterStringField(kApiResponsePlaybackReportingTokenKey,
+                                 &Stream::playback_reporting_token_);
 }
 
 // static
@@ -306,7 +310,9 @@ std::unique_ptr<Stream> Stream::CreateFrom(const base::Value& value) {
 }
 
 std::string Stream::ToString() const {
-  return base::StringPrintf("Stream(url=\"%s\")", url_.spec().c_str());
+  return base::StringPrintf(
+      "Stream(url=\"%s\", playback_reporting_token=\"%s\")",
+      url_.spec().c_str(), playback_reporting_token_.c_str());
 }
 
 PlaybackManifest::PlaybackManifest() = default;

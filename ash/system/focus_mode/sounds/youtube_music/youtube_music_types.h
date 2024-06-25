@@ -92,6 +92,7 @@ struct ASH_EXPORT PlaybackContext {
                   const std::string& track_explicit_type,
                   const Image& track_image,
                   const GURL& stream_url,
+                  const std::string& playback_reporting_token,
                   const std::string& queue_name);
   PlaybackContext(const PlaybackContext& other);
   ~PlaybackContext();
@@ -107,6 +108,8 @@ struct ASH_EXPORT PlaybackContext {
   Image track_image;
 
   GURL stream_url;
+
+  std::string playback_reporting_token;
 
   std::string queue_name;
 };

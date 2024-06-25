@@ -54,12 +54,14 @@ PlaybackContext::PlaybackContext(const std::string& track_name,
                                  const std::string& track_explicit_type,
                                  const Image& track_image,
                                  const GURL& stream_url,
+                                 const std::string& playback_reporting_token,
                                  const std::string& queue_name)
     : track_name(track_name),
       track_title(track_title),
       track_explicit_type_(track_explicit_type),
       track_image(track_image),
       stream_url(stream_url),
+      playback_reporting_token(playback_reporting_token),
       queue_name(queue_name) {}
 
 PlaybackContext::PlaybackContext(const PlaybackContext& other) = default;
@@ -70,10 +72,10 @@ std::string PlaybackContext::ToString() const {
   return base::StringPrintf(
       "PlaybackContext(track_name=\"%s\", track_title=\"%s\", "
       "track_explicit_type=\"%s\", track_image=%s, stream_url=\"%s\", "
-      "queue_name=\"%s\")",
+      "playback_reporting_token=\"%s\", queue_name=\"%s\")",
       track_name.c_str(), track_title.c_str(), track_explicit_type_.c_str(),
       track_image.ToString().c_str(), stream_url.spec().c_str(),
-      queue_name.c_str());
+      playback_reporting_token.c_str(), queue_name.c_str());
 }
 
 }  // namespace ash::youtube_music

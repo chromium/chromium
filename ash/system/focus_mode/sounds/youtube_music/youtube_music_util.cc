@@ -75,13 +75,16 @@ std::optional<PlaybackContext> GetPlaybackContextFromApiQueue(
   // TODO(yongshun): Consider to add retry when there is no stream in the
   // response.
   GURL stream_url = GURL();
+  std::string playback_reporting_token;
   if (auto& streams = playback_context.playback_manifest().streams();
       !streams.empty()) {
-    stream_url = streams.begin()->get()->url();
+    const auto* stream = streams.begin()->get();
+    stream_url = stream->url();
+    playback_reporting_token = stream->playback_reporting_token();
   }
   return PlaybackContext(track.name(), track.title(), track.explicit_type(),
                          FindBestImage(GetImagesFromApiImages(track.images())),
-                         stream_url, queue->name());
+                         stream_url, playback_reporting_token, queue->name());
 }
 
 Image FindBestImage(const std::vector<Image>& images) {

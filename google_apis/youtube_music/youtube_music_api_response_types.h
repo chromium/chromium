@@ -272,12 +272,16 @@ class Stream {
 
   static std::unique_ptr<Stream> CreateFrom(const base::Value& value);
 
+  const std::string& playback_reporting_token() const {
+    return playback_reporting_token_;
+  }
   const GURL& url() const { return url_; }
 
   std::string ToString() const;
 
  private:
   GURL url_;
+  std::string playback_reporting_token_;
 };
 
 // Playback manifest object from the API response. For object details, check
