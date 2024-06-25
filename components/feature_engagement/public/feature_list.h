@@ -269,6 +269,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSInlineEnhancedSafeBrowsingPromoFeature,
                        "IPH_iOSInlineEnhancedSafeBrowsingPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSSavedTabGroupClosed,
                        "IPH_iOSSavedTabGroupClosed");
+DEFINE_VARIATION_PARAM(kIPHiOSContextualPanelSampleModelFeature,
+                       "IPH_iOSContextualPanelSampleModel");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -622,6 +624,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoGenericDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSOverflowMenuCustomizationFeature),
         VARIATION_ENTRY(kIPHiOSSavedTabGroupClosed),
+        VARIATION_ENTRY(kIPHiOSContextualPanelSampleModelFeature),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

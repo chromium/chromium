@@ -43512,6 +43512,8 @@ should be able to be added at any place in this file.
       label="For iOSAddressPromoDesktop feature"/>
   <suffix name="iOSChoiceScreen"
       label="(obsolete) For iOSChoiceScreen feature"/>
+  <suffix name="iOSContextualPanelSampleModel"
+      label="For iOSContextualPanelSampleModel feature"/>
   <suffix name="iOSDefaultBrowserBadgeEligibility"
       label="For iOSDefaultBrowserBadgeEligibility feature"/>
   <suffix name="iOSDefaultBrowserOverflowMenuBadge"

@@ -609,6 +609,9 @@ BASE_FEATURE(kIPHiOSInlineEnhancedSafeBrowsingPromoFeature,
 BASE_FEATURE(kIPHiOSSavedTabGroupClosed,
              "IPH_iOSSavedTabGroupClosed",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSContextualPanelSampleModelFeature,
+             "IPH_iOSContextualPanelSampleModel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

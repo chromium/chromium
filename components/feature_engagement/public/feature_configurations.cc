@@ -1761,6 +1761,25 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_IOS)
+  if (kIPHiOSContextualPanelSampleModelFeature.name == feature->name) {
+    // The contextual panel's sample model entrypoint IPH config to control the
+    // impressions of the IPH for this infoblock. Shows the IPH up to 3 times
+    // per day if the user doesn't interact with the entrypoint, and is
+    // blocking/blocked to/by all other IPHs.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->used = EventConfig(feature_engagement::events::
+                                   kIOSContextualPanelSampleModelEntrypointUsed,
+                               Comparator(LESS_THAN, 1), 1, 1);
+    config->trigger =
+        EventConfig("ios_contextual_panel_sample_model_entrypoint_iph_trigger",
+                    Comparator(LESS_THAN, 3), 1, 1);
+    return config;
+  }
+
   if (kIPHDefaultSiteViewFeature.name == feature->name) {
     // A config that shows an IPH on the overflow menu button advertising the
     // Default Page Mode feature when the user has requested the Desktop version

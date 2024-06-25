@@ -225,6 +225,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the iOS address promo on desktop"/>
   <variant name="IPH_iOSChoiceScreenFeature"
       summary="(obsolete) showing the Choice screen on iOS"/>
+  <variant name="IPH_iOSContextualPanelSampleModel"
+      summary="contextual panel sample model IPH impression tracking"/>
   <variant name="IPH_iOSDefaultBrowserBadgeEligibility"
       summary="default browser badge promo eligibility tracking"/>
   <variant name="IPH_iOSDefaultBrowserOverflowMenuBadge"

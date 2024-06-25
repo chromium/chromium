@@ -300,6 +300,10 @@ extern const char kTailoredDefaultBrowserPromosGroupTrigger[];
 // experiment.
 extern const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[];
 
+// The user has tapped the contextual panel entrypoint when it was showing the
+// sample model info.
+extern const char kIOSContextualPanelSampleModelEntrypointUsed[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.
