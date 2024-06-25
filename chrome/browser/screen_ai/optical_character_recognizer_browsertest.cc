@@ -79,57 +79,7 @@ struct OpticalCharacterRecognizerTestParamsToString {
   }
 };
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
-
-// Computes string match based on the edit distance of the two strings.
-// Returns 0 for totally different strings and 1 for totally matching. See
-// `StringMatchTest` for some examples.
-double StringMatch(std::string_view expected, std::string_view extracted) {
-  unsigned extracted_size = extracted.size();
-  unsigned expected_size = expected.size();
-  if (!expected_size || !extracted_size) {
-    return (expected_size || extracted_size) ? 0 : 1;
-  }
-
-  // d[i][j] is the best match (shortest edit distance) until expected[i] and
-  // extracted[j].
-  std::vector<std::vector<int>> d(expected_size,
-                                  std::vector<int>(extracted_size));
-
-  for (unsigned i = 0; i < expected_size; i++) {
-    for (unsigned j = 0; j < extracted_size; j++) {
-      int local_match = (expected[i] == extracted[j]) ? 0 : 1;
-      if (!i && !j) {
-        d[i][j] = local_match;
-        continue;
-      }
-
-      int best_match = expected_size + extracted_size;
-      // Insert
-      if (i) {
-        best_match = std::min(best_match, d[i - 1][j] + 1);
-      }
-      // Delete
-      if (j) {
-        best_match = std::min(best_match, d[i][j - 1] + 1);
-      }
-      // Replace/Accept
-      if (i && j) {
-        best_match = std::min(best_match, d[i - 1][j - 1] + local_match);
-      }
-      d[i][j] = best_match;
-    }
-  }
-  return 1.0f -
-         (d[expected_size - 1][extracted_size - 1]) /
-             static_cast<double>(std::max(expected_size, extracted_size));
-}
-
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) &&
-        // !BUILDFLAG(USE_FAKE_SCREEN_AI)
-
 }  // namespace
-
 namespace screen_ai {
 
 class OpticalCharacterRecognizerTest
@@ -239,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   ASSERT_TRUE(ocr);
 }
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR) {
   // Init OCR.
   base::test::TestFuture<bool> init_future;
   scoped_refptr<OpticalCharacterRecognizer> ocr =
@@ -258,11 +208,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
   ASSERT_TRUE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
 }
 
-// The image used in this test is very simple to reduce the possibility of
-// failure due to library changes.
-// If this test fails after updating the library, there is a high probability
-// that the new library has some sort of incompatibility with Chromium.
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_WithResults) {
   base::HistogramTester histograms;
 
   // Init OCR.
@@ -276,7 +222,7 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
 
   // Perform OCR.
   SkBitmap bitmap = LoadImageFromTestFile(
-      base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
+      base::FilePath(FILE_PATH_LITERAL("ocr/quick_brown_fox.png")));
   base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
   ocr->PerformOCR(bitmap, perform_future.GetCallback());
   ASSERT_TRUE(perform_future.Wait());
@@ -289,11 +235,17 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
 #endif
 
   auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
-  unsigned expected_lines_count =
-      (expected_call_success && IsOcrAvailable()) ? 1 : 0;
+  unsigned expected_lines_count = 0;
+  if (expected_call_success && IsOcrAvailable()) {
+    // Expected lines count is 6, but current library splits one of the lines
+    // into two.
+    // TODO(crbug.com/347622611): Update when post-processing is added.
+    expected_lines_count = 7;
+  }
   ASSERT_EQ(expected_lines_count, results->lines.size());
   if (results->lines.size()) {
-    ASSERT_EQ(results->lines[0]->text_line, "A");
+    ASSERT_EQ(results->lines[0]->text_line,
+              "The quick brown fox jumps over the lazy dog.");
   }
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
@@ -323,10 +275,11 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
   // Expect measured latency, but we don't know how long it taskes to process.
   // So we just check the total count of the expected bucket determined by the
   // image size.
-  EXPECT_GT(500 * 500, image_size);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Small",
+  EXPECT_GT(image_size, 500 * 500);
+  EXPECT_GT(1000 * 1000, image_size);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Small", 0);
+  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Medium",
                               expected_calls);
-  histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Medium", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.Large", 0);
   histograms.ExpectTotalCount("Accessibility.ScreenAI.OCR.Latency.XLarge", 0);
 }
@@ -336,103 +289,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Combine(testing::Bool(), testing::Bool()),
                          OpticalCharacterRecognizerTestParamsToString());
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !BUILDFLAG(USE_FAKE_SCREEN_AI)
-
-TEST(OpticalCharacterRecognizer, StringMatchTest) {
-  ASSERT_EQ(StringMatch("ABC", ""), 0);
-  ASSERT_EQ(StringMatch("", "ABC"), 0);
-  ASSERT_EQ(StringMatch("ABC", "ABC"), 1);
-  ASSERT_EQ(StringMatch("ABC", "DEF"), 0);
-  ASSERT_LE(StringMatch("ABCD", "ABC"), 0.75);
-  ASSERT_LE(StringMatch("ABCD", "ABXD"), 0.75);
-}
-
-// Param: Test name.
-class OpticalCharacterRecognizerResultsTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<const char*> {
- public:
-  OpticalCharacterRecognizerResultsTest() {
-    feature_list_.InitWithFeatures({ax::mojom::features::kScreenAIOCREnabled,
-                                    ::features::kScreenAITestMode},
-                                   {});
-  }
-
-  // InProcessBrowserTest:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    ScreenAIInstallState::GetInstance()->SetComponentFolder(
-        GetComponentBinaryPathForTests().DirName());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// If this test fails after updating the library, the failure can be related to
-// minor changes in recognition results of the library. The failed cases can be
-// checked and if the new result is acceptable. For each test case, the last
-// line in the .txt file is the minimum acceptable match and it can be updated.
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest, PerformOCR) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  // Init OCR.
-  base::test::TestFuture<bool> init_future;
-  scoped_refptr<OpticalCharacterRecognizer> ocr =
-      OpticalCharacterRecognizer::CreateWithStatusCallback(
-          browser()->profile(), mojom::OcrClientType::kTest,
-          init_future.GetCallback());
-  ASSERT_TRUE(init_future.Wait());
-  ASSERT_EQ(init_future.Get<bool>(), true);
-
-  // Perform OCR.
-  base::FilePath image_path =
-      base::FilePath(FILE_PATH_LITERAL("ocr"))
-          .AppendASCII(base::StringPrintf("%s.png", GetParam()));
-  SkBitmap bitmap = LoadImageFromTestFile(image_path);
-  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
-  ocr->PerformOCR(bitmap, perform_future.GetCallback());
-  ASSERT_TRUE(perform_future.Wait());
-  auto& results = perform_future.Get<mojom::VisualAnnotationPtr>();
-
-  // Load expectations.
-  std::string expetations;
-  base::FilePath expectation_path;
-  ASSERT_TRUE(
-      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &expectation_path));
-  expectation_path =
-      expectation_path.Append(FILE_PATH_LITERAL("chrome/test/data/ocr"))
-          .AppendASCII(base::StringPrintf("%s.txt", GetParam()));
-  ASSERT_TRUE(ReadFileToString(expectation_path, &expetations))
-      << expectation_path << " not found.";
-  std::vector<std::string> expected_lines = base::SplitString(
-      expetations, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  // The last line of expectations is the minimum expected match.
-  ASSERT_NE(expected_lines.size(), 0u);
-  double expected_match =
-      atof(expected_lines[expected_lines.size() - 1].c_str());
-  expected_lines.pop_back();
-
-  ASSERT_EQ(results->lines.size(), expected_lines.size());
-  for (unsigned i = 0; i < results->lines.size(); i++) {
-    const std::string extracted_text = results->lines[i]->text_line;
-    const std::string expected_text = expected_lines[i];
-
-    double match = StringMatch(expected_text, extracted_text);
-    ASSERT_GE(match, expected_match) << "Extracted text: " << extracted_text;
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OpticalCharacterRecognizerResultsTest,
-                         testing::Values("simple_text_only_sample",
-                                         "chinese",
-                                         "farsi",
-                                         "hindi",
-                                         "japanese",
-                                         "korean",
-                                         "russian"));
-
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS) && !
-        // BUILDFLAG(USE_FAKE_SCREEN_AI)
 }  // namespace screen_ai

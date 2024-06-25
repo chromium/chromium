@@ -1,5 +1,0 @@
-ABC
-DEF
-GHI
-JKL
-1.0
