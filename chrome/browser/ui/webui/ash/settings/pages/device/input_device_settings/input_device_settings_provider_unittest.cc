@@ -1288,4 +1288,31 @@ TEST_F(InputDeviceSettingsProviderTest,
       "ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted", 1);
 }
 
+TEST_F(InputDeviceSettingsProviderTest,
+       RecordSetKeyboardAutoBrightnessEnabled) {
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed", 0);
+
+  provider_->SetKeyboardAmbientLightSensorEnabled(true);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed", 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed",
+      /*sample=*/true, /*expected_count=*/1);
+
+  provider_->SetKeyboardAmbientLightSensorEnabled(false);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed", 2);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed",
+      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed",
+      /*sample=*/false, /*expected_count=*/1);
+}
+
 }  // namespace ash::settings

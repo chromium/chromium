@@ -201,6 +201,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed"
+    enum="BooleanToggled" expires_after="2025-03-01">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user toggles the keyboard auto-brightness setting via
+    the ChromeOS Settings app.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted"
     units="%" expires_after="2025-04-08">
   <owner>longbo@google.com</owner>

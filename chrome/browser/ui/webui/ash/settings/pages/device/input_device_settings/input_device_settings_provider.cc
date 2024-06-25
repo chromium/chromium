@@ -391,6 +391,11 @@ void InputDeviceSettingsProvider::SetKeyboardAmbientLightSensorEnabled(
   }
   keyboard_brightness_control_delegate_
       ->HandleSetKeyboardAmbientLightSensorEnabled(enabled);
+
+  // Record the keyboard auto-brightness toggle event.
+  base::UmaHistogramBoolean(
+      "ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed",
+      /*sample=*/enabled);
 }
 
 void InputDeviceSettingsProvider::OnReceiveKeyboardBrightness(
