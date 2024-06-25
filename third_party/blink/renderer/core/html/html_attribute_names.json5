@@ -277,6 +277,7 @@
     "ontouchcancel",
     "ontransitionend",
     "onunload",
+    "onvalidationstatuschange",
     "onvolumechange",
     "onwaiting",
     "onwebkitanimationstart",

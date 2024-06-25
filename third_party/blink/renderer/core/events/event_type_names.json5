@@ -346,6 +346,7 @@
     "updateready",
     "updatestart",
     "upgradeneeded",
+    "validationstatuschange",
     "versionchange",
     "visibilitychange",
     "voiceschanged",

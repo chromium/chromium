@@ -262,7 +262,10 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
       permission_service_(document.GetExecutionContext()),
       permission_observer_receivers_(this, document.GetExecutionContext()),
       embedded_permission_control_receiver_(this,
-                                            document.GetExecutionContext()) {
+                                            document.GetExecutionContext()),
+      disable_reason_expire_timer_(
+          this,
+          &HTMLPermissionElement::DisableReasonExpireTimerFired) {
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
       document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
@@ -290,12 +293,21 @@ const AtomicString& HTMLPermissionElement::GetType() const {
   return type_.IsNull() ? g_empty_atom : type_;
 }
 
+String HTMLPermissionElement::invalidReason() const {
+  return clicking_enabled_state_.invalid_reason;
+}
+
+bool HTMLPermissionElement::isValid() const {
+  return clicking_enabled_state_.is_valid;
+}
+
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(permission_observer_receivers_);
   visitor->Trace(embedded_permission_control_receiver_);
   visitor->Trace(permission_text_span_);
   visitor->Trace(intersection_observer_);
+  visitor->Trace(disable_reason_expire_timer_);
   HTMLElement::Trace(visitor);
 }
 
@@ -413,6 +425,8 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
       return "intersection change";
     case DisableReason::kInvalidStyle:
       return "invalid style";
+    case DisableReason::kUnknown:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -427,6 +441,23 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
       return UserInteractionDeniedReason::kIntersectionChanged;
     case DisableReason::kInvalidStyle:
       return UserInteractionDeniedReason::kInvalidStyle;
+    case DisableReason::kUnknown:
+      NOTREACHED_NORETURN();
+  }
+}
+
+// static
+AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
+    DisableReason reason) {
+  switch (reason) {
+    case DisableReason::kRecentlyAttachedToLayoutTree:
+      return AtomicString("recently_attached");
+    case DisableReason::kIntersectionChanged:
+      return AtomicString("intersection_changed");
+    case DisableReason::kInvalidStyle:
+      return AtomicString("style_invalid");
+    case DisableReason::kUnknown:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -726,6 +757,7 @@ void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
   }
 
   UpdateAppearance();
+  MaybeDispatchValidationChangeEvent();
 }
 
 void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
@@ -751,6 +783,20 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
       return;
   }
   NOTREACHED_IN_MIGRATION();
+}
+
+void HTMLPermissionElement::DisableReasonExpireTimerFired(TimerBase* timer) {
+  EnableClicking(static_cast<DisableReasonExpireTimer*>(timer)->reason());
+}
+
+void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
+  auto state = GetClickingEnabledState();
+  if (clicking_enabled_state_ != state) {
+    DispatchEvent(*Event::Create(event_type_names::kValidationstatuschange));
+  }
+
+  // Always keep `clicking_enabled_state_` up-to-date
+  clicking_enabled_state_ = state;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -809,6 +855,10 @@ bool HTMLPermissionElement::IsClickingEnabled() {
 
 void HTMLPermissionElement::DisableClickingIndefinitely(DisableReason reason) {
   clicking_disabled_reasons_.Set(reason, base::TimeTicks::Max());
+  if (disable_reason_expire_timer_.IsActive()) {
+    disable_reason_expire_timer_.Stop();
+  }
+  MaybeDispatchValidationChangeEvent();
 }
 
 void HTMLPermissionElement::DisableClickingTemporarily(
@@ -822,7 +872,23 @@ void HTMLPermissionElement::DisableClickingTemporarily(
     return;
   }
 
+  // An active timer indicates that the element is temporarily disabled with a
+  // reason, which is the longest alive temporary reason in
+  // `clicking_disabled_reasons_`. If the timer's next fire time is less than
+  // the `timeout_time` (`NextFireInterval() < duration`), a new "longest alive
+  // temporary reason" emerges and we need an adjustment to the timer.
   clicking_disabled_reasons_.Set(reason, timeout_time);
+  if (!disable_reason_expire_timer_.IsActive() ||
+      disable_reason_expire_timer_.NextFireInterval() < duration) {
+    disable_reason_expire_timer_.StartOrRestartWithReason(reason, duration);
+  }
+
+  MaybeDispatchValidationChangeEvent();
+}
+
+void HTMLPermissionElement::EnableClicking(DisableReason reason) {
+  clicking_disabled_reasons_.erase(reason);
+  RefreshDisableReasonsAndUpdateTimer();
 }
 
 void HTMLPermissionElement::EnableClickingAfterDelay(
@@ -830,11 +896,94 @@ void HTMLPermissionElement::EnableClickingAfterDelay(
     const base::TimeDelta& delay) {
   if (clicking_disabled_reasons_.Contains(reason)) {
     clicking_disabled_reasons_.Set(reason, base::TimeTicks::Now() + delay);
+    RefreshDisableReasonsAndUpdateTimer();
   }
 }
 
-void HTMLPermissionElement::EnableClicking(DisableReason reason) {
-  clicking_disabled_reasons_.erase(reason);
+HTMLPermissionElement::ClickingEnabledState
+HTMLPermissionElement::GetClickingEnabledState() const {
+  if (permission_descriptors_.empty()) {
+    return {false, AtomicString("type_invalid")};
+  }
+
+  if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
+    return {false, AtomicString("illegal_subframe")};
+  }
+
+  if (GetDocument().GetFrame()->IsCrossOriginToOutermostMainFrame() &&
+      !GetExecutionContext()
+           ->GetContentSecurityPolicy()
+           ->HasEnforceFrameAncestorsDirectives()) {
+    return {false, AtomicString("illegal_subframe")};
+  }
+
+  for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
+    if (!GetExecutionContext()->IsFeatureEnabled(
+            PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
+      return {false, AtomicString("illegal_subframe")};
+    }
+  }
+
+  if (!IsRegisteredInBrowserProcess()) {
+    return {false, AtomicString("unsuccessful_registration")};
+  }
+
+  if (RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
+    return {true, AtomicString()};
+  }
+
+  // If there's an "indefinitely disabling" for any reason, return that reason.
+  // Otherwise, we will look into the reason of the current active timer.
+  for (const auto& it : clicking_disabled_reasons_) {
+    if (it.value == base::TimeTicks::Max()) {
+      return {false, DisableReasonToInvalidReasonString(it.key)};
+    }
+  }
+
+  if (disable_reason_expire_timer_.IsActive()) {
+    return {false, DisableReasonToInvalidReasonString(
+                       disable_reason_expire_timer_.reason())};
+  }
+
+  return {true, AtomicString()};
+}
+
+void HTMLPermissionElement::RefreshDisableReasonsAndUpdateTimer() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks max_time_ticks = base::TimeTicks::Min();
+  DisableReason reason = DisableReason::kUnknown;
+  HashMap<DisableReason, base::TimeTicks> swap_clicking_disabled_reasons;
+  for (auto it = clicking_disabled_reasons_.begin();
+       it != clicking_disabled_reasons_.end(); ++it) {
+    if (it->value == base::TimeTicks::Max()) {
+      if (disable_reason_expire_timer_.IsActive()) {
+        disable_reason_expire_timer_.Stop();
+      }
+      return;
+    }
+
+    if (it->value < now) {
+      continue;
+    }
+
+    swap_clicking_disabled_reasons.Set(it->key, it->value);
+    if (it->value <= max_time_ticks) {
+      continue;
+    }
+
+    max_time_ticks = it->value;
+    reason = it->key;
+  }
+  // Restart the timer to match with  "longest alive, not indefinitely disabling
+  // reason". That's the one has the max timeticks on
+  // `clicking_disabled_reasons_`.
+  if (max_time_ticks != base::TimeTicks::Min()) {
+    disable_reason_expire_timer_.StartOrRestartWithReason(reason,
+                                                          max_time_ticks - now);
+  }
+
+  clicking_disabled_reasons_.swap(swap_clicking_disabled_reasons);
+  MaybeDispatchValidationChangeEvent();
 }
 
 void HTMLPermissionElement::UpdateAppearance() {

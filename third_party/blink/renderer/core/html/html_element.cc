@@ -604,6 +604,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kTouchstart, nullptr},
       {html_names::kOntransitionendAttr, kNoWebFeature,
        event_type_names::kWebkitTransitionEnd, nullptr},
+      {html_names::kOnvalidationstatuschangeAttr, kNoWebFeature,
+       event_type_names::kValidationstatuschange, nullptr},
       {html_names::kOnvolumechangeAttr, kNoWebFeature,
        event_type_names::kVolumechange, nullptr},
       {html_names::kOnwaitingAttr, kNoWebFeature, event_type_names::kWaiting,
