@@ -1538,12 +1538,12 @@ int API_EXPORTED libusb_claim_interface(libusb_device_handle *dev,
 		return LIBUSB_ERROR_NO_DEVICE;
 
 	usbi_mutex_lock(&dev->lock);
-	if (dev->claimed_interfaces & (1 << interface_number))
+	if (dev->claimed_interfaces & (1U << interface_number))
 		goto out;
 
 	r = usbi_backend->claim_interface(dev, interface_number);
 	if (r == 0)
-		dev->claimed_interfaces |= 1 << interface_number;
+		dev->claimed_interfaces |= 1U << interface_number;
 
 out:
 	usbi_mutex_unlock(&dev->lock);
@@ -1579,14 +1579,14 @@ int API_EXPORTED libusb_release_interface(libusb_device_handle *dev,
 		return LIBUSB_ERROR_INVALID_PARAM;
 
 	usbi_mutex_lock(&dev->lock);
-	if (!(dev->claimed_interfaces & (1 << interface_number))) {
+	if (!(dev->claimed_interfaces & (1U << interface_number))) {
 		r = LIBUSB_ERROR_NOT_FOUND;
 		goto out;
 	}
 
 	r = usbi_backend->release_interface(dev, interface_number);
 	if (r == 0)
-		dev->claimed_interfaces &= ~(1 << interface_number);
+		dev->claimed_interfaces &= ~(1U << interface_number);
 
 out:
 	usbi_mutex_unlock(&dev->lock);
@@ -1628,7 +1628,7 @@ int API_EXPORTED libusb_set_interface_alt_setting(libusb_device_handle *dev,
 		return LIBUSB_ERROR_NO_DEVICE;
 	}
 
-	if (!(dev->claimed_interfaces & (1 << interface_number))) {
+	if (!(dev->claimed_interfaces & (1U << interface_number))) {
 		usbi_mutex_unlock(&dev->lock);
 		return LIBUSB_ERROR_NOT_FOUND;
 	}
