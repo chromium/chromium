@@ -224,6 +224,9 @@ TEST_F(QualityMetricsFillingTest,
       "Autofill.DataUtilization.SelectedFieldTypes.NoPrediction",
       AutofillDataUtilization::kNotAutofilled, 1);
 
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.ByPossibleType", (NAME_FIRST << 6) | 0, 1);
+
   EXPECT_TRUE(
       histogram_tester_
           .GetAllSamples("Autofill.DataUtilization.AllFieldTypes.HadPrediction")
@@ -269,6 +272,9 @@ TEST_F(QualityMetricsFillingTest,
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.SelectedFieldTypes.HadPrediction",
       AutofillDataUtilization::kAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.ByPossibleType", (NAME_FIRST << 6) | 1, 1);
 
   EXPECT_TRUE(
       histogram_tester_
@@ -317,6 +323,10 @@ TEST_F(QualityMetricsFillingTest,
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.AllFieldTypes.NoPrediction",
       AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.ByPossibleType",
+      (CREDIT_CARD_EXP_MONTH << 6) | 0, 1);
 
   EXPECT_TRUE(
       histogram_tester_
@@ -396,6 +406,9 @@ TEST_F(QualityMetricsFillingTest,
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.SelectedFieldTypes.GarbageHadPrediction",
       AutofillDataUtilization::kNotAutofilled, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.ByPossibleType", (NAME_FIRST << 6) | 0, 1);
 
   EXPECT_TRUE(
       histogram_tester_

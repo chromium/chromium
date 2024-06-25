@@ -75,6 +75,21 @@ void LogAutomationRate(const FormStructure& form) {
   }
 }
 
+int GetFieldTypeAutofillDataUtilization(
+    FieldType field_type,
+    AutofillDataUtilization data_utilization) {
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 6),
+                "Autofill::FieldType value needs more than 10 bits.");
+
+  // Technically only 1 bit is required at this time. Reserving more bits for
+  // potential future expansion.
+  static_assert(static_cast<int>(AutofillDataUtilization::kMaxValue) <=
+                    (UINT16_MAX >> 10),
+                "AutofillDataUtilization value needs more than 6 bits");
+
+  return (field_type << 6) | static_cast<int>(data_utilization);
+}
+
 // Records, for fields that were submitted with values that were found in the
 // user's stored address profiles / credit cards, whether the field value was
 // autofilled or manually entered by the user. Note that fields that were
@@ -103,7 +118,7 @@ void LogDataUtilization(const FormStructure& form) {
     const bool kLogSelectedTypes = !fillable_possible_types.contains_any(
         kFieldTypesRepresentingSmallNumbers);
 
-    const AutofillDataUtilization kSample =
+    const AutofillDataUtilization sample =
         field->is_autofilled() ? AutofillDataUtilization::kAutofilled
                                : AutofillDataUtilization::kNotAutofilled;
 
@@ -115,7 +130,7 @@ void LogDataUtilization(const FormStructure& form) {
       }
       // Emit "Aggregate" variants.
       base::UmaHistogramEnumeration(
-          base::StrCat({histogram_base, kAggregateVariant}), kSample);
+          base::StrCat({histogram_base, kAggregateVariant}), sample);
 
       // Emit "Garbage" variants.
       const bool kAutocompleteStateIsGarbage =
@@ -123,7 +138,7 @@ void LogDataUtilization(const FormStructure& form) {
           AutofillMetrics::AutocompleteState::kGarbage;
       if (kAutocompleteStateIsGarbage) {
         base::UmaHistogramEnumeration(
-            base::StrCat({histogram_base, kGarbageVariant}), kSample);
+            base::StrCat({histogram_base, kGarbageVariant}), sample);
       }
 
       // Emit "HadPrediction" and "NoPrediction" variants.
@@ -132,14 +147,21 @@ void LogDataUtilization(const FormStructure& form) {
       const std::string_view kPredictionVariant =
           kHadPrediction ? kHadPredictionVariant : kNoPredictionVariant;
       base::UmaHistogramEnumeration(
-          base::StrCat({histogram_base, kPredictionVariant}), kSample);
+          base::StrCat({histogram_base, kPredictionVariant}), sample);
 
       // Emit "GarbageHadPrediction" variants.
       if (kHadPrediction && kAutocompleteStateIsGarbage) {
         base::UmaHistogramEnumeration(
             base::StrCat({histogram_base, kGarbageHadPredictionVariant}),
-            kSample);
+            sample);
       }
+    }
+
+    // Emit breakdown by possible type.
+    for (FieldType type : fillable_possible_types) {
+      base::UmaHistogramSparse(
+          "Autofill.DataUtilization.ByPossibleType",
+          GetFieldTypeAutofillDataUtilization(type, sample));
     }
   }
 }

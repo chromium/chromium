@@ -358,6 +358,375 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Autofilled"/>
 </enum>
 
+<enum name="AutofillDataUtilizationByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0"
+      label="NO_SERVER_DATA: Not autofilled or autofilled value edited"/>
+  <int value="1" label="NO_SERVER_DATA: Autofilled value accepted"/>
+  <int value="64"
+      label="UNKNOWN_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="65" label="UNKNOWN_TYPE: Autofilled value accepted"/>
+  <int value="128"
+      label="EMPTY_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="129" label="EMPTY_TYPE: Autofilled value accepted"/>
+  <int value="192"
+      label="NAME_FIRST: Not autofilled or autofilled value edited"/>
+  <int value="193" label="NAME_FIRST: Autofilled value accepted"/>
+  <int value="256"
+      label="NAME_MIDDLE: Not autofilled or autofilled value edited"/>
+  <int value="257" label="NAME_MIDDLE: Autofilled value accepted"/>
+  <int value="320"
+      label="NAME_LAST: Not autofilled or autofilled value edited"/>
+  <int value="321" label="NAME_LAST: Autofilled value accepted"/>
+  <int value="384"
+      label="NAME_MIDDLE_INITIAL: Not autofilled or autofilled value edited"/>
+  <int value="385" label="NAME_MIDDLE_INITIAL: Autofilled value accepted"/>
+  <int value="448"
+      label="NAME_FULL: Not autofilled or autofilled value edited"/>
+  <int value="449" label="NAME_FULL: Autofilled value accepted"/>
+  <int value="512"
+      label="NAME_SUFFIX: Not autofilled or autofilled value edited"/>
+  <int value="513" label="NAME_SUFFIX: Autofilled value accepted"/>
+  <int value="576"
+      label="EMAIL_ADDRESS: Not autofilled or autofilled value edited"/>
+  <int value="577" label="EMAIL_ADDRESS: Autofilled value accepted"/>
+  <int value="640"
+      label="PHONE_HOME_NUMBER: Not autofilled or autofilled value edited"/>
+  <int value="641" label="PHONE_HOME_NUMBER: Autofilled value accepted"/>
+  <int value="704"
+      label="PHONE_HOME_CITY_CODE: Not autofilled or autofilled value edited"/>
+  <int value="705" label="PHONE_HOME_CITY_CODE: Autofilled value accepted"/>
+  <int value="768"
+      label="PHONE_HOME_COUNTRY_CODE: Not autofilled or autofilled value
+             edited"/>
+  <int value="769" label="PHONE_HOME_COUNTRY_CODE: Autofilled value accepted"/>
+  <int value="832"
+      label="PHONE_HOME_CITY_AND_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="833"
+      label="PHONE_HOME_CITY_AND_NUMBER: Autofilled value accepted"/>
+  <int value="896"
+      label="PHONE_HOME_WHOLE_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="897" label="PHONE_HOME_WHOLE_NUMBER: Autofilled value accepted"/>
+  <int value="1920"
+      label="ADDRESS_HOME_LINE1: Not autofilled or autofilled value edited"/>
+  <int value="1921" label="ADDRESS_HOME_LINE1: Autofilled value accepted"/>
+  <int value="1984"
+      label="ADDRESS_HOME_LINE2: Not autofilled or autofilled value edited"/>
+  <int value="1985" label="ADDRESS_HOME_LINE2: Autofilled value accepted"/>
+  <int value="2048"
+      label="ADDRESS_HOME_APT_NUM: Not autofilled or autofilled value edited"/>
+  <int value="2049" label="ADDRESS_HOME_APT_NUM: Autofilled value accepted"/>
+  <int value="2112"
+      label="ADDRESS_HOME_CITY: Not autofilled or autofilled value edited"/>
+  <int value="2113" label="ADDRESS_HOME_CITY: Autofilled value accepted"/>
+  <int value="2176"
+      label="ADDRESS_HOME_STATE: Not autofilled or autofilled value edited"/>
+  <int value="2177" label="ADDRESS_HOME_STATE: Autofilled value accepted"/>
+  <int value="2240"
+      label="ADDRESS_HOME_ZIP: Not autofilled or autofilled value edited"/>
+  <int value="2241" label="ADDRESS_HOME_ZIP: Autofilled value accepted"/>
+  <int value="2304"
+      label="ADDRESS_HOME_COUNTRY: Not autofilled or autofilled value edited"/>
+  <int value="2305" label="ADDRESS_HOME_COUNTRY: Autofilled value accepted"/>
+  <int value="3264"
+      label="CREDIT_CARD_NAME_FULL: Not autofilled or autofilled value edited"/>
+  <int value="3265" label="CREDIT_CARD_NAME_FULL: Autofilled value accepted"/>
+  <int value="3328"
+      label="CREDIT_CARD_NUMBER: Not autofilled or autofilled value edited"/>
+  <int value="3329" label="CREDIT_CARD_NUMBER: Autofilled value accepted"/>
+  <int value="3392"
+      label="CREDIT_CARD_EXP_MONTH: Not autofilled or autofilled value edited"/>
+  <int value="3393" label="CREDIT_CARD_EXP_MONTH: Autofilled value accepted"/>
+  <int value="3456"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Not autofilled or autofilled value
+             edited"/>
+  <int value="3457"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3520"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Not autofilled or autofilled value
+             edited"/>
+  <int value="3521"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3584"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Not autofilled or autofilled
+             value edited"/>
+  <int value="3585"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3648"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Not autofilled or autofilled
+             value edited"/>
+  <int value="3649"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3712"
+      label="CREDIT_CARD_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="3713" label="CREDIT_CARD_TYPE: Autofilled value accepted"/>
+  <int value="3776"
+      label="CREDIT_CARD_VERIFICATION_CODE: Not autofilled or autofilled
+             value edited"/>
+  <int value="3777"
+      label="CREDIT_CARD_VERIFICATION_CODE: Autofilled value accepted"/>
+  <int value="3840"
+      label="COMPANY_NAME: Not autofilled or autofilled value edited"/>
+  <int value="3841" label="COMPANY_NAME: Autofilled value accepted"/>
+  <int value="3904"
+      label="FIELD_WITH_DEFAULT_VALUE: Not autofilled or autofilled value
+             edited"/>
+  <int value="3905"
+      label="FIELD_WITH_DEFAULT_VALUE: Autofilled value accepted"/>
+  <int value="4672"
+      label="MERCHANT_EMAIL_SIGNUP: Not autofilled or autofilled value edited"/>
+  <int value="4673" label="MERCHANT_EMAIL_SIGNUP: Autofilled value accepted"/>
+  <int value="4736"
+      label="MERCHANT_PROMO_CODE: Not autofilled or autofilled value edited"/>
+  <int value="4737" label="MERCHANT_PROMO_CODE: Autofilled value accepted"/>
+  <int value="4800"
+      label="PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="4801" label="PASSWORD: Autofilled value accepted"/>
+  <int value="4864"
+      label="ACCOUNT_CREATION_PASSWORD: Not autofilled or autofilled value
+             edited"/>
+  <int value="4865"
+      label="ACCOUNT_CREATION_PASSWORD: Autofilled value accepted"/>
+  <int value="4928"
+      label="ADDRESS_HOME_STREET_ADDRESS: Not autofilled or autofilled value
+             edited"/>
+  <int value="4929"
+      label="ADDRESS_HOME_STREET_ADDRESS: Autofilled value accepted"/>
+  <int value="5056"
+      label="ADDRESS_HOME_SORTING_CODE: Not autofilled or autofilled value
+             edited"/>
+  <int value="5057"
+      label="ADDRESS_HOME_SORTING_CODE: Autofilled value accepted"/>
+  <int value="5184"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Not autofilled or autofilled
+             value edited"/>
+  <int value="5185"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Autofilled value accepted"/>
+  <int value="5312"
+      label="ADDRESS_HOME_LINE3: Not autofilled or autofilled value edited"/>
+  <int value="5313" label="ADDRESS_HOME_LINE3: Autofilled value accepted"/>
+  <int value="5440"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: Not autofilled or autofilled
+             value edited"/>
+  <int value="5441"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: Autofilled value accepted"/>
+  <int value="5504"
+      label="USERNAME: Not autofilled or autofilled value edited"/>
+  <int value="5505" label="USERNAME: Autofilled value accepted"/>
+  <int value="5568"
+      label="USERNAME_AND_EMAIL_ADDRESS: Not autofilled or autofilled value
+             edited"/>
+  <int value="5569"
+      label="USERNAME_AND_EMAIL_ADDRESS: Autofilled value accepted"/>
+  <int value="5632"
+      label="NEW_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="5633" label="NEW_PASSWORD: Autofilled value accepted"/>
+  <int value="5696"
+      label="PROBABLY_NEW_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="5697" label="PROBABLY_NEW_PASSWORD: Autofilled value accepted"/>
+  <int value="5760"
+      label="NOT_NEW_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="5761" label="NOT_NEW_PASSWORD: Autofilled value accepted"/>
+  <int value="5824"
+      label="CREDIT_CARD_NAME_FIRST: Not autofilled or autofilled value
+             edited"/>
+  <int value="5825" label="CREDIT_CARD_NAME_FIRST: Autofilled value accepted"/>
+  <int value="5888"
+      label="CREDIT_CARD_NAME_LAST: Not autofilled or autofilled value edited"/>
+  <int value="5889" label="CREDIT_CARD_NAME_LAST: Autofilled value accepted"/>
+  <int value="5952"
+      label="PHONE_HOME_EXTENSION: Not autofilled or autofilled value edited"/>
+  <int value="5953" label="PHONE_HOME_EXTENSION: Autofilled value accepted"/>
+  <int value="6080"
+      label="CONFIRMATION_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="6081" label="CONFIRMATION_PASSWORD: Autofilled value accepted"/>
+  <int value="6144"
+      label="AMBIGUOUS_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="6145" label="AMBIGUOUS_TYPE: Autofilled value accepted"/>
+  <int value="6208"
+      label="SEARCH_TERM: Not autofilled or autofilled value edited"/>
+  <int value="6209" label="SEARCH_TERM: Autofilled value accepted"/>
+  <int value="6272" label="PRICE: Not autofilled or autofilled value edited"/>
+  <int value="6273" label="PRICE: Autofilled value accepted"/>
+  <int value="6336"
+      label="NOT_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="6337" label="NOT_PASSWORD: Autofilled value accepted"/>
+  <int value="6400"
+      label="SINGLE_USERNAME: Not autofilled or autofilled value edited"/>
+  <int value="6401" label="SINGLE_USERNAME: Autofilled value accepted"/>
+  <int value="6464"
+      label="NOT_USERNAME: Not autofilled or autofilled value edited"/>
+  <int value="6465" label="NOT_USERNAME: Autofilled value accepted"/>
+  <int value="6592"
+      label="ADDRESS_HOME_STREET_NAME: Not autofilled or autofilled value
+             edited"/>
+  <int value="6593"
+      label="ADDRESS_HOME_STREET_NAME: Autofilled value accepted"/>
+  <int value="6656"
+      label="ADDRESS_HOME_HOUSE_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="6657"
+      label="ADDRESS_HOME_HOUSE_NUMBER: Autofilled value accepted"/>
+  <int value="6720"
+      label="ADDRESS_HOME_SUBPREMISE: Not autofilled or autofilled value
+             edited"/>
+  <int value="6721" label="ADDRESS_HOME_SUBPREMISE: Autofilled value accepted"/>
+  <int value="6784"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: Not autofilled or autofilled value
+             edited"/>
+  <int value="6785"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: Autofilled value accepted"/>
+  <int value="6848"
+      label="NAME_LAST_FIRST: Not autofilled or autofilled value edited"/>
+  <int value="6849" label="NAME_LAST_FIRST: Autofilled value accepted"/>
+  <int value="6912"
+      label="NAME_LAST_CONJUNCTION: Not autofilled or autofilled value edited"/>
+  <int value="6913" label="NAME_LAST_CONJUNCTION: Autofilled value accepted"/>
+  <int value="6976"
+      label="NAME_LAST_SECOND: Not autofilled or autofilled value edited"/>
+  <int value="6977" label="NAME_LAST_SECOND: Autofilled value accepted"/>
+  <int value="7040"
+      label="NAME_HONORIFIC_PREFIX: Not autofilled or autofilled value edited"/>
+  <int value="7041" label="NAME_HONORIFIC_PREFIX: Autofilled value accepted"/>
+  <int value="7296"
+      label="ADDRESS_HOME_ADDRESS: Not autofilled or autofilled value edited"/>
+  <int value="7297" label="ADDRESS_HOME_ADDRESS: Autofilled value accepted"/>
+  <int value="7360"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Not autofilled or autofilled
+             value edited"/>
+  <int value="7361"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Autofilled value accepted"/>
+  <int value="7424"
+      label="ADDRESS_HOME_FLOOR: Not autofilled or autofilled value edited"/>
+  <int value="7425" label="ADDRESS_HOME_FLOOR: Autofilled value accepted"/>
+  <int value="7744"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Not autofilled or
+             autofilled value edited"/>
+  <int value="7745"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Autofilled value
+             accepted"/>
+  <int value="7808"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Not autofilled
+             or autofilled value edited"/>
+  <int value="7809"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Autofilled
+             value accepted"/>
+  <int value="7872"
+      label="PHONE_HOME_NUMBER_PREFIX: Not autofilled or autofilled value
+             edited"/>
+  <int value="7873"
+      label="PHONE_HOME_NUMBER_PREFIX: Autofilled value accepted"/>
+  <int value="7936"
+      label="PHONE_HOME_NUMBER_SUFFIX: Not autofilled or autofilled value
+             edited"/>
+  <int value="7937"
+      label="PHONE_HOME_NUMBER_SUFFIX: Autofilled value accepted"/>
+  <int value="8000"
+      label="IBAN_VALUE: Not autofilled or autofilled value edited"/>
+  <int value="8001" label="IBAN_VALUE: Autofilled value accepted"/>
+  <int value="8064"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Not autofilled or
+             autofilled value edited"/>
+  <int value="8065"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Autofilled value
+             accepted"/>
+  <int value="8192"
+      label="NUMERIC_QUANTITY: Not autofilled or autofilled value edited"/>
+  <int value="8193" label="NUMERIC_QUANTITY: Autofilled value accepted"/>
+  <int value="8256"
+      label="ONE_TIME_CODE: Not autofilled or autofilled value edited"/>
+  <int value="8257" label="ONE_TIME_CODE: Autofilled value accepted"/>
+  <int value="8512"
+      label="DELIVERY_INSTRUCTIONS: Not autofilled or autofilled value edited"/>
+  <int value="8513" label="DELIVERY_INSTRUCTIONS: Autofilled value accepted"/>
+  <int value="8640"
+      label="ADDRESS_HOME_OVERFLOW: Not autofilled or autofilled value edited"/>
+  <int value="8641" label="ADDRESS_HOME_OVERFLOW: Autofilled value accepted"/>
+  <int value="8704"
+      label="ADDRESS_HOME_LANDMARK: Not autofilled or autofilled value edited"/>
+  <int value="8705" label="ADDRESS_HOME_LANDMARK: Autofilled value accepted"/>
+  <int value="8960"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Not autofilled or autofilled
+             value edited"/>
+  <int value="8961"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Autofilled value accepted"/>
+  <int value="9024"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: Not autofilled or autofilled value
+             edited"/>
+  <int value="9025"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: Autofilled value accepted"/>
+  <int value="9088"
+      label="ADDRESS_HOME_STREET_LOCATION: Not autofilled or autofilled value
+             edited"/>
+  <int value="9089"
+      label="ADDRESS_HOME_STREET_LOCATION: Autofilled value accepted"/>
+  <int value="9152"
+      label="ADDRESS_HOME_BETWEEN_STREETS: Not autofilled or autofilled value
+             edited"/>
+  <int value="9153"
+      label="ADDRESS_HOME_BETWEEN_STREETS: Autofilled value accepted"/>
+  <int value="9216"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Not autofilled or
+             autofilled value edited"/>
+  <int value="9217"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Autofilled value
+             accepted"/>
+  <int value="9280"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Not autofilled or
+             autofilled value edited"/>
+  <int value="9281"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Autofilled value
+             accepted"/>
+  <int value="9344"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Not autofilled or
+             autofilled value edited"/>
+  <int value="9345"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Autofilled value
+             accepted"/>
+  <int value="9600"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Not autofilled or
+             autofilled value edited"/>
+  <int value="9601"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Autofilled value
+             accepted"/>
+  <int value="9664"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: Not autofilled or autofilled
+             value edited"/>
+  <int value="9665"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: Autofilled value accepted"/>
+  <int value="9728"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: Not autofilled or autofilled
+             value edited"/>
+  <int value="9729"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: Autofilled value accepted"/>
+  <int value="9792"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Not autofilled or autofilled
+             value edited"/>
+  <int value="9793"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Autofilled value accepted"/>
+  <int value="9856"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Not autofilled or autofilled
+             value edited"/>
+  <int value="9857"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Autofilled value accepted"/>
+  <int value="9984"
+      label="ADDRESS_HOME_APT: Not autofilled or autofilled value edited"/>
+  <int value="9985" label="ADDRESS_HOME_APT: Autofilled value accepted"/>
+  <int value="10048"
+      label="ADDRESS_HOME_APT_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="10049" label="ADDRESS_HOME_APT_TYPE: Autofilled value accepted"/>
+  <int value="10240"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Not autofilled or
+             autofilled value edited"/>
+  <int value="10241"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Autofilled value
+             accepted"/>
+</enum>
+
 <enum name="AutofillDeveloperEngagement">
   <int value="0" label="Fillable form parsed without type hints"/>
   <int value="1" label="Fillable form parsed with type hints"/>

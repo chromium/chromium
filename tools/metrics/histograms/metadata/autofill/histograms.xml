@@ -1729,6 +1729,25 @@ chromium-metrics-reviews@google.com.
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
+<histogram name="Autofill.DataUtilization.ByPossibleType"
+    enum="AutofillDataUtilizationByFieldType" expires_after="2024-12-12">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, for fields that were submitted with values that were found in the
+    user's stored address profiles / credit cards, whether the field value was
+    autofilled or manually entered by the user. Note that fields that were
+    autofilled and then edited by the user or JavaScript count as &quot;manually
+    entered&quot;. Note that fields that were submitted with a prefilled value
+    don't get recorded. Emitted on form submission. Broken down by the field's
+    possible types. Possible types are the field types that correspond to stored
+    values which matched the field value on form submission. A field can have
+    multiple possible types. This metric is recorded for every possible type.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.DataUtilization.{FieldTypesSelection}.{FieldState}"
     enum="AutofillDataUtilization" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>
