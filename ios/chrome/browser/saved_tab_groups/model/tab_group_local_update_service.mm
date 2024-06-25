@@ -71,13 +71,19 @@ void TabGroupLocalUpdateService::WebStateListDidChange(
     case WebStateListChange::Type::kStatusOnly: {
       const WebStateListChangeStatusOnly& status_only =
           change.As<WebStateListChangeStatusOnly>();
-      if (status_only.old_group()) {
-        // TODO(crbug.com/329640035): Remove from the old group.
-        StopObservingWebState(status_only.web_state());
-      }
-      if (status_only.new_group()) {
-        // TODO(crbug.com/329640035): Insert into the new group.
-        StartObservingWebState(status_only.web_state());
+      const TabGroup* oldGroup = status_only.old_group();
+      const TabGroup* newGroup = status_only.new_group();
+
+      if (oldGroup != newGroup) {
+        // There is a change of group.
+        if (oldGroup) {
+          // TODO(crbug.com/329640035): Remove from the old group.
+          StopObservingWebState(status_only.web_state());
+        }
+        if (newGroup) {
+          // TODO(crbug.com/329640035): Insert into the new group.
+          StartObservingWebState(status_only.web_state());
+        }
       }
     } break;
     case WebStateListChange::Type::kDetach: {
