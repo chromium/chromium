@@ -103,26 +103,25 @@ class GlanceablesTasksViewTest : public AshTestBase {
 
   Combobox* GetComboBoxView() const {
     return views::AsViewClass<Combobox>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
+        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   const IconButton* GetHeaderIconView() const {
     return views::AsViewClass<IconButton>(
-        view_
-            ->GetViewByID(
-                base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView))
-            ->GetViewByID(base::to_underlying(
-                GlanceablesViewId::kTasksBubbleHeaderIcon)));
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleHeaderIcon)));
   }
 
   const CounterExpandButton* GetCounterExpandButton() const {
-    return views::AsViewClass<CounterExpandButton>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton)));
+    return views::AsViewClass<CounterExpandButton>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   const views::View* GetTaskItemsContainerView() const {
-    return views::AsViewClass<views::View>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer)));
+    return views::AsViewClass<views::View>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
   const views::View* GetEditInBrowserButton() const {
@@ -136,8 +135,9 @@ class GlanceablesTasksViewTest : public AshTestBase {
   }
 
   const GlanceablesListFooterView* GetListFooterView() const {
-    return views::AsViewClass<GlanceablesListFooterView>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter)));
+    return views::AsViewClass<GlanceablesListFooterView>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleListFooter)));
   }
 
   const views::ProgressBar* GetProgressBar() const {
@@ -180,8 +180,8 @@ TEST_F(GlanceablesTasksViewTest, Basics) {
 
   // Check that the expand button does not exist when `GlanceablesTasksView` is
   // created alone.
-  auto* expand_button = view()->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton));
+  auto* expand_button = view()->GetViewByID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleExpandButton));
   EXPECT_TRUE(expand_button);
   EXPECT_FALSE(expand_button->GetVisible());
 }

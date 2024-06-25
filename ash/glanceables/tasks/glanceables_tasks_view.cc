@@ -177,7 +177,7 @@ GlanceablesTasksView::GlanceablesTasksView(
   tasks_header_view_->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   tasks_header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
   tasks_header_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderView));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderView));
   tasks_header_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -189,8 +189,8 @@ GlanceablesTasksView::GlanceablesTasksView(
       std::make_unique<GlanceablesExpandButton>(
           IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP,
           IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
-  expand_button_->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton));
+  expand_button_->SetID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleExpandButton));
   // This is only set visible when both Tasks and Classroom exist, where the
   // elevated background is created in that case.
   expand_button_->SetVisible(false);
@@ -223,8 +223,8 @@ GlanceablesTasksView::GlanceablesTasksView(
       list_view->AddChildView(std::make_unique<views::View>());
   task_items_container_view_->GetViewAccessibility().SetRole(
       ax::mojom::Role::kList);
-  task_items_container_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer));
+  task_items_container_view_->SetID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleListContainer));
   task_items_container_view_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical,
@@ -242,7 +242,7 @@ GlanceablesTasksView::GlanceablesTasksView(
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleHeaderIcon));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
 
   tasks_combobox_model_ =
       std::make_unique<GlanceablesTasksComboboxModel>(task_lists);
@@ -278,7 +278,7 @@ GlanceablesTasksView::GlanceablesTasksView(
                               TasksLaunchSource::kFooterButton,
                               GURL(kTasksManagementPage))));
   list_footer_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleListFooter));
   list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
   list_footer_view_->SetVisible(false);
 
@@ -1005,7 +1005,7 @@ void GlanceablesTasksView::CreateComboBoxView() {
   task_list_combo_box_view_ = tasks_header_view_->AddChildView(
       std::make_unique<Combobox>(tasks_combobox_model_.get()));
   task_list_combo_box_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
   task_list_combo_box_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

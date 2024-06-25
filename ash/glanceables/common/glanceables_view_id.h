@@ -18,13 +18,19 @@ enum class GlanceablesViewId {
   // `GlanceablesProgressBarView`.
   kProgressBar,
 
-  // `ClassroomBubbleBaseView`.
-  kClassroomBubbleHeaderIcon,
-  kClassroomBubbleComboBox,
-  kClassroomBubbleExpandButton,
-  kClassroomBubbleListContainer,
+  // `GlanceablesTimeManagementBubbleView`.
+  kTimeManagementBubbleHeaderView,
+  kTimeManagementBubbleHeaderIcon,
+  kTimeManagementBubbleComboBox,
+  kTimeManagementBubbleExpandButton,
+  kTimeManagementBubbleListContainer,
+  kTimeManagementBubbleListFooter,
+
+  // `GlanceablesClassroomStudentView`.
   kClassroomBubbleEmptyListLabel,
-  kClassroomBubbleListFooter,
+
+  // `GlanceablesTasksView`.
+  kTasksBubbleAddNewButton,
 
   // `GlanceablesClassroomItemView`.
   kClassroomItemIcon,
@@ -32,15 +38,6 @@ enum class GlanceablesViewId {
   kClassroomItemCourseTitleLabel,
   kClassroomItemDueDateLabel,
   kClassroomItemDueTimeLabel,
-
-  // `GlanceablesTasksView`.
-  kTasksBubbleComboBox,
-  kTasksBubbleExpandButton,
-  kTasksBubbleListContainer,
-  kTasksBubbleAddNewButton,
-  kTasksBubbleListFooter,
-  kTasksBubbleHeaderView,
-  kTasksBubbleHeaderIcon,
 
   // `GlanceablesTaskView`.
   kTaskItemTitleLabel,

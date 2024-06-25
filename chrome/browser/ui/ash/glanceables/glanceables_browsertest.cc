@@ -157,7 +157,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
   Combobox* GetTasksComboBoxView() const {
     return views::AsViewClass<Combobox>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
+        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   views::ScrollView* GetTasksScrollView() const {
@@ -166,13 +166,15 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   }
 
   views::View* GetTasksItemContainerView() const {
-    return views::AsViewClass<views::View>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer)));
+    return views::AsViewClass<views::View>(
+        GetTasksView()->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
   CounterExpandButton* GetTasksExpandButtonView() const {
-    return views::AsViewClass<CounterExpandButton>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton)));
+    return views::AsViewClass<CounterExpandButton>(
+        GetTasksView()->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::LabelButton* GetAddNewTaskButton() const {
@@ -204,18 +206,19 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
   views::View* GetStudentComboBoxView() const {
     return views::AsViewClass<views::View>(GetStudentView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   CounterExpandButton* GetStudentExpandButtonView() const {
     return views::AsViewClass<CounterExpandButton>(
         GetStudentView()->GetViewByID(base::to_underlying(
-            GlanceablesViewId::kClassroomBubbleExpandButton)));
+            GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::View* GetStudentItemContainerView() const {
-    return views::AsViewClass<views::View>(GetStudentView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer)));
+    return views::AsViewClass<views::View>(
+        GetStudentView()->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
   std::vector<std::string> GetCurrentStudentAssignmentCourseWorkTitles() const {

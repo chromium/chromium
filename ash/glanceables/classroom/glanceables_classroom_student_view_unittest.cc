@@ -120,23 +120,26 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
   }
 
   const views::View* GetHeaderIcon() const {
-    return views::AsViewClass<views::View>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleHeaderIcon)));
+    return views::AsViewClass<views::View>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleHeaderIcon)));
   }
 
   Combobox* GetComboBoxView() {
     return views::AsViewClass<Combobox>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   const CounterExpandButton* GetCounterExpandButton() const {
-    return views::AsViewClass<CounterExpandButton>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton)));
+    return views::AsViewClass<CounterExpandButton>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   const views::View* GetListContainerView() const {
-    return views::AsViewClass<views::View>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer)));
+    return views::AsViewClass<views::View>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
   const views::View* GetEmptyListLabel() const {
@@ -146,8 +149,9 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
   }
 
   views::View* GetListFooter() const {
-    return views::AsViewClass<views::View>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter)));
+    return views::AsViewClass<views::View>(
+        view_->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleListFooter)));
   }
 
   const views::Label* GetListFooterLabel() const {
@@ -202,8 +206,8 @@ TEST_F(GlanceablesClassroomStudentViewTest, Basics) {
 
   // Check that the expand button is not visible when
   // `GlanceablesClassroomStudentView` is created alone.
-  auto* expand_button = view_->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton));
+  auto* expand_button = view_->GetViewByID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleExpandButton));
   EXPECT_TRUE(expand_button);
   EXPECT_FALSE(expand_button->GetVisible());
 }

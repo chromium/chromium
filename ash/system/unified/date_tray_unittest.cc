@@ -692,7 +692,8 @@ TEST_P(GlanceablesDateTrayTest, ClickOutsideComboboxMenu) {
   // Click on the combo box to show the assignment types list.
   const auto* combobox = views::AsViewClass<Combobox>(
       GetGlanceableTrayBubble()->GetClassroomStudentView()->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+          base::to_underlying(
+              GlanceablesViewId::kTimeManagementBubbleComboBox)));
   LeftClickOn(combobox);
   EXPECT_TRUE(combobox->IsMenuRunning());
   EXPECT_TRUE(GetGlanceableTrayBubble());

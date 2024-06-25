@@ -246,8 +246,9 @@ class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
   }
 
   CounterExpandButton* GetTasksExpandButtonView() const {
-    return views::AsViewClass<CounterExpandButton>(GetTasksView()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton)));
+    return views::AsViewClass<CounterExpandButton>(
+        GetTasksView()->GetViewByID(base::to_underlying(
+            GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::ScrollView* GetTasksScrollView() const {
@@ -263,7 +264,7 @@ class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
   CounterExpandButton* GetClassroomExpandButtonView() const {
     return views::AsViewClass<CounterExpandButton>(
         GetClassroomView()->GetViewByID(base::to_underlying(
-            GlanceablesViewId::kClassroomBubbleExpandButton)));
+            GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   views::ScrollView* GetClassroomScrollView() const {

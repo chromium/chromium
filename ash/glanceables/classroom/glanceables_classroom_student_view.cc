@@ -182,12 +182,12 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
   header_icon->SetID(
-      base::to_underlying(GlanceablesViewId::kClassroomBubbleHeaderIcon));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleHeaderIcon));
 
   combo_box_view_ = header_view_->AddChildView(std::make_unique<Combobox>(
       std::make_unique<ClassroomStudentComboboxModel>()));
   combo_box_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox));
   combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLANCEABLES_CLASSROOM_DROPDOWN_ACCESSIBLE_NAME));
   combo_box_view_->GetViewAccessibility().SetDescription(u"");
@@ -219,8 +219,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       header_container->AddChildView(std::make_unique<GlanceablesExpandButton>(
           IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP,
           IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
-  expand_button_->SetID(
-      base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton));
+  expand_button_->SetID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleExpandButton));
   // This is only set visible when both Tasks and Classroom exist, where the
   // elevated background is created in that case.
   expand_button_->SetVisible(false);
@@ -240,8 +240,8 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
 
   list_container_view_ =
       body_container->AddChildView(std::make_unique<views::BoxLayoutView>());
-  list_container_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer));
+  list_container_view_->SetID(base::to_underlying(
+      GlanceablesViewId::kTimeManagementBubbleListContainer));
   list_container_view_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
   list_container_view_->SetBetweenChildSpacing(4);
@@ -269,7 +269,7 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
           base::BindRepeating(&GlanceablesClassroomStudentView::OnSeeAllPressed,
                               base::Unretained(this))));
   list_footer_view_->SetID(
-      base::to_underlying(GlanceablesViewId::kClassroomBubbleListFooter));
+      base::to_underlying(GlanceablesViewId::kTimeManagementBubbleListFooter));
   list_footer_view_->SetVisible(false);
 
   SelectedAssignmentListChanged(/*initial_update=*/true);
