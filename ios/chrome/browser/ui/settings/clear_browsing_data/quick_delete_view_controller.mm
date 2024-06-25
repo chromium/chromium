@@ -166,8 +166,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [_tableView deselectRowAtIndexPath:indexPath animated:NO];
-
-  // TODO(crbug.com/335387869): Deal with tap on Browing Data row.
+  ItemIdentifier itemType = static_cast<ItemIdentifier>(
+      [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
+  CHECK(itemType == ItemIdentifierBrowsingData) << itemType;
+  [self.presentationHandler showBrowsingDataPage];
 }
 
 - (UIView*)tableView:(UITableView*)tableView

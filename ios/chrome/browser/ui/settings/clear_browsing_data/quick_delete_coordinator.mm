@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mediator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_view_controller.h"
@@ -25,6 +26,7 @@
 @implementation QuickDeleteCoordinator {
   QuickDeleteViewController* _viewController;
   QuickDeleteMediator* _mediator;
+  QuickDeleteBrowsingDataCoordinator* _browsingDataCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -57,6 +59,9 @@
   _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
+
+  [_browsingDataCoordinator stop];
+  _browsingDataCoordinator = nil;
 }
 
 #pragma mark - QuickDeletePresentationCommands
@@ -82,6 +87,17 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [handler closeSettingsUIAndOpenURL:command];
+}
+
+- (void)showBrowsingDataPage {
+  [_browsingDataCoordinator stop];
+
+  QuickDeleteBrowsingDataCoordinator* browsingDataCoordinator =
+      [[QuickDeleteBrowsingDataCoordinator alloc]
+          initWithBaseViewController:_viewController
+                             browser:self.browser];
+  _browsingDataCoordinator = browsingDataCoordinator;
+  [_browsingDataCoordinator start];
 }
 
 @end
