@@ -492,12 +492,7 @@ public class MainSettingsFragmentTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         launchSettingsActivity();
 
-        assertSettingsExists(
-                MainSettings.PREF_SIGN_IN,
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? ManageSyncSettings.class
-                        : AccountManagementFragment.class);
+        assertSettingsExists(MainSettings.PREF_SIGN_IN, AccountManagementFragment.class);
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(doesNotExist());
     }
 
@@ -531,7 +526,9 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testRenderOnIdentityErrorForSignedInUsers_withoutReplaceSyncPromos()
+            throws IOException {
         FakeSyncServiceImpl fakeSyncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
@@ -563,6 +560,46 @@ public class MainSettingsFragmentTest {
                         .findViewById(android.R.id.content)
                         .getRootView();
         mRenderTestRule.render(view, "main_settings_signed_in_identity_error");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testRenderOnIdentityErrorForSignedInUsers_withReplaceSyncPromos()
+            throws IOException {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign in and wait for sync machinery to be active.
+        CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
+        SyncTestUtil.waitForSyncTransportActive();
+
+        launchSettingsActivity();
+
+        // Population of profile data is flaky. Thus, wait till it's populated.
+        // TODO(crbug.com/40944114): Check if there exists an alternate way out.
+        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return signInPreference
+                            .getProfileDataCache()
+                            .hasProfileDataForTesting(accountInfo.getEmail());
+                });
+
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
+        mRenderTestRule.render(
+                view, "main_settings_signed_in_identity_error_with_replace_sync_promos");
     }
 
     @Test
