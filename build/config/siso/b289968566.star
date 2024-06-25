@@ -249,12 +249,13 @@ def __step_config(ctx, step_config):
         # use_siso = true
         "./clang_arm64/obj/net/http/transport_security_state_generated_files/transport_security_state.o",
         # Fallback happens with the following args.gn
-        # (mac-build-perf-developer, win-build-perf-developer)
+        # (mac-build-perf-developer)
         # is_component_build = true
         # is_debug = true
         # symbol_level = 2
         # use_siso = true
         "./obj/content/browser/browser/storage_partition_impl.o",
+        "./obj/third_party/blink/renderer/core/core/local_frame.o",
         "./obj/third_party/blink/renderer/core/core/local_frame_view.o",
         "./obj/third_party/blink/renderer/core/core_hot/document.o",
         # Fallback happens with the following args.gn
