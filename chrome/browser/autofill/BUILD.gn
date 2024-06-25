@@ -71,6 +71,7 @@ static_library("autofill") {
 
   if (is_android) {
     sources += [
+      "android/android_autofill_availability_status.h",
       "android/autofill_image_fetcher_impl.cc",
       "android/autofill_image_fetcher_impl.h",
       "android/personal_data_manager_android.cc",

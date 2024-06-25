@@ -17,8 +17,12 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE;
+import static org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus.AVAILABLE;
+import static org.chromium.chrome.browser.autofill.AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,7 +52,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -95,7 +98,6 @@ public class AutofillOptionsTest {
     @Before
     public void setUp() {
         mCloseableMocks = MockitoAnnotations.openMocks(this);
-        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(true);
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
@@ -127,6 +129,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void constructedWithPrefAsDefaultForOption() {
+        setAutofillAvailabilityToUseForTesting(AVAILABLE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
         // Initializing should set default property but not make use of dialogs or restarts yet.
@@ -141,7 +144,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void optionDisabledForAwgUpdatesOnResume() {
-        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(false);
+        setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
@@ -156,7 +159,7 @@ public class AutofillOptionsTest {
         assertFalse(getRadioButtonComponent().isEnabled());
 
         // On resume, check again whether AwG isn't used anymore — e.g. coming back from Settings.
-        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(true);
+        setAutofillAvailabilityToUseForTesting(AVAILABLE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
         lifecycleRegistry.handleLifecycleEvent(Event.ON_RESUME);
 
@@ -167,7 +170,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void optionEnabledWithOverrideForAwg() {
-        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(false);
+        setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
         addFeatureOverrideForAwG();
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
@@ -184,7 +187,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void optionEnabledToSwitchOffAwg() {
-        AutofillClientProviderUtils.setAllowedToUseAutofillFrameworkForTesting(false);
+        setAutofillAvailabilityToUseForTesting(ANDROID_AUTOFILL_SERVICE_IS_GOOGLE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
         // Toggling on resume is to align with prefs and shouldn't trigger restart/dialogs.
@@ -194,6 +197,7 @@ public class AutofillOptionsTest {
 
         // On construction (assuming Awg is set), the setting is turned off but may change.
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        assertFalse(model.get(THIRD_PARTY_TOGGLE_IS_READ_ONLY));
         assertTrue(getRadioButtonComponent().isEnabled());
     }
 

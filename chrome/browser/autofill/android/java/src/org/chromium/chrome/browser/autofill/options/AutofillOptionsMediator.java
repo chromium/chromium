@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -85,6 +86,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     void initialize(PropertyModel model, @AutofillOptionsReferrer int referrer) {
         mModel = model;
+        updateToggleStateFromPref();
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);
     }
@@ -102,14 +104,27 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
      * @return true if the toggle should be read-only.
      */
     boolean should3pToggleBeReadOnly() {
-        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
-                "skip_compatibility_check",
-                false)) {
-            return false;
+        if (prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)) {
+            return false; // Always allow to flip back to built-in password management.
         }
-        return !prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)
-                && !AutofillClientProviderUtils.isAllowedToUseAndroidAutofillFramework();
+        switch (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(prefs())) {
+            case AndroidAutofillAvailabilityStatus.NOT_ALLOWED_BY_POLICY:
+                return true;
+            case AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF: // Pref may be changed!
+            case AndroidAutofillAvailabilityStatus.AVAILABLE:
+                return false;
+            case AndroidAutofillAvailabilityStatus.ANDROID_VERSION_TOO_OLD:
+            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_MANAGER_NOT_AVAILABLE:
+            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED:
+            case AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE:
+            case AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE:
+                return !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID,
+                        "skip_compatibility_check",
+                        false);
+        }
+        assert false : "Unhandled AndroidAutofillFrameworkAvailability state!";
+        return false;
     }
 
     void updateToggleStateFromPref() {

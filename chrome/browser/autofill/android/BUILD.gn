@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 java_cpp_enum("autofill_generated_enums") {
   sources = [
     "//chrome/browser/android/preferences/autofill/autofill_profile_bridge.h",
+    "//chrome/browser/autofill/android/android_autofill_availability_status.h",
   ]
 }
 
