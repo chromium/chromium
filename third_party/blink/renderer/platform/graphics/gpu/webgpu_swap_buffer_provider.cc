@@ -288,9 +288,13 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
 
   wgpu::DawnTextureInternalUsageDescriptor internal_usage;
   internal_usage.internalUsage = internal_usage_;
+  wgpu::Extent3D size = {};
+  size.width = latest_swap_buffer->size.width();
+  size.height = latest_swap_buffer->size.height();
   wgpu::TextureDescriptor desc = {
       .nextInChain = &internal_usage,
       .usage = usage_,
+      .size = size,
       .format = format_,
   };
 

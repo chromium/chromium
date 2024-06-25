@@ -733,7 +733,7 @@ TEST_F(WebGPUSwapBufferProviderTest,
 // correctly-configured texture and size if a swapbuffer has been created.
 TEST_F(WebGPUSwapBufferProviderTest,
        GetLastWebGPUMailboxTextureAndSizeReturnsValidTextureWithSwapBuffer) {
-  const gfx::Size kSize(10, 10);
+  const gfx::Size kSize(10, 20);
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
       .WillRepeatedly(Invoke(
@@ -753,6 +753,8 @@ TEST_F(WebGPUSwapBufferProviderTest,
   EXPECT_EQ(texture.GetDimension(), wgpu::TextureDimension::e2D);
   EXPECT_EQ(texture.GetMipLevelCount(), 1u);
   EXPECT_EQ(texture.GetSampleCount(), 1u);
+  EXPECT_EQ(texture.GetHeight(), static_cast<uint32_t>(kSize.height()));
+  EXPECT_EQ(texture.GetWidth(), static_cast<uint32_t>(kSize.width()));
 }
 
 }  // namespace blink
