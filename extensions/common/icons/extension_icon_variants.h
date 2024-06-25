@@ -24,14 +24,25 @@ class ExtensionIconVariants {
   ~ExtensionIconVariants();
 
   // Parse the provided list from manifest.json and set `list_` with the result.
-  bool Parse(const base::Value::List* list,
-             std::vector<diagnostics::icon_variants::Diagnostic>& diagnostics);
+  void Parse(const base::Value::List* list);
 
   // Determine whether `list_` has at least one icon variant after parsing.
   bool IsEmpty() const;
 
+  // Add an icon variant to the this object.
+  void Add(std::unique_ptr<ExtensionIconVariant> icon_variant);
+
+  // Diagnostics for the `icon_variants` key are consumed only once and deleted.
+  std::vector<diagnostics::icon_variants::Diagnostic>& get_diagnostics() {
+    return diagnostics_;
+  }
+
  private:
   std::vector<ExtensionIconVariant> list_;
+
+  // Warnings observed while parsing `icon_variants` from manifest.json. These
+  // will be cleared at the end of manifest parsing for memory optimization.
+  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics_;
 };
 
 }  //  namespace extensions

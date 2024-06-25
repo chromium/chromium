@@ -71,35 +71,30 @@ TEST_F(IconVariantsManifestTest, Success) {
   }
 }
 
+struct WarningTestCase {
+  const char* title;
+  const char* warning;
+  const char* icon_variants;
+};
+
 // Cases that could generate warnings after parsing successfully.
-// TODO(crbug.com/41419485): Verify optional warnings.
-TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
-  static constexpr struct {
-    const char* title;
-    const char* icon_variants;
-  } test_cases[] = {
-      {"An icon size is below the minimum",
+TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarning) {
+  WarningTestCase test_cases[] = {
+      {"An icon size is below the minimum", "Icon variant 'size' is not valid.",
        R"([
             {
               "0": "0.png",
               "16": "16.png",
             }
           ])"},
-      {"An icon size is above the max",
+      {"An icon size is above the max.", "Icon variant 'size' is not valid.",
        R"([
             {
               "2048": "2048.png",
               "2049": "2049.png",
             }
           ])"},
-      {"Invalid color_scheme.",
-       R"([
-            {
-              "16": "16.png",
-              "color_schemes": ["warning"]
-            }
-          ])"},
-      {"An empty icon variant.",
+      {"An empty icon variant.", "Icon variant is empty.",
        R"([
             {
               "16": "16.png",
@@ -109,12 +104,46 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
-    LoadAndExpectSuccess(GetManifestData(test_case.icon_variants));
-    // TODO(crbug.com/344639840): Implement and verify warnings.
+    LoadAndExpectWarning(GetManifestData(test_case.icon_variants),
+                         test_case.warning);
   }
 }
 
-// Cases that could generate warnings after parsing successfully.
+// Check cases where there could be multiple warnings.
+TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
+  WarningTestCase test_cases[] = {
+      {"`color_schemes` should be an array of strings",
+       "Unexpected 'color_schemes' type.",
+       R"([
+            {
+              "16": "16.png",
+              "color_schemes": [["type warning"]]
+            }
+          ])"},
+      {"`color_schemes` is expected to be an array of strings.",
+       "Unexpected 'color_schemes' type.",
+       R"([
+            {
+              "16": "16.png",
+              "color_schemes": "type warning"
+            }
+          ])"},
+      {"Invalid color scheme", "Unexpected 'color_scheme'.",
+       R"([
+        {
+          "16": "16.png",
+          "color_schemes": ["warning"]
+        }
+      ])"},
+  };
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
+    std::vector<std::string> warnings({test_case.warning, "Failed to parse."});
+    LoadAndExpectWarnings(GetManifestData(test_case.icon_variants), warnings);
+  }
+}
+
+// Cases that cause errors and prevent the extension from loading.
 TEST_F(IconVariantsManifestTest, Errors) {
   static constexpr struct {
     const char* title;
@@ -123,11 +152,16 @@ TEST_F(IconVariantsManifestTest, Errors) {
       {"Empty value", "[{}]"},
       {"Empty array", "[]"},
       {"Invalid item type", R"(["error"])"},
+      {"Icon variants are empty (IsEmpty())", R"([
+        {
+          "empty": "empty.png",
+        }
+      ])"},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     LoadAndExpectError(GetManifestData(test_case.icon_variants),
-                       "Error: Invalid icon_variants.");
+                       "Error: 'icon_variants' is not valid.");
   }
 }
 

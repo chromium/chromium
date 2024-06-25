@@ -8,18 +8,21 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
+#include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 
 namespace extensions {
 
 // Either `any` or `map` must have a non-empty and valid size and/or path.
 class ExtensionIconVariant {
  public:
-  ~ExtensionIconVariant();
+  ExtensionIconVariant();
   ExtensionIconVariant(const ExtensionIconVariant& other) = delete;
   ExtensionIconVariant(ExtensionIconVariant&& other);
+  ~ExtensionIconVariant();
 
   // Options for `"color_scheme"` in the `"icon_variants"` manifest key.
   enum class ColorScheme {
@@ -27,17 +30,16 @@ class ExtensionIconVariant {
     kLight,
   };
 
-  // Optionally return an ExtensionIconVariant. `issue` is used here in place of
-  // error or warning to represent either. It's matching the singular form even
-  // though there can technically be none, one, or more.
-  // Returns: nullopt on error, or an ExtensionIconVariant with an optionally
-  // populated issue in the event of a non-terminating warning.
-  static std::optional<ExtensionIconVariant> Parse(const base::Value& dict,
-                                                   std::string* issue);
+  // Parse the base::value argument and return an instance of this class.
+  // TODO(crbug.com/344639840): Remove `issue` and rely on `diagnostics_`?
+  static std::unique_ptr<ExtensionIconVariant> Parse(const base::Value& dict,
+                                                     std::string* issue);
+
+  std::vector<diagnostics::icon_variants::Diagnostic>& get_diagnostics() {
+    return diagnostics_;
+  }
 
  private:
-  ExtensionIconVariant();
-
   // Helper methods that add to `this` object if the parameter is valid.
   void MaybeAddColorSchemes(const base::Value& value);
   void MaybeAddSizeEntry(
@@ -59,6 +61,10 @@ class ExtensionIconVariant {
   // Size keys are numbers represented as strings in JSON for which there is no
   // IDL nor json_schema_compiler support.
   base::flat_map<Size, Path> sizes_;
+
+  // Warnings observed while parsing `icon_variants` from manifest.json. These
+  // will be cleared at the end of manifest parsing for memory optimization.
+  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics_;
 };
 
 }  // namespace extensions

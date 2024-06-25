@@ -5,6 +5,7 @@
 #include "extensions/common/icons/extension_icon_variant.h"
 
 #include <optional>
+#include <vector>
 
 #include "extensions/common/manifest_handler_helpers.h"
 
@@ -13,7 +14,7 @@ namespace extensions {
 namespace {
 
 // Convert a string representation of a `"color_scheme"` to an enum value.
-std::optional<ExtensionIconVariant::ColorScheme> GetColorScheme(
+std::optional<ExtensionIconVariant::ColorScheme> MaybeGetColorScheme(
     const std::string& color_scheme) {
   if (color_scheme == "dark") {
     return ExtensionIconVariant::ColorScheme::kDark;
@@ -37,22 +38,29 @@ ExtensionIconVariant::ExtensionIconVariant(ExtensionIconVariant&& other) =
 
 // Add color schemes if the input value is valid and has valid color_schemes.
 void ExtensionIconVariant::MaybeAddColorSchemes(const base::Value& value) {
-  // Validate parameter type.
+  // `value` should be a list. Otherwise add a warning and return.
   if (!value.is_list()) {
+    diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+        diagnostics::icon_variants::Feature::kIconVariants,
+        diagnostics::icon_variants::Id::kIconVariantColorSchemesType));
     return;
   }
 
   for (const auto& item : value.GetList()) {
     // Ignore invalid types.
     if (!item.is_string()) {
-      // TODO(crbug.com/344639840): Add a warning.
+      diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+          diagnostics::icon_variants::Feature::kIconVariants,
+          diagnostics::icon_variants::Id::kIconVariantColorSchemesType));
       continue;
     }
 
     // A valid `color_scheme` is required.
-    auto color_scheme = GetColorScheme(item.GetString());
+    auto color_scheme = MaybeGetColorScheme(item.GetString());
     if (!color_scheme.has_value()) {
-      // TODO(crbug.com/344639840): Add a warning.
+      diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+          diagnostics::icon_variants::Feature::kIconVariants,
+          diagnostics::icon_variants::Id::kIconVariantColorSchemeInvalid));
       continue;
     }
 
@@ -69,41 +77,44 @@ void ExtensionIconVariant::MaybeAddSizeEntry(
 
   // Verify that size is of type `int`.
   if (!size.has_value()) {
-    // TODO(crbug.com/344639840): Add a warning.
+    diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
+        diagnostics::icon_variants::Feature::kIconVariants,
+        diagnostics::icon_variants::Id::kIconVariantSizeInvalid));
     return;
   }
 
   sizes_[size.value()] = entry.second.GetString();
 }
 
-std::optional<ExtensionIconVariant> ExtensionIconVariant::Parse(
+std::unique_ptr<ExtensionIconVariant> ExtensionIconVariant::Parse(
     const base::Value& value,
     std::string* issue) {
   if (!value.is_dict()) {
-    return std::nullopt;
+    return nullptr;
   }
 
   auto& dict = value.GetDict();
-  ExtensionIconVariant icon_variant;
+  std::unique_ptr<ExtensionIconVariant> icon_variant =
+      std::make_unique<ExtensionIconVariant>();
   for (const auto entry : dict) {
     // `any`. Optional string.
     if (entry.first == "any") {
-      icon_variant.any_ = std::make_optional(entry.second.GetString());
+      icon_variant->any_ = std::make_optional(entry.second.GetString());
       continue;
     }
 
     // `color_scheme`. Optional string or list of strings.
     if (entry.first == "color_schemes") {
-      icon_variant.MaybeAddColorSchemes(entry.second);
+      icon_variant->MaybeAddColorSchemes(entry.second);
       continue;
     }
 
     // Assume that `entry.first` is an `int` from this point.
-    icon_variant.MaybeAddSizeEntry(entry);
+    icon_variant->MaybeAddSizeEntry(entry);
   }
 
-  if (!icon_variant.IsValid()) {
-    return std::nullopt;
+  if (!icon_variant->IsValid()) {
+    return nullptr;
   }
 
   return icon_variant;

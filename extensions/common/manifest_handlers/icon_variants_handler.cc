@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/icon_variants.h"
 #include "extensions/common/extension.h"
@@ -26,7 +27,7 @@ namespace keys = manifest_keys;
 using IconVariantsManifestKeys = extensions::api::icon_variants::ManifestKeys;
 
 // extensions::diagnostics::
-using Code = extensions::diagnostics::icon_variants::Id;
+using Id = extensions::diagnostics::icon_variants::Id;
 using Severity = extensions::diagnostics::icon_variants::Severity;
 using Feature = extensions::diagnostics::icon_variants::Feature;
 
@@ -35,20 +36,55 @@ void AddInstallWarning(Extension& extension, const std::string& warning) {
   extension.AddInstallWarning(InstallWarning(warning));
 }
 
-void AddInstallWarningForCode(Extension& extension, Code code) {
-  auto diagnostic = extensions::diagnostics::icon_variants::GetDiagnosticForID(
-      Feature::kIconVariants, code);
+void AddInstallWarningForId(Extension& extension, Id id) {
+  auto diagnostic = extensions::diagnostics::icon_variants::GetDiagnostic(
+      Feature::kIconVariants, id);
   if (diagnostic.severity != Severity::kWarning) {
     return;
   }
   AddInstallWarning(extension, diagnostic.message);
+}
+
+// Returns the icon variants parsed from the `extension` manifest.
+// Populates `error` if there are no icon variants.
+std::unique_ptr<ExtensionIconVariants> GetIconVariants(Extension& extension,
+                                                       std::u16string* error) {
+  // Convert the input key into a list containing everything.
+  const base::Value::List* icon_variants_list =
+      extension.manifest()->available_values().FindList(keys::kIconVariants);
+  if (!icon_variants_list) {
+    *error = base::UTF8ToUTF16(
+        diagnostics::icon_variants::GetDiagnostic(
+            Feature::kIconVariants, Id::kIconVariantsKeyMustBeAList)
+            .message);
+    return nullptr;
+  }
+
+  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics;
+
+  std::unique_ptr<ExtensionIconVariants> icon_variants =
+      std::make_unique<ExtensionIconVariants>();
+  icon_variants->Parse(icon_variants_list);
+
+  // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.
+  // TODO(crbug.com/344639840): Consider whether an empty list should be an
+  // error or just a warning instead (for future proofing).
+  if (icon_variants->IsEmpty()) {
+    *error =
+        base::UTF8ToUTF16(diagnostics::icon_variants::GetDiagnostic(
+                              Feature::kIconVariants, Id::kIconVariantsInvalid)
+                              .message);
+    return nullptr;
+  }
+
+  return icon_variants;
 }
 }  // namespace
 
 // static
 bool IconVariantsInfo::HasIconVariants(const Extension* extension) {
   DCHECK(extension);
-  const IconVariantsInfo* info = GetIconVariants(extension);
+  const IconVariantsInfo* info = IconVariantsInfo::GetIconVariants(extension);
   return info && info->icon_variants;
 }
 
@@ -58,6 +94,7 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
       extension->GetManifestData(IconVariantsManifestKeys::kIconVariants));
 }
 
+// TODO(crbug.com/41419485): Add more test coverage for warnings and errors.
 bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   DCHECK(extension);
 
@@ -65,54 +102,45 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   // This only verifies the limited subset of keys supported by
   // json_schema_compiler. The manifest_keys wouldn't contain icon sizes, so
   // all keys will be parsed from the same source list after this verification.
-  //
-  // Don't return false on error. `DOMString` for `color_scheme` in .idl
-  // wouldn't cause a parse error, but e.g. `enum` does. Therefore those will be
-  // treated as warnings.
   std::u16string ignore_generated_parsing_errors;
   IconVariantsManifestKeys manifest_keys;
   if (!IconVariantsManifestKeys::ParseFromDictionary(
           extension->manifest()->available_values(), manifest_keys,
           ignore_generated_parsing_errors)) {
-    // TODO(crbug.com/41419485): Maybe emit `warning`. A problem is that the
-    // .idl parser returns false if manifest value doesn't match an .idl enum,
-    // but `warning` is empty in that case.
-    AddInstallWarningForCode(*extension, Code::kFailedToParse);
+    // `ParseFromDictionary` returns false if .e.g. a manifest string doesn't
+    // match an .idl enum or a dictionary value type doesn't match .idl.
+    // Don't return false on error to allow for non-breaking changes later on.
+    AddInstallWarningForId(*extension, Id::kFailedToParse);
   }
 
-  // Convert the input key into a list containing everything.
-  const base::Value::List* icon_variants_list =
-      extension->manifest()->available_values().FindList(keys::kIconVariants);
-  if (!icon_variants_list) {
-    // TODO(crbug.com/41419485): Specific error that the value isn't a list.
-    *error = manifest_errors::kInvalidIconVariants;
-    return false;
-  }
-
-  // Parse the `icon_variants` key.
+  // If `ExtensionIconVariants` isn't returned, it's ok to just show an error
+  // and ignore possible warnings.
+  // TODO(crbug.com/41419485): Don't set `error` from within `GetIconVariants`.
+  // Instead, return with one diagnostic as the error as soon as one is found.
   std::unique_ptr<ExtensionIconVariants> icon_variants =
-      std::make_unique<ExtensionIconVariants>();
-  // TODO(crbug.com/344639840): Consider moving icon_variant* impl here to avoid
-  // bubbling up warnings and errors.
-  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics;
-  if (!icon_variants->Parse(icon_variants_list, diagnostics)) {
-    AddInstallWarningForCode(*extension, Code::kFailedToParse);
-    // TODO(crbug.com/41419485): Use the WECG proposal to determine warn/error.
-    return true;
-  }
+      GetIconVariants(*extension, error);
 
-  // If there are any parse warnings, add them to the install warnings.
-  for (const auto& diagnostic : diagnostics) {
-    AddInstallWarningForCode(*extension, diagnostic.id);
-  }
-
-  // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.
-  // TODO(crbug.com/344639840): Consider whether an empty list should be an
-  // error or just a warning instead.
-  if (icon_variants->IsEmpty()) {
-    *error = std::u16string(u"Error: Invalid icon_variants.");
+  // TODO(crbug.com/41419485): Consider not generating an error this and other
+  // cases, unless absolutely necessary. Additionally, consider letting all
+  // errors be caught in the handling below, instead of this custom if block.
+  if (!icon_variants) {
+    // `error` is being populated in `GetIconVariants`.
     return false;
   }
+
+  // Add any install warnings, handle errors, and then clear out diagnostics.
+  // TODO(crbug.com/41419485): If there is an error, warnings can be omitted.
+  auto& diagnostics = icon_variants->get_diagnostics();
+  for (auto& diagnostic : diagnostics) {
+    // If any error exists, do not load the extension.
+    if (diagnostic.severity == diagnostics::icon_variants::Severity::kError) {
+      *error = base::UTF8ToUTF16(diagnostic.message);
+      return false;
+    }
+
+    AddInstallWarningForId(*extension, diagnostic.id);
+  }
+  diagnostics.clear();
 
   // Save the result in the info object.
   std::unique_ptr<IconVariantsInfo> icon_variants_info(

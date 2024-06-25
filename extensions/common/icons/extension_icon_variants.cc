@@ -15,39 +15,48 @@ using Diagnostic = diagnostics::icon_variants::Diagnostic;
 
 ExtensionIconVariants::ExtensionIconVariants() = default;
 
-ExtensionIconVariants::~ExtensionIconVariants() = default;
-
 ExtensionIconVariants::ExtensionIconVariants(ExtensionIconVariants&& other) =
     default;
 
-// TODO(crbug.com/41419485): Include `warning` in addition to `error`.
-bool ExtensionIconVariants::Parse(const base::Value::List* list,
-                                  std::vector<Diagnostic>& diagnostics) {
+ExtensionIconVariants::~ExtensionIconVariants() = default;
+
+void ExtensionIconVariants::Parse(const base::Value::List* list) {
   // Parse each icon variant in `icon_variants`.
   for (auto& entry : *list) {
     std::string issue;
-    auto icon_variant = ExtensionIconVariant::Parse(entry, &issue);
-    if (!icon_variant.has_value()) {
-      diagnostics.emplace_back(diagnostics::icon_variants::GetDiagnosticForID(
+    std::unique_ptr<ExtensionIconVariant> icon_variant =
+        ExtensionIconVariant::Parse(entry, &issue);
+    if (!icon_variant) {
+      diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
           diagnostics::icon_variants::Feature::kIconVariants,
           diagnostics::icon_variants::Id::kEmptyIconVariant));
       continue;
     }
-    list_.emplace_back(std::move(icon_variant.value()));
+
+    // Move diagnostics for an icon_variant directly into icon_variants.
+    auto& diagnostics = icon_variant->get_diagnostics();
+    diagnostics_.insert(diagnostics_.end(), diagnostics.begin(),
+                        diagnostics.end());
+    diagnostics.clear();
+
+    list_.emplace_back(std::move(*icon_variant));
   }
 
   // Add a warning for an empty list, but don't generate an error.
   if (list_.empty()) {
-    diagnostics.emplace_back(diagnostics::icon_variants::GetDiagnosticForID(
+    diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
         diagnostics::icon_variants::Feature::kIconVariants,
         diagnostics::icon_variants::Id::kIconVariantsEmpty));
   }
-
-  return true;
 }
 
 bool ExtensionIconVariants::IsEmpty() const {
   return list_.size() == 0;
+}
+
+void ExtensionIconVariants::Add(
+    std::unique_ptr<ExtensionIconVariant> icon_variant) {
+  list_.emplace_back(std::move(*icon_variant));
 }
 
 }  //  namespace extensions

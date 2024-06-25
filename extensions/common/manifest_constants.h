@@ -435,8 +435,6 @@ inline constexpr char kInvalidHostPermissions[] = "Invalid value for '*'.";
 inline constexpr char kInvalidIconKey[] = "Invalid key in icons: \"*\".";
 inline constexpr char kInvalidIconPath[] = "Invalid value for 'icons[\"*\"]'.";
 inline constexpr char16_t kInvalidIcons[] = u"Invalid value for 'icons'.";
-inline constexpr char16_t kInvalidIconVariants[] =
-    u"Invalid value for 'icon_variants'.";
 inline constexpr char16_t kInvalidImportAndExport[] =
     u"Simultaneous 'import' and 'export' are not allowed.";
 inline constexpr char kInvalidImportId[] = "Invalid value for 'import[*].id'.";
