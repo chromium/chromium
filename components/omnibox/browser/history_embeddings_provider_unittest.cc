@@ -5,16 +5,24 @@
 #include "components/omnibox/browser/history_embeddings_provider.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/history_embeddings/mock_history_embeddings_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/search_engines/template_url.h"
@@ -24,6 +32,10 @@
 #include "url/gurl.h"
 
 namespace {
+AutocompleteInput CreateAutocompleteInput(const std::u16string input) {
+  return {input, metrics::OmniboxEventProto::OTHER, TestSchemeClassifier()};
+}
+
 history_embeddings::ScoredUrlRow CreateScoredUrlRow(
     float score,
     const std::string& url,
@@ -34,6 +46,15 @@ history_embeddings::ScoredUrlRow CreateScoredUrlRow(
   scored_url_row.row.set_title(title);
   return scored_url_row;
 }
+
+history_embeddings::SearchResult CreateSearchResult(
+    const std::u16string& title) {
+  history_embeddings::SearchResult result;
+  result.scored_url_rows = {
+      CreateScoredUrlRow(.5, "https://url.com/", title),
+  };
+  return result;
+}
 }  // namespace
 
 class FakeHistoryEmbeddingsProvider : public HistoryEmbeddingsProvider {
@@ -41,6 +62,8 @@ class FakeHistoryEmbeddingsProvider : public HistoryEmbeddingsProvider {
   using HistoryEmbeddingsProvider::HistoryEmbeddingsProvider;
   using HistoryEmbeddingsProvider::OnReceivedSearchResult;
 
+  using HistoryEmbeddingsProvider::done_;
+  using HistoryEmbeddingsProvider::last_search_input_;
   using HistoryEmbeddingsProvider::matches_;
   using HistoryEmbeddingsProvider::starter_pack_engine_;
 
@@ -48,37 +71,61 @@ class FakeHistoryEmbeddingsProvider : public HistoryEmbeddingsProvider {
   ~FakeHistoryEmbeddingsProvider() override = default;
 };
 
-class HistoryEmbeddingsProviderTest : public testing::Test {
- protected:
+class HistoryEmbeddingsProviderTest : public testing::Test,
+                                      public AutocompleteProviderListener {
+ public:
   HistoryEmbeddingsProviderTest() {
-    history_embeddings_service_ =
-        std::make_unique<history_embeddings::MockHistoryEmbeddingsService>();
-
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    client_->set_history_embeddings_service(history_embeddings_service_.get());
+    client_->set_history_embeddings_service(&history_embeddings_service_);
 
     history_embeddings_provider_ =
-        new FakeHistoryEmbeddingsProvider(client_.get());
+        new FakeHistoryEmbeddingsProvider(client_.get(), this);
+
+    // When `Search()` is called, pushes a callback to `search_callbacks_` that
+    // can be ran to simulate `Search()` responding asyncly.
+    ON_CALL(history_embeddings_service_,
+            Search(testing::_, testing::_, testing::_, testing::_))
+        .WillByDefault([&](std::string query,
+                           std::optional<base::Time> time_range_start,
+                           size_t count,
+                           history_embeddings::SearchResultCallback callback) {
+          search_callbacks_.push_back(base::BindOnce(
+              [](history_embeddings::SearchResultCallback callback,
+                 std::string response) {
+                std::move(callback).Run(
+                    CreateSearchResult(base::UTF8ToUTF16(response)));
+              },
+              std::move(callback)));
+        });
   }
 
-  std::unique_ptr<history_embeddings::MockHistoryEmbeddingsService>
+  // AutocompleteProviderListener:
+  void OnProviderUpdate(bool updated_matches,
+                        const AutocompleteProvider* provider) override {
+    last_update_matches_ = history_embeddings_provider_->matches_;
+  }
+
+  testing::NiceMock<history_embeddings::MockHistoryEmbeddingsService>
       history_embeddings_service_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<FakeHistoryEmbeddingsProvider> history_embeddings_provider_;
+  // Callbacks created when `Search()` is called. Running a callback with
+  // `string` will simulate `Search()` responding with 1 result with title
+  // `string`.
+  std::vector<base::OnceCallback<void(std::string)>> search_callbacks_;
+  // The last set of matches the provider gave the autocomplete controller.
+  ACMatches last_update_matches_;
 };
 
 TEST_F(HistoryEmbeddingsProviderTest, Start) {
-  AutocompleteInput short_input(u"query", metrics::OmniboxEventProto::OTHER,
-                                TestSchemeClassifier());
-  AutocompleteInput long_input(u"query query query",
-                               metrics::OmniboxEventProto::OTHER,
-                               TestSchemeClassifier());
+  AutocompleteInput short_input = CreateAutocompleteInput(u"query");
+  AutocompleteInput long_input = CreateAutocompleteInput(u"query query query");
 
   // When the feature is disabled, should early exit.
   base::test::ScopedFeatureList disabled_feature;
   disabled_feature.InitAndDisableFeature(
       history_embeddings::kHistoryEmbeddings);
-  EXPECT_CALL(*history_embeddings_service_,
+  EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(long_input, false);
@@ -87,22 +134,139 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
       history_embeddings::kHistoryEmbeddings};
 
   // Short queries should be blocked.
-  EXPECT_CALL(*history_embeddings_service_,
+  EXPECT_CALL(history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
   history_embeddings_provider_->Start(short_input, false);
 
   // Long queries should pass.
   EXPECT_CALL(
-      *history_embeddings_service_,
+      history_embeddings_service_,
       Search("query query query", std::optional<base::Time>{}, 3u, testing::_))
       .Times(1);
   history_embeddings_provider_->Start(long_input, false);
 }
 
-TEST_F(HistoryEmbeddingsProviderTest, Stop) {
+TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleSequentialSearches) {
+  base::test::ScopedFeatureList enabled_feature{
+      history_embeddings::kHistoryEmbeddings};
+
+  // Start 1st search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Check results are populated when 1st search responds.
+  std::move(search_callbacks_[0]).Run("1");
+  EXPECT_THAT(last_update_matches_,
+              testing::ElementsAre(
+                  testing::Field(&AutocompleteMatch::description, u"1")));
+
+  // Start 2nd search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"2 2 2"), false);
+  EXPECT_THAT(last_update_matches_,
+              testing::ElementsAre(
+                  testing::Field(&AutocompleteMatch::description, u"1")));
+
+  // Check results are populated when 2nd search responds.
+  std::move(search_callbacks_[1]).Run("2");
+  EXPECT_THAT(last_update_matches_,
+              testing::ElementsAre(
+                  testing::Field(&AutocompleteMatch::description, u"2")));
+}
+
+TEST_F(HistoryEmbeddingsProviderTest, Start_MultipleParallelSearches) {
+  base::test::ScopedFeatureList enabled_feature{
+      history_embeddings::kHistoryEmbeddings};
+
+  // Start 1st search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Start 2nd search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"2 2 2"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Check results are not populated when 1st search responds.
+  std::move(search_callbacks_[0]).Run("1");
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Check results are populated when 2nd search responds.
+  std::move(search_callbacks_[1]).Run("2");
+  EXPECT_THAT(last_update_matches_,
+              testing::ElementsAre(
+                  testing::Field(&AutocompleteMatch::description, u"2")));
+}
+
+TEST_F(HistoryEmbeddingsProviderTest,
+       Start_MultipleParallelSearchesWithSameQuery) {
+  base::test::ScopedFeatureList enabled_feature{
+      history_embeddings::kHistoryEmbeddings};
+
+  // Start 1st search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Start 2nd search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Check results are populated when 1st search responds. Even though the
+  // provider usually only cares about the most recent `Search()`, since the
+  // input didn't change, it can use the 1st `Search()`.
+  std::move(search_callbacks_[0]).Run("1");
+  EXPECT_THAT(last_update_matches_,
+              testing::ElementsAre(
+                  testing::Field(&AutocompleteMatch::description, u"1")));
+
+  // Check results aren't replaced when 2nd search responds. The provider
+  // already reported `done_ = true` and it would break autocompletion to send
+  // an update after doing so.
+  std::move(search_callbacks_[1]).Run("2");
+  EXPECT_THAT(last_update_matches_,
+              testing::ElementsAre(
+                  testing::Field(&AutocompleteMatch::description, u"1")));
+}
+
+TEST_F(HistoryEmbeddingsProviderTest,
+       Start_MultipleParallelSearchesWithIneligibleQuery) {
+  base::test::ScopedFeatureList enabled_feature{
+      history_embeddings::kHistoryEmbeddings};
+
+  // Start 1st search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Start 2nd search. It's too short.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"2 2"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Ensure a stale search doesn't populate matches.
+  std::move(search_callbacks_[0]).Run("1");
+  EXPECT_TRUE(last_update_matches_.empty());
+
+  // Ensure a 2nd search wasn't made.
+  EXPECT_EQ(search_callbacks_.size(), 1u);
+}
+
+TEST_F(HistoryEmbeddingsProviderTest, Start_Stop_SearchCompletesAfterStop) {
+  base::test::ScopedFeatureList enabled_feature{
+      history_embeddings::kHistoryEmbeddings};
+
+  // Start search.
+  history_embeddings_provider_->Start(CreateAutocompleteInput(u"1 1 1"), false);
+  EXPECT_TRUE(last_update_matches_.empty());
+
   history_embeddings_provider_->Stop(false, false);
-  // `Stop()` is not implemented yet. Just expect it to not crash.
+
+  // Results returned after `Stop()` should be discarded.
+  std::move(search_callbacks_[0]).Run("1");
+  EXPECT_TRUE(last_update_matches_.empty());
+}
+
+TEST_F(HistoryEmbeddingsProviderTest, Stop) {
+  history_embeddings_provider_->done_ = false;
+  history_embeddings_provider_->Stop(false, false);
+  EXPECT_TRUE(history_embeddings_provider_->done_);
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, DeleteMatch) {
@@ -116,6 +280,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
   result.scored_url_rows = {
       CreateScoredUrlRow(.5, "https://url.com/", u"title"),
   };
+  history_embeddings_provider_->done_ = false;
+  history_embeddings_provider_->last_search_input_ = u"query";
   history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);
@@ -151,6 +317,8 @@ TEST_F(HistoryEmbeddingsProviderTest,
   result.scored_url_rows = {
       CreateScoredUrlRow(.5, "https://url.com/", u"title"),
   };
+  history_embeddings_provider_->done_ = false;
+  history_embeddings_provider_->last_search_input_ = u"query";
   history_embeddings_provider_->OnReceivedSearchResult(u"query", result);
 
   ASSERT_EQ(history_embeddings_provider_->matches_.size(), 1u);

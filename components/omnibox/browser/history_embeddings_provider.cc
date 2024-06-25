@@ -26,19 +26,23 @@ constexpr int kMaxScore = 1000;
 }
 
 HistoryEmbeddingsProvider::HistoryEmbeddingsProvider(
-    AutocompleteProviderClient* client)
+    AutocompleteProviderClient* client,
+    AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS),
       client_(client) {
   CHECK(client_);
+  AddListener(listener);
 }
 
 HistoryEmbeddingsProvider::~HistoryEmbeddingsProvider() = default;
 
 void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
                                       bool minimal_changes) {
-  if (!base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings)) {
+  done_ = true;
+  matches_.clear();
+
+  if (!base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings))
     return;
-  }
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
@@ -49,22 +53,23 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
 
   int num_terms =
       history_embeddings::CountWords(base::UTF16ToUTF8(adjusted_input.text()));
-  if (num_terms < history_embeddings::kSearchQueryMinimumWordCount.Get()) {
-    matches_.clear();
+  if (num_terms < history_embeddings::kSearchQueryMinimumWordCount.Get())
     return;
-  }
 
   history_embeddings::HistoryEmbeddingsService* service =
       client_->GetHistoryEmbeddingsService();
   CHECK(service);
+  last_search_input_ = adjusted_input.text();
+  done_ = false;
   service->Search(
       base::UTF16ToUTF8(adjusted_input.text()), {}, provider_max_matches_,
       base::BindOnce(&HistoryEmbeddingsProvider::OnReceivedSearchResult,
-                     weak_factory_.GetWeakPtr(), input.text()));
+                     weak_factory_.GetWeakPtr(), adjusted_input.text()));
 }
 
 void HistoryEmbeddingsProvider::Stop(bool clear_cached_results,
                                      bool due_to_user_inactivity) {
+  done_ = true;
   // TODO(b/333770460): Once `HistoryEmbeddingsService` has a stop API, we
   //   should call it here.
 }
@@ -77,7 +82,17 @@ void HistoryEmbeddingsProvider::DeleteMatch(const AutocompleteMatch& match) {
 void HistoryEmbeddingsProvider::OnReceivedSearchResult(
     std::u16string input_text,
     history_embeddings::SearchResult result) {
-  matches_.clear();
+  // Check `done_` in case the stop timer fired or the user closed the omnibox
+  // before `Search()` completed. Check `last_search_input_` in case this is the
+  // result for an earlier `Search()` request; there's usually 2 requests
+  // ongoing as the user types.
+  if (done_ || last_search_input_ != input_text)
+    return;
+
+  // `matches_` should be empty. They're cleared before `Search()` is called,
+  // and checking `done_` above ensures there's at most 1
+  // `OnReceivedSearchResult()` per `Search()`.
+  DCHECK(matches_.empty());
 
   for (const history_embeddings::ScoredUrlRow& scored_url_row :
        result.scored_url_rows) {
@@ -104,5 +119,7 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
 
     matches_.push_back(match);
   }
+
+  done_ = true;
   NotifyListeners(!matches_.empty());
 }

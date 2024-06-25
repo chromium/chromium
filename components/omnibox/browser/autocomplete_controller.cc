@@ -1054,7 +1054,8 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
   }
 #if !BUILDFLAG(IS_IOS)
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS) {
-    providers_.push_back(new HistoryEmbeddingsProvider(provider_client_.get()));
+    providers_.push_back(
+        new HistoryEmbeddingsProvider(provider_client_.get(), this));
   }
 #endif
 }

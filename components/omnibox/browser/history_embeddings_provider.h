@@ -18,7 +18,8 @@ struct AutocompleteMatch;
 
 class HistoryEmbeddingsProvider : public AutocompleteProvider {
  public:
-  explicit HistoryEmbeddingsProvider(AutocompleteProviderClient* client);
+  explicit HistoryEmbeddingsProvider(AutocompleteProviderClient* client,
+                                     AutocompleteProviderListener* listener);
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
@@ -41,6 +42,9 @@ class HistoryEmbeddingsProvider : public AutocompleteProvider {
   // Never null. Owned by `AutocompleteController`, which also owns this
   // provider, ensuring `client_` outlives this.
   raw_ptr<AutocompleteProviderClient> client_;
+
+  // The last search input sent to `HistoryEmbeddingsService::Search()`.
+  std::u16string last_search_input_;
 
   base::WeakPtrFactory<HistoryEmbeddingsProvider> weak_factory_{this};
 };
