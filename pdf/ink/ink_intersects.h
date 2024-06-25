@@ -9,11 +9,9 @@ namespace chrome_pdf {
 
 class InkModeledShapeView;
 struct InkAffineTransform;
+struct InkRect;
 
-bool InkIntersectsRectWithShape(float rect_x,
-                                float rect_y,
-                                float rect_width,
-                                float rect_height,
+bool InkIntersectsRectWithShape(const InkRect& rect,
                                 const InkModeledShapeView& shape,
                                 const InkAffineTransform& transform);
 
