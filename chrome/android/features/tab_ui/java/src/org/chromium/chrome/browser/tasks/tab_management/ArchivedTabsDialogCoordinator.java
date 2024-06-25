@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,8 +25,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +101,7 @@ public class ArchivedTabsDialogCoordinator {
     private final @NonNull ViewGroup mRootView;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull TabCreator mRegularTabCreator;
+    private final @NonNull BackPressManager mBackPressManager;
 
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
@@ -110,6 +114,9 @@ public class ArchivedTabsDialogCoordinator {
      * @param tabContentManager Used as a dependency to TabListEditorCoordiantor.
      * @param mode Used as a dependency to TabListEditorCoordiantor.
      * @param rootView Used as a dependency to TabListEditorCoordiantor.
+     * @param snackbarManager Manages snackbars shown in the app.
+     * @param regularTabCreator Handles the creation of regular tabs.
+     * @param backPressManager Manages the different back press handlers throughout the app.
      */
     public ArchivedTabsDialogCoordinator(
             @NonNull Context context,
@@ -119,7 +126,8 @@ public class ArchivedTabsDialogCoordinator {
             @TabListMode int mode,
             @NonNull ViewGroup rootView,
             @NonNull SnackbarManager snackbarManager,
-            @NonNull TabCreator regularTabCreator) {
+            @NonNull TabCreator regularTabCreator,
+            @NonNull BackPressManager backPressManager) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
@@ -127,6 +135,7 @@ public class ArchivedTabsDialogCoordinator {
         mRootView = rootView;
         mSnackbarManager = snackbarManager;
         mRegularTabCreator = regularTabCreator;
+        mBackPressManager = backPressManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mArchivedTabModel =
@@ -148,26 +157,35 @@ public class ArchivedTabsDialogCoordinator {
 
         mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
+        // Add the dialog view.
         mRootView.addView(mView);
+
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
         List<Tab> archivedTabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
-        mTabListEditorCoordinator.getController().show(archivedTabs, 0, null);
-        // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
-        mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
+        controller.show(archivedTabs, 0, null);
 
-        mTabListEditorCoordinator.getController().setNavigationProvider(mNavigationProvider);
+        controller.setNavigationProvider(mNavigationProvider);
 
+        // Setup the closable menu.
         List<TabListEditorAction> actions = new ArrayList<>();
         actions.add(
                 TabListEditorRestoreAllArchivedTabsAction.createAction(mContext, mArchiveDelegate));
         actions.add(TabListEditorSelectTabsAction.createAction(mContext, mArchiveDelegate));
         actions.add(TabListEditorArchiveSettingsAction.createAction(mContext, mArchiveDelegate));
-        mTabListEditorCoordinator.getController().configureToolbarWithMenuItems(actions);
+        controller.configureToolbarWithMenuItems(actions);
+
+        // Register the dialog to handle back press events.
+        mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
+
+        // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
+        mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
 
         updateTitle();
     }
 
     public void hide() {
         mTabListEditorCoordinator.getController().hide();
+        mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
         mRootView.removeView(mView);
         mArchivedTabModel.getTabCountSupplier().removeObserver(mTabCountObserver);
     }

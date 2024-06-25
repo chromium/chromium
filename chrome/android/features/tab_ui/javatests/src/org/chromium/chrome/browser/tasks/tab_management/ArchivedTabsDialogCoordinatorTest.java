@@ -199,6 +199,19 @@ public class ArchivedTabsDialogCoordinatorTest {
                 .verifyToolbarSelectionText("2 inactive tabs");
     }
 
+    @Test
+    @MediumTest
+    public void testCloseDialogWithBackButton() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(1);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
+                });
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+    }
+
     private void showDialog(int numTabs) {
         // Enter the tab switcher and click the message.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());

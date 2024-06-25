@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -98,6 +99,7 @@ public interface TabManagementDelegate {
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
      * @param isIncognito Whether this is an incognito pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @param backPressManager Manages different back press handlers throughout the app.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -115,7 +117,8 @@ public interface TabManagementDelegate {
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
-            @NonNull DoubleConsumer onToolbarAlphaChange);
+            @NonNull DoubleConsumer onToolbarAlphaChange,
+            @NonNull BackPressManager backPressManager);
 
     /**
      * *

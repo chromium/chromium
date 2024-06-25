@@ -965,7 +965,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                                 mNewTabButtonClickListener,
                                 isIncognito,
-                                adaptOnToolbarAlphaChange());
+                                adaptOnToolbarAlphaChange(),
+                                mBackPressManager);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

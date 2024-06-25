@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -34,6 +35,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -44,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests for {@link TabListMediator}. */
@@ -67,6 +70,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private TabListEditorController mTabListEditorController;
     @Spy private ViewGroup mRootView;
     @Mock private TabCreator mRegularTabCreator;
+    @Mock private BackPressManager mBackPressManager;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -89,7 +93,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         TabListMode.GRID,
                         mRootView,
                         mSnackbarManager,
-                        mRegularTabCreator);
+                        mRegularTabCreator,
+                        mBackPressManager);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
     }
 
@@ -109,6 +114,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mRootView).addView(any());
         verify(mTabListEditorController).setNavigationProvider(any());
         verify(mTabListEditorController).setToolbarTitle("0 inactive tabs");
+        verify(mBackPressManager).addHandler(any(), eq(BackPressHandler.Type.ARCHIVED_TABS_DIALOG));
 
         doReturn(1).when(mArchivedTabModel).getCount();
         mCoordinator.updateTitle();

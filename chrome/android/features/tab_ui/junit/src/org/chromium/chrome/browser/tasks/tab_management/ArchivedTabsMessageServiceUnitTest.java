@@ -35,6 +35,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -67,6 +68,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabContentManager mTabContentManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TabCreator mRegularTabCreator;
+    @Mock private BackPressManager mBackPressManager;
 
     private Activity mActivity;
     private ViewGroup mRootView;
@@ -91,7 +93,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         TabListMode.GRID,
                         mRootView,
                         mSnackbarManager,
-                        mRegularTabCreator);
+                        mRegularTabCreator,
+                        mBackPressManager);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);

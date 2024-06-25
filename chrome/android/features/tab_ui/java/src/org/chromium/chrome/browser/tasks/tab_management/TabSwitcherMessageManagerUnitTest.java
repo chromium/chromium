@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -83,6 +84,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private TabContentManager mTabContentManager;
     @Mock private ViewGroup mRootView;
     @Mock private TabCreator mRegularTabCreator;
+    @Mock private BackPressManager mBackPressManager;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -133,7 +135,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         mTabContentManager,
                         TabListMode.GRID,
                         mRootView,
-                        mRegularTabCreator);
+                        mRegularTabCreator,
+                        mBackPressManager);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
                 mTabListCoordinator, container, mPriceWelcomeMessageReviewActionProvider);

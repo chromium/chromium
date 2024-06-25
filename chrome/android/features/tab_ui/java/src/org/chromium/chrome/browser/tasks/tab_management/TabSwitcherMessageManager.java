@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -136,6 +137,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @TabListMode int mTabListMode;
     private final @NonNull ViewGroup mRootView;
     private final @NonNull TabCreator mRegularTabCreator;
+    private final @NonNull BackPressManager mBackPressManager;
 
     private @Nullable Profile mProfile;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
@@ -151,6 +153,12 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      *     for multi-window related changes.
      * @param snackbarManager The {@link SnackbarManager} for the activity.
      * @param modalDialogManager The {@link ModalDialogManager} for the activity.
+     * @param browserControlStateProvider Provides the state of browser controls.
+     * @param tabContentManager Serves tab content to UI components.
+     * @param tabListMode The {@link TabListMode} determining how the TabList will be displayed.
+     * @param rootView The root {@link ViewGroup} to attach dialogs to.
+     * @param regularTabCreator Manages the creation of regular tabs.
+     * @param backPressManager Manages the different back press handlers in the app.
      */
     public TabSwitcherMessageManager(
             @NonNull Context context,
@@ -163,7 +171,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull TabContentManager tabContentManager,
             @TabListMode int tabListMode,
             @NonNull ViewGroup rootView,
-            @NonNull TabCreator regularTabCreator) {
+            @NonNull TabCreator regularTabCreator,
+            @NonNull BackPressManager backPressManager) {
         mContext = context;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -175,6 +184,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mTabListMode = tabListMode;
         mRootView = rootView;
         mRegularTabCreator = regularTabCreator;
+        mBackPressManager = backPressManager;
 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(
@@ -275,7 +285,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mTabListMode,
                             mRootView,
                             mSnackbarManager,
-                            mRegularTabCreator);
+                            mRegularTabCreator,
+                            mBackPressManager);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

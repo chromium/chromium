@@ -645,23 +645,24 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="(XX) AR_DELEGATE (Deprecated)"/>
   <int value="3" label="(02) SCENE_OVERLAY"/>
   <int value="4" label="(05) START_SURFACE (with tab switcher if enabled)"/>
-  <int value="5" label="(09) SELECTION_POPUP"/>
-  <int value="6" label="(10) MANUAL_FILLING"/>
-  <int value="7" label="(08) FULLSCREEN"/>
+  <int value="5" label="(10) SELECTION_POPUP"/>
+  <int value="6" label="(11) MANUAL_FILLING"/>
+  <int value="7" label="(09) FULLSCREEN"/>
   <int value="8" label="(03) BOTTOM_SHEET"/>
-  <int value="9" label="(12) TAB_MODAL_HANDLER"/>
-  <int value="10" label="(07) TAB_SWITCHER (if Start surface is disabled)"/>
-  <int value="11" label="(13) CLOSE_WATCHER"/>
-  <int value="12" label="(16) TAB_HISTORY (and bottom controls)"/>
-  <int value="13" label="(17) TAB_RETURN_TO_CHROME_START_SURFACE"/>
-  <int value="14" label="(18) SHOW_READING_LIST"/>
-  <int value="15" label="(19) MINIMIZE_APP_AND_CLOSE_TAB"/>
-  <int value="16" label="(14) FIND_TOOLBAR"/>
-  <int value="17" label="(11) LOCATION_BAR"/>
+  <int value="9" label="(13) TAB_MODAL_HANDLER"/>
+  <int value="10" label="(08) TAB_SWITCHER (if Start surface is disabled)"/>
+  <int value="11" label="(14) CLOSE_WATCHER"/>
+  <int value="12" label="(17) TAB_HISTORY (and bottom controls)"/>
+  <int value="13" label="(18) TAB_RETURN_TO_CHROME_START_SURFACE"/>
+  <int value="14" label="(19) SHOW_READING_LIST"/>
+  <int value="15" label="(20) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="16" label="(15) FIND_TOOLBAR"/>
+  <int value="17" label="(12) LOCATION_BAR"/>
   <int value="18" label="(01) XR_DELEGATE"/>
   <int value="19" label="(04) PAGE_INSIGHTS_BOTTOM_SHEET"/>
-  <int value="20" label="(15) BOTTOM_CONTROLS"/>
-  <int value="21" label="(06) HUB"/>
+  <int value="20" label="(16) BOTTOM_CONTROLS"/>
+  <int value="21" label="(07) HUB"/>
+  <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
 </enum>
 
 <enum name="ChromeActivityType">

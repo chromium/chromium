@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -95,6 +96,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull ViewGroup mRootView;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull TabCreator mRegularTabCreator;
+    private final @NonNull BackPressManager mBackPressManager;
 
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     private TabModel mArchivedTabModel;
@@ -110,7 +112,8 @@ public class ArchivedTabsMessageService extends MessageService
             @TabListMode int tabListMode,
             @NonNull ViewGroup rootView,
             @NonNull SnackbarManager snackbarManager,
-            @NonNull TabCreator regularTabCreator) {
+            @NonNull TabCreator regularTabCreator,
+            @NonNull BackPressManager backPressManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
 
         mContext = context;
@@ -121,6 +124,7 @@ public class ArchivedTabsMessageService extends MessageService
         mRootView = rootView;
         mSnackbarManager = snackbarManager;
         mRegularTabCreator = regularTabCreator;
+        mBackPressManager = backPressManager;
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
@@ -214,7 +218,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mTabListMode,
                         mRootView,
                         mSnackbarManager,
-                        mRegularTabCreator);
+                        mRegularTabCreator,
+                        mBackPressManager);
     }
 
     private void updateModelProperties() {
