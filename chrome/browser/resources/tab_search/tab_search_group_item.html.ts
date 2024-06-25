@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {TabSearchGroupItemElement} from './tab_search_group_item.js';
+
+export function getHtml(this: TabSearchGroupItemElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="iconContainer">
   <!-- TODO(romanarora): Replace with a 16x16 SVG. -->
   <svg id="icon" width="32" height="32" viewBox="0 0 32 32" fill="none"
@@ -25,3 +36,6 @@
     <div id="timestamp">${this.data.tabGroup.lastActiveElapsedText}</div>
   </div>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

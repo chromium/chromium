@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
+
+export function getHtml(this: TabOrganizationInProgressElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="tab-organization-container">
   <div id="header"
       class="tab-organization-header"
@@ -25,3 +36,6 @@
     </div>
   </div>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

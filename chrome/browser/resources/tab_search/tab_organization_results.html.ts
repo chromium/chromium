@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {TabOrganizationResultsElement} from './tab_organization_results.js';
+
+export function getHtml(this: TabOrganizationResultsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="tab-organization-container">
   <div id="header"
       class="tab-organization-header"
@@ -42,3 +53,6 @@
     </cr-feedback-buttons>
   </div>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

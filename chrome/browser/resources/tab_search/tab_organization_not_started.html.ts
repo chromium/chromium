@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
+
+export function getHtml(this: TabOrganizationNotStartedElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div class="tab-organization-container">
   <tab-organization-not-started-image></tab-organization-not-started-image>
   <div class="tab-organization-text-container">
@@ -54,3 +65,6 @@
     </cr-button>
   </div>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

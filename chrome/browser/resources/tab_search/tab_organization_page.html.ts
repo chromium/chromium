@@ -1,6 +1,14 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {TabOrganizationPageElement} from './tab_organization_page.js';
 import {TabOrganizationState} from './tab_search.mojom-webui.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: TabOrganizationPageElement) {
+  return html`<!--_html_template_start_-->
 <div id="contents">
   <div id="body">
     <tab-organization-not-started id="notStarted"
@@ -36,4 +44,5 @@ import {TabOrganizationState} from './tab_search.mojom-webui.js';
         @tip-click="${this.onTipClick_}">
     </tab-organization-failure>
   </div>
-</div>
+</div><!--_html_template_end_-->`;
+}

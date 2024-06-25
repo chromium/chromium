@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {TabOrganizationNotStartedImageElement} from './tab_organization_not_started_image.js';
+
+export function getHtml(this: TabOrganizationNotStartedImageElement) {
+  return html`<!--_html_template_start_-->
 <svg xmlns="http://www.w3.org/2000/svg" width="280" height="103" fill="none">
   <g clip-path="url(#a)">
     <rect width="280" height="103" fill="url(#b)" rx="8"></rect>
@@ -53,3 +63,5 @@
     </clipPath>
   </defs>
 </svg>
+<!--_html_template_end_-->`;
+}
