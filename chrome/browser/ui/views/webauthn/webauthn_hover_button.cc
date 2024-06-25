@@ -51,10 +51,8 @@ WebAuthnHoverButton::WebAuthnHoverButton(
     const std::u16string& title_text,
     const std::u16string& subtitle_text,
     std::unique_ptr<views::View> secondary_icon,
-    bool enabled)
+    bool force_two_line)
     : HoverButton(std::move(callback), std::u16string()) {
-  SetEnabled(enabled);
-
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
@@ -96,7 +94,7 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   const int row_height = views::TypographyProvider::Get().GetLineHeight(
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
-  const bool is_two_line = !subtitle_text.empty();
+  const bool is_two_line = !subtitle_text.empty() || force_two_line;
   const int icon_row_span = is_two_line ? 2 : 1;
   layout->AddRows(icon_row_span, views::TableLayout::kFixedSize, row_height);
 
@@ -106,16 +104,13 @@ WebAuthnHoverButton::WebAuthnHoverButton(
                             gfx::Size(/*width=*/1, icon_row_span));
   }
 
+  const int title_row_span = force_two_line && subtitle_text.empty() ? 2 : 1;
   title_ = AddChildView(
       std::make_unique<views::Label>(title_text, views::style::CONTEXT_LABEL,
                                      views::style::STYLE_BODY_3_EMPHASIS));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetProperty(views::kTableColAndRowSpanKey,
-                      gfx::Size(/*width=*/1, /*height=*/1));
-  if (!GetEnabled()) {
-    // TODO(crbug.com/348445885): use a custom color.
-    title_->SetEnabledColorId(ui::kColorLabelForegroundDisabled);
-  }
+                      gfx::Size(/*width=*/1, title_row_span));
 
   if (secondary_icon) {
     secondary_icon_view_ =
@@ -129,10 +124,6 @@ WebAuthnHoverButton::WebAuthnHoverButton(
         subtitle_text, views::style::CONTEXT_LABEL,
         views::style::STYLE_BODY_3));
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!GetEnabled()) {
-      // TODO(crbug.com/348445885): use a custom color.
-      subtitle_->SetEnabledColorId(ui::kColorLabelForegroundDisabled);
-    }
   }
 
   GetViewAccessibility().SetName(

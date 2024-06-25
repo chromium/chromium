@@ -36,13 +36,11 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
     const ui::ImageModel& icon,
     std::u16string item_title,
     std::u16string item_description,
-    bool enabled,
     views::Button::PressedCallback callback) {
   constexpr int kChevronSize = 8;
   auto secondary_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSubmenuArrowIcon,
-          enabled ? ui::kColorIcon : ui::kColorIconDisabled, kChevronSize));
+          vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kChevronSize));
 
   const int kIconSize = 24;
   auto item_image = std::make_unique<views::ImageView>(icon);
@@ -50,7 +48,7 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
 
   return std::make_unique<WebAuthnHoverButton>(
       std::move(callback), std::move(item_image), item_title, item_description,
-      std::move(secondary_view), enabled);
+      std::move(secondary_view), false /*XXX*/);
 }
 
 }  // namespace
@@ -73,8 +71,7 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
   for (const auto item_tag : model_->GetButtonTags()) {
     AppendListItemView(model_->GetItemIcon(item_tag),
                        model_->GetItemText(item_tag),
-                       model_->GetDescriptionText(item_tag),
-                       model_->IsButtonEnabled(item_tag), item_tag);
+                       model_->GetDescriptionText(item_tag), item_tag);
   }
 
   scroll_view_ = new views::ScrollView();
@@ -89,10 +86,9 @@ HoverListView::~HoverListView() = default;
 void HoverListView::AppendListItemView(const ui::ImageModel& icon,
                                        std::u16string item_text,
                                        std::u16string description_text,
-                                       bool enabled,
                                        int item_tag) {
   auto hover_button = CreateHoverButtonForListItem(
-      icon, item_text, description_text, enabled,
+      icon, item_text, description_text,
       base::BindRepeating(&HoverListModel::OnListItemSelected,
                           base::Unretained(model_.get()), item_tag));
 
@@ -133,7 +129,7 @@ int HoverListView::GetPreferredViewHeight() const {
   if (reserved_items > 0) {
     auto dummy_hover_button = CreateHoverButtonForListItem(
         ui::ImageModel(), std::u16string(), std::u16string(),
-        /*enabled=*/true, views::Button::PressedCallback());
+        views::Button::PressedCallback());
     const auto list_item_height =
         separator_height + dummy_hover_button->GetPreferredSize().height();
     size += list_item_height * reserved_items;

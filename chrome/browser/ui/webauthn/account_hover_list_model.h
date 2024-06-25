@@ -15,7 +15,9 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "ui/base/models/image_model.h"
 
-struct AuthenticatorRequestDialogModel;
+namespace device {
+class DiscoverableCredentialMetadata;
+}
 
 class AccountHoverListModel : public HoverListModel {
  public:
@@ -26,8 +28,9 @@ class AccountHoverListModel : public HoverListModel {
     virtual void CredentialSelected(size_t index) = 0;
   };
 
-  AccountHoverListModel(AuthenticatorRequestDialogModel* dialog_model,
-                        Delegate* delegate);
+  AccountHoverListModel(
+      base::span<const device::DiscoverableCredentialMetadata> creds,
+      Delegate* delegate);
 
   AccountHoverListModel(const AccountHoverListModel&) = delete;
   AccountHoverListModel& operator=(const AccountHoverListModel&) = delete;
@@ -39,16 +42,12 @@ class AccountHoverListModel : public HoverListModel {
   std::u16string GetItemText(int item_tag) const override;
   std::u16string GetDescriptionText(int item_tag) const override;
   ui::ImageModel GetItemIcon(int item_tag) const override;
-  bool IsButtonEnabled(int item_tag) const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;
 
  private:
   struct Item {
-    Item(std::u16string text,
-         std::u16string description,
-         ui::ImageModel icon,
-         bool enabled);
+    Item(std::u16string text, std::u16string description, ui::ImageModel icon);
     Item(const Item&) = delete;
     Item(Item&&);
     Item& operator=(const Item&) = delete;
@@ -58,7 +57,6 @@ class AccountHoverListModel : public HoverListModel {
     std::u16string text;
     std::u16string description;
     ui::ImageModel icon;
-    bool enabled;
   };
 
   std::vector<Item> items_;

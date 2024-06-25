@@ -102,15 +102,14 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         device::FidoRequestType::kGetAssertion;
 
     // The dialog should immediately close as soon as it is displayed.
-    if (name == "mechanisms" || name == "mechanisms_disabled") {
+    if (name == "mechanisms") {
       // A phone is configured so that the "Manage devices" button is shown.
       controller_->set_cable_transport_info(
           /*extension_is_v2=*/std::nullopt, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kMechanismSelection);
-    } else if (name == "mechanisms_create" ||
-               name == "mechanisms_create_disabled") {
+    } else if (name == "mechanisms_create") {
       transport_availability.make_credential_attachment =
           device::AuthenticatorAttachment::kAny;
       transport_availability.request_type =
@@ -368,10 +367,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
 
     controller_->StartFlow(std::move(transport_availability),
                            /*is_conditional_mediation=*/false);
-    if (name.ends_with("_disabled")) {
-      model_->ui_disabled_ = true;
-      model_->OnSheetModelChanged();
-    }
   }
 
  private:
@@ -399,15 +394,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_mechanisms) {
 }
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_mechanisms_create) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_mechanisms_disabled) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
-                       InvokeUi_mechanisms_create_disabled) {
   ShowAndVerifyUi();
 }
 
@@ -608,10 +594,8 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
   GPMPasskeysAuthenticatorDialogTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnEnclaveAuthenticator},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({syncer::kSyncWebauthnCredentials},
+                                          /*disabled_features=*/{});
   }
 
   // AuthenticatorDialogTest:
@@ -629,7 +613,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     model_->account_name = "example@gmail.com";
     controller_ =
         std::make_unique<AuthenticatorRequestDialogController>(model_.get());
-    controller_->SetAccountPreselectedCallback(base::DoNothing());
 
     device::FidoRequestHandlerBase::TransportAvailabilityInfo&
         transport_availability =
@@ -643,10 +626,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
         AuthenticatorTransport::kAndroidAccessory,
     };
 
-    device::DiscoverableCredentialMetadata gpm_cred(
-        device::AuthenticatorType::kEnclave, "example.com", {1},
-        device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
-                                              "Elisa Beckett"));
     device::DiscoverableCredentialMetadata local_cred1(
         device::AuthenticatorType::kTouchID, "example.com", {1},
         device::PublicKeyCredentialUserEntity({1}, "elisa.g.beckett@gmail.com",
@@ -684,7 +663,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           std::move(phone_cred1),
           std::move(phone_cred2),
       };
-    } else if (name == "local_only" || name == "local_only_disabled") {
+    } else if (name == "local_only") {
       transport_availability.recognized_credentials = {
           std::move(local_cred1),
           std::move(local_cred2),
@@ -701,10 +680,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           std::move(phone_cred1),
           std::move(phone_cred2),
       };
-    } else if (name == "priority_mech" || name == "priority_mech_disabled") {
-      transport_availability.has_empty_allow_list = true;
+    } else if (name == "one_local_cred") {
       transport_availability.recognized_credentials = {
-          std::move(gpm_cred),
+          std::move(local_cred1),
       };
     } else if (name == "one_phone_cred") {
       transport_availability.recognized_credentials = {
@@ -768,7 +746,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
           device::AuthenticatorAttachment::kAny;
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMTouchID);
-    } else if (name == "gpm_change_pin" || name == "gpm_change_pin_disabled") {
+    } else if (name == "gpm_change_pin") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMChangePin);
     } else if (name == "gpm_create_pin") {
@@ -803,10 +781,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     }
     controller_->StartFlow(std::move(transport_availability),
                            /*is_conditional_mediation=*/false);
-    if (name.ends_with("_disabled")) {
-      model_->ui_disabled_ = true;
-      model_->OnSheetModelChanged();
-    }
   }
 
  private:
@@ -831,11 +805,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_local_only_disabled) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_local_no_other_devices) {
   ShowAndVerifyUi();
 }
@@ -846,12 +815,7 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_priority_mech) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_priority_mech_disabled) {
+                       InvokeUi_one_local_cred) {
   ShowAndVerifyUi();
 }
 
@@ -897,11 +861,6 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
                        InvokeUi_gpm_change_pin) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_gpm_change_pin_disabled) {
   ShowAndVerifyUi();
 }
 

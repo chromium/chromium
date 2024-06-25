@@ -76,10 +76,10 @@ class AuthenticatorMechanismSelectorSheetView
   BuildStepSpecificContent() override {
     auto* model = static_cast<AuthenticatorMechanismSelectorSheetModel*>(
         AuthenticatorRequestSheetView::model());
-    return std::make_pair(
-        std::make_unique<HoverListView>(
-            std::make_unique<TransportHoverListModel>(model->dialog_model())),
-        AutoFocus::kYes);
+    return std::make_pair(std::make_unique<HoverListView>(
+                              std::make_unique<TransportHoverListModel>(
+                                  model->dialog_model()->mechanisms)),
+                          AutoFocus::kYes);
   }
 };
 

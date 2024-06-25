@@ -44,7 +44,7 @@ class WebAuthnHoverButton : public HoverButton {
                       const std::u16string& title,
                       const std::u16string& subtitle,
                       std::unique_ptr<views::View> secondary_icon,
-                      bool enabled);
+                      bool force_two_line = false);
   WebAuthnHoverButton(const WebAuthnHoverButton&) = delete;
   WebAuthnHoverButton& operator=(const WebAuthnHoverButton&) = delete;
   ~WebAuthnHoverButton() override = default;
