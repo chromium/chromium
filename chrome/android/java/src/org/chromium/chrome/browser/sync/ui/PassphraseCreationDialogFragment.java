@@ -5,9 +5,6 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -22,19 +19,16 @@ import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.DialogFragment;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -96,7 +90,6 @@ public class PassphraseCreationDialogFragment extends DialogFragment
     }
 
     private SpannableString getInstructionsText() {
-        final Context context = getActivity();
         boolean shouldReplaceSyncSettingsWithAccountSettings =
                 ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -112,16 +105,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
-                                // TODO(crbug.com/40944114): Move the following logic to open the
-                                // sync dashboard to a helper function.
-                                Uri syncDashboardUrl =
-                                        Uri.parse(ChromeStringConstants.SYNC_DASHBOARD_URL);
-                                Intent intent = new Intent(Intent.ACTION_VIEW, syncDashboardUrl);
-                                intent.setPackage(
-                                        ContextUtils.getApplicationContext().getPackageName());
-                                IntentUtils.safePutBinderExtra(
-                                        intent, CustomTabsIntent.EXTRA_SESSION, null);
-                                context.startActivity(intent);
+                                SyncSettingsUtils.openSyncDashboard(getActivity());
                             }
                         }));
     }

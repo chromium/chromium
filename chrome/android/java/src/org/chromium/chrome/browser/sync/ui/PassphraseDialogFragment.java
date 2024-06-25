@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -26,17 +23,14 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -181,7 +175,6 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
     }
 
     private SpannableString getResetText() {
-        final Context context = getActivity();
         return SpanApplier.applySpans(
                 getString(R.string.sync_passphrase_recover),
                 new SpanInfo(
@@ -190,14 +183,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnClickL
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
-                                Uri syncDashboardUrl =
-                                        Uri.parse(ChromeStringConstants.SYNC_DASHBOARD_URL);
-                                Intent intent = new Intent(Intent.ACTION_VIEW, syncDashboardUrl);
-                                intent.setPackage(
-                                        ContextUtils.getApplicationContext().getPackageName());
-                                IntentUtils.safePutBinderExtra(
-                                        intent, CustomTabsIntent.EXTRA_SESSION, null);
-                                context.startActivity(intent);
+                                SyncSettingsUtils.openSyncDashboard(getActivity());
                             }
                         }));
     }
