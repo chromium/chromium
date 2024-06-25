@@ -18591,18 +18591,18 @@
     }
    },
    "pointerevents": {
-    "deviceproperties": {
-     "unique-id-is-unique-manual.tentative.html": [
-      "55db05353f5a2f5d543b2c0ba2caf1f066537341",
+    "html": {
+     "pointerevent_drag_interaction-manual.html": [
+      "1a80d239b8930a74cd5e764c6307980082e6766b",
       [
        null,
        {}
       ]
      ]
     },
-    "html": {
-     "pointerevent_drag_interaction-manual.html": [
-      "1a80d239b8930a74cd5e764c6307980082e6766b",
+    "persistentDeviceId": {
+     "persistentdeviceid-is-unique-manual.tentative.html": [
+      "f9f15cfaea85a1aaee1ade8799d4d774c1342b95",
       [
        null,
        {}
@@ -94902,6 +94902,19 @@
        [
         [
          "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scope-featureless.html": [
+      "ca0b1f0217900cb43f162c1d200a13d26ebcbed8",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/scope-featureless-ref.html",
          "=="
         ]
        ],
@@ -309409,6 +309422,10 @@
       "661016619c0c46c113dedc57aa890f62b35e137c",
       []
      ],
+     "scope-featureless-ref.html": [
+      "b53c789544655dddf05bb40fb5cc8ad46622e0e2",
+      []
+     ],
      "scope-pseudo-element-ref.html": [
       "2ad6a0995a9e3bb9db0131eb2c42b19d09768fb4",
       []
@@ -329218,8 +329235,12 @@
        "820be9471b599145f4f420aa66ccda17c48a7c3e",
        []
       ],
+      "line-clamp-invalid-expected.txt": [
+       "2421724b28f9b349121c0360e7d7b919127bfa0d",
+       []
+      ],
       "line-clamp-valid-expected.txt": [
-       "525238db6235243a49076be2472dc6578e099867",
+       "1bead233776ea1520a1c446eedd988e0a79997ab",
        []
       ],
       "max-lines-valid-expected.txt": [
@@ -350524,10 +350545,6 @@
      "8d510e4c129638caed986d1642194ce9c47b82b0",
      []
     ],
-    "ElementInternals-accessibility-expected.txt": [
-     "02df05e9503ca4a3506668a36a37271d4ba62f43",
-     []
-    ],
     "HTMLElement-constructor-customized-builtins-expected.txt": [
      "33120592683372bb76ed19017a461bf05dd79d8d",
      []
@@ -350593,10 +350610,6 @@
      []
     ],
     "reactions": {
-     "AriaMixin-string-attributes-expected.txt": [
-      "55967acc82c57f160ee246663078be5c7daac1e8",
-      []
-     ],
      "WEB_FEATURES.yml": [
       "fe4958dd49c703e6dd71cb9720aa70b36e49427c",
       []
@@ -362111,10 +362124,6 @@
         "3b93b498a26cbd7213179dba7254eeb843173d2d",
         []
        ],
-       "cross-origin-objects-function-name-expected.txt": [
-        "26845722becb3bf7782ec34985dcef26b24764c4",
-        []
-       ],
        "frame-with-then.html": [
         "3eedeca38af5a9c71fc831306b029da76dca47af",
         []
@@ -366463,10 +366472,6 @@
     "dom": {
      "WEB_FEATURES.yml": [
       "5c9e27d29745ca9046d04c1dea58af2f8b3fd801",
-      []
-     ],
-     "aria-attribute-reflection-expected.txt": [
-      "b7644167fd91a22df36f146f6ae0968b499f36fe",
       []
      ],
      "directionality": {
@@ -386173,7 +386178,7 @@
      ]
     },
     "pointerevent_after_target_removed_from_slot_mouse-expected.txt": [
-     "efffbc3adc47a30738bb37f137694d4e736a714a",
+     "629baaba8c5990e4d847014619a9d1d6f5e98d1c",
      []
     ],
     "pointerevent_click_during_capture_mouse-auxclick-expected.txt": [
@@ -397734,10 +397739,6 @@
     ],
     "META.yml": [
      "17068230e58323c5151dab2bd93f170b757ed316",
-     []
-    ],
-    "idlharness.window-expected.txt": [
-     "10993751b27a015ca9557ed4dc5d8958584503a2",
      []
     ],
     "role": {
@@ -446196,6 +446197,13 @@
      ],
      "anchor-transition-eval.html": [
       "cf65742b2dc4e762118b51a5a07592c0cf912c73",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-transition-focus.html": [
+      "4533fa80e4dd28480306013968c574950a15288e",
       [
        null,
        {}
@@ -617700,24 +617708,6 @@
       ]
      ]
     },
-    "deviceproperties": {
-     "get-device-properties-uniqueid-from-pointer-event.tentative.html": [
-      "dc6b9379c11403baab12d5ac65032bdd766b1643",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "pointer-event-has-device-properties-uniqueid-from-pointer-event-init.tentative.html": [
-      "33b2354ec63935cd9cfc0320de022df7b2be163c",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "idlharness.https.window.js": [
      "e6e84fa9c72ff8ac639607d8a4dad8c0816e7ac6",
      [
@@ -617774,6 +617764,24 @@
      ],
      "touch-action-valid.html": [
       "9bb5d023edcfad425fcaa23d20abf0c4bf479034",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "persistentDeviceId": {
+     "get-persistendeviceid-from-pointer-event.tentative.html": [
+      "9f77c1c9e9559d29029bc376326fe655cefda3f1",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "pointer-event-has-persistentdeviceid-from-pointer-event-init.tentative.html": [
+      "ef3f4d153566ac02d7e90fdd6962e395023356bd",
       [
        null,
        {}
@@ -617898,7 +617906,7 @@
      ]
     ],
     "pointerevent_after_target_removed_from_slot.html": [
-     "1d183afa61428f0c15a464220151f5608e297df8",
+     "35955f86893826a9f6cac159f64c69914afb1b84",
      [
       "pointerevents/pointerevent_after_target_removed_from_slot.html?mouse",
       {
@@ -691779,6 +691787,47 @@
          [
           "title",
           "validation tests for WebNN API concat operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "constant-changed-buffer.https.any.js": [
+      "7840a83d947adc1e0b6d2d3a7830e9684a23ecbd",
+      [
+       "webnn/validation_tests/constant-changed-buffer.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure MLGraphBuilder.constant() handles buffers which change"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/constant-changed-buffer.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "ensure MLGraphBuilder.constant() handles buffers which change"
          ],
          [
           "global",
