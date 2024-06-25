@@ -58,6 +58,19 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
     client_->GetSuggestedEditorResults(callback);
   }
 
+  if (model.GetMode() == PickerModeType::kHasSelection) {
+    std::vector<PickerSearchResult> case_transform_results;
+    for (PickerSearchResult::CaseTransformData::Type type : {
+             PickerSearchResult::CaseTransformData::Type::kUpperCase,
+             PickerSearchResult::CaseTransformData::Type::kLowerCase,
+             PickerSearchResult::CaseTransformData::Type::kTitleCase,
+             PickerSearchResult::CaseTransformData::Type::kSentenceCase,
+         }) {
+      case_transform_results.push_back(PickerSearchResult::CaseTransform(type));
+    }
+    callback.Run(std::move(case_transform_results));
+  }
+
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
   for (PickerCategory category : model.GetRecentResultsCategories()) {
     GetSuggestionsForCategory(
@@ -74,10 +87,6 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
   switch (category) {
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
-    case PickerCategory::kUpperCase:
-    case PickerCategory::kLowerCase:
-    case PickerCategory::kSentenceCase:
-    case PickerCategory::kTitleCase:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
       client_->GetSuggestedLinkResults(std::move(callback));

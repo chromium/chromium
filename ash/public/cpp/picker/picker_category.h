@@ -23,11 +23,6 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   // Calculation categories:
   kDatesTimes,
   kUnitsMaths,
-  // Case transformation categories:
-  kUpperCase,
-  kLowerCase,
-  kSentenceCase,
-  kTitleCase,
 };
 
 }  // namespace ash

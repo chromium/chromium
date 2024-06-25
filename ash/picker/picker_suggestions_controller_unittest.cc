@@ -22,6 +22,7 @@ using ::testing::Contains;
 using ::testing::Each;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::IsSupersetOf;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Property;
@@ -67,17 +68,19 @@ TEST_F(PickerSuggestionsControllerTest,
   PickerModel model(/*focused_client=*/&input_field, &keyboard,
                     PickerModel::EditorStatus::kEnabled);
 
-  base::test::TestFuture<std::vector<PickerSearchResult>> results_future;
-  controller.GetSuggestions(model, results_future.GetRepeatingCallback());
+  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      callback,
+      Run(AllOf(Not(IsEmpty()),
+                Each(Property(
+                    "data", &PickerSearchResult::data,
+                    VariantWith<PickerSearchResult::EditorData>(Field(
+                        &PickerSearchResult::EditorData::mode,
+                        PickerSearchResult::EditorData::Mode::kRewrite)))))))
+      .Times(1);
 
-  EXPECT_THAT(
-      results_future.Get(),
-      AllOf(Not(IsEmpty()),
-            Each(Property(
-                "data", &PickerSearchResult::data,
-                VariantWith<PickerSearchResult::EditorData>(
-                    Field(&PickerSearchResult::EditorData::mode,
-                          PickerSearchResult::EditorData::Mode::kRewrite))))));
+  controller.GetSuggestions(model, callback.Get());
 }
 
 TEST_F(PickerSuggestionsControllerTest,
@@ -130,6 +133,66 @@ TEST_F(PickerSuggestionsControllerTest,
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback, Run(Contains(PickerSearchResult::CapsLock(false))))
       .Times(1);
+
+  controller.GetSuggestions(model, callback.Get());
+}
+
+TEST_F(PickerSuggestionsControllerTest,
+       GetSuggestionsWithSelectionReturnsCaseTransforms) {
+  NiceMock<MockPickerClient> client;
+  PickerSuggestionsController controller(&client);
+  ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
+  input_method::FakeImeKeyboard keyboard;
+  PickerModel model(&input_field, &keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(
+      callback,
+      Run(IsSupersetOf({
+          PickerSearchResult::CaseTransform(
+              PickerSearchResult::CaseTransformData::Type::kUpperCase),
+          PickerSearchResult::CaseTransform(
+              PickerSearchResult::CaseTransformData::Type::kLowerCase),
+          PickerSearchResult::CaseTransform(
+              PickerSearchResult::CaseTransformData::Type::kTitleCase),
+          PickerSearchResult::CaseTransform(
+              PickerSearchResult::CaseTransformData::Type::kSentenceCase),
+      })))
+      .Times(1);
+
+  controller.GetSuggestions(model, callback.Get());
+}
+
+TEST_F(PickerSuggestionsControllerTest,
+       GetSuggestionsWithNoSelectionDoesNotReturnCaseTransforms) {
+  NiceMock<MockPickerClient> client;
+  PickerSuggestionsController controller(&client);
+  ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method::FakeImeKeyboard keyboard;
+  PickerModel model(&input_field, &keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
+  EXPECT_CALL(callback,
+              Run(Contains(PickerSearchResult::CaseTransform(
+                  PickerSearchResult::CaseTransformData::Type::kUpperCase))))
+      .Times(0);
+  EXPECT_CALL(callback,
+              Run(Contains(PickerSearchResult::CaseTransform(
+                  PickerSearchResult::CaseTransformData::Type::kLowerCase))))
+      .Times(0);
+  EXPECT_CALL(callback,
+              Run(Contains(PickerSearchResult::CaseTransform(
+                  PickerSearchResult::CaseTransformData::Type::kTitleCase))))
+      .Times(0);
+  EXPECT_CALL(callback,
+              Run(Contains(PickerSearchResult::CaseTransform(
+                  PickerSearchResult::CaseTransformData::Type::kSentenceCase))))
+      .Times(0);
 
   controller.GetSuggestions(model, callback.Get());
 }

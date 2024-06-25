@@ -131,10 +131,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return options_.available_categories;
   }
 
-  void TransformSelectedText(PickerCategory category) override {
-    requested_case_transformation_category_ = category;
-  }
-
   void GetZeroStateSuggestedResults(
       SuggestedResultsCallback callback) override {
     callback.Run({});
@@ -210,9 +206,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return emoji_picker_query_;
   }
   bool showed_editor() const { return showed_editor_; }
-  std::optional<PickerCategory> requested_case_transformation_category() const {
-    return requested_case_transformation_category_;
-  }
 
  private:
   Options options_;
@@ -223,8 +216,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   std::optional<ui::EmojiPickerCategory> emoji_picker_category_;
   std::optional<std::u16string> emoji_picker_query_;
   bool showed_editor_ = false;
-  std::optional<PickerCategory> requested_case_transformation_category_ =
-      std::nullopt;
 };
 
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {

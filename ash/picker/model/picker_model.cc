@@ -56,12 +56,6 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       if (editor_status_ == EditorStatus::kEnabled) {
         categories.push_back(PickerCategory::kEditorRewrite);
       }
-      categories.insert(categories.end(), {
-                                              PickerCategory::kUpperCase,
-                                              PickerCategory::kLowerCase,
-                                              PickerCategory::kSentenceCase,
-                                              PickerCategory::kTitleCase,
-                                          });
       return categories;
     }
     case PickerModeType::kNoSelection: {

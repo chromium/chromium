@@ -97,16 +97,6 @@ PickerZeroStateView::PickerZeroStateView(
       base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Case transformation results are shown in a submenu.
-  auto case_transform_submenu =
-      views::Builder<PickerItemWithSubmenuView>()
-          .SetSubmenuController(&submenu_controller_)
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
-          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-              kPickerSentenceCaseIcon, cros_tokens::kCrosSysOnSurface))
-          .Build();
-
   for (PickerCategory category : available_categories) {
     // kEditorRewrite is not visible in the zero-state, since it's replaced with
     // the rewrite suggestions.
@@ -115,26 +105,10 @@ PickerZeroStateView::PickerZeroStateView(
     }
 
     auto result = PickerSearchResult::Category(category);
-    if (category == PickerCategory::kUpperCase ||
-        category == PickerCategory::kLowerCase ||
-        category == PickerCategory::kSentenceCase ||
-        category == PickerCategory::kTitleCase) {
-      case_transform_submenu->AddEntry(
-          std::move(result),
-          base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
-                              weak_ptr_factory_.GetWeakPtr(), category));
-    } else {
-      GetOrCreateSectionView(category)->AddResult(
-          std::move(result), &preview_controller_,
-          base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
-                              weak_ptr_factory_.GetWeakPtr(), category));
-    }
-  }
-
-  // Add the submenu for case transformation.
-  if (!case_transform_submenu->IsEmpty()) {
-    GetOrCreateSectionView(PickerCategoryType::kCaseTransformations)
-        ->AddItemWithSubmenu(std::move(case_transform_submenu));
+    GetOrCreateSectionView(category)->AddResult(
+        std::move(result), &preview_controller_,
+        base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+                            weak_ptr_factory_.GetWeakPtr(), category));
   }
 }
 
@@ -263,6 +237,16 @@ void PickerZeroStateView::OnFetchSuggestedResults(
               chromeos::kEditorMenuEmojifyIcon, cros_tokens::kCrosSysOnSurface))
           .Build();
 
+  // Case transformation results are shown in a submenu.
+  auto case_transform_submenu =
+      views::Builder<PickerItemWithSubmenuView>()
+          .SetSubmenuController(&submenu_controller_)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
+          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+              kPickerSentenceCaseIcon, cros_tokens::kCrosSysOnSurface))
+          .Build();
+
   for (const PickerSearchResult& result : results) {
     if (std::holds_alternative<PickerSearchResult::NewWindowData>(
             result.data())) {
@@ -287,6 +271,11 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           tone_submenu->AddEntry(result, std::move(callback));
           break;
       }
+    } else if (std::holds_alternative<PickerSearchResult::CaseTransformData>(
+                   result.data())) {
+      case_transform_submenu->AddEntry(
+          result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                                      weak_ptr_factory_.GetWeakPtr(), result));
     } else {
       PickerItemView* view = primary_section_view_->AddResult(
           result, &preview_controller_,
@@ -309,6 +298,12 @@ void PickerZeroStateView::OnFetchSuggestedResults(
 
   if (!tone_submenu->IsEmpty()) {
     primary_section_view_->AddItemWithSubmenu(std::move(tone_submenu));
+  }
+
+  // Add the submenu for case transformation.
+  if (!case_transform_submenu->IsEmpty()) {
+    GetOrCreateSectionView(PickerCategoryType::kCaseTransformations)
+        ->AddItemWithSubmenu(std::move(case_transform_submenu));
   }
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());

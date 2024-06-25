@@ -169,17 +169,16 @@ TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
 TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForCaseTransform) {
   {
     PickerSessionMetrics metrics;
-    metrics.SetSelectedCategory(PickerCategory::kUpperCase);
     metrics.SetSelectedResult(
-        PickerSearchResult::Text(
-            u"primary", PickerSearchResult::TextData::Source::kCaseTransform),
+        PickerSearchResult::CaseTransform(
+            PickerSearchResult::CaseTransformData::Type::kUpperCase),
         0);
     metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
   }
 
   cros_events::Picker_FinishSession expected_event;
   expected_event.SetOutcome(cros_events::PickerSessionOutcome::FORMAT)
-      .SetAction(cros_events::PickerAction::TRANSFORM_UPPER_CASE)
+      .SetAction(cros_events::PickerAction::UNKNOWN)
       .SetResultSource(cros_events::PickerResultSource::CASE_TRANSFORM)
       .SetResultType(cros_events::PickerResultType::TEXT)
       .SetTotalEdits(0)

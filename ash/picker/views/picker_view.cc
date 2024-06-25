@@ -448,14 +448,6 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
     return;
   }
 
-  if (GetPickerCategoryType(category) ==
-      PickerCategoryType::kCaseTransformations) {
-    session_metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
-    delegate_->TransformSelectedText(category);
-    GetWidget()->Close();
-    return;
-  }
-
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   search_field_view_->SetQueryText(std::u16string(query));

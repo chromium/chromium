@@ -170,6 +170,9 @@ bool PickerSearchResult::NewWindowData::operator==(const NewWindowData&) const =
 bool PickerSearchResult::CapsLockData::operator==(const CapsLockData&) const =
     default;
 
+bool PickerSearchResult::CaseTransformData::operator==(
+    const CaseTransformData&) const = default;
+
 PickerSearchResult::~PickerSearchResult() = default;
 
 PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
@@ -283,6 +286,11 @@ PickerSearchResult PickerSearchResult::NewWindow(
 
 PickerSearchResult PickerSearchResult::CapsLock(bool enabled) {
   return PickerSearchResult(CapsLockData{.enabled = enabled});
+}
+
+PickerSearchResult PickerSearchResult::CaseTransform(
+    CaseTransformData::Type type) {
+  return PickerSearchResult(CaseTransformData{.type = type});
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

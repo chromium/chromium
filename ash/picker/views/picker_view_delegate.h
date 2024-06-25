@@ -47,11 +47,6 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void GetResultsForCategory(PickerCategory category,
                                      SearchResultsCallback callback) = 0;
 
-  // Transforms the selected text specified by `category` then commits to the
-  // focused input field. `category` should be one of   kUpperCase, kLowerCase,
-  // kSentenceCase, kTitleCase.
-  virtual void TransformSelectedText(PickerCategory category) = 0;
-
   // Starts a search for `query`. Results will be returned via `callback`,
   // which may be called multiples times to update the results.
   virtual void StartSearch(const std::u16string& query,

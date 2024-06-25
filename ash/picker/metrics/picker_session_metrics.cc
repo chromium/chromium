@@ -112,14 +112,6 @@ cros_events::PickerAction ConvertToCrosEventAction(
       return cros_events::PickerAction::OPEN_DATES_TIMES;
     case PickerCategory::kUnitsMaths:
       return cros_events::PickerAction::OPEN_UNITS_MATHS;
-    case PickerCategory::kUpperCase:
-      return cros_events::PickerAction::TRANSFORM_UPPER_CASE;
-    case PickerCategory::kLowerCase:
-      return cros_events::PickerAction::TRANSFORM_LOWER_CASE;
-    case PickerCategory::kSentenceCase:
-      return cros_events::PickerAction::TRANSFORM_SENTENCE_CASE;
-    case PickerCategory::kTitleCase:
-      return cros_events::PickerAction::TRANSFORM_TITLE_CASE;
   }
 }
 
@@ -184,6 +176,9 @@ cros_events::PickerResultSource GetResultSource(
           [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
             return cros_events::PickerResultSource::UNKNOWN;
           },
+          [](const PickerSearchResult::CaseTransformData& data) -> ReturnType {
+            return cros_events::PickerResultSource::CASE_TRANSFORM;
+          },
       },
       result->data());
 }
@@ -246,6 +241,9 @@ cros_events::PickerResultType GetResultType(
           },
           [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
             return cros_events::PickerResultType::UNKNOWN;
+          },
+          [](const PickerSearchResult::CaseTransformData& data) -> ReturnType {
+            return cros_events::PickerResultType::TEXT;
           },
       },
       result->data());

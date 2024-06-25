@@ -197,6 +197,9 @@ InsertionContent GetInsertionContentForResult(
           [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
             return std::monostate();
           },
+          [](const PickerSearchResult::CaseTransformData& data) -> ReturnType {
+            return std::monostate();
+          },
       },
       result.data());
 }
@@ -245,26 +248,16 @@ std::u16string ToSentenceCase(std::u16string_view text) {
 }
 
 std::u16string TransformText(std::u16string_view text,
-                             PickerCategory category) {
-  switch (category) {
-    case PickerCategory::kUpperCase:
+                             PickerSearchResult::CaseTransformData::Type type) {
+  switch (type) {
+    case PickerSearchResult::CaseTransformData::Type ::kUpperCase:
       return base::i18n::ToUpper(text);
-    case PickerCategory::kLowerCase:
+    case PickerSearchResult::CaseTransformData::Type ::kLowerCase:
       return base::i18n::ToLower(text);
-    case PickerCategory::kSentenceCase:
+    case PickerSearchResult::CaseTransformData::Type ::kSentenceCase:
       return ToSentenceCase(text);
-    case PickerCategory::kTitleCase:
+    case PickerSearchResult::CaseTransformData::Type ::kTitleCase:
       return ToTitleCase(text);
-    case PickerCategory::kEditorWrite:
-    case PickerCategory::kEditorRewrite:
-    case PickerCategory::kLinks:
-    case PickerCategory::kExpressions:
-    case PickerCategory::kDriveFiles:
-    case PickerCategory::kLocalFiles:
-    case PickerCategory::kDatesTimes:
-    case PickerCategory::kUnitsMaths:
-    case PickerCategory::kClipboard:
-      NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();
 }
@@ -401,16 +394,6 @@ void PickerController::GetResultsForCategory(PickerCategory category,
           .Then(std::move(callback)));
 }
 
-void PickerController::TransformSelectedText(PickerCategory category) {
-  if (!model_) {
-    return;
-  }
-  std::u16string_view selected_text = model_->selected_text();
-  InsertResultOnNextFocus(PickerSearchResult::Text(
-      TransformText(selected_text, category),
-      PickerSearchResult::TextData::Source::kCaseTransform));
-}
-
 void PickerController::StartSearch(const std::u16string& query,
                                    std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
@@ -531,6 +514,17 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
                 PickerSessionMetrics::SessionOutcome::kFormat);
             GetImeKeyboard().SetCapsLockEnabled(data.enabled);
           },
+          [&](const PickerSearchResult::CaseTransformData& data) {
+            if (!model_) {
+              return;
+            }
+            session_metrics_->SetOutcome(
+                PickerSessionMetrics::SessionOutcome::kFormat);
+            std::u16string_view selected_text = model_->selected_text();
+            InsertResultOnNextFocus(PickerSearchResult::Text(
+                TransformText(selected_text, data.type),
+                PickerSearchResult::TextData::Source::kCaseTransform));
+          },
       },
       result.data());
 }
@@ -623,7 +617,9 @@ PickerActionType PickerController::GetActionForResult(
           [](const PickerSearchResult::CapsLockData& data) {
             return PickerActionType::kDo;
           },
-      },
+          [&](const PickerSearchResult::CaseTransformData& data) {
+            return PickerActionType::kDo;
+          }},
       result.data());
 }
 

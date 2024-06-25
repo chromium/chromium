@@ -269,8 +269,21 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
 
 TEST_F(PickerZeroStateViewTest, ShowsCaseTransformationBehindSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kUpperCase}},
-                           kPickerWidth, &asset_fetcher_);
+  EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults)
+      .WillOnce(
+          [](MockZeroStateViewDelegate::SuggestedResultsCallback callback) {
+            std::move(callback).Run({
+                PickerSearchResult::CaseTransform(
+                    PickerSearchResult::CaseTransformData::kUpperCase),
+                PickerSearchResult::CaseTransform(
+                    PickerSearchResult::CaseTransformData::kLowerCase),
+                PickerSearchResult::CaseTransform(
+                    PickerSearchResult::CaseTransformData::kTitleCase),
+                PickerSearchResult::CaseTransform(
+                    PickerSearchResult::CaseTransformData::kSentenceCase),
+            });
+          });
+  PickerZeroStateView view(&mock_delegate, {}, kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
       view.category_section_views_for_testing(),

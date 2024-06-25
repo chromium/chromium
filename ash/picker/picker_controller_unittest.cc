@@ -482,6 +482,78 @@ TEST_F(PickerControllerTest, OpenCapsLockResultTurnsOffCapsLock) {
   EXPECT_FALSE(ime_keyboard->IsCapsLockEnabled());
 }
 
+TEST_F(PickerControllerTest, OpenUpperCaseResultCommitsUpperCase) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"abc", gfx::Range(0, 3));
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  controller.ToggleWidget();
+  controller.OpenResult(PickerSearchResult::CaseTransform(
+      PickerSearchResult::CaseTransformData::Type::kUpperCase));
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"ABC");
+}
+
+TEST_F(PickerControllerTest, OpenLowerCaseResultCommitsLowerCase) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"XYZ", gfx::Range(0, 3));
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  controller.ToggleWidget();
+  controller.OpenResult(PickerSearchResult::CaseTransform(
+      PickerSearchResult::CaseTransformData::Type::kLowerCase));
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"xyz");
+}
+
+TEST_F(PickerControllerTest, OpenTitleCaseResultCommitsTitleCase) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"how are you", gfx::Range(0, 11));
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  controller.ToggleWidget();
+  controller.OpenResult(PickerSearchResult::CaseTransform(
+      PickerSearchResult::CaseTransformData::Type::kTitleCase));
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"How Are You");
+}
+
+TEST_F(PickerControllerTest, OpenSentenceCaseResultCommitsSentenceCase) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  input_field.SetTextAndSelection(u"how are you? fine. thanks!  ok",
+                                  gfx::Range(0, 30));
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  controller.ToggleWidget();
+  controller.OpenResult(PickerSearchResult::CaseTransform(
+      PickerSearchResult::CaseTransformData::Type::kSentenceCase));
+  input_method->SetFocusedTextInputClient(&input_field);
+
+  EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
+}
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
@@ -572,75 +644,6 @@ TEST_F(PickerControllerTest,
 
   EXPECT_THAT(controller.GetAvailableCategories(),
               Not(Contains(PickerCategory::kEditorWrite)));
-}
-
-TEST_F(PickerControllerTest, GetUpperCaseSelectedText) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"abc", gfx::Range(0, 3));
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.ToggleWidget();
-  controller.TransformSelectedText(PickerCategory::kUpperCase);
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.text(), u"ABC");
-}
-
-TEST_F(PickerControllerTest, GetLowerCaseSelectedText) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"XYZ", gfx::Range(0, 3));
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.ToggleWidget();
-  controller.TransformSelectedText(PickerCategory::kLowerCase);
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.text(), u"xyz");
-}
-
-TEST_F(PickerControllerTest, GetTitleCaseSelectedText) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"how are you", gfx::Range(0, 11));
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.ToggleWidget();
-  controller.TransformSelectedText(PickerCategory::kTitleCase);
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.text(), u"How Are You");
-}
-
-TEST_F(PickerControllerTest, GetSentenceCaseSelectedText) {
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
-  ui::FakeTextInputClient input_field(input_method,
-                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
-  input_method->SetFocusedTextInputClient(&input_field);
-  input_field.SetTextAndSelection(u"how are you? fine. thanks!  ok",
-                                  gfx::Range(0, 30));
-  PickerController controller;
-  NiceMock<TestPickerClient> client(&controller);
-
-  controller.ToggleWidget();
-  controller.TransformSelectedText(PickerCategory::kSentenceCase);
-  input_method->SetFocusedTextInputClient(&input_field);
-
-  EXPECT_EQ(input_field.text(), u"How are you? Fine. Thanks!  Ok");
 }
 
 TEST_F(PickerControllerTest, GetsRecentEmoji) {

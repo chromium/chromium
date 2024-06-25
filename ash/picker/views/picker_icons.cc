@@ -34,14 +34,6 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
       return kPickerCalendarIcon;
     case PickerCategory::kUnitsMaths:
       return kPickerUnitsMathsIcon;
-    case PickerCategory::kUpperCase:
-      return kPickerUpperCaseIcon;
-    case PickerCategory::kLowerCase:
-      return kPickerLowerCaseIcon;
-    case PickerCategory::kSentenceCase:
-      return kPickerSentenceCaseIcon;
-    case PickerCategory::kTitleCase:
-      return kPickerTitleCaseIcon;
   }
 }
 

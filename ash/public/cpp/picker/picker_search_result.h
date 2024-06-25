@@ -228,6 +228,19 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const CapsLockData&) const;
   };
 
+  struct CaseTransformData {
+    enum Type {
+      kUpperCase,
+      kLowerCase,
+      kSentenceCase,
+      kTitleCase,
+    };
+
+    Type type;
+
+    bool operator==(const CaseTransformData&) const;
+  };
+
   using Data = std::variant<TextData,
                             SearchRequestData,
                             EmojiData,
@@ -241,7 +254,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             CategoryData,
                             EditorData,
                             NewWindowData,
-                            CapsLockData>;
+                            CapsLockData,
+                            CaseTransformData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -294,6 +308,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       std::optional<std::string> freeform_text);
   static PickerSearchResult NewWindow(NewWindowData::Type type);
   static PickerSearchResult CapsLock(bool enabled);
+  static PickerSearchResult CaseTransform(CaseTransformData::Type type);
 
   const Data& data() const;
 

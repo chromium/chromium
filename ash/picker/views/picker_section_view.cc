@@ -98,6 +98,34 @@ const gfx::VectorIcon& GetIconForNewWindowType(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+std::u16string GetLabelForCaseTransformType(
+    PickerSearchResult::CaseTransformData::Type type) {
+  switch (type) {
+    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
+      return l10n_util::GetStringUTF16(IDS_PICKER_UPPER_CASE_CATEGORY_LABEL);
+    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
+      return l10n_util::GetStringUTF16(IDS_PICKER_LOWER_CASE_CATEGORY_LABEL);
+    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
+      return l10n_util::GetStringUTF16(IDS_PICKER_TITLE_CASE_CATEGORY_LABEL);
+    case PickerSearchResult::CaseTransformData::Type::kSentenceCase:
+      return l10n_util::GetStringUTF16(IDS_PICKER_SENTENCE_CASE_CATEGORY_LABEL);
+  }
+}
+
+const gfx::VectorIcon& GetIconForCaseTransformType(
+    PickerSearchResult::CaseTransformData::Type type) {
+  switch (type) {
+    case PickerSearchResult::CaseTransformData::Type::kUpperCase:
+      return kPickerUpperCaseIcon;
+    case PickerSearchResult::CaseTransformData::Type::kLowerCase:
+      return kPickerLowerCaseIcon;
+    case PickerSearchResult::CaseTransformData::Type::kTitleCase:
+      return kPickerTitleCaseIcon;
+    case PickerSearchResult::CaseTransformData::Type::kSentenceCase:
+      return kPickerSentenceCaseIcon;
+  }
+}
+
 }  // namespace
 
 PickerSectionView::PickerSectionView(
@@ -280,6 +308,15 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
                              : IDS_PICKER_CAPS_OFF_CATEGORY_LABEL));
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
                 data.enabled ? kPickerCapsLockOnIcon : kPickerCapsLockOffIcon,
+                cros_tokens::kCrosSysOnSurface));
+            return item_view;
+          },
+          [&](const PickerSearchResult::CaseTransformData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(GetLabelForCaseTransformType(data.type));
+            item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                GetIconForCaseTransformType(data.type),
                 cros_tokens::kCrosSysOnSurface));
             return item_view;
           },
