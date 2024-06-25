@@ -177,7 +177,7 @@ export namespace Session {
         browserVersion: z.string().optional(),
         platformName: z.string().optional(),
         proxy: Session.ProxyConfigurationSchema.optional(),
-        webSocketUrl: z.boolean().optional(),
+        unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
       })
       .and(ExtensibleSchema)
   );
@@ -246,6 +246,22 @@ export namespace Session {
   );
 }
 export namespace Session {
+  export const UserPromptHandlerTypeSchema = z.lazy(() =>
+    z.enum(['accept', 'dismiss', 'ignore'])
+  );
+}
+export namespace Session {
+  export const UserPromptHandlerSchema = z.lazy(() =>
+    z.object({
+      alert: Session.UserPromptHandlerTypeSchema.optional(),
+      beforeUnload: Session.UserPromptHandlerTypeSchema.optional(),
+      confirm: Session.UserPromptHandlerTypeSchema.optional(),
+      default: Session.UserPromptHandlerTypeSchema.optional(),
+      prompt: Session.UserPromptHandlerTypeSchema.optional(),
+    })
+  );
+}
+export namespace Session {
   export const SubscriptionRequestSchema = z.lazy(() =>
     z.object({
       events: z.array(z.string()).min(1),
@@ -300,6 +316,7 @@ export namespace Session {
           setWindowRect: z.boolean(),
           userAgent: z.string(),
           proxy: Session.ProxyConfigurationSchema.optional(),
+          unhandledPromptBehavior: Session.UserPromptHandlerSchema.optional(),
           webSocketUrl: z.string().optional(),
         })
         .and(ExtensibleSchema),
@@ -536,6 +553,11 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const ReadinessStateSchema = z.lazy(() =>
     z.enum(['none', 'interactive', 'complete'])
+  );
+}
+export namespace BrowsingContext {
+  export const UserPromptTypeSchema = z.lazy(() =>
+    z.enum(['alert', 'beforeunload', 'confirm', 'prompt'])
   );
 }
 export namespace BrowsingContext {
@@ -944,6 +966,7 @@ export namespace BrowsingContext {
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
       accepted: z.boolean(),
+      type: BrowsingContext.UserPromptTypeSchema,
       userText: z.string().optional(),
     })
   );
@@ -960,8 +983,9 @@ export namespace BrowsingContext {
   export const UserPromptOpenedParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
-      type: z.enum(['alert', 'confirm', 'prompt', 'beforeunload']),
+      handler: z.enum(['accept', 'dismiss', 'ignore']),
       message: z.string(),
+      type: BrowsingContext.UserPromptTypeSchema,
       defaultValue: z.string().optional(),
     })
   );

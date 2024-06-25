@@ -43,6 +43,7 @@ async def test_browsingContext_userPromptOpened_event(websocket, context_id):
         "params": {
             "context": context_id,
             "type": 'alert',
+            'handler': 'ignore',
             "message": message,
         }
     }
@@ -121,6 +122,7 @@ async def test_browsingContext_userPromptOpened_event_default_value(
         "params": {
             "context": context_id,
             "type": 'prompt',
+            'handler': 'ignore',
             "message": message,
             "defaultValue": default,
         }

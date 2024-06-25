@@ -583,6 +583,8 @@ export class BrowsingContextImpl {
           params: {
             context: this.id,
             accepted,
+            // TODO
+            type: BrowsingContextImpl.#getPromptType(undefined as any),
             userText:
               accepted && params.userInput ? params.userInput : undefined,
           },
@@ -598,7 +600,8 @@ export class BrowsingContextImpl {
           method: ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
           params: {
             context: this.id,
-            type: params.type,
+            handler: this.#getPromptHandler(),
+            type: BrowsingContextImpl.#getPromptType(params.type),
             message: params.message,
             ...(params.type === 'prompt'
               ? {defaultValue: params.defaultPrompt}
@@ -608,6 +611,26 @@ export class BrowsingContextImpl {
         this.id
       );
     });
+  }
+
+  static #getPromptType(
+    cdpType: Protocol.Page.DialogType
+  ): BrowsingContext.UserPromptType {
+    switch (cdpType) {
+      case 'alert':
+        return BrowsingContext.UserPromptType.Alert;
+      case 'confirm':
+        return BrowsingContext.UserPromptType.Confirm;
+      case 'prompt':
+        return BrowsingContext.UserPromptType.Prompt;
+      case 'beforeunload':
+        return BrowsingContext.UserPromptType.Beforeunload;
+    }
+  }
+
+  #getPromptHandler(): 'accept' | 'dismiss' | 'ignore' {
+    // TODO: implement.
+    return 'ignore';
   }
 
   #documentChanged(loaderId?: Protocol.Network.LoaderId) {

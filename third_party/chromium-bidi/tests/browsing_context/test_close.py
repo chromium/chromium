@@ -102,7 +102,8 @@ async def test_browsingContext_close_prompt(websocket, context_id, html,
         "params": {
             "context": context_id,
             "message": "",
-            "type": "beforeunload"
+            "type": "beforeunload",
+            "handler": "ignore"
         }
     }
 

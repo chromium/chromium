@@ -132,7 +132,7 @@ export namespace Session {
     browserVersion?: string;
     platformName?: string;
     proxy?: Session.ProxyConfiguration;
-    webSocketUrl?: boolean;
+    unhandledPromptBehavior?: Session.UserPromptHandler;
   } & Extensible;
 }
 export namespace Session {
@@ -174,6 +174,22 @@ export namespace Session {
   export type SystemProxyConfiguration = {
     proxyType: 'system';
   } & Extensible;
+}
+export namespace Session {
+  export const enum UserPromptHandlerType {
+    Accept = 'accept',
+    Dismiss = 'dismiss',
+    Ignore = 'ignore',
+  }
+}
+export namespace Session {
+  export type UserPromptHandler = {
+    alert?: Session.UserPromptHandlerType;
+    beforeUnload?: Session.UserPromptHandlerType;
+    confirm?: Session.UserPromptHandlerType;
+    default?: Session.UserPromptHandlerType;
+    prompt?: Session.UserPromptHandlerType;
+  };
 }
 export namespace Session {
   export type SubscriptionRequest = {
@@ -218,6 +234,7 @@ export namespace Session {
       setWindowRect: boolean;
       userAgent: string;
       proxy?: Session.ProxyConfiguration;
+      unhandledPromptBehavior?: Session.UserPromptHandler;
       webSocketUrl?: string;
     } & Extensible;
   };
@@ -395,6 +412,14 @@ export namespace BrowsingContext {
     None = 'none',
     Interactive = 'interactive',
     Complete = 'complete',
+  }
+}
+export namespace BrowsingContext {
+  export const enum UserPromptType {
+    Alert = 'alert',
+    Beforeunload = 'beforeunload',
+    Confirm = 'confirm',
+    Prompt = 'prompt',
   }
 }
 export namespace BrowsingContext {
@@ -769,6 +794,7 @@ export namespace BrowsingContext {
   export type UserPromptClosedParameters = {
     context: BrowsingContext.BrowsingContext;
     accepted: boolean;
+    type: BrowsingContext.UserPromptType;
     userText?: string;
   };
 }
@@ -781,8 +807,9 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export type UserPromptOpenedParameters = {
     context: BrowsingContext.BrowsingContext;
-    type: 'alert' | 'confirm' | 'prompt' | 'beforeunload';
+    handler: 'accept' | 'dismiss' | 'ignore';
     message: string;
+    type: BrowsingContext.UserPromptType;
     defaultValue?: string;
   };
 }
