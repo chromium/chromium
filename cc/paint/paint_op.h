@@ -44,6 +44,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 
 class SkImage;
@@ -206,6 +207,9 @@ class CC_PAINT_EXPORT PaintOp {
   // generated images.
   static bool OpHasDiscardableImages(const PaintOp& op);
 
+  // Gets the maximum content color usage of all images in this PaintOp.
+  gfx::ContentColorUsage GetContentColorUsage() const;
+
   // Returns true if the given op type has PaintFlags.
   static bool TypeHasFlags(PaintOpType type);
 
@@ -220,8 +224,16 @@ class CC_PAINT_EXPORT PaintOp {
   // by the flags for kSaveLayerAlpha to preserving LCD text.
   bool HasEffectsPreventingLCDTextForSaveLayerAlpha() const { return false; }
 
-  bool HasDiscardableImages() const { return false; }
-  bool HasDiscardableImagesFromFlags() const { return false; }
+  // If `content_color_usage` is not null, the functions should update
+  // `*content_color_usage` to be
+  // max(*content_color_usage, max_content_color_usage_of_this_op).
+  bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const {
+    return false;
+  }
+  bool HasDiscardableImagesFromFlags(
+      gfx::ContentColorUsage* content_color_usage) const {
+    return false;
+  }
 
   // Returns the number of bytes used by this op in referenced sub records
   // and display lists.  This doesn't count other objects like paths or blobs.
@@ -286,7 +298,8 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
 
   int CountSlowPathsFromFlags() const { return flags.getPathEffect() ? 1 : 0; }
   bool HasNonAAPaint() const { return !flags.isAntiAlias(); }
-  bool HasDiscardableImagesFromFlags() const;
+  bool HasDiscardableImagesFromFlags(
+      gfx::ContentColorUsage* content_color_usage) const;
 
   void RasterWithFlags(SkCanvas* canvas,
                        const PaintFlags* flags,
@@ -499,7 +512,7 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
            std::isfinite(scale_adjustment.height());
   }
   bool EqualsForTesting(const DrawImageOp& other) const;
-  bool HasDiscardableImages() const;
+  bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
   bool HasNonAAPaint() const { return false; }
   HAS_SERIALIZATION_FUNCTIONS();
 
@@ -541,7 +554,7 @@ class CC_PAINT_EXPORT DrawImageRectOp final : public PaintOpWithFlags {
            std::isfinite(scale_adjustment.height());
   }
   bool EqualsForTesting(const DrawImageRectOp& other) const;
-  bool HasDiscardableImages() const;
+  bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
   PaintImage image;
@@ -787,7 +800,7 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOp {
   bool EqualsForTesting(const DrawRecordOp& other) const;
   size_t AdditionalBytesUsed() const;
   size_t AdditionalOpCount() const;
-  bool HasDiscardableImages() const;
+  bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
   bool HasDrawTextOps() const;
@@ -869,7 +882,7 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final : public PaintOp {
   bool EqualsForTesting(const DrawScrollingContentsOp& other) const;
   size_t AdditionalBytesUsed() const;
   size_t AdditionalOpCount() const;
-  bool HasDiscardableImages() const;
+  bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
   bool HasDrawTextOps() const;
@@ -937,7 +950,7 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
            t <= 1.f;
   }
   bool EqualsForTesting(const DrawSkottieOp& other) const;
-  bool HasDiscardableImages() const;
+  bool HasDiscardableImages(gfx::ContentColorUsage* content_color_usage) const;
   HAS_SERIALIZATION_FUNCTIONS();
 
   scoped_refptr<SkottieWrapper> skottie;

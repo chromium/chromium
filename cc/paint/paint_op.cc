@@ -357,6 +357,36 @@ std::string PaintOpTypeToString(PaintOpType type) {
   NOTREACHED_NORETURN();
 }
 
+bool IsDiscardableImage(const PaintImage& image,
+                        gfx::ContentColorUsage* content_color_usage) {
+  if (!image || image.IsTextureBacked()) {
+    return false;
+  }
+  if (content_color_usage) {
+    *content_color_usage =
+        std::max(*content_color_usage, image.GetContentColorUsage());
+  }
+  return true;
+}
+
+bool OpHasDiscardableImagesImpl(const PaintOp& op) {
+  gfx::ContentColorUsage* const unused_content_color_usage = nullptr;
+  if (op.IsPaintOpWithFlags() &&
+      static_cast<const PaintOpWithFlags&>(op).HasDiscardableImagesFromFlags(
+          unused_content_color_usage)) {
+    return true;
+  }
+  switch (op.GetType()) {
+#define M(T)                                               \
+  case T::kType:                                           \
+    return static_cast<const T&>(op).HasDiscardableImages( \
+        unused_content_color_usage);
+
+    TYPES(M)
+#undef M
+  }
+}
+
 #undef TYPES
 
 std::ostream& operator<<(std::ostream& os, PaintOpType type) {
@@ -2285,26 +2315,7 @@ bool PaintOp::QuickRejectDraw(const PaintOp& op, const SkCanvas* canvas) {
 
 // static
 bool PaintOp::OpHasDiscardableImages(const PaintOp& op) {
-  if (op.IsPaintOpWithFlags() && static_cast<const PaintOpWithFlags&>(op)
-                                     .HasDiscardableImagesFromFlags()) {
-    return true;
-  }
-
-  if (op.GetType() == PaintOpType::kDrawImage &&
-      static_cast<const DrawImageOp&>(op).HasDiscardableImages()) {
-    return true;
-  } else if (op.GetType() == PaintOpType::kDrawImageRect &&
-             static_cast<const DrawImageRectOp&>(op).HasDiscardableImages()) {
-    return true;
-  } else if (op.GetType() == PaintOpType::kDrawRecord &&
-             static_cast<const DrawRecordOp&>(op).HasDiscardableImages()) {
-    return true;
-  } else if (op.GetType() == PaintOpType::kDrawSkottie &&
-             static_cast<const DrawSkottieOp&>(op).HasDiscardableImages()) {
-    return true;
-  }
-
-  return false;
+  return OpHasDiscardableImagesImpl(op);
 }
 
 void PaintOp::DestroyThis() {
@@ -2313,8 +2324,9 @@ void PaintOp::DestroyThis() {
     func(this);
 }
 
-bool PaintOpWithFlags::HasDiscardableImagesFromFlags() const {
-  return flags.HasDiscardableImages();
+bool PaintOpWithFlags::HasDiscardableImagesFromFlags(
+    gfx::ContentColorUsage* content_color_usage) const {
+  return flags.HasDiscardableImages(content_color_usage);
 }
 
 void PaintOpWithFlags::RasterWithFlags(SkCanvas* canvas,
@@ -2365,7 +2377,7 @@ int DrawRecordOp::CountSlowPaths() const {
 }
 
 bool DrawRecordOp::HasNonAAPaint() const {
-  return record.HasNonAAPaint();
+  return record.has_non_aa_paint();
 }
 
 bool DrawRecordOp::HasDrawTextOps() const {
@@ -2384,12 +2396,22 @@ bool DrawRecordOp::HasEffectsPreventingLCDTextForSaveLayerAlpha() const {
   return record.has_effects_preventing_lcd_text_for_save_layer_alpha();
 }
 
+bool DrawRecordOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  bool has_discardable_images = record.has_discardable_images();
+  if (has_discardable_images && content_color_usage) {
+    *content_color_usage =
+        std::max(*content_color_usage, record.content_color_usage());
+  }
+  return has_discardable_images;
+}
+
 int DrawScrollingContentsOp::CountSlowPaths() const {
   return display_item_list->num_slow_paths_up_to_min_for_MSAA();
 }
 
 bool DrawScrollingContentsOp::HasNonAAPaint() const {
-  return display_item_list->HasNonAAPaint();
+  return display_item_list->has_non_aa_paint();
 }
 
 bool DrawScrollingContentsOp::HasDrawTextOps() const {
@@ -2408,6 +2430,16 @@ bool DrawScrollingContentsOp::HasEffectsPreventingLCDTextForSaveLayerAlpha()
     const {
   return display_item_list
       ->has_effects_preventing_lcd_text_for_save_layer_alpha();
+}
+
+bool DrawScrollingContentsOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  bool has_discardable_images = display_item_list->has_discardable_images();
+  if (has_discardable_images && content_color_usage) {
+    *content_color_usage = std::max(*content_color_usage,
+                                    display_item_list->content_color_usage());
+  }
+  return has_discardable_images;
 }
 
 gfx::PointF DrawScrollingContentsOp::GetScrollOffset(
@@ -2447,8 +2479,9 @@ DrawImageOp::DrawImageOp(const PaintImage& image,
       top(top),
       sampling(sampling) {}
 
-bool DrawImageOp::HasDiscardableImages() const {
-  return image && !image.IsTextureBacked();
+bool DrawImageOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  return IsDiscardableImage(image, content_color_usage);
 }
 
 DrawImageOp::~DrawImageOp() = default;
@@ -2478,8 +2511,9 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
       sampling(sampling),
       constraint(constraint) {}
 
-bool DrawImageRectOp::HasDiscardableImages() const {
-  return image && !image.IsTextureBacked();
+bool DrawImageRectOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  return IsDiscardableImage(image, content_color_usage);
 }
 
 DrawImageRectOp::~DrawImageRectOp() = default;
@@ -2546,16 +2580,18 @@ DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 
 DrawSkottieOp::~DrawSkottieOp() = default;
 
-bool DrawSkottieOp::HasDiscardableImages() const {
-  return !images.empty();
-}
-
-bool DrawRecordOp::HasDiscardableImages() const {
-  return record.HasDiscardableImages();
-}
-
-bool DrawScrollingContentsOp::HasDiscardableImages() const {
-  return display_item_list->HasDiscardableImages();
+bool DrawSkottieOp::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  if (images.empty()) {
+    return false;
+  }
+  if (content_color_usage) {
+    for (auto& [_, frame_data] : images) {
+      *content_color_usage = std::max(*content_color_usage,
+                                      frame_data.image.GetContentColorUsage());
+    }
+  }
+  return true;
 }
 
 DrawTextBlobOp::DrawTextBlobOp() : PaintOpWithFlags(kType) {}

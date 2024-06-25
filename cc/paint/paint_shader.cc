@@ -256,9 +256,37 @@ size_t PaintShader::GetSerializedSize(const PaintShader* shader) {
 PaintShader::PaintShader(Type type) : shader_type_(type) {}
 PaintShader::~PaintShader() = default;
 
-bool PaintShader::has_discardable_images() const {
-  return (image_ && !image_.IsTextureBacked()) ||
-         (record_ && record_->HasDiscardableImages());
+bool PaintShader::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  switch (shader_type_) {
+    case Type::kEmpty:
+    case Type::kColor:
+    case Type::kLinearGradient:
+    case Type::kRadialGradient:
+    case Type::kTwoPointConicalGradient:
+    case Type::kSweepGradient:
+      return false;
+    case Type::kImage:
+      if (image_ && !image_.IsTextureBacked()) {
+        if (content_color_usage) {
+          *content_color_usage =
+              std::max(*content_color_usage, image_.GetContentColorUsage());
+        }
+        return true;
+      }
+      return false;
+    case Type::kPaintRecord:
+      if (record_ && record_->has_discardable_images()) {
+        if (content_color_usage) {
+          *content_color_usage =
+              std::max(*content_color_usage, record_->content_color_usage());
+        }
+        return true;
+      }
+      return false;
+    case Type::kShaderCount:
+      NOTREACHED_NORETURN();
+  }
 }
 
 bool PaintShader::GetClampedRasterizationTileRect(const SkMatrix& ctm,

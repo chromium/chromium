@@ -88,13 +88,14 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   subrecord_bytes_used_ = other.subrecord_bytes_used_;
   subrecord_op_count_ = other.subrecord_op_count_;
   has_non_aa_paint_ = other.has_non_aa_paint_;
-  has_discardable_images_ = other.has_discardable_images_;
   has_draw_ops_ = other.has_draw_ops_;
   has_draw_text_ops_ = other.has_draw_text_ops_;
   has_save_layer_ops_ = other.has_save_layer_ops_;
   has_save_layer_alpha_ops_ = other.has_save_layer_alpha_ops_;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ =
       other.has_effects_preventing_lcd_text_for_save_layer_alpha_;
+  has_discardable_images_ = other.has_discardable_images_;
+  content_color_usage_ = other.content_color_usage_;
 
   // Make sure the other pob can destruct safely or is ready for reuse.
   other.reserved_ = 0;
@@ -128,12 +129,13 @@ void PaintOpBuffer::ResetRetainingBuffer() {
   has_non_aa_paint_ = false;
   subrecord_bytes_used_ = 0;
   subrecord_op_count_ = 0;
-  has_discardable_images_ = false;
   has_draw_ops_ = false;
   has_draw_text_ops_ = false;
   has_save_layer_ops_ = false;
   has_save_layer_alpha_ops_ = false;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ = false;
+  has_discardable_images_ = false;
+  content_color_usage_ = gfx::ContentColorUsage::kSRGB;
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas) const {

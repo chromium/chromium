@@ -2019,7 +2019,7 @@ int LayerTreeHostImpl::GetMSAASampleCountForRaster(
     return 0;
   }
 
-  if (display_list->HasNonAAPaint()) {
+  if (display_list->has_non_aa_paint()) {
     return 0;
   }
 

@@ -21,6 +21,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
+#include "cc/paint/paint_shader.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/gfx/display_color_spaces.h"
@@ -72,8 +73,9 @@ class DiscardableImageMap::Generator {
   // this image in the top-level buffer.
   void GatherDiscardableImages(const PaintOpBuffer& buffer,
                                const gfx::Rect* top_level_op_rect) {
-    if (!buffer.HasDiscardableImages())
+    if (!buffer.has_discardable_images()) {
       return;
+    }
 
     // Prevent PaintOpBuffers from having side effects back into the canvas.
     SkAutoCanvasRestore save_restore(&canvas_, true);
@@ -182,8 +184,9 @@ class DiscardableImageMap::Generator {
                           const PaintShader* shader,
                           const SkM44& ctm,
                           PaintFlags::FilterQuality filter_quality) {
-    if (!shader || !shader->has_discardable_images())
+    if (!shader || !shader->HasDiscardableImages()) {
       return;
+    }
 
     if (shader->shader_type() == PaintShader::Type::kImage) {
       const PaintImage& paint_image = shader->paint_image();
@@ -261,10 +264,6 @@ class DiscardableImageMap::Generator {
     if (paint_image.IsPaintWorklet()) {
       map_.paint_worklet_inputs_.emplace_back(
           paint_image.paint_worklet_input(), paint_image.stable_id());
-    } else {
-      const auto image_color_usage = paint_image.GetContentColorUsage();
-      map_.content_color_usage_ =
-          std::max(map_.content_color_usage_, image_color_usage);
     }
 
     auto& rects = map_.image_id_to_rects_[paint_image.stable_id()];
@@ -321,35 +320,36 @@ class DiscardableImageMap::Generator {
   bool only_gather_animated_images_ = false;
 };  // DiscardableImageMap::Generator
 
-DiscardableImageMap::DiscardableImageMap() {
-  DETACH_FROM_SEQUENCE(images_rtree_sequence_checker_);
-}
+DiscardableImageMap::DiscardableImageMap() = default;
+
+// Once a DiscardableImage is generated, it's hold in a ref-counted
+// DisplayItemList which may be destructed from any thread.
 DiscardableImageMap::~DiscardableImageMap() = default;
 
 void DiscardableImageMap::Generate(const PaintOpBuffer& paint_op_buffer,
                                    const gfx::Rect& bounds) {
   TRACE_EVENT0("cc", "DiscardableImageMap::Generate");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!paint_op_buffer.HasDiscardableImages()) {
+  if (!paint_op_buffer.has_discardable_images()) {
     return;
   }
 
   SkNoDrawCanvas canvas(bounds.right(), bounds.bottom());
   Generator generator(*this, canvas, paint_op_buffer);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(images_rtree_sequence_checker_);
   CHECK(!images_rtree_);
-  DETACH_FROM_SEQUENCE(images_rtree_sequence_checker_);
 }
 
 base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
 DiscardableImageMap::TakeDecodingModeMap() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::move(decoding_mode_map_);
 }
 
 void DiscardableImageMap::GetDiscardableImagesInRect(
     const gfx::Rect& rect,
     std::vector<const DrawImage*>* images) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(images_rtree_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!images_rtree_) {
     images_rtree_ = std::make_unique<RTree<const DrawImage*>>();
 
@@ -362,18 +362,10 @@ void DiscardableImageMap::GetDiscardableImagesInRect(
 
 const DiscardableImageMap::Rects& DiscardableImageMap::GetRectsForImage(
     PaintImage::Id image_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static const base::NoDestructor<Rects> kEmptyRects;
   auto it = image_id_to_rects_.find(image_id);
   return it == image_id_to_rects_.end() ? *kEmptyRects : it->second;
-}
-
-void DiscardableImageMap::Reset() {
-  image_id_to_rects_.clear();
-  image_id_to_rects_.shrink_to_fit();
-  DCHECK_CALLED_ON_VALID_SEQUENCE(images_rtree_sequence_checker_);
-  images_rtree_.reset();
-  images_.clear();
-  DETACH_FROM_SEQUENCE(images_rtree_sequence_checker_);
 }
 
 DiscardableImageMap::AnimatedImageMetadata::AnimatedImageMetadata(

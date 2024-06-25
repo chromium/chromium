@@ -18,12 +18,10 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
-#include "cc/paint/paint_shader.h"
 #include "cc/paint/paint_worklet_input.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -58,18 +56,23 @@ class CC_PAINT_EXPORT DiscardableImageMap {
   DiscardableImageMap();
   ~DiscardableImageMap();
 
-  bool empty() const { return image_id_to_rects_.empty(); }
+  // Called if the caller creates DiscardableImageMap lazily.
+  void CheckCalledOnValidSequence() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  bool empty() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return image_id_to_rects_.empty();
+  }
   void GetDiscardableImagesInRect(const gfx::Rect& rect,
                                   std::vector<const DrawImage*>* images) const;
   const Rects& GetRectsForImage(PaintImage::Id image_id) const;
-  gfx::ContentColorUsage content_color_usage() const {
-    return content_color_usage_;
-  }
   const std::vector<AnimatedImageMetadata>& animated_images_metadata() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return animated_images_metadata_;
   }
 
-  void Reset();
   void Generate(const PaintOpBuffer& paint_op_buffer, const gfx::Rect& bounds);
 
   // This should only be called once from the compositor thread at commit time.
@@ -90,16 +93,13 @@ class CC_PAINT_EXPORT DiscardableImageMap {
   base::flat_map<PaintImage::Id, Rects> image_id_to_rects_;
   std::vector<AnimatedImageMetadata> animated_images_metadata_;
   std::vector<std::pair<DrawImage, gfx::Rect>> images_;
-  // This r-tree is built lazily and in practice is only constructed
-  // on the impl thread. The entries are DrawImage pointers in `images_`.
-  mutable std::unique_ptr<RTree<const DrawImage*>> images_rtree_
-      GUARDED_BY_CONTEXT(images_rtree_sequence_checker_);
+  // This r-tree is built lazily. The entries are DrawImage pointers in images_.
+  mutable std::unique_ptr<RTree<const DrawImage*>> images_rtree_;
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode> decoding_mode_map_;
-  gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
-
-  SEQUENCE_CHECKER(images_rtree_sequence_checker_);
-
   std::vector<PaintWorkletInputWithImageId> paint_worklet_inputs_;
+
+  // The class should be used from single thread only.
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace cc

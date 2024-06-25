@@ -89,11 +89,7 @@ void PictureLayer::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
 
 bool PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
   if (const DisplayItemList* display_list = GetDisplayItemList()) {
-    display_list->GenerateDiscardableImageMap();
-    if (display_list->discardable_image_map().content_color_usage() ==
-        gfx::ContentColorUsage::kHDR) {
-      return true;
-    }
+    return display_list->content_color_usage() == gfx::ContentColorUsage::kHDR;
   }
   return false;
 }

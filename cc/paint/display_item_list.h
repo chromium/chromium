@@ -147,7 +147,7 @@ class CC_PAINT_EXPORT DisplayItemList
   int num_slow_paths_up_to_min_for_MSAA() const {
     return paint_op_buffer_.num_slow_paths_up_to_min_for_MSAA();
   }
-  bool HasNonAAPaint() const { return paint_op_buffer_.HasNonAAPaint(); }
+  bool has_non_aa_paint() const { return paint_op_buffer_.has_non_aa_paint(); }
 
   // This gives the total number of PaintOps.
   size_t TotalOpCount() const { return paint_op_buffer_.total_op_count(); }
@@ -160,24 +160,19 @@ class CC_PAINT_EXPORT DisplayItemList
   size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
   // Should be called before any usage of discardable_image_map() or
-  // TakeDecodingModeMap(). There are two scenarios:
-  // 1. Called during commit from the compositor thread, then all usages of
-  //    the map from the compositor thread will be safe;
-  // 2. Called from the main thread in rare cases (e.g. from
-  //    PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange()) before
-  //    usage of the map.
-  void GenerateDiscardableImageMap() const;
+  // TakeDecodingModeMap(). There should be called during commit from the
+  // compositor thread, then all usages of the map from the compositor thread
+  // will be safe.
+  void GenerateDiscardableImageMap();
 
   // This can only be called after GenerateDiscardableImageMap().
   const DiscardableImageMap& discardable_image_map() const {
-    base::AutoLock lock(image_generation_lock_);
     CHECK(image_map_);
     return *image_map_;
   }
   // This can only be called after GenerateDiscardableImageMap().
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode>
   TakeDecodingModeMap() {
-    base::AutoLock lock(image_generation_lock_);
     CHECK(image_map_);
     return image_map_->TakeDecodingModeMap();
   }
@@ -211,8 +206,11 @@ class CC_PAINT_EXPORT DisplayItemList
     return paint_op_buffer_
         .has_effects_preventing_lcd_text_for_save_layer_alpha();
   }
-  bool HasDiscardableImages() const {
-    return paint_op_buffer_.HasDiscardableImages();
+  bool has_discardable_images() const {
+    return paint_op_buffer_.has_discardable_images();
+  }
+  gfx::ContentColorUsage content_color_usage() const {
+    return paint_op_buffer_.content_color_usage();
   }
 
   // Ops with nested paint ops are considered as a single op.
@@ -249,9 +247,7 @@ class CC_PAINT_EXPORT DisplayItemList
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
 
-  mutable std::optional<DiscardableImageMap> image_map_
-      GUARDED_BY(image_generation_lock_);
-  mutable base::Lock image_generation_lock_;
+  std::optional<DiscardableImageMap> image_map_;
 
   // Maps scroll element ids of `DrawScrollingContentsOp`s to visual rects.
   // For a nested `DrawScrollingContentsOp`, the scroll element id is of the

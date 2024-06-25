@@ -510,21 +510,21 @@ TEST(PaintOpBufferTest, SaveLayerRestore_DrawColor) {
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_EmptyBuffer) {
   PaintOpBuffer buffer;
-  EXPECT_FALSE(buffer.HasDiscardableImages());
+  EXPECT_FALSE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_NoImageOp) {
   PaintOpBuffer buffer;
   PaintFlags flags;
   buffer.push<DrawRectOp>(SkRect::MakeWH(100, 100), flags);
-  EXPECT_FALSE(buffer.HasDiscardableImages());
+  EXPECT_FALSE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_DrawImage) {
   PaintOpBuffer buffer;
   PaintImage image = CreateDiscardablePaintImage(gfx::Size(100, 100));
   buffer.push<DrawImageOp>(image, SkIntToScalar(0), SkIntToScalar(0));
-  EXPECT_TRUE(buffer.HasDiscardableImages());
+  EXPECT_TRUE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_PaintWorkletImage) {
@@ -533,7 +533,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTracking_PaintWorkletImage) {
   PaintOpBuffer buffer;
   PaintImage image = CreatePaintWorkletPaintImage(input);
   buffer.push<DrawImageOp>(image, SkIntToScalar(0), SkIntToScalar(0));
-  EXPECT_TRUE(buffer.HasDiscardableImages());
+  EXPECT_TRUE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_PaintWorkletImageRect) {
@@ -545,7 +545,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTracking_PaintWorkletImageRect) {
   SkRect dst = SkRect::MakeEmpty();
   buffer.push<DrawImageRectOp>(image, src, dst,
                                SkCanvas::kStrict_SrcRectConstraint);
-  EXPECT_TRUE(buffer.HasDiscardableImages());
+  EXPECT_TRUE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_DrawImageRect) {
@@ -554,7 +554,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTracking_DrawImageRect) {
   buffer.push<DrawImageRectOp>(image, SkRect::MakeWH(100, 100),
                                SkRect::MakeWH(100, 100),
                                SkCanvas::kFast_SrcRectConstraint);
-  EXPECT_TRUE(buffer.HasDiscardableImages());
+  EXPECT_TRUE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTracking_OpWithFlags) {
@@ -564,7 +564,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTracking_OpWithFlags) {
   flags.setShader(PaintShader::MakeImage(std::move(image), SkTileMode::kClamp,
                                          SkTileMode::kClamp, nullptr));
   buffer.push<DrawRectOp>(SkRect::MakeWH(100, 100), flags);
-  EXPECT_TRUE(buffer.HasDiscardableImages());
+  EXPECT_TRUE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, SlowPaths) {
@@ -625,25 +625,25 @@ TEST(PaintOpBufferTest, NonAAPaint) {
   // PaintOpWithFlags
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     // Add a PaintOpWithFlags (in this case a line) with AA.
     PaintFlags line_effect;
     line_effect.setAntiAlias(true);
     buffer.push<DrawLineOp>(1.f, 2.f, 3.f, 4.f, line_effect);
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     // Add a PaintOpWithFlags (in this case a line) without AA.
     PaintFlags line_effect_no_aa;
     line_effect_no_aa.setAntiAlias(false);
     buffer.push<DrawLineOp>(1.f, 2.f, 3.f, 4.f, line_effect_no_aa);
-    EXPECT_TRUE(buffer.HasNonAAPaint());
+    EXPECT_TRUE(buffer.has_non_aa_paint());
   }
 
   // ClipPathOp
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     SkPath path;
     path.addCircle(2, 2, 5);
@@ -651,44 +651,44 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     // ClipPathOp with AA
     buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/true,
                             UsePaintCache::kDisabled);
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     // ClipPathOp without AA
     buffer.push<ClipPathOp>(path, SkClipOp::kIntersect, /*antialias=*/false,
                             UsePaintCache::kDisabled);
-    EXPECT_TRUE(buffer.HasNonAAPaint());
+    EXPECT_TRUE(buffer.has_non_aa_paint());
   }
 
   // ClipRRectOp
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     // ClipRRectOp with AA
     buffer.push<ClipRRectOp>(SkRRect::MakeEmpty(), SkClipOp::kIntersect,
                              true /* antialias */);
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     // ClipRRectOp without AA
     buffer.push<ClipRRectOp>(SkRRect::MakeEmpty(), SkClipOp::kIntersect,
                              false /* antialias */);
-    EXPECT_TRUE(buffer.HasNonAAPaint());
+    EXPECT_TRUE(buffer.has_non_aa_paint());
   }
 
   // Drawing a record with non-aa paths into another propogates the value.
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintOpBuffer sub_buffer;
     SkPath path;
     path.addCircle(2, 2, 5);
     sub_buffer.push<ClipPathOp>(path, SkClipOp::kIntersect,
                                 /*antialias=*/false, UsePaintCache::kDisabled);
-    EXPECT_TRUE(sub_buffer.HasNonAAPaint());
+    EXPECT_TRUE(sub_buffer.has_non_aa_paint());
 
     buffer.push<DrawRecordOp>(sub_buffer.ReleaseAsRecord());
-    EXPECT_TRUE(buffer.HasNonAAPaint());
+    EXPECT_TRUE(buffer.has_non_aa_paint());
   }
 
   // The following PaintOpWithFlags types are overridden to *not* ever have
@@ -698,7 +698,7 @@ TEST(PaintOpBufferTest, NonAAPaint) {
   // DrawImageOp
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintImage image = CreateDiscardablePaintImage(gfx::Size(100, 100));
     PaintFlags non_aa_flags;
@@ -706,31 +706,31 @@ TEST(PaintOpBufferTest, NonAAPaint) {
     buffer.push<DrawImageOp>(image, SkIntToScalar(0), SkIntToScalar(0),
                              SkSamplingOptions(), &non_aa_flags);
 
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
   }
 
   // DrawIRectOp
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintFlags non_aa_flags;
     non_aa_flags.setAntiAlias(true);
     buffer.push<DrawIRectOp>(SkIRect::MakeWH(1, 1), non_aa_flags);
 
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
   }
 
   // SaveLayerOp
   {
     PaintOpBuffer buffer;
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
 
     PaintFlags non_aa_flags;
     non_aa_flags.setAntiAlias(true);
     buffer.push<SaveLayerOp>(SkRect::MakeWH(1, 1), non_aa_flags);
 
-    EXPECT_FALSE(buffer.HasNonAAPaint());
+    EXPECT_FALSE(buffer.has_non_aa_paint());
   }
 }
 
@@ -3644,7 +3644,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpNoImages) {
       CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/1),
       /*dst=*/SkRect::MakeWH(100, 100), /*t=*/0.1f, SkottieFrameDataMap(),
       SkottieColorMap(), SkottieTextPropertyValueMap());
-  EXPECT_FALSE(buffer.HasDiscardableImages());
+  EXPECT_FALSE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpWithImages) {
@@ -3657,7 +3657,7 @@ TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpWithImages) {
   ASSERT_FALSE(images_in.empty());
   buffer.push<DrawSkottieOp>(skottie, skottie_rect, /*t=*/0.1f, images_in,
                              SkottieColorMap(), SkottieTextPropertyValueMap());
-  EXPECT_TRUE(buffer.HasDiscardableImages());
+  EXPECT_TRUE(buffer.has_discardable_images());
 }
 
 TEST(PaintOpBufferTest, OpHasDiscardableImagesSkottieOpNoImages) {
@@ -4568,6 +4568,91 @@ TEST(IteratorTest, PlaybackFoldingIteratorEmptyDrawRecordInSaveLayerAlpha) {
   EXPECT_TRUE(++iter);
   EXPECT_TRUE(++iter);
   EXPECT_FALSE(++iter);
+}
+
+TEST(PaintOpBufferTest, ContentColorUsageFromImages) {
+  PaintOpBuffer buffer;
+  EXPECT_EQ(gfx::ContentColorUsage::kSRGB, buffer.content_color_usage());
+
+  // Adding a SRGB image should remain SRGB.
+  PaintImage srgb = CreateDiscardablePaintImage(
+      gfx::Size(1, 1), gfx::ColorSpace::CreateSRGB().ToSkColorSpace());
+  ASSERT_EQ(gfx::ContentColorUsage::kSRGB, srgb.GetContentColorUsage());
+  buffer.push<DrawImageOp>(srgb, 0.f, 0.f);
+  EXPECT_EQ(gfx::ContentColorUsage::kSRGB, buffer.content_color_usage());
+
+  // Adding a WCG image should switch to WCG.
+  PaintImage wcg = CreateDiscardablePaintImage(
+      gfx::Size(1, 1), gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
+  ASSERT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            wcg.GetContentColorUsage());
+  buffer.push<DrawImageOp>(wcg, 0.f, 0.f);
+  EXPECT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            buffer.content_color_usage());
+
+  // Adding a HDR image should switch to HDR.
+  PaintOpBuffer sub_buffer;
+  PaintImage hdr = CreateDiscardablePaintImage(
+      gfx::Size(1, 1), gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
+  ASSERT_EQ(gfx::ContentColorUsage::kHDR, hdr.GetContentColorUsage());
+  sub_buffer.push<DrawImageRectOp>(hdr, SkRect::MakeWH(10, 10),
+                                   SkRect::MakeWH(20, 20),
+                                   SkCanvas::kStrict_SrcRectConstraint);
+  EXPECT_EQ(gfx::ContentColorUsage::kHDR, sub_buffer.content_color_usage());
+  buffer.push<DrawRecordOp>(sub_buffer.ReleaseAsRecord());
+  EXPECT_EQ(gfx::ContentColorUsage::kHDR, buffer.content_color_usage());
+}
+
+TEST(PaintOpBufferTest, ContentColorUsageFromShader) {
+  PaintOpBuffer buffer1;
+  PaintFlags flags1;
+  PaintImage wcg = CreateDiscardablePaintImage(
+      gfx::Size(2, 2), gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
+  ASSERT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            wcg.GetContentColorUsage());
+  auto shader1 = PaintShader::MakeImage(wcg, SkTileMode::kClamp,
+                                        SkTileMode::kClamp, nullptr);
+  flags1.setShader(std::move(shader1));
+  buffer1.push<DrawRectOp>(SkRect::MakeWH(10, 20), flags1);
+  EXPECT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            buffer1.content_color_usage());
+
+  PaintOpBuffer buffer2;
+  PaintFlags flags2;
+  auto shader2 = PaintShader::MakePaintRecord(
+      buffer1.ReleaseAsRecord(), SkRect::MakeWH(2, 2), SkTileMode::kClamp,
+      SkTileMode::kClamp, nullptr);
+  flags2.setShader(std::move(shader2));
+  buffer2.push<DrawRectOp>(SkRect::MakeWH(10, 20), flags2);
+  EXPECT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            buffer2.content_color_usage());
+}
+
+TEST(PaintOpBufferTest, ContentColorUsageFromFilter) {
+  PaintOpBuffer buffer1;
+  PaintFlags flags1;
+  PaintImage wcg = CreateDiscardablePaintImage(
+      gfx::Size(2, 2), gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
+  ASSERT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            wcg.GetContentColorUsage());
+  auto filter1 = sk_make_sp<ImagePaintFilter>(wcg, SkRect::MakeWH(5, 5),
+                                              SkRect::MakeWH(5, 5),
+                                              PaintFlags::FilterQuality::kNone);
+  flags1.setImageFilter(std::move(filter1));
+  buffer1.push<DrawRectOp>(SkRect::MakeWH(10, 20), flags1);
+  EXPECT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            buffer1.content_color_usage());
+
+  PaintOpBuffer buffer2;
+  PaintFlags flags2;
+  auto filter2 = sk_make_sp<BlurPaintFilter>(
+      0.1f, 0.2f, SkTileMode::kClamp,
+      sk_make_sp<RecordPaintFilter>(buffer1.ReleaseAsRecord(),
+                                    SkRect::MakeWH(5, 5)));
+  flags2.setImageFilter(std::move(filter2));
+  buffer2.push<DrawRectOp>(SkRect::MakeWH(10, 20), flags2);
+  EXPECT_EQ(gfx::ContentColorUsage::kWideColorGamut,
+            buffer2.content_color_usage());
 }
 
 }  // namespace cc

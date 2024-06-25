@@ -139,7 +139,11 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     return image_analysis_state_;
   }
 
-  bool has_discardable_images() const;
+  // If `content_color_usage` is not null, the function should update
+  // `*content_color_usage` to be
+  // max(*content_color_usage, max_content_color_usage_of_the_flags).
+  bool HasDiscardableImages(
+      gfx::ContentColorUsage* content_color_usage = nullptr) const;
 
   SkMatrix GetLocalMatrix() const {
     return local_matrix_ ? *local_matrix_ : SkMatrix::I();

@@ -94,7 +94,6 @@ class DiscardableImageMapTest : public testing::Test {
     for (const auto* image : draw_image_ptrs)
       draw_images.push_back(DrawImage(
           *image, 1.f, PaintImage::kDefaultFrameIndex, target_color_params));
-    DCHECK_CALLED_ON_VALID_SEQUENCE(image_map.images_rtree_sequence_checker_);
     std::vector<PositionScaleDrawImage> position_draw_images;
     std::vector<const DrawImage*> results;
     image_map.images_rtree_->Search(rect, &results);
@@ -1123,46 +1122,6 @@ TEST_F(DiscardableImageMapTest, TracksImageRegions) {
             expected_region);
 }
 
-TEST_F(DiscardableImageMapTest, ContentColorUsage) {
-  constexpr gfx::Size kSize(25, 25);
-  constexpr gfx::Rect kVisibleRect(500, 500);
-  FakeContentLayerClient content_layer_client;
-  content_layer_client.set_bounds(kVisibleRect.size());
-
-  // Empty map should report a color usage of SRGB.
-  auto display_list = content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
-            gfx::ContentColorUsage::kSRGB);
-
-  // Adding a SRGB image should remain SRGB.
-  PaintImage discardable_image_srgb = CreateDiscardablePaintImage(
-      kSize, gfx::ColorSpace::CreateSRGB().ToSkColorSpace());
-  content_layer_client.add_draw_image(discardable_image_srgb, gfx::Point(0, 0));
-  display_list = content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
-            gfx::ContentColorUsage::kSRGB);
-
-  // Adding a WCG image should switch to WCG.
-  PaintImage discardable_image_wcg = CreateDiscardablePaintImage(
-      kSize, gfx::ColorSpace::CreateDisplayP3D65().ToSkColorSpace());
-  content_layer_client.add_draw_image(discardable_image_wcg, gfx::Point(0, 0));
-  display_list = content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
-            gfx::ContentColorUsage::kWideColorGamut);
-
-  // Adding a HDR image should switch to HDR.
-  PaintImage discardable_image_hdr = CreateDiscardablePaintImage(
-      kSize, gfx::ColorSpace::CreateHDR10().ToSkColorSpace());
-  content_layer_client.add_draw_image(discardable_image_hdr, gfx::Point(0, 0));
-  display_list = content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
-            gfx::ContentColorUsage::kHDR);
-}
-
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
 TEST_F(DiscardableImageMapTest,
        GetDiscardableImagesInRectSkottieWithoutImages) {
@@ -1261,51 +1220,5 @@ TEST_F(DiscardableImageMapTest,
 }
 
 #endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
-
-class DiscardableImageMapColorSpaceTest
-    : public DiscardableImageMapTest,
-      public testing::WithParamInterface<gfx::ColorSpace> {};
-
-TEST_P(DiscardableImageMapColorSpaceTest, ColorSpace) {
-  const gfx::ColorSpace image_color_space = GetParam();
-  gfx::Rect visible_rect(500, 500);
-  PaintImage discardable_image = CreateDiscardablePaintImage(
-      gfx::Size(500, 500), image_color_space.ToSkColorSpace());
-
-  FakeContentLayerClient content_layer_client;
-  content_layer_client.set_bounds(visible_rect.size());
-
-  scoped_refptr<DisplayItemList> display_list =
-      content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map = display_list->discardable_image_map();
-
-  EXPECT_EQ(image_map.content_color_usage(), gfx::ContentColorUsage::kSRGB);
-
-  content_layer_client.add_draw_image(discardable_image, gfx::Point(0, 0));
-  display_list = content_layer_client.PaintContentsToDisplayList();
-  display_list->GenerateDiscardableImageMap();
-  const DiscardableImageMap& image_map2 = display_list->discardable_image_map();
-
-  if (!image_color_space.IsValid()) {
-    EXPECT_EQ(image_map2.content_color_usage(), gfx::ContentColorUsage::kSRGB);
-  } else if (image_color_space == gfx::ColorSpace::CreateSRGB()) {
-    EXPECT_EQ(image_map2.content_color_usage(), gfx::ContentColorUsage::kSRGB);
-  } else if (image_color_space.IsHDR()) {
-    EXPECT_EQ(image_map2.content_color_usage(), gfx::ContentColorUsage::kHDR);
-  } else {
-    EXPECT_EQ(image_map2.content_color_usage(),
-              gfx::ContentColorUsage::kWideColorGamut);
-  }
-}
-
-gfx::ColorSpace test_color_spaces[] = {
-    gfx::ColorSpace(), gfx::ColorSpace::CreateSRGB(),
-    gfx::ColorSpace::CreateDisplayP3D65(), gfx::ColorSpace::CreateHDR10(),
-    gfx::ColorSpace::CreateHLG()};
-
-INSTANTIATE_TEST_SUITE_P(ColorSpace,
-                         DiscardableImageMapColorSpaceTest,
-                         testing::ValuesIn(test_color_spaces));
 
 }  // namespace cc

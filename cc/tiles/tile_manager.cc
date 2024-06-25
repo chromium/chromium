@@ -388,8 +388,7 @@ gfx::ContentColorUsage GetContentColorUsageForPrioritizedTile(
     const PrioritizedTile& prioritized_tile) {
   return prioritized_tile.raster_source()
       ->GetDisplayItemList()
-      ->discardable_image_map()
-      .content_color_usage();
+      ->content_color_usage();
 }
 
 }  // namespace

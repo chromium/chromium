@@ -776,11 +776,9 @@ void PictureLayerImpl::UpdateRasterSource(
                 new_display_item_list);
         needs_full_invalidation |=
             layer_tree_impl()->GetTargetColorParams(
-                current_display_item_list->discardable_image_map()
-                    .content_color_usage()) !=
+                current_display_item_list->content_color_usage()) !=
             layer_tree_impl()->GetTargetColorParams(
-                new_display_item_list->discardable_image_map()
-                    .content_color_usage());
+                new_display_item_list->content_color_usage());
         if (needs_full_invalidation)
           new_invalidation->Union(gfx::Rect(raster_source->size()));
       }
@@ -2202,7 +2200,7 @@ gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
   if (!display_item_list)
     return gfx::ContentColorUsage::kSRGB;
 
-  return display_item_list->discardable_image_map().content_color_usage();
+  return display_item_list->content_color_usage();
 }
 
 }  // namespace cc

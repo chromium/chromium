@@ -307,13 +307,13 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
   }
 }
 
-void DisplayItemList::GenerateDiscardableImageMap() const {
+void DisplayItemList::GenerateDiscardableImageMap() {
 #if DCHECK_IS_ON()
   DCHECK(IsFinalized());
 #endif
 
-  base::AutoLock lock(image_generation_lock_);
   if (image_map_) {
+    image_map_->CheckCalledOnValidSequence();
     return;
   }
 

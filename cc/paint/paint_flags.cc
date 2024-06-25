@@ -4,6 +4,7 @@
 
 #include "cc/paint/paint_flags.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/values_equivalent.h"
@@ -206,9 +207,20 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          AreValuesEqualForTesting(shader_, other.shader_);  // IN-TEST
 }
 
-bool PaintFlags::HasDiscardableImages() const {
-  return (shader_ && shader_->has_discardable_images()) ||
-         (image_filter_ && image_filter_->has_discardable_images());
+bool PaintFlags::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  bool has_discardable_images = false;
+  if (shader_) {
+    has_discardable_images = shader_->HasDiscardableImages(content_color_usage);
+  }
+  if (image_filter_ && image_filter_->has_discardable_images()) {
+    if (content_color_usage) {
+      *content_color_usage =
+          std::max(*content_color_usage, image_filter_->GetContentColorUsage());
+    }
+    has_discardable_images = true;
+  }
+  return has_discardable_images;
 }
 
 }  // namespace cc
