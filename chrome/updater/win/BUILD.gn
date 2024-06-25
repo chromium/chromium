@@ -98,6 +98,16 @@ artifact_zip("updater_zip") {
     "//chrome/updater/win/installer",
     "//chrome/updater/win/installer:installer_test",
   ]
+  if (is_chrome_branded) {
+    inputs += [
+      "$root_build_dir/GoogleUpdateAdmx.zip",
+      "$root_build_dir/GoogleCloudManagementAdmx.zip",
+    ]
+    deps += [
+      "//chrome/updater/enterprise/win/google:GoogleCloudManagementAdmxZip",
+      "//chrome/updater/enterprise/win/google:GoogleUpdateAdmxZip",
+    ]
+  }
 }
 
 process_version("uninstall.cmd") {
