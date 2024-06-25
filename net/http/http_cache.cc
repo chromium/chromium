@@ -507,6 +507,7 @@ void HttpCache::OnExternalCacheHit(
     const GURL& url,
     const std::string& http_method,
     const NetworkIsolationKey& network_isolation_key,
+    bool is_subframe_document_resource,
     bool used_credentials) {
   if (!disk_cache_.get() || mode_ == DISABLE) {
     return;
@@ -523,9 +524,8 @@ void HttpCache::OnExternalCacheHit(
   request_info.network_anonymization_key =
       NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           network_isolation_key);
-  // This method is only called for cache hits on resources, so mark this
-  // request as not being a subframe navigation.
-  request_info.is_subframe_document_resource = false;
+
+  request_info.is_subframe_document_resource = is_subframe_document_resource;
   if (base::FeatureList::IsEnabled(features::kSplitCacheByIncludeCredentials)) {
     if (!used_credentials) {
       request_info.load_flags &= LOAD_DO_NOT_SAVE_COOKIES;

@@ -210,11 +210,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void CloseIdleConnections(const char* net_log_reason_utf8);
 
   // Called whenever an external cache in the system reuses the resource
-  // referred to by `url`, `http_method`, `network_isolation_key`, and
-  // `include_credentials`.
+  // referred to by |url| and |http_method| and |network_isolation_key|.
   void OnExternalCacheHit(const GURL& url,
                           const std::string& http_method,
                           const NetworkIsolationKey& network_isolation_key,
+                          bool is_subframe_document_resource,
                           bool include_credentials);
 
   // Causes all transactions created after this point to simulate lock timeout

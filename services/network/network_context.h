@@ -288,6 +288,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void NotifyExternalCacheHit(const GURL& url,
                               const std::string& http_method,
                               const net::NetworkIsolationKey& key,
+                              bool is_subframe_document_resource,
                               bool include_credentials) override;
   void ClearCorsPreflightCache(
       mojom::ClearDataFilterPtr filter,

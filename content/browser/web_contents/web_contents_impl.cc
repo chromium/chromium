@@ -7046,9 +7046,10 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
 
   StoragePartition* partition = source->GetProcess()->GetStoragePartition();
 
-  CHECK(!blink::IsRequestDestinationFrame(request_destination));
+  DCHECK(!blink::IsRequestDestinationFrame(request_destination));
   partition->GetNetworkContext()->NotifyExternalCacheHit(
       url, http_method, source->GetNetworkIsolationKey(),
+      /*is_subframe_document_resource=*/false,
       /*include_credentials=*/include_credentials);
 }
 
