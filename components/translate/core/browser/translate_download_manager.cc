@@ -42,6 +42,13 @@ void TranslateDownloadManager::GetSupportedLanguages(
 }
 
 // static
+void TranslateDownloadManager::RequestLanguageList() {
+  TranslateLanguageList* language_list = GetInstance()->language_list();
+  DCHECK(language_list);
+  language_list->RequestLanguageList();
+}
+
+// static
 base::Time TranslateDownloadManager::GetSupportedLanguagesLastUpdated() {
   TranslateLanguageList* language_list = GetInstance()->language_list();
   DCHECK(language_list);

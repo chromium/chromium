@@ -67,6 +67,9 @@ class TranslateDownloadManager {
   static void GetSupportedLanguages(bool translate_allowed,
                                     std::vector<std::string>* languages);
 
+  // Refresh the language list if needed.
+  static void RequestLanguageList();
+
   // Returns the last-updated time when Chrome received a language list from a
   // Translate server. Returns null time if Chrome hasn't received any lists.
   static base::Time GetSupportedLanguagesLastUpdated();

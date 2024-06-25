@@ -508,14 +508,9 @@ void TranslatePrefs::GetLanguageInfoList(
         std::move(code);
   }
 
-  // Get the sorted list of translatable languages.
-  std::vector<std::string> translate_languages;
-  translate::TranslateDownloadManager::GetSupportedLanguages(
-      translate_allowed, &translate_languages);
-  // |translate_languages| should already be sorted alphabetically for fast
-  // searching.
-  DCHECK(
-      std::is_sorted(translate_languages.begin(), translate_languages.end()));
+  if (translate_allowed) {
+    translate::TranslateDownloadManager::RequestLanguageList();
+  }
 
   // Build the language list from the language map.
   for (auto& entry : language_map) {
@@ -532,15 +527,13 @@ void TranslatePrefs::GetLanguageInfoList(
     language.native_display_name =
         base::UTF16ToUTF8(adjusted_native_display_name);
 
-    std::string supports_translate_code = language.code;
-
     // Extract the base language: if the base language can be translated, then
     // even the regional one should be marked as such.
-    language::ToTranslateLanguageSynonym(&supports_translate_code);
+    std::string translate_code = language.code;
+    language::ToTranslateLanguageSynonym(&translate_code);
     language.supports_translate =
-        std::binary_search(translate_languages.begin(),
-                           translate_languages.end(), supports_translate_code);
-
+        translate::TranslateDownloadManager::IsSupportedLanguage(
+            translate_code);
     language_list->push_back(std::move(language));
   }
 }
