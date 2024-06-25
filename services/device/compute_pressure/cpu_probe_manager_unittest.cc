@@ -126,7 +126,7 @@ TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
       // Value after first Update(), should be discarded.
       CpuSample{0.9},
       // Value after second Update(), should be reported.
-      CpuSample{0.4},
+      CpuSample{0.65},
   };
 
   base::RunLoop run_loop;
@@ -196,9 +196,9 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
       // kNominal value after should be reported.
       CpuSample{0.3},
       // kFair value should be reported.
-      CpuSample{0.6},
+      CpuSample{0.7},
       // kSerious value should be reported.
-      CpuSample{0.9},
+      CpuSample{0.8},
       // kCritical value should be reported.
       CpuSample{1.0},
   };
@@ -230,9 +230,9 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
       // kSerious value should be reported.
       CpuSample{0.85},
       // kFair value should be reported.
-      CpuSample{0.55},
+      CpuSample{0.70},
       // kNominal value should be reported.
-      CpuSample{0.25},
+      CpuSample{0.55},
   };
 
   base::RunLoop run_loop;
@@ -263,9 +263,9 @@ TEST_F(CpuProbeManagerTest,
       // kCritical value should be reported due to hysteresis.
       CpuSample{0.88},
       // kFair value should be reported.
-      CpuSample{0.58},
+      CpuSample{0.73},
       // kNominal value should be reported.
-      CpuSample{0.26},
+      CpuSample{0.56},
   };
 
   base::RunLoop run_loop;
@@ -294,9 +294,9 @@ TEST_F(CpuProbeManagerTest,
       // kCritical value after should be reported.
       CpuSample{0.95},
       // kFair value should be reported.
-      CpuSample{0.58},
+      CpuSample{0.73},
       // kFair value should be reported due to hysteresis.
-      CpuSample{0.28},
+      CpuSample{0.58},
   };
 
   base::RunLoop run_loop;
@@ -322,11 +322,11 @@ TEST_F(CpuProbeManagerTest,
       // Value after first Update(), should be discarded.
       CpuSample{1.0},
       // kNominal value after should be reported.
-      CpuSample{0.3},
+      CpuSample{0.6},
       // kFair value should be reported due to hysteresis.
-      CpuSample{0.32},
-      // kSerious value should be reported.
       CpuSample{0.62},
+      // kSerious value should be reported.
+      CpuSample{0.77},
       // kCritical value should be reported.
       CpuSample{0.91},
   };

@@ -97,7 +97,8 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
     manager_impl_ = PressureManagerImpl::Create();
     auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
-    fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.42});
+    // CpuSample = 0.63 is converted to PressureState::kFair
+    fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.63});
     std::unique_ptr<CpuProbeManager> cpu_probe_manager =
         CpuProbeManager::CreateForTesting(
             std::move(fake_cpu_probe), kDefaultSamplingIntervalForTesting,
@@ -131,6 +132,7 @@ TEST_F(PressureManagerImplTest, OneClient) {
   client.WaitForUpdate();
   ASSERT_EQ(client.updates().size(), 1u);
   EXPECT_EQ(client.updates()[0].source, mojom::PressureSource::kCpu);
+  // In SetUp() CpuSample = 0.63, which is translated to PressureState::kFair.
   EXPECT_EQ(client.updates()[0].state, mojom::PressureState::kFair);
 }
 
@@ -148,6 +150,7 @@ TEST_F(PressureManagerImplTest, ThreeClients) {
                               mojom::PressureSource::kCpu),
             mojom::PressureStatus::kOk);
 
+  // In SetUp() CpuSample = 0.63, which is translated to PressureState::kFair.
   FakePressureClient::WaitForUpdates({&client1, &client2, &client3});
   ASSERT_EQ(client1.updates().size(), 1u);
   EXPECT_EQ(client1.updates()[0].source, mojom::PressureSource::kCpu);

@@ -31,16 +31,16 @@ constexpr uint64_t kMaxRandomizationTimeInSeconds = 240;
 // Thresholds to use with no randomization.
 constexpr std::array<double,
                      static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
-    kStateBaseThresholds = {0.3,   // kNominal
-                            0.6,   // kFair
+    kStateBaseThresholds = {0.6,   // kNominal
+                            0.75,  // kFair
                             0.9,   // kSerious
                             1.0};  // kCritical
 
 // Thresholds to use during randomization.
 constexpr std::array<double,
                      static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
-    kStateRandomizedThresholds = {0.2,   // kNominal
-                                  0.7,   // kFair
+    kStateRandomizedThresholds = {0.5,   // kNominal
+                                  0.8,   // kFair
                                   0.85,  // kSerious
                                   1.0};  // kCritical
 
