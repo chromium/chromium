@@ -31100,7 +31100,7 @@ Called by update_net_error_codes.py.-->
   <int value="38" label="DesktopNtpModule"/>
   <int value="41" label="AndroidHomeModuleRanker"/>
   <int value="44" label="ComposePromotion"/>
-  <int value="46" label="URLVisitResumptionRanker"/>
+  <int value="46" label="UrlVisitResumptionRanker"/>
 </enum>
 
 <enum name="SegmentationPlatformTrainingDataCollectionEvent">

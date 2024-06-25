@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
   <variant name="TabletProductivityUser"/>
   <variant name="TabResumptionClassifier"/>
   <variant name="Unknown"/>
-  <variant name="URLVisitResumptionRanker"/>
+  <variant name="UrlVisitResumptionRanker"/>
   <variant name="Voice"/>
   <variant name="WebAppInstallationPromo"/>
 </variants>
