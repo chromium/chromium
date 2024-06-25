@@ -377,10 +377,15 @@ extern int GetLensOverlayTapRegionHeight();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayTapRegionWidth();
 
-// Returns whether to enable the image context menu extrypoint for Lens
+// Returns whether to enable the image context menu entry point for Lens
 // Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseLensOverlayForImageSearch();
+
+// Returns whether to enable the video context menu entry point for Lens
+// Overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseLensOverlayForVideoFrameSearch();
 
 // Returns whether to enable the find-in-page entry point.
 COMPONENT_EXPORT(LENS_FEATURES)

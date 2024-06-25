@@ -2027,7 +2027,8 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
   }
 
   const int search_for_image_idc = GetSearchForImageIdc();
-  if (LensOverlayController::IsEnabled(GetBrowser())) {
+  if (LensOverlayController::IsEnabled(GetBrowser()) &&
+      lens::features::UseLensOverlayForImageSearch()) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -2109,16 +2110,35 @@ void RenderViewContextMenu::AppendVideoItems() {
                                        IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
   AppendMediaRouterItem();
 
+  // Search for video frame menu item.
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
-    const auto* provider = GetImageSearchProvider();
-    if (!provider) {
-      return;
+    const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
+
+    if (LensOverlayController::IsEnabled(GetBrowser()) &&
+        lens::features::UseLensOverlayForVideoFrameSearch()) {
+      const gfx::VectorIcon& icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+          vector_icons::kSearchIcon;
+#endif
+      menu_model_.AddItemWithStringIdAndIcon(
+          search_for_video_frame_idc, IDS_CONTENT_CONTEXT_LENS_OVERLAY,
+          ui::ImageModel::FromVectorIcon(icon));
+    } else {
+      const auto* provider = GetImageSearchProvider();
+      if (!provider) {
+        return;
+      }
+
+      menu_model_.AddItem(
+          search_for_video_frame_idc,
+          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
+                                     GetImageSearchProviderName(provider)));
     }
 
-    menu_model_.AddItem(
-        GetSearchForVideoFrameIdc(),
-        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME,
-                                   GetImageSearchProviderName(provider)));
+    // TODO(b/344600237): Add SetElementIdentifierAt() and interactive tests.
+
     MaybePrepareForLensQuery();
   }
 }
@@ -4630,14 +4650,36 @@ void RenderViewContextMenu::MediaPlayerAction(
   }
 }
 
-// TODO(b/344600237): Use `region_bounds` for Lens overlay.
 void RenderViewContextMenu::SearchForVideoFrame(
     const SkBitmap& bitmap,
-    const gfx::Rect& /*region_bounds*/) {
+    const gfx::Rect& region_bounds) {
   if (bitmap.isNull()) {
     return;
   }
 
+  if (LensOverlayController::IsEnabled(GetBrowser()) &&
+      lens::features::UseLensOverlayForVideoFrameSearch()) {
+    RenderFrameHost* render_frame_host = GetRenderFrameHost();
+    if (!render_frame_host) {
+      return;
+    }
+
+    auto tab_bounds = source_web_contents_->GetViewBounds();
+    auto view_bounds = render_frame_host->GetView()->GetViewBounds();
+    float device_scale_factor =
+        render_frame_host->GetView()->GetDeviceScaleFactor();
+
+    // OpenLensOverlayWithPreselectedRegion() only takes a `ChromeRenderFrame`
+    // to keep it alive while the mojo calls run, which is not needed here.
+    OpenLensOverlayWithPreselectedRegion(
+        /*chrome_render_frame=*/mojo::AssociatedRemote<
+            chrome::mojom::ChromeRenderFrame>(),
+        tab_bounds, view_bounds, device_scale_factor, bitmap, region_bounds);
+    return;
+  }
+
+  // If not using Lens overlay for video frame search, fallback to use
+  // CoreTabHelper.
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(source_web_contents_);
   if (!core_tab_helper) {
