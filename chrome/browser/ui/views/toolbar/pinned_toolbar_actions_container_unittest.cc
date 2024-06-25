@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -34,6 +35,7 @@
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kToolbarPinning);
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
@@ -169,6 +171,9 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
     view->OnKeyReleased(
         ui::KeyEvent(ui::ET_KEY_PRESSED, code, flags, ui::EventTimeForNow()));
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   raw_ptr<PinnedToolbarActionsModel> model_;
@@ -391,7 +396,7 @@ TEST_F(PinnedToolbarActionsContainerTest, MovingActionsUpdateOrderUsingDrag) {
   ASSERT_EQ(toolbar_buttons[1]->GetActionId(), actions::kActionCut);
 }
 
-TEST_F(PinnedToolbarActionsContainerTest, ContextMenuTest) {
+TEST_F(PinnedToolbarActionsContainerTest, ContextMenuPinTest) {
   actions::ActionItem* browser_action_item =
       browser_view()->browser()->browser_actions()->root_action_item();
 
@@ -409,6 +414,9 @@ TEST_F(PinnedToolbarActionsContainerTest, ContextMenuTest) {
   EXPECT_EQ(
       pinned_buttons[0]->menu_model()->GetLabelAt(0),
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
+  // Skip index 1, which is a divider with no string.
+  EXPECT_EQ(pinned_buttons[0]->menu_model()->GetLabelAt(2),
+            l10n_util::GetStringUTF16(IDS_SHOW_CUSTOMIZE_CHROME_TOOLBAR));
   pinned_buttons[0]->ExecuteCommand(IDC_UPDATE_SIDE_PANEL_PIN_STATE, 0);
   WaitForAnimations();
   pinned_buttons = GetChildToolbarButtons();
