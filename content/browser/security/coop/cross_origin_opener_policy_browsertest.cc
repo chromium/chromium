@@ -4184,7 +4184,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
   EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
   EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-  if (base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault)) {
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
     // The main frame and the child frame have different origins, so when
     // OriginKeyedProcessesByDefault is enabled they will be placed in different
     // processes.
@@ -4490,8 +4490,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // locked process back to an unlocked process, and hence require a process
     // swap.
     EXPECT_NE(rph_id_2, rph_id_3);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kOriginKeyedProcessesByDefault)) {
+  } else if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
     // With OriginKeyedProcessesByDefault, each unique origin will be placed in
     // a separate process.
     EXPECT_NE(rph_id_1, rph_id_2);

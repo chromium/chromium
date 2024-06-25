@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
     // Create expected site url, including port if origin isolation is enabled.
     std::string expected_site_url =
-        base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault)
+        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()
             ? url::Origin::Create(https_url).GetURL().spec()
             : std::string("https://a.test/");
     EXPECT_EQ(expected_site_url,

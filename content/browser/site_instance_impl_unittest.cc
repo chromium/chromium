@@ -551,8 +551,6 @@ TEST_F(SiteInstanceTest,
   feature_list.InitWithFeatures(
       /* enable */ {features::kOriginKeyedProcessesByDefault},
       /* disable */ {});
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault));
 
   TestBrowserContext browser_context;
   GURL url("https://www.foo.com/");
@@ -676,7 +674,7 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   TestBrowserContext context;
 
   bool origin_keyed_processes_by_default =
-      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
 
   // Pages are irrelevant.
   GURL test_url = GURL("http://www.google.com/index.html");
@@ -852,7 +850,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   // (foo.com).
   {
     bool origin_keyed_processes_by_default =
-        base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+        SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
 
     auto site_info = SiteInfo::CreateForTesting(isolation_context, test_url);
     if (origin_keyed_processes_by_default) {
@@ -864,7 +862,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   }
 
   bool is_origin_keyed_processes_by_default =
-      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
   GURL expected_process_lock_url =
       is_origin_keyed_processes_by_default ? test_url : nonapp_site_url;
   SiteInfo expected_site_info(
@@ -1669,7 +1667,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
 
   bool is_origin_keyed_processes_by_default =
-      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+      SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
   SiteInfo expected_site_info(
       app_url /* site_url */, original_url /* process_lock_url */,
       is_origin_keyed_processes_by_default,

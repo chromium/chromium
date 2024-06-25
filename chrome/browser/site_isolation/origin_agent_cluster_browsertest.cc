@@ -14,6 +14,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/variations/active_field_trials.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
 IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
                        ProcessCountMetricsNoOACs) {
   bool origin_keyed_processes_by_default =
-      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault();
   GURL start_url(https_server()->GetURL("foo.com", "/iframe.html"));
   GURL sub_origin_url(https_server()->GetURL("sub.foo.com", "/title1.html"));
 
