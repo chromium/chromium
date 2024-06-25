@@ -81,7 +81,8 @@ enum EventType {
   kGesturePinchTypeLast = kGesturePinchUpdate,
 
   // The following types are variations and subevents of single-taps.
-  //
+  kGestureBegin,
+
   // Sent the moment the user's finger hits the screen.
   kGestureTapDown,
   // Sent a short interval later, after it seems the finger is staying in
@@ -119,7 +120,9 @@ enum EventType {
   // a touchpad, as the desired effect is similar to Android's double-tap.
   kGestureDoubleTap,
 
-  kGestureTypeLast = kGestureDoubleTap,
+  kGestureEnd,
+
+  kGestureTypeLast = kGestureEnd,
 
   // WebTouchEvent - raw touch pointers not yet classified into gestures.
   kTouchStart,

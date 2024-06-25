@@ -458,6 +458,8 @@ public abstract class ChromeFeatureList {
     public static final String STOP_APP_INDEXING_REPORT = "StopAppIndexingReport";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
+    public static final String SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END =
+            "SuppressToolbarCapturesAtGestureEnd";
     public static final String SURFACE_POLISH = "SurfacePolish";
     public static final String SURFACE_POLISH_FOR_TOOLBAR_KILL_SWITCH =
             "SurfacePolishForToolbarKillSwitch";
@@ -843,6 +845,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SAFETY_HUB, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
+    public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
+            newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
     public static final MutableFlagWithSafeDefault sTabIdMap =
             newMutableFlagWithSafeDefault(TAB_ID_MAP, true);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =

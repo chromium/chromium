@@ -182,6 +182,12 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mControlsResizeView;
     private boolean mInGesture;
     private boolean mContentViewScrolling;
+    // The number of active touch pointers. We are sending a gesture begin
+    // event for every added touch point, and a gesnture end event for every
+    // removed touch point.
+    // TODO(crbug.com/265479149): We will remove |mInGesture| if we enable the
+    // SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END feature.
+    private int mNumGestureActiveTouches;
     private ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier;
 
     // Handler for changes to viewport insets.
@@ -337,6 +343,20 @@ public class CompositorViewHolder extends FrameLayout
                         assert getWebContents() != null;
                         updateVirtualKeyboardMode(getWebContents().getVirtualKeyboardMode());
                     }
+                }
+
+                // TODO(crbug.com/265479149): Split out a specific delegate for
+                // gesture listening below and remove from TabObserver.
+                @Override
+                public void onGestureBegin() {
+                    mNumGestureActiveTouches++;
+                    updateInMotion();
+                }
+
+                @Override
+                public void onGestureEnd() {
+                    mNumGestureActiveTouches--;
+                    updateInMotion();
                 }
             };
 
@@ -720,7 +740,13 @@ public class CompositorViewHolder extends FrameLayout
 
     private void updateInMotion() {
         // TODO(crbug.com/40244051): Track fling as well.
-        boolean inMotion = mInGesture || mContentViewScrolling;
+        boolean inMotion = mContentViewScrolling;
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END)) {
+            inMotion |= mNumGestureActiveTouches > 0;
+        } else {
+            inMotion |= mInGesture;
+        }
         mInMotionSupplier.set(inMotion);
         if (mContentView != null) {
             mContentView.setDeferKeepScreenOnChanges(inMotion);

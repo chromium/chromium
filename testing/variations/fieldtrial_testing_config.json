@@ -21360,6 +21360,21 @@
             ]
         }
     ],
+    "SuppressToolbarCapturesAtGestureEnd": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SuppressToolbarCapturesAtGestureEnd"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [

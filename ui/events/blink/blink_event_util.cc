@@ -461,7 +461,11 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
           IfNanUseMaxFloat(details.bounding_box_f().height());
       break;
     case ET_GESTURE_BEGIN:
+      gesture.SetType(WebInputEvent::Type::kGestureBegin);
+      break;
     case ET_GESTURE_END:
+      gesture.SetType(WebInputEvent::Type::kGestureEnd);
+      break;
     case ET_GESTURE_SWIPE:
       // The caller is responsible for discarding these gestures appropriately.
       gesture.SetType(WebInputEvent::Type::kUndefined);

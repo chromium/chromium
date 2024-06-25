@@ -179,4 +179,10 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}
+
+    @Override
+    public void onGestureBegin() {}
+
+    @Override
+    public void onGestureEnd() {}
 }

@@ -287,6 +287,8 @@ class BLINK_COMMON_EXPORT WebInputEvent {
       CASE_TYPE(GestureShortPress);
       CASE_TYPE(GestureLongPress);
       CASE_TYPE(GestureLongTap);
+      CASE_TYPE(GestureBegin);
+      CASE_TYPE(GestureEnd);
       CASE_TYPE(GesturePinchBegin);
       CASE_TYPE(GesturePinchEnd);
       CASE_TYPE(GesturePinchUpdate);

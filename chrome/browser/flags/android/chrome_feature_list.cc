@@ -279,6 +279,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSmallerTabStripTitleLimit,
     &kStopAppIndexingReport,
     &kSuppressToolbarCaptures,
+    &kSuppressToolbarCapturesAtGestureEnd,
     &kTabDragDropAndroid,
     &kTabGroupParityAndroid,
     &kTabIdMapAndroid,
@@ -877,6 +878,10 @@ BASE_FEATURE(kStopAppIndexingReport,
 BASE_FEATURE(kSuppressToolbarCaptures,
              "SuppressToolbarCaptures",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
+             "SuppressToolbarCapturesAtGestureEnd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabDragDropAndroid,
              "TabDragDropAndroid",

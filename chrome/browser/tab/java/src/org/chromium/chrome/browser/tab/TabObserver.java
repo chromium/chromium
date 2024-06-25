@@ -369,6 +369,12 @@ public interface TabObserver {
      */
     void onContentViewScrollingStateChanged(boolean scrolling);
 
+    /** Called when the gesture begin event is received. */
+    void onGestureBegin();
+
+    /** Called when the gesture end event is received. */
+    void onGestureEnd();
+
     /** Back press refactor related. Called when navigation state is invalidated. */
     void onNavigationStateChanged();
 

@@ -335,6 +335,16 @@ public class GestureListenerManagerImpl
                         .getContainerView()
                         .performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 break;
+            case EventType.GESTURE_BEGIN:
+                for (mIterator.rewind(); mIterator.hasNext(); ) {
+                    mIterator.next().onGestureBegin();
+                }
+                break;
+            case EventType.GESTURE_END:
+                for (mIterator.rewind(); mIterator.hasNext(); ) {
+                    mIterator.next().onGestureEnd();
+                }
+                break;
             default:
                 break;
         }

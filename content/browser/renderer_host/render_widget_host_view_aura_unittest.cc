@@ -5608,10 +5608,11 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
 
   // GestureTap event should have correct pointer type.
   events = GetAndResetDispatchedMessages();
-  EXPECT_EQ("GestureTapDown GestureShowPress GestureTap",
-            GetMessageNames(events));
+  EXPECT_EQ(
+      "GestureBegin GestureTapDown GestureShowPress GestureTap GestureEnd",
+      GetMessageNames(events));
   const WebGestureEvent* gesture_event = static_cast<const WebGestureEvent*>(
-      &events[2]->ToEvent()->Event()->Event());
+      &events[3]->ToEvent()->Event()->Event());
   EXPECT_EQ(WebInputEvent::Type::kGestureTap, gesture_event->GetType());
   EXPECT_EQ(blink::WebPointerProperties::PointerType::kPen,
             gesture_event->primary_pointer_type);

@@ -42,6 +42,12 @@ public abstract class GestureStateListener {
     /** Called when a scroll gesture has stopped. */
     public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {}
 
+    /** Called when a gesture begin event has been processed. */
+    public void onGestureBegin() {}
+
+    /** Called when a gesture end event has been processed. */
+    public void onGestureEnd() {}
+
     /** Called when the min or max scale factor may have been changed. */
     public void onScaleLimitsChanged(float minPageScaleFactor, float maxPageScaleFactor) {}
 

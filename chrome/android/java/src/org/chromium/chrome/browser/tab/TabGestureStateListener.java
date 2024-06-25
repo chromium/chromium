@@ -67,6 +67,24 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
                         onScrollingStateChanged();
                     }
 
+                    @Override
+                    public void onGestureBegin() {
+                        RewindableIterator<TabObserver> observers =
+                                ((TabImpl) mTab).getTabObservers();
+                        while (observers.hasNext()) {
+                            observers.next().onGestureBegin();
+                        }
+                    }
+
+                    @Override
+                    public void onGestureEnd() {
+                        RewindableIterator<TabObserver> observers =
+                                ((TabImpl) mTab).getTabObservers();
+                        while (observers.hasNext()) {
+                            observers.next().onGestureEnd();
+                        }
+                    }
+
                     private void onScrollingStateChanged() {
                         boolean scrolling = manager != null ? manager.isScrollInProgress() : false;
                         RewindableIterator<TabObserver> observers =

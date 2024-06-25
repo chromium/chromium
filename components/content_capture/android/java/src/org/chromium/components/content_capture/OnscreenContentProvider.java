@@ -33,14 +33,13 @@ public class OnscreenContentProvider {
 
     private long mNativeOnscreenContentProviderAndroid;
 
-    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers =
-            new ArrayList<ContentCaptureConsumer>();
+    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
 
     private WeakReference<WebContents> mWebContents;
 
     public OnscreenContentProvider(
             Context context, View view, ViewStructure structure, WebContents webContents) {
-        mWebContents = new WeakReference<WebContents>(webContents);
+        mWebContents = new WeakReference<>(webContents);
         if (sDump == null) sDump = ContentCaptureFeatures.isDumpForTestingEnabled();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -91,7 +90,7 @@ public class OnscreenContentProvider {
     }
 
     public void onWebContentsChanged(WebContents current) {
-        mWebContents = new WeakReference<WebContents>(current);
+        mWebContents = new WeakReference<>(current);
         if (mNativeOnscreenContentProviderAndroid != 0) {
             OnscreenContentProviderJni.get()
                     .onWebContentsChanged(mNativeOnscreenContentProviderAndroid, current);
@@ -219,7 +218,8 @@ public class OnscreenContentProvider {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long init(OnscreenContentProvider caller, WebContents webContents);
 
         void onWebContentsChanged(
