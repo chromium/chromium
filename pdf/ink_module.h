@@ -134,7 +134,7 @@ class InkModule {
     // screen-based position that are provided during stroking from
     // `blink::WebMouseEvent` positions.  Used after stroking has already
     // started, to support invalidation.
-    gfx::PointF ink_input_last_event_position;
+    std::optional<gfx::PointF> ink_input_last_event_position;
 
     // The points that make up the current stroke. Coordinates for each
     // `InkStrokeInput` are stored in a canonical format specified in
