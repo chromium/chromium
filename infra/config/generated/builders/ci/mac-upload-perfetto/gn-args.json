@@ -4,6 +4,8 @@
     "enable_perfetto_zlib": true,
     "is_component_build": false,
     "is_debug": false,
+    "target_cpu": "arm64",
+    "target_os": "mac",
     "use_remoteexec": true,
     "use_siso": true
   }
