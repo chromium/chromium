@@ -28,7 +28,6 @@ gpu::MockTransferBuffer::ExpectedMemoryInfo::ptr
 
 # Populated manually - conflicting types in an initializer list
 WebUITabStripContainerView::tab_counter_
-DownloadItemView::review_button_
 
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
@@ -84,17 +83,6 @@ device::BluetoothDevice::adapter_
 # expects the raw pointer type.
 vr::LocationBarState::vector_icon
 vr::OmniboxSuggestion::icon
-
-# Populated manually - assigned to |auto*| in ranged loop on an array
-# initializer literal comprising of those pointers.
-DownloadItemView::discard_button_
-DownloadItemView::open_now_button_
-DownloadItemView::save_button_
-DownloadItemView::scan_button_
-OpaqueBrowserFrameViewLayout::minimize_button_
-OpaqueBrowserFrameViewLayout::maximize_button_
-OpaqueBrowserFrameViewLayout::restore_button_
-OpaqueBrowserFrameViewLayout::close_button_
 
 # Populated manually - incompatibilities with tracing (TRACE_EVENT*),
 # perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.

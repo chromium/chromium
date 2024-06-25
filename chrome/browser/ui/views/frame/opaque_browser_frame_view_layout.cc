@@ -244,7 +244,7 @@ void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(
 
   is_window_controls_overlay_enabled_ = enabled;
 
-  for (auto* button :
+  for (const raw_ptr<views::Button>& button :
        {minimize_button_, maximize_button_, restore_button_, close_button_}) {
     if (!button)
       continue;
