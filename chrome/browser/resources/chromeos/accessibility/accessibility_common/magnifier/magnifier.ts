@@ -38,6 +38,7 @@ export class Magnifier {
    * focus updates.
    */
   private isInitializing_ = true;
+
   /** Last time mouse has moved (from last onMouseMovedOrDragged). */
   private lastMouseMovedTime_: Date|undefined;
   private lastFocusSelectionOrCaretMove_: Date|undefined;
@@ -235,6 +236,15 @@ export class Magnifier {
     this.isInitializing_ = isInitializing;
   }
 
+  /**
+   * Sets |IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS| inside tests to ensure all
+   * automated input is received.
+   */
+  setIgnoreAssistiveTechnologyUpdatesAfterOtherMoveDurationForTest(
+      duration: number): void {
+    Magnifier.IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS = duration;
+  }
+
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
@@ -414,7 +424,7 @@ export namespace Magnifier {
    * updates from assistive technologies like Select to Speak and ChromeVox, to
    * prevent the magnified region from jumping.
    */
-  export const IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS = 1500;
+  export var IGNORE_AT_UPDATES_AFTER_OTHER_MOVE_MS = 1500;
 }
 
 TestImportManager.exportForTesting(Magnifier);
