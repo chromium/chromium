@@ -9,6 +9,7 @@ import {Router} from 'chrome://compare/router.js';
 import type {ProductInfo, ProductSpecifications, ProductSpecificationsProduct, ProductSpecificationsSet, ProductSpecificationsValue} from 'chrome://compare/shopping_service.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -137,6 +138,7 @@ suite('AppTest', () => {
   }
 
   setup(async () => {
+    loadTimeData.overrideValues({priceRowTitle: 'price'});
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
     router.reset();
@@ -292,6 +294,7 @@ suite('AppTest', () => {
       title: 'qux',
       productUrl: {url: 'https://example.com/'},
       imageUrl: {url: 'qux.com/image'},
+      currentPrice: '$100',
     });
     const info2 = createInfo({
       clusterId: BigInt(231),
@@ -324,6 +327,7 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
+              {title: 'price', description: '$100', summary: ''},
               {title: detailTitle, description: 'bar, baz', summary: 'summary'},
             ],
           },
@@ -339,6 +343,7 @@ suite('AppTest', () => {
             // `productDetails` should have empty strings for `description` and
             // summary`.
             productDetails: [
+              {title: 'price', description: '', summary: ''},
               {title: detailTitle, description: '', summary: ''},
             ],
           },
@@ -405,6 +410,7 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
+              {title: 'price', description: '', summary: ''},
               {title: detailTitle, description: 'bar', summary: ''},
             ],
           },
@@ -515,6 +521,7 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
+              {title: 'price', description: '', summary: ''},
               {title: detailTitle, description: 'desc 1', summary: ''},
             ],
           },
@@ -525,6 +532,7 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
+              {title: 'price', description: '', summary: ''},
               {title: detailTitle, description: 'desc 2', summary: ''},
             ],
           },
@@ -663,6 +671,7 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
+              {title: 'price', description: '', summary: ''},
               {title: rowTitle, description: 'desc 2', summary: ''},
             ],
           },
@@ -673,6 +682,7 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
+              {title: 'price', description: '', summary: ''},
               {title: rowTitle, description: 'desc 1', summary: ''},
             ],
           },

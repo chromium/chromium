@@ -15,6 +15,7 @@ import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/brows
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {PageCallbackRouter, ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -60,8 +61,18 @@ export interface ProductSpecificationsElement {
 
 function getProductDetails(
     product: ProductSpecificationsProduct|null,
-    productSpecs: ProductSpecifications): ProductDetail[] {
+    productSpecs: ProductSpecifications,
+    productInfo: ProductInfo|null): ProductDetail[] {
   const productDetails: ProductDetail[] = [];
+
+  // First add rows that don't come directly from the product
+  // specifications backend.
+  productDetails.push({
+    title: loadTimeData.getString('priceRowTitle'),
+    description: (productInfo?.currentPrice || ''),
+    summary: '',
+  });
+
   productSpecs.productDimensionMap.forEach((title: string, key: bigint) => {
     if (!product) {
       // Fill missing product details with strings to ensure uniform table row
@@ -206,8 +217,8 @@ export class ProductSpecificationsElement extends PolymerElement {
             url: url,
             imageUrl: info ? info.imageUrl.url : '',
           },
-          productDetails: product ? getProductDetails(product, productSpecs) :
-                                    getProductDetails(null, productSpecs),
+          productDetails:
+              getProductDetails(product || null, productSpecs, info || null),
         });
       });
     }
