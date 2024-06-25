@@ -121,7 +121,7 @@ struct SameSizeAsComputedStyleBase
 
  private:
   Member<void*> pointers[10];
-  unsigned bitfields[6];
+  unsigned bitfields[5];
 };
 
 struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase {

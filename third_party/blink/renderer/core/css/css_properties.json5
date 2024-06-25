@@ -2615,6 +2615,7 @@
       // Storage for this property also covers these legacy properties:
       // page-break-after, -webkit-column-break-after
       field_template: "keyword",
+      field_group: "*",
       keywords: [
         "auto", "avoid", "avoid-column", "avoid-page", "column", "left", "page",
         "recto", "right", "verso"
@@ -2630,6 +2631,7 @@
       // Storage for this property also covers these legacy properties:
       // page-break-before, -webkit-column-break-before
       field_template: "keyword",
+      field_group: "*",
       keywords: [
         "auto", "avoid", "avoid-column", "avoid-page", "column", "left", "page",
         "recto", "right", "verso"
@@ -2645,6 +2647,7 @@
       // Storage for this property also covers these legacy properties:
       // page-break-inside, -webkit-column-break-inside
       field_template: "keyword",
+      field_group: "*",
       keywords: ["auto", "avoid", "avoid-column", "avoid-page"],
       typedom_types: ["Keyword"],
       default_value: "auto",
