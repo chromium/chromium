@@ -138,7 +138,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
     case Suggestion::Icon::kPlusAddress:
-    case Suggestion::Icon::kPlusAddressSmall:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
@@ -246,13 +245,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromVectorIcon(GooglePasswordManagerVectorIcon(),
                                       kGooglePasswordManagerIconSize);
     case Suggestion::Icon::kPlusAddress:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return ImageModelFromVectorIcon(plus_addresses::kPlusAddressesLogoIcon,
-                                      kIconSize);
-#else
-      return ImageModelFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
-#endif
-    case Suggestion::Icon::kPlusAddressSmall:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromVectorIcon(plus_addresses::kPlusAddressLogoSmallIcon,
                                       kIconSize);

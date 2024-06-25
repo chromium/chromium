@@ -122,9 +122,6 @@ struct Suggestion {
     kOfferTag,
     kPenSpark,
     kPlusAddress,
-    // TODO(crbug.com/342125189): Rename to `kPlusAddress` when UI changes are
-    // launched.
-    kPlusAddressSmall,
     kScanCreditCard,
     kSettings,
     kSettingsAndroid,

@@ -9,6 +9,5 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/ic_plus_addresses_logo_16dp.xml",
     "java/res/drawable/ic_plus_addresses_logo_24dp.xml",
-    "java/res/drawable/plus_addresses_logo.xml",
   ]
 }

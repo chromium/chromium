@@ -82,7 +82,7 @@ auto EqualsFillPlusAddressSuggestion(std::string_view address) {
   }
   return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
                                 /*main_text=*/base::UTF8ToUTF16(address)),
-               Field(&Suggestion::icon, Suggestion::Icon::kPlusAddressSmall),
+               Field(&Suggestion::icon, Suggestion::Icon::kPlusAddress),
                Field(&Suggestion::labels, labels));
 }
 

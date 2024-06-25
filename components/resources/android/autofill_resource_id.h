@@ -73,8 +73,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN,
 
 // Note that R.drawable.plus_addresses_logo is always present, but the icon in
 // branded builds is different from the one in unbranded builds,
-DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS, R.drawable.plus_addresses_logo)
-DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS_SMALL,
+DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS,
                     R.drawable.ic_plus_addresses_logo_16dp)
 
 // We display settings and edit icon for keyboard accessory using Android's
