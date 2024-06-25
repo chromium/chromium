@@ -1424,11 +1424,6 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
       wgpu::FeatureName::SharedTextureMemoryIOSurface,
       wgpu::FeatureName::SharedFenceMTLSharedEvent,
 
-#if BUILDFLAG(IS_CHROMEOS)
-      wgpu::FeatureName::SharedTextureMemoryDmaBuf,
-      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
       wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
@@ -1767,14 +1762,6 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
     bool supports_external_textures = false;
-
-#if BUILDFLAG(IS_CHROMEOS)
-    if (!adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryDmaBuf) ||
-        !adapter.HasFeature(wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD)) {
-      return false;
-    }
-#endif
-
 #if BUILDFLAG(IS_APPLE)
     supports_external_textures =
         adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
