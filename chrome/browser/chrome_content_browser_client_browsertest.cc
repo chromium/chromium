@@ -56,6 +56,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -557,7 +558,7 @@ class PrefersColorSchemeTest
                                          ->tab_strip_model()
                                          ->GetActiveWebContents()
                                          ->GetLastCommittedURL();
-    if (last_committed_url.SchemeIs(content::kChromeUIScheme)) {
+    if (content::HasWebUIScheme(last_committed_url)) {
       return GetIsDarkColorProviderColorMode() ? "dark" : "light";
     }
     return GetIsDarkNativeTheme() ? "dark" : "light";
