@@ -4,9 +4,11 @@
 
 #include "pdf/ink_module.h"
 
+#include <set>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/test/bind.h"
@@ -95,15 +97,18 @@ class FakeClient : public InkModule::Client {
     invalidations_.push_back(rect);
   }
 
+  bool IsPageVisible(int index) override {
+    return base::Contains(visible_page_indices_, index);
+  }
+
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
-    // Assumes that all pages are visible.
     for (size_t i = 0; i < page_layouts_.size(); ++i) {
-      if (page_layouts_[i].Contains(point)) {
+      if (IsPageVisible(i) && page_layouts_[i].Contains(point)) {
         return i;
       }
     }
 
-    // Point is not over a page in the viewer plane.
+    // Point is not over a visible page in the viewer plane.
     return -1;
   }
 
@@ -116,6 +121,16 @@ class FakeClient : public InkModule::Client {
   // positioning makes sense (e.g., pages do not overlap).
   void set_page_layouts(base::span<const gfx::RectF> page_layouts) {
     page_layouts_ = base::ToVector(page_layouts);
+  }
+
+  // Marks pages as visible or not. The caller is responsible for making sure
+  // the values makes sense.
+  void set_page_visibility(int index, bool visible) {
+    if (visible) {
+      visible_page_indices_.insert(index);
+    } else {
+      visible_page_indices_.erase(index);
+    }
   }
 
   void set_orientation(PageOrientation orientation) {
@@ -131,6 +146,7 @@ class FakeClient : public InkModule::Client {
  private:
   int ink_stroke_finished_count_ = 0;
   std::vector<gfx::RectF> page_layouts_;
+  std::set<int> visible_page_indices_;
   PageOrientation orientation_ = PageOrientation::kOriginal;
   gfx::Vector2dF viewport_origin_offset_;
   float zoom_ = 1.0f;
@@ -324,6 +340,7 @@ class InkModuleStrokeTest : public InkModuleTest {
     // Single page layout that matches visible area.
     constexpr gfx::RectF kPage(0.0f, 0.0f, 50.0f, 60.0f);
     client().set_page_layouts(base::span_from_ref(kPage));
+    client().set_page_visibility(0, true);
   }
 
   void ApplyInkStrokeWithMousePoints(
@@ -391,6 +408,7 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   constexpr gfx::PointF kPageOrigin(5.0f, -15.0f);
   constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
   client().set_page_layouts(base::span_from_ref(kPageLayout));
+  client().set_page_visibility(0, true);
   client().set_orientation(PageOrientation::kClockwise180);
   client().set_zoom(2.0f);
 
@@ -418,6 +436,7 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
   constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
   constexpr gfx::Vector2dF kViewportOrigin(5.0f, 0.0f);
   client().set_page_layouts(base::span_from_ref(kPageLayout));
+  client().set_page_visibility(0, true);
   client().set_orientation(PageOrientation::kClockwise180);
   client().set_viewport_origin_offset(kViewportOrigin);
 
@@ -436,6 +455,13 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
                                              0.0f,  -1.0f, 44.0f};
   // Just one transform provided, to match the captured stroke.
   EXPECT_THAT(draw_render_transforms, ElementsAre(kDrawTransform));
+
+  // But if the one and only page is not visible, then Draw() does no transform
+  // calculations.
+  draw_render_transforms.clear();
+  client().set_page_visibility(0, false);
+  ink_module().Draw(canvas);
+  EXPECT_TRUE(draw_render_transforms.empty());
 }
 
 TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
@@ -457,6 +483,8 @@ TEST_F(InkModuleStrokeTest, StrokeOutsidePage) {
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
   client().set_page_layouts(kVerticalLayout2Pages);
+  client().set_page_visibility(0, true);
+  client().set_page_visibility(1, true);
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
@@ -477,6 +505,8 @@ TEST_F(InkModuleStrokeTest, StrokeInsidePages) {
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
   client().set_page_layouts(kVerticalLayout2Pages);
+  client().set_page_visibility(0, true);
+  client().set_page_visibility(1, true);
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
@@ -513,6 +543,8 @@ TEST_F(InkModuleStrokeTest, StrokeAcrossPages) {
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
   client().set_page_layouts(kVerticalLayout2Pages);
+  client().set_page_visibility(0, true);
+  client().set_page_visibility(1, true);
 
   // Start out without any strokes.
   EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());

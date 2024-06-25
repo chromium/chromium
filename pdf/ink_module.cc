@@ -63,12 +63,14 @@ InkModule::~InkModule() = default;
 
 void InkModule::Draw(SkCanvas& canvas) {
   for (const auto& [page_index, page_ink_strokes] : ink_strokes_) {
+    if (!client_->IsPageVisible(page_index)) {
+      continue;
+    }
+
     // Use an updated transform based on the page and its position in the
     // viewport.
     // TODO(crbug.com/335524380): Draw `ink_strokes_` with InkSkiaRenderer
     // using the canonical-to-screen rendering transform.
-    // TODO(crbug.com/335517469): Only attempt to draw the strokes for pages
-    // which are visible.
     InkAffineTransform transform = GetInkRenderTransform(
         client_->GetViewportOriginOffset(), client_->GetOrientation(),
         client_->GetPageContentsRect(page_index), client_->GetZoom());

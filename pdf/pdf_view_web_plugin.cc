@@ -2002,10 +2002,14 @@ void PdfViewWebPlugin::InkStrokeFinished() {
   client_->PostMessage(std::move(message));
 }
 
+bool PdfViewWebPlugin::IsPageVisible(int index) {
+  return engine_->IsPageVisible(index);
+}
+
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
   gfx::Point rounded_point = gfx::ToRoundedPoint(point);
   for (int i = 0; i < engine_->GetNumberOfPages(); ++i) {
-    if (!engine_->IsPageVisible(i)) {
+    if (!IsPageVisible(i)) {
       continue;
     }
     auto rect = engine_->GetPageContentsRect(i);

@@ -407,6 +407,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   gfx::Vector2dF GetViewportOriginOffset() override;
   float GetZoom() const override;
   void InkStrokeFinished() override;
+  bool IsPageVisible(int index) override;
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
 #endif
 

@@ -85,6 +85,9 @@ class InkModule {
     // the `blink::WebMouseEvent` positions during stroking.
     virtual void Invalidate(const gfx::Rect& rect) {}
 
+    // Returns whether the page at `index` is visible or not.
+    virtual bool IsPageVisible(int index) = 0;
+
     // Returns the 0-based page index for the given `point` if it is on a
     // visible page, or -1 if `point` is not on a visible page.
     virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
