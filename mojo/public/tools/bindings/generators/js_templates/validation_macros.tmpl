@@ -1,5 +1,5 @@
 {% macro _check_err() -%}
-if (err !== mojo.internal.validationError.NONE)
+if (err !== validator.validationError.NONE)
     return err;
 {%- endmacro %}
 
