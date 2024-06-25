@@ -1,8 +1,8 @@
 Name: C++ port of zxcvbn, an advanced password strength estimation library.
 Short Name: zxcvbn-cpp
-URL: https://github.com/rianhunter/zxcvbn-cpp
-Version: 0
-Date: Dec 4, 2016
+URL: https://thelig.ht/code/zxcvbn-cpp
+Version: N/A
+Date: 2016-12-04
 Revision: cf092c952cd2325ce390b2691231a8f1cb195d59
 License: MIT
 License File: LICENSE.txt
