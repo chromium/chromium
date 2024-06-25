@@ -1583,12 +1583,6 @@
   },
   'chrome_public_wpt': {
     'modifications': {
-      'android-chrome-13-x64-wpt-android-specific': {
-        'args': [
-          '--test-list',
-          '../../third_party/blink/web_tests/TestLists/android.filter'
-        ]
-      },
       'android-chrome-pie-x86-wpt-fyi-rel': {
         'args': [
           '--use-upstream-wpt',
@@ -4673,21 +4667,6 @@
       # TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.
       'win_optional_gpu_tests_rel',
     ],
-  },
-  'trichrome_webview_wpt_64': {
-    'modifications': {
-      'android-chrome-13-x64-wpt-android-specific': {
-        'args': [
-          '--test-list',
-          '../../third_party/blink/web_tests/TestLists/android.filter'
-        ]
-      },
-      'android-webview-pie-x86-wpt-fyi-rel': {
-        'args': [
-          '--use-upstream-wpt',
-        ],
-      },
-    },
   },
   'unit_tests': {
     'remove_from': [

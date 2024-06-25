@@ -13147,9 +13147,9 @@
     "isolated_scripts": [
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-list",
-          "../../third_party/blink/web_tests/TestLists/android.filter"
+          "../../third_party/blink/web_tests/TestLists/android.filter",
+          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
         "merge": {
@@ -13158,7 +13158,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "chrome_public_wpt",
+        "name": "android_blink_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -13192,9 +13192,9 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-list",
-          "../../third_party/blink/web_tests/TestLists/android.filter"
+          "../../third_party/blink/web_tests/TestLists/android.filter",
+          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
         "merge": {
@@ -13203,7 +13203,7 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
-        "name": "trichrome_webview_wpt_64",
+        "name": "webview_blink_wpt_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
