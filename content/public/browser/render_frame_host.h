@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -900,17 +901,24 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const gfx::Point& location,
       const blink::mojom::MediaPlayerAction& action) = 0;
 
-  // Requests the current video frame of the media player at `location`, scaled
-  // if needed to be bounded by `max_size` with aspect ratio preserved, unless
-  // the original area is already less than `max_area`, where `max_size` and
-  // `max_area` are both in device-independent pixels. This is to avoid scaling
-  // images with very large/small aspect ratio to avoid losing information. If
-  // any of the dimensions is non-positive, no scaling will be performed.
-  virtual void RequestVideoFrameAt(
+  // Requests the current video frame and bounds of the media player at
+  // `location`. The returned image is scaled if needed to be bounded by
+  // `max_size` with aspect ratio preserved, unless the original area is already
+  // less than `max_area`, where `max_size` and `max_area` are both in
+  // device-independent pixels. This is to avoid scaling images with very
+  // large/small aspect ratio to avoid losing information. If any of the
+  // dimensions is non-positive, no scaling will be performed. The bounds
+  // originate from the DOM layer, are in DIP and are relative to the local
+  // root's widget (see Element::BoundsInWidget()). No guarantee is made about
+  // their correlation with the bounds of the video frame as displayed in the
+  // presentation layer. The returned bounds are also not guaranteed to
+  // correspond to the result of returned video frame.
+  virtual void RequestVideoFrameAtWithBoundsDiagnostics(
       const gfx::Point& location,
       const gfx::Size& max_size,
       int max_area,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback) = 0;
+      base::OnceCallback<void(const gfx::ImageSkia&, const gfx::Rect&)>
+          callback) = 0;
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|.
   //

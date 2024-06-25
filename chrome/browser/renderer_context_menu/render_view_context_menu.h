@@ -395,7 +395,8 @@ class RenderViewContextMenu
   void ExecOpenInReadAnything();
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
-  void SearchForVideoFrame(const gfx::ImageSkia& image);
+  void SearchForVideoFrame(const gfx::ImageSkia& image,
+                           const gfx::Rect& region_bounds);
   void PluginActionAt(const gfx::Point& location,
                       blink::mojom::PluginActionType plugin_action);
 

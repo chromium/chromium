@@ -923,16 +923,22 @@ interface LocalFrame {
   MediaPlayerActionAt(gfx.mojom.Point location,
                       blink.mojom.MediaPlayerAction action);
 
-  // Requests the current video frame of the media player at `location`, scaled
-  // if needed to be bounded by `max_size` with aspect ratio preserved, unless
-  // the original area is already less than `max_area`, where `max_size` and
-  // `max_area` are both in device-independent pixels. This is to avoid scaling
-  // images with very large/small aspect ratio to avoid losing information. If
-  // any of the dimensions is non-positive, no scaling will be performed.
-  RequestVideoFrameAt(gfx.mojom.Point location,
-                      gfx.mojom.Size max_size,
-                      int32 max_area)
-      => (gfx.mojom.ImageSkia image);
+  // Requests the current video frame and bounds of the media player at
+  // `location`. The returned image is scaled if needed to be bounded by
+  // `max_size` with aspect ratio preserved, unless the original area is already
+  // less than `max_area`, where `max_size` and `max_area` are both in
+  // device-independent pixels. This is to avoid scaling images with very
+  // large/small aspect ratio to avoid losing information. If any of the
+  // dimensions is non-positive, no scaling will be performed. The bounds
+  // originate from the DOM layer, are in DIP and are relative to the local
+  // root's widget (see Element::BoundsInWidget()). No guarantee is made about
+  // their correlation with the bounds of the video frame as displayed in the
+  // presentation layer. The returned bounds are also not guaranteed to
+  // correspond to the result of returned video frame.
+  RequestVideoFrameAtWithBoundsDiagnostics(gfx.mojom.Point location,
+                                           gfx.mojom.Size max_size,
+                                           int32 max_area)
+      => (gfx.mojom.ImageSkia image, gfx.mojom.Rect bounds);
 
   // Tells the renderer to perform the given action on the plugin location at
   // the given point in the view coordinate space.

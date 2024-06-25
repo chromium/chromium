@@ -4467,7 +4467,7 @@ void RenderViewContextMenu::ExecSearchForVideoFrame() {
     return;
   }
 
-  frame_host->RequestVideoFrameAt(
+  frame_host->RequestVideoFrameAtWithBoundsDiagnostics(
       gfx::Point(params_.x, params_.y),
       gfx::Size(lens::features::GetMaxPixelsForImageSearch(),
                 lens::features::GetMaxPixelsForImageSearch()),
@@ -4630,7 +4630,10 @@ void RenderViewContextMenu::MediaPlayerAction(
   }
 }
 
-void RenderViewContextMenu::SearchForVideoFrame(const gfx::ImageSkia& image) {
+// TODO(b/344600237): Use `region_bounds` for Lens overlay.
+void RenderViewContextMenu::SearchForVideoFrame(
+    const gfx::ImageSkia& image,
+    const gfx::Rect& /*region_bounds*/) {
   if (image.isNull()) {
     return;
   }
