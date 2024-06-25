@@ -150,12 +150,12 @@
                                   'modulesMoreActions',
                                   'modulesTabResumptionTitle')]]"
     on-disable-button-click="onDisableButtonClick_"
-    on-dismiss-button-click="onDismissButtonClick_"
+    on-dismiss-button-click="onDismissAllButtonClick_"
     on-info-button-click="onInfoButtonClick_"
     on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
 <div id="tabs">
-  <template id="tabRepeat" is="dom-repeat" items="[[tabs]]">
+  <template id="tabRepeat" is="dom-repeat" items="[[getVisibleTabs_()]]">
     <a class="tab" href="[[item.url.url]]" on-click="onTabClick_">
       <div id="hover-layer"></div>
       <page-favicon class="icon" url="[[item.url]]"
@@ -180,6 +180,9 @@
           </span>
         </div>
       </div>
+      <cr-icon-button iron-icon="modules:done" on-click="onDismissButtonClick_"
+                      title="$i18n{modulesHistoryDoneButton}">
+      </cr-icon-button>
     </a>
   </template>
 </div>

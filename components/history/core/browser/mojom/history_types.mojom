@@ -43,4 +43,11 @@ struct Tab {
 
   // Relative time to display on UI (i.e. 2 hours ago).
   string relative_time_text;
+
+  // Timestamp to be sent back to handler.
+  mojo_base.mojom.Time? timestamp;
+
+  // URL Key to distinguish visits with similar URLs. It may or may not be a
+  // valid URL. It is derived from a URL however.
+  string url_key;
 };

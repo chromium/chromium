@@ -6,6 +6,7 @@ import './icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../history_clusters/page_favicon.js';
+import '../icons.html.js';
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,6 +28,7 @@ export interface MostRelevantTabResumptionModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
     moduleHeaderElementV2: ModuleHeaderElementV2,
+    tabs: HTMLElement,
   };
 }
 
@@ -85,7 +87,7 @@ private shouldShowDeviceIcon_:
         {
           action: 'dismiss',
           icon: 'modules:thumb_down',
-          text: this.i18n('modulesTabResumptionDismissButton'),
+          text: this.i18n('modulesMostRelevantTabResumptionDismissAll'),
         },
         {
           action: 'disable',
@@ -121,6 +123,45 @@ private shouldShowDeviceIcon_:
     this.dispatchEvent(disableEvent);
   }
 
+  private onDismissAllButtonClick_() {
+    MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissModule(
+        this.tabs);
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage',
+            loadTimeData.getString('modulesTabResumptionSentence')),
+        restoreCallback: () => MostRelevantTabResumptionProxyImpl.getInstance()
+                                   .handler.restoreModule(this.tabs),
+      },
+    }));
+  }
+
+  private onDismissButtonClick_(e: DomRepeatEvent<Tab>) {
+    e.preventDefault();
+    const tab = (e.target! as HTMLElement).parentElement!;
+    const index = e.model.index;
+    tab!.remove();
+    MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissTab(
+        this.tabs[index]);
+    this.dispatchEvent(new CustomEvent('dismiss-module-element', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage',
+            loadTimeData.getString('modulesTabResumptionSentence')),
+        restoreCallback: () => {
+          this.$.tabs.insertBefore(tab, this.$.tabs.childNodes[index]);
+          MostRelevantTabResumptionProxyImpl.getInstance().handler.restoreTab(
+              this.tabs[index]);
+        },
+      },
+    }));
+  }
+
   private onInfoButtonClick_() {
     this.$.infoDialogRender.get().showModal();
   }
@@ -130,6 +171,7 @@ private shouldShowDeviceIcon_:
   }
 
   private onTabClick_(e: DomRepeatEvent<Tab>) {
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.TabResumption.ClickIndex', e.model.index);
 
@@ -181,6 +223,10 @@ private shouldShowDeviceIcon_:
   private computeShouldShowDeviceName_(tab: Tab): boolean {
     return !this.shouldShowDeviceIcon_ && !!this.computeDeviceName_(tab);
   }
+
+  private getVisibleTabs_(): Tab[] {
+    return this.tabs.slice(0, MAX_TABS);
+  }
 }
 
 customElements.define(
@@ -196,7 +242,7 @@ async function createElement():
   }
 
   const element = new MostRelevantTabResumptionModuleElement();
-  element.tabs = tabs.slice(0, MAX_TABS);
+  element.tabs = tabs;
 
   return element;
 }

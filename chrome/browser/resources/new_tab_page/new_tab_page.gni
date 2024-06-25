@@ -55,6 +55,7 @@ if (optimize_webui) {
     "photos.mojom-webui.js",
     "recipes.mojom-webui.js",
     "tab_resumption.mojom-webui.js",
+    "most_relevant_tab_resumption.mojom-webui.js",
   ]
 
   if (!is_official_build) {
