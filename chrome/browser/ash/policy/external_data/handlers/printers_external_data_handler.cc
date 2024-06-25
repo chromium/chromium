@@ -60,13 +60,11 @@ void PrintersExternalDataHandler::OnExternalDataFetched(
 }
 
 void PrintersExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure on_removed) {
+    const AccountId& account_id) {
   auto* factory = ash::BulkPrintersCalculatorFactory::Get();
   if (factory) {
     factory->RemoveForUserId(account_id);
   }
-  std::move(on_removed).Run();
 }
 
 }  // namespace policy

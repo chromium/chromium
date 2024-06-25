@@ -122,6 +122,7 @@ CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
     ash::CrosSettings* cros_settings,
     DeviceLocalAccountPolicyService* device_local_account_policy_service,
     const std::string& policy,
+    user_manager::UserManager* user_manager,
     std::unique_ptr<Delegate> delegate)
     : cros_settings_(cros_settings),
       device_local_account_policy_service_(device_local_account_policy_service),
@@ -131,6 +132,8 @@ CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
   // SessionManager might not exist in unit tests.
   if (session_manager)
     session_observation_.Observe(session_manager);
+
+  user_manager_observation_.Observe(user_manager);
 
   if (device_local_account_policy_service_)
     device_local_account_policy_service_->AddObserver(this);
@@ -175,10 +178,9 @@ void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
       this, user_id, policy_connector->policy_service());
 }
 
-void CloudExternalDataPolicyObserver::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure callback) {
-  delegate_->RemoveForAccountId(account_id, std::move(callback));
+void CloudExternalDataPolicyObserver::OnUserToBeRemoved(
+    const AccountId& account_id) {
+  delegate_->RemoveForAccountId(account_id);
 }
 
 void CloudExternalDataPolicyObserver::OnPolicyUpdated(

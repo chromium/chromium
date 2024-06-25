@@ -117,15 +117,6 @@ class ChromeUserManagerImpl
 
   void UpdateOwnerId();
 
-  // Remove non cryptohome data associated with the given `account_id` after
-  // having removed all external data (such as wallpapers and avatars)
-  // associated with that `account_id`, this function is guarded by a latch
-  // `remove_non_cryptohome_data_latch_` that ensures that all external data is
-  // removed prior to clearing prefs for `account_id`, as the removal of certain
-  // external data depends on prefs.
-  void RemoveNonCryptohomeDataPostExternalDataRemoval(
-      const AccountId& account_id);
-
   // Interface to device-local account definitions and associated policy.
   raw_ptr<policy::DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;

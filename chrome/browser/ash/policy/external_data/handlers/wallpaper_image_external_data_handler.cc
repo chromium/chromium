@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 
 namespace policy {
@@ -33,10 +34,9 @@ void WallpaperImageExternalDataHandler::OnExternalDataFetched(
 }
 
 void WallpaperImageExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure on_removed) {
-  WallpaperControllerClientImpl::Get()->RemoveUserWallpaper(
-      account_id, std::move(on_removed));
+    const AccountId& account_id) {
+  WallpaperControllerClientImpl::Get()->RemoveUserWallpaper(account_id,
+                                                            base::DoNothing());
 }
 
 }  // namespace policy

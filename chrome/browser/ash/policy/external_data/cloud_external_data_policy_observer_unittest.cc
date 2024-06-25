@@ -123,8 +123,7 @@ class TestDelegate : public CloudExternalDataPolicyObserver::Delegate {
     EXPECT_EQ(key::kUserAvatarImage, policy);
     fetched_calls_.emplace_back(user_id, std::move(*data));
   }
-  void RemoveForAccountId(const AccountId& account_id,
-                          base::OnceClosure on_removed) override {
+  void RemoveForAccountId(const AccountId& account_id) override {
     NOTIMPLEMENTED();
   }
 
@@ -268,7 +267,7 @@ void CloudExternalDataPolicyObserverTest::CreateObserver() {
   delegate_ = delegate.get();
   observer_ = std::make_unique<CloudExternalDataPolicyObserver>(
       ash::CrosSettings::Get(), device_local_account_policy_service_.get(),
-      key::kUserAvatarImage, std::move(delegate));
+      key::kUserAvatarImage, user_manager_.get(), std::move(delegate));
   observer_->Init();
 }
 

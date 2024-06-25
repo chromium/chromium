@@ -40,12 +40,11 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataFetched(
 }
 
 void PreconfiguredDeskTemplatesExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure on_removed) {
+    const AccountId& account_id) {
   DesksClient* dc = DesksClient::Get();
-  if (dc)
+  if (dc) {
     dc->RemovePolicyPreconfiguredTemplate(account_id);
-  std::move(on_removed).Run();
+  }
 }
 
 }  // namespace policy

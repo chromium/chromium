@@ -245,33 +245,33 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings(), device_local_account_policy_service,
-          policy::key::kUserAvatarImage,
+          policy::key::kUserAvatarImage, this,
           std::make_unique<policy::UserAvatarImageExternalDataHandler>()));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings(), device_local_account_policy_service,
-          policy::key::kWallpaperImage,
+          policy::key::kWallpaperImage, this,
           std::make_unique<policy::WallpaperImageExternalDataHandler>()));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings(), device_local_account_policy_service,
-          policy::key::kPrintersBulkConfiguration,
+          policy::key::kPrintersBulkConfiguration, this,
           std::make_unique<policy::PrintersExternalDataHandler>()));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings(), device_local_account_policy_service,
-          policy::key::kExternalPrintServers,
+          policy::key::kExternalPrintServers, this,
           std::make_unique<policy::PrintServersExternalDataHandler>()));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings(), device_local_account_policy_service,
-          policy::key::kCrostiniAnsiblePlaybook,
+          policy::key::kCrostiniAnsiblePlaybook, this,
           std::make_unique<
               policy::CrostiniAnsiblePlaybookExternalDataHandler>()));
   cloud_external_data_policy_observers_.push_back(
       std::make_unique<policy::CloudExternalDataPolicyObserver>(
           cros_settings(), device_local_account_policy_service,
-          policy::key::kPreconfiguredDeskTemplates,
+          policy::key::kPreconfiguredDeskTemplates, this,
           std::make_unique<
               policy::PreconfiguredDeskTemplatesExternalDataHandler>()));
   for (auto& observer : cloud_external_data_policy_observers_) {
@@ -406,27 +406,6 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 }
 
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(
-    const AccountId& account_id) {
-  // Wallpaper removal can be async if system salt is not yet received (see
-  // `WallpaperControllerClientImpl::GetFilesId`), and depends on user
-  // preference, so it must happen before `known_user::RemovePrefs`.
-  // See https://crbug.com/778077. Here we use a latch to ensure that
-  // `known_user::RemovePrefs` does indeed get invoked after wallpaper and other
-  // external data that might be associated with `account_id` are removed (in
-  // case those removal operations are async).
-  remove_non_cryptohome_data_barrier_ = base::BarrierClosure(
-      cloud_external_data_policy_observers_.size(),
-      base::BindOnce(&ChromeUserManagerImpl::
-                         RemoveNonCryptohomeDataPostExternalDataRemoval,
-                     weak_factory_.GetWeakPtr(), account_id));
-
-  for (auto& observer : cloud_external_data_policy_observers_) {
-    observer->RemoveForAccountId(account_id,
-                                 remove_non_cryptohome_data_barrier_);
-  }
-}
-
-void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
     const AccountId& account_id) {
   // TODO(tbarzic): Forward data removal request to HammerDeviceHandler,
   // instead of removing the prefs value here.

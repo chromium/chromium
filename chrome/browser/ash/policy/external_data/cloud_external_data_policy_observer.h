@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "components/user_manager/user_manager.h"
 
 class AccountId;
 namespace policy {
@@ -33,6 +34,7 @@ namespace policy {
 // external data to be fetched.
 class CloudExternalDataPolicyObserver
     : public session_manager::SessionManagerObserver,
+      public user_manager::UserManager::Observer,
       public DeviceLocalAccountPolicyService::Observer {
  public:
   class Delegate {
@@ -58,9 +60,7 @@ class CloudExternalDataPolicyObserver
                                        const base::FilePath& file_path);
 
     // Removes the data for the given `account_id`.
-    // Calls `on_removed` on its completion.
-    virtual void RemoveForAccountId(const AccountId& account_id,
-                                    base::OnceClosure on_removed) = 0;
+    virtual void RemoveForAccountId(const AccountId& account_id) = 0;
   };
 
   // |device_local_account_policy_service| may be nullptr if unavailable (e.g.
@@ -69,6 +69,7 @@ class CloudExternalDataPolicyObserver
       ash::CrosSettings* cros_settings,
       DeviceLocalAccountPolicyService* device_local_account_policy_service,
       const std::string& policy,
+      user_manager::UserManager* user_manager,
       std::unique_ptr<Delegate> delegate);
 
   CloudExternalDataPolicyObserver(const CloudExternalDataPolicyObserver&) =
@@ -83,8 +84,8 @@ class CloudExternalDataPolicyObserver
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
 
-  void RemoveForAccountId(const AccountId& account_id,
-                          base::OnceClosure callback);
+  // user_manager::UserManager::Observer:
+  void OnUserToBeRemoved(const AccountId& account_id) override;
 
   // DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
@@ -128,6 +129,9 @@ class CloudExternalDataPolicyObserver
 
   std::unique_ptr<Delegate> delegate_;
 
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};

@@ -47,13 +47,10 @@ void UserAvatarImageExternalDataHandler::OnExternalDataFetched(
 }
 
 void UserAvatarImageExternalDataHandler::RemoveForAccountId(
-    const AccountId& account_id,
-    base::OnceClosure on_removed) {
+    const AccountId& account_id) {
   ash::UserImageManagerRegistry::Get()
       ->GetManager(account_id)
       ->DeleteUserImage();
-
-  std::move(on_removed).Run();
 }
 
 }  // namespace policy
