@@ -10,7 +10,7 @@ source_set("interactive_ui_tests") {
   testonly = true
 
   sources = [
-    "esim_interactive_uitest.cc",
+    "esim_installation_interactive_uitest.cc",
     "toggle_cellular_from_os_settings_interactive_uitest.cc",
   ]
 

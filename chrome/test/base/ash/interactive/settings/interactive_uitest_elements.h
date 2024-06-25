@@ -14,31 +14,47 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage();
 
 namespace cellular {
 
-// The message shown to the user that provides information about the current
-// step of the eSIM installation flow.
-WebContentsInteractionTestUtil::DeepQuery EsimDialogInstallingMessage();
+// The cellular "row" on the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
+
+// The "add eSIM" button on the cellular page.
+WebContentsInteractionTestUtil::DeepQuery AddEsimButton();
+
+// The "add eSIM" dialog.
+WebContentsInteractionTestUtil::DeepQuery EsimDialog();
+
+// The activation code input field on the manual entry page of the "add eSIM"
+// dialog.
+WebContentsInteractionTestUtil::DeepQuery EsimDialogActivationCodeInput();
 
 // The first eSIM profile in the list of eSIM profiles found via an SM-DS scan.
 WebContentsInteractionTestUtil::DeepQuery EsimDialogFirstProfile();
+
+// The label of the first eSIM profile in the list of eSIM profiles found via an
+// SM-DS scan.
+WebContentsInteractionTestUtil::DeepQuery EsimDialogFirstProfileLabel();
 
 // The "forward" button of the "add eSIM" dialog. When pressed, this button will
 // either navigate the user forward in the eSIM installation flow.
 WebContentsInteractionTestUtil::DeepQuery EsimDialogForwardButton();
 
+// The message shown to the user that provides information about the current
+// step of the eSIM installation flow.
+WebContentsInteractionTestUtil::DeepQuery EsimDialogInstallingMessage();
+
+// The "skip discovery" / "manual entry" link of the "add eSIM" dialog. When
+// pressed, this link will cause the eSIM installation flow to skip to the page
+// where users can manually enter an activation code.
+WebContentsInteractionTestUtil::DeepQuery EsimDialogSkipDiscoveryLink();
+
 // The title of the "add eSIM" dialog.
 WebContentsInteractionTestUtil::DeepQuery EsimDialogTitle();
 
-// The "add eSIM" dialog.
-WebContentsInteractionTestUtil::DeepQuery EsimDialog();
-
-// The "add eSIM" button on the cellular page.
-WebContentsInteractionTestUtil::DeepQuery AddEsimButton();
+// The list of eSIM networks.
+WebContentsInteractionTestUtil::DeepQuery EsimNetworkList();
 
 // The Mobile data toggle on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery MobileDataToggle();
-
-// The cellular "row" on the top-level internet page.
-WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem();
 
 }  // namespace cellular
 

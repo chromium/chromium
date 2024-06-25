@@ -17,28 +17,9 @@ WebContentsInteractionTestUtil::DeepQuery InternetPage() {
 
 namespace cellular {
 
-WebContentsInteractionTestUtil::DeepQuery EsimDialogInstallingMessage() {
-  return EsimDialog() + "setup-loading-page#profileInstallingPage" +
-         "base-page" + "div#message";
-}
-
-WebContentsInteractionTestUtil::DeepQuery EsimDialogFirstProfile() {
-  return EsimDialog() + "profile-discovery-list-page" +
-         "profile-discovery-list-item:first-of-type";
-}
-
-WebContentsInteractionTestUtil::DeepQuery EsimDialogForwardButton() {
-  return InternetPage() + "os-settings-cellular-setup-dialog" +
-         "cellular-setup" + "button-bar" + "cr-button#forward";
-}
-
-WebContentsInteractionTestUtil::DeepQuery EsimDialogTitle() {
-  return InternetPage() + "os-settings-cellular-setup-dialog" + "div#header";
-}
-
-WebContentsInteractionTestUtil::DeepQuery EsimDialog() {
-  return InternetPage() + "os-settings-cellular-setup-dialog" +
-         "cellular-setup" + "esim-flow-ui";
+WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
+  return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
+         "div#networkSummaryItemRow";
 }
 
 WebContentsInteractionTestUtil::DeepQuery AddEsimButton() {
@@ -46,9 +27,47 @@ WebContentsInteractionTestUtil::DeepQuery AddEsimButton() {
          "cellular-networks-list" + "cr-icon-button#addESimButton";
 }
 
-WebContentsInteractionTestUtil::DeepQuery CellularSummaryItem() {
-  return InternetPage() + "network-summary" + "network-summary-item#Cellular" +
-         "div#networkSummaryItemRow";
+WebContentsInteractionTestUtil::DeepQuery EsimDialog() {
+  return InternetPage() + "os-settings-cellular-setup-dialog" +
+         "cellular-setup" + "esim-flow-ui";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogActivationCodeInput() {
+  return EsimDialog() + "activation-code-page" + "cr-input#activationCode" +
+         "input#input";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogFirstProfile() {
+  return EsimDialog() + "profile-discovery-list-page" +
+         "profile-discovery-list-item:first-of-type";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogFirstProfileLabel() {
+  return EsimDialogFirstProfile() + "div#profileTitleLabel";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogForwardButton() {
+  return InternetPage() + "os-settings-cellular-setup-dialog" +
+         "cellular-setup" + "button-bar" + "cr-button#forward";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogInstallingMessage() {
+  return EsimDialog() + "setup-loading-page#profileInstallingPage" +
+         "base-page" + "div#message";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogSkipDiscoveryLink() {
+  return EsimDialog() + "profile-discovery-consent-page" +
+         "localized-link#shouldSkipDiscovery" + "a";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimDialogTitle() {
+  return InternetPage() + "os-settings-cellular-setup-dialog" + "div#header";
+}
+
+WebContentsInteractionTestUtil::DeepQuery EsimNetworkList() {
+  return InternetPage() + "settings-internet-subpage" +
+         "cellular-networks-list" + "network-list#esimNetworkList";
 }
 
 WebContentsInteractionTestUtil::DeepQuery MobileDataToggle() {

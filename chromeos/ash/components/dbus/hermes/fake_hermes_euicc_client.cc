@@ -30,7 +30,7 @@ namespace ash {
 namespace {
 
 const char* kDefaultMccMnc = "310999";
-const char* kFakeActivationCodePrefix = "1$SMDP.GSMA.COM$00000-00000-00000-000";
+const char* kFakeActivationCodePrefix = "LPA:1$SMDP.GSMA.COM$";
 const char* kActivationCodeToTriggerDBusError = "no_memory";
 const char* kFakeProfilePathPrefix = "/org/chromium/Hermes/Profile/";
 const char* kFakeIccidPrefix = "10000000000000000";
@@ -95,6 +95,12 @@ base::Value::List ExtractPSimSlotInfo(const base::Value* sim_slot_info_list) {
   return psim_slot_info_list;
 }
 
+// The `index` is used when formatting the activation code and is intended to
+// ensure that all fake activation codes are unique.
+std::string GenerateFakeActivationCodeWithIndex(int index) {
+  return base::StringPrintf("%s%010d", kFakeActivationCodePrefix, index);
+}
+
 }  // namespace
 
 FakeHermesEuiccClient::Properties::Properties(
@@ -157,9 +163,8 @@ dbus::ObjectPath FakeHermesEuiccClient::AddFakeCarrierProfile(
       base::StringPrintf("%s%02d", kFakeProfileNicknamePrefix, index),
       base::StringPrintf("%s%02d", kFakeProfileNamePrefix, index),
       kFakeServiceProvider,
-      activation_code.empty()
-          ? base::StringPrintf("%s%02d", kFakeActivationCodePrefix, index)
-          : activation_code,
+      activation_code.empty() ? GenerateFakeActivationCodeWithIndex(index)
+                              : activation_code,
       base::StringPrintf("%s%02d", kFakeNetworkServicePathPrefix, index), state,
       hermes::profile::ProfileClass::kOperational,
       add_carrier_profile_behavior);
@@ -333,8 +338,7 @@ void FakeHermesEuiccClient::SetInteractiveDelay(base::TimeDelta delay) {
 }
 
 std::string FakeHermesEuiccClient::GenerateFakeActivationCode() {
-  return base::StringPrintf("%s-%04d", kFakeActivationCodePrefix,
-                            fake_profile_counter_++);
+  return GenerateFakeActivationCodeWithIndex(fake_profile_counter_++);
 }
 
 std::string FakeHermesEuiccClient::GetDBusErrorActivationCode() {
@@ -484,6 +488,8 @@ void FakeHermesEuiccClient::DoInstallProfileFromActivationCode(
 
   if (!base::StartsWith(activation_code, kFakeActivationCodePrefix,
                         base::CompareCase::SENSITIVE)) {
+    DVLOG(1) << "Unexpected activation code prefix. Fake activation codes "
+             << "should begin with '" << kFakeActivationCodePrefix << "'";
     std::move(callback).Run(HermesResponseStatus::kErrorInvalidActivationCode,
                             dbus::DBusResult::kSuccess, nullptr);
     return;

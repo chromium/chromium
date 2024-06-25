@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 
+#include <optional>
+
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -425,40 +427,57 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
                                         const std::string& text) {
   MultiStep steps;
+
+  // The text that should be entered as key events is provided as a std::string,
+  // but key events require a key code. The loop below converts each character
+  // of the string into a single key event; this loop avoids code duplication be
+  // identifying when a character exists within a known contiguous range, e.g. A
+  // through Z, and computing the desired key code by calculating the offset of
+  // the character into the known contiguous range.
   for (char c : text) {
+    std::optional<ui::KeyboardCode> key_code;
+    unsigned short offset = 0;
+    int modifiers = 0;
+
     if (c >= 'a' && c <= 'z') {
-      AddStep(steps,
-              SendAccelerator(
-                  element_id,
-                  ui::Accelerator(
-                      static_cast<ui::KeyboardCode>(
-                          static_cast<unsigned char>(ui::VKEY_A) + (c - 'a')),
-                      0, ui::Accelerator::KeyState::PRESSED)));
+      key_code = ui::VKEY_A;
+      offset = c - 'a';
     } else if (c >= 'A' && c <= 'Z') {
-      AddStep(steps,
-              SendAccelerator(
-                  element_id,
-                  ui::Accelerator(
-                      static_cast<ui::KeyboardCode>(
-                          static_cast<unsigned char>(ui::VKEY_A) + (c - 'A')),
-                      ui::EF_SHIFT_DOWN, ui::Accelerator::KeyState::PRESSED)));
+      key_code = ui::VKEY_A;
+      offset = c - 'A';
+      modifiers = ui::EF_SHIFT_DOWN;
     } else if (c >= '0' && c <= '9') {
-      AddStep(steps,
-              SendAccelerator(
-                  element_id,
-                  ui::Accelerator(
-                      static_cast<ui::KeyboardCode>(
-                          static_cast<unsigned char>(ui::VKEY_0) + (c - '0')),
-                      0, ui::Accelerator::KeyState::PRESSED)));
+      key_code = ui::VKEY_0;
+      offset = c - '0';
+    } else if (c == '$') {
+      key_code = ui::VKEY_4;
+      modifiers = ui::EF_SHIFT_DOWN;
+    } else if (c == '-') {
+      key_code = ui::VKEY_OEM_MINUS;
+    } else if (c == '.') {
+      key_code = ui::VKEY_OEM_PERIOD;
+    } else if (c == ';') {
+      key_code = ui::VKEY_OEM_1;
+    } else if (c == ':') {
+      key_code = ui::VKEY_OEM_1;
+      modifiers = ui::EF_SHIFT_DOWN;
+    } else if (c == '_') {
+      key_code = ui::VKEY_OEM_MINUS;
+      modifiers = ui::EF_SHIFT_DOWN;
     } else if (c == '\n') {
-      AddStep(steps, SendAccelerator(
-                         element_id,
-                         ui::Accelerator(ui::VKEY_RETURN, 0,
-                                         ui::Accelerator::KeyState::PRESSED)));
-    } else {
+      key_code = ui::VKEY_RETURN;
+    }
+
+    if (!key_code.has_value()) {
       // Unsupported input.
       NOTREACHED_IN_MIGRATION();
     }
+
+    AddStep(steps, SendAccelerator(
+                       element_id,
+                       ui::Accelerator(
+                           static_cast<ui::KeyboardCode>(*key_code + offset),
+                           modifiers, ui::Accelerator::KeyState::PRESSED)));
   }
   return steps;
 }
