@@ -22,9 +22,6 @@ class TestExtensionsRendererClient : public ExtensionsRendererClient {
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
   Dispatcher* GetDispatcher() override;
-  bool ExtensionAPIEnabledForServiceWorkerScript(
-      const GURL& scope,
-      const GURL& script_url) const override;
 };
 
 }  // namespace extensions

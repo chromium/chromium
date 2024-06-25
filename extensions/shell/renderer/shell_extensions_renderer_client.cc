@@ -38,10 +38,4 @@ Dispatcher* ShellExtensionsRendererClient::GetDispatcher() {
   return dispatcher_.get();
 }
 
-bool ShellExtensionsRendererClient::ExtensionAPIEnabledForServiceWorkerScript(
-    const GURL& scope,
-    const GURL& script_url) const {
-  return false;
-}
-
 }  // namespace extensions

@@ -92,6 +92,13 @@ class Dispatcher : public content::RenderThreadObserver,
   // Returns Service Worker ScriptContexts belonging to current worker thread.
   static WorkerScriptContextSet* GetWorkerScriptContextSet();
 
+  // Returns true if web socket activity for the service worker associated with
+  // the given `v8_context` should count as service worker activity, prolonging
+  // the service worker's lifetime.
+  // Called on the service worker thread.
+  static bool ShouldNotifyServiceWorkerOnWebSocketActivity(
+      v8::Local<v8::Context> v8_context);
+
   const ScriptContextSet& script_context_set() const {
     return *script_context_set_;
   }

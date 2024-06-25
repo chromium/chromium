@@ -77,10 +77,6 @@ class ChromeExtensionsRendererClient
   void OnExtensionUnloaded(
       const extensions::ExtensionId& extension_id) override;
 
-  bool ExtensionAPIEnabledForServiceWorkerScript(
-      const GURL& scope,
-      const GURL& script_url) const override;
-
   // See ChromeContentRendererClient methods with the same names.
   void WebViewCreated(blink::WebView* web_view,
                       const url::Origin* outermost_origin);

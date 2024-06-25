@@ -120,6 +120,33 @@ namespace {
 static const char kOnSuspendEvent[] = "runtime.onSuspend";
 static const char kOnSuspendCanceledEvent[] = "runtime.onSuspendCanceled";
 
+// Returns whether or not extension APIs are allowed for the specified
+// `script_url` and `scope`. The script must be specified in the extension's
+// manifest background section and the scope must be the root scope of the
+// extension.
+bool ExtensionAPIEnabledForServiceWorkerScript(const GURL& scope,
+                                               const GURL& script_url) {
+  if (!script_url.SchemeIs(kExtensionScheme)) {
+    return false;
+  }
+
+  const Extension* extension =
+      RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(script_url);
+
+  if (!extension || !BackgroundInfo::IsServiceWorkerBased(extension)) {
+    return false;
+  }
+
+  if (scope != extension->url()) {
+    return false;
+  }
+
+  const std::string& sw_script =
+      BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
+
+  return extension->GetResourceURL(sw_script) == script_url;
+}
+
 // Calls a method |method_name| in a module |module_name| belonging to the
 // module system from |context|. Intended as a callback target from
 // ScriptContextSet::ForEach.
@@ -294,6 +321,18 @@ Dispatcher::~Dispatcher() {
 // static
 WorkerScriptContextSet* Dispatcher::GetWorkerScriptContextSet() {
   return &(g_worker_script_context_set.Get());
+}
+
+// static
+bool Dispatcher::ShouldNotifyServiceWorkerOnWebSocketActivity(
+    v8::Local<v8::Context> v8_context) {
+  ScriptContext* script_context =
+      GetWorkerScriptContextSet()->GetContextByV8Context(v8_context);
+  // Only notify on web socket activity if the service worker is the background
+  // service worker for an extension.
+  return script_context &&
+         ExtensionAPIEnabledForServiceWorkerScript(
+             script_context->service_worker_scope(), script_context->url());
 }
 
 void Dispatcher::OnRenderThreadStarted(content::RenderThread* thread) {
@@ -482,9 +521,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     return;
   }
 
-  if (!ExtensionsRendererClient::Get()
-           ->ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
-                                                       script_url)) {
+  if (!ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
+                                                 script_url)) {
     return;
   }
 
@@ -562,10 +600,10 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
     int64_t service_worker_version_id,
     const GURL& service_worker_scope,
     const GURL& script_url) {
-  if (!ExtensionsRendererClient::Get()
-           ->ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
-                                                       script_url))
+  if (!ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
+                                                 script_url)) {
     return;
+  }
 
   const int thread_id = content::WorkerThread::GetCurrentId();
   CHECK_NE(thread_id, kMainThreadId);
