@@ -635,6 +635,31 @@ TEST_P(PrintContextTest, LinkInFragmentedContainer) {
   EXPECT_LE(page2_link2.rect.bottom(), page_rect.y() + 100);
 }
 
+TEST_P(PrintContextTest, LinkedTargetSecondPage) {
+  SetBodyInnerHTML(R"HTML(
+    <a style="display:block; width:33px; height:33px;" href="#nextpage"></a>
+    <div style="break-before:page;"></div>
+    <div id="nextpage" style="margin-top:50px; width:100px; height:100px;"></div>
+  )HTML");
+
+  // The link is on the first page.
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 0, 33, 33, (*operations)[0].rect);
+
+  // The destination is on the second page.
+  testing::NiceMock<MockPageContextCanvas> second_canvas;
+  PrintSinglePage(second_canvas, 1);
+  operations = &second_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 50, 0, 0, (*operations)[0].rect);
+}
+
 // Here are a few tests to check that shrink to fit doesn't mess up page count.
 
 TEST_P(PrintContextTest, ScaledVerticalRL1) {

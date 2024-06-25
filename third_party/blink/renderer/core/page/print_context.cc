@@ -199,8 +199,14 @@ void PrintContext::OutputLinkedDestinations(
     if (!layout_object || !layout_object->GetFrameView())
       continue;
     gfx::Point anchor_point = layout_object->AbsoluteBoundingBoxRect().origin();
-    if (page_rect.Contains(anchor_point))
-      context.SetURLDestinationLocation(entry.key, anchor_point);
+    if (page_rect.Contains(anchor_point)) {
+      // The linked destination location is relative to the current page (in
+      // fact just like everything else that's painted, but the linked
+      // destination code is tacked on the outside of the paint code, so extra
+      // awareness is required).
+      context.SetURLDestinationLocation(
+          entry.key, anchor_point - page_rect.OffsetFromOrigin());
+    }
   }
 }
 
