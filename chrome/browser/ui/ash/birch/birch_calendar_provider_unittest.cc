@@ -176,6 +176,43 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
   EXPECT_EQ(attachments[1].file_id(), "file_id_1");
 }
 
+TEST_F(BirchCalendarProviderTest, GetCalendarEvents_DeclinedEventAttachment) {
+  BirchCalendarProvider provider(profile());
+
+  // Set up a custom fetcher with an event with attachments.
+  auto fetcher = std::make_unique<TestCalendarFetcher>(profile());
+  auto events = std::make_unique<google_apis::calendar::EventList>();
+  events->set_time_zone("Greenwich Mean Time");
+
+  // Create a declined event with an attachment.
+  auto event = calendar_test_utils::CreateEvent(
+      "id_0", "title_0", "10 Jan 2010 10:00 GMT", "10 Jan 2010 11:00 GMT",
+      google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
+      google_apis::calendar::CalendarEvent::ResponseStatus::kDeclined);
+  event->set_conference_data_uri(GURL("http://meet.com/"));
+  google_apis::calendar::Attachment attachment0;
+  attachment0.set_title("attachment0");
+  attachment0.set_file_url(GURL("http://file0.com/"));
+  attachment0.set_icon_link(GURL("http://icon0.com/"));
+  attachment0.set_file_id("file_id_0");
+  event->set_attachments({attachment0});
+  events->InjectItemForTesting(std::move(event));
+  fetcher->events_ = std::move(events);
+  provider.SetFetcherForTest(std::move(fetcher));
+
+  // Get the calendar events.
+  provider.RequestBirchDataFetch();
+
+  // Verify the declined event is not added to the model.
+  auto* birch_model = Shell::Get()->birch_model();
+  const auto& items = birch_model->GetCalendarItemsForTest();
+  ASSERT_EQ(0u, items.size());
+
+  // Verify the declined event attachment is not added to the model.
+  const auto& attachments = birch_model->GetAttachmentItemsForTest();
+  ASSERT_EQ(0u, attachments.size());
+}
+
 TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {
   BirchCalendarProvider provider(profile());
 
