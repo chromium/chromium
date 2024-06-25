@@ -166,7 +166,8 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
   WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
   scoped_refptr<SwapBuffer> last_swap_buffer_;
-  const viz::SharedImageFormat format_;
+  const viz::SharedImageFormat shared_image_format_;
+  const wgpu::TextureFormat format_;
   const wgpu::TextureUsage usage_;
   const wgpu::TextureUsage internal_usage_;
   const PredefinedColorSpace color_space_;

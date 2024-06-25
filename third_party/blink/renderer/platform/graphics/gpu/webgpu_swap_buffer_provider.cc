@@ -45,7 +45,8 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
     : dawn_control_client_(dawn_control_client),
       client_(client),
       device_(device),
-      format_(WGPUFormatToViz(format)),
+      shared_image_format_(WGPUFormatToViz(format)),
+      format_(format),
       usage_(usage),
       internal_usage_(internal_usage),
       color_space_(color_space),
@@ -62,7 +63,7 @@ WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
 }
 
 viz::SharedImageFormat WebGPUSwapBufferProvider::Format() const {
-  return format_;
+  return shared_image_format_;
 }
 
 const gfx::Size& WebGPUSwapBufferProvider::Size() const {
@@ -185,7 +186,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     const wgpu::TextureDescriptor& desc,
     SkAlphaType alpha_mode) {
   DCHECK_EQ(desc.usage, usage_);
-  DCHECK_EQ(WGPUFormatToViz(desc.format), format_);
+  DCHECK_EQ(desc.format, format_);
   DCHECK_EQ(desc.dimension, wgpu::TextureDimension::e2D);
   DCHECK_EQ(desc.size.depthOrArrayLayers, 1u);
   DCHECK_EQ(desc.mipLevelCount, 1u);
@@ -290,6 +291,7 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
   wgpu::TextureDescriptor desc = {
       .nextInChain = &internal_usage,
       .usage = usage_,
+      .format = format_,
   };
 
   return WebGPUMailboxTextureAndSize(

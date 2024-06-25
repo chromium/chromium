@@ -729,8 +729,8 @@ TEST_F(WebGPUSwapBufferProviderTest,
   CHECK_EQ(mailbox_texture_size.size, gfx::Size());
 }
 
-// Verifies that GetLastWebGPUMailboxTextureAndSize() returns a valid texture
-// with the correct size if a swapbuffer has been created.
+// Verifies that GetLastWebGPUMailboxTextureAndSize() returns a
+// correctly-configured texture and size if a swapbuffer has been created.
 TEST_F(WebGPUSwapBufferProviderTest,
        GetLastWebGPUMailboxTextureAndSizeReturnsValidTextureWithSwapBuffer) {
   const gfx::Size kSize(10, 10);
@@ -745,6 +745,14 @@ TEST_F(WebGPUSwapBufferProviderTest,
   auto mailbox_texture_size = provider_->GetLastWebGPUMailboxTextureAndSize();
   CHECK_NE(mailbox_texture_size.mailbox_texture, nullptr);
   CHECK_EQ(mailbox_texture_size.size, kSize);
+
+  auto texture = mailbox_texture_size.mailbox_texture->GetTexture();
+  CHECK_EQ(texture.GetUsage(), kUsage);
+  CHECK_EQ(texture.GetFormat(), kFormat);
+  CHECK_EQ(texture.GetDepthOrArrayLayers(), 1u);
+  CHECK_EQ(texture.GetDimension(), wgpu::TextureDimension::e2D);
+  CHECK_EQ(texture.GetMipLevelCount(), 1u);
+  CHECK_EQ(texture.GetSampleCount(), 1u);
 }
 
 }  // namespace blink
