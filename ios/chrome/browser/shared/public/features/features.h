@@ -558,7 +558,10 @@ extern const char kDiscoverFeedIsNativeUIEnabled[];
 extern const char kTabResumptionParameterName[];
 extern const char kTabResumptionMostRecentTabOnlyParam[];
 extern const char kTabResumptionAllTabsParam[];
-extern const char kTabResumptionAllTabsOneDayThresholdParam[];
+
+// Feature parameters for the tab resumption feature. The threshold for tabs
+// fetched from sync in seconds. Default to 12 hours.
+extern const char kTabResumptionThresholdParameterName[];
 
 // Whether the feed is contained in a Home module.
 bool IsFeedContainmentEnabled();

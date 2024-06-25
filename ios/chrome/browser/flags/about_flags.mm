@@ -485,7 +485,8 @@ const FeatureEntry::FeatureParam kTabResumptionMostRecentTabOnly[] = {
 const FeatureEntry::FeatureParam kTabResumptionAllTabs[] = {
     {kTabResumptionParameterName, kTabResumptionAllTabsParam}};
 const FeatureEntry::FeatureParam kTabResumptionAllTabsOneDayThreshold[] = {
-    {kTabResumptionParameterName, kTabResumptionAllTabsOneDayThresholdParam}};
+    {kTabResumptionParameterName, kTabResumptionAllTabsParam},
+    {kTabResumptionThresholdParameterName, /* 24 hours */ "86400"}};
 
 const FeatureEntry::FeatureVariation kTabResumptionVariations[] = {
     {"Most recent tab only", kTabResumptionMostRecentTabOnly,

@@ -688,8 +688,9 @@ const char kTabResumptionParameterName[] = "variant";
 const char kTabResumptionMostRecentTabOnlyParam[] =
     "tab-resumption-recent-tab-only";
 const char kTabResumptionAllTabsParam[] = "tab-resumption-all-tabs";
-const char kTabResumptionAllTabsOneDayThresholdParam[] =
-    "tab-resumption-all-tabs-one-day-threshold";
+
+const char kTabResumptionThresholdParameterName[] =
+    "tab-resumption-sync-threshold";
 
 bool IsFeedContainmentEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedContainment);
@@ -721,12 +722,11 @@ bool IsTabResumption2_0Enabled() {
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
   CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
 
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kTabResumption, kTabResumptionParameterName);
-  if (feature_param == kTabResumptionAllTabsOneDayThresholdParam) {
-    return base::Days(1);
-  }
-  return base::Hours(12);
+  // Default to 12 hours.
+  int threshold = base::GetFieldTrialParamByFeatureAsInt(
+      kTabResumption, kTabResumptionThresholdParameterName,
+      /*default_value*/ 12 * 3600);
+  return base::Seconds(threshold);
 }
 
 BASE_FEATURE(kTabResumption1_5,
