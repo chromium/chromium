@@ -2210,6 +2210,12 @@ const char kAutomaticFullscreenContentSettingDescription[] =
     "Enables a new Automatic Fullscreen content setting that lets allowlisted "
     "origins use the HTML Fullscreen API without transient activation.";
 
+const char kAutomaticFullscreenPermissionsQueryName[] =
+    "Automatic Fullscreen Permissions Query";
+const char kAutomaticFullscreenPermissionsQueryDescription[] =
+    "Enables Permissions API query support for Automatic Fullscreen. Requires "
+    "chrome://flags/#automatic-fullscreen-content-setting to be enabled.";
+
 const char kJapaneseOSSettingsName[] = "Japanese OS Settings Page";
 const char kJapaneseOSSettingsDescription[] =
     "Enable OS Settings Page for Japanese input methods";

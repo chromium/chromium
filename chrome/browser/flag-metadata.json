@@ -881,6 +881,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "automatic-fullscreen-permissions-query",
+    "owners": [ "msw@chromium.org", "web-windowing-team@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "auxiliary-search-donation",
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 140
