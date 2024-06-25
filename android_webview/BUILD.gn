@@ -699,6 +699,7 @@ android_library("browser_java") {
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/embedder_support/android/metrics:java",
+    "//components/ip_protection/android_auth_client_lib/client:ip_protection_auth_client_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/navigation_interception/android:navigation_interception_java",
     "//components/policy/android:policy_java",
