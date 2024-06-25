@@ -1320,6 +1320,13 @@ by a child template that "extends" this file.
           android:grantUriPermissions="true">
       </provider>
 
+       <!-- Provider for incognito pdf page. -->
+      <provider android:name="org.chromium.chrome.browser.pdf.PdfContentProvider"
+          android:authorities="{{ manifest_package }}.PdfContentProvider"
+          android:exported="false"
+          android:grantUriPermissions="true">
+      </provider>
+
       <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
       <provider
           android:authorities="{{ manifest_package }}.androidx-startup"

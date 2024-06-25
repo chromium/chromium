@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.fakepdf;
 
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Preconditions;
@@ -16,13 +15,11 @@ import java.io.File;
 public class PdfDocumentRequest {
     private final Uri mUri;
     private final File mFile;
-    private final ParcelFileDescriptor mPfd;
 
     public PdfDocumentRequest(@NonNull Builder builder) {
         Preconditions.checkNotNull(builder);
         this.mUri = builder.mUri;
         this.mFile = builder.mFile;
-        this.mPfd = builder.mPfd;
     }
 
     public Uri getUri() {
@@ -33,14 +30,9 @@ public class PdfDocumentRequest {
         return this.mFile;
     }
 
-    public ParcelFileDescriptor getParcelFileDescriptor() {
-        return this.mPfd;
-    }
-
     public static class Builder {
         private Uri mUri;
         private File mFile;
-        private ParcelFileDescriptor mPfd;
         private PdfViewSettings mPdfViewSettings;
 
         public Builder() {}
@@ -54,12 +46,6 @@ public class PdfDocumentRequest {
         @NonNull
         public Builder setFile(File file) {
             this.mFile = file;
-            return this;
-        }
-
-        @NonNull
-        public Builder setPfd(ParcelFileDescriptor pfd) {
-            this.mPfd = pfd;
             return this;
         }
 

@@ -132,6 +132,12 @@
         android:grantUriPermissions="true">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
     </provider>  # DIFF-ANCHOR: b73a881a
+    <provider  # DIFF-ANCHOR: 43f90318
+        android:name="org.chromium.chrome.browser.pdf.PdfContentProvider"
+        android:authorities="$PACKAGE.PdfContentProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+    </provider>  # DIFF-ANCHOR: 43f90318
     <provider  # DIFF-ANCHOR: f1c2d7e1
         android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
         android:authorities="$PACKAGE.ChromeBrowserProvider;$PACKAGE.browser;$PACKAGE"

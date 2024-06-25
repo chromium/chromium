@@ -33,7 +33,6 @@ public class PdfCoordinator {
     private NativePageHost mHost;
     private final View mView;
     private final FragmentManager mFragmentManager;
-    private final boolean mIsIncognito;
     private int mFragmentContainerViewId;
     private String mPdfFilePath;
     private boolean mPdfIsDownloaded;
@@ -56,10 +55,10 @@ public class PdfCoordinator {
             NativePageHost host, Profile profile, Activity activity, String filepath, String url) {
         mHost = host;
         mIsPdfLoaded = false;
-        mIsIncognito = profile.isOffTheRecord();
         mView = LayoutInflater.from(host.getContext()).inflate(R.layout.pdf_page, null);
         mView.setBackgroundColor(
-                ChromeColors.getPrimaryBackgroundColor(host.getContext(), mIsIncognito));
+                ChromeColors.getPrimaryBackgroundColor(
+                        host.getContext(), profile.isOffTheRecord()));
         mTextView = mView.findViewById(R.id.fake_pdf_text);
         mTextView.setText(PDF_LOADING);
         mView.addOnAttachStateChangeListener(
@@ -150,8 +149,7 @@ public class PdfCoordinator {
         if (mView.getParent() == null) {
             return;
         }
-        PdfDocumentRequest pdfDocumentRequest =
-                PdfUtils.getPdfDocumentRequest(mPdfFilePath, mIsIncognito);
+        PdfDocumentRequest pdfDocumentRequest = PdfUtils.getPdfDocumentRequest(mPdfFilePath);
         if (pdfDocumentRequest != null) {
             mPdfViewerFragment = new PdfViewerFragment();
             mPdfEventsListener = new ChromePdfEventsListener();

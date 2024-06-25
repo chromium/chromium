@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
@@ -152,7 +151,7 @@ public class PdfUtils {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
     }
 
-    static PdfDocumentRequest getPdfDocumentRequest(String pdfFilePath, boolean isIncognito) {
+    static PdfDocumentRequest getPdfDocumentRequest(String pdfFilePath) {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
         PdfDocumentRequest.Builder builder = new PdfDocumentRequest.Builder();
@@ -162,10 +161,6 @@ public class PdfUtils {
             } else if (UrlConstants.FILE_SCHEME.equals(scheme)) {
                 File file = new File(Objects.requireNonNull(uri.getPath()));
                 builder.setFile(file);
-            } else if (isIncognito) {
-                int fd = getFileDescriptor(pdfFilePath);
-                ParcelFileDescriptor pfd = ParcelFileDescriptor.adoptFd(fd);
-                builder.setPfd(pfd);
             } else {
                 File file = new File(pdfFilePath);
                 // TODO: use builder.setFile(file) once supported.
@@ -179,11 +174,6 @@ public class PdfUtils {
         builder.setPdfViewSettings(
                 new PdfViewSettings(/* overrideDefaultUrlClickBehavior= */ true));
         return new PdfDocumentRequest(builder);
-    }
-
-    private static int getFileDescriptor(String filepath) throws NumberFormatException {
-        String fd = filepath.substring(filepath.lastIndexOf('/') + 1);
-        return Integer.parseInt(fd);
     }
 
     static void loadPdf(
