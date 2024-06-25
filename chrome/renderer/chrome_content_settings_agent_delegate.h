@@ -11,6 +11,10 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace blink {
+class WebSecurityOrigin;
+}  // namespace blink
+
 namespace extensions {
 class Dispatcher;
 class Extension;

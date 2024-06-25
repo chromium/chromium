@@ -847,17 +847,6 @@ void LocalFrameClientImpl::DidObserveLayoutShift(double score,
     client->DidObserveLayoutShift(score, after_input_or_scroll);
 }
 
-void LocalFrameClientImpl::PreloadSubresourceOptimizationsForOrigins(
-    const WTF::HashSet<scoped_refptr<const SecurityOrigin>>& origins) {
-  if (WebLocalFrameClient* client = web_frame_->Client()) {
-    std::vector<WebSecurityOrigin> origins_list;
-    for (const auto& origin : origins) {
-      origins_list.emplace_back(origin);
-    }
-    client->PreloadSubresourceOptimizationsForOrigins(origins_list);
-  }
-}
-
 void LocalFrameClientImpl::SelectorMatchChanged(
     const Vector<String>& added_selectors,
     const Vector<String>& removed_selectors) {

@@ -42,7 +42,6 @@ namespace blink {
 class WebDocumentLoader;
 class WebElement;
 class WebFormElement;
-class WebSecurityOrigin;
 class WebString;
 class WebURLRequest;
 class WebWorkerFetchContext;
@@ -373,11 +372,6 @@ class CONTENT_EXPORT RenderFrameObserver
   // return true. All other observers should return false (default).
   virtual bool SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory);
-
-  // Notifies the observers of the origins for which subresource redirect
-  // optimizations can be preloaded.
-  virtual void PreloadSubresourceOptimizationsForOrigins(
-      const std::vector<blink::WebSecurityOrigin>& origins) {}
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // IPC::Listener implementation.

@@ -244,11 +244,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {
   }
 
-  // Notifies the observers of the origins for which subresource redirect
-  // optimizations can be preloaded.
-  virtual void PreloadSubresourceOptimizationsForOrigins(
-      const WTF::HashSet<scoped_refptr<const SecurityOrigin>>& origins) {}
-
   // Transmits the change in the set of watched CSS selectors property that
   // match any element on the frame.
   virtual void SelectorMatchChanged(
