@@ -45,8 +45,9 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
   ~FamilyLiveTest() override;
 
-  // Turns on sync and closes auxiliary tabs.
-  static void TurnOnSyncFor(FamilyMember& member);
+  // Turns on sync and waits for the sync subsystem to start. Manages the list
+  // of open service tabs.
+  void TurnOnSyncFor(FamilyMember& member);
 
  protected:
   void SetUp() override;

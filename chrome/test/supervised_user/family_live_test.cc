@@ -40,6 +40,9 @@ namespace {
 // When enabled the tests explicitly wait for sync invalidation to be ready.
 const char* kWaitForSyncInvalidationReadyFlag =
     "supervised-tests-wait-for-sync-invalidation-ready";
+// When enabled, the browser opens extra debugging tabs & the logging is more
+// detailed.
+const char* kDebug = "supervised-tests-debug-features";
 
 bool IsFeatureFlagEnabled(const char* flag) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(flag);
@@ -105,12 +108,18 @@ FamilyLiveTest::FamilyLiveTest(
       extra_enabled_hosts_(extra_enabled_hosts) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
 
-/* static */ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
+void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
   member.TurnOnSync();
   member.browser()->tab_strip_model()->CloseWebContentsAt(
       2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   member.browser()->tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+
+  if (IsFeatureFlagEnabled(kDebug)) {
+    CHECK(AddTabAtIndexToBrowser(member.browser(), 1,
+                                 GURL("chrome://sync-internals"),
+                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
+  }
 
   if (IsFeatureFlagEnabled(kWaitForSyncInvalidationReadyFlag)) {
     // After turning the sync on, wait until this is fully initialized.
