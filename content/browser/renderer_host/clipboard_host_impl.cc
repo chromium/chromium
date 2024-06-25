@@ -183,12 +183,7 @@ ClipboardHostImpl::ClipboardHostImpl(
     : DocumentService(render_frame_host, std::move(receiver)) {
   static base::NoDestructor<CopyObserver> observer;
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
-      ui::ClipboardBuffer::kCopyPaste,
-      std::make_unique<ui::DataTransferEndpoint>(
-          render_frame_host.GetMainFrame()->GetLastCommittedURL(),
-          ui::DataTransferEndpointOptions{
-              .off_the_record =
-                  render_frame_host.GetBrowserContext()->IsOffTheRecord()}));
+      ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 }
 
 void ClipboardHostImpl::Create(
@@ -810,6 +805,10 @@ void ClipboardHostImpl::OnCopyAllowedResult(
 
 std::unique_ptr<ui::DataTransferEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
+  if (!render_frame_host().GetMainFrame()->GetLastCommittedURL().is_valid()) {
+    return nullptr;
+  }
+
   return std::make_unique<ui::DataTransferEndpoint>(
       render_frame_host().GetMainFrame()->GetLastCommittedURL(),
       ui::DataTransferEndpointOptions{

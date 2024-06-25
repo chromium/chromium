@@ -1508,7 +1508,8 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
   }
   aura::client::DragUpdateInfo drag_info;
   auto* focused_frame = web_contents_->GetFocusedFrame();
-  if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord()) {
+  if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord() &&
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL().is_valid()) {
     drag_info.data_endpoint = ui::DataTransferEndpoint(
         web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
         {.off_the_record =

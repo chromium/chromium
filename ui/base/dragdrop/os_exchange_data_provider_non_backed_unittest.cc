@@ -45,7 +45,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
                            std::string(kFileContents));
   original.SetHtml(kHtml, GURL(kBaseUrl));
   original.MarkRendererTaintedFromOrigin(url::Origin());
-  GURL url("www.example.com");
+  GURL url("https://www.example.com");
   original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
   std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();

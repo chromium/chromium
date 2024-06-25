@@ -32,7 +32,7 @@ TEST(ClipboardDataTest, BitmapTest) {
 // Tests that two ClipboardData objects won't be equal if they don't have the
 // same data source.
 TEST(ClipboardDataTest, DataSrcTest) {
-  GURL url("www.example.com");
+  GURL url("https://www.example.com");
   ClipboardData data1;
   data1.set_source(std::make_optional<DataTransferEndpoint>(url));
 

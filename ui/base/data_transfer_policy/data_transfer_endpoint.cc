@@ -17,7 +17,9 @@ DataTransferEndpoint::DataTransferEndpoint(const GURL& url,
     : type_(EndpointType::kUrl),
       url_(url),
       off_the_record_(options.off_the_record),
-      notify_if_restricted_(options.notify_if_restricted) {}
+      notify_if_restricted_(options.notify_if_restricted) {
+  DCHECK(url.is_valid());
+}
 
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
                                            DataTransferEndpointOptions options)
