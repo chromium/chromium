@@ -98,7 +98,7 @@ class Generator(generator.Generator):
 
   def _GetRustDataFieldType(self, kind):
     if mojom.IsEnumKind(kind):
-      return self._GetNameForKind(kind)
+      return self._GetNameForKind(kind, is_data=True)
     if mojom.IsStructKind(kind):
       return (f"bindings::data::Pointer<"
               f"{self._GetNameForKind(kind, is_data=True)}>")
@@ -207,14 +207,23 @@ class Generator(generator.Generator):
 
     return rust_fields
 
+  def _GetPackedBoolLocation(self, packed_field):
+    return {
+        "field_name": f"_packed_bits_{packed_field.offset}",
+        "bit_offset": f"{packed_field.bit}"
+    }
+
   @staticmethod
   def GetTemplatePrefix():
     return "rust_templates"
 
   def GetFilters(self):
     rust_filters = {
+        "get_packed_bool_location": self._GetPackedBoolLocation,
         "get_pad": pack.GetPad,
         "get_rust_data_fields": self._GetRustDataFields,
+        "is_enum_kind": mojom.IsEnumKind,
+        "is_pointer_kind": mojom.IsPointerKind,
         "is_nullable_kind": mojom.IsNullableKind,
         "is_struct_kind": mojom.IsStructKind,
         "rust_field_type": self._GetRustFieldType,

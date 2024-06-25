@@ -85,6 +85,9 @@ define_validation_tests! {
     conformance_mthd11_num_bytes_version_mismatch_1 => ConformanceTestInterface Request;
     conformance_mthd11_num_bytes_version_mismatch_2 => ConformanceTestInterface Request;
     conformance_mthd12_invalid_request_flags => ConformanceTestInterface Request;
+    conformance_mthd14_good_known_enum_values => ConformanceTestInterface Request;
+    conformance_mthd14_good_uknown_extensible_enum_value => ConformanceTestInterface Request;
+    conformance_mthd14_uknown_non_extensible_enum_value => ConformanceTestInterface Request;
     resp_boundscheck_msghdr_no_such_method => ConformanceTestInterface Response;
     resp_conformance_msghdr_invalid_response_flags1 => ConformanceTestInterface Response;
     resp_conformance_msghdr_invalid_response_flags2 => ConformanceTestInterface Response;

@@ -30,6 +30,7 @@ pub enum ValidationError {
     MessageHeaderInvalidFlags,
     MessageHeaderMissingRequestId,
     MessageHeaderUnknownMethod,
+    UnknownEnumValue,
 }
 
 impl ValidationError {
@@ -44,6 +45,7 @@ impl ValidationError {
             MessageHeaderInvalidFlags => "VALIDATION_ERROR_MESSAGE_HEADER_INVALID_FLAGS",
             MessageHeaderMissingRequestId => "VALIDATION_ERROR_MESSAGE_HEADER_MISSING_REQUEST_ID",
             MessageHeaderUnknownMethod => "VALIDATION_ERROR_MESSAGE_HEADER_UNKNOWN_METHOD",
+            UnknownEnumValue => "VALIDATION_ERROR_UNKNOWN_ENUM_VALUE",
         }
     }
 }

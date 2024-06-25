@@ -66,25 +66,48 @@ impl {{name}}_Data {
             }
         }
 
-{%- for packed_field in struct.packed.packed_fields %}
-{%-   if packed_field.field.kind|is_struct_kind %}
-{%-     if not packed_field.field.kind|is_nullable_kind %}
-        if data.r#{{packed_field.field.name}}.offset == 0 {
-            return Err(bindings::ValidationError::UnexpectedNullPointer);
-        }
-{%-     endif %}
-
-        if data.r#{{packed_field.field.name}}.offset != 0 {
+{%- macro validate_child(field_name, kind) %}
+{%-   if kind|is_struct_kind %}
+        if data.r#{{field_name}}.offset != 0 {
             let abs_ptr = bindings::AbsolutePointer::resolve_from(
-                &data.r#{{packed_field.field.name}},
+                &data.r#{{field_name}},
                 &data,
                 chunk,
             )?;
 
             let child_chunk = ctx.claim_struct(abs_ptr)?;
-            {{packed_field.field.kind|rust_referent_data_type}}
+            {{kind|rust_referent_data_type}}
                 ::validate(ctx, &child_chunk)?;
         }
+{%-   elif kind|is_enum_kind %}
+        data.r#{{field_name}}.validate()?;
+{%-   endif %}
+{%- endmacro -%}
+
+{% for packed_field in struct.packed.packed_fields -%}
+{%-   set kind = packed_field.field.kind -%}
+{%    if packed_field.linked_value_packed_field  -%}
+{#-     The current field is a packed boolean which determines if its associated
+        value field is present. Process both. The loop will iterate over the value
+        field later, but it will be skipped. -#}
+{%-     set orig_field = packed_field.original_field -%}
+{%-     set value_field = packed_field.linked_value_packed_field -%}
+{%-     set flag_location = packed_field|get_packed_bool_location -%}
+        // {{orig_field.name}} is nullable and has an associated boolean flag.
+        if (data.r#{{flag_location.field_name}}
+          & 1u8 << {{flag_location.bit_offset}}) > 0 {
+            {{validate_child(orig_field.name, value_field.field.kind)}}
+        }
+{%-   elif packed_field.original_field -%}
+{#-     Skip field: it was already processed above. -#}
+{%-   elif kind|is_pointer_kind and not kind|is_nullable_kind -%}
+        if data.r#{{packed_field.field.name}}.offset == 0 {
+            return Err(bindings::ValidationError::UnexpectedNullPointer);
+        }
+
+        {{validate_child(packed_field.field.name, packed_field.field.kind)}}
+{%-   else -%}
+        {{validate_child(packed_field.field.name, packed_field.field.kind)}}
 {%-   endif %}
 {%- endfor %}
 
