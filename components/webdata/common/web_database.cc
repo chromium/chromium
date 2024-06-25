@@ -17,7 +17,7 @@
 // corresponding changes must happen in the unit tests, and new migration test
 // added.  See `WebDatabaseMigrationTest::kCurrentTestedVersionNumber`.
 // static
-const int WebDatabase::kCurrentVersionNumber = 128;
+const int WebDatabase::kCurrentVersionNumber = 129;
 
 // To support users who are upgrading from older versions of Chrome, we enable
 // migrating from any database version newer than `kDeprecatedVersionNumber`.

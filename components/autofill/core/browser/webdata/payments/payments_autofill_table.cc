@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -233,6 +234,18 @@ constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
     kBenefitMerchantDomainsColumnNamesAndTypes = {
         {kBenefitId, "VARCHAR NOT NULL"},
         {kMerchantDomain, "VARCHAR NOT NULL"}};
+
+constexpr std::string_view kGenericPaymentInstrumentsTable =
+    "generic_payment_instruments";
+// kInstrumentId = "instrument_id"
+constexpr std::string_view kPaymentInstrumentType = "payment_instrument_type";
+constexpr std::string_view kSerializedValueEncrypted =
+    "serialized_value_encrypted";
+constexpr std::initializer_list<std::pair<std::string_view, std::string_view>>
+    kGenericPaymentInstrumentsColumnNamesAndTypes = {
+        {kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
+        {kPaymentInstrumentType, "INTEGER NOT NULL DEFAULT 0"},
+        {kSerializedValueEncrypted, "VARCHAR NOT NULL"}};
 
 void BindEncryptedValueToColumn(sql::Statement* s,
                                 int column_index,
@@ -452,11 +465,12 @@ bool PaymentsAutofillTable::CreateTablesIfNecessary() {
          InitMaskedBankAccountsMetadataTable() && InitMaskedIbansTable() &&
          InitMaskedIbansMetadataTable() &&
          InitMaskedCreditCardBenefitsTable() &&
-         InitBenefitMerchantDomainsTable();
+         InitBenefitMerchantDomainsTable() &&
+         InitGenericPaymentInstrumentsTable();
 }
 
 bool PaymentsAutofillTable::MigrateToVersion(int version,
-                                     bool* update_compatible_version) {
+                                             bool* update_compatible_version) {
   if (!db_->is_open()) {
     return false;
   }
@@ -530,6 +544,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 125:
       *update_compatible_version = true;
       return MigrateToVersion125DeleteFullServerCardsTable();
+    case 128:
+      *update_compatible_version = false;
+      return MigrateToVersion129AddGenericPaymentInstrumentsTable();
   }
   return true;
 }
@@ -2010,6 +2027,12 @@ bool PaymentsAutofillTable::MigrateToVersion125DeleteFullServerCardsTable() {
   return DropTableIfExists(db_, "unmasked_credit_cards");
 }
 
+bool PaymentsAutofillTable::
+    MigrateToVersion129AddGenericPaymentInstrumentsTable() {
+  return CreateTable(db_, kGenericPaymentInstrumentsTable,
+                     kGenericPaymentInstrumentsColumnNamesAndTypes);
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db_->transaction_nesting(), 0);
@@ -2221,6 +2244,11 @@ bool PaymentsAutofillTable::InitMaskedCreditCardBenefitsTable() {
 bool PaymentsAutofillTable::InitBenefitMerchantDomainsTable() {
   return CreateTableIfNotExists(db_, kBenefitMerchantDomainsTable,
                                 kBenefitMerchantDomainsColumnNamesAndTypes);
+}
+
+bool PaymentsAutofillTable::InitGenericPaymentInstrumentsTable() {
+  return CreateTableIfNotExists(db_, kGenericPaymentInstrumentsTable,
+                                kGenericPaymentInstrumentsColumnNamesAndTypes);
 }
 
 }  // namespace autofill

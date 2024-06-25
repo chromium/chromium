@@ -335,6 +335,18 @@ struct ServerCvc {
 //   merchant_domain    Origin for merchant websites on which this benefit
 //                      would apply.
 // -----------------------------------------------------------------------------
+// generic_payment_instruments
+//                      Contains serialized versions of payment instruments such
+//                      as eWallets.
+//
+//   instrument_id      The server-generated ID for the payment instrument.
+//   payment_instrument_type
+//                      An enum indicating the type of details associated with
+//                      the payment instrument.
+//   serialized_value_encrypted
+//                      A byte-encoded representation of the payment
+//                      instrument's protobuf, encrypted.
+// -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
   PaymentsAutofillTable();
@@ -570,6 +582,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool
   MigrateToVersion124AndDeletePaymentInstrumentRelatedTablesAndAddMaskedBankAccountTable();
   bool MigrateToVersion125DeleteFullServerCardsTable();
+  bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -601,6 +614,7 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitMaskedBankAccountsMetadataTable();
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
+  bool InitGenericPaymentInstrumentsTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 };

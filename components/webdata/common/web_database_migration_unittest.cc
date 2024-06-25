@@ -145,7 +145,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 128;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 129;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1389,5 +1389,22 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion127ToCurrent) {
         connection.GetSchema().find(
             "CREATE TABLE plus_addresses (profile_id VARCHAR PRIMARY KEY"),
         std::string::npos);
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion128ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_128.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(128, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("generic_payment_instruments"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("generic_payment_instruments"));
   }
 }
