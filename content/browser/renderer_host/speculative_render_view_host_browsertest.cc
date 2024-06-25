@@ -133,7 +133,8 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest,
   // Cancel the navigation while there's still a speculative RenderFrameHost and
   // RenderViewHost.
   FrameTreeNode* root = frame_tree.root();
-  root->navigator().CancelNavigation(root, NavigationDiscardReason::kCancelled);
+  root->navigator().CancelNavigation(
+      root, NavigationDiscardReason::kExplicitCancellation);
 
   // Expect that the navigation finishes but doesn't commit. There should no
   // longer be a speculative RenderViewHost or RenderFrameHost. The current

@@ -3280,6 +3280,15 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
             blink::mojom::TraverseCancelledReason::kSandboxViolation);
       }
       DiscardPendingEntry(false);
+
+      for (auto& unused_request : same_document_loads) {
+        unused_request->set_navigation_discard_reason(
+            NavigationDiscardReason::kNeverStarted);
+      }
+      for (auto& unused_request : different_document_loads) {
+        unused_request->set_navigation_discard_reason(
+            NavigationDiscardReason::kNeverStarted);
+      }
       return nullptr;
     }
   }
@@ -3312,6 +3321,16 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
         initiator_process_id);
     base::WeakPtr<NavigationRequest> request = navigation_request->GetWeakPtr();
     root->navigator().Navigate(std::move(navigation_request), ReloadType::NONE);
+
+    for (auto& unused_request : same_document_loads) {
+      unused_request->set_navigation_discard_reason(
+          NavigationDiscardReason::kNeverStarted);
+    }
+    for (auto& unused_request : different_document_loads) {
+      unused_request->set_navigation_discard_reason(
+          NavigationDiscardReason::kNeverStarted);
+    }
+
     return (request && request->IsInPrimaryMainFrame()) ? request : nullptr;
   }
 

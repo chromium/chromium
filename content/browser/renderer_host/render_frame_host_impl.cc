@@ -5311,6 +5311,14 @@ void RenderFrameHostImpl::ResetOwnedNavigationRequests(
     }
   }
 
+  for (auto& request : navigation_requests_) {
+    request.second->set_navigation_discard_reason(reason);
+  }
+
+  for (auto& request : same_document_navigation_requests_) {
+    request.second->set_navigation_discard_reason(reason);
+  }
+
   // Move the NavigationRequests to new maps first before deleting them. This
   // avoids issues if a re-entrant call is made when a NavigationRequest is
   // being deleted (e.g., if the process goes away as the tab is closing).
@@ -10304,7 +10312,9 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
   if (!for_navigation) {
     // Cancel any pending navigations, to avoid their navigation commit/fail
     // event from wiping out the is_waiting_for_beforeunload_completion_ state.
-    owner_->CancelNavigation();
+    // Since this beforeunload is not for navigation, it must be for deleting
+    // the frame (e.g. for tab discard), so set the reason accordingly.
+    owner_->CancelNavigation(NavigationDiscardReason::kWillRemoveFrame);
   }
 
   // In renderer-initiated navigations, don't check for beforeunload in the
@@ -10525,7 +10535,7 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
     // kStopCancellingNavigationsOnCommitAndNewNavigation flag is enabled, or
     // for all pending deletion cases otherwise.
     NavigationDiscardReason reason = NavigationDiscardReason::kWillRemoveFrame;
-    GetFrameTreeNodeForUnload()->CancelNavigation();
+    GetFrameTreeNodeForUnload()->CancelNavigation(reason);
     GetFrameTreeNodeForUnload()
         ->GetRenderFrameHostManager()
         .DiscardSpeculativeRFH(reason);
@@ -11932,12 +11942,14 @@ RenderFrameHostImpl::GetNavigationClientFromInterfaceProvider() {
 }
 
 void RenderFrameHostImpl::NavigationRequestCancelled(
-    NavigationRequest* navigation_request) {
+    NavigationRequest* navigation_request,
+    NavigationDiscardReason reason) {
   // Remove the requests from the list of NavigationRequests waiting to commit.
   // RenderDocument should obsolete the need for this, as always swapping RFHs
   // means that it won't be necessary to clean up the list of navigation
   // requests when the renderer aborts a navigation--instead, we'll always just
   // throw away the entire speculative RFH.
+  navigation_request->set_navigation_discard_reason(reason);
   navigation_requests_.erase(navigation_request);
 }
 
@@ -13700,6 +13712,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   if (!ValidateDidCommitParams(navigation_request.get(), params.get(),
                                is_same_document_navigation)) {
+    if (navigation_request) {
+      navigation_request->set_navigation_discard_reason(
+          NavigationDiscardReason::kFailedSecurityCheck);
+    }
     return false;
   }
 
@@ -14268,12 +14284,15 @@ void RenderFrameHostImpl::OnSameDocumentCommitProcessed(
     // TODO(crbug.com/40252449): Explain why `owner_` exists.
     CHECK(owner_);
     owner_->RestartNavigationAsCrossDocument(std::move(request->second));
+    same_document_navigation_requests_.erase(navigation_token);
     return;
   }
 
   DCHECK_EQ(result, blink::mojom::CommitResult::Aborted);
   // Note: if the commit was successful, the NavigationRequest is moved in
   // DidCommitSameDocumentNavigation.
+  request->second->set_navigation_discard_reason(
+      NavigationDiscardReason::kInternalCancellation);
   same_document_navigation_requests_.erase(navigation_token);
 }
 
@@ -14701,8 +14720,13 @@ void RenderFrameHostImpl::DidCommitNavigation(
   // destroying this RenderFrameHost. Note that we intentionally do not ignore
   // commits that happen while the current tab is being closed - see
   // https://crbug.com/805705.
-  if (IsPendingDeletion())
+  if (IsPendingDeletion()) {
+    if (request) {
+      request->set_navigation_discard_reason(
+          NavigationDiscardReason::kInternalCancellation);
+    }
     return;
+  }
 
   if (interface_params) {
     if (broker_receiver_.is_bound()) {
@@ -14723,6 +14747,11 @@ void RenderFrameHostImpl::DidCommitNavigation(
       broker_receiver_.reset();
       bad_message::ReceivedBadMessage(
           process, bad_message::RFH_INTERFACE_PROVIDER_MISSING);
+
+      if (request) {
+        request->set_navigation_discard_reason(
+            NavigationDiscardReason::kFailedSecurityCheck);
+      }
       return;
     }
 

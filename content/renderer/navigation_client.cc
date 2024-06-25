@@ -133,6 +133,11 @@ void NavigationClient::ResetWithoutCancelling() {
       mojom::NavigationClient::kResetForSwap, "");
 }
 
+void NavigationClient::ResetForAbort() {
+  navigation_client_receiver_.ResetWithReason(
+      mojom::NavigationClient::kResetForAbort, "");
+}
+
 void NavigationClient::NotifyNavigationCancellationWindowEnded() {
   DCHECK(was_initiated_in_this_frame_);
   renderer_cancellation_listener_remote_->RendererCancellationWindowEnded();

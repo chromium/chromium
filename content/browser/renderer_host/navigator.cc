@@ -1017,7 +1017,8 @@ void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,
   // after the navigation started. The last user input should be respected, and
   // the navigation cancelled anyway.
   if (!proceed) {
-    CancelNavigation(frame_tree_node, NavigationDiscardReason::kCancelled);
+    CancelNavigation(frame_tree_node,
+                     NavigationDiscardReason::kExplicitCancellation);
     return;
   }
 

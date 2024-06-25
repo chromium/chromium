@@ -266,6 +266,7 @@ source_set("browser_sources") {
     "navigation_controller.h",
     "navigation_details.cc",
     "navigation_details.h",
+    "navigation_discard_reason.h",
     "navigation_entry.h",
     "navigation_entry_restore_context.h",
     "navigation_handle.cc",

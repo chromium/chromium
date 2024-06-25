@@ -1787,7 +1787,6 @@ source_set("browser") {
     "renderer_host/navigation_controller_delegate.h",
     "renderer_host/navigation_controller_impl.cc",
     "renderer_host/navigation_controller_impl.h",
-    "renderer_host/navigation_discard_reason.h",
     "renderer_host/navigation_entry_impl.cc",
     "renderer_host/navigation_entry_impl.h",
     "renderer_host/navigation_entry_restore_context_impl.cc",

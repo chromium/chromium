@@ -84,6 +84,8 @@ class NavigationClient : mojom::NavigationClient {
 
   void ResetWithoutCancelling();
 
+  void ResetForAbort();
+
  private:
   // OnDroppedNavigation is bound from BeginNavigation till CommitNavigation.
   // During this period, it is called when the interface pipe is closed from the

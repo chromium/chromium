@@ -21564,7 +21564,8 @@ IN_PROC_BROWSER_TEST_P(
 
     // Cancel the navigation. This should trigger the deletion of the
     // speculative RenderFrameHost.
-    root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    root->ResetNavigationRequest(
+        NavigationDiscardReason::kExplicitCancellation);
     EXPECT_FALSE(root->render_manager()->speculative_frame_host());
   }
 
@@ -21578,7 +21579,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(root->render_manager()->speculative_frame_host());
     // Cancel the navigation. This should trigger the deletion of the
     // speculative RenderFrameHost.
-    root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    root->ResetNavigationRequest(
+        NavigationDiscardReason::kExplicitCancellation);
     EXPECT_FALSE(root->render_manager()->speculative_frame_host());
   }
 }
@@ -21608,7 +21610,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(child->render_manager()->speculative_frame_host());
     // Cancel the navigation. This should trigger the deletion of the
     // speculative RenderFrameHost.
-    child->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    child->ResetNavigationRequest(
+        NavigationDiscardReason::kExplicitCancellation);
     EXPECT_FALSE(child->render_manager()->speculative_frame_host());
   }
 
@@ -21622,7 +21625,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(ExecJs(child, JsReplace("location.href = $1;", url_b)));
     navigation_manager.WaitForSpeculativeRenderFrameHostCreation();
     EXPECT_TRUE(child->render_manager()->speculative_frame_host());
-    child->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+    child->ResetNavigationRequest(
+        NavigationDiscardReason::kExplicitCancellation);
 
     // Cancel the navigation. This should trigger the deletion of the
     // speculative RenderFrameHost.
@@ -22070,7 +22074,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Cancel the navigation to `url_b2` by calling ResetNavigationRequest().
   // This shouldn't cancel the navigation to `url_b1`.
-  root->ResetNavigationRequest(NavigationDiscardReason::kCancelled);
+  root->ResetNavigationRequest(NavigationDiscardReason::kExplicitCancellation);
   ASSERT_TRUE(b2_nav.WaitForNavigationFinished());
   EXPECT_FALSE(b2_nav.was_committed());
   EXPECT_FALSE(b2_nav.GetNavigationHandle());

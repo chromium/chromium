@@ -118,7 +118,7 @@ class RenderFrameHostOwner {
   // Cancels the navigation owned by the FrameTreeNode.
   // Note: this does not cancel navigations that are owned by the current or
   // speculative RenderFrameHosts.
-  virtual void CancelNavigation() = 0;
+  virtual void CancelNavigation(NavigationDiscardReason reason) = 0;
 
   // Return the iframe.credentialless attribute value.
   virtual bool Credentialless() const = 0;

@@ -19,13 +19,13 @@
 #include "base/observer_list.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_frame_host_owner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -349,7 +349,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // Similar to `ResetNavigationRequest()`, but keeps the state created by the
   // NavigationRequest (e.g. speculative RenderFrameHost, loading state).
-  void ResetNavigationRequestButKeepState();
+  void ResetNavigationRequestButKeepState(NavigationDiscardReason reason);
 
   // The load progress for a RenderFrameHost in this node was updated to
   // |load_progress|. This will notify the FrameTree which will in turn notify
@@ -727,7 +727,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
       int http_response_code) override;
-  void CancelNavigation() override;
+  void CancelNavigation(NavigationDiscardReason reason) override;
   bool Credentialless() const override;
 #if !BUILDFLAG(IS_ANDROID)
   void GetVirtualAuthenticatorManager(

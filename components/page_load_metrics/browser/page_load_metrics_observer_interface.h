@@ -13,13 +13,13 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-
 #include "url/gurl.h"
 
 namespace blink {
@@ -104,11 +104,14 @@ struct ExtraRequestCompleteInfo {
 
 // Information related to failed provisional loads.
 struct FailedProvisionalLoadInfo {
-  FailedProvisionalLoadInfo(base::TimeDelta interval, net::Error error);
+  FailedProvisionalLoadInfo(base::TimeDelta interval,
+                            net::Error error,
+                            content::NavigationDiscardReason discard_reason);
   ~FailedProvisionalLoadInfo();
 
   base::TimeDelta time_to_failed_provisional_load;
   net::Error error;
+  content::NavigationDiscardReason discard_reason;
 };
 
 // Struct for storing per-frame memory update data.

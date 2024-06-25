@@ -50,9 +50,13 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
 
 ExtraRequestCompleteInfo::~ExtraRequestCompleteInfo() {}
 
-FailedProvisionalLoadInfo::FailedProvisionalLoadInfo(base::TimeDelta interval,
-                                                     net::Error error)
-    : time_to_failed_provisional_load(interval), error(error) {}
+FailedProvisionalLoadInfo::FailedProvisionalLoadInfo(
+    base::TimeDelta interval,
+    net::Error error,
+    content::NavigationDiscardReason discard_reason)
+    : time_to_failed_provisional_load(interval),
+      error(error),
+      discard_reason(discard_reason) {}
 
 FailedProvisionalLoadInfo::~FailedProvisionalLoadInfo() {}
 

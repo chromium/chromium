@@ -446,6 +446,7 @@ class CONTENT_EXPORT NavigationRequest
   blink::mojom::RendererContentSettingsPtr GetContentSettingsForTesting()
       override;
   void SetIsAdTagged() override;
+  std::optional<NavigationDiscardReason> GetNavigationDiscardReason() override;
   // NOTE: Read function comments in NavigationHandle before use!
   std::optional<url::Origin> GetOriginToCommit() override;
   // End of NavigationHandle implementation.
@@ -1344,6 +1345,12 @@ class CONTENT_EXPORT NavigationRequest
   }
   bool was_initiated_by_animated_transition() const {
     return was_initiated_by_animated_transition_;
+  }
+
+  void set_navigation_discard_reason(
+      NavigationDiscardReason navigation_discard_reason) {
+    CHECK(!navigation_discard_reason_.has_value());
+    navigation_discard_reason_ = navigation_discard_reason;
   }
 
  private:
@@ -2886,6 +2893,10 @@ class CONTENT_EXPORT NavigationRequest
   // If true, this means that this navigaiton request was initiated by an
   // animated transition.
   bool was_initiated_by_animated_transition_ = false;
+
+  // If the navigation is cancelled/discarded before it commits, the reason
+  // for cancellation will be saved.
+  std::optional<NavigationDiscardReason> navigation_discard_reason_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

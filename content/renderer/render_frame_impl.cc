@@ -4409,6 +4409,8 @@ void RenderFrameImpl::AbortClientNavigation() {
   // See comment in header for more information of how navigation cleanup works.
   // Note: This might not actually cancel the navigation if the navigation is
   // already in the process of committing to a different RenderFrame.
+
+  navigation_client_impl_->ResetForAbort();
   navigation_client_impl_.reset();
 }
 

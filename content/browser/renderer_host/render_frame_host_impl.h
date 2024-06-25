@@ -59,7 +59,6 @@
 #include "content/browser/renderer_host/loading_state.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
-#include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -85,6 +84,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -1815,7 +1815,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Called to signify the RenderFrameHostImpl that one of its ongoing
   // NavigationRequest's has been cancelled.
-  void NavigationRequestCancelled(NavigationRequest* navigation_request);
+  void NavigationRequestCancelled(NavigationRequest* navigation_request,
+                                  NavigationDiscardReason reason);
 
   // Return fenced frames owned by |this|. The returned vector is in the order
   // the fenced frames were added (most recent at end).

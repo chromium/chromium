@@ -234,6 +234,10 @@ interface NavigationClient {
   // logic (by unexpectedly cancelling the queued navigation).
   const uint32 kResetForSwap = 1;
 
+  // Explicit reset reason when the NavigationClient needs to be reset because
+  // the renderer explicitly aborted the navigation (instead of e.g. crashing).
+  const uint32 kResetForAbort = 2;
+
   // Tells the renderer that a navigation is ready to commit.
   //
   // The renderer should bind the |url_loader_client_endpoints| to an

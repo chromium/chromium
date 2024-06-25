@@ -721,7 +721,8 @@ TestRenderFrameHost::BuildDidCommitInterfaceParams(bool is_same_document) {
 }
 
 void TestRenderFrameHost::AbortCommit(NavigationRequest* navigation_request) {
-  NavigationRequestCancelled(navigation_request);
+  NavigationRequestCancelled(navigation_request,
+                             NavigationDiscardReason::kExplicitCancellation);
 }
 
 // static

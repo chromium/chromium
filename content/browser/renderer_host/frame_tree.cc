@@ -985,7 +985,8 @@ void FrameTree::Shutdown() {
 
   // Do not update state as the FrameTree::Delegate (possibly a WebContents) is
   // being destroyed.
-  root_.ResetNavigationRequestButKeepState();
+  root_.ResetNavigationRequestButKeepState(
+      NavigationDiscardReason::kWillRemoveFrame);
   if (root_manager->speculative_frame_host()) {
     root_manager->DiscardSpeculativeRenderFrameHostForShutdown();
   }

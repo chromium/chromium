@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/preloading_trigger_type.h"
@@ -743,6 +744,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // `GetNavigationInitiatorActivationAndAdStatus()` as it can include other
   // signals outside of the initiator.
   virtual void SetIsAdTagged() = 0;
+
+  // If the navigation is discarded without committing, returns the reason for
+  // the discarding. See `NavigationDiscardReason` for the various cases.
+  virtual std::optional<NavigationDiscardReason>
+  GetNavigationDiscardReason() = 0;
 };
 
 }  // namespace content

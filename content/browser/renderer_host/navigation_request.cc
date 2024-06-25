@@ -2167,7 +2167,12 @@ NavigationRequest::~NavigationRequest() {
   if (loading_mem_tracker_)
     loading_mem_tracker_->Cancel();
   ResetExpectedProcess();
-  if (!HasCommitted()) {
+
+  if (HasCommitted()) {
+    CHECK(!navigation_discard_reason_.has_value());
+  } else {
+    CHECK(navigation_discard_reason_.has_value());
+
     // If we're before WILL_START_NAVIGATION, we haven't reported request start
     // to DevTools yet.
     // If we're in WILL_FAIL_REQUEST, the failure has been reported already.
@@ -3309,7 +3314,7 @@ void NavigationRequest::OnRequestRedirected(
     // (rather than passing the old URL).
     UpdateStateFollowingRedirect(GURL(redirect_info.new_referrer));
     frame_tree_node_->ResetNavigationRequest(
-        NavigationDiscardReason::kCancelled);
+        NavigationDiscardReason::kInternalCancellation);
     return;
   }
 #endif
@@ -4577,7 +4582,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
                  frame_tree_node_->IsOutermostMainFrame())) {
       net_error_ = net::ERR_ABORTED;
       frame_tree_node_->ResetNavigationRequest(
-          NavigationDiscardReason::kCancelled);
+          NavigationDiscardReason::kInternalCancellation);
       return;
     }
   }
@@ -6992,10 +6997,16 @@ void NavigationRequest::OnNavigationClientDisconnected(
   // anymore. Fix tests that expect this behavior.
   // 2. The target renderer had crashed, so the speculative RenderFrame is not
   // live anymore, because the navigation can't commit in a crashed renderer.
+  NavigationDiscardReason discard_reason =
+      (HasRenderFrameHost() && !GetRenderFrameHost()->IsRenderFrameLive())
+          ? NavigationDiscardReason::kRenderProcessGone
+          : (reason == mojom::NavigationClient::kResetForAbort
+                 ? NavigationDiscardReason::kExplicitCancellation
+                 : NavigationDiscardReason::kInternalCancellation);
   if (!IsWaitingToCommit()) {
     // The cancellation happens before READY_TO_COMMIT.
-    frame_tree_node_->navigator().CancelNavigation(
-        frame_tree_node_, NavigationDiscardReason::kCancelled);
+    frame_tree_node_->navigator().CancelNavigation(frame_tree_node_,
+                                                   discard_reason);
   } else if (GetRenderFrameHost() ==
                  frame_tree_node_->render_manager()->current_frame_host() ||
              !GetRenderFrameHost()->IsRenderFrameLive()) {
@@ -7003,10 +7014,10 @@ void NavigationRequest::OnNavigationClientDisconnected(
     // `render_frame_host_` owns `this`. Cache any needed state in stack
     // variables to avoid a use-after-free.
     FrameTreeNode* frame_tree_node = frame_tree_node_;
-    GetRenderFrameHost()->NavigationRequestCancelled(this);
+    GetRenderFrameHost()->NavigationRequestCancelled(this, discard_reason);
     // Ensure that the speculative RFH, if any, is also cleaned up.
     frame_tree_node->render_manager()->DiscardSpeculativeRFHIfUnused(
-        NavigationDiscardReason::kCancelled);
+        discard_reason);
   }
 
   // Do not add code after this, NavigationRequest might have been destroyed.
@@ -9674,7 +9685,7 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
       (net::ERR_BLOCKED_BY_CLIENT == net_error_ &&
        silently_ignore_blocked_by_client_)) {
     frame_tree_node_->ResetNavigationRequest(
-        NavigationDiscardReason::kCancelled);
+        NavigationDiscardReason::kInternalCancellation);
     return true;
   }
 
@@ -9690,7 +9701,7 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
       blink::FrameOwnerElementType::kObject) {
     RenderFallbackContentForObjectTag();
     frame_tree_node_->ResetNavigationRequest(
-        NavigationDiscardReason::kCancelled);
+        NavigationDiscardReason::kInternalCancellation);
     return true;
   }
 
@@ -10617,6 +10628,11 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
   }
 
   return page_swap_event_params;
+}
+
+std::optional<NavigationDiscardReason>
+NavigationRequest::GetNavigationDiscardReason() {
+  return navigation_discard_reason_;
 }
 
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
