@@ -89,21 +89,25 @@ EpStatus Endpointer::Status(int64_t* time) {
 }
 
 EpStatus Endpointer::ProcessAudio(const AudioChunk& raw_audio, float* rms_out) {
-  const int16_t* audio_data = raw_audio.SamplesData16();
-  const int num_samples = raw_audio.NumSamples();
+  return ProcessAudio(raw_audio.SamplesData16(), raw_audio.NumSamples(),
+                      rms_out);
+}
+
+EpStatus Endpointer::ProcessAudio(const int16_t* audio_data,
+                                  const int num_samples,
+                                  float* rms_out) {
   EpStatus ep_status = EP_PRE_SPEECH;
 
-  // Process the input data in blocks of frame_size_, dropping any incomplete
-  // frames at the end (which is ok since typically the caller will be recording
-  // audio in multiples of our frame size).
+  // Process the input data in blocks of frame_size_.
   int sample_index = 0;
-  while (sample_index + frame_size_ <= num_samples) {
+  while (sample_index < num_samples) {
+    int frame_size = std::min(frame_size_, num_samples - sample_index);
     // Have the endpointer process the frame.
     energy_endpointer_.ProcessAudioFrame(
-        audio_frame_time_us_, audio_data + sample_index, frame_size_, rms_out);
-    sample_index += frame_size_;
+        audio_frame_time_us_, audio_data + sample_index, frame_size, rms_out);
+    sample_index += frame_size;
     audio_frame_time_us_ +=
-        (frame_size_ * kMicrosecondsPerSecond) / sample_rate_;
+        (frame_size * kMicrosecondsPerSecond) / sample_rate_;
 
     // Get the status of the endpointer.
     int64_t ep_time;

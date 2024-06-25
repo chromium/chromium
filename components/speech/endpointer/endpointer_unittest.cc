@@ -12,12 +12,6 @@
 
 namespace {
 const int kFrameRate = 50;     // 20 ms long frames for AMR encoding.
-const int kSampleRate = 8000;  // 8 k samples per second for AMR encoding.
-
-// At 8 sample per second a 20 ms frame is 160 samples, which corrsponds
-// to the AMR codec.
-const int kFrameSize = kSampleRate / kFrameRate;  // 160 samples.
-static_assert(kFrameSize == 160, "invalid frame size");
 }  // namespace
 
 namespace speech {
@@ -30,8 +24,9 @@ class FrameProcessor {
                                 int frame_size) = 0;
 };
 
-void RunEndpointerEventsTest(FrameProcessor* processor) {
-  int16_t samples[kFrameSize];
+void RunEndpointerEventsTest(FrameProcessor* processor, int sample_rate) {
+  int frame_size = sample_rate / kFrameRate;
+  int16_t samples[frame_size];
 
   // We will create a white noise signal of 150 frames. The frames from 50 to
   // 100 will have more power, and the endpointer should fire on those frames.
@@ -50,14 +45,14 @@ void RunEndpointerEventsTest(FrameProcessor* processor) {
       gain = 1.0;
     }
     // Create random samples.
-    for (int i = 0; i < kFrameSize; ++i) {
+    for (int i = 0; i < frame_size; ++i) {
       float randNum = static_cast<float>(rand() - (RAND_MAX / 2)) /
                       static_cast<float>(RAND_MAX);
       samples[i] = static_cast<int16_t>(gain * randNum);
     }
 
-    EpStatus ep_status = processor->ProcessFrame(time, samples, kFrameSize);
-    time += static_cast<int64_t>(kFrameSize * (1e6 / kSampleRate));
+    EpStatus ep_status = processor->ProcessFrame(time, samples, frame_size);
+    time += static_cast<int64_t>(frame_size * (1e6 / sample_rate));
 
     // Log the status.
     if (20 == frame_count) {
@@ -85,7 +80,7 @@ class EnergyEndpointerFrameProcessor : public FrameProcessor {
   EpStatus ProcessFrame(int64_t time,
                         int16_t* samples,
                         int frame_size) override {
-    endpointer_->ProcessAudioFrame(time, samples, kFrameSize, nullptr);
+    endpointer_->ProcessAudioFrame(time, samples, frame_size, nullptr);
     int64_t ep_time;
     return endpointer_->Status(&ep_time);
   }
@@ -95,6 +90,8 @@ class EnergyEndpointerFrameProcessor : public FrameProcessor {
 };
 
 TEST(EndpointerTest, TestEnergyEndpointerEvents) {
+  const int sample_rate = 8000;  // 8 k samples per second for AMR encoding.
+
   // Initialize endpointer and configure it. We specify the parameters
   // here for a 20ms window, and a 20ms step size, which corrsponds to
   // the narrow band AMR codec.
@@ -116,7 +113,7 @@ TEST(EndpointerTest, TestEnergyEndpointerEvents) {
   endpointer.StartSession();
 
   EnergyEndpointerFrameProcessor frame_processor(&endpointer);
-  RunEndpointerEventsTest(&frame_processor);
+  RunEndpointerEventsTest(&frame_processor, sample_rate);
 
   endpointer.EndSession();
 }
@@ -131,7 +128,7 @@ class EndpointerFrameProcessor : public FrameProcessor {
                         int16_t* samples,
                         int frame_size) override {
     scoped_refptr<AudioChunk> frame(
-        new AudioChunk(reinterpret_cast<uint8_t*>(samples), kFrameSize * 2, 2));
+        new AudioChunk(reinterpret_cast<uint8_t*>(samples), frame_size * 2, 2));
     endpointer_->ProcessAudio(*frame.get(), nullptr);
     int64_t ep_time;
     return endpointer_->Status(&ep_time);
@@ -142,9 +139,9 @@ class EndpointerFrameProcessor : public FrameProcessor {
 };
 
 TEST(EndpointerTest, TestEmbeddedEndpointerEvents) {
-  const int kSampleRate = 8000;  // 8 k samples per second for AMR encoding.
+  const int sample_rate = 8000;  // 8 k samples per second for AMR encoding.
 
-  Endpointer endpointer(kSampleRate);
+  Endpointer endpointer(sample_rate);
   const int64_t kMillisecondsPerMicrosecond = 1000;
   const int64_t short_timeout = 300 * kMillisecondsPerMicrosecond;
   endpointer.set_speech_input_possibly_complete_silence_length(short_timeout);
@@ -153,7 +150,24 @@ TEST(EndpointerTest, TestEmbeddedEndpointerEvents) {
   endpointer.StartSession();
 
   EndpointerFrameProcessor frame_processor(&endpointer);
-  RunEndpointerEventsTest(&frame_processor);
+  RunEndpointerEventsTest(&frame_processor, sample_rate);
+
+  endpointer.EndSession();
+}
+
+TEST(EndpointerTest, HighSampleRate) {
+  const int sample_rate = 48000;
+
+  Endpointer endpointer(sample_rate);
+  const int64_t kMillisecondsPerMicrosecond = 1000;
+  const int64_t short_timeout = 300 * kMillisecondsPerMicrosecond;
+  endpointer.set_speech_input_possibly_complete_silence_length(short_timeout);
+  const int64_t long_timeout = 500 * kMillisecondsPerMicrosecond;
+  endpointer.set_speech_input_complete_silence_length(long_timeout);
+  endpointer.StartSession();
+
+  EndpointerFrameProcessor frame_processor(&endpointer);
+  RunEndpointerEventsTest(&frame_processor, sample_rate);
 
   endpointer.EndSession();
 }

@@ -64,6 +64,10 @@ class Endpointer {
   // The status of the last frame will be returned.
   EpStatus ProcessAudio(const AudioChunk& raw_audio, float* rms_out);
 
+  EpStatus ProcessAudio(const int16_t* audio_data,
+                        const int num_samples,
+                        float* rms_out);
+
   // Get the status of the endpointer.
   EpStatus Status(int64_t* time_us);
 
