@@ -199,7 +199,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   Type type() const { return type_; }
 
   void SetVisible(bool visible);
-  bool is_visible() { return is_visible_; }
+  bool is_visible() const { return is_visible_; }
 
   const base::flat_set<Accelerator>& accelerators() const {
     return accelerators_;
