@@ -22,14 +22,16 @@ std::vector<int> GetMechanismIndices(
 }  // namespace
 
 TransportHoverListModel::TransportHoverListModel(
-    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms)
-    : TransportHoverListModel(mechanisms, GetMechanismIndices(mechanisms)) {}
+    AuthenticatorRequestDialogModel* dialog_model)
+    : TransportHoverListModel(dialog_model,
+                              GetMechanismIndices(dialog_model->mechanisms)) {}
 
 TransportHoverListModel::TransportHoverListModel(
-    base::span<const AuthenticatorRequestDialogModel::Mechanism> mechanisms,
+    AuthenticatorRequestDialogModel* dialog_model,
     std::vector<int> mechanism_indices_to_display)
-    : mechanisms_(mechanisms),
-      mechanism_indices_to_display_(std::move(mechanism_indices_to_display)) {}
+    : mechanism_indices_to_display_(std::move(mechanism_indices_to_display)) {
+  dialog_model_observation_.Observe(dialog_model);
+}
 
 TransportHoverListModel::~TransportHoverListModel() = default;
 
@@ -38,22 +40,34 @@ std::vector<int> TransportHoverListModel::GetButtonTags() const {
 }
 
 std::u16string TransportHoverListModel::GetItemText(int item_tag) const {
-  return mechanisms_[item_tag].name;
+  return dialog_model_observation_.GetSource()->mechanisms[item_tag].name;
 }
 
 std::u16string TransportHoverListModel::GetDescriptionText(int item_tag) const {
-  return mechanisms_[item_tag].description;
+  return dialog_model_observation_.GetSource()
+      ->mechanisms[item_tag]
+      .description;
 }
 
 ui::ImageModel TransportHoverListModel::GetItemIcon(int item_tag) const {
-  return ui::ImageModel::FromVectorIcon(*mechanisms_[item_tag].icon,
-                                        ui::kColorIcon, 20);
+  return ui::ImageModel::FromVectorIcon(
+      *dialog_model_observation_.GetSource()->mechanisms[item_tag].icon,
+      IsButtonEnabled(item_tag) ? ui::kColorIcon : ui::kColorIconDisabled, 20);
+}
+
+bool TransportHoverListModel::IsButtonEnabled(int item_tag) const {
+  return !dialog_model_observation_.GetSource()->ui_disabled_;
 }
 
 void TransportHoverListModel::OnListItemSelected(int item_tag) {
-  mechanisms_[item_tag].callback.Run();
+  dialog_model_observation_.GetSource()->mechanisms[item_tag].callback.Run();
 }
 
 size_t TransportHoverListModel::GetPreferredItemCount() const {
   return mechanism_indices_to_display_.size();
+}
+
+void TransportHoverListModel::OnModelDestroyed(
+    AuthenticatorRequestDialogModel* model) {
+  dialog_model_observation_.Reset();
 }

@@ -21,7 +21,7 @@ AuthenticatorPriorityMechanismSheetView::BuildStepSpecificContent() {
       static_cast<AuthenticatorPriorityMechanismSheetModel*>(model());
   return std::make_pair(
       std::make_unique<HoverListView>(std::make_unique<TransportHoverListModel>(
-          sheet_model->dialog_model()->mechanisms,
+          sheet_model->dialog_model(),
           std::vector{base::checked_cast<int>(
               *sheet_model->dialog_model()->priority_mechanism_index)})),
       AutoFocus::kNo);
