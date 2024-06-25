@@ -634,6 +634,9 @@ class Generator(generator.Generator):
         return not self._IsTypemappedKind(kind) or self.typemap[
             self._GetFullMojomNameForKind(kind)]["hashable"]
       elif mojom.IsUnionKind(kind):
+        if (self._IsTypemappedKind(kind) and
+            not self.typemap[self._GetFullMojomNameForKind(kind)]["hashable"]):
+          return False
         return all(Check(field.kind) for field in kind.fields)
       elif mojom.IsAnyHandleKind(kind):
         return False
