@@ -223,6 +223,9 @@ void FocusModeController::OnSelectedPlaylistChanged() {
     return;
   }
 
+  focus_mode_metrics_recorder_->SetHasSelectedSoundType(
+      focus_mode_sounds_controller_->selected_playlist());
+
   if (media_widget_) {
     CloseMediaWidget();
   }
@@ -457,6 +460,8 @@ void FocusModeController::StartFocusSession(
   if (HasSelectedTask()) {
     focus_mode_metrics_recorder_->IncrementTasksSelectedCount();
   }
+  focus_mode_metrics_recorder_->SetHasSelectedSoundType(
+      focus_mode_sounds_controller_->selected_playlist());
 
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());

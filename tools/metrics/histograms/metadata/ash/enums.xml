@@ -1720,6 +1720,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Backfilled to disabled due to PIN length."/>
 </enum>
 
+<enum name="PlaylistTypesSelectedDuringSessionType">
+  <int value="0" label="None"/>
+  <int value="1" label="YTM"/>
+  <int value="2" label="Soundscapes"/>
+  <int value="3" label="YTM And Soundscapes"/>
+</enum>
+
 <enum name="PrivacyIndicatorsSource">
   <int value="0" label="Apps"/>
   <int value="1" label="Linux VM"/>

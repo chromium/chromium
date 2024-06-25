@@ -6,6 +6,10 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
@@ -66,9 +70,10 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, MediaWidget) {
   EXPECT_TRUE(sounds_controller->selected_playlist().empty());
   EXPECT_FALSE(FindMediaWidget());
 
-  // Select a playlist and verify that a media widget is created.
+  // Select a playlist with a type and verify that a media widget is created.
   FocusModeSoundsController::SelectedPlaylist selected_playlist;
   selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
   sounds_controller->TogglePlaylist(selected_playlist);
   EXPECT_FALSE(sounds_controller->selected_playlist().empty());
   EXPECT_TRUE(FindMediaWidget());
@@ -101,6 +106,86 @@ IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest, MediaWidget) {
   controller->ToggleFocusMode();
   EXPECT_TRUE(controller->in_focus_session());
   EXPECT_TRUE(FindMediaWidget());
+}
+
+IN_PROC_BROWSER_TEST_F(FocusModeBrowserTest,
+                       CheckSoundsPlayedDuringSessionHistogram) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = FocusModeController::Get();
+  auto* sounds_controller = controller->focus_mode_sounds_controller();
+
+  // 1. No playlist playing during the session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(sounds_controller->selected_playlist().empty());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kPlaylistTypesSelectedDuringSession,
+      /*sample=*/
+      focus_mode_histogram_names::PlaylistTypesSelectedDuringFocusSessionType::
+          kNone,
+      /*expected_count=*/1);
+
+  // 2. Only the type of soundscape playlist playing during the session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  FocusModeSoundsController::SelectedPlaylist selected_playlist;
+  selected_playlist.id = "id0";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_FALSE(sounds_controller->selected_playlist().empty());
+  EXPECT_TRUE(FindMediaWidget());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kPlaylistTypesSelectedDuringSession,
+      /*sample=*/
+      focus_mode_histogram_names::PlaylistTypesSelectedDuringFocusSessionType::
+          kSoundscapes,
+      /*expected_count=*/1);
+
+  // 3. Only the type of YouTube Music playlist playing during the session.
+  selected_playlist.id = "id1";
+  selected_playlist.type = focus_mode_util::SoundType::kYouTubeMusic;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_FALSE(sounds_controller->selected_playlist().empty());
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kPlaylistTypesSelectedDuringSession,
+      /*sample=*/
+      focus_mode_histogram_names::PlaylistTypesSelectedDuringFocusSessionType::
+          kYouTubeMusic,
+      /*expected_count=*/1);
+
+  // 4. The two types of playlists playing during the session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(sounds_controller->selected_playlist().empty());
+
+  selected_playlist.id = "id3";
+  selected_playlist.type = focus_mode_util::SoundType::kSoundscape;
+  sounds_controller->TogglePlaylist(selected_playlist);
+  EXPECT_EQ(sounds_controller->selected_playlist().type,
+            focus_mode_util::SoundType::kSoundscape);
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kPlaylistTypesSelectedDuringSession,
+      /*sample=*/
+      focus_mode_histogram_names::PlaylistTypesSelectedDuringFocusSessionType::
+          kYouTubeMusicAndSoundscapes,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash

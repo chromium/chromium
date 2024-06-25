@@ -183,6 +183,29 @@ void RecordStartedWithTaskHistogram(const TaskId& selected_task_id) {
                 kNewlySelectedTask);
 }
 
+void RecordSoundsPlayedDuringSessionHistogram(bool has_selected_soundscapes,
+                                              bool has_selected_youtube_music) {
+  focus_mode_histogram_names::PlaylistTypesSelectedDuringFocusSessionType type =
+      focus_mode_histogram_names::PlaylistTypesSelectedDuringFocusSessionType::
+          kNone;
+
+  if (has_selected_soundscapes && has_selected_youtube_music) {
+    type = focus_mode_histogram_names::
+        PlaylistTypesSelectedDuringFocusSessionType::
+            kYouTubeMusicAndSoundscapes;
+  } else if (has_selected_soundscapes) {
+    type = focus_mode_histogram_names::
+        PlaylistTypesSelectedDuringFocusSessionType::kSoundscapes;
+  } else if (has_selected_youtube_music) {
+    type = focus_mode_histogram_names::
+        PlaylistTypesSelectedDuringFocusSessionType::kYouTubeMusic;
+  }
+
+  base::UmaHistogramEnumeration(
+      /*name=*/focus_mode_histogram_names::kPlaylistTypesSelectedDuringSession,
+      /*sample=*/type);
+}
+
 }  // namespace
 
 FocusModeMetricsRecorder::FocusModeMetricsRecorder(
@@ -214,6 +237,24 @@ void FocusModeMetricsRecorder::OnQuietModeChanged(bool in_quiet_mode) {
   }
 }
 
+void FocusModeMetricsRecorder::SetHasSelectedSoundType(
+    const FocusModeSoundsController::SelectedPlaylist& selected_playlist) {
+  if (selected_playlist.empty()) {
+    return;
+  }
+
+  switch (selected_playlist.type) {
+    case focus_mode_util::SoundType::kSoundscape:
+      has_selected_soundscapes_ = true;
+      break;
+    case focus_mode_util::SoundType::kYouTubeMusic:
+      has_selected_youtube_music_ = true;
+      break;
+    case focus_mode_util::SoundType::kNone:
+      NOTREACHED_IN_MIGRATION();
+  }
+}
+
 void FocusModeMetricsRecorder::RecordHistogramsOnStart(
     focus_mode_histogram_names::ToggleSource source,
     const TaskId& selected_task_id) {
@@ -238,6 +279,9 @@ void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
   RecordPercentCompletedHistogram(
       session_snapshot.progress, session_snapshot.session_duration.InMinutes());
   RecordSessionDurationHistogram(session_snapshot.time_elapsed.InMinutes());
+
+  RecordSoundsPlayedDuringSessionHistogram(has_selected_soundscapes_,
+                                           has_selected_youtube_music_);
 }
 
 void FocusModeMetricsRecorder::RecordHistogramOnEndingMoment(
