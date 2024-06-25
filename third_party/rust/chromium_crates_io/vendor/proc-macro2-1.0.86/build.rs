@@ -1,39 +1,3 @@
-// rustc-cfg emitted by the build script:
-//
-// "wrap_proc_macro"
-//     Wrap types from libproc_macro rather than polyfilling the whole API.
-//     Enabled on rustc 1.29+ as long as procmacro2_semver_exempt is not set,
-//     because we can't emulate the unstable API without emulating everything
-//     else. Also enabled unconditionally on nightly, in which case the
-//     procmacro2_semver_exempt surface area is implemented by using the
-//     nightly-only proc_macro API.
-//
-// "hygiene"
-//    Enable Span::mixed_site() and non-dummy behavior of Span::resolved_at
-//    and Span::located_at. Enabled on Rust 1.45+.
-//
-// "proc_macro_span"
-//     Enable non-dummy behavior of Span::start and Span::end methods which
-//     requires an unstable compiler feature. Enabled when building with
-//     nightly, unless `-Z allow-feature` in RUSTFLAGS disallows unstable
-//     features.
-//
-// "super_unstable"
-//     Implement the semver exempt API in terms of the nightly-only proc_macro
-//     API. Enabled when using procmacro2_semver_exempt on a nightly compiler.
-//
-// "span_locations"
-//     Provide methods Span::start and Span::end which give the line/column
-//     location of a token. Enabled by procmacro2_semver_exempt or the
-//     "span-locations" Cargo cfg. This is behind a cfg because tracking
-//     location inside spans is a performance hit.
-//
-// "is_available"
-//     Use proc_macro::is_available() to detect if the proc macro API is
-//     available or needs to be polyfilled instead of trying to use the proc
-//     macro API and catching a panic if it isn't available. Enabled on Rust
-//     1.57+.
-
 #![allow(unknown_lints)]
 #![allow(unexpected_cfgs)]
 
@@ -71,18 +35,28 @@ fn main() {
     }
 
     if semver_exempt || cfg!(feature = "span-locations") {
+        // Provide methods Span::start and Span::end which give the line/column
+        // location of a token. This is behind a cfg because tracking location
+        // inside spans is a performance hit.
         println!("cargo:rustc-cfg=span_locations");
     }
 
     if rustc < 57 {
+        // Do not use proc_macro::is_available() to detect whether the proc
+        // macro API is available vs needs to be polyfilled. Instead, use the
+        // proc macro API unconditionally and catch the panic that occurs if it
+        // isn't available.
         println!("cargo:rustc-cfg=no_is_available");
     }
 
     if rustc < 66 {
+        // Do not call libproc_macro's Span::source_text. Always return None.
         println!("cargo:rustc-cfg=no_source_text");
     }
 
     if rustc < 79 {
+        // Do not call Literal::byte_character nor Literal::c_string. They can
+        // be emulated by way of Literal::from_str.
         println!("cargo:rustc-cfg=no_literal_byte_character");
         println!("cargo:rustc-cfg=no_literal_c_string");
     }
@@ -130,14 +104,26 @@ fn main() {
     }
 
     if proc_macro_span || !semver_exempt {
+        // Wrap types from libproc_macro rather than polyfilling the whole API.
+        // Enabled as long as procmacro2_semver_exempt is not set, because we
+        // can't emulate the unstable API without emulating everything else.
+        // Also enabled unconditionally on nightly, in which case the
+        // procmacro2_semver_exempt surface area is implemented by using the
+        // nightly-only proc_macro API.
         println!("cargo:rustc-cfg=wrap_proc_macro");
     }
 
     if proc_macro_span {
+        // Enable non-dummy behavior of Span::start and Span::end methods which
+        // requires an unstable compiler feature. Enabled when building with
+        // nightly, unless `-Z allow-feature` in RUSTFLAGS disallows unstable
+        // features.
         println!("cargo:rustc-cfg=proc_macro_span");
     }
 
     if semver_exempt && proc_macro_span {
+        // Implement the semver exempt API in terms of the nightly-only
+        // proc_macro API.
         println!("cargo:rustc-cfg=super_unstable");
     }
 

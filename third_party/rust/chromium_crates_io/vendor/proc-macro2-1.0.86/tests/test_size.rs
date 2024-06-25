@@ -1,12 +1,12 @@
+#![allow(unused_attributes)]
+
 extern crate proc_macro;
 
 use std::mem;
 
-#[rustversion::attr(before(1.64), ignore)]
-#[rustversion::attr(
-    since(1.64),
-    cfg_attr(any(randomize_layout, not(target_pointer_width = "64")), ignore)
-)]
+#[rustversion::attr(before(1.64), ignore = "requires Rust 1.64+")]
+#[cfg_attr(not(target_pointer_width = "64"), ignore = "only applicable to 64-bit")]
+#[cfg_attr(randomize_layout, ignore = "disabled due to randomized layout")]
 #[test]
 fn test_proc_macro_size() {
     assert_eq!(mem::size_of::<proc_macro::Span>(), 4);
@@ -18,15 +18,10 @@ fn test_proc_macro_size() {
     assert_eq!(mem::size_of::<proc_macro::TokenStream>(), 4);
 }
 
-#[cfg_attr(
-    any(
-        randomize_layout,
-        not(target_pointer_width = "64"),
-        wrap_proc_macro,
-        span_locations
-    ),
-    ignore
-)]
+#[cfg_attr(not(target_pointer_width = "64"), ignore = "only applicable to 64-bit")]
+#[cfg_attr(randomize_layout, ignore = "disabled due to randomized layout")]
+#[cfg_attr(wrap_proc_macro, ignore = "wrapper mode")]
+#[cfg_attr(span_locations, ignore = "span locations are on")]
 #[test]
 fn test_proc_macro2_fallback_size_without_locations() {
     assert_eq!(mem::size_of::<proc_macro2::Span>(), 0);
@@ -38,15 +33,10 @@ fn test_proc_macro2_fallback_size_without_locations() {
     assert_eq!(mem::size_of::<proc_macro2::TokenStream>(), 8);
 }
 
-#[cfg_attr(
-    any(
-        randomize_layout,
-        not(target_pointer_width = "64"),
-        wrap_proc_macro,
-        not(span_locations)
-    ),
-    ignore
-)]
+#[cfg_attr(not(target_pointer_width = "64"), ignore = "only applicable to 64-bit")]
+#[cfg_attr(randomize_layout, ignore = "disabled due to randomized layout")]
+#[cfg_attr(wrap_proc_macro, ignore = "wrapper mode")]
+#[cfg_attr(not(span_locations), ignore = "span locations are off")]
 #[test]
 fn test_proc_macro2_fallback_size_with_locations() {
     assert_eq!(mem::size_of::<proc_macro2::Span>(), 8);
@@ -58,19 +48,11 @@ fn test_proc_macro2_fallback_size_with_locations() {
     assert_eq!(mem::size_of::<proc_macro2::TokenStream>(), 8);
 }
 
-#[rustversion::attr(before(1.71), ignore)]
-#[rustversion::attr(
-    since(1.71),
-    cfg_attr(
-        any(
-            randomize_layout,
-            not(target_pointer_width = "64"),
-            not(wrap_proc_macro),
-            span_locations
-        ),
-        ignore
-    )
-)]
+#[rustversion::attr(before(1.71), ignore = "requires Rust 1.71+")]
+#[cfg_attr(not(target_pointer_width = "64"), ignore = "only applicable to 64-bit")]
+#[cfg_attr(randomize_layout, ignore = "disabled due to randomized layout")]
+#[cfg_attr(not(wrap_proc_macro), ignore = "fallback mode")]
+#[cfg_attr(span_locations, ignore = "span locations are on")]
 #[test]
 fn test_proc_macro2_wrapper_size_without_locations() {
     assert_eq!(mem::size_of::<proc_macro2::Span>(), 4);
@@ -82,19 +64,11 @@ fn test_proc_macro2_wrapper_size_without_locations() {
     assert_eq!(mem::size_of::<proc_macro2::TokenStream>(), 32);
 }
 
-#[rustversion::attr(before(1.65), ignore)]
-#[rustversion::attr(
-    since(1.65),
-    cfg_attr(
-        any(
-            randomize_layout,
-            not(target_pointer_width = "64"),
-            not(wrap_proc_macro),
-            not(span_locations)
-        ),
-        ignore
-    )
-)]
+#[rustversion::attr(before(1.65), ignore = "requires Rust 1.65+")]
+#[cfg_attr(not(target_pointer_width = "64"), ignore = "only applicable to 64-bit")]
+#[cfg_attr(randomize_layout, ignore = "disabled due to randomized layout")]
+#[cfg_attr(not(wrap_proc_macro), ignore = "fallback mode")]
+#[cfg_attr(not(span_locations), ignore = "span locations are off")]
 #[test]
 fn test_proc_macro2_wrapper_size_with_locations() {
     assert_eq!(mem::size_of::<proc_macro2::Span>(), 12);
