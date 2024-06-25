@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/fido/mac/credential_store.h"
-
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
@@ -14,6 +12,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "crypto/apple_keychain_v2.h"
 #include "crypto/fake_apple_keychain_v2.h"
 #include "device/base/features.h"
@@ -22,7 +21,7 @@
 #include "device/fido/fido_test_data.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/authenticator_config.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/mac/credential_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,7 +40,7 @@ using base::apple::NSToCFPtrCast;
 
 namespace device {
 
-using test::TestCallbackReceiver;
+using base::test::TestFuture;
 
 namespace fido::mac {
 namespace {
@@ -133,13 +132,13 @@ class BrowsingDataDeletionTest : public testing::Test {
   bool MakeCredential() { return MakeCredential(authenticator_.get()); }
 
   bool MakeCredential(TouchIdAuthenticator* authenticator) {
-    TestCallbackReceiver<CtapDeviceResponseCode,
-                         std::optional<AuthenticatorMakeCredentialResponse>>
-        callback_receiver;
+    TestFuture<CtapDeviceResponseCode,
+               std::optional<AuthenticatorMakeCredentialResponse>>
+        future;
     authenticator->MakeCredential(MakeRequest(), MakeCredentialOptions(),
-                                  callback_receiver.callback());
-    callback_receiver.WaitForCallback();
-    auto result = callback_receiver.TakeResult();
+                                  future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    auto result = future.Take();
     return std::get<0>(result) == CtapDeviceResponseCode::kSuccess;
   }
 

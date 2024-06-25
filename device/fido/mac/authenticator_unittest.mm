@@ -5,6 +5,7 @@
 #include "device/fido/mac/authenticator.h"
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -16,7 +17,6 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
-#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,12 +24,12 @@ namespace device {
 
 namespace {
 
-using GetInfoCallback =
-    test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
-                               FidoRequestHandlerBase::RecognizedCredential>;
-using GetAssertionCallback = test::StatusAndValueCallbackReceiver<
-    CtapDeviceResponseCode,
-    std::vector<AuthenticatorGetAssertionResponse>>;
+using GetInfoFuture =
+    base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
+                           FidoRequestHandlerBase::RecognizedCredential>;
+using GetAssertionFuture =
+    base::test::TestFuture<CtapDeviceResponseCode,
+                           std::vector<AuthenticatorGetAssertionResponse>>;
 
 constexpr char kRp1[] = "one.com";
 constexpr char kRp2[] = "two.com";
@@ -69,27 +69,27 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
 
   {
     // RP 1 should return the resident credential.
-    GetInfoCallback callback;
+    GetInfoFuture future;
     CtapGetAssertionRequest request(kRp1, "{json: true}");
     authenticator_->GetPlatformCredentialInfoForRequest(
-        std::move(request), CtapGetAssertionOptions(), callback.callback());
-    callback.WaitForCallback();
-    EXPECT_THAT(std::get<0>(*callback.result()),
+        std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_THAT(std::get<0>(future.Get()),
                 testing::ElementsAre(credential_metadata));
     EXPECT_EQ(
-        std::get<1>(*callback.result()),
+        std::get<1>(future.Get()),
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   }
   {
     // RP 2 should return no credentials.
-    GetInfoCallback callback;
+    GetInfoFuture future;
     CtapGetAssertionRequest request(kRp2, "{json: true}");
     authenticator_->GetPlatformCredentialInfoForRequest(
-        std::move(request), CtapGetAssertionOptions(), callback.callback());
-    callback.WaitForCallback();
-    EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+        std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_TRUE(std::get<0>(future.Get()).empty());
     EXPECT_EQ(
-        std::get<1>(*callback.result()),
+        std::get<1>(future.Get()),
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
   }
 }
@@ -109,56 +109,57 @@ TEST_F(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
   {
     // RP 1 should report the credential if it is in the allow list but not
     // return it.
-    GetInfoCallback callback;
+    GetInfoFuture future;
     CtapGetAssertionRequest request(kRp1, "{json: true}");
     request.allow_list.emplace_back(CredentialType::kPublicKey,
                                     credential.credential_id);
     authenticator_->GetPlatformCredentialInfoForRequest(
-        std::move(request), CtapGetAssertionOptions(), callback.callback());
-    callback.WaitForCallback();
-    EXPECT_THAT(std::get<0>(*callback.result()),
+        std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_THAT(std::get<0>(future.Get()),
                 testing::ElementsAre(credential_metadata));
     EXPECT_EQ(
-        std::get<1>(*callback.result()),
+        std::get<1>(future.Get()),
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential);
   }
   {
     // RP 1 should not report the credential if it is not in the allow list.
-    GetInfoCallback callback;
+    GetInfoFuture future;
     CtapGetAssertionRequest request(kRp1, "{json: true}");
     request.allow_list.emplace_back(CredentialType::kPublicKey,
                                     std::vector<uint8_t>{5, 6, 7, 8});
     authenticator_->GetPlatformCredentialInfoForRequest(
-        std::move(request), CtapGetAssertionOptions(), callback.callback());
-    callback.WaitForCallback();
-    EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+        std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_TRUE(std::get<0>(future.Get()).empty());
     EXPECT_EQ(
-        std::get<1>(*callback.result()),
+        std::get<1>(future.Get()),
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
   }
   {
     // RP 2 should report no credentials.
-    GetInfoCallback callback;
+    GetInfoFuture future;
     CtapGetAssertionRequest request(kRp2, "{json: true}");
     request.allow_list.emplace_back(CredentialType::kPublicKey,
                                     credential.credential_id);
     authenticator_->GetPlatformCredentialInfoForRequest(
-        std::move(request), CtapGetAssertionOptions(), callback.callback());
-    callback.WaitForCallback();
-    EXPECT_TRUE(std::get<0>(*callback.result()).empty());
+        std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_TRUE(std::get<0>(future.Get()).empty());
     EXPECT_EQ(
-        std::get<1>(*callback.result()),
+        std::get<1>(future.Get()),
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
   }
 }
 
 TEST_F(TouchIdAuthenticatorTest, GetAssertionEmpty) {
-  GetAssertionCallback callback;
+  GetAssertionFuture future;
   CtapGetAssertionRequest request(kRp1, "{json: true}");
   authenticator_->GetAssertion(std::move(request), CtapGetAssertionOptions(),
-                               callback.callback());
-  callback.WaitForCallback();
-  EXPECT_EQ(callback.status(), CtapDeviceResponseCode::kCtap2ErrNoCredentials);
+                               future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::get<0>(future.Get()),
+            CtapDeviceResponseCode::kCtap2ErrNoCredentials);
 }
 
 }  // namespace

@@ -5,8 +5,8 @@
 #include "chrome/browser/webauthn/local_credential_management_mac.h"
 
 #include <optional>
-#include <tuple>
 
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -15,11 +15,12 @@
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using base::test::TestFuture;
 
 static const device::PublicKeyCredentialUserEntity kUser({1, 2, 3},
                                                          "doe@example.com",
@@ -41,41 +42,39 @@ class LocalCredentialManagementTest : public testing::Test {
 };
 
 TEST_F(LocalCredentialManagementTest, NoCredentials) {
-  device::test::TestCallbackReceiver<bool> callback;
-  local_cred_man_.HasCredentials(callback.callback());
-  EXPECT_FALSE(callback.was_called());
-  callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+  TestFuture<bool> future;
+  local_cred_man_.HasCredentials(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
 
-  device::test::TestCallbackReceiver<
-      std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
-      enumerate_callback;
-  local_cred_man_.Enumerate(enumerate_callback.callback());
-  EXPECT_FALSE(enumerate_callback.was_called());
-  enumerate_callback.WaitForCallback();
-  auto result = std::get<0>(enumerate_callback.TakeResult());
+  TestFuture<std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      enumerate_future;
+  local_cred_man_.Enumerate(enumerate_future.GetCallback());
+  EXPECT_FALSE(enumerate_future.IsReady());
+  EXPECT_TRUE(enumerate_future.Wait());
+  auto result = enumerate_future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->empty());
 }
 
 TEST_F(LocalCredentialManagementTest, OneCredential) {
-  device::test::TestCallbackReceiver<bool> callback;
+  TestFuture<bool> future;
   auto credential = store_.CreateCredential(
       kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
   EXPECT_TRUE(credential);
-  local_cred_man_.HasCredentials(callback.callback());
-  EXPECT_FALSE(callback.was_called());
-  callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+  local_cred_man_.HasCredentials(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
 
-  device::test::TestCallbackReceiver<
-      std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
-      enumerate_callback;
-  local_cred_man_.Enumerate(enumerate_callback.callback());
-  EXPECT_FALSE(enumerate_callback.was_called());
-  enumerate_callback.WaitForCallback();
+  TestFuture<std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      enumerate_future;
+  local_cred_man_.Enumerate(enumerate_future.GetCallback());
+  EXPECT_FALSE(enumerate_future.IsReady());
+  EXPECT_TRUE(enumerate_future.Wait());
   const std::optional<std::vector<device::DiscoverableCredentialMetadata>>
-      result = std::get<0>(enumerate_callback.TakeResult());
+      result = enumerate_future.Get();
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result->size(), 1u);
   EXPECT_EQ(result->at(0).rp_id, kRpId);
@@ -89,28 +88,28 @@ TEST_F(LocalCredentialManagementTest, DeleteCredential) {
   ASSERT_TRUE(credentials);
   EXPECT_EQ(credentials->size(), 1u);
   {
-    device::test::TestCallbackReceiver<bool> callback;
+    TestFuture<bool> future;
     local_cred_man_.Delete(credential->first.credential_id,
-                           callback.callback());
-    EXPECT_FALSE(callback.was_called());
-    callback.WaitForCallback();
-    EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+                           future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_TRUE(future.Get());
   }
   credentials = store_.FindResidentCredentials(kRpId);
   ASSERT_TRUE(credentials);
   EXPECT_EQ(store_.FindResidentCredentials(kRpId)->size(), 0u);
 
   {
-    device::test::TestCallbackReceiver<bool> callback;
-    local_cred_man_.Delete(std::vector<uint8_t>{8}, callback.callback());
-    EXPECT_FALSE(callback.was_called());
-    callback.WaitForCallback();
-    EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+    TestFuture<bool> future;
+    local_cred_man_.Delete(std::vector<uint8_t>{8}, future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_FALSE(future.Get());
   }
 }
 
 TEST_F(LocalCredentialManagementTest, EditCredential) {
-  device::test::TestCallbackReceiver<bool> callback;
+  TestFuture<bool> future;
   auto credential = store_.CreateCredential(
       kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
   ASSERT_TRUE(credential);
@@ -119,10 +118,10 @@ TEST_F(LocalCredentialManagementTest, EditCredential) {
           config_, kRpId);
   EXPECT_EQ(credentials.size(), 1u);
   local_cred_man_.Edit(credential->first.credential_id, "new-username",
-                       callback.callback());
-  EXPECT_FALSE(callback.was_called());
-  callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+                       future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
 
   credentials =
       device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
@@ -132,7 +131,7 @@ TEST_F(LocalCredentialManagementTest, EditCredential) {
 }
 
 TEST_F(LocalCredentialManagementTest, EditLongCredential) {
-  device::test::TestCallbackReceiver<bool> callback;
+  TestFuture<bool> future;
   auto credential = store_.CreateCredential(
       kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
   ASSERT_TRUE(credential);
@@ -143,10 +142,10 @@ TEST_F(LocalCredentialManagementTest, EditLongCredential) {
   local_cred_man_.Edit(
       credential->first.credential_id,
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-      callback.callback());
-  EXPECT_FALSE(callback.was_called());
-  callback.WaitForCallback();
-  EXPECT_TRUE(std::get<0>(callback.TakeResult()));
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
 
   credentials =
       device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
@@ -158,7 +157,7 @@ TEST_F(LocalCredentialManagementTest, EditLongCredential) {
 }
 
 TEST_F(LocalCredentialManagementTest, EditUnknownCredential) {
-  device::test::TestCallbackReceiver<bool> callback;
+  TestFuture<bool> future;
   auto credential = store_.CreateCredential(
       kRpId, kUser, device::fido::mac::TouchIdCredentialStore::kDiscoverable);
   ASSERT_TRUE(credential);
@@ -167,10 +166,10 @@ TEST_F(LocalCredentialManagementTest, EditUnknownCredential) {
           config_, kRpId);
   EXPECT_EQ(credentials.size(), 1u);
   uint8_t credential_id[] = {0xa};
-  local_cred_man_.Edit(credential_id, "new-username", callback.callback());
-  EXPECT_FALSE(callback.was_called());
-  callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+  local_cred_man_.Edit(credential_id, "new-username", future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
 }
 
 class ScopedMockKeychain : crypto::AppleKeychainV2 {
@@ -197,23 +196,21 @@ class MockKeychainLocalCredentialManagementTest : public testing::Test {
 TEST_F(MockKeychainLocalCredentialManagementTest, KeychainError) {
   EXPECT_CALL(mock_keychain_, ItemCopyMatching)
       .WillOnce(testing::Return(errSecInternalComponent));
-  device::test::TestCallbackReceiver<bool> callback;
-  local_cred_man_.HasCredentials(callback.callback());
-  EXPECT_FALSE(callback.was_called());
-  callback.WaitForCallback();
-  EXPECT_FALSE(std::get<0>(callback.TakeResult()));
+  TestFuture<bool> future;
+  local_cred_man_.HasCredentials(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
   testing::Mock::VerifyAndClearExpectations(&mock_keychain_);
 
   EXPECT_CALL(mock_keychain_, ItemCopyMatching)
       .WillOnce(testing::Return(errSecInternalComponent));
-  device::test::TestCallbackReceiver<
-      std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
-      enumerate_callback;
-  local_cred_man_.Enumerate(enumerate_callback.callback());
-  EXPECT_FALSE(enumerate_callback.was_called());
-  enumerate_callback.WaitForCallback();
-  auto result = std::get<0>(enumerate_callback.TakeResult());
-  EXPECT_FALSE(result.has_value());
+  TestFuture<std::optional<std::vector<device::DiscoverableCredentialMetadata>>>
+      enumerate_future;
+  local_cred_man_.Enumerate(enumerate_future.GetCallback());
+  EXPECT_FALSE(enumerate_future.IsReady());
+  EXPECT_TRUE(enumerate_future.Wait());
+  EXPECT_FALSE(enumerate_future.Get());
 }
 
 }  // namespace
