@@ -598,7 +598,7 @@ void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
 
 void BuiltInBackendToAndroidBackendMigrator::RunCallbackOrAbortMigration(
     base::OnceClosure callback,
-    std::string backend_infix,
+    const std::string& backend_infix,
     BackendOperationForMigration backend_operation,
     PasswordChangesOrError changes_or_error) {
   if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {

@@ -148,7 +148,7 @@ class BuiltInBackendToAndroidBackendMigrator {
   // backend the operation was performed, for the purpose of recording metrics.
   void RunCallbackOrAbortMigration(
       base::OnceClosure callback,
-      std::string backend_infix,
+      const std::string& backend_infix,
       BackendOperationForMigration backend_operation,
       PasswordChangesOrError changelist);
 
