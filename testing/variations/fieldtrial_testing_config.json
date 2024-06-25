@@ -9542,36 +9542,6 @@
             ]
         }
     ],
-    "FeedSportsCard": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230921",
-                    "enable_features": [
-                        "FeedSportsCard"
-                    ]
-                }
-            ]
-        }
-    ],
-    "FeedUserInteractionReliabilityReport": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230602",
-                    "enable_features": [
-                        "FeedUserInteractionReliabilityReport"
-                    ]
-                }
-            ]
-        }
-    ],
     "FencedFramesEnableCredentialsForAutomaticBeacons": [
         {
             "platforms": [

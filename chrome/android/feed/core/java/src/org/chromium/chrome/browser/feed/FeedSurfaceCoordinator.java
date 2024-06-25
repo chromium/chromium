@@ -830,11 +830,8 @@ public class FeedSurfaceCoordinator
                             .hasSwitch("force-enable-feed-reliability-logging")) {
                 FeedLaunchReliabilityLogger launchLogger =
                         mSurfaceScope.getLaunchReliabilityLogger();
-                FeedUserInteractionReliabilityLogger userInteractionLogger = null;
-                if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)) {
-                    userInteractionLogger = mSurfaceScope.getUserInteractionReliabilityLogger();
-                }
+                FeedUserInteractionReliabilityLogger userInteractionLogger =
+                        mSurfaceScope.getUserInteractionReliabilityLogger();
                 FeedCardOpeningReliabilityLogger cardOpeningLogger =
                         mSurfaceScope.getCardOpeningReliabilityLogger();
                 mReliabilityLogger =

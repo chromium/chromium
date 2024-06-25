@@ -102,9 +102,6 @@ BASE_DECLARE_FEATURE(kFeedPerformanceStudy);
 // by the client, primarily to retroactively work around bugs.
 BASE_DECLARE_FEATURE(kSyntheticCapabilities);
 
-// Feature that enables reporting feed user interaction reliability.
-BASE_DECLARE_FEATURE(kFeedUserInteractionReliabilityReport);
-
 // Feature that enables signed-out view demotion.
 BASE_DECLARE_FEATURE(kFeedSignedOutViewDemotion);
 
@@ -113,9 +110,6 @@ BASE_DECLARE_FEATURE(kFeedDynamicColors);
 
 // Feature that enables UI update for Follow.
 BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
-
-// Feature that enables sports card in the feed.
-BASE_DECLARE_FEATURE(kFeedSportsCard);
 
 // Feature that enables refreshing feed when Chrome restarts.
 BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);

@@ -4324,10 +4324,6 @@ const char kFeedSignedOutViewDemotionName[] = "Feed signed-out view demotion";
 const char kFeedSignedOutViewDemotionDescription[] =
     "Enables signed-out view demotion for the Discover Feed.";
 
-const char kFeedSportsCardName[] = "Sports cards in the feed";
-const char kFeedSportsCardDescription[] =
-    "Enables the live sports cards in the feed.";
-
 const char kFeedStampName[] = "StAMP cards in the feed";
 const char kFeedStampDescription[] = "Enables StAMP cards in the feed.";
 

@@ -111,7 +111,6 @@ import java.util.Map;
 @DisableFeatures({
     ChromeFeatureList.WEB_FEED_SORT,
     ChromeFeatureList.WEB_FEED_ONBOARDING,
-    ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT,
     // TODO(crbug.com/40858677): Disabling the feature explicitly, because native is not
     // available to provide a default value. This should be enabled if the feature is enabled by
     // default or removed if the flag is removed.

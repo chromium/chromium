@@ -314,8 +314,6 @@ public abstract class ChromeFeatureList {
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";
     public static final String FEED_POSITION_ANDROID = "FeedPositionAndroid";
     public static final String FEED_SHOW_SIGN_IN_COMMAND = "FeedShowSignInCommand";
-    public static final String FEED_USER_INTERACTION_RELIABILITY_REPORT =
-            "FeedUserInteractionReliabilityReport";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FINGERPRINTING_PROTECTION_SETTING =
             "FingerprintingProtectionSetting";

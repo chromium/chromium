@@ -122,10 +122,6 @@ BASE_FEATURE(kSyntheticCapabilities,
              "FeedSyntheticCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFeedUserInteractionReliabilityReport,
-             "FeedUserInteractionReliabilityReport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedSignedOutViewDemotion,
              "FeedSignedOutViewDemotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -136,10 +132,6 @@ BASE_FEATURE(kFeedDynamicColors,
 
 BASE_FEATURE(kFeedFollowUiUpdate,
              "FeedFollowUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeedSportsCard,
-             "FeedSportsCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRefreshFeedOnRestart,
