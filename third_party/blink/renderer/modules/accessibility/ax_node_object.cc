@@ -5047,11 +5047,13 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
         if (options_bounds) {
           unsigned int index = static_cast<unsigned int>(
               To<HTMLOptionElement>(GetNode())->index());
-          DUMP_WILL_BE_CHECK(index < options_bounds->size())
-              << "Out of bounds option index=" << index
-              << " should be less than " << options_bounds->size()
-              << "\n* Object = " << this;
-          out_bounds_in_container = gfx::RectF(options_bounds->at(index));
+          // Some <option> bounding boxes may not be sent, as a performance
+          // optimization. For example, only the first 1000 options may have
+          // bounding boxes. If no bounding box is available, then we serialize
+          // the option with everything except for that information.
+          if (index < options_bounds->size()) {
+            out_bounds_in_container = gfx::RectF(options_bounds->at(index));
+          }
           return;
         }
       }
