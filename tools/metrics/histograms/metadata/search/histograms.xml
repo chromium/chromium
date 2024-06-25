@@ -120,6 +120,18 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
+    enum="SearchEngineChoiceScrollState" expires_after="2025-02-11">
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records an enum that represents the search engine choice page scroll state
+    when the &quot;More&quot; button is clicked. In some cases, the page doesn't
+    scroll to the exact bottom when the button is clicked. Recorded only when
+    the &quot;More&quot; button is clicked.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.UnexpectedSearchEngineId" units="id"
     expires_after="2025-02-11">
   <owner>dgn@chromium.org</owner>

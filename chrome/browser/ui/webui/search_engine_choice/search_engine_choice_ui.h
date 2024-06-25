@@ -57,6 +57,9 @@ class SearchEngineChoiceUI
   // clicked.
   void HandleLearnMoreLinkClicked();
 
+  // Notifies the search engine choice service that the more button was clicked.
+  void HandleMoreButtonClicked();
+
   std::unique_ptr<SearchEngineChoiceHandler> page_handler_;
 
   mojo::Receiver<search_engine_choice::mojom::PageHandlerFactory>

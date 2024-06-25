@@ -22,6 +22,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {getTemplate} from './app.html.js';
 import type {SearchEngineChoice} from './browser_proxy.js';
 import {SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
+import {PageHandler_ScrollState} from './search_engine_choice.mojom-webui.js';
 import type {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoiceAppElement {
@@ -199,7 +200,23 @@ export class SearchEngineChoiceAppElement extends
       return;
     }
 
+    this.pageHandler_.handleMoreButtonClicked();
+    document.addEventListener('scrollend', this.onPageScrollEnd_.bind(this));
+    // Force change the "More" button to "Set as default" to prevent users from
+    // being blocked on the screen in case of error.
     window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+  }
+
+  private handleContentScrollStateUpdate_(forceFullyDisplayed: boolean) {
+    if (!forceFullyDisplayed &&
+        this.getScrollState_() === PageHandler_ScrollState.kNotAtTheBottom) {
+      return;
+    }
+
+    this.hasUserScrolledToTheBottom_ = true;
+    window.removeEventListener('resize', this.onPageResize_.bind(this));
+    window.removeEventListener('scroll', this.onPageScroll_.bind(this));
+    window.removeEventListener('scrollend', this.onPageScrollEnd_.bind(this));
   }
 
   private getMarketingSnippetClass_(item: SearchEngineChoice) {
@@ -247,24 +264,29 @@ export class SearchEngineChoiceAppElement extends
     this.showSearchEngineSnippet_(parseInt(newPrepopulatedId));
   }
 
-  private wasPageContentFullyDisplayed_() {
-    // The value is checked against `< 1` instead of `=== 0` to keep a margin of
-    // error.
-    return document.body.scrollHeight - window.innerHeight - window.scrollY < 1;
-  }
-
   private onPageResize_() {
-    if (this.wasPageContentFullyDisplayed_()) {
-      this.hasUserScrolledToTheBottom_ = true;
-      window.removeEventListener('resize', this.onPageScroll_.bind(this));
-    }
+    this.handleContentScrollStateUpdate_(/*forceFullyDisplayed=*/ false);
   }
 
   private onPageScroll_() {
-    if (this.wasPageContentFullyDisplayed_()) {
-      this.hasUserScrolledToTheBottom_ = true;
-      document.removeEventListener('scroll', this.onPageScroll_.bind(this));
+    this.handleContentScrollStateUpdate_(/*forceFullyDisplayed=*/ false);
+  }
+
+  private getScrollState_() {
+    const scrollDifference =
+        document.body.scrollHeight - window.innerHeight - window.scrollY;
+    if (scrollDifference <= 0) {
+      return PageHandler_ScrollState.kAtTheBottom;
     }
+    return scrollDifference <= 1 ?
+        PageHandler_ScrollState.kAtTheBottomWithErrorMargin :
+        PageHandler_ScrollState.kNotAtTheBottom;
+  }
+
+  // This function is called only when the "More" button is clicked.
+  private onPageScrollEnd_() {
+    this.pageHandler_.recordScrollState(this.getScrollState_());
+    this.handleContentScrollStateUpdate_(/*forceFullyDisplayed=*/ true);
   }
 
   private getActionButtonText_() {

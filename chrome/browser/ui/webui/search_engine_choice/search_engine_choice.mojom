@@ -13,6 +13,16 @@ interface PageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
+  // These values are persisted to logs and should not be renumbered or
+  // re-used.
+  // LINT.IfChange(ScrollState)
+  enum ScrollState {
+    kAtTheBottom = 0,
+    kAtTheBottomWithErrorMargin = 1,
+    kNotAtTheBottom = 2,
+  };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScrollState)
+
   // Displays the Search Engine Choice dialog.
   // Triggered by the `displayDialog()` call in
   // `chrome/browser/resources/search_engine_choice/app.ts`
@@ -26,4 +36,11 @@ interface PageHandler {
   // Notifies the `SearchEngineChoiceDialogService` that the learn more link was
   // clicked.
   HandleLearnMoreLinkClicked();
+
+  // Notifies the `SearchEngineChoiceDialogService` that the "More" button was
+  // clicked.
+  HandleMoreButtonClicked();
+
+  // Records the scroll state after the "More" button was clicked.
+  RecordScrollState(ScrollState scroll_state);
 };

@@ -80,6 +80,10 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // record histograms. `entry_point` is the view in which the UI is rendered.
   void NotifyLearnMoreLinkClicked(EntryPoint entry_point);
 
+  // Informs the service that the "More" button was clicked. This is used to
+  // record histograms. `entry_point` is the view in which the UI is rendered.
+  void NotifyMoreButtonClicked(EntryPoint entry_point);
+
   // Returns whether a Search Engine Choice dialog is currently open or not for
   // `browser`.
   bool IsShowingDialog(Browser* browser);

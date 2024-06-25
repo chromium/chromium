@@ -30933,6 +30933,8 @@ Called by update_net_error_codes.py.-->
       label="Choice Screen dialog skipped as app stared by external intent"/>
 </enum>
 
+<!-- LINT.IfChange(SearchEngineChoiceScreenEvents) -->
+
 <enum name="SearchEngineChoiceScreenEvents">
   <int value="0" label="Unknown"/>
   <int value="1" label="[Dialog] Choice Screen Was Displayed"/>
@@ -30947,7 +30949,22 @@ Called by update_net_error_codes.py.-->
   <int value="9"
       label="[Profile Creation] Learn More Screen Was Displayed (Desktop
              only)"/>
+  <int value="10" label="[Dialog] More button was clicked"/>
+  <int value="11" label="[FRE] More button was clicked"/>
+  <int value="12" label="[Profile Creation] More button was clicked"/>
 </enum>
+
+<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenEvents) -->
+
+<!-- LINT.IfChange(SearchEngineChoiceScrollState) -->
+
+<enum name="SearchEngineChoiceScrollState">
+  <int value="0" label="Scrolled to the bottom"/>
+  <int value="1" label="Scrolled to the bottom with error margin"/>
+  <int value="2" label="Failed scrolling to the bottom"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom:ScrollState) -->
 
 <enum name="SearchEngineChoiceWipeReason">
   <int value="0" label="Profile wipe"/>

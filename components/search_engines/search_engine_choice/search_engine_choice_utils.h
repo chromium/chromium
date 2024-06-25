@@ -79,6 +79,7 @@ enum class SearchEngineChoiceScreenConditions {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(SearchEngineChoiceScreenEvents)
 enum class SearchEngineChoiceScreenEvents {
   kUnknown = 0,
   // The non-FRE version of the choice screen was displayed.
@@ -101,8 +102,15 @@ enum class SearchEngineChoiceScreenEvents {
   // The "Learn more" screen was displayed on the profile creation specific
   // screen.
   kProfileCreationLearnMoreDisplayed = 9,
-  kMaxValue = kProfileCreationLearnMoreDisplayed,
+  // The "More" button was clicked on the modal dialog.
+  kMoreButtonClicked = 10,
+  // The "More" button was clicked on the FRE-specific screen.
+  kFreMoreButtonClicked = 11,
+  // The "More" button was clicked on the profile creation specific screen.
+  kProfileCreationMoreButtonClicked = 12,
+  kMaxValue = kProfileCreationMoreButtonClicked,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml:SearchEngineChoiceScreenEvents)
 
 enum class ChoicePromo {
   // Any path of getting the choice screen.
