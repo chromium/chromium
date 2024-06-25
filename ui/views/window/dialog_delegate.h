@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WINDOW_DIALOG_DELEGATE_H_
 #define UI_VIEWS_WINDOW_DIALOG_DELEGATE_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -68,10 +69,11 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     // here will get the default text for its type from GetDialogButtonLabel.
     // Prefer to use this field (via SetButtonLabel) rather than override
     // GetDialogButtonLabel - see https://crbug.com/1011446
-    std::u16string button_labels[ui::DIALOG_BUTTON_LAST + 1];
+    std::array<std::u16string, ui::DIALOG_BUTTON_LAST + 1> button_labels;
 
     // Styles of each button on this dialog. If empty a style will be derived.
-    std::optional<ui::ButtonStyle> button_styles[ui::DIALOG_BUTTON_LAST + 1];
+    std::array<std::optional<ui::ButtonStyle>, ui::DIALOG_BUTTON_LAST + 1>
+        button_styles;
 
     // A bitmask of buttons (from ui::DialogButton) that are enabled in this
     // dialog. It's legal for a button to be marked enabled that isn't present
