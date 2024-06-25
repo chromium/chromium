@@ -14,7 +14,6 @@ from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import make_v8_to_blink_value_variadic
 from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
-from .blink_v8_bridge import typed_array_element_type
 from .code_node import EmptyNode
 from .code_node import FormatNode
 from .code_node import ListNode
@@ -2511,35 +2510,15 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                         cg_context=cg_context))
         elif unwrapped_idl_type.is_typed_array_type:
             assert "AllowShared" in argument.idl_type.effective_annotations
-            element_type = typed_array_element_type(unwrapped_idl_type)
-            v8_type = "const v8::FastApiTypedArray<{}>&".format(element_type)
-            if "PassAsSpan" in argument.idl_type.effective_annotations:
-                return (v8_type,
-                        make_v8_to_blink_value(
-                            blink_arg_name,
-                            "${{{}}}".format(v8_arg_name),
-                            argument.idl_type,
-                            argument=argument,
-                            error_exit_return_statement="return;",
-                            cg_context=cg_context))
-            # TODO(346495942): remove the below branch once v8::FastApiTypedArray is gone.
-            def create_definition(symbol_node):
-                binds = {
-                    "v8_arg_name": v8_arg_name,
-                    "blink_arg_name": blink_arg_name,
-                }
-                symbol_def_node = SymbolDefinitionNode(
-                    symbol_node,
-                    [F("auto& {blink_arg_name} = {v8_arg_name};", **binds)])
-                symbol_def_node.accumulate(
-                    CodeGenAccumulator.require_include_headers([
-                        "third_party/blink/renderer/core/typed_arrays/nadc_typed_array_view.h",
-                    ]))
-                return symbol_def_node
-
-            return (v8_type,
-                    S(blink_arg_name,
-                      definition_constructor=create_definition))
+            assert "PassAsSpan" in argument.idl_type.effective_annotations
+            return ("v8::Local<v8::Value>",
+                    make_v8_to_blink_value(
+                        blink_arg_name,
+                        "${{{}}}".format(v8_arg_name),
+                        argument.idl_type,
+                        argument=argument,
+                        error_exit_return_statement="return;",
+                        cg_context=cg_context))
         else:
             return (blink_type_info(argument.idl_type).value_t,
                     S(blink_arg_name,
@@ -4642,9 +4621,6 @@ def _make_operation_registration_table(table_name, operation_entries):
                     if arg.index >= nadc_entry.argument_count:
                         break
                     nadc_v8_type_info_flags = []
-                    if "AllowShared" in arg.idl_type.effective_annotations:
-                        nadc_v8_type_info_flags.append(
-                            "v8::CTypeInfo::Flags::kAllowSharedBit")
                     if "Clamp" in arg.idl_type.effective_annotations:
                         nadc_v8_type_info_flags.append(
                             "v8::CTypeInfo::Flags::kClampBit")

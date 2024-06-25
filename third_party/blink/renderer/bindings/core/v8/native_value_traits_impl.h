@@ -1827,18 +1827,6 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
         ExceptionMessages::ArgumentNotOfType(argument_index, "TypedArray"));
     return {};
   }
-
-  // TODO(346495942): remove once v8::FastApiTypedArrays are no longer passed.
-  static base::span<ElementType> ArgumentValue(
-      v8::Isolate* isolate,
-      int argument_index,
-      v8::FastApiTypedArray<ElementType> value,
-      ExceptionState& exception_state) {
-    ElementType* data;
-    const bool aligned = value.getStorageIfAligned(&data);
-    DCHECK(aligned);
-    return base::make_span(data, value.length());
-  }
 };
 
 template <typename T>
