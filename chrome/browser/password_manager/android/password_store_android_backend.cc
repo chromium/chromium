@@ -838,8 +838,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // TODO(crbug.com/40839365): DCHECK_EQ(api_error_code,
     // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
-
     int api_error = error.api_error_code.value();
+    reported_error.android_backend_api_error = api_error;
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
 
     // Retry the call if the performed operation in combination with the error
