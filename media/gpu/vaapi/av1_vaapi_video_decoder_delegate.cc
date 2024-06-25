@@ -553,23 +553,22 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
 
   const libgav1::ObuFrameHeader& frame_header = pic.frame_header;
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
-  DCHECK(!!vaapi_pic->display_va_surface() &&
-         !!vaapi_pic->reconstruct_va_surface());
+  DCHECK_NE(vaapi_pic->display_va_surface_id(), VA_INVALID_SURFACE);
+  DCHECK_NE(vaapi_pic->reconstruct_va_surface_id(), VA_INVALID_SURFACE);
   if (frame_header.film_grain_params.apply_grain) {
-    DCHECK_NE(vaapi_pic->display_va_surface()->id(),
-              vaapi_pic->reconstruct_va_surface()->id())
+    DCHECK_NE(vaapi_pic->display_va_surface_id(),
+              vaapi_pic->reconstruct_va_surface_id())
         << "When using film grain synthesis, the display and reconstruct "
            "surfaces"
         << " should be different.";
-    va_pic_param.current_frame = vaapi_pic->reconstruct_va_surface()->id();
-    va_pic_param.current_display_picture =
-        vaapi_pic->display_va_surface()->id();
+    va_pic_param.current_frame = vaapi_pic->reconstruct_va_surface_id();
+    va_pic_param.current_display_picture = vaapi_pic->display_va_surface_id();
   } else {
-    DCHECK_EQ(vaapi_pic->display_va_surface()->id(),
-              vaapi_pic->reconstruct_va_surface()->id())
+    DCHECK_EQ(vaapi_pic->display_va_surface_id(),
+              vaapi_pic->reconstruct_va_surface_id())
         << "When not using film grain synthesis, the display and reconstruct"
         << " surfaces should be the same.";
-    va_pic_param.current_frame = vaapi_pic->display_va_surface()->id();
+    va_pic_param.current_frame = vaapi_pic->display_va_surface_id();
     va_pic_param.current_display_picture = VA_INVALID_SURFACE;
   }
 
@@ -597,7 +596,7 @@ bool FillAV1PictureParameter(const AV1Picture& pic,
     const auto* ref_pic =
         static_cast<const VaapiAV1Picture*>(ref_frames[i].get());
     va_pic_param.ref_frame_map[i] =
-        ref_pic ? ref_pic->reconstruct_va_surface()->id() : VA_INVALID_SURFACE;
+        ref_pic ? ref_pic->reconstruct_va_surface_id() : VA_INVALID_SURFACE;
   }
 
   // |va_pic_param.ref_frame_idx| doesn't need to be filled in for intra frames
@@ -772,7 +771,7 @@ scoped_refptr<AV1Picture> AV1VaapiVideoDecoderDelegate::CreateAV1Picture(
 bool AV1VaapiVideoDecoderDelegate::OutputPicture(const AV1Picture& pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
-  vaapi_dec_->SurfaceReady(vaapi_pic->display_va_surface()->id(),
+  vaapi_dec_->SurfaceReady(vaapi_pic->display_va_surface_id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
                            vaapi_pic->get_colorspace());
   return true;
@@ -912,7 +911,7 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
 
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
   const bool success = vaapi_wrapper_->MapAndCopyAndExecute(
-      vaapi_pic->reconstruct_va_surface()->id(), buffers);
+      vaapi_pic->reconstruct_va_surface_id(), buffers);
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 

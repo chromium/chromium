@@ -44,7 +44,7 @@ bool VP8VaapiVideoDecoderDelegate::SubmitDecode(
   TRACE_EVENT0("media,gpu", "VP8VaapiVideoDecoderDelegate::SubmitDecode");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto va_surface_id = pic->AsVaapiVP8Picture()->va_surface()->id();
+  const auto va_surface_id = pic->AsVaapiVP8Picture()->va_surface_id();
   DCHECK_NE(va_surface_id, VA_INVALID_SURFACE);
 
   VAIQMatrixBufferVP8 iq_matrix_buf{};
@@ -109,7 +109,7 @@ bool VP8VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiVP8Picture* vaapi_pic = pic->AsVaapiVP8Picture();
-  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface()->id(),
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface_id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
                            vaapi_pic->get_colorspace());
   return true;

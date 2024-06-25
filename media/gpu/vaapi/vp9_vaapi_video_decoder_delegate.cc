@@ -114,7 +114,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       pic_param.reference_frames[i] =
-          ref_pic->AsVaapiVP9Picture()->va_surface()->id();
+          ref_pic->AsVaapiVP9Picture()->va_surface_id();
     } else {
       pic_param.reference_frames[i] = VA_INVALID_SURFACE;
     }
@@ -273,8 +273,8 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  const bool success = vaapi_wrapper_->MapAndCopyAndExecute(
-      vaapi_pic->va_surface()->id(), buffers);
+  const bool success =
+      vaapi_wrapper_->MapAndCopyAndExecute(vaapi_pic->va_surface_id(), buffers);
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;
 
@@ -289,7 +289,7 @@ bool VP9VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface()->id(),
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface_id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
                            vaapi_pic->get_colorspace());
   return true;

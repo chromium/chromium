@@ -31,7 +31,7 @@ class VaapiH264Picture : public H264Picture {
 
   VaapiH264Picture* AsVaapiH264Picture() override;
 
-  const scoped_refptr<VASurface>& va_surface() const { return va_surface_; }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiH264Picture() override;
@@ -50,7 +50,7 @@ class VaapiH265Picture : public H265Picture {
 
   VaapiH265Picture* AsVaapiH265Picture() override;
 
-  const scoped_refptr<VASurface>& va_surface() const { return va_surface_; }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiH265Picture() override;
@@ -69,7 +69,7 @@ class VaapiVP8Picture : public VP8Picture {
 
   VaapiVP8Picture* AsVaapiVP8Picture() override;
 
-  const scoped_refptr<VASurface>& va_surface() const { return va_surface_; }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiVP8Picture() override;
@@ -87,7 +87,7 @@ class VaapiVP9Picture : public VP9Picture {
 
   VaapiVP9Picture* AsVaapiVP9Picture() override;
 
-  const scoped_refptr<VASurface>& va_surface() const { return va_surface_; }
+  VASurfaceID va_surface_id() const { return va_surface_->id(); }
 
  protected:
   ~VaapiVP9Picture() override;
@@ -105,11 +105,11 @@ class VaapiAV1Picture : public AV1Picture {
   VaapiAV1Picture(const VaapiAV1Picture&) = delete;
   VaapiAV1Picture& operator=(const VaapiAV1Picture&) = delete;
 
-  const scoped_refptr<VASurface>& display_va_surface() const {
-    return display_va_surface_;
+  VASurfaceID display_va_surface_id() const {
+    return display_va_surface_->id();
   }
-  const scoped_refptr<VASurface>& reconstruct_va_surface() const {
-    return reconstruct_va_surface_;
+  VASurfaceID reconstruct_va_surface_id() const {
+    return reconstruct_va_surface_->id();
   }
 
  protected:

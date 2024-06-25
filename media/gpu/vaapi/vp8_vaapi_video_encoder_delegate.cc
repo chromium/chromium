@@ -583,20 +583,20 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
 
   VAEncPictureParameterBufferVP8 pic_param = {};
 
-  pic_param.reconstructed_frame = pic->AsVaapiVP8Picture()->va_surface()->id();
+  pic_param.reconstructed_frame = pic->AsVaapiVP8Picture()->va_surface_id();
   DCHECK_NE(pic_param.reconstructed_frame, VA_INVALID_ID);
 
   auto last_frame = ref_frames.GetFrame(Vp8RefType::VP8_FRAME_LAST);
   pic_param.ref_last_frame =
-      last_frame ? last_frame->AsVaapiVP8Picture()->va_surface()->id()
+      last_frame ? last_frame->AsVaapiVP8Picture()->va_surface_id()
                  : VA_INVALID_ID;
   auto golden_frame = ref_frames.GetFrame(Vp8RefType::VP8_FRAME_GOLDEN);
   pic_param.ref_gf_frame =
-      golden_frame ? golden_frame->AsVaapiVP8Picture()->va_surface()->id()
+      golden_frame ? golden_frame->AsVaapiVP8Picture()->va_surface_id()
                    : VA_INVALID_ID;
   auto alt_frame = ref_frames.GetFrame(Vp8RefType::VP8_FRAME_ALTREF);
   pic_param.ref_arf_frame =
-      alt_frame ? alt_frame->AsVaapiVP8Picture()->va_surface()->id()
+      alt_frame ? alt_frame->AsVaapiVP8Picture()->va_surface_id()
                 : VA_INVALID_ID;
   pic_param.coded_buf = job.coded_buffer_id();
   DCHECK_NE(pic_param.coded_buf, VA_INVALID_ID);

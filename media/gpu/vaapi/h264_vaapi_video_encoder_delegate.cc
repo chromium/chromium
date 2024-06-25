@@ -804,7 +804,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
 
   VAEncPictureParameterBufferH264 pic_param = {};
 
-  auto va_surface_id = pic->AsVaapiH264Picture()->va_surface()->id();
+  auto va_surface_id = pic->AsVaapiH264Picture()->va_surface_id();
   pic_param.CurrPic.picture_id = va_surface_id;
   pic_param.CurrPic.TopFieldOrderCnt = pic->top_field_order_cnt;
   pic_param.CurrPic.BottomFieldOrderCnt = pic->bottom_field_order_cnt;
@@ -856,7 +856,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
     H264Picture& ref_pic = *ref_pic_list0[i];
     VAPictureH264 va_pic_h264;
     InitVAPictureH264(&va_pic_h264);
-    va_pic_h264.picture_id = ref_pic.AsVaapiH264Picture()->va_surface()->id();
+    va_pic_h264.picture_id = ref_pic.AsVaapiH264Picture()->va_surface_id();
     va_pic_h264.flags = VA_PICTURE_H264_SHORT_TERM_REFERENCE;
     va_pic_h264.frame_idx = ref_pic.frame_num;
     va_pic_h264.TopFieldOrderCnt = ref_pic.top_field_order_cnt;

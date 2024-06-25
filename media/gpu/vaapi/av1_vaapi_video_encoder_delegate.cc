@@ -712,8 +712,7 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
 
   pic_param.coded_buf = job.coded_buffer_id();
   pic_param.reconstructed_frame = reinterpret_cast<const VaapiAV1Picture*>(&pic)
-                                      ->reconstruct_va_surface()
-                                      ->id();
+                                      ->reconstruct_va_surface_id();
   for (int i = 0; i < libgav1::kNumReferenceFrameTypes; i++) {
     pic_param.reference_frames[i] = VA_INVALID_ID;
   }
@@ -742,8 +741,7 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
     // recent frame.
     pic_param.reference_frames[0] =
         reinterpret_cast<VaapiAV1Picture*>(last_frame_.get())
-            ->reconstruct_va_surface()
-            ->id();
+            ->reconstruct_va_surface_id();
     pic_param.ref_frame_ctrl_l0.fields.search_idx0 =
         libgav1::kReferenceFrameLast;
     pic_param.ref_frame_ctrl_l1.fields.search_idx0 =
