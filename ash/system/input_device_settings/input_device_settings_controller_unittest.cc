@@ -1830,7 +1830,9 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest,
   ASSERT_TRUE(graphics_tablet->settings);
 }
 
-TEST_F(InputDeviceSettingsControllerTest, BatteryInfoAddedForBluetoothDevices) {
+// TODO(crbug.com/349179793): Disabled due to segfaults across platforms.
+TEST_F(InputDeviceSettingsControllerTest,
+       DISABLED_BatteryInfoAddedForBluetoothDevices) {
   uint32_t test_vendor_id = 0x1111;
   uint32_t test_product_id = 0x1112;
   auto mock_device = SetupMockBluetoothDevice(test_vendor_id, test_product_id,
