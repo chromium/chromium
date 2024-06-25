@@ -23,6 +23,35 @@ namespace developer = api::developer_private;
 
 namespace {
 
+// Update the old kPrefAcknowledgeSafetyCheckWarning pref to the new
+// kPrefAcknowledgeSafetyCheckWarningReason pref. If only the boolean
+// acknowledged pref is present, it's replaced with the new acknowledge
+// reason pref set to the current top warning reason. If both the
+// boolean and reason acknowledged pref are present, the bool pref is
+// removed.
+void MigrateSafetyCheckAcknowledgePref(
+    const Extension& extension,
+    developer::SafetyCheckWarningReason acknowledged_reason,
+    developer::SafetyCheckWarningReason top_warning_reason,
+    ExtensionPrefs* extension_prefs) {
+  bool extension_kept = false;
+  extension_prefs->ReadPrefAsBoolean(
+      extension.id(), extensions::kPrefAcknowledgeSafetyCheckWarning,
+      &extension_kept);
+  if (!extension_kept) {
+    return;
+  }
+  if (acknowledged_reason == developer::SafetyCheckWarningReason::kNone) {
+    extension_prefs->SetIntegerPref(
+        extension.id(), extensions::kPrefAcknowledgeSafetyCheckWarningReason,
+        static_cast<int>(top_warning_reason));
+  }
+  // Remove the old boolean pref.
+  extension_prefs->UpdateExtensionPref(
+      extension.id(), extensions::kPrefAcknowledgeSafetyCheckWarning.name,
+      std::nullopt);
+}
+
 // Returns true if the Safety Check should display a malware warning.
 bool SafetyCheckShouldShowMalware(
     BitMapBlocklistState blocklist_state,
@@ -65,7 +94,6 @@ bool SafetyCheckShouldShowPotentiallyUnwanted(
 // Returns true if the Safety Check should display a no privacy practice
 // warning.
 bool SafetyCheckShouldShowNoPrivacyPractice(
-    BitMapBlocklistState blocklist_state,
     const std::optional<CWSInfoService::CWSInfo>& cws_info) {
   bool valid_cws_info = cws_info.has_value() && cws_info->is_present;
   bool no_privacy_practice_enabled = base::FeatureList::IsEnabled(
@@ -122,7 +150,7 @@ bool SafetyCheckShouldShowOffstoreExtension(
 // Return the `PrefAcknowledgeSafetyCheckWarningReason` pref as an enum.
 developer::SafetyCheckWarningReason GetPrefAcknowledgeSafetyCheckWarningReason(
     const Extension& extension,
-    const ExtensionPrefs* extension_prefs) {
+    ExtensionPrefs* extension_prefs) {
   int kept_reason_int = 0;
   extension_prefs->ReadPrefAsInteger(
       extension.id(), extensions::kPrefAcknowledgeSafetyCheckWarningReason,
@@ -220,8 +248,7 @@ developer::SafetyCheckWarningReason GetSafetyCheckWarningReasonHelper(
   } else if (valid_cws_info && cws_info->unpublished_long_ago) {
     top_warning_reason = developer::SafetyCheckWarningReason::kUnpublished;
 
-  } else if (SafetyCheckShouldShowNoPrivacyPractice(blocklist_state,
-                                                    cws_info)) {
+  } else if (SafetyCheckShouldShowNoPrivacyPractice(cws_info)) {
     top_warning_reason =
         developer::SafetyCheckWarningReason::kNoPrivacyPractice;
 
@@ -229,6 +256,11 @@ developer::SafetyCheckWarningReason GetSafetyCheckWarningReasonHelper(
                                                     cws_info)) {
     top_warning_reason = developer::SafetyCheckWarningReason::kOffstore;
   }
+
+  // TODO(crbug.com/325469212) Remove after migration is deemed complete.
+  MigrateSafetyCheckAcknowledgePref(extension, acknowledged_reason,
+                                    top_warning_reason,
+                                    ExtensionPrefs::Get(profile));
 
   // If user has chosen to keep the extension for the current, or a higher
   // trigger reason, we will return no trigger.
