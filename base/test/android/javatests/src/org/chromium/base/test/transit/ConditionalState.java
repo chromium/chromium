@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base class for states with conditions for entering and exiting them.
+ * Base class representing a state with conditions for entering and exiting.
  *
  * <p>Conditions include the existence of {@link Elements}, e.g. Views.
  *
@@ -75,9 +75,10 @@ public abstract class ConditionalState {
 
     private void initElements() {
         if (mElements == null) {
-            Elements.Builder builder = Elements.newBuilder();
+            mElements = new Elements();
+            Elements.Builder builder = mElements.newBuilder();
             declareElements(builder);
-            mElements = builder.build();
+            builder.consolidate();
         }
     }
 

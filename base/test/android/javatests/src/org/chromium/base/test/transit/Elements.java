@@ -9,10 +9,15 @@ import android.view.View;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The elements that define a {@link ConditionalState}.
@@ -27,19 +32,31 @@ import java.util.List;
 public class Elements {
     static final Elements EMPTY = new Elements();
 
-    private final ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
-    private final ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
-    private final ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
+    private ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
+    private Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
+    private ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
+    private ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
 
-    /** Private constructor, instantiated by {@link Builder#build()}. */
-    private Elements() {}
+    Elements() {}
 
-    public static Builder newBuilder() {
-        return new Builder(new Elements());
+    public Builder newBuilder() {
+        return new Builder(this);
+    }
+
+    Set<String> getElementsInStateIds() {
+        Set<String> elementIds = new HashSet<>();
+        for (ElementInState<?> element : mElementsInState) {
+            elementIds.add(element.getId());
+        }
+        return elementIds;
     }
 
     List<ElementInState<?>> getElementsInState() {
         return mElementsInState;
+    }
+
+    Map<Condition, ElementFactory> getElementFactories() {
+        return mElementFactories;
     }
 
     List<Condition> getOtherEnterConditions() {
@@ -50,6 +67,13 @@ public class Elements {
         return mOtherExitConditions;
     }
 
+    void addAll(Elements otherElements) {
+        mElementsInState.addAll(otherElements.mElementsInState);
+        mElementFactories.putAll(otherElements.mElementFactories);
+        mOtherEnterConditions.addAll(otherElements.mOtherEnterConditions);
+        mOtherExitConditions.addAll(otherElements.mOtherExitConditions);
+    }
+
     /**
      * Builder for {@link Elements}.
      *
@@ -58,25 +82,36 @@ public class Elements {
      */
     public static class Builder {
 
-        private Elements mElements;
+        private Elements mOwner;
+        private ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
+        private Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
+        private ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
+        private ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
 
         /** Instantiate by calling {@link Elements#newBuilder()}. */
-        private Builder(Elements elements) {
-            mElements = elements;
+        private Builder(Elements owner) {
+            mOwner = owner;
         }
 
         /** Declare as an element an Android Activity of type |activityClass|. */
         public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
             ActivityElement<T> element = new ActivityElement<>(activityClass);
-            mElements.mElementsInState.add(element);
+            mElementsInState.add(element);
             return element;
         }
 
         /** Declare as an element a View that matches |viewMatcher|. */
         public ViewElementInState declareView(ViewElement viewElement) {
             ViewElementInState inState = new ViewElementInState(viewElement, /* gate= */ null);
-            mElements.mElementsInState.add(inState);
+            mElementsInState.add(inState);
             return inState;
+        }
+
+        /** Declare an {@link ElementFactory} that is gated by a Condition. */
+        public <T extends Condition> T declareElementFactory(
+                T condition, Callback<Elements.Builder> delayedDeclarations) {
+            mElementFactories.put(condition, new ElementFactory(mOwner, delayedDeclarations));
+            return condition;
         }
 
         /**
@@ -86,13 +121,13 @@ public class Elements {
          */
         public ViewElementInState declareViewIf(ViewElement viewElement, Condition gate) {
             ViewElementInState inState = new ViewElementInState(viewElement, gate);
-            mElements.mElementsInState.add(inState);
+            mElementsInState.add(inState);
             return inState;
         }
 
         /** Declare as a Condition that a View is not displayed. */
         public void declareNoView(Matcher<View> viewMatcher) {
-            mElements.mOtherEnterConditions.add(new NotDisplayedAnymoreCondition(viewMatcher));
+            mOtherEnterConditions.add(new NotDisplayedAnymoreCondition(viewMatcher));
         }
 
         /**
@@ -104,7 +139,7 @@ public class Elements {
          * with the same LogicalElement.
          */
         public LogicalElement<?> declareLogicalElement(LogicalElement<?> logicalElement) {
-            mElements.mElementsInState.add(logicalElement);
+            mElementsInState.add(logicalElement);
             return logicalElement;
         }
 
@@ -119,7 +154,7 @@ public class Elements {
          * a scoped {@link LogicalElement} in this case.
          */
         public <T extends Condition> T declareEnterCondition(T condition) {
-            mElements.mOtherEnterConditions.add(condition);
+            mOtherEnterConditions.add(condition);
             return condition;
         }
 
@@ -131,30 +166,30 @@ public class Elements {
          * ACTIVE. For these cases, use a scoped {@link LogicalElement}.
          */
         public <T extends Condition> T declareExitCondition(T condition) {
-            mElements.mOtherExitConditions.add(condition);
+            mOtherExitConditions.add(condition);
             return condition;
         }
 
         /** Declare a custom element, already rendered to an ElementInState. */
         public <T extends ElementInState<?>> T declareElementInState(T elementInState) {
-            mElements.mElementsInState.add(elementInState);
+            mElementsInState.add(elementInState);
             return elementInState;
         }
 
-        void addAll(Elements otherElements) {
-            mElements.mElementsInState.addAll(otherElements.mElementsInState);
-            mElements.mOtherEnterConditions.addAll(otherElements.mOtherEnterConditions);
-            mElements.mOtherExitConditions.addAll(otherElements.mOtherExitConditions);
-        }
-
         /**
-         * Instantiates the {@link Elements} of a given |conditionalState| after they were declared
-         * by calling the Builder's declare___() methods.
+         * Adds newly declared {@link Elements} (from calling the Builders declare___() methods) to
+         * the original {@link Elements} owned by a ConditionalState.
          */
-        Elements build() {
-            Elements elements = mElements;
-            mElements = null;
-            return elements;
+        Elements consolidate() {
+            assert mOwner != null;
+            Elements newElements = new Elements();
+            newElements.mElementsInState.addAll(mElementsInState);
+            newElements.mElementFactories.putAll(mElementFactories);
+            newElements.mOtherEnterConditions.addAll(mOtherEnterConditions);
+            newElements.mOtherExitConditions.addAll(mOtherExitConditions);
+            mOwner.addAll(newElements);
+            mOwner = null;
+            return newElements;
         }
     }
 }

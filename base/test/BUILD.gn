@@ -655,6 +655,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ConditionWaiter.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionWithResult.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionalState.java",
+      "android/javatests/src/org/chromium/base/test/transit/ElementFactory.java",
       "android/javatests/src/org/chromium/base/test/transit/ElementInState.java",
       "android/javatests/src/org/chromium/base/test/transit/Elements.java",
       "android/javatests/src/org/chromium/base/test/transit/EntryPointSentinelStation.java",
@@ -678,6 +679,20 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewElementInState.java",
+    ]
+  }
+
+  robolectric_library("public_transit_robolectric_tests_java") {
+    deps = [
+      ":public_transit_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//base:callback_java",
+      "//third_party/junit",
+    ]
+
+    sources = [
+      "android/javatests/src/org/chromium/base/test/transit/TripUnitTest.java",
     ]
   }
 }

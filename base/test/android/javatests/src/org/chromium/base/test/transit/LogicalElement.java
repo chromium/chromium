@@ -40,6 +40,11 @@ public class LogicalElement<ParamT> extends ElementInState<Void> {
                 }
 
                 @Override
+                public boolean hasValue() {
+                    return true;
+                }
+
+                @Override
                 protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
                     return fulfilled().withResult(null);
                 }

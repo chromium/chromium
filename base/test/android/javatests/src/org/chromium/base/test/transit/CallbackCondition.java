@@ -51,6 +51,7 @@ public class CallbackCondition extends Condition {
     @CallSuper
     @Override
     public void onStartMonitoring() {
+        super.onStartMonitoring();
         mStartingCount = mCallbackHelper.getCallCount();
     }
 

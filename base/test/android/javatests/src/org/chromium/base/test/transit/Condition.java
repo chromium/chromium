@@ -6,7 +6,9 @@ package org.chromium.base.test.transit;
 
 import android.util.ArrayMap;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.FormatMethod;
 
@@ -24,6 +26,9 @@ public abstract class Condition {
 
     private final boolean mIsRunOnUiThread;
     private ArrayMap<String, Supplier<?>> mDependentSuppliers;
+
+    @VisibleForTesting boolean mHasStartedMonitoringForTesting;
+    @VisibleForTesting boolean mHasStoppedMonitoringForTesting;
 
     /**
      * @param isRunOnUiThread true if the Condition should be checked on the UI Thread, false if it
@@ -55,13 +60,25 @@ public abstract class Condition {
      * Hook run right before the condition starts being checked. Used, for example, to get initial
      * callback counts and install observers.
      */
-    public void onStartMonitoring() {}
+    @CallSuper
+    public void onStartMonitoring() {
+        assert !mHasStartedMonitoringForTesting
+                : getDescription() + ": onStartMonitoring should only be called once";
+        mHasStartedMonitoringForTesting = true;
+    }
 
     /**
      * Hook run right after the condition stops being checked. Used, for example, to uninstall
      * observers.
      */
-    public void onStopMonitoring() {}
+    @CallSuper
+    public void onStopMonitoring() {
+        assert mHasStartedMonitoringForTesting
+                : getDescription() + ": onStartMonitoring was not called before onStopMonitoring";
+        assert !mHasStoppedMonitoringForTesting
+                : getDescription() + ": onStopMonitoring should only be called once";
+        mHasStoppedMonitoringForTesting = true;
+    }
 
     /**
      * @return a short description to be printed as part of a list of conditions.
