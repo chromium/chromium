@@ -12,7 +12,7 @@ import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
 import type {TriggerVerification} from './attribution.mojom-webui.js';
 import {AttributionSupport} from './attribution.mojom-webui.js';
 import type {AttributionDetailTableElement} from './attribution_detail_table.js';
-import type {HandlerInterface, ObserverInterface, ReportID, ReportStatus, WebUIAggregatableDebugReport, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
+import type {HandlerInterface, NetworkStatus, ObserverInterface, ReportID, ReportStatus, WebUIAggregatableDebugReport, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
 import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 import type {AttributionInternalsTableElement, CompareFunc, DataColumn, InitOpts, RenderFunc} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
@@ -411,6 +411,20 @@ const reportStatusColumn: DataColumn<{status: string, sendFailed: boolean}> = {
   },
 };
 
+function networkStatusToString(status: NetworkStatus, sentPrefix: string):
+    [status: string, sendFailed: boolean] {
+  if (status.httpResponseCode !== undefined) {
+    return [
+      `${sentPrefix}HTTP ${status.httpResponseCode}`,
+      isHttpError(status.httpResponseCode),
+    ];
+  } else if (status.networkError !== undefined) {
+    return [`Network error: ${status.networkError}`, true];
+  } else {
+    throw new Error('invalid NetworkStatus union');
+  }
+}
+
 class Report {
   id: ReportID;
   reportBody: string;
@@ -437,11 +451,8 @@ class Report {
 
   static statusToString(status: ReportStatus, sentPrefix: string):
       [status: string, sendFailed: boolean] {
-    if (status.sent !== undefined) {
-      return [
-        `${sentPrefix}HTTP ${status.sent}`,
-        isHttpError(status.sent),
-      ];
+    if (status.networkStatus !== undefined) {
+      return networkStatusToString(status.networkStatus, sentPrefix);
     } else if (status.pending !== undefined) {
       return ['Pending', false];
     } else if (status.replacedByHigherPriorityReport !== undefined) {
@@ -452,8 +463,6 @@ class Report {
       ];
     } else if (status.prohibitedByBrowserPolicy !== undefined) {
       return ['Prohibited by browser policy', false];
-    } else if (status.networkError !== undefined) {
-      return [`Network error: ${status.networkError}`, true];
     } else if (status.failedToAssemble !== undefined) {
       return ['Dropped due to assembly failure', false];
     } else {
@@ -649,15 +658,8 @@ function verboseDebugReport(mojo: WebUIDebugReport): DebugReport {
     sendFailed: false,
   };
 
-  if (mojo.status.httpResponseCode !== undefined) {
-    report.status = `HTTP ${mojo.status.httpResponseCode}`;
-    report.sendFailed = isHttpError(mojo.status.httpResponseCode);
-  } else if (mojo.status.networkError !== undefined) {
-    report.status = `Network error: ${mojo.status.networkError}`;
-    report.sendFailed = true;
-  } else {
-    throw new Error('invalid DebugReportStatus union');
-  }
+  [report.status, report.sendFailed] =
+      networkStatusToString(mojo.status, /*sentPrefix=*/ '');
 
   return report;
 }
@@ -705,12 +707,9 @@ function aggregatableDebugReport(mojo: WebUIAggregatableDebugReport):
       processAggregatableDebugReportResultText[mojo.processResult];
   let sendStatus;
 
-  if (mojo.sendResult.httpResponseCode !== undefined) {
-    sendStatus = `HTTP ${mojo.sendResult.httpResponseCode}`;
-    report.sendFailed = isHttpError(mojo.sendResult.httpResponseCode);
-  } else if (mojo.sendResult.networkError !== undefined) {
-    sendStatus = `Network error: ${mojo.sendResult.networkError}`;
-    report.sendFailed = true;
+  if (mojo.sendResult.networkStatus !== undefined) {
+    [sendStatus, report.sendFailed] = networkStatusToString(
+        mojo.sendResult.networkStatus, /*sentPrefix=*/ '');
   } else if (mojo.sendResult.assemblyFailed !== undefined) {
     sendStatus = 'Assembly failure';
   } else {

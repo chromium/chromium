@@ -51,14 +51,17 @@ union WebUIReportData {
 
 struct Empty {};
 
+union NetworkStatus {
+  int32 http_response_code;
+  string network_error;
+};
+
 union ReportStatus {
   Empty pending;
   // Contains the external report ID of the replacement report.
   string replaced_by_higher_priority_report;
   Empty prohibited_by_browser_policy;
-  // Contains the HTTP response code.
-  int32 sent;
-  string network_error;
+  NetworkStatus network_status;
   Empty failed_to_assemble;
 };
 
@@ -76,23 +79,16 @@ struct WebUIReport {
   WebUIReportData data;
 };
 
-// TODO(linnan): Consider share this with different reports.
-union DebugReportStatus {
-  int32 http_response_code;
-  string network_error;
-};
-
 struct WebUIDebugReport {
   url.mojom.Url url;
   double time;
   string body;
-  DebugReportStatus status;
+  NetworkStatus status;
 };
 
 union SendAggregatableDebugReportResult {
   Empty assembly_failed;
-  int32 http_response_code;
-  string network_error;
+  NetworkStatus network_status;
 };
 
 struct WebUIAggregatableDebugReport {

@@ -230,6 +230,14 @@ void ForwardReportsToWebUI(
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
 }
 
+attribution_internals::mojom::NetworkStatusPtr NetworkStatus(int status) {
+  return status > 0
+             ? attribution_internals::mojom::NetworkStatus::NewHttpResponseCode(
+                   status)
+             : attribution_internals::mojom::NetworkStatus::NewNetworkError(
+                   net::ErrorToShortString(status));
+}
+
 }  // namespace
 
 AttributionInternalsHandlerImpl::AttributionInternalsHandlerImpl(
@@ -374,15 +382,16 @@ void AttributionInternalsHandlerImpl::OnReportSent(
   ReportStatusPtr status;
   switch (info.status) {
     case SendResult::Status::kSent:
-      status = ReportStatus::NewSent(info.http_response_code);
+      status = ReportStatus::NewNetworkStatus(
+          NetworkStatus(info.http_response_code));
       break;
     case SendResult::Status::kDropped:
       status = ReportStatus::NewProhibitedByBrowserPolicy(Empty::New());
       break;
     case SendResult::Status::kFailure:
     case SendResult::Status::kTransientFailure:
-      status = ReportStatus::NewNetworkError(
-          net::ErrorToShortString(info.network_error));
+      status =
+          ReportStatus::NewNetworkStatus(NetworkStatus(info.network_error));
       break;
     case SendResult::Status::kAssemblyFailure:
     case SendResult::Status::kTransientAssemblyFailure:
@@ -403,13 +412,7 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
   web_report->time = time.InMillisecondsFSinceUnixEpoch();
   web_report->body =
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true);
-
-  web_report->status =
-      status > 0
-          ? attribution_internals::mojom::DebugReportStatus::
-                NewHttpResponseCode(status)
-          : attribution_internals::mojom::DebugReportStatus::NewNetworkError(
-                net::ErrorToShortString(status));
+  web_report->status = NetworkStatus(status);
 
   observer_->OnDebugReportSent(std::move(web_report));
 }
@@ -431,13 +434,9 @@ void AttributionInternalsHandlerImpl::OnAggregatableDebugReportSent(
   web_report->send_result = absl::visit(
       base::Overloaded{
           [](const SendAggregatableDebugReportResult::Sent& sent) {
-            return sent.status > 0
-                       ? attribution_internals::mojom::
-                             SendAggregatableDebugReportResult::
-                                 NewHttpResponseCode(sent.status)
-                       : attribution_internals::mojom::
-                             SendAggregatableDebugReportResult::NewNetworkError(
-                                 net::ErrorToShortString(sent.status));
+            return attribution_internals::mojom::
+                SendAggregatableDebugReportResult::NewNetworkStatus(
+                    NetworkStatus(sent.status));
           },
           [](const SendAggregatableDebugReportResult::AssemblyFailed&) {
             return attribution_internals::mojom::
