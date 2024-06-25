@@ -144,6 +144,11 @@ CWV_EXPORT
 // Defaults to NO.
 @property(nonatomic, class) BOOL webInspectorEnabled;
 
+// Normally ios/web_view/ CHECKs IsOptedInForAccountStorage() early on. Setting
+// this to true will cause the CHECK to be skipped, which potentially fixes
+// crbug.com/347862165.
+@property(nonatomic, class) BOOL skipAccountStorageCheckEnabled;
+
 // Set this to customize the underlying WKWebView's inputAccessoryView. Setting
 // to nil means to use the WKWebView's default inputAccessoryView instead.
 //

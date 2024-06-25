@@ -33,6 +33,7 @@
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
+#import "ios/web_view/public/cwv_web_view.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -98,6 +99,31 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
             password_manager::PasswordForm::Store::kAccountStore);
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       &pref_service_, &sync_service_));
+}
+
+TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
+  CWVWebView.skipAccountStorageCheckEnabled = true;
+  AccountInfo account_info =
+      identity_test_environment_.MakeAccountAvailable(kTestEmail);
+  sync_service_.SetSignedInWithSyncFeatureOn(account_info);
+  sync_service_.SetPersistentAuthError();
+  ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
+      &pref_service_, &sync_service_));
+
+  // Should not crash.
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  [sync_controller
+      startSyncWithIdentity:[[CWVIdentity alloc]
+                                initWithEmail:@(kTestEmail)
+                                     fullName:base::SysUTF8ToNSString(
+                                                  account_info.full_name)
+                                       gaiaID:base::SysUTF8ToNSString(
+                                                  account_info.gaia)]];
+
+  CWVWebView.skipAccountStorageCheckEnabled = false;
 }
 
 TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
