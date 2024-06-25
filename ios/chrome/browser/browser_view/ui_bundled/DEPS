@@ -44,6 +44,7 @@ include_rules = [
   "+ios/chrome/browser/settings/model/sync/utils/sync_presenter.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h",
   "+ios/chrome/browser/ssl/model/captive_portal_tab_helper.h",
   "+ios/chrome/browser/store_kit/model",
   "+ios/chrome/browser/sync/model/sync_error_browser_agent.h",

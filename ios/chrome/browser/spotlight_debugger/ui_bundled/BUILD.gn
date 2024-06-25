@@ -16,7 +16,7 @@ swift_source_set("spotlight_debugger_swift") {
   ]
 }
 
-source_set("spotlight_debugger") {
+source_set("ui_bundled") {
   sources = [
     "spotlight_debugger_coordinator.h",
     "spotlight_debugger_coordinator.mm",

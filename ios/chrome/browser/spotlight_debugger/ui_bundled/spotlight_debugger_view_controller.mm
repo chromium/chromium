@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_view_controller.h"
+#import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_coordinator.h"
+#import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_swift.h"
-#import "ios/chrome/browser/ui/spotlight_debugger/spotlight_debugger_view_controller.h"
+#import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_swift.h"
+#import "ios/chrome/browser/spotlight_debugger/ui_bundled/spotlight_debugger_view_controller.h"
 
 @interface SpotlightDebuggerCoordinator () <
     SpotlightDebuggerViewControllerDelegate>
