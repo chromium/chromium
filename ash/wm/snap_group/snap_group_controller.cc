@@ -302,6 +302,8 @@ SnapGroup* SnapGroupController::GetTopmostVisibleSnapGroup(
 }
 
 SnapGroup* SnapGroupController::GetTopmostSnapGroup() const {
+  // Use `BuildMruWindowList()` to include all windows on the active desk across
+  // all root windows.
   for (const aura::Window* window :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (auto* snap_group = GetSnapGroupForGivenWindow(window);

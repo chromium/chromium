@@ -226,6 +226,8 @@ void AppendUIModeToHistogram(std::string& histogram_name) {
 // Returns true if there is no window in partial overview (excluding the given
 // `window`).
 bool IsPartialOverviewEmptyForActiveDesk(aura::Window* window) {
+  // Use `BuildMruWindowList()` to include all window types, e.g. always-on-top
+  // windows and floated windows.
   for (auto win :
        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
     if (win != window && wm::GetTransientRoot(win) != window &&
