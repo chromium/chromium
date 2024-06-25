@@ -1813,14 +1813,17 @@ void HostProcess::StartHost() {
   // This thread is used as a network thread in WebRTC.
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
-  // Initialize global field trials.
-  field_trial_list_ = std::make_unique<base::FieldTrialList>();
+  // Initialize global field trials. In case this code runs a second time,
+  // check for any previous instance - see crbug.com/349062464.
+  if (!field_trial_list_) {
+    field_trial_list_ = std::make_unique<base::FieldTrialList>();
 
-  // Override LossBasedBweV2 trial.
-  // TODO(b/266103942): Remove this override once we figure out why the BWE is
-  // crashing for some users and have a fix available.
-  base::FieldTrialList::CreateTrialsFromString(
-      "WebRTC-Bwe-LossBasedBweV2/Enabled:false/");
+    // Override LossBasedBweV2 trial.
+    // TODO(b/266103942): Remove this override once we figure out why the BWE is
+    // crashing for some users and have a fix available.
+    base::FieldTrialList::CreateTrialsFromString(
+        "WebRTC-Bwe-LossBasedBweV2/Enabled:false/");
+  }
 
   SetState(HOST_STARTED);
 
