@@ -230,6 +230,12 @@ class InkModule {
   // nullptr.
   std::unique_ptr<InkInProgressStroke> CreateInProgressStrokeFromInputs() const;
 
+  // Wrapper around EventPositionToCanonicalPosition(). `page_index` is the page
+  // that `position` is on. The page must be visible.
+  gfx::PointF ConvertEventPositionToCanonicalPosition(
+      const gfx::PointF& position,
+      int page_index);
+
   const raw_ref<Client> client_;
 
   bool enabled_ = false;

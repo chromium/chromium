@@ -202,13 +202,8 @@ bool InkModule::StartInkStroke(const gfx::PointF& position) {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
 
-  // If the page is visible to the point then its area must not be empty.
-  auto page_contents_rect = client_->GetPageContentsRect(page_index);
-  CHECK(!page_contents_rect.IsEmpty());
-
   gfx::PointF page_position =
-      EventPositionToCanonicalPosition(position, client_->GetOrientation(),
-                                       page_contents_rect, client_->GetZoom());
+      ConvertEventPositionToCanonicalPosition(position, page_index);
 
   CHECK(!state.ink_start_time.has_value());
   state.ink_start_time = base::Time::Now();
@@ -260,14 +255,8 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
   }
 
   CHECK_GE(state.ink_page_index, 0);
-
-  // If inking was able to start on the page then its area must not be empty.
-  auto page_contents_rect = client_->GetPageContentsRect(state.ink_page_index);
-  CHECK(!page_contents_rect.IsEmpty());
-
   gfx::PointF page_position =
-      EventPositionToCanonicalPosition(position, client_->GetOrientation(),
-                                       page_contents_rect, client_->GetZoom());
+      ConvertEventPositionToCanonicalPosition(position, state.ink_page_index);
 
   base::TimeDelta time_diff = base::Time::Now() - state.ink_start_time.value();
   state.ink_inputs.push_back({
@@ -419,6 +408,18 @@ InkModule::CreateInProgressStrokeFromInputs() const {
   bool update_results = stroke->UpdateShape(0);
   CHECK(update_results);
   return stroke;
+}
+
+gfx::PointF InkModule::ConvertEventPositionToCanonicalPosition(
+    const gfx::PointF& position,
+    int page_index) {
+  // If the page is visible at `position`, then its rect must not be empty.
+  auto page_contents_rect = client_->GetPageContentsRect(page_index);
+  CHECK(!page_contents_rect.IsEmpty());
+
+  return EventPositionToCanonicalPosition(position, client_->GetOrientation(),
+                                          page_contents_rect,
+                                          client_->GetZoom());
 }
 
 InkModule::DrawingStrokeState::DrawingStrokeState() = default;
