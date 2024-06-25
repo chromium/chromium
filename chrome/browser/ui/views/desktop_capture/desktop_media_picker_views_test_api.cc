@@ -153,26 +153,6 @@ views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {
   return picker_->dialog_->reselect_button_;
 }
 
-const DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane()
-    const {
-  const int index = picker_->dialog_->GetSelectedTabIndex();
-  CHECK_GE(index, 0);
-  CHECK_LT(static_cast<size_t>(index), picker_->dialog_->categories_.size());
-  CHECK(picker_->dialog_->categories_[index].pane);
-  return picker_->dialog_->categories_[index].pane;
-}
-
-DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane() {
-  return const_cast<DesktopMediaPaneView*>(
-      std::as_const(*this).GetActivePane());
-}
-
-#if BUILDFLAG(IS_MAC)
-void DesktopMediaPickerViewsTestApi::OnPermissionUpdate(bool has_permission) {
-  picker_->dialog_->OnPermissionUpdate(has_permission);
-}
-#endif
-
 const views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(
     size_t index) const {
   views::View* list = picker_->dialog_->GetSelectedController()->view_;
@@ -200,4 +180,17 @@ views::TableView* DesktopMediaPickerViewsTestApi::GetTableView() {
   return IsDesktopMediaTabList(list)
              ? static_cast<DesktopMediaTabList*>(list)->table_.get()
              : nullptr;
+}
+
+const DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane()
+    const {
+  return const_cast<DesktopMediaPickerViewsTestApi*>(this)->GetActivePane();
+}
+
+DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane() {
+  const int index = picker_->dialog_->GetSelectedTabIndex();
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), picker_->dialog_->categories_.size());
+  CHECK(picker_->dialog_->categories_[index].pane);
+  return picker_->dialog_->categories_[index].pane;
 }
