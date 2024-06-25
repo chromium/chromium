@@ -153,8 +153,17 @@ FileTypePolicies::UpdateResult FileTypePolicies::PopulateFromBinaryPb(
       return UpdateResult::SKIPPED_VERSION_CHECK_EQUAL;
 
     // Check that version number increases
-    if (new_config->version_id() <= config_->version_id())
+    if (new_config->version_id() <= config_->version_id()) {
+      // TODO(crbug.com/347288618): Remove these, since they are not
+      // expected to be useful long-term.
+      base::UmaHistogramSparse(
+          "SafeBrowsing.FileTypeUpdate.FailedUpdateSourceVersion",
+          config_->version_id());
+      base::UmaHistogramSparse(
+          "SafeBrowsing.FileTypeUpdate.FailedUpdateDestinationVersion",
+          new_config->version_id());
       return UpdateResult::FAILED_VERSION_CHECK;
+    }
 
     // Check that we haven't dropped more than 1/2 the list.
     if (new_config->file_types().size() * 2 < config_->file_types().size())
