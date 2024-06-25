@@ -175,9 +175,10 @@ public class TabArchiver implements TabWindowManager.Observer {
 
     private void archiveEligibleTabsFromTabModelSelector(TabModelSelector selector) {
         TabModel model = selector.getModel(/* isIncognito= */ false);
+        int activeTabId = TabModelUtils.getCurrentTabId(model);
         for (int i = 0; i < model.getCount(); ) {
             Tab tab = model.getTabAt(i);
-            if (isTabEligibleForArchive(tab)) {
+            if (activeTabId != tab.getId() && isTabEligibleForArchive(tab)) {
                 archiveAndRemoveTab(model, tab);
             } else {
                 i++;
@@ -188,6 +189,8 @@ public class TabArchiver implements TabWindowManager.Observer {
     private boolean isTabEligibleForArchive(Tab tab) {
         // Explicitly prevent grouped tabs from getting archived.
         if (tab.getTabGroupId() != null) return false;
+        TabState tabState = TabStateExtractor.from(tab);
+        if (tabState.contentsState == null) return false;
 
         return isTimestampWithinTargetHours(
                 tab.getTimestampMillis(), mTabArchiveSettings.getArchiveTimeDeltaHours());

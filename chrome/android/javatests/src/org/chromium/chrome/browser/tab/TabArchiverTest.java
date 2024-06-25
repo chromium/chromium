@@ -158,6 +158,8 @@ public class TabArchiverTest {
     public void testGroupedTabsAreNotArchived() throws Exception {
         sActivityTestRule.loadUrlInNewTab(
                 sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        sActivityTestRule.loadUrlInNewTab(
+                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
         // Set the tab to expire after 1 hour to simplify testing.
         mTabArchiveSettings.setArchiveTimeDeltaHours(1);
@@ -172,7 +174,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> mRegularTabModel.getTabAt(0).setTabGroupId(Token.createRandom()));
 
-        assertEquals(2, mRegularTabModel.getCount());
+        assertEquals(3, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
 
         // The grouped tab should be skipped.
@@ -184,7 +186,7 @@ public class TabArchiverTest {
                                         .getTabModelSelectorSupplier()
                                         .get()));
 
-        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(2, mRegularTabModel.getCount());
         assertEquals(1, mArchivedTabModel.getCount());
     }
 

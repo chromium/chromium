@@ -163,8 +163,8 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
         assertEquals(2, mTaskRunner.mDelayedTasks.size());
-        assertEquals(0, mRegularTabModel.getCount());
-        assertEquals(2, mArchivedTabModel.getCount());
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
     }
 
     @Test
@@ -209,9 +209,9 @@ public class ArchivedTabModelOrchestratorTest {
         // A task was scheduled to perform a scheduled declutter, get it and run it.
         runOnUiThreadBlocking(() -> mTaskRunner.mDelayedTasks.get(0).first.run());
 
-        assertEquals(0, mRegularTabModel.getCount());
+        assertEquals(1, mRegularTabModel.getCount());
         // The new tab should be archived now.
-        assertEquals(2, mArchivedTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
 
         // The schedule call should queue up another runnable.
         assertEquals(2, mTaskRunner.mDelayedTasks.size());
@@ -231,8 +231,8 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(() -> mOrchestrator.resetBeginDeclutterForTesting());
         runOnUiThreadBlocking(() -> mOrchestrator.maybeBeginDeclutter());
 
-        assertEquals(0, mRegularTabModel.getCount());
-        assertEquals(2, mArchivedTabModel.getCount());
+        assertEquals(1, mRegularTabModel.getCount());
+        assertEquals(1, mArchivedTabModel.getCount());
 
         runOnUiThreadBlocking(() -> mOrchestrator.maybeRescueArchivedTabs(mRegularTabCreator));
 
