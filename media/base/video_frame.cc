@@ -828,39 +828,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-    scoped_refptr<gpu::ClientSharedImage> shared_images[kMaxPlanes],
-    const gpu::SyncToken& sync_token,
-    uint32_t texture_target,
-    ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
-    base::TimeDelta timestamp) {
-  scoped_refptr<VideoFrame> frame =
-      CreateFrameForGpuMemoryBufferOrMappableSIInternal(
-          visible_rect, natural_size, std::move(gpu_memory_buffer),
-          /*shared_image=*/nullptr,
-          /*enable_mappable_si=*/false,
-          std::move(mailbox_holder_and_gmb_release_cb), timestamp);
-  if (!frame) {
-    return nullptr;
-  }
-
-  for (size_t i = 0; i < kMaxPlanes; ++i) {
-    if (shared_images[i]) {
-      frame->mailbox_holders_[i] = gpu::MailboxHolder(
-          shared_images[i]->mailbox(), sync_token,
-          base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
-              ? shared_images[i]->GetTextureTarget()
-              : texture_target);
-      frame->shared_images_[i] = shared_images[i]->MakeUnowned();
-    }
-  }
-  return frame;
-}
-
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     uint32_t texture_target,

@@ -454,8 +454,7 @@ struct SharedMemoryVideoFrameData {
 
 struct GpuMemoryBufferSharedImageVideoFrameData {
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
-  // Size should be no greater than media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.ExportedSharedImage> shared_images;
+  gpu.mojom.ExportedSharedImage? shared_image;
   gpu.mojom.SyncToken sync_token;
   uint32 texture_target;
 };

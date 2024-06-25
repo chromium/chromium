@@ -124,26 +124,34 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   DCHECK_LE(input->NumTextures(), mailbox_holder.size());
   // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailboxes,
   // we should only access them when there are textures.
-  for (size_t i = 0; i < input->NumTextures(); i++)
+  for (size_t i = 0; i < input->NumTextures(); i++) {
     mailbox_holder[i] = input->mailbox_holder(i);
-
-  std::vector<gpu::ExportedSharedImage> shared_images;
-  if (input->HasSharedImages()) {
-    for (size_t i = 0; i < input->NumTextures(); i++) {
-      shared_images.push_back(input->shared_image(i)->Export());
-    }
   }
 
   if (input->HasMappableGpuBuffer()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
-    CHECK(!shared_images.empty() || mailbox_holder[0].mailbox.IsZero());
+    std::optional<gpu::ExportedSharedImage> shared_image;
+    if (input->HasSharedImages()) {
+      // `input` is either empty or of size 1 with
+      // GpuMemoryBufferSharedImageVideoFrameData.
+      CHECK_EQ(input->NumTextures(), 1u);
+      shared_image = input->shared_image(0)->Export();
+    }
+
+    CHECK(input->HasSharedImages() || mailbox_holder[0].mailbox.IsZero());
     return media::mojom::VideoFrameData::NewGpuMemoryBufferSharedImageData(
         media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
-            std::move(gpu_memory_buffer_handle), std::move(shared_images),
+            std::move(gpu_memory_buffer_handle), std::move(shared_image),
             std::move(mailbox_holder[0].sync_token),
             mailbox_holder[0].texture_target));
   } else if (input->HasTextures()) {
+    std::vector<gpu::ExportedSharedImage> shared_images;
+    if (input->HasSharedImages()) {
+      for (size_t i = 0; i < input->NumTextures(); i++) {
+        shared_images.push_back(input->shared_image(i)->Export());
+      }
+    }
     if (!shared_images.empty()) {
       return media::mojom::VideoFrameData::NewSharedImageData(
           media::mojom::SharedImageVideoFrameData::New(
@@ -310,30 +318,16 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    std::vector<gpu::ExportedSharedImage> exported_shared_images;
-    if (!gpu_memory_buffer_data.ReadSharedImages(&exported_shared_images)) {
-      DLOG(ERROR) << "Failed to get shared images";
+    std::optional<gpu::ExportedSharedImage> exported_shared_image;
+    if (!gpu_memory_buffer_data.ReadSharedImage(&exported_shared_image)) {
+      DLOG(ERROR) << "Failed to get shared image";
       return false;
-    }
-    if (exported_shared_images.size() > media::VideoFrame::kMaxPlanes) {
-      DLOG(ERROR) << "The shared image array is too large: "
-                  << exported_shared_images.size();
-      return false;
-    }
-
-    scoped_refptr<gpu::ClientSharedImage>
-        shared_images[media::VideoFrame::kMaxPlanes];
-    for (size_t i = 0; i < exported_shared_images.size(); i++) {
-      shared_images[i] =
-          gpu::ClientSharedImage::ImportUnowned(exported_shared_images[i]);
     }
 
     gpu::SyncToken sync_token;
     if (!gpu_memory_buffer_data.ReadSyncToken(&sync_token)) {
       return false;
     }
-
-    uint32_t texture_target = gpu_memory_buffer_data.texture_target();
 
     std::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
@@ -361,17 +355,16 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    if (exported_shared_images.size() == 1) {
-      frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          visible_rect, natural_size, std::move(gpu_memory_buffer),
-          shared_images[0], sync_token, texture_target, base::NullCallback(),
-          timestamp);
-    } else {
-      frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          visible_rect, natural_size, std::move(gpu_memory_buffer),
-          shared_images, sync_token, texture_target, base::NullCallback(),
-          timestamp);
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    if (exported_shared_image) {
+      shared_image =
+          gpu::ClientSharedImage::ImportUnowned(*exported_shared_image);
     }
+
+    uint32_t texture_target = gpu_memory_buffer_data.texture_target();
+    frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
+        visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
+        sync_token, texture_target, base::NullCallback(), timestamp);
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
