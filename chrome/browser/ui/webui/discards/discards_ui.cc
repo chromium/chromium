@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -35,7 +34,6 @@
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -188,7 +186,6 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
   void DiscardById(int32_t id,
                    mojom::LifecycleUnitDiscardReason reason,
                    DiscardByIdCallback callback) override {
-    using PageContext = resource_attribution::PageContext;
     auto* lifecycle_unit = GetLifecycleUnitById(id);
     if (lifecycle_unit) {
       // Callback to do the discard with the memory estimate.
@@ -206,12 +203,10 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
           },
           id, reason, std::move(callback));
 
-      const std::optional<PageContext> page_context =
-          PageContext::FromWebContents(
-              lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents());
       performance_manager::user_tuning::
-          GetDiscardedMemoryEstimateForPageContext(page_context.value(),
-                                                   std::move(discard_callback));
+          GetDiscardedMemoryEstimateForWebContents(
+              lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents(),
+              std::move(discard_callback));
     }
   }
 
