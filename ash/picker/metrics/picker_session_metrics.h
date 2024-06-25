@@ -48,9 +48,9 @@ class ASH_EXPORT PickerSessionMetrics {
   // This can be multiple times per session. Only the last category is recorded.
   void SetSelectedCategory(PickerCategory category);
 
-  // Sets the search result which user inserts. This is expected to be called at
-  // most once during a session.
-  void SetInsertedResult(PickerSearchResult inserted_result, int index);
+  // Sets the search result which user selects to finish the session.
+  // This is expected to be called at most once during a session.
+  void SetSelectedResult(PickerSearchResult selected_result, int index);
 
   // Updates the search query to latest and accumulates total edits.
   void UpdateSearchQuery(std::u16string_view search_query);
@@ -66,7 +66,7 @@ class ASH_EXPORT PickerSessionMetrics {
 
   std::optional<PickerCategory> last_category_;
 
-  std::optional<PickerSearchResult> inserted_result_;
+  std::optional<PickerSearchResult> selected_result_;
   int result_index_ = -1;
 
   int search_query_total_edits_ = 0;

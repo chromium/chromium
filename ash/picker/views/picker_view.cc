@@ -254,10 +254,10 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
     delegate_->ShowEditor(editor_data->preset_query_id,
                           editor_data->freeform_text);
   } else {
+    delegate_->GetSessionMetrics().SetSelectedResult(
+        result, search_results_view_->GetIndex(result));
     switch (delegate_->GetActionForResult(result)) {
       case PickerActionType::kInsert:
-        delegate_->GetSessionMetrics().SetInsertedResult(
-            result, search_results_view_->GetIndex(result));
         delegate_->InsertResultOnNextFocus(result);
         GetWidget()->Close();
         break;

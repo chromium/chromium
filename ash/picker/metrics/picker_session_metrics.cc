@@ -179,10 +179,10 @@ cros_events::PickerResultSource GetResultSource(
             NOTREACHED_NORETURN();
           },
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            return cros_events::PickerResultSource::UNKNOWN;
           },
           [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            return cros_events::PickerResultSource::UNKNOWN;
           },
       },
       result->data());
@@ -242,10 +242,10 @@ cros_events::PickerResultType GetResultType(
             NOTREACHED_NORETURN();
           },
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            return cros_events::PickerResultType::UNKNOWN;
           },
           [](const PickerSearchResult::CapsLockData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            return cros_events::PickerResultType::UNKNOWN;
           },
       },
       result->data());
@@ -271,10 +271,10 @@ void PickerSessionMetrics::SetSelectedCategory(PickerCategory category) {
   }
 }
 
-void PickerSessionMetrics::SetInsertedResult(PickerSearchResult inserted_result,
+void PickerSessionMetrics::SetSelectedResult(PickerSearchResult selected_result,
                                              int index) {
-  if (!inserted_result_.has_value()) {
-    inserted_result_ = std::move(inserted_result);
+  if (!selected_result_.has_value()) {
+    selected_result_ = std::move(selected_result);
     result_index_ = index;
   }
 }
@@ -299,8 +299,8 @@ void PickerSessionMetrics::OnFinishSession() {
       cros_events::Picker_FinishSession()
           .SetOutcome(ConvertToCrosEventSessionOutcome(outcome_))
           .SetAction(ConvertToCrosEventAction(last_category_))
-          .SetResultSource(GetResultSource(std::move(inserted_result_)))
-          .SetResultType(GetResultType(std::move(inserted_result_)))
+          .SetResultSource(GetResultSource(std::move(selected_result_)))
+          .SetResultType(GetResultType(std::move(selected_result_)))
           .SetTotalEdits(search_query_total_edits_)
           .SetFinalQuerySize(search_query_length_)
           .SetResultIndex(result_index_));
