@@ -50,6 +50,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/binder.h"
 #include "mojo/public/cpp/platform/binder_exchange.h"
 #endif
 
@@ -127,7 +128,8 @@ void CreateChannel(PlatformHandle* local_endpoint,
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(core::kMojoUseBinder)) {
+  if (base::FeatureList::IsEnabled(core::kMojoUseBinder) &&
+      base::android::IsNativeBinderAvailable()) {
     auto [exchange0, exchange1] = CreateBinderExchange();
     *local_endpoint = PlatformHandle(std::move(exchange0));
     *remote_endpoint = PlatformHandle(std::move(exchange1));
