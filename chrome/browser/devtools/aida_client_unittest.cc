@@ -67,6 +67,7 @@ class AidaClientTest : public testing::Test {
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
+  AidaClient::ScopedOverride scoped_country_override_;
 };
 
 class Delegate {
@@ -130,6 +131,7 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
 }
 
 TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
+  scoped_country_override_ = AidaClient::OverrideCountryForTesting("us");
   auto blocked_reason = AidaClient::CanUseAida(profile_.get());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_FALSE(blocked_reason.blocked);
@@ -152,6 +154,7 @@ TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
 }
 
 TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
+  scoped_country_override_ = AidaClient::OverrideCountryForTesting("us");
   auto blocked_reason = AidaClient::CanUseAida(profile_.get());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_FALSE(blocked_reason.blocked);
@@ -180,6 +183,38 @@ TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
   EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
   EXPECT_FALSE(blocked_reason.blocked_by_age);
 #endif
+}
+
+TEST_F(AidaClientTest, NotAvailableInCountry) {
+  scoped_country_override_ = AidaClient::OverrideCountryForTesting("cn");
+  auto blocked_reason = AidaClient::CanUseAida(profile_.get());
+  EXPECT_TRUE(blocked_reason.blocked);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_FALSE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_TRUE(blocked_reason.blocked_by_geo);
+#else
+  EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_FALSE(blocked_reason.blocked_by_geo);
+#endif
+  EXPECT_FALSE(blocked_reason.blocked_by_age);
+  EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
+}
+
+TEST_F(AidaClientTest, NoLoggingInEurope) {
+  scoped_country_override_ = AidaClient::OverrideCountryForTesting("de");
+  auto blocked_reason = AidaClient::CanUseAida(profile_.get());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_FALSE(blocked_reason.blocked);
+  EXPECT_FALSE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_TRUE(blocked_reason.disallow_logging);
+#else
+  EXPECT_TRUE(blocked_reason.blocked);
+  EXPECT_TRUE(blocked_reason.blocked_by_feature_flag);
+  EXPECT_FALSE(blocked_reason.disallow_logging);
+#endif
+  EXPECT_FALSE(blocked_reason.blocked_by_geo);
+  EXPECT_FALSE(blocked_reason.blocked_by_age);
+  EXPECT_FALSE(blocked_reason.blocked_by_enterprise_policy);
 }
 
 TEST_F(AidaClientTest, Succeeds) {

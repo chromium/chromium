@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -80,17 +81,28 @@ bool IsAidaBlockedByAge(std::optional<AccountInfo> account_info) {
          signin::Tribool::kTrue;
 }
 
-bool IsLoggingDisabledByGeo() {
+std::unique_ptr<std::string>& GetCountryCodeOverride() {
+  static base::NoDestructor<std::unique_ptr<std::string>> country_code_override(
+      nullptr);
+  return *country_code_override;
+}
+
+std::string GetCountryCode() {
+  if (GetCountryCodeOverride()) {
+    return *GetCountryCodeOverride();
+  }
   std::string country_code =
       base::ToLowerASCII(variations::GetCurrentCountryCode(
           g_browser_process->variations_service()));
+  DLOG_IF(WARNING, country_code.empty()) << "Couldn't get country info.";
+  return country_code;
+}
+
+bool IsLoggingDisabledByGeo(std::string country_code) {
   return kLoggingDisallowedCountries.contains(country_code);
 }
 
-bool IsAidaBlockedByGeo() {
-  std::string country_code =
-      base::ToLowerASCII(variations::GetCurrentCountryCode(
-          g_browser_process->variations_service()));
+bool IsAidaBlockedByGeo(std::string country_code) {
   return !kAidaSupportedCountries.contains(country_code);
 }
 
@@ -115,16 +127,25 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   result.blocked_by_enterprise_policy =
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
       static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kDisable);
-  result.blocked_by_geo = IsAidaBlockedByGeo();
+  std::string country_code = GetCountryCode();
+  result.blocked_by_geo = IsAidaBlockedByGeo(country_code);
   result.disallow_logging =
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
           static_cast<int>(
               DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging) ||
-      IsLoggingDisabledByGeo();
+      IsLoggingDisabledByGeo(country_code);
   result.blocked = result.blocked_by_age ||
                    result.blocked_by_enterprise_policy || result.blocked_by_geo;
   return result;
 #endif
+}
+
+AidaClient::ScopedOverride AidaClient::OverrideCountryForTesting(
+    std::string country_code) {
+  CHECK(!GetCountryCodeOverride());
+  GetCountryCodeOverride() = std::make_unique<std::string>(country_code);
+  return std::make_unique<base::ScopedClosureRunner>(
+      base::BindOnce([]() { GetCountryCodeOverride().reset(); }));
 }
 
 void AidaClient::OverrideAidaEndpointAndScopeForTesting(
