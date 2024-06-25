@@ -618,10 +618,12 @@ function computeBuildId(
     const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
 
     const driverArchive = `${currentPlatform()}-recordreplay.tgz`;
-    let downloadArchive = driverArchive;
-    if (driverRevisionIsSet) {
-      downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision}.tgz`;
-    }
+    driverRevision = driverRevisionIsSet
+      ? driverRevision
+      : fs.readFileSync("REPLAY_BACKEND_REV", "utf8");
+    // NOTE(dmiller): we seem to always download the x86 driver here but that's OK because we're just using
+    // the archive to check the date and revision in the metadata JSON file.
+    const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision.trim().substring(0, 12)}.tgz`;
     spawnChecked(
       "curl",
       [
