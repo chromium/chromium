@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
-    enum="PermissionType" expires_after="2024-07-10">
+    enum="PermissionType" expires_after="2025-07-10">
   <owner>fjacky@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
