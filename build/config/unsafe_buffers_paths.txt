@@ -60,6 +60,9 @@
 -buildtools/
 -cc/
 -chrome/
++chrome/browser/apps/guest_view/
++chrome/browser/extensions/api/web_view/
++chrome/browser/guest_view/
 -chromecast/
 -chromeos/
 -clank/
@@ -67,6 +70,7 @@
 -components/
 +components/autofill
 +components/discardable_memory
++components/guest_view/
 +components/plus_addresses
 -courgette/
 -crypto/
@@ -75,6 +79,9 @@
 -device/
 -docs/
 -extensions/
++extensions/browser/api/guest_view/
++extensions/browser/guest_view/
++extensions/renderer/guest_view/
 -fuchsia_web/
 -gin/
 -google_apis/
