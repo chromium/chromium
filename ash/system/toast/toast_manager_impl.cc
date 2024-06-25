@@ -119,8 +119,13 @@ void ToastManagerImpl::Show(ToastData data) {
   std::string_view id = data.id;
   DCHECK(!id.empty());
 
+  LOG(ERROR) << "Show toast called, toast id: " << id;
+
   // If `pause_counter_` is greater than 0, no toasts should be shown.
   if (pause_counter_ > 0) {
+    LOG(ERROR)
+        << "Toast not shown, pause_counter_ is creater than 0, toast id: "
+        << id;
     return;
   }
 
@@ -271,6 +276,7 @@ void ToastManagerImpl::ShowLatest() {
   current_toast_data_ = std::move(*it);
   queue_.erase(it);
 
+  LOG(ERROR) << "Showing latest toast, toast id: " << current_toast_data_->id;
   serial_++;
 
   if (current_toast_data_->show_on_all_root_windows) {
