@@ -83,10 +83,7 @@ impl Value {
 	}
 
 	pub(crate) fn try_as_usize<I: Interrupt>(self, int: &I) -> FResult<usize> {
-		if !self.is_unitless(int)? {
-			return Err(FendError::NumberWithUnitToInt);
-		}
-		self.try_as_usize_unit(int)
+		self.into_unitless_complex(int)?.try_as_usize(int)
 	}
 
 	pub(crate) fn try_as_usize_unit<I: Interrupt>(self, int: &I) -> FResult<usize> {
@@ -160,16 +157,13 @@ impl Value {
 	}
 
 	pub(crate) fn factorial<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		if !self.is_unitless(int)? {
-			return Err(FendError::FactorialUnitless);
-		}
 		Ok(Self {
-			value: Dist::from(self.value.one_point()?.factorial(int)?),
-			unit: self.unit,
+			unit: Unit::unitless(),
 			exact: self.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
+			value: Dist::from(self.into_unitless_complex(int)?.factorial(int)?),
 		})
 	}
 
@@ -280,74 +274,59 @@ impl Value {
 	}
 
 	fn modulo<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
-		if !self.is_unitless(int)? || !rhs.is_unitless(int)? {
-			return Err(FendError::ModuloUnitless);
-		}
 		Ok(Self {
-			value: Dist::from(
-				self.value
-					.one_point()?
-					.modulo(rhs.value.one_point()?, int)?,
-			),
-			unit: self.unit,
+			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
+			value: Dist::from(
+				self.into_unitless_complex(int)?
+					.modulo(rhs.into_unitless_complex(int)?, int)?,
+			),
 		})
 	}
 
 	fn bitwise<I: Interrupt>(self, rhs: Self, op: BitwiseBop, int: &I) -> FResult<Self> {
-		if !self.is_unitless(int)? || !rhs.is_unitless(int)? {
-			return Err(FendError::ExpectedAUnitlessNumber);
-		}
 		Ok(Self {
-			value: Dist::from(
-				self.value
-					.one_point()?
-					.bitwise(rhs.value.one_point()?, op, int)?,
-			),
-			unit: self.unit,
+			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
+			value: Dist::from(self.into_unitless_complex(int)?.bitwise(
+				rhs.into_unitless_complex(int)?,
+				op,
+				int,
+			)?),
 		})
 	}
 
 	pub(crate) fn combination<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
-		if !self.is_unitless(int)? || !rhs.is_unitless(int)? {
-			return Err(FendError::ExpectedAUnitlessNumber);
-		}
 		Ok(Self {
-			value: Dist::from(
-				self.value
-					.one_point()?
-					.combination(rhs.value.one_point()?, int)?,
-			),
-			unit: self.unit,
+			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
+			value: Dist::from(
+				self.into_unitless_complex(int)?
+					.combination(rhs.into_unitless_complex(int)?, int)?,
+			),
 		})
 	}
 
 	pub(crate) fn permutation<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
-		if !self.is_unitless(int)? || !rhs.is_unitless(int)? {
-			return Err(FendError::ExpectedAUnitlessNumber);
-		}
 		Ok(Self {
-			value: Dist::from(
-				self.value
-					.one_point()?
-					.permutation(rhs.value.one_point()?, int)?,
-			),
-			unit: self.unit,
+			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
+			value: Dist::from(
+				self.into_unitless_complex(int)?
+					.permutation(rhs.into_unitless_complex(int)?, int)?,
+			),
 		})
 	}
 
@@ -393,14 +372,13 @@ impl Value {
 	}
 
 	pub(crate) fn pow<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
-		if !rhs.is_unitless(int)? {
-			return Err(FendError::ExpUnitless);
-		}
+		let rhs_exact = rhs.exact;
+		let rhs = rhs.into_unitless_complex(int)?;
 		let mut new_components = vec![];
 		let mut exact_res = true;
 		for unit_exp in self.unit.components {
 			let exponent = Exact::new(unit_exp.exponent, self.exact)
-				.mul(&Exact::new(rhs.value.clone().one_point()?, rhs.exact), int)?;
+				.mul(&Exact::new(rhs.clone(), rhs_exact), int)?;
 			exact_res = exact_res && exponent.exact;
 			new_components.push(UnitExponent {
 				unit: unit_exp.unit,
@@ -410,11 +388,11 @@ impl Value {
 		let new_unit = Unit {
 			components: new_components,
 		};
-		let value = self.value.one_point()?.pow(rhs.value.one_point()?, int)?;
+		let value = self.value.one_point()?.pow(rhs, int)?;
 		Ok(Self {
 			value: value.value.into(),
 			unit: new_unit,
-			exact: self.exact && rhs.exact && exact_res && value.exact,
+			exact: self.exact && rhs_exact && exact_res && value.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
@@ -487,6 +465,14 @@ impl Value {
 
 	fn remove_unit_scaling<I: Interrupt>(self, int: &I) -> FResult<Self> {
 		self.convert_to(Self::unitless(), int)
+	}
+
+	fn into_unitless_complex<I: Interrupt>(mut self, int: &I) -> FResult<Complex> {
+		self = self.remove_unit_scaling(int)?;
+		if !self.is_unitless(int)? {
+			return Err(FendError::ExpectedAUnitlessNumber);
+		}
+		self.value.one_point()
 	}
 
 	fn apply_fn_exact<I: Interrupt>(

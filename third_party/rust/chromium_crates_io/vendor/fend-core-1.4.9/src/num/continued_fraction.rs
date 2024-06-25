@@ -720,7 +720,7 @@ macro_rules! cf {
 				} else {
 					$crate::num::continued_fraction::Sign::Negative
 				},
-				integer: (i.abs() as u64).into(),
+				integer: u64::from(i.unsigned_abs()).into(),
 				fraction: Rc::new(move || {
 					Box::new(parts.clone().into_iter())
 				}),

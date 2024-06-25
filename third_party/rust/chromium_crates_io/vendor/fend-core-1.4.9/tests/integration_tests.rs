@@ -5972,3 +5972,9 @@ fn modulo_percent() {
 	test_eval("5%4", "1");
 	test_eval("(104857566-103811072+1) % (1024*1024/512)", "2015");
 }
+
+#[test]
+fn modulo_unitless() {
+	test_eval("5 mod (4k)", "5");
+	test_eval("(4k)^2", "16000000");
+}

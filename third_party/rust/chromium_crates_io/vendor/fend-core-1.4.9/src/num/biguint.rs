@@ -440,7 +440,7 @@ impl BigUint {
 		}
 		for (i, a) in res.iter_mut().enumerate() {
 			let b = other.get(i);
-			if !(b == std::u64::MAX && carry == 1) && *a >= b + carry {
+			if !(b == u64::MAX && carry == 1) && *a >= b + carry {
 				*a = *a - b - carry;
 				carry = 0;
 			} else {

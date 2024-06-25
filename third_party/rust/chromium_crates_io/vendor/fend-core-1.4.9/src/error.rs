@@ -32,7 +32,6 @@ pub(crate) enum FendError {
 	ExpectedARationalNumber,
 	CannotConvertToInteger,
 	ComplexToInteger,
-	NumberWithUnitToInt,
 	InexactNumberToInt,
 	ExpectedANumber,
 	ExpectedABool(&'static str),
@@ -74,16 +73,13 @@ pub(crate) enum FendError {
 	ExpectedAString,
 	ExpectedARealNumber,
 	ConversionRhsNumerical,
-	FactorialUnitless,
 	ModuloForPositiveInts,
-	ExpUnitless,
 	IncompatibleConversion {
 		from: String,
 		to: String,
 		from_base: String,
 		to_base: String,
 	},
-	ModuloUnitless,
 	RootsOfNegativeNumbers,
 	NonIntegerNegRoots,
 	CannotConvertValueTo(&'static str),
@@ -104,13 +100,8 @@ impl fmt::Display for FendError {
 		match self {
 			Self::Interrupted => write!(f, "interrupted"),
 			Self::ParseError(e) => write!(f, "{e}"),
-			Self::FactorialUnitless => {
-				write!(f, "factorial is only supported for unitless numbers")
-			}
 			Self::DeserializationError => write!(f, "failed to deserialize object"),
-			Self::ModuloUnitless => write!(f, "modulo is only supported for unitless numbers"),
 			Self::FactorialComplex => write!(f, "factorial is not supported for complex numbers"),
-			Self::ExpUnitless => write!(f, "exponentiation is only supported for unitless numbers"),
 			Self::IoError(_) => write!(f, "I/O error"),
 			Self::InvalidBasePrefix => write!(
 				f,
@@ -191,7 +182,6 @@ impl fmt::Display for FendError {
 			Self::ExpectedARationalNumber => write!(f, "expected a rational number"),
 			Self::CannotConvertToInteger => write!(f, "number cannot be converted to an integer"),
 			Self::ComplexToInteger => write!(f, "cannot convert complex number to integer"),
-			Self::NumberWithUnitToInt => write!(f, "cannot convert number with unit to integer"),
 			Self::InexactNumberToInt => write!(f, "cannot convert inexact number to integer"),
 			Self::ExpectedANumber => write!(f, "expected a number"),
 			Self::InvalidDiceSyntax => write!(f, "invalid dice syntax, try e.g. `4d6`"),

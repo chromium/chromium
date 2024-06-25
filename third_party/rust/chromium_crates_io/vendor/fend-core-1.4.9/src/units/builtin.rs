@@ -431,6 +431,12 @@ const TIME_UNITS: &[UnitTuple] = &[
 	("beat", "beats", "l@decimal_minute", "Swatch Internet Time"),
 	("scaramucci", "scaramuccis", "11 days", ""),
 	("mooch", "mooches", "scaramucci", ""),
+	(
+		"sol",
+		"sols",
+		"24 hours 39 minutes 35 seconds",
+		"martian day",
+	),
 ];
 
 const RATIOS: &[UnitTuple] = &[
