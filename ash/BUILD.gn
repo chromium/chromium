@@ -3103,6 +3103,7 @@ component("ash") {
     "wm/wm_default_layout_manager.h",
     "wm/wm_event.cc",
     "wm/wm_event.h",
+    "wm/wm_metrics.cc",
     "wm/wm_metrics.h",
     "wm/wm_shadow_controller_delegate.cc",
     "wm/wm_shadow_controller_delegate.h",
