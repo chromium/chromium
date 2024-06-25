@@ -20333,6 +20333,24 @@
             ]
         }
     ],
+    "SegmentationPlatformURLVisitResumptionRanker": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "use_random_score": "true"
+                    },
+                    "enable_features": [
+                        "SegmentationPlatformURLVisitResumptionRanker"
+                    ]
+                }
+            ]
+        }
+    ],
     "SendTabToSelfV2": [
         {
             "platforms": [
