@@ -3442,6 +3442,79 @@ TEST_F(SnapGroupTest, UseShortcutToGroupSnappedWindows) {
   EXPECT_TRUE(snap_group_divider());
 }
 
+// Tests the behavior for an unresizable window that cannot snap.
+TEST_F(SnapGroupTest, UnresizableWindowWontFormSnapGroup) {
+  std::unique_ptr<aura::Window> normal(CreateAppWindow());
+  std::unique_ptr<aura::Window> unresizable(CreateAppWindow());
+  unresizable->SetProperty(aura::client::kResizeBehaviorKey,
+                           aura::client::kResizeBehaviorNone);
+
+  // 1 - Snap the normal window to start partial overview.
+  SnapOneTestWindow(normal.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifySplitViewOverviewSession(normal.get());
+
+  // Selecting the unresizable window from partial overview won't snap and won't
+  // add to snap group.
+  ClickOverviewItem(GetEventGenerator(), unresizable.get());
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kAppCannotSnapToastId));
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(normal.get(),
+                                                            unresizable.get()));
+
+  // 2 - Snap the unresizable window won't start partial overview and won't
+  // form a group even when the layout is complete.
+  SnapOneTestWindow(unresizable.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifyNotSplitViewOverviewSession(unresizable.get());
+  SnapOneTestWindow(normal.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(normal.get(),
+                                                            unresizable.get()));
+}
+
+// Tests the behavior for an unresizable window that can snap.
+TEST_F(SnapGroupTest, UnresizableCanSnapWindowWontFormSnapGroup) {
+  std::unique_ptr<aura::Window> normal(CreateAppWindow());
+  std::unique_ptr<aura::Window> unresizable(CreateAppWindow());
+  unresizable->SetProperty(aura::client::kResizeBehaviorKey,
+                           aura::client::kResizeBehaviorNone);
+  unresizable->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(300, 0));
+
+  // 1 - Snap the normal window to start partial overview.
+  SnapOneTestWindow(normal.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifySplitViewOverviewSession(normal.get());
+
+  // Select the `kUnresizableSnappedSizeKey` window from partial overview. Test
+  // it snaps but does not form a group.
+  auto* event_generator = GetEventGenerator();
+  ClickOverviewItem(event_generator, unresizable.get());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(unresizable.get())->GetStateType());
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(normal.get(),
+                                                            unresizable.get()));
+
+  // 2 - Snap the `kUnresizableSnappedSizeKey` window to start partial overview.
+  SnapOneTestWindow(unresizable.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  VerifySplitViewOverviewSession(unresizable.get());
+
+  // Select the normal window from partial overview. Test it snaps but does not
+  // form a group.
+  ClickOverviewItem(event_generator, normal.get());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(normal.get())->GetStateType());
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(normal.get(),
+                                                            unresizable.get()));
+}
+
 // -----------------------------------------------------------------------------
 // SnapGroupDividerTest:
 

@@ -170,6 +170,12 @@ SnapGroup* SnapGroupController::AddSnapGroup(
     return nullptr;
   }
 
+  // Disallow snap group creation for unresizable windows.
+  if (!WindowState::Get(window1)->CanResize() ||
+      !WindowState::Get(window2)->CanResize()) {
+    return nullptr;
+  }
+
   // We only allow snap group to be created if the windows fit the work area.
   if (!CanWindowsFitInWorkArea(window1, window2)) {
     return nullptr;
