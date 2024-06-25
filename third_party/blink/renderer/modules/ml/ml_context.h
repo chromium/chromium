@@ -48,6 +48,16 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
             const V8MLPowerPreference power_preference,
             const V8MLModelFormat model_format,
             const unsigned int num_threads,
+            ML* ml,
+            webnn::mojom::blink::CreateContextSuccessPtr create_context_success,
+            ScriptState* script_state);
+
+  // Used when context is created for model loader API.
+  MLContext(const V8MLDevicePreference device_preference,
+            const V8MLDeviceType device_type,
+            const V8MLPowerPreference power_preference,
+            const V8MLModelFormat model_format,
+            const unsigned int num_threads,
             ML* ml);
 
   MLContext(const MLContext&) = delete;
@@ -136,9 +146,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // The callback of creating `WebNNContext` mojo interface from WebNN Service.
   // Return `CreateContextResult::kNotSupported` on non-supported input
   // configuration.
-  void OnCreateWebNNContext(ScopedMLTrace scoped_trace,
-                            ScriptPromiseResolver<MLContext>* resolver,
-                            webnn::mojom::blink::CreateContextResultPtr result);
+  static void OnCreateWebNNContext(
+      MLContextOptions* options,
+      ML* ml,
+      ScopedMLTrace scoped_trace,
+      ScriptPromiseResolver<MLContext>* resolver,
+      webnn::mojom::blink::CreateContextResultPtr result);
 
   // Validate and write ArrayBuffer data to hardware accelerated OS
   // machine learning buffers in the WebNN Service.
