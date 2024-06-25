@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
@@ -116,10 +115,12 @@ void FakeFormFetcher::SetNonFederated(
     const std::vector<PasswordForm>& non_federated_same_scheme) {
   non_federated_ = non_federated;
   non_federated_same_scheme_ = non_federated_same_scheme;
-  best_matches_ =
-      password_manager_util::FindBestMatches(non_federated_same_scheme_);
 }
 
+void FakeFormFetcher::SetBestMatches(
+    const std::vector<PasswordForm>& best_matches) {
+  best_matches_ = best_matches;
+}
 void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {
   is_blocklisted_ = is_blocklisted;
 }

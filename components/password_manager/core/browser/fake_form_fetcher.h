@@ -84,6 +84,8 @@ class FakeFormFetcher : public FormFetcher {
       const std::vector<PasswordForm>& non_federated,
       const std::vector<PasswordForm>& non_federated_same_scheme);
 
+  void SetBestMatches(const std::vector<PasswordForm>& best_matches);
+
   void SetBlocklisted(bool is_blocklisted);
 
   void NotifyFetchCompleted();

@@ -170,6 +170,7 @@ PasswordGenerationManagerTest::SetUpOverwritingUI(
   const PasswordForm federated = CreateSavedFederated();
   FakeFormFetcher fetcher;
   fetcher.SetNonFederated({saved});
+  fetcher.SetBestMatches({saved});
   fetcher.set_federated({federated});
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordMock(true))
@@ -213,6 +214,7 @@ TEST_F(PasswordGenerationManagerTest, GeneratedPasswordAccepted_Conflict) {
   MockPasswordManagerDriver driver;
   FakeFormFetcher fetcher;
   fetcher.SetNonFederated({saved});
+  fetcher.SetBestMatches({saved});
 
   EXPECT_CALL(driver, GeneratedPasswordAccepted(generated.password_value));
   manager().GeneratedPasswordAccepted(std::move(generated), {&saved}, {},

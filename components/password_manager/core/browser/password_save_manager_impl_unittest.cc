@@ -358,6 +358,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   void SetNonFederatedAndNotifyFetchCompleted(
       std::vector<PasswordForm> non_federated) {
     fetcher()->SetNonFederated(non_federated);
+    fetcher()->SetBestMatches(non_federated);
     fetcher()->NotifyFetchCompleted();
   }
 

@@ -552,6 +552,7 @@ class PasswordFormManagerTest : public testing::Test,
   void SetNonFederatedAndNotifyFetchCompleted(
       const std::vector<PasswordForm>& non_federated) {
     fetcher_->SetNonFederated(non_federated);
+    fetcher_->SetBestMatches(non_federated);
     fetcher_->NotifyFetchCompleted();
   }
 
@@ -797,6 +798,7 @@ TEST_P(PasswordFormManagerTest, AutofillWithBlocklistedMatch) {
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
   fetcher_->SetNonFederated({saved_match_});
+  fetcher_->SetBestMatches({saved_match_});
   fetcher_->SetBlocklisted(true);
   fetcher_->NotifyFetchCompleted();
 

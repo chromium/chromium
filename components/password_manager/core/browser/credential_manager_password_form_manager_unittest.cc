@@ -107,6 +107,7 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
       const std::vector<PasswordForm>& non_federated) {
     auto* fake_fetcher = static_cast<FakeFormFetcher*>(fetcher);
     fake_fetcher->SetNonFederated(non_federated);
+    fake_fetcher->SetBestMatches(non_federated);
     fake_fetcher->NotifyFetchCompleted();
     // It is required because of PostTask in
     // CredentialManagerPasswordFormManager::OnFetchCompleted

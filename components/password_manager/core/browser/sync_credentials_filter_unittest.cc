@@ -161,6 +161,7 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
       matches.push_back(pending_);
     }
     fetcher_.SetNonFederated(matches);
+    fetcher_.SetBestMatches(matches);
     fetcher_.NotifyFetchCompleted();
 
     form_manager_->ProvisionallySave(
