@@ -19,6 +19,33 @@ reviewer.
 
 <histograms>
 
+<variants name="ActivityTypeStoragePercentage">
+  <variant name="AGSACCT"
+      summary="Percentage of AGSACCT in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="BrApp"
+      summary="Percentage of BrApp in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="NonAGSACCT"
+      summary="Percentage of NonAGSACCT in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="Other"
+      summary="Percentage of Other in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="PreFirstTab"
+      summary="Percentage of PreFirstTab in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="TWA"
+      summary="Percentage of TWA in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="WebApk"
+      summary="Percentage of WebApk in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+  <variant name="WebApp"
+      summary="Percentage of WebApp in the list stored in the
+               privacy_sandbox.activity_type.record pref"/>
+</variants>
+
 <variants name="DIPSCookieMode">
   <variant name=".Block3PC"
       summary="in a NON-off-the-record profile, with third-party cookies
@@ -495,6 +522,8 @@ reviewer.
   </summary>
 </histogram>
 
+<!--TODO(crbug.com/348369971): Clean up old ActivityTypeStorage histograms.-->
+
 <histogram
     name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
@@ -508,7 +537,31 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2"
+    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
+    expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the user segment based on the 10 most recent records. Recorded at
+    most once on Clank startup.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment"
+    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
+    expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the user segment based on the 20 most recent records. Recorded at
+    most once on Clank startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2"
     enum="PrivacySandboxStorageUserSegmentByRecentActivity"
     expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -587,6 +640,19 @@ reviewer.
     Records the percentage of WebApp activity type launches. Recorded once on
     Clank startup.
   </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.ActivityTypeStorage.Percentage.{ActivityTypeStoragePercentage}2"
+    units="%" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the percentage of each PrivacySandboxStorageActivityType launch from
+    the list stored in the privacy_sandbox.activity_type.record pref
+  </summary>
+  <token key="ActivityTypeStoragePercentage"
+      variants="ActivityTypeStoragePercentage"/>
 </histogram>
 
 <histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"

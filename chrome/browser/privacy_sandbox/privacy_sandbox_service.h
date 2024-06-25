@@ -296,7 +296,7 @@ class PrivacySandboxService : public KeyedService {
 #if BUILDFLAG(IS_ANDROID)
   // On Clank startup, the RecordActivityType function will be called once,
   // passing in the corresponding PrivacySandboxStorageActivityType. Each time
-  // the function is called, the kPrivacySandboxActivityTypeRecord preference
+  // the function is called, the kPrivacySandboxActivityTypeRecord2 preference
   // will be updated with a new list of activity type launches. This list is
   // limited in size and by the timestamps of recordable launches
   // (kPrivacySandboxActivityTypeStorageLastNLaunches and
@@ -308,15 +308,18 @@ class PrivacySandboxService : public KeyedService {
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
   // LINT.IfChange(PrivacySandboxStorageActivityType)
   enum class PrivacySandboxStorageActivityType {
-    kTabbed,              // BrApp
-    kAGSACustomTab,       // AGSA-CCT
-    kNonAGSACustomTab,    // Non-AGSA-CCT
-    kTrustedWebActivity,  // TWA
+    kOther = 0,               // Partial CCT and all other unknowns
+    kTabbed = 1,              // BrApp
+    kAGSACustomTab = 2,       // AGSA-CCT
+    kNonAGSACustomTab = 3,    // Non-AGSA-CCT
+    kTrustedWebActivity = 4,  // TWA
     //   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webapps/README.md
-    kWebapp,
+    kWebapp = 5,  // Shortcut
     //   - https://web.dev/webapks/
-    kWebApk,  // PWA
-    kMaxValue = kWebApk,
+    kWebApk = 6,  // PWA
+    kPreFirstTab =
+        7,  // Chrome has started running, but no tab has yet become visible.
+    kMaxValue = kPreFirstTab,
   };
   // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
@@ -327,14 +330,15 @@ class PrivacySandboxService : public KeyedService {
   //
   // LINT.IfChange(PrivacySandboxStorageUserSegmentByRecentActivity)
   enum class PrivacySandboxStorageUserSegmentByRecentActivity {
-    kHasBrowserApp,
-    kHasAGSACCT,
-    kHasNonAGSACCT,
-    kHasPWA,
-    kHasTWA,
-    kHasWebapp,
-    kOther,
-    kMaxValue = kOther,
+    kHasOther = 0,
+    kHasBrowserApp = 1,
+    kHasAGSACCT = 2,
+    kHasNonAGSACCT = 3,
+    kHasPWA = 4,
+    kHasTWA = 5,
+    kHasWebapp = 6,
+    kHasPreFirstTab = 7,
+    kMaxValue = kHasPreFirstTab,
   };
   // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 #endif  // BUILDFLAG(IS_ANDROID)

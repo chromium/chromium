@@ -62,6 +62,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "");
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord);
+  registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
 #endif
   // Register prefs for tracking protection.
   tracking_protection::RegisterProfilePrefs(registry);

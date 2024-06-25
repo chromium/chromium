@@ -1484,12 +1484,15 @@ bool PrivacySandboxServiceImpl::IsM1PrivacySandboxEffectivelyManaged(
 void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
   using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
   std::unordered_map<ActivityType, int> activity_type_counts{
+      {ActivityType::kOther, 0},
       {ActivityType::kTabbed, 0},
       {ActivityType::kAGSACustomTab, 0},
       {ActivityType::kNonAGSACustomTab, 0},
       {ActivityType::kTrustedWebActivity, 0},
       {ActivityType::kWebapp, 0},
-      {ActivityType::kWebApk, 0}};
+      {ActivityType::kWebApk, 0},
+      {ActivityType::kPreFirstTab, 0}};
+
   for (const base::Value& record : activity_type_record) {
     std::optional<int> activity_type_int =
         record.GetDict().FindInt("activity_type");
@@ -1508,12 +1511,14 @@ void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
 
   constexpr auto kTypesToHistogramSuffix =
       base::MakeFixedFlatMap<ActivityType, std::string_view>(
-          {{ActivityType::kTabbed, "BrApp"},
+          {{ActivityType::kOther, "Other"},
+           {ActivityType::kTabbed, "BrApp"},
            {ActivityType::kAGSACustomTab, "AGSACCT"},
            {ActivityType::kNonAGSACustomTab, "NonAGSACCT"},
            {ActivityType::kTrustedWebActivity, "TWA"},
            {ActivityType::kWebapp, "WebApp"},
-           {ActivityType::kWebApk, "WebApk"}});
+           {ActivityType::kWebApk, "WebApk"},
+           {ActivityType::kPreFirstTab, "PreFirstTab"}});
 
   // Emit all the histograms with each percentage value.
   for (const auto& [type, suffix] : kTypesToHistogramSuffix) {
@@ -1522,7 +1527,7 @@ void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
     }
     base::UmaHistogramPercentage(
         base::StrCat(
-            {"PrivacySandbox.ActivityTypeStorage.Percentage.", suffix}),
+            {"PrivacySandbox.ActivityTypeStorage.Percentage.", suffix, "2"}),
         activity_type_percentages[type]);
   }
 }
@@ -1556,7 +1561,7 @@ void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
     encountered_activities.insert(GetActivityType(activity_type_record[i]));
   }
 
-  SegmentType segment_type = SegmentType::kOther;
+  SegmentType segment_type = SegmentType::kHasOther;
   if (encountered_activities.contains(ActivityType::kTabbed)) {
     segment_type = SegmentType::kHasBrowserApp;
   } else if (encountered_activities.contains(ActivityType::kAGSACustomTab)) {
@@ -1570,11 +1575,13 @@ void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
     segment_type = SegmentType::kHasTWA;
   } else if (encountered_activities.contains(ActivityType::kWebapp)) {
     segment_type = SegmentType::kHasWebapp;
+  } else if (encountered_activities.contains(ActivityType::kPreFirstTab)) {
+    segment_type = SegmentType::kHasPreFirstTab;
   }
   base::UmaHistogramEnumeration(
       base::StrCat({"PrivacySandbox.ActivityTypeStorage.",
                     base::NumberToString(records_in_a_row),
-                    "MostRecentRecordsUserSegment"}),
+                    "MostRecentRecordsUserSegment2"}),
       segment_type);
 }
 
@@ -1637,7 +1644,7 @@ void PrivacySandboxServiceImpl::RecordActivityType(
   new_dict.Set("activity_type", static_cast<int>(type));
 
   const base::Value::List& old_activity_type_record =
-      pref_service_->GetList(prefs::kPrivacySandboxActivityTypeRecord);
+      pref_service_->GetList(prefs::kPrivacySandboxActivityTypeRecord2);
 
   base::Value::List new_activity_type_record;
   new_activity_type_record.Append(std::move(new_dict));
@@ -1664,7 +1671,7 @@ void PrivacySandboxServiceImpl::RecordActivityType(
     }
   }
   RecordActivityTypeMetrics(new_activity_type_record, current_time);
-  pref_service_->SetList(prefs::kPrivacySandboxActivityTypeRecord,
+  pref_service_->SetList(prefs::kPrivacySandboxActivityTypeRecord2,
                          std::move(new_activity_type_record));
 }
 #endif  // BUILDFLAG(IS_ANDROID)

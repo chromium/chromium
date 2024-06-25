@@ -29587,13 +29587,14 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="PrivacySandboxStorageUserSegmentByRecentActivity">
-  <int value="0" label="kHasBrowserApp"/>
-  <int value="1" label="kHasAGSACCT"/>
-  <int value="2" label="kHasNonAGSACCT"/>
-  <int value="3" label="kHasPWA"/>
-  <int value="4" label="kHasTWA"/>
-  <int value="5" label="kHasWebapp"/>
-  <int value="6" label="kOther"/>
+  <int value="0" label="kHasOther"/>
+  <int value="1" label="kHasBrowserApp"/>
+  <int value="2" label="kHasAGSACCT"/>
+  <int value="3" label="kHasNonAGSACCT"/>
+  <int value="4" label="kHasPWA"/>
+  <int value="5" label="kHasTWA"/>
+  <int value="6" label="kHasWebapp"/>
+  <int value="7" label="kHasPreFirstTab"/>
 </enum>
 
 <enum name="ProbeResult">
