@@ -270,7 +270,8 @@ MojoTimeTicks Core::GetTimeTicksNow() {
 MojoResult Core::Close(MojoHandle handle) {
   // Refuse to close handles at non-deterministic points, as this requires a lot
   // of interaction with other mojo components.
-  if (recordreplay::AreEventsDisallowed("Core::Close")) {
+  if (recordreplay::AreEventsDisallowed() &&
+      recordreplay::FeatureEnabled("leak-references", "Core::Close")) {
     return MOJO_RESULT_OK;
   }
 

@@ -277,7 +277,8 @@ int Node::ClosePort(const PortRef& port_ref) {
   // The set of ports on a node should be the same when recording vs. replaying,
   // so we refuse to close ports when events are disallowed and the calling
   // code runs at non-deterministic points. This will cause ports to leak.
-  if (recordreplay::AreEventsDisallowed("Node::ClosePort")) {
+  if (recordreplay::AreEventsDisallowed() &&
+      recordreplay::FeatureEnabled("leak-references", "Node::ClosePort")) {
     return OK;
   }
   std::vector<std::unique_ptr<UserMessageEvent>> undelivered_messages;

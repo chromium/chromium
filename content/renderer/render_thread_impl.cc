@@ -1388,13 +1388,14 @@ void RenderThreadImpl::SetIsCrossOriginIsolated(bool value) {
   blink::SetIsCrossOriginIsolated(value);
 }
 
-extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
+extern "C" void V8RecordReplayBrowserEvent(const char* name,
+                                           const char* payload);
 
-void RenderThreadImpl::RecordReplayBrowserEvent(
-    const std::string& name,
-    base::Value::Dict value) {
+void RenderThreadImpl::RecordReplayBrowserEvent(const std::string& name,
+                                                base::Value::Dict value) {
   // Do nothing if not in record/replay mode.
-  if (!recordreplay::IsRecordingOrReplaying("browser-event") || !v8::IsMainThread()) {
+  if (!recordreplay::IsRecordingOrReplaying("browser-event") ||
+      !v8::IsMainThread()) {
     return;
   }
 
@@ -1724,6 +1725,12 @@ void RenderThreadImpl::OnRendererForegrounded() {
 
 void RenderThreadImpl::ReleaseFreeMemory() {
   TRACE_EVENT0("blink", "RenderThreadImpl::ReleaseFreeMemory()");
+
+  if (recordreplay::AreEventsDisallowed() &&
+      recordreplay::FeatureEnabled("leak-references", "ReleaseFreeMemory")) {
+    return;
+  }
+
   base::allocator::ReleaseFreeMemory();
   discardable_memory_allocator_->ReleaseFreeMemory();
 
