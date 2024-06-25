@@ -1,4 +1,10 @@
-<style include="cr-shared-style">
+<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
   cr-tabs {
     --cr-tabs-font-size: inherit;
     --cr-tabs-height: 40px;
@@ -12,19 +18,54 @@
   .enterprise-icon {
     padding-inline-start: 5px;
   }
+
+  #main {
+    flex: 1;
+    overflow: auto;
+    padding: 16px;
+  }
+
+  cr-menu-selector {
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+    overflow: auto;
+    padding-top: 8px;
+    width: 250px;
+  }
+
 </style>
 
 <cr-toolbar page-name="[[i18n('certificateManagerV2Title')]]"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
 
-<cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTabIndex_}}">
-</cr-tabs>
+<div id="sidebar" role="navigation">
+  <cr-menu-selector id="menu" selectable="a" attr-for-selected="path"
+      selected-attribute="selected" selected="[[selectedPage_]]"
+      on-iron-select="onMenuItemSelect_">
+    <a id="localMenuItem" role="menuitem" class="cr-nav-menu-item"
+        path="localcerts" href="/localcerts" on-click="onMenuItemClick_">
+      [[i18n('certificateManagerV2LocalCerts')]]
+    </a>
+    <a id="clientMenuItem" role="menuitem" class="cr-nav-menu-item"
+        path="clientcerts" href="/clientcerts" on-click="onMenuItemClick_">
+      [[i18n('certificateManagerV2ClientCerts')]]
+    </a>
+    <a id="crsMenuItem" role="menuitem" class="cr-nav-menu-item"
+        path="crscerts" href="/crscerts" on-click="onMenuItemClick_">
+      [[i18n('certificateManagerV2CRSCerts')]]
+    </a>
+  </cr-menu-selector>
+</div>
 
 <!-- TODO(crbug.com/40928765): localize strings -->
-<iron-pages selected="[[selectedTabIndex_]]">
+<!-- TODO(crbug.com/40928765): migrate off of iron-pages. See:
+  https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md#polymer-iron_paper-elements-alternatives -->
+<iron-pages id="main" attr-for-selected="path" fallback-selection="localcerts"
+    selected="[[selectedPage_]]">
 
-  <div>
+  <div id="clientCertSection" path="clientcerts">
     Client certificates are certificates that identify you to other servers.
 
     <if expr="is_win or is_macosx or is_linux">
@@ -64,7 +105,7 @@
     </if>
   </div>
 
-  <div class="cr-centered-card-container">
+  <div id="localCertSection" class="cr-centered-card-container" path="localcerts">
     Local certificates that have been added by your operating system or your
     administrator.
 
@@ -121,7 +162,7 @@
   </div>
 
   <!-- Chrome Root Store section -->
-  <div>
+  <div id="crsCertSection" path="crscerts">
     <certificate-list-v2
         id="crsCerts"
         cert-source="[[certificateSourceEnum_.kChromeRootStore]]"

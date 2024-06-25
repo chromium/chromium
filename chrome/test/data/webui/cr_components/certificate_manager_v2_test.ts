@@ -327,4 +327,28 @@ suite('CertificateManagerV2Test', () => {
     const linkRow = customSection!.querySelector('cr-link-row');
     assertEquals('5 certificates', linkRow!.subLabel);
   });
+
+  test('click local certs section', async () => {
+    initializeElement();
+    certManager.$.localMenuItem.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.localCertSection.classList.contains('iron-selected'));
+  });
+
+  test('click client certs section', async () => {
+    initializeElement();
+    certManager.$.clientMenuItem.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.clientCertSection.classList.contains('iron-selected'));
+  });
+
+  test('click crs certs section', async () => {
+    initializeElement();
+    certManager.$.crsMenuItem.click();
+    await microtasksFinished();
+    assertTrue(
+        certManager.$.crsCertSection.classList.contains('iron-selected'));
+  });
 });

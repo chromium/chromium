@@ -19,10 +19,14 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
+import '//resources/cr_elements/cr_page_host_style.css.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -52,6 +56,14 @@ export interface CertificateManagerV2Element {
     manageOsImportedCerts: HTMLElement,
     manageOsImportedClientCerts: HTMLElement,
     // </if>
+
+    localMenuItem: HTMLElement,
+    clientMenuItem: HTMLElement,
+    crsMenuItem: HTMLElement,
+
+    localCertSection: HTMLElement,
+    clientCertSection: HTMLElement,
+    crsCertSection: HTMLElement,
   };
 }
 
@@ -67,7 +79,7 @@ export class CertificateManagerV2Element extends
 
   static get properties() {
     return {
-      selectedTabIndex_: Number,
+      selectedPage_: String,
       tabNames_: Array,
 
       toastMessage_: String,
@@ -94,12 +106,9 @@ export class CertificateManagerV2Element extends
     };
   }
 
-  private selectedTabIndex_: number = 0;
-  private tabNames_: string[] = [
-    loadTimeData.getString('certificateManagerV2ClientCerts'),
-    loadTimeData.getString('certificateManagerV2LocalCerts'),
-    loadTimeData.getString('certificateManagerV2CRSCerts'),
-  ];
+  // TODO(crbug.com/40928765): create constants for paths for TS even if the
+  // html has to have its own set of constants.
+  private selectedPage_: string = 'localcerts';
   private toastMessage_: string;
   private certPolicy_: CertPolicyInfo;
   private importOsCertsEnabled_: boolean;
@@ -118,6 +127,18 @@ export class CertificateManagerV2Element extends
     this.toastMessage_ =
         loadTimeData.getString('certificateManagerV2HashCopiedToast');
     this.$.toast.show();
+  }
+
+  // Prevent clicks on sidebar items from navigating and therefore reloading
+  // the page.
+  protected onMenuItemClick_(e: MouseEvent) {
+    e.preventDefault();
+  }
+
+  private onMenuItemSelect_(e: CustomEvent<{item: HTMLElement}>) {
+    const page = e.detail.item.getAttribute('path');
+    assert(page, 'Page is not available');
+    this.selectedPage_ = page;
   }
 
   private computeImportOsCertsEnabled_(): boolean {
