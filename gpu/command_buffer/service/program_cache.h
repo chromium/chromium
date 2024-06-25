@@ -52,8 +52,12 @@ class GPU_GLES2_EXPORT ProgramCache {
     ScopedCacheUse(ProgramCache* cache, CacheProgramCallback callback);
     // Disallow copy/assign as it is subtle and error prone (only one
     // ScopedCacheUse should reset the callback on destruction).
-    ScopedCacheUse(ScopedCacheUse& other) = delete;
-    ScopedCacheUse& operator=(ScopedCacheUse& other) = delete;
+    ScopedCacheUse(const ScopedCacheUse& other) = delete;
+    ScopedCacheUse& operator=(const ScopedCacheUse& other) = delete;
+    // Disallow move as the destructor dereferences `cache_` after it has been
+    // moved out.
+    ScopedCacheUse(ScopedCacheUse&& other) = delete;
+    ScopedCacheUse& operator=(ScopedCacheUse&& other) = delete;
     ~ScopedCacheUse();
 
    private:

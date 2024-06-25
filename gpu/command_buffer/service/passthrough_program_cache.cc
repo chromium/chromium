@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
@@ -254,15 +255,23 @@ PassthroughProgramCache::ProgramCacheValue::ProgramCacheValue(
 }
 
 PassthroughProgramCache::ProgramCacheValue::~ProgramCacheValue() {
-  program_cache_->curr_size_bytes_ -= program_blob_.size();
+  if (program_cache_) {
+    program_cache_->curr_size_bytes_ -= program_blob_.size();
+  }
 }
 
 PassthroughProgramCache::ProgramCacheValue::ProgramCacheValue(
-    ProgramCacheValue&& other) = default;
+    ProgramCacheValue&& other)
+    : program_blob_(std::move(other.program_blob_)),
+      program_cache_(std::exchange(other.program_cache_, nullptr)) {}
 
 PassthroughProgramCache::ProgramCacheValue&
 PassthroughProgramCache::ProgramCacheValue::operator=(
-    ProgramCacheValue&& other) = default;
+    ProgramCacheValue&& other) {
+  program_blob_ = std::move(other.program_blob_);
+  program_cache_ = std::exchange(other.program_cache_, nullptr);
+  return *this;
+}
 
 }  // namespace gles2
 }  // namespace gpu
