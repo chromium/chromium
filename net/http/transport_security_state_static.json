@@ -139968,6 +139968,7 @@
     { "name": "teams.microsoft.us", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "office365.us", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "www.amazon.in", "policy": "custom", "mode": "force-https", "include_subdomains": true },
+    { "name": "ilya.top", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     // Burton domains (contact: burton at typewritten.net)
     { "name": "typewritten.net", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "codebreaking.org", "policy": "custom", "mode": "force-https", "include_subdomains": true },
