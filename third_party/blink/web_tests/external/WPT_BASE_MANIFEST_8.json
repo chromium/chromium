@@ -978,21 +978,21 @@
        {}
       ]
      ],
-     "firefox-bug1693616-001-crash.html": [
+     "firefox-bug-1693616-001-crash.html": [
       "5aadb70037c3b31abc7bd91ee1dc8dc412e0c3e1",
       [
        null,
        {}
       ]
      ],
-     "firefox-bug1693616-002-crash.html": [
+     "firefox-bug-1693616-002-crash.html": [
       "01f836c805d0909a96f759d0b1d4e404fe7509fb",
       [
        null,
        {}
       ]
      ],
-     "firefox-bug1903652-crash.html": [
+     "firefox-bug-1903652-crash.html": [
       "45dc078c5e84183a5e5f10a597be65bb03991745",
       [
        null,
@@ -107869,7 +107869,7 @@
        ]
       ],
       "disclosure-styles.html": [
-       "79ac6ca145d0b435a72469c61d09d0dd4a8c9d03",
+       "e33b4cc2ac6769cd14929248c5b10d91d23524be",
        [
         null,
         [
@@ -311720,7 +311720,7 @@
        []
       ],
       "disclosure-styles-ref.html": [
-       "a1dafa7560fbe424bbf160e4484603e973dbf0e3",
+       "d9191d6e542d2f9072a3ba03a9f612c7c241cb2a",
        []
       ],
       "empty-string-symbol-notref.html": [
@@ -400966,7 +400966,7 @@
        []
       ],
       "helpers.py": [
-       "2b810be8a99a9fe143d90a588816ad0829c99542",
+       "0ca5bd28269a831ccdbcfdcbcb0eb748f308495f",
        []
       ],
       "html": {
@@ -401635,14 +401635,6 @@
       []
      ]
     },
-    "idlharness.https.any-expected.txt": [
-     "cede0673697996cf63ff86309b3942420ea868c0",
-     []
-    ],
-    "idlharness.https.any.worker-expected.txt": [
-     "cede0673697996cf63ff86309b3942420ea868c0",
-     []
-    ],
     "resources": {
      "test_data": {
       "abs.json": [
@@ -510860,6 +510852,13 @@
     ],
     "web-usb.https.html": [
      "3156f68ea736f2bdf34a679d51a3a04f15ae08dd",
+     [
+      null,
+      {}
+     ]
+    ],
+    "webrtc-peer-connection.https.html": [
+     "fdb42be46f821007d62330c863a693b7815dd53b",
      [
       null,
       {}
