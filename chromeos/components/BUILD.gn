@@ -34,4 +34,8 @@ test("chromeos_components_unittests") {
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/components/sensors:ash_unit_tests" ]
+  }
 }

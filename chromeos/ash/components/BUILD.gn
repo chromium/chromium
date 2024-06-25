@@ -66,7 +66,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/trash_service:unit_tests",
     "//chromeos/ash/components/trial_group:unit_tests",
     "//chromeos/ash/components/wifi_p2p:unit_tests",
-    "//chromeos/components/sensors:ash_unit_tests",
   ]
 
   if (target_cpu == "x64") {
