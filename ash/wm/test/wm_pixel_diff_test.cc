@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -19,6 +20,7 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_state.h"
+#include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
@@ -37,6 +39,9 @@ class WmPixelDiffTest : public AshTestBase {
       const override {
     return pixel_test::InitParams();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_{features::kForestFeature};
 };
 
 // A basic overview pixel test that shows three overview windows and the virtual
@@ -74,7 +79,7 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overview_and_desks_bar_basic",
-      /*revision_number=*/14, desk_widget, overview_widget1, overview_widget2,
+      /*revision_number=*/15, desk_widget, overview_widget1, overview_widget2,
       overview_widget3));
 }
 
