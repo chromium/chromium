@@ -14,7 +14,9 @@
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -462,9 +464,6 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
     return;
   }
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
-      store_->CreateWriteBatch();
-
   const SavedTabGroup* group = model_->Get(guid);
   CHECK(group);
   if (!group->is_shared_tab_group()) {
@@ -472,18 +471,52 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupAddedLocally(
     return;
   }
 
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
   CHECK(group->collaboration_id().has_value());
-  sync_pb::SharedTabGroupDataSpecifics group_specifics =
-      SharedTabGroupToSpecifics(*group);
 
-  UpsertEntitySpecific(std::move(group_specifics),
-                       group->collaboration_id().value(), write_batch.get());
+  UpsertEntitySpecifics(SharedTabGroupToSpecifics(*group),
+                        group->collaboration_id().value(), write_batch.get());
   for (size_t i = 0; i < group->saved_tabs().size(); ++i) {
     sync_pb::SharedTabGroupDataSpecifics tab_specifics =
         SharedTabGroupTabToSpecifics(group->saved_tabs()[i]);
     // TODO(crbug.com/319521964): handle tab positions.
-    UpsertEntitySpecific(std::move(tab_specifics),
-                         group->collaboration_id().value(), write_batch.get());
+    UpsertEntitySpecifics(std::move(tab_specifics),
+                          group->collaboration_id().value(), write_batch.get());
+  }
+
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&SharedTabGroupDataSyncBridge::OnDatabaseSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
+    const base::Uuid& group_guid,
+    const std::optional<base::Uuid>& tab_guid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!store_ || !model_->is_loaded()) {
+    // Ignore any changes before the model is successfully initialized.
+    VLOG(2) << "SavedTabGroupUpdatedLocally called while not initialized";
+    return;
+  }
+
+  const SavedTabGroup* group = model_->Get(group_guid);
+  CHECK(group);
+  if (!group->is_shared_tab_group()) {
+    // Ignore changes for non-shared tab groups.
+    return;
+  }
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  if (tab_guid.has_value()) {
+    // The tab has been updated, added or removed.
+    ProcessTabLocalUpdate(*group, tab_guid.value(), write_batch.get());
+  } else {
+    // Only group metadata has been updated.
+    UpsertEntitySpecifics(SharedTabGroupToSpecifics(*group),
+                          group->collaboration_id().value(), write_batch.get());
   }
 
   store_->CommitWriteBatch(
@@ -666,13 +699,41 @@ void SharedTabGroupDataSyncBridge::SendToSync(
                           metadata_change_list);
 }
 
-void SharedTabGroupDataSyncBridge::UpsertEntitySpecific(
+void SharedTabGroupDataSyncBridge::UpsertEntitySpecifics(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     const std::string& collaboration_id,
     syncer::ModelTypeStore::WriteBatch* write_batch) {
   // TODO(crbug.com/319521964): use different proto to store data locally.
   write_batch->WriteData(specifics.guid(), specifics.SerializeAsString());
   SendToSync(specifics, collaboration_id, write_batch->GetMetadataChangeList());
+}
+
+void SharedTabGroupDataSyncBridge::ProcessTabLocalUpdate(
+    const SavedTabGroup& group,
+    const base::Uuid& tab_id,
+    syncer::ModelTypeStore::WriteBatch* write_batch) {
+  const SavedTabGroupTab* tab = group.GetTab(tab_id);
+  if (tab) {
+    // Process new or updated tab.
+    UpsertEntitySpecifics(SharedTabGroupTabToSpecifics(*tab),
+                          group.collaboration_id().value(), write_batch);
+  } else {
+    RemoveEntitySpecifics(tab_id, write_batch);
+  }
+}
+
+void SharedTabGroupDataSyncBridge::RemoveEntitySpecifics(
+    const base::Uuid& guid,
+    syncer::ModelTypeStore::WriteBatch* write_batch) {
+  write_batch->DeleteData(guid.AsLowercaseString());
+
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
+  change_processor()->Delete(guid.AsLowercaseString(),
+                             syncer::DeletionOrigin::Unspecified(),
+                             write_batch->GetMetadataChangeList());
 }
 
 }  // namespace tab_groups

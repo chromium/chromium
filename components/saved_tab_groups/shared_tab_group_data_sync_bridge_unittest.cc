@@ -34,6 +34,7 @@ void PrintTo(const SavedTabGroupTab& tab, std::ostream* os) {
 }
 namespace {
 
+using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
@@ -670,6 +671,128 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldIgnoreNewNonSharedGroups) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   model()->Add(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab2);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  syncer::EntityData captured_entity_data;
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce(WithArg<1>(
+          Invoke([&captured_entity_data](
+                     std::unique_ptr<syncer::EntityData> entity_data) {
+            captured_entity_data = std::move(*entity_data);
+          })));
+  tab_groups::TabGroupVisualData visual_data(
+      u"new title", tab_groups::TabGroupColorId::kYellow);
+  model()->UpdateVisualData(group.saved_guid(), &visual_data);
+
+  EXPECT_THAT(
+      captured_entity_data,
+      HasGroupEntityData("new title", sync_pb::SharedTabGroup_Color_YELLOW,
+                         "collaboration"));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewLocalTab) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+
+  group.AddTabLocally(tab);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 1u);
+
+  SavedTabGroupTab new_tab = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"new tab", group.saved_guid(), /*position=*/1);
+
+  syncer::EntityData captured_entity_data;
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce(WithArg<1>(
+          Invoke([&captured_entity_data](
+                     std::unique_ptr<syncer::EntityData> entity_data) {
+            captured_entity_data = std::move(*entity_data);
+          })));
+  model()->AddTabToGroupLocally(group.saved_guid(), new_tab);
+
+  EXPECT_THAT(
+      captured_entity_data,
+      HasTabEntityData("new tab", "http://google.com/2", "collaboration"));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalTab) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab_to_remove =
+      test::CreateSavedTabGroupTab("http://google.com/2", u"tab to remove",
+                                   group.saved_guid(), /*position=*/1);
+
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab_to_remove);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  EXPECT_CALL(mock_processor(),
+              Delete(tab_to_remove.saved_tab_guid().AsLowercaseString(), _, _));
+  model()->RemoveTabFromGroupLocally(group.saved_guid(),
+                                     tab_to_remove.saved_tab_guid());
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab_to_update = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab_to_update);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  syncer::EntityData captured_entity_data;
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce(WithArg<1>(
+          Invoke([&captured_entity_data](
+                     std::unique_ptr<syncer::EntityData> entity_data) {
+            captured_entity_data = std::move(*entity_data);
+          })));
+  tab_to_update.SetURL(GURL("http://google.com/updated"));
+  tab_to_update.SetTitle(u"updated tab");
+  model()->UpdateTabInGroup(group.saved_guid(), tab_to_update);
+
+  EXPECT_THAT(captured_entity_data,
+              HasTabEntityData("updated tab", "http://google.com/updated",
+                               "collaboration"));
 }
 
 }  // namespace

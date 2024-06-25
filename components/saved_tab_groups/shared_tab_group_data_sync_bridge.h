@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store.h"
@@ -30,6 +29,7 @@ class SharedTabGroupDataSpecifics;
 }  // namespace sync_pb
 
 namespace tab_groups {
+class SavedTabGroup;
 class SavedTabGroupModel;
 
 // Sync bridge implementation for SHARED_TAB_GROUP_DATA model type.
@@ -72,14 +72,16 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // SavedTabGroupModelObserver overrides.
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
+  void SavedTabGroupUpdatedLocally(
+      const base::Uuid& group_guid,
+      const std::optional<base::Uuid>& tab_guid) override;
   // TODO(crbug.com/319521964): implement the following methods.
-  // void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group)
-  // override; void SavedTabGroupUpdatedLocally(
-  //     const base::Uuid& group_guid,
-  //     const std::optional<base::Uuid>& tab_guid) override;
+  // void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group)
+  // override;
   // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid)
-  // override; void SavedTabGroupReorderedLocally() override; void
-  // SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
+  // override;
+  // void SavedTabGroupReorderedLocally() override;
+  // void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;
 
  private:
   // Loads the data already stored in the ModelTypeStore.
@@ -126,10 +128,20 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Updates or adds the `specifics` into the `store_` and populates it to the
   // processor.
-  void UpsertEntitySpecific(
+  void UpsertEntitySpecifics(
       const sync_pb::SharedTabGroupDataSpecifics& specifics,
       const std::string& collaboration_id,
       syncer::ModelTypeStore::WriteBatch* write_batch);
+
+  // Process local tab changes (add, remove, update), excluding changing tab's
+  // position.
+  void ProcessTabLocalUpdate(const SavedTabGroup& group,
+                             const base::Uuid& tab_id,
+                             syncer::ModelTypeStore::WriteBatch* write_batch);
+
+  // Removes the specifics pointed to by `guid` from the `store_`.
+  void RemoveEntitySpecifics(const base::Uuid& guid,
+                             syncer::ModelTypeStore::WriteBatch* write_batch);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
