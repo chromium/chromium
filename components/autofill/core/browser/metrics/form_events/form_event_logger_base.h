@@ -160,7 +160,7 @@ class FormEventLoggerBase {
 
   // Whether for a submitted form, Chrome had data stored that could be
   // filled.
-  void RecordFillingReadiness(LogBuffer& logs) const;
+  virtual void RecordFillingReadiness(LogBuffer& logs) const;
 
   // Whether a user accepted a filling suggestion they saw for a form that
   // was later submitted.

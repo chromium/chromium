@@ -2369,12 +2369,8 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
     return;
   }
   GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();
-  address_form_event_logger_->set_record_type_count(
-      client()
-          .GetPersonalDataManager()
-          ->address_data_manager()
-          .GetProfiles()
-          .size());
+  address_form_event_logger_->UpdateProfileAvailabilityForReadiness(
+      client().GetPersonalDataManager()->address_data_manager().GetProfiles());
 }
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_ADDRESS_FORM_EVENT_LOGGER_H_
 
 #include <string>
+#include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
@@ -19,11 +20,11 @@
 
 namespace autofill::autofill_metrics {
 
-// To measure the added value of kAccount profiles, the filling assistance
-// metric is split by profile category. Since the metric is emitted at
-// navigation (not at filling time), multiple profiles can be used to fill a
-// single form. This is represented by kMixed.
-enum class CategoryResolvedFillingAssistanceBucket {
+// To measure the added value of kAccount profiles, the filling readiness and
+// assistance metrics are split by profile category.
+// Even for assistance, the `kMixed` case is possible, since the metric is
+// emitted at navigation (rather than filling) time.
+enum class CategoryResolvedKeyMetricBucket {
   kNone = 0,
   kLocalOrSyncable = 1,
   kAccountChrome = 2,
@@ -41,9 +42,8 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   ~AddressFormEventLogger() override;
 
-  void set_record_type_count(size_t record_type_count) {
-    record_type_count_ = record_type_count;
-  }
+  void UpdateProfileAvailabilityForReadiness(
+      const std::vector<const AutofillProfile*>& profiles);
 
   void OnDidFillFormFillingSuggestion(
       const AutofillProfile& profile,
@@ -62,7 +62,8 @@ class AddressFormEventLogger : public FormEventLoggerBase {
              FormEvent event,
              const FormStructure& form) const override;
 
-  // Assistance and correctness metrics resolved by profile category.
+  // Readiness, assistance and correctness metrics resolved by profile category.
+  void RecordFillingReadiness(LogBuffer& logs) const override;
   void RecordFillingAssistance(LogBuffer& logs) const override;
   void RecordFillingCorrectness(LogBuffer& logs) const override;
 
@@ -75,8 +76,10 @@ class AddressFormEventLogger : public FormEventLoggerBase {
       const FormStructure& form) const override;
 
  private:
+  // All profile categories for which the user has at least one profile stored.
+  DenseSet<AutofillProfileSourceCategory> profile_categories_available_;
   // All profile categories for which the user has accepted at least one
-  // suggestion - used for metrics.
+  // suggestion.
   DenseSet<AutofillProfileSourceCategory> profile_categories_filled_;
 
   size_t record_type_count_ = 0;

@@ -21,6 +21,30 @@
 
 namespace autofill::autofill_metrics {
 
+namespace {
+
+// Converts a set of `AutofillProfileSourceCategory` to the corresponding
+// `CategoryResolvedKeyMetricBucket`.
+CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
+    DenseSet<AutofillProfileSourceCategory> categories) {
+  if (categories.empty()) {
+    return CategoryResolvedKeyMetricBucket::kNone;
+  }
+  if (categories.size() > 1) {
+    return CategoryResolvedKeyMetricBucket::kMixed;
+  }
+  switch (*categories.begin()) {
+    case AutofillProfileSourceCategory::kLocalOrSyncable:
+      return CategoryResolvedKeyMetricBucket::kLocalOrSyncable;
+    case AutofillProfileSourceCategory::kAccountChrome:
+      return CategoryResolvedKeyMetricBucket::kAccountChrome;
+    case AutofillProfileSourceCategory::kAccountNonChrome:
+      return CategoryResolvedKeyMetricBucket::kAccountNonChrome;
+  }
+}
+
+}  // namespace
+
 AddressFormEventLogger::AddressFormEventLogger(
     bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
@@ -31,6 +55,15 @@ AddressFormEventLogger::AddressFormEventLogger(
                           client) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
+
+void AddressFormEventLogger::UpdateProfileAvailabilityForReadiness(
+    const std::vector<const AutofillProfile*>& profiles) {
+  record_type_count_ = profiles.size();
+  profile_categories_available_.clear();
+  for (const AutofillProfile* profile : profiles) {
+    profile_categories_available_.insert(GetCategoryOfProfile(*profile));
+  }
+}
 
 void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
     const AutofillProfile& profile,
@@ -93,28 +126,18 @@ void AddressFormEventLogger::RecordShowSuggestions() {
       base::UserMetricsAction("Autofill_ShowedProfileSuggestions"));
 }
 
+void AddressFormEventLogger::RecordFillingReadiness(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingReadiness(logs);
+  base::UmaHistogramEnumeration(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      ProfileCategoriesToMetricBucket(profile_categories_available_));
+}
+
 void AddressFormEventLogger::RecordFillingAssistance(LogBuffer& logs) const {
   FormEventLoggerBase::RecordFillingAssistance(logs);
-  // Log the origin-resolved filling assistance metric by converting the
-  // `profile_categories_filled` to an CategoryResolvedFillingAssistanceBucket.
-  auto filled_categories_to_bucket = [&] {
-    if (profile_categories_filled_.empty()) {
-      return CategoryResolvedFillingAssistanceBucket::kNone;
-    }
-    if (profile_categories_filled_.size() > 1) {
-      return CategoryResolvedFillingAssistanceBucket::kMixed;
-    }
-    switch (*profile_categories_filled_.begin()) {
-      case AutofillProfileSourceCategory::kLocalOrSyncable:
-        return CategoryResolvedFillingAssistanceBucket::kLocalOrSyncable;
-      case AutofillProfileSourceCategory::kAccountChrome:
-        return CategoryResolvedFillingAssistanceBucket::kAccountChrome;
-      case AutofillProfileSourceCategory::kAccountNonChrome:
-        return CategoryResolvedFillingAssistanceBucket::kAccountNonChrome;
-    }
-  };
-  base::UmaHistogramEnumeration("Autofill.Leipzig.FillingAssistanceCategory",
-                                filled_categories_to_bucket());
+  base::UmaHistogramEnumeration(
+      "Autofill.Leipzig.FillingAssistanceCategory",
+      ProfileCategoriesToMetricBucket(profile_categories_filled_));
 }
 
 void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {

@@ -22,7 +22,10 @@ class CategoryResolvedKeyMetricsTest
  public:
   CategoryResolvedKeyMetricsTest() = default;
 
-  void SetUp() override { SetUpHelper(); }
+  void SetUp() override {
+    SetUpHelper();
+    personal_data().test_address_data_manager().ClearProfiles();
+  }
   void TearDown() override { TearDownHelper(); }
 
   // Creates a full profile of the given `category` and adds it to the PDM.
@@ -79,7 +82,7 @@ TEST_F(CategoryResolvedKeyMetricsTest, NoAutofill) {
   ResetDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingAssistanceCategory",
-      CategoryResolvedFillingAssistanceBucket::kNone, 1);
+      CategoryResolvedKeyMetricBucket::kNone, 1);
   // FillingCorrectness is only emitted when Autofill was used.
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
@@ -94,8 +97,8 @@ TEST_F(CategoryResolvedKeyMetricsTest, NoAutofill) {
 // Parameterized CategoryResolvedKeyMetricsTest that edits a field depending on
 // the parameter. This is used to test the correctness metric, which depends on
 // whether autofilled fields have been edited.
-// Additionally, these tests verify that the category-resolved assistance metric
-// is correctly emitted.
+// Additionally, these tests verify that the category-resolved assistance and
+// readiness metrics are correctly emitted.
 class CategoryResolvedKeyMetricsEditTest
     : public CategoryResolvedKeyMetricsTest,
       public testing::WithParamInterface<bool> {
@@ -118,8 +121,11 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kLocalOrSyncable) {
 
   ResetDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      CategoryResolvedKeyMetricBucket::kLocalOrSyncable, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingAssistanceCategory",
-      CategoryResolvedFillingAssistanceBucket::kLocalOrSyncable, 1);
+      CategoryResolvedKeyMetricBucket::kLocalOrSyncable, 1);
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingCorrectness.Legacy", !ShouldEditField(), 1);
   histogram_tester_.ExpectTotalCount(
@@ -141,8 +147,11 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountChrome) {
 
   ResetDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      CategoryResolvedKeyMetricBucket::kAccountChrome, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingAssistanceCategory",
-      CategoryResolvedFillingAssistanceBucket::kAccountChrome, 1);
+      CategoryResolvedKeyMetricBucket::kAccountChrome, 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
   histogram_tester_.ExpectUniqueSample(
@@ -166,8 +175,11 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, kAccountNonChrome) {
 
   ResetDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      CategoryResolvedKeyMetricBucket::kAccountNonChrome, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingAssistanceCategory",
-      CategoryResolvedFillingAssistanceBucket::kAccountNonChrome, 1);
+      CategoryResolvedKeyMetricBucket::kAccountNonChrome, 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
   histogram_tester_.ExpectTotalCount(
@@ -205,8 +217,11 @@ TEST_P(CategoryResolvedKeyMetricsEditTest, Mixed) {
 
   ResetDriverToCommitMetrics();
   histogram_tester_.ExpectUniqueSample(
+      "Autofill.Leipzig.FillingReadinessCategory",
+      CategoryResolvedKeyMetricBucket::kMixed, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Autofill.Leipzig.FillingAssistanceCategory",
-      CategoryResolvedFillingAssistanceBucket::kMixed, 1);
+      CategoryResolvedKeyMetricBucket::kMixed, 1);
   histogram_tester_.ExpectTotalCount(
       "Autofill.Leipzig.FillingCorrectness.Legacy", 0);
   histogram_tester_.ExpectTotalCount(

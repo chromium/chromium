@@ -3071,6 +3071,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Leipzig.FillingReadinessCategory"
+    enum="AutofillCategoryResolvedFillingReadiness" expires_after="2024-11-03">
+  <owner>koerber@chromium.org</owner>
+  <owner>fleimgruber@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingReadiness.Address, but split by profile
+    category.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.LocalCardMigrationBubbleOffer{ShowType}"
     enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
