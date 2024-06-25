@@ -238,7 +238,7 @@ class BrowserActivationWaiter : public BrowserListObserver {
 };
 
 // Returns whether `window` roughly matches expected `bounds`.
-bool CheckforBounds(ui::BaseWindow* window, const gfx::Rect& bounds) {
+bool CheckForBounds(ui::BaseWindow* window, const gfx::Rect& bounds) {
   const gfx::Rect& actual = window->GetBounds();
   // Tolerances were empirically derived, and should be reduced.
   constexpr int kOffsetTolerance = 5, kSizeTolerance = 50;
@@ -250,10 +250,10 @@ bool CheckforBounds(ui::BaseWindow* window, const gfx::Rect& bounds) {
 // Waits until `window` roughly matches expected `bounds`, or fails after 1s.
 bool WaitForBounds(ui::BaseWindow* window, const gfx::Rect& bounds) {
   ui_test_utils::CheckWaiter(
-      base::BindRepeating(CheckforBounds, base::Unretained(window), bounds),
+      base::BindRepeating(CheckForBounds, base::Unretained(window), bounds),
       /*expected=*/true, base::Seconds(1))
       .Wait();
-  return CheckforBounds(window, bounds);
+  return CheckForBounds(window, bounds);
 }
 
 }  // namespace
@@ -1445,19 +1445,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_WindowOffsetsClampedToScreen) {
 
   // Open windows until they yield bounds that match the prior window's bounds,
   // which happens if windows start stacking at the bottom right of the screen.
-  bool bounds_match_prior_window = false;
-  bounds = window->GetBounds();
-  for (int i = 0; i < 10; i++) {
+  bool bounds_match = false;
+  std::vector<ui::BaseWindow*> windows = {window};
+  while (windows.size() < 10 && !bounds_match) {
     window = LaunchWebAppBrowserAndWait(app_id)->window();
-    if (bounds == window->GetBounds()) {
-      bounds_match_prior_window = true;
-      break;
-    }
-    bounds = window->GetBounds();
+    bounds_match |= CheckForBounds(window, windows.back()->GetBounds());
+    windows.push_back(window);
   }
 
-  EXPECT_TRUE(bounds_match_prior_window)
-      << window->GetBounds().ToString() << " != " << bounds.ToString();
+  EXPECT_TRUE(bounds_match)
+      << windows.back()->GetBounds().ToString()
+      << " != " << (*std::prev(windows.end(), 2))->GetBounds().ToString();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
