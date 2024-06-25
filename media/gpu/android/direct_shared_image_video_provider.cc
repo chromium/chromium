@@ -53,7 +53,7 @@ void ContextStateResultUMA(gpu::ContextResult result) {
 // Mailbox) to access shared images.
 BASE_FEATURE(kUseClientSharedImageForAndroidVideo,
              "UseClientSharedImageForAndroidVideo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DirectSharedImageVideoProvider::DirectSharedImageVideoProvider(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
