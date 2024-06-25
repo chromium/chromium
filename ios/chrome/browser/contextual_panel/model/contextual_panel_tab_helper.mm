@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/page_transition_types.h"
 
 ContextualPanelTabHelper::ContextualPanelTabHelper(
     web::WebState* web_state,
@@ -88,6 +89,22 @@ void ContextualPanelTabHelper::SetLargeEntrypointShown(bool shown) {
   large_entrypoint_shown_for_curent_page_navigation_ = shown;
 }
 
+bool ContextualPanelTabHelper::ShouldRefreshData(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // `pushState` from Javascript shows up as this set of parameters, and should
+  // count as a navigation to a new page and thus a data refresh.
+  if (navigation_context->IsSameDocument() &&
+      navigation_context->HasUserGesture() &&
+      ui::PageTransitionCoreTypeIs(navigation_context->GetPageTransition(),
+                                   ui::PAGE_TRANSITION_LINK)) {
+    return true;
+  }
+
+  // Otherwise, refresh the data if the navigation is to a new document.
+  return !navigation_context->IsSameDocument();
+}
+
 #pragma mark - WebStateObserver
 
 void ContextualPanelTabHelper::DidStartNavigation(
@@ -95,8 +112,7 @@ void ContextualPanelTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   DCHECK_EQ(web_state_, web_state);
 
-  // If the navigation was started for the same document, do nothing.
-  if (navigation_context->IsSameDocument()) {
+  if (!ShouldRefreshData(web_state, navigation_context)) {
     return;
   }
 
@@ -115,6 +131,11 @@ void ContextualPanelTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   DCHECK_EQ(web_state_, web_state);
+
+  if (!ShouldRefreshData(web_state, navigation_context)) {
+    return;
+  }
+
   QueryModels();
 }
 

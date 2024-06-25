@@ -61,6 +61,11 @@ class ContextualPanelTabHelper
   bool WasLargeEntrypointShown();
   void SetLargeEntrypointShown(bool shown);
 
+  // Returns whether the given navigation should cause the panel's data to be
+  // updated.
+  bool ShouldRefreshData(web::WebState* web_state,
+                         web::NavigationContext* navigation_context);
+
   // WebStateObserver:
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
