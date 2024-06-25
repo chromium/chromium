@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
+import {getFaviconForPageURL} from '//resources/js/icon.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -122,6 +123,11 @@ export class TableElement extends PolymerElement {
       return detail && detail.title === title && detail.summary &&
           detail.summary.length > 0 && detail.summary !== 'N/A';
     });
+  }
+
+  // This method provides a string that is intended to be used primarily in CSS.
+  private getFavicon_(url: string): string {
+    return getFaviconForPageURL(url, false, '', 32);
   }
 }
 

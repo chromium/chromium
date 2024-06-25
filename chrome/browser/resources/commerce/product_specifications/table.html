@@ -32,7 +32,8 @@
     position: relative;
   }
 
-  img {
+  .main-image {
+    background-color: white;
     border: 1px solid var(--color-sys-base-container);
     border-radius: 8px;
     box-sizing: border-box;
@@ -40,6 +41,11 @@
     padding: 8px 0;
     object-fit: contain;
     width: var(--column-width);
+  }
+
+  .favicon {
+    background-repeat: no-repeat;
+    background-position: center;
   }
 
   .open-tab-button {
@@ -86,9 +92,19 @@
           on-remove-url="onUrlRemove_">
       </product-selector>
       <div class="img-container">
-        <img is="cr-auto-img"
-            auto-src="[[column.selectedItem.imageUrl]]"
-            draggable="false" />
+        <template is="dom-if"
+            if="[[column.selectedItem.imageUrl.length]]">
+          <img class="main-image" is="cr-auto-img"
+              auto-src="[[column.selectedItem.imageUrl]]"
+              draggable="false">
+        </template>
+        <template is="dom-if"
+            if="[[!column.selectedItem.imageUrl.length]]">
+          <div class="main-image favicon"
+              style="background-image:
+                  [[getFavicon_(column.selectedItem.url)]]">
+          </div>
+        </template>
         <cr-icon-button class="open-tab-button icon-external"
             hidden$="[[!showOpenTabButton_(columnIndex,
                 hoveredColumnIndex_)]]"

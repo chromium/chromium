@@ -7,7 +7,8 @@ import 'chrome://compare/table.js';
 import type {TableElement} from 'chrome://compare/table.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -82,6 +83,37 @@ suite('ProductSpecificationsTableTest', () => {
         tableElement.columns[0]!.selectedItem.imageUrl, images[0]!.autoSrc);
     assertEquals(
         tableElement.columns[1]!.selectedItem.imageUrl, images[1]!.autoSrc);
+
+    // Ensure the favicon isn't showing.
+    const faviconMainImage = $$<HTMLElement>(tableElement, '.favicon');
+    assertFalse(!!faviconMainImage);
+  });
+
+  test('fallback images are displayed', async () => {
+    // Arrange / Act.
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'item1',
+          url: 'https://example.com/',
+          // Intentionally leave this URL empty so the fallback is used.
+          imageUrl: '',
+        },
+        productDetails: [],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Assert.
+    const faviconMainImage = $$<HTMLElement>(tableElement, '.favicon');
+    assertTrue(!!faviconMainImage);
+    assertEquals(
+        getFaviconForPageURL('https://example.com/', false, '', 32),
+        faviconMainImage.style.backgroundImage);
+
+    // Ensure the alternate image tag isn't showing.
+    const crAutoImg = $$<CrAutoImgElement>(tableElement, '.col img');
+    assertFalse(!!crAutoImg);
   });
 
   test('product rows show the correct data', async () => {

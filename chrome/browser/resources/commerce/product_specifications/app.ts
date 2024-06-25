@@ -215,7 +215,7 @@ export class ProductSpecificationsElement extends PolymerElement {
           selectedItem: {
             title: product?.title || info?.title || '',
             url: url,
-            imageUrl: info ? info.imageUrl.url : '',
+            imageUrl: info?.imageUrl?.url || product?.imageUrl?.url || '',
           },
           productDetails:
               getProductDetails(product || null, productSpecs, info || null),
