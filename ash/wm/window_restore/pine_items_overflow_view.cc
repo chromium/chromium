@@ -7,7 +7,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
-#include "ash/wm/window_restore/pine_app_image_view.h"
+#include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -112,8 +112,8 @@ PineItemsOverflowView::PineItemsOverflowView(
 
     views::BoxLayoutView* row_view =
         bottom_row_view ? bottom_row_view : top_row_view;
-    auto image_view = std::make_unique<PineAppImageView>(
-        apps_infos[i].app_id, PineAppImageView::Type::kOverflow,
+    auto image_view = std::make_unique<InformedRestoreAppImageView>(
+        apps_infos[i].app_id, InformedRestoreAppImageView::Type::kOverflow,
         base::DoNothing());
     image_view->SetID(pine::kOverflowImageViewID);
     row_view->AddChildView(std::move(image_view));

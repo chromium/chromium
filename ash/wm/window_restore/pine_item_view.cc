@@ -8,7 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
-#include "ash/wm/window_restore/pine_app_image_view.h"
+#include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
@@ -50,10 +50,10 @@ PineItemView::PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetID(pine::kItemViewID);
 
-  auto* image_view = AddChildView(std::make_unique<PineAppImageView>(
+  auto* image_view = AddChildView(std::make_unique<InformedRestoreAppImageView>(
       app_id_,
-      inside_screenshot_ ? PineAppImageView::Type::kScreenshot
-                         : PineAppImageView::Type::kItem,
+      inside_screenshot_ ? InformedRestoreAppImageView::Type::kScreenshot
+                         : InformedRestoreAppImageView::Type::kItem,
       base::BindOnce(&PineItemView::UpdateTitle,
                      weak_ptr_factory_.GetWeakPtr())));
   image_view->SetID(pine::kItemImageViewID);

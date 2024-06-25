@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_RESTORE_PINE_APP_IMAGE_VIEW_H_
-#define ASH_WM_WINDOW_RESTORE_PINE_APP_IMAGE_VIEW_H_
+#ifndef ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_APP_IMAGE_VIEW_H_
+#define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_APP_IMAGE_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
@@ -17,20 +17,21 @@ namespace ash {
 // `AppRegistryCache` to update the icon after it has been marked as ready
 // (installed). `ready_callback` is run after the given `app_id` has been
 // marked as "ready" by the `AppRegistryCache`.
-class ASH_EXPORT PineAppImageView : public views::ImageView,
+class ASH_EXPORT InformedRestoreAppImageView : public views::ImageView,
                                     public apps::AppRegistryCache::Observer {
-  METADATA_HEADER(PineAppImageView, views::ImageView)
+  METADATA_HEADER(InformedRestoreAppImageView, views::ImageView)
 
  public:
   // Determines the styling of the view, based on where it is used.
   enum class Type { kItem, kScreenshot, kOverflow };
 
-  PineAppImageView(const std::string& app_id,
+  InformedRestoreAppImageView(const std::string& app_id,
                    const Type type,
                    base::OnceClosure ready_callback);
-  PineAppImageView(const PineAppImageView&) = delete;
-  PineAppImageView& operator=(const PineAppImageView&) = delete;
-  ~PineAppImageView() override;
+  InformedRestoreAppImageView(const InformedRestoreAppImageView&) = delete;
+  InformedRestoreAppImageView& operator=(const InformedRestoreAppImageView&)
+      = delete;
+  ~InformedRestoreAppImageView() override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -51,9 +52,9 @@ class ASH_EXPORT PineAppImageView : public views::ImageView,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
-  base::WeakPtrFactory<PineAppImageView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<InformedRestoreAppImageView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_WINDOW_RESTORE_PINE_APP_IMAGE_VIEW_H_
+#endif  // ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_APP_IMAGE_VIEW_H_

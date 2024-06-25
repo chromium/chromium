@@ -15,8 +15,8 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_view.h"
 #include "ash/wm/window_restore/informed_restore_test_base.h"
-#include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -82,8 +82,9 @@ TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
   ASSERT_TRUE(pine_widget);
 
   // The context menu should not be open.
-  PineContentsView* contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  InformedRestoreContentsView* contents_view =
+      views::AsViewClass<InformedRestoreContentsView>(
+          pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_FALSE(contents_view->context_menu_model_.get());
 

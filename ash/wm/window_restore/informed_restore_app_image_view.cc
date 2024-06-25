@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_app_image_view.h"
+#include "ash/wm/window_restore/informed_restore_app_image_view.h"
 
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -20,42 +20,44 @@ namespace {
 constexpr gfx::Size kItemIconPreferredSize(32, 32);
 constexpr int kItemIconBackgroundRounding = 10;
 
-gfx::Size GetImageSizeForType(const PineAppImageView::Type type) {
+gfx::Size GetImageSizeForType(const InformedRestoreAppImageView::Type type) {
   switch (type) {
-    case PineAppImageView::Type::kScreenshot:
+    case InformedRestoreAppImageView::Type::kScreenshot:
       return pine::kScreenshotIconRowImageViewSize;
-    case PineAppImageView::Type::kItem:
+    case InformedRestoreAppImageView::Type::kItem:
       return kItemIconPreferredSize;
-    case PineAppImageView::Type::kOverflow:
+    case InformedRestoreAppImageView::Type::kOverflow:
       return pine::kOverflowIconPreferredSize;
   }
 }
 
-gfx::Size GetPreferredSizeForType(const PineAppImageView::Type type) {
+gfx::Size GetPreferredSizeForType(
+    const InformedRestoreAppImageView::Type type) {
   switch (type) {
-    case PineAppImageView::Type::kScreenshot:
+    case InformedRestoreAppImageView::Type::kScreenshot:
       return pine::kScreenshotIconRowImageViewSize;
-    case PineAppImageView::Type::kItem:
+    case InformedRestoreAppImageView::Type::kItem:
       return pine::kItemIconBackgroundPreferredSize;
-    case PineAppImageView::Type::kOverflow:
+    case InformedRestoreAppImageView::Type::kOverflow:
       return pine::kOverflowIconPreferredSize;
   }
 }
 
-int GetIconSizeForType(const PineAppImageView::Type type) {
+int GetIconSizeForType(const InformedRestoreAppImageView::Type type) {
   switch (type) {
-    case PineAppImageView::Type::kScreenshot:
+    case InformedRestoreAppImageView::Type::kScreenshot:
       return pine::kScreenshotIconRowIconSize;
-    case PineAppImageView::Type::kItem:
+    case InformedRestoreAppImageView::Type::kItem:
       return pine::kAppImageSize;
-    case PineAppImageView::Type::kOverflow:
+    case InformedRestoreAppImageView::Type::kOverflow:
       return pine::kAppImageSize;
   }
 }
 
 }  // namespace
 
-PineAppImageView::PineAppImageView(const std::string& app_id,
+InformedRestoreAppImageView::InformedRestoreAppImageView(
+                                   const std::string& app_id,
                                    const Type type,
                                    base::OnceClosure ready_callback)
     : app_id_(app_id), type_(type), ready_callback_(std::move(ready_callback)) {
@@ -75,7 +77,7 @@ PineAppImageView::PineAppImageView(const std::string& app_id,
   // The callback may be called synchronously.
   Shell::Get()->saved_desk_delegate()->GetIconForAppId(
       app_id_, GetIconSizeForType(type_),
-      base::BindOnce(&PineAppImageView::GetIconCallback,
+      base::BindOnce(&InformedRestoreAppImageView::GetIconCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Observe the cache for changes to app readiness.
@@ -86,9 +88,9 @@ PineAppImageView::PineAppImageView(const std::string& app_id,
   }
 }
 
-PineAppImageView::~PineAppImageView() = default;
+InformedRestoreAppImageView::~InformedRestoreAppImageView() = default;
 
-void PineAppImageView::OnAppUpdate(const apps::AppUpdate& update) {
+void InformedRestoreAppImageView::OnAppUpdate(const apps::AppUpdate& update) {
   // If the update matches our desired App ID, and it shows a change in
   // readiness (i.e., the app has been installed), then fetch the icon again.
   if (update.AppId() == app_id_ && update.Delta() &&
@@ -97,8 +99,9 @@ void PineAppImageView::OnAppUpdate(const apps::AppUpdate& update) {
 
     // The callback may be called synchronously.
     delegate->GetIconForAppId(update.AppId(), GetIconSizeForType(type_),
-                              base::BindOnce(&PineAppImageView::GetIconCallback,
-                                             weak_ptr_factory_.GetWeakPtr()));
+                              base::BindOnce(
+                                  &InformedRestoreAppImageView::GetIconCallback,
+                                  weak_ptr_factory_.GetWeakPtr()));
 
     // Run any callbacks that also need to occur after the app is installed
     // (e.g., updating the app title).
@@ -109,19 +112,19 @@ void PineAppImageView::OnAppUpdate(const apps::AppUpdate& update) {
   }
 }
 
-void PineAppImageView::OnAppRegistryCacheWillBeDestroyed(
+void InformedRestoreAppImageView::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
 }
 
-void PineAppImageView::GetIconCallback(const gfx::ImageSkia& icon) {
+void InformedRestoreAppImageView::GetIconCallback(const gfx::ImageSkia& icon) {
   // We don't want to replace the default icon if `icon` is null.
   if (!icon.isNull()) {
     SetImage(ui::ImageModel::FromImageSkia(icon));
   }
 }
 
-BEGIN_METADATA(PineAppImageView)
+BEGIN_METADATA(InformedRestoreAppImageView)
 END_METADATA
 
 }  // namespace ash

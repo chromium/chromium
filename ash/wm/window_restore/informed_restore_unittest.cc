@@ -23,18 +23,18 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/window_restore/pine_app_image_view.h"
-#include "ash/wm/window_restore/pine_constants.h"
+#include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
-#include "ash/wm/window_restore/pine_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_test_api.h"
+#include "ash/wm/window_restore/informed_restore_test_base.h"
+#include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
-#include "ash/wm/window_restore/informed_restore_test_api.h"
-#include "ash/wm/window_restore/informed_restore_test_base.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -92,14 +92,14 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     auto* pine_widget = OverviewGridTestApi(grid).pine_widget();
     ASSERT_TRUE(pine_widget);
 
-    const PineContentsView* contents_view =
-        views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+    const auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
+        pine_widget->GetContentsView());
     ASSERT_TRUE(contents_view);
     ASSERT_TRUE(contents_view->GetViewByID(pine::kPreviewContainerViewID));
   }
 
-  const PineContentsView* GetContentsView() const {
-    return views::AsViewClass<PineContentsView>(
+  const InformedRestoreContentsView* GetContentsView() const {
+    return views::AsViewClass<InformedRestoreContentsView>(
         OverviewGridTestApi(Shell::GetPrimaryRootWindow())
             .pine_widget()
             ->GetContentsView());
@@ -750,7 +750,7 @@ TEST_F(InformedRestoreTest, InformedRestoreWidgetTabTraversal) {
           .pine_widget();
   ASSERT_TRUE(pine_widget);
   views::FocusManager* focus_manager = pine_widget->GetFocusManager();
-  const PineContentsView* contents = GetContentsView();
+  const InformedRestoreContentsView* contents = GetContentsView();
 
   // Tab a couple times through the pine widgets focusable views.
   PressAndReleaseKey(ui::VKEY_TAB);
@@ -793,10 +793,11 @@ TEST_F(InformedRestoreTest, LayoutLandscapeToPortrait) {
   views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
   ASSERT_TRUE(pine_widget);
 
-  // In landscape mode, the `PineContentsView` should have two children: a left
-  // hand side contents view, and a right hand side contents view.
-  PineContentsView* contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  // In landscape mode, the `InformedRestoreContentsView` should have two
+  // children: a left hand side contents view, and a right hand side contents
+  // view.
+  auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
+      pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 2u);
 
@@ -809,11 +810,11 @@ TEST_F(InformedRestoreTest, LayoutLandscapeToPortrait) {
       orientation_test_api.GetCurrentOrientation()));
   ASSERT_TRUE(pine_widget);
 
-  // In portrait mode, the `PineContentsView` should have three children: the
-  // title and description container (header), the `PineItemsContainerView`, and
-  // the buttons container (footer).
-  contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  // In portrait mode, the `InformedRestoreContentsView` should have three
+  // children: the title and description container (header), the
+  // `PineItemsContainerView`, and the buttons container (footer).
+  contents_view = views::AsViewClass<InformedRestoreContentsView>(
+      pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 3u);
 }
@@ -837,11 +838,11 @@ TEST_F(InformedRestoreTest, LayoutPortraitToLandscape) {
   views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
   ASSERT_TRUE(pine_widget);
 
-  // In portrait mode, the `PineContentsView` should have three children: the
-  // title and description container (header), the `PineItemsContainerView`, and
-  // the buttons container (footer).
-  PineContentsView* contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  // In portrait mode, the `InformedRestoreContentsView` should have three
+  // children: the title and description container (header), the
+  // `PineItemsContainerView`, and the buttons container (footer).
+  auto* contents_view = views::AsViewClass<InformedRestoreContentsView>(
+      pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 3u);
 
@@ -852,10 +853,11 @@ TEST_F(InformedRestoreTest, LayoutPortraitToLandscape) {
       orientation_test_api.GetCurrentOrientation()));
   ASSERT_TRUE(pine_widget);
 
-  // In landscape mode, the `PineContentsView` should have two children: a left
-  // hand side contents view, and a right hand side contents view.
-  contents_view =
-      views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  // In landscape mode, the `InformedRestoreContentsView` should have two
+  // children: a left hand side contents view, and a right hand side contents
+  // view.
+  contents_view = views::AsViewClass<InformedRestoreContentsView>(
+      pine_widget->GetContentsView());
   ASSERT_TRUE(contents_view);
   EXPECT_EQ(contents_view->children().size(), 2u);
 }
@@ -916,8 +918,8 @@ class PineAppIconTest : public InformedRestoreTest {
   apps::AppRegistryCache registry_cache_;
 };
 
-// Tests that `PineAppImageView` properly updates the displayed image when the
-// app with the given ID is installed.
+// Tests that `InformedRestoreAppImageView` properly updates the displayed image
+// when the app with the given ID is installed.
 TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
   // The intended icon for our test app. It should not be shown until the app is
   // "updated".
@@ -931,8 +933,9 @@ TEST_F(PineAppIconTest, UpdateAfterSessionStarted) {
 
   // Before installation, the image view should show the default app icon, and
   // the title should be empty.
-  const PineAppImageView* image_view = views::AsViewClass<PineAppImageView>(
-      GetContentsView()->GetViewByID(pine::kItemImageViewID));
+  const InformedRestoreAppImageView* image_view =
+      views::AsViewClass<InformedRestoreAppImageView>(
+          GetContentsView()->GetViewByID(pine::kItemImageViewID));
   ASSERT_TRUE(image_view);
   EXPECT_FALSE(image_view->GetImage().isNull());
   EXPECT_FALSE(gfx::test::AreImagesClose(gfx::Image(image_view->GetImage()),

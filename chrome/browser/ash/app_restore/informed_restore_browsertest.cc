@@ -15,9 +15,9 @@
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_view.h"
 #include "ash/wm/window_restore/informed_restore_test_api.h"
 #include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,7 +42,7 @@ namespace ash::full_restore {
 
 namespace {
 
-const PineContentsView* GetPineContentsView() {
+const InformedRestoreContentsView* GetInformedRestoreContentsView() {
   OverviewGrid* overview_grid =
       GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   if (!overview_grid) {
@@ -54,24 +54,27 @@ const PineContentsView* GetPineContentsView() {
     return nullptr;
   }
 
-  return views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
+  return views::AsViewClass<InformedRestoreContentsView>(
+      pine_widget->GetContentsView());
 }
 
 // Retrieve the "Restore" button from the informed restore dialog, if we are in
 // a overview pine session.
 const PillButton* GetPineDialogRestoreButton() {
-  const PineContentsView* pine_contents_view = GetPineContentsView();
-  return pine_contents_view
+  const auto* contents_view =
+      GetInformedRestoreContentsView();
+  return contents_view
              ? static_cast<const PillButton*>(
-                   pine_contents_view->GetViewByID(pine::kRestoreButtonID))
+                   contents_view->GetViewByID(pine::kRestoreButtonID))
              : nullptr;
 }
 
 const PillButton* GetPineDialogCancelButton() {
-  const PineContentsView* pine_contents_view = GetPineContentsView();
-  return pine_contents_view
+  const auto* contents_view =
+      GetInformedRestoreContentsView();
+  return contents_view
              ? static_cast<const PillButton*>(
-                   pine_contents_view->GetViewByID(pine::kCancelButtonID))
+                   contents_view->GetViewByID(pine::kCancelButtonID))
              : nullptr;
 }
 

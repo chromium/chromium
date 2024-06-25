@@ -77,7 +77,7 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_restore/pine_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_contents_view.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
@@ -713,7 +713,8 @@ void OverviewGrid::PrepareForOverview() {
   // TODO(b/326434696): Currently this will return false if there is no restore
   // data in the pine contents data. Show the zero-state dialog.
   if (ShouldShowPineDialog(root_window_)) {
-    pine_widget_ = PineContentsView::Create(GetGridEffectiveBounds());
+    pine_widget_ =
+        InformedRestoreContentsView::Create(GetGridEffectiveBounds());
     pine_widget_->ShowInactive();
 
     // If the enter type is immediate, `ShowInactive()` is sufficient as
@@ -1318,12 +1319,14 @@ void OverviewGrid::OnDisplayMetricsChanged(uint32_t changed_metrics) {
 
   UpdateCannotSnapWarningVisibility(/*animate=*/true);
 
-  // The `PineContentsView` may need to be updated to match the primary display
-  // orientation. If the pine widget exists, then this overview grid is on the
-  // primary display, so we can tell the contents view to update on rotation.
+  // The `InformedRestoreContentsView` may need to be updated to match the
+  // primary display orientation. If the pine widget exists, then this overview
+  // grid is on the primary display, so we can tell the contents view to update
+  // on rotation.
   if (pine_widget_ &&
       (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)) {
-    views::AsViewClass<PineContentsView>(pine_widget_->GetContentsView())
+    views::AsViewClass<InformedRestoreContentsView>(
+        pine_widget_->GetContentsView())
         ->UpdateOrientation();
   }
 
@@ -2311,8 +2314,9 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
   UpdateNoWindowsWidget(empty(), animate, /*is_continuous_enter=*/false);
 
   if (pine_widget_) {
-    PineContentsView* contents_view =
-        views::AsViewClass<PineContentsView>(pine_widget_->GetContentsView());
+    InformedRestoreContentsView* contents_view =
+        views::AsViewClass<InformedRestoreContentsView>(
+            pine_widget_->GetContentsView());
     CHECK(contents_view);
     gfx::Rect pine_bounds = GetGridEffectiveBounds();
     pine_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());

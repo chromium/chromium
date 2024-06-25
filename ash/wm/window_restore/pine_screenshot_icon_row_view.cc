@@ -8,7 +8,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
-#include "ash/wm/window_restore/pine_app_image_view.h"
+#include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
@@ -58,8 +58,8 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
   SetInsideBorderInsets(kIconRowInsets);
   SetBackground(
       views::CreateThemedSolidBackground(kColorAshShieldAndBaseOpaque));
-  // Do not flip this view in RTL, since the cutout in `PineContentsView` is not
-  // flipped.
+  // Do not flip this view in RTL, since the cutout in
+  // `InformedRestoreContentsView` is not flipped.
   SetMirrored(false);
 
   const int elements_size = static_cast<int>(apps_infos.size());
@@ -82,8 +82,8 @@ PineScreenshotIconRowView::PineScreenshotIconRowView(
                              : elements_size;
 
     for (int i = 0; i < num_icon; i++) {
-      auto image_view = std::make_unique<PineAppImageView>(
-          apps_infos[i].app_id, PineAppImageView::Type::kScreenshot,
+      auto image_view = std::make_unique<InformedRestoreAppImageView>(
+          apps_infos[i].app_id, InformedRestoreAppImageView::Type::kScreenshot,
           base::DoNothing());
       image_view->SetID(pine::kScreenshotImageViewID);
       AddChildView(std::move(image_view));

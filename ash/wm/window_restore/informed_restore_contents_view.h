@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_VIEW_H_
-#define ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_VIEW_H_
+#ifndef ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTENTS_VIEW_H_
+#define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTENTS_VIEW_H_
 
 #include <memory>
 #include <string>
@@ -27,14 +27,15 @@ class PineContextMenuModel;
 
 // TODO(http://b/337339184): Change the layout when the display orientation
 // changes.
-class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
-  METADATA_HEADER(PineContentsView, views::BoxLayoutView)
+class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
+  METADATA_HEADER(InformedRestoreContentsView, views::BoxLayoutView)
 
  public:
-  PineContentsView();
-  PineContentsView(const PineContentsView&) = delete;
-  PineContentsView& operator=(const PineContentsView&) = delete;
-  ~PineContentsView() override;
+  InformedRestoreContentsView();
+  InformedRestoreContentsView(const InformedRestoreContentsView&) = delete;
+  InformedRestoreContentsView& operator=(const InformedRestoreContentsView&)
+      = delete;
+  ~InformedRestoreContentsView() override;
 
   static std::unique_ptr<views::Widget> Create(
       const gfx::Rect& grid_bounds_in_screen);
@@ -99,14 +100,16 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
 
   base::CallbackListSubscription contents_data_updated_subscription_;
 
-  base::WeakPtrFactory<PineContentsView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<InformedRestoreContentsView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, PineContentsView, views::BoxLayoutView)
+BEGIN_VIEW_BUILDER(/* no export */,
+                   InformedRestoreContentsView,
+                   views::BoxLayoutView)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/* no export */, ash::PineContentsView)
+DEFINE_VIEW_BUILDER(/* no export */, ash::InformedRestoreContentsView)
 
-#endif  // ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_VIEW_H_
+#endif  // ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTENTS_VIEW_H_

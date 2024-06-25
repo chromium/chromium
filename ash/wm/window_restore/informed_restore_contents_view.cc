@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_contents_view.h"
+#include "ash/wm/window_restore/informed_restore_contents_view.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -79,7 +79,8 @@ constexpr int kScreenshotMinHeight = 88;
 
 }  // namespace
 
-PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
+InformedRestoreContentsView::InformedRestoreContentsView() :
+    creation_time_(base::TimeTicks::Now()) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kContentsRounding));
   SetBetweenChildSpacing(kContentsChildSpacing);
@@ -88,7 +89,8 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
   auto* pine_controller = Shell::Get()->pine_controller();
   contents_data_updated_subscription_ =
       pine_controller->RegisterContentsDataUpdateCallback(base::BindRepeating(
-          &PineContentsView::UpdateContents, weak_ptr_factory_.GetWeakPtr()));
+          &InformedRestoreContentsView::UpdateContents,
+          weak_ptr_factory_.GetWeakPtr()));
 
   // Update the value of `showing_list_view_` and record it.
   const InformedRestoreContentsData* contents_data =
@@ -107,7 +109,7 @@ PineContentsView::PineContentsView() : creation_time_(base::TimeTicks::Now()) {
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
 }
 
-PineContentsView::~PineContentsView() {
+InformedRestoreContentsView::~InformedRestoreContentsView() {
   if (!close_metric_recorded_) {
     RecordPineDialogClosing(showing_list_view_
                                 ? ClosePineDialogType::kListviewOther
@@ -116,9 +118,9 @@ PineContentsView::~PineContentsView() {
 }
 
 // static
-std::unique_ptr<views::Widget> PineContentsView::Create(
+std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
     const gfx::Rect& grid_bounds_in_screen) {
-  auto contents_view = std::make_unique<PineContentsView>();
+  auto contents_view = std::make_unique<InformedRestoreContentsView>();
   gfx::Rect contents_bounds = grid_bounds_in_screen;
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
 
@@ -157,7 +159,7 @@ std::unique_ptr<views::Widget> PineContentsView::Create(
   return widget;
 }
 
-void PineContentsView::UpdateOrientation() {
+void InformedRestoreContentsView::UpdateOrientation() {
   settings_button_ = nullptr;
   preview_container_view_ = nullptr;
   items_container_view_ = nullptr;
@@ -168,7 +170,7 @@ void PineContentsView::UpdateOrientation() {
   CreateChildViews();
 }
 
-void PineContentsView::UpdateContents() {
+void InformedRestoreContentsView::UpdateContents() {
   const auto& apps_infos =
       Shell::Get()->pine_controller()->contents_data()->apps_infos;
 
@@ -186,7 +188,7 @@ void PineContentsView::UpdateContents() {
   }
 }
 
-void PineContentsView::OnRestoreButtonPressed() {
+void InformedRestoreContentsView::OnRestoreButtonPressed() {
   if (InformedRestoreContentsData* contents_data =
           Shell::Get()->pine_controller()->contents_data()) {
     if (contents_data->restore_callback) {
@@ -204,7 +206,7 @@ void PineContentsView::OnRestoreButtonPressed() {
   }
 }
 
-void PineContentsView::OnCancelButtonPressed() {
+void InformedRestoreContentsView::OnCancelButtonPressed() {
   if (InformedRestoreContentsData* contents_data =
           Shell::Get()->pine_controller()->contents_data()) {
     if (contents_data->cancel_callback) {
@@ -221,11 +223,11 @@ void PineContentsView::OnCancelButtonPressed() {
   }
 }
 
-void PineContentsView::OnSettingsButtonPressed() {
+void InformedRestoreContentsView::OnSettingsButtonPressed() {
   context_menu_model_ = std::make_unique<PineContextMenuModel>();
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
       context_menu_model_.get(),
-      base::BindRepeating(&PineContentsView::OnMenuClosed,
+      base::BindRepeating(&InformedRestoreContentsView::OnMenuClosed,
                           weak_ptr_factory_.GetWeakPtr()));
 
   std::unique_ptr<views::MenuItemView> root_menu_item =
@@ -258,11 +260,12 @@ void PineContentsView::OnSettingsButtonPressed() {
 }
 
 views::Builder<views::ImageButton>
-PineContentsView::CreateSettingsButtonBuilder() {
+InformedRestoreContentsView::CreateSettingsButtonBuilder() {
   return views::Builder<views::ImageButton>(
              views::CreateVectorImageButtonWithNativeTheme(
-                 base::BindRepeating(&PineContentsView::OnSettingsButtonPressed,
-                                     weak_ptr_factory_.GetWeakPtr()),
+                 base::BindRepeating(
+                      &InformedRestoreContentsView::OnSettingsButtonPressed,
+                      weak_ptr_factory_.GetWeakPtr()),
                  kSettingsIcon, kSettingsIconSize))
       .CopyAddressTo(&settings_button_)
       .SetBackground(views::CreateThemedRoundedRectBackground(
@@ -272,28 +275,30 @@ PineContentsView::CreateSettingsButtonBuilder() {
 }
 
 views::Builder<views::BoxLayoutView>
-PineContentsView::CreateButtonContainerBuilder() {
+InformedRestoreContentsView::CreateButtonContainerBuilder() {
   return views::Builder<views::BoxLayoutView>()
       .SetBetweenChildSpacing(kButtonContainerChildSpacing)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .AddChildren(
           views::Builder<PillButton>()
               .SetCallback(
-                  base::BindRepeating(&PineContentsView::OnCancelButtonPressed,
-                                      weak_ptr_factory_.GetWeakPtr()))
+                  base::BindRepeating(
+                        &InformedRestoreContentsView::OnCancelButtonPressed,
+                        weak_ptr_factory_.GetWeakPtr()))
               .SetID(pine::kCancelButtonID)
               .SetPillButtonType(PillButton::Type::kDefaultLargeWithoutIcon)
               .SetTextWithStringId(IDS_ASH_PINE_DIALOG_NO_THANKS_BUTTON),
           views::Builder<PillButton>()
               .SetCallback(
-                  base::BindRepeating(&PineContentsView::OnRestoreButtonPressed,
-                                      weak_ptr_factory_.GetWeakPtr()))
+                  base::BindRepeating(
+                      &InformedRestoreContentsView::OnRestoreButtonPressed,
+                      weak_ptr_factory_.GetWeakPtr()))
               .SetID(pine::kRestoreButtonID)
               .SetPillButtonType(PillButton::Type::kPrimaryLargeWithoutIcon)
               .SetTextWithStringId(IDS_ASH_PINE_DIALOG_RESTORE_BUTTON));
 }
 
-void PineContentsView::CreateChildViews() {
+void InformedRestoreContentsView::CreateChildViews() {
   const bool landscape_mode =
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
@@ -449,13 +454,13 @@ void PineContentsView::CreateChildViews() {
   }
 }
 
-void PineContentsView::OnMenuClosed() {
+void InformedRestoreContentsView::OnMenuClosed() {
   menu_runner_.reset();
   menu_model_adapter_.reset();
   context_menu_model_.reset();
 }
 
-void PineContentsView::UpdateIconRowClipArea() {
+void InformedRestoreContentsView::UpdateIconRowClipArea() {
   if (showing_list_view_) {
     return;
   }
@@ -473,11 +478,12 @@ void PineContentsView::UpdateIconRowClipArea() {
   image_view_->SetClipPath(builder.Build());
 }
 
-void PineContentsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+void InformedRestoreContentsView::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
   UpdateIconRowClipArea();
 }
 
-BEGIN_METADATA(PineContentsView)
+BEGIN_METADATA(InformedRestoreContentsView)
 END_METADATA
 
 }  // namespace ash
