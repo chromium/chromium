@@ -7363,8 +7363,10 @@ should be able to be added at any place in this file.
   <owner>chrome-compose-frontend@google.com</owner>
   <description>
     Records when the user presses the &quot;Create&quot; button in the input
-    state of the Compose dialog. This is emitted when the button is pressed and
-    before the Compose request is made, at most once per Compose session.
+    state of the Compose dialog, directly or indirectly. This is emitted when
+    the button is pressed or when auto-compose is enabled and the Compose dialog
+    is opened with a text selection. It is emitted before the Compose request is
+    made and at most once per Compose session.
   </description>
 </action>
 
@@ -7432,9 +7434,9 @@ should be able to be added at any place in this file.
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <description>
-    Records when a Compose session ends implicitly. This is emitted when the
-    session is destroyed because the owning WebContents navigates or is
-    destroyed. This is emitted at most once per session.
+    Records when a Compose session is abandoned (ends implicitly). This is
+    emitted when the session is destroyed because the owning WebContents
+    navigates or is destroyed. This is emitted at most once per session.
   </description>
 </action>
 
@@ -7452,8 +7454,8 @@ should be able to be added at any place in this file.
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <description>
-    Records when a Compose session ends because a dialog was opened with a text
-    selection from the same page field. This is emitted at most once per
+    Records when a Compose session ends (before insertion) because a new session
+    was started on the same text field. This is emitted at most once per
     session.
   </description>
 </action>
