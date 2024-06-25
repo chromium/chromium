@@ -35,6 +35,7 @@
     <!-- Confirm reset settings dialog. -->
     <cr-dialog id="confirmResetSettings" close-text="$i18n{close}"
         on-close="onResetSettingsDialogClosed_">
+      <div slot="title">$i18n{siteSettingsSiteResetDialogTitle}</div>
       <div slot="body">
         [[i18n('siteSettingsSiteResetConfirmation', pageTitle)]]
       </div>
