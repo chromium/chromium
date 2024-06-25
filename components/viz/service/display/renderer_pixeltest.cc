@@ -270,15 +270,13 @@ void CreateTestTwoColoredTextureDrawQuad(
   SkPMColor pixel_color_one =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color_one.toSkColor())
-          : SkPackARGB32NoCheck(
-                255 * texel_color_one.fA, 255 * texel_color_one.fR,
-                255 * texel_color_one.fG, 255 * texel_color_one.fB);
+          : SkPackARGB32(255 * texel_color_one.fA, 255 * texel_color_one.fR,
+                         255 * texel_color_one.fG, 255 * texel_color_one.fB);
   SkPMColor pixel_color_two =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color_two.toSkColor())
-          : SkPackARGB32NoCheck(
-                255 * texel_color_two.fA, 255 * texel_color_two.fR,
-                255 * texel_color_two.fG, 255 * texel_color_two.fB);
+          : SkPackARGB32(255 * texel_color_two.fA, 255 * texel_color_two.fR,
+                         255 * texel_color_two.fG, 255 * texel_color_two.fB);
   // The default color is texel_color_one
   std::vector<uint32_t> pixels(rect.size().GetArea(), pixel_color_one);
   if (half_and_half) {
@@ -354,8 +352,8 @@ void CreateTestTextureDrawQuad(
   SkPMColor pixel_color =
       premultiplied_alpha
           ? SkPreMultiplyColor(texel_color.toSkColor())
-          : SkPackARGB32NoCheck(texel_color.fA * 255, texel_color.fR * 255,
-                                texel_color.fG * 255, texel_color.fB * 255);
+          : SkPackARGB32(texel_color.fA * 255, texel_color.fR * 255,
+                         texel_color.fG * 255, texel_color.fB * 255);
   size_t num_pixels = static_cast<size_t>(rect.width()) * rect.height();
   std::vector<uint32_t> pixels(num_pixels, pixel_color);
 

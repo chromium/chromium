@@ -440,10 +440,10 @@ TEST(SkBitmapOperationsTest, UnPreMultiply) {
   EXPECT_EQ(input.alphaType(), kPremul_SkAlphaType);
 
   // Set PMColors into the bitmap
-  *input.getAddr32(0, 0) = SkPackARGB32NoCheck(0x80, 0x00, 0x00, 0x00);
-  *input.getAddr32(1, 0) = SkPackARGB32NoCheck(0x80, 0x80, 0x80, 0x80);
-  *input.getAddr32(0, 1) = SkPackARGB32NoCheck(0xFF, 0x00, 0xCC, 0x88);
-  *input.getAddr32(1, 1) = SkPackARGB32NoCheck(0x00, 0x00, 0xCC, 0x88);
+  *input.getAddr32(0, 0) = SkPackARGB32(0x80, 0x00, 0x00, 0x00);
+  *input.getAddr32(1, 0) = SkPackARGB32(0x80, 0x80, 0x80, 0x80);
+  *input.getAddr32(0, 1) = SkPackARGB32(0xFF, 0x00, 0xCC, 0x88);
+  *input.getAddr32(1, 1) = SkPackARGB32(0x00, 0x00, 0xCC, 0x88);
 
   SkBitmap result = SkBitmapOperations::UnPreMultiply(input);
   EXPECT_EQ(result.alphaType(), kUnpremul_SkAlphaType);

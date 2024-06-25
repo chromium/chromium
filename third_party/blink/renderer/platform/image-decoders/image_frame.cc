@@ -247,7 +247,7 @@ static uint32_t BlendSrcOverDstNonPremultiplied(uint32_t src, uint32_t dst) {
   uint8_t blend_b = BlendChannel(SkGetPackedB32(src), src_a,
                                  SkGetPackedB32(dst), dst_factor_a, scale);
 
-  return SkPackARGB32NoCheck(blend_a, blend_r, blend_g, blend_b);
+  return SkPackARGB32(blend_a, blend_r, blend_g, blend_b);
 }
 
 void ImageFrame::BlendRGBARaw(PixelData* dest,
@@ -255,8 +255,7 @@ void ImageFrame::BlendRGBARaw(PixelData* dest,
                               unsigned g,
                               unsigned b,
                               unsigned a) {
-  *dest =
-      BlendSrcOverDstNonPremultiplied(SkPackARGB32NoCheck(a, r, g, b), *dest);
+  *dest = BlendSrcOverDstNonPremultiplied(SkPackARGB32(a, r, g, b), *dest);
 }
 
 void ImageFrame::BlendSrcOverDstRaw(PixelData* src, PixelData dst) {

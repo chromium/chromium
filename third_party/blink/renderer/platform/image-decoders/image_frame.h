@@ -218,7 +218,7 @@ class PLATFORM_EXPORT ImageFrame final {
     if (premultiply_alpha_) {
       SetRGBAPremultiply(dest, r, g, b, a);
     } else {
-      *dest = SkPackARGB32NoCheck(a, r, g, b);
+      *dest = SkPackARGB32(a, r, g, b);
     }
   }
 
@@ -236,7 +236,7 @@ class PLATFORM_EXPORT ImageFrame final {
       b = (b * alpha + kRoundFractionControl) >> 16;
     }
 
-    *dest = SkPackARGB32NoCheck(a, r, g, b);
+    *dest = SkPackARGB32(a, r, g, b);
   }
 
   static inline void SetRGBARaw(PixelData* dest,
@@ -244,7 +244,7 @@ class PLATFORM_EXPORT ImageFrame final {
                                 unsigned g,
                                 unsigned b,
                                 unsigned a) {
-    *dest = SkPackARGB32NoCheck(a, r, g, b);
+    *dest = SkPackARGB32(a, r, g, b);
   }
 
   // Blend the RGBA pixel provided by |red|, |green|, |blue| and |alpha| over
