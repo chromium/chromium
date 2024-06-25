@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/ranges.h"
+#include "base/strings/utf_string_conversions.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -205,6 +206,45 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
   }
 }
 
+void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
+                            ui::AXNodeData& inline_text_box) {
+  std::vector<int32_t> character_offsets = inline_text_box.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kCharacterOffsets);
+
+  switch (word_box.direction()) {
+    case chrome_screen_ai::DIRECTION_LEFT_TO_RIGHT: {
+      int32_t line_offset =
+          base::ClampRound(inline_text_box.relative_bounds.bounds.x());
+      ranges::transform(
+          word_box.symbols(), std::back_inserter(character_offsets),
+          [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
+            return symbol.bounding_box().x() - line_offset;
+          });
+      break;
+    }
+    case chrome_screen_ai::DIRECTION_RIGHT_TO_LEFT: {
+      int32_t line_offset =
+          base::ClampRound(inline_text_box.relative_bounds.bounds.x() +
+                           inline_text_box.relative_bounds.bounds.width());
+      ranges::transform(
+          word_box.symbols(), std::back_inserter(character_offsets),
+          [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
+            return line_offset - symbol.bounding_box().x() -
+                   symbol.bounding_box().width();
+          });
+      break;
+    }
+    default:
+      // To be added when OCR supports it.
+      return;
+  }
+
+  if (character_offsets.size()) {
+    inline_text_box.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kCharacterOffsets, character_offsets);
+  }
+}
+
 void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
                       ui::AXNodeData& inline_text_box) {
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
@@ -217,20 +257,14 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
       word_box.bounding_box().x(), word_box.bounding_box().y(),
       word_box.bounding_box().width(), word_box.bounding_box().height()));
 
-  std::vector<int32_t> character_offsets;
-  // TODO(crbug.com/40946728): Handle writing directions other than
-  // LEFT_TO_RIGHT.
-  int32_t line_offset =
-      base::ClampRound(inline_text_box.relative_bounds.bounds.x());
-  ranges::transform(word_box.symbols(), std::back_inserter(character_offsets),
-                    [line_offset](const chrome_screen_ai::SymbolBox& symbol) {
-                      return symbol.bounding_box().x() - line_offset;
-                    });
+  UpdateCharacterOffsets(word_box, inline_text_box);
 
   std::string inner_text =
       inline_text_box.GetStringAttribute(ax::mojom::StringAttribute::kName);
   inner_text += word_box.utf8_string();
-  size_t word_length = word_box.utf8_string().length();
+  // Word length should specify the number of characters, which differs from the
+  // number of bytes in multi-byte characters.
+  size_t word_length = base::UTF8ToUTF16(word_box.utf8_string()).length();
   if (word_box.has_space_after()) {
     inner_text += " ";
     ++word_length;
