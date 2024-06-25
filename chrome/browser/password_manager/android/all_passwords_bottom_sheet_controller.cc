@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -71,13 +70,11 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
   CHECK(web_contents_);
   CHECK(profile_store);
   CHECK(dismissal_callback_);
-  password_manager::ContentPasswordManagerDriverFactory* factory =
-      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-          web_contents_);
   auto* focused_frame = web_contents->GetFocusedFrame();
   CHECK(focused_frame->IsRenderFrameLive());
   password_manager::ContentPasswordManagerDriver* driver =
-      factory->GetDriverForFrame(focused_frame);
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          focused_frame);
   driver_ = driver->AsWeakPtr();
   client_ = ChromePasswordManagerClient::FromWebContents(web_contents_);
   password_reuse_detection_manager_client_ =

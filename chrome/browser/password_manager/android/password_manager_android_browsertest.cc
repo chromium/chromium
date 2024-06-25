@@ -14,7 +14,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_results_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -129,11 +128,8 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
   NavigateToFile(has_form_tag ? "/password/simple_password.html"
                               : "/password/no_form_element.html");
 
-  password_manager::ContentPasswordManagerDriverFactory* driver_factory =
-      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-          GetActiveWebContents());
   password_manager::ContentPasswordManagerDriver* driver =
-      driver_factory->GetDriverForFrame(
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           GetActiveWebContents()->GetPrimaryMainFrame());
 
   // There should be only one form with two fields in the test html.

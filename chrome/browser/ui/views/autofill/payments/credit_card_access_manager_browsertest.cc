@@ -10,7 +10,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -69,8 +68,8 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
 
   CreditCardAccessManager& GetCreditCardAccessManager() {
     ContentAutofillDriver* autofill_driver =
-        ContentAutofillDriverFactory::FromWebContents(web_contents())
-            ->DriverForFrame(web_contents()->GetPrimaryMainFrame());
+        ContentAutofillDriver::GetForRenderFrameHost(
+            web_contents()->GetPrimaryMainFrame());
     return static_cast<BrowserAutofillManager&>(
                autofill_driver->GetAutofillManager())
         .GetCreditCardAccessManager();

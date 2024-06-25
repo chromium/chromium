@@ -317,7 +317,10 @@ ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
   ContentAutofillDriverFactory* factory =
       ContentAutofillDriverFactory::FromWebContents(
           content::WebContents::FromRenderFrameHost(render_frame_host));
-  return factory ? factory->DriverForFrame(render_frame_host) : nullptr;
+  return factory
+             ? factory->DriverForFrame(render_frame_host,
+                                       base::PassKey<ContentAutofillDriver>())
+             : nullptr;
 }
 
 void ContentAutofillDriver::BindPendingReceiver(
@@ -334,7 +337,7 @@ ContentAutofillDriver* ContentAutofillDriver::GetParent() {
   if (!parent_rfh) {
     return nullptr;
   }
-  return owner_->DriverForFrame(parent_rfh);
+  return GetForRenderFrameHost(parent_rfh);
 }
 
 ContentAutofillClient& ContentAutofillDriver::GetAutofillClient() {

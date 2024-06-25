@@ -148,7 +148,10 @@ ContentPasswordManagerDriver::GetForRenderFrameHost(
   ContentPasswordManagerDriverFactory* factory =
       ContentPasswordManagerDriverFactory::FromWebContents(
           content::WebContents::FromRenderFrameHost(render_frame_host));
-  return factory ? factory->GetDriverForFrame(render_frame_host) : nullptr;
+  return factory ? factory->GetDriverForFrame(
+                       render_frame_host,
+                       base::PassKey<ContentPasswordManagerDriver>())
+                 : nullptr;
 }
 
 void ContentPasswordManagerDriver::BindPendingReceiver(

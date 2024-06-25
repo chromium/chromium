@@ -40,7 +40,7 @@
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/android_autofill_provider.h"
 #include "components/android_autofill/browser/autofill_provider.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -368,8 +368,8 @@ void TabAndroid::InitializeAutofillIfNecessary(JNIEnv* env) {
   autofill::AutofillProvider::FromWebContents(web_contents_.get())
       ->MaybeInitKeyboardSuppressor();
 
-  autofill::ContentAutofillDriverFactory::FromWebContents(web_contents_.get())
-      ->DriverForFrame(web_contents_->GetPrimaryMainFrame());
+  autofill::ContentAutofillDriver::GetForRenderFrameHost(
+      web_contents_->GetPrimaryMainFrame());
 }
 
 void TabAndroid::UpdateDelegates(

@@ -84,8 +84,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
   }
 
   ContentAutofillDriver& autofill_driver() {
-    return *ContentAutofillDriverFactory::FromWebContents(web_contents())
-                ->DriverForFrame(main_rfh());
+    return *ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   }
 
   BrowserAutofillManager& autofill_manager() {

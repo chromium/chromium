@@ -1260,9 +1260,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerOverwritePlaceholderTest,
       autofill::test::CreateFieldPrediction(autofill::FieldType::PASSWORD)};
   // Simulate password manager receiving server predictions.
   password_manager::ContentPasswordManagerDriver* driver =
-      password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-          WebContents())
-          ->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          WebContents()->GetPrimaryMainFrame());
   autofill::FormData form_data(
       *static_cast<const password_manager::PasswordManager*>(
            driver->GetPasswordManager())
@@ -4462,10 +4461,8 @@ class MockPrerenderPasswordManagerDriverInjector
  private:
   password_manager::ContentPasswordManagerDriver* GetDriverForFrame(
       content::RenderFrameHost* rfh) {
-    password_manager::ContentPasswordManagerDriverFactory* driver_factory =
-        password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-            web_contents());
-    return driver_factory->GetDriverForFrame(rfh);
+    return password_manager::ContentPasswordManagerDriver::
+        GetForRenderFrameHost(rfh);
   }
 
   // content::WebContentsObserver:
@@ -4714,10 +4711,8 @@ class MockPasswordManagerDriverInjector : public content::WebContentsObserver {
  private:
   password_manager::ContentPasswordManagerDriver* GetDriverForFrame(
       content::RenderFrameHost* rfh) {
-    password_manager::ContentPasswordManagerDriverFactory* driver_factory =
-        password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-            web_contents());
-    return driver_factory->GetDriverForFrame(rfh);
+    return password_manager::ContentPasswordManagerDriver::
+        GetForRenderFrameHost(rfh);
   }
 
   // content::WebContentsObserver:

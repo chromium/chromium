@@ -345,10 +345,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // removes logins from the password store).
   autofill_client->SetKeepPopupOpenForTesting(true);
 
-  ContentPasswordManagerDriverFactory* factory =
-      ContentPasswordManagerDriverFactory::FromWebContents(WebContents());
   autofill::mojom::PasswordManagerDriver* driver =
-      factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
+      ContentPasswordManagerDriver::GetForRenderFrameHost(
+          WebContents()->GetPrimaryMainFrame());
 
   // Just fake a position of the <input> element within the content_area_bounds.
   // For this test it does not matter where the dropdown is rendered.

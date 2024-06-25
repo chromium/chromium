@@ -73,12 +73,6 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       delete;
   ~ContentAutofillDriverFactory() override;
 
-  // Gets the |ContentAutofillDriver| associated with |render_frame_host|.
-  // If |render_frame_host| is currently being deleted, this may be nullptr.
-  // |render_frame_host| must be owned by |web_contents()|.
-  ContentAutofillDriver* DriverForFrame(
-      content::RenderFrameHost* render_frame_host);
-
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
@@ -100,8 +94,20 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   std::vector<ContentAutofillDriver*> GetExistingDrivers(
       base::PassKey<ScopedAutofillManagersObservation>);
 
+  ContentAutofillDriver* DriverForFrame(
+      content::RenderFrameHost* render_frame_host,
+      base::PassKey<ContentAutofillDriver>) {
+    return DriverForFrame(render_frame_host);
+  }
+
  private:
   friend class ContentAutofillDriverFactoryTestApi;
+
+  // Gets the `ContentAutofillDriver` associated with `render_frame_host`.
+  // If `render_frame_host` is currently being deleted, this may be nullptr.
+  // `render_frame_host` must be owned by `web_contents()`.
+  ContentAutofillDriver* DriverForFrame(
+      content::RenderFrameHost* render_frame_host);
 
   // The owning AutofillClient.
   const raw_ref<ContentAutofillClient> client_;

@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -292,8 +291,7 @@ content::RenderViewHost* AutofillUiTest::GetRenderViewHost() {
 
 BrowserAutofillManager* AutofillUiTest::GetBrowserAutofillManager() {
   ContentAutofillDriver* driver =
-      ContentAutofillDriverFactory::FromWebContents(GetWebContents())
-          ->DriverForFrame(current_main_rfh_);
+      ContentAutofillDriver::GetForRenderFrameHost(current_main_rfh_);
   // ContentAutofillDriver will be null if the current RenderFrameHost
   // is not owned by the current WebContents. This state appears to occur
   // when there is a web page popup during teardown

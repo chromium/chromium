@@ -551,9 +551,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
 
   NavigateAndCommit(GURL(kUrl));
   ContentAutofillDriver* autofill_driver =
-      ContentAutofillClient::FromWebContents(web_contents())
-          ->GetAutofillDriverFactory()
-          ->DriverForFrame(main_rfh());
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   ASSERT_TRUE(autofill_driver);
 
   FormData form = CreateFormDataForRenderFrameHost(
@@ -598,9 +596,9 @@ TEST_F(ChromePasswordManagerClientTest,
       ContentAutofillClient::FromWebContents(web_contents());
   ASSERT_TRUE(autofill_client);
   ContentAutofillDriver* main_driver =
-      autofill_client->GetAutofillDriverFactory()->DriverForFrame(main_rfh());
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   ContentAutofillDriver* child_driver =
-      autofill_client->GetAutofillDriverFactory()->DriverForFrame(child_rfh);
+      ContentAutofillDriver::GetForRenderFrameHost(child_rfh);
   ASSERT_TRUE(main_driver);
   ASSERT_TRUE(child_driver);
 

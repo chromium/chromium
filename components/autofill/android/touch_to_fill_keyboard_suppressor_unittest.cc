@@ -47,7 +47,7 @@ class TouchToFillKeyboardSuppressorTest
     content::NavigationSimulator::NavigateAndCommitFromDocument(
         GURL("about:blank"), child_rfh_);
     // Forces creation of the child frame's AutofillManager.
-    autofill_client().GetAutofillDriverFactory()->DriverForFrame(child_rfh_);
+    ContentAutofillDriver::GetForRenderFrameHost(child_rfh_);
     ASSERT_TRUE(&autofill_manager());
     ASSERT_TRUE(&child_autofill_manager());
     ASSERT_NE(&autofill_manager(), &child_autofill_manager());

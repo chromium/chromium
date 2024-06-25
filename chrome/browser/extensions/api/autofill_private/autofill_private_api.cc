@@ -23,7 +23,6 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -100,8 +99,8 @@ autofill::BrowserAutofillManager* GetBrowserAutofillManager(
     return nullptr;
   }
   autofill::ContentAutofillDriver* autofill_driver =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents)
-          ->DriverForFrame(web_contents->GetPrimaryMainFrame());
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents->GetPrimaryMainFrame());
   if (!autofill_driver)
     return nullptr;
   // This cast is safe, since `AutofillManager` is always a

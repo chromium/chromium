@@ -675,8 +675,7 @@ TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensOnFrameDestruction) {
       GURL("https://foo.bar"), child_rfh);
 
   // Force creation of driver.
-  ASSERT_TRUE(ContentAutofillDriverFactory::FromWebContents(web_contents())
-                  ->DriverForFrame(child_rfh));
+  ASSERT_TRUE(ContentAutofillDriver::GetForRenderFrameHost(child_rfh));
 
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(),

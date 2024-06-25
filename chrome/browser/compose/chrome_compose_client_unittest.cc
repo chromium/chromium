@@ -1213,9 +1213,8 @@ TEST_F(ChromeComposeClientTest, TestCaretMovementExtendsNudgeDelay) {
   field_data.set_host_form_id(form_data.renderer_id());
 
   autofill::ContentAutofillDriver* autofill_driver =
-      autofill::ContentAutofillClient::FromWebContents(web_contents())
-          ->GetAutofillDriverFactory()
-          ->DriverForFrame(web_contents()->GetPrimaryMainFrame());
+      autofill::ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(autofill_driver);
 
   {

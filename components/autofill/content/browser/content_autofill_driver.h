@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -110,6 +111,7 @@ class AutofillDriverRouter;
 class ContentAutofillDriver : public AutofillDriver,
                               public mojom::AutofillDriver {
  public:
+  using PassKey = base::PassKey<ContentAutofillDriver>;
   // Gets the driver for |render_frame_host|.
   // If |render_frame_host| is currently being deleted, this may be nullptr.
   static ContentAutofillDriver* GetForRenderFrameHost(

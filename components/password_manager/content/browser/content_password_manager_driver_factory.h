@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -44,7 +45,10 @@ class ContentPasswordManagerDriverFactory
   // Note that this may return null if the RenderFrameHost does not have a
   // live RenderFrame (e.g. it represents a crashed RenderFrameHost).
   ContentPasswordManagerDriver* GetDriverForFrame(
-      content::RenderFrameHost* render_frame_host);
+      content::RenderFrameHost* render_frame_host,
+      base::PassKey<ContentPasswordManagerDriver>) {
+    return GetDriverForFrame(render_frame_host);
+  }
 
   // Requests all drivers to inform their renderers whether
   // chrome://password-manager-internals is available.
@@ -57,6 +61,9 @@ class ContentPasswordManagerDriverFactory
 
   ContentPasswordManagerDriverFactory(content::WebContents* web_contents,
                                       PasswordManagerClient* client);
+
+  ContentPasswordManagerDriver* GetDriverForFrame(
+      content::RenderFrameHost* render_frame_host);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

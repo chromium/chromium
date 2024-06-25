@@ -39,7 +39,6 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
@@ -176,8 +175,7 @@ class AutofillCapturedSitesInteractiveTest
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame);
     auto& autofill_manager = static_cast<BrowserAutofillManager&>(
-        ContentAutofillDriverFactory::FromWebContents(web_contents)
-            ->DriverForFrame(frame->GetMainFrame())
+        ContentAutofillDriver::GetForRenderFrameHost(frame->GetMainFrame())
             ->GetAutofillManager());
     test_delegate()->Observe(autofill_manager);
 

@@ -20,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
@@ -75,8 +74,8 @@ class AutocompleteTest : public InProcessBrowserTest {
     // causing this test to fail.
     base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
-    ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+    ContentAutofillDriver::GetForRenderFrameHost(
+        web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager()
         .client()
         .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
@@ -151,8 +150,8 @@ class AutocompleteTest : public InProcessBrowserTest {
   }
 
   AutofillManager& manager() {
-    return ContentAutofillDriverFactory::FromWebContents(web_contents())
-        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
+    return ContentAutofillDriver::GetForRenderFrameHost(
+               web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager();
   }
 

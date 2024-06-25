@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -12,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -88,9 +89,11 @@ TEST_F(ContentAutofillDriverFactoryTest, MainDriver) {
       test_api(factory()).GetDriver(main_rfh());
   EXPECT_TRUE(main_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
-  EXPECT_EQ(factory().DriverForFrame(main_rfh()), main_driver);
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()),
+            main_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
-  EXPECT_EQ(factory().DriverForFrame(main_rfh()), main_driver);
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()),
+            main_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
 }
 
@@ -123,15 +126,21 @@ TEST_F(ContentAutofillDriverFactoryTest_WithTwoFrames, TwoDrivers) {
   NavigateChildFrame("https://b.com/");
   ASSERT_TRUE(main_rfh());
   ASSERT_TRUE(child_rfh());
-  ContentAutofillDriver* main_driver = factory().DriverForFrame(main_rfh());
-  ContentAutofillDriver* child_driver = factory().DriverForFrame(child_rfh());
+  ContentAutofillDriver* main_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ContentAutofillDriver* child_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(child_rfh());
   EXPECT_TRUE(main_driver);
   EXPECT_TRUE(child_driver);
-  EXPECT_EQ(factory().DriverForFrame(main_rfh()), main_driver);
-  EXPECT_EQ(factory().DriverForFrame(child_rfh()), child_driver);
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()),
+            main_driver);
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(child_rfh()),
+            child_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 2u);
-  EXPECT_EQ(factory().DriverForFrame(main_rfh()), main_driver);
-  EXPECT_EQ(factory().DriverForFrame(child_rfh()), child_driver);
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(main_rfh()),
+            main_driver);
+  EXPECT_EQ(ContentAutofillDriver::GetForRenderFrameHost(child_rfh()),
+            child_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 2u);
 }
 
@@ -155,17 +164,20 @@ TEST_P(ContentAutofillDriverFactoryTest_WithTwoFrames_PickOne,
   NavigateMainFrame("https://a.com/");
   NavigateChildFrame("https://b.com/");
   ASSERT_TRUE(picked_rfh() == main_rfh() || picked_rfh() == child_rfh());
-  ContentAutofillDriver* main_driver = factory().DriverForFrame(main_rfh());
-  ContentAutofillDriver* child_driver = factory().DriverForFrame(child_rfh());
+  ContentAutofillDriver* main_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ContentAutofillDriver* child_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(child_rfh());
   EXPECT_TRUE(main_driver);
   EXPECT_TRUE(child_driver);
   EXPECT_EQ(test_api(factory()).num_drivers(), 2u);
   factory().RenderFrameDeleted(picked_rfh());
   EXPECT_EQ(test_api(factory()).num_drivers(), 1u);
-  if (picked_rfh() == main_rfh())
+  if (picked_rfh() == main_rfh()) {
     EXPECT_EQ(test_api(factory()).GetDriver(child_rfh()), child_driver);
-  else
+  } else {
     EXPECT_EQ(test_api(factory()).GetDriver(main_rfh()), main_driver);
+  }
 }
 
 // Test case with one frame, with BFcache enabled or disabled depending on the
@@ -201,7 +213,8 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        SameDocumentNavigation) {
   NavigateMainFrame("https://a.com/");
   content::RenderFrameHost* orig_rfh = main_rfh();
-  ContentAutofillDriver* orig_driver = factory().DriverForFrame(orig_rfh);
+  ContentAutofillDriver* orig_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(orig_rfh);
   NavigateMainFrame("https://a.com/#same-site");
   ASSERT_EQ(orig_rfh, main_rfh());
   EXPECT_EQ(test_api(factory()).GetDriver(orig_rfh), orig_driver);
@@ -220,7 +233,8 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        SameOriginNavigation) {
   NavigateMainFrame("https://a.com/");
   content::RenderFrameHost* orig_rfh = main_rfh();
-  ContentAutofillDriver* orig_driver = factory().DriverForFrame(orig_rfh);
+  ContentAutofillDriver* orig_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(orig_rfh);
 
   // TODO(crbug.com/40178290): Use mock AutofillManagers and expect a call of
   // AutofillManager::Reset(), which is blocked by ContentAutofillDriver's use
@@ -245,7 +259,8 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   NavigateMainFrame("https://a.com/");
   content::RenderFrameHost* orig_rfh = main_rfh();
   content::GlobalRenderFrameHostId orig_rfh_id = orig_rfh->GetGlobalId();
-  ContentAutofillDriver* orig_driver = factory().DriverForFrame(orig_rfh);
+  ContentAutofillDriver* orig_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(orig_rfh);
 
   ASSERT_EQ(orig_rfh, main_rfh());
   EXPECT_EQ(test_api(factory()).GetDriver(orig_rfh), orig_driver);
@@ -258,10 +273,11 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
   // been removed in ContentAutofillDriverFactory::RenderFrameDeleted(), unless
   // BFcache is enabled (or main_rfh() happens to have the same address as
   // |orig_rfh|).
-  if (use_bfcache())
+  if (use_bfcache()) {
     EXPECT_EQ(test_api(factory()).GetDriver(orig_rfh), orig_driver);
-  else if (main_rfh() != orig_rfh)
+  } else if (main_rfh() != orig_rfh) {
     EXPECT_EQ(test_api(factory()).GetDriver(orig_rfh), nullptr);
+  }
   EXPECT_NE(test_api(factory()).GetDriver(main_rfh()), nullptr);
   EXPECT_EQ(test_api(factory()).num_drivers(), use_bfcache() ? 2u : 1u);
 }
@@ -291,9 +307,11 @@ TEST_F(ContentAutofillDriverFactoryTest_FencedFrames,
   content::RenderFrameHost* fenced_frame_subframe =
       content::RenderFrameHostTester::For(fenced_frame_root)
           ->AppendChild("iframe");
-  EXPECT_NE(nullptr, factory().DriverForFrame(main_rfh()));
-  EXPECT_NE(nullptr, factory().DriverForFrame(fenced_frame_root));
-  EXPECT_NE(nullptr, factory().DriverForFrame(fenced_frame_subframe));
+  EXPECT_NE(nullptr, ContentAutofillDriver::GetForRenderFrameHost(main_rfh()));
+  EXPECT_NE(nullptr,
+            ContentAutofillDriver::GetForRenderFrameHost(fenced_frame_root));
+  EXPECT_NE(nullptr, ContentAutofillDriver::GetForRenderFrameHost(
+                         fenced_frame_subframe));
 }
 
 // Tests the notifications of ContentAutofillDriverFactory::Observer.
@@ -316,8 +334,9 @@ class ContentAutofillDriverFactoryTest_Observer
 };
 
 auto IsKnownDriver(ContentAutofillDriverFactory* factory) {
-  return testing::Truly([factory](ContentAutofillDriver& driver) {
-    return factory->DriverForFrame(driver.render_frame_host()) == &driver;
+  return testing::Truly([](ContentAutofillDriver& driver) {
+    return ContentAutofillDriver::GetForRenderFrameHost(
+               driver.render_frame_host()) == &driver;
   });
 }
 

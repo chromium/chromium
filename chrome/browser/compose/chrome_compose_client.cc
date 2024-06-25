@@ -37,7 +37,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -530,9 +529,8 @@ void ChromeComposeClient::ShowSavedStateNotification(
   }
 
   if (autofill::AutofillDriver* driver =
-          autofill::ContentAutofillDriverFactory::FromWebContents(
-              &GetWebContents())
-              ->DriverForFrame(GetWebContents().GetPrimaryMainFrame())) {
+          autofill::ContentAutofillDriver::GetForRenderFrameHost(
+              GetWebContents().GetPrimaryMainFrame())) {
     driver->RendererShouldTriggerSuggestions(
         field_id,
         autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus);
@@ -803,9 +801,8 @@ void ChromeComposeClient::OnFocusChangedInPage(
 void ChromeComposeClient::ShowProactiveNudge(autofill::FormGlobalId form,
                                              autofill::FieldGlobalId field) {
   if (autofill::AutofillDriver* driver =
-          autofill::ContentAutofillDriverFactory::FromWebContents(
-              &GetWebContents())
-              ->DriverForFrame(GetWebContents().GetPrimaryMainFrame())) {
+          autofill::ContentAutofillDriver::GetForRenderFrameHost(
+              GetWebContents().GetPrimaryMainFrame())) {
     driver->RendererShouldTriggerSuggestions(
         field, autofill::AutofillSuggestionTriggerSource::
                    kComposeDelayedProactiveNudge);

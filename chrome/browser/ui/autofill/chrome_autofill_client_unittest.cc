@@ -184,7 +184,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   ContentAutofillDriver* driver(content::RenderFrameHost* rfh) {
-    return client()->GetAutofillDriverFactory()->DriverForFrame(rfh);
+    return ContentAutofillDriver::GetForRenderFrameHost(rfh);
   }
 
   TestPersonalDataManager* personal_data_manager() {
