@@ -1172,7 +1172,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                       removedItem.tabSwitcherItem.identifier];
       }];
 
-  if (_searchText.length) {
+  if (_mode == TabGridModeSearch && _searchText.length) {
     [self updateSearchResultsHeader];
   }
 }
@@ -1815,13 +1815,16 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 // Updates the number of results found on the search open tabs section header.
 - (void)updateSearchResultsHeader {
+  CHECK_EQ(_mode, TabGridModeSearch, base::NotFatalUntil::M129);
+  CHECK_GT(_searchText.length, 0ul, base::NotFatalUntil::M129);
   NSInteger tabSectionIndex = [self.diffableDataSource
       indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-  GridHeader* headerView = (GridHeader*)[self.collectionView
+  GridHeader* headerView = base::apple::ObjCCast<
+      GridHeader>([self.collectionView
       supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                           atIndexPath:[NSIndexPath
                                           indexPathForRow:0
-                                                inSection:tabSectionIndex]];
+                                                inSection:tabSectionIndex]]);
   if (!headerView) {
     return;
   }
