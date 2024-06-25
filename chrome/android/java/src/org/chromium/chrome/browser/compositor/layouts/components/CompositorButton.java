@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
 import android.util.FloatProperty;
-import android.view.MotionEvent;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
+import org.chromium.ui.MotionEventUtils;
 
 /**
  * {@link CompositorButton} keeps track of state for buttons that are rendered in the compositor.
@@ -311,7 +311,7 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean onDown(float x, float y, boolean fromMouse, int buttons) {
         if (checkClickedOrHovered(x, y)
-                && (!fromMouse || (buttons & MotionEvent.BUTTON_PRIMARY) != 0)) {
+                && MotionEventUtils.isTouchOrMousePrimaryButton(fromMouse, buttons)) {
             setPressed(true, fromMouse);
             return true;
         }
@@ -327,7 +327,7 @@ public class CompositorButton extends StripLayoutView {
      */
     public boolean click(float x, float y, boolean fromMouse, int buttons) {
         if (checkClickedOrHovered(x, y)
-                && (!fromMouse || (buttons & MotionEvent.BUTTON_PRIMARY) != 0)) {
+                && MotionEventUtils.isTouchOrMousePrimaryButton(fromMouse, buttons)) {
             setPressed(false, false);
             return true;
         }

@@ -81,6 +81,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -1923,10 +1924,9 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
             mInteractingTab = null;
         }
 
-        if (fromMouse
+        if (MotionEventUtils.isMousePrimaryButton(fromMouse, buttons)
                 && !clickedClose
-                && clickedTab != null
-                && (buttons & MotionEvent.BUTTON_PRIMARY) != 0) {
+                && clickedTab != null) {
             startReorderMode(time, x, x);
         }
     }
