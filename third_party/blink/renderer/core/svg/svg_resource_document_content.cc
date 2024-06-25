@@ -132,7 +132,7 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
 SVGResourceDocumentContent::UpdateResult
 SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
                                            const KURL& request_url) {
-  if (data->empty()) {
+  if (data->empty() || was_disposed_) {
     return UpdateResult::kError;
   }
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
@@ -167,6 +167,7 @@ void SVGResourceDocumentContent::AsyncLoadingFinished() {
 
 void SVGResourceDocumentContent::Dispose() {
   ClearDocument();
+  was_disposed_ = true;
 }
 
 void SVGResourceDocumentContent::ClearDocument() {

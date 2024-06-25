@@ -59,6 +59,50 @@ TEST_F(SVGResourceDocumentContentSimTest, GetDocumentBeforeLoadComplete) {
   EXPECT_NE(nullptr, entry->GetDocument());
 }
 
+TEST_F(SVGResourceDocumentContentSimTest, LoadCompleteAfterDispose) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete("<!doctype html><body></body>");
+
+  const char kSVGUrl[] = "https://example.com/svg.svg";
+  SimSubresourceRequest svg_resource(kSVGUrl, "application/xml");
+
+  // Request a resource from the cache.
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  ResourceLoaderOptions options(execution_context->GetCurrentWorld());
+  options.initiator_info.name = fetch_initiator_type_names::kCSS;
+  FetchParameters params(ResourceRequest(kSVGUrl), options);
+  params.MutableResourceRequest().SetMode(
+      network::mojom::blink::RequestMode::kSameOrigin);
+  auto* content = SVGResourceDocumentContent::Fetch(params, GetDocument());
+
+  EXPECT_TRUE(content->IsLoading());
+  EXPECT_FALSE(content->IsLoaded());
+  EXPECT_FALSE(content->ErrorOccurred());
+
+  // Make the GC dispose - and thus lose track of - the content.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // Write part of the response. The document hasn't been created yet, but the
+  // cache no longer references it.
+  svg_resource.Start();
+  svg_resource.Complete("<svg xmlns='http://www.w3.org/2000/svg'></svg>");
+
+  // The cache reference is gone.
+  EXPECT_EQ(GetDocument().GetPage()->GetSVGResourceDocumentCache().Get(
+                SVGResourceDocumentCache::MakeCacheKey(params)),
+            nullptr);
+
+  EXPECT_FALSE(content->IsLoading());
+  EXPECT_TRUE(content->IsLoaded());
+  EXPECT_TRUE(content->ErrorOccurred());
+
+  content = nullptr;
+
+  // GC the content. Should not crash/DCHECK.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
 class SVGResourceDocumentContentTest : public PageTestBase {
  public:
   SVGResourceDocumentContentTest()
