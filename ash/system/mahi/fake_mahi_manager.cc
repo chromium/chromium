@@ -21,6 +21,12 @@ namespace ash {
 
 namespace {
 
+// If true, callbacks passed to `FakeMahiManager` are handled asyncly with zero
+// time duration.
+bool g_use_zero_duration = false;
+
+// Constants -------------------------------------------------------------------
+
 constexpr char16_t kDefaultAnswer[] = u"Fake answer";
 
 constexpr char16_t kDefaultContentTitle[] = u"fake content title";
@@ -67,7 +73,10 @@ void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
       base::BindOnce(std::move(callback),
                      summary_text_.value_or(kDefaultSummaryText),
                      chromeos::MahiResponseStatus::kSuccess),
-      base::Seconds(mahi_constants::kFakeMahiManagerLoadSummaryDelaySeconds));
+      g_use_zero_duration
+          ? base::TimeDelta()
+          : base::Seconds(
+                mahi_constants::kFakeMahiManagerLoadSummaryDelaySeconds));
 }
 
 void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
@@ -75,7 +84,10 @@ void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
       FROM_HERE,
       base::BindOnce(std::move(callback), kDefaultOutlines,
                      chromeos::MahiResponseStatus::kSuccess),
-      base::Seconds(mahi_constants::kFakeMahiManagerLoadOutlinesDelaySeconds));
+      g_use_zero_duration
+          ? base::TimeDelta()
+          : base::Seconds(
+                mahi_constants::kFakeMahiManagerLoadOutlinesDelaySeconds));
 }
 
 void FakeMahiManager::AnswerQuestion(const std::u16string& question,
@@ -86,7 +98,10 @@ void FakeMahiManager::AnswerQuestion(const std::u16string& question,
       FROM_HERE,
       base::BindOnce(std::move(callback), answer_text_.value_or(kDefaultAnswer),
                      chromeos::MahiResponseStatus::kSuccess),
-      base::Seconds(mahi_constants::kFakeMahiManagerLoadAnswerDelaySeconds));
+      g_use_zero_duration
+          ? base::TimeDelta()
+          : base::Seconds(
+                mahi_constants::kFakeMahiManagerLoadAnswerDelaySeconds));
 }
 
 void FakeMahiManager::OnContextMenuClicked(
@@ -141,5 +156,17 @@ bool FakeMahiManager::IsEnabled() {
 }
 
 void FakeMahiManager::SetMediaAppPDFFocused() {}
+
+// ScopedFakeMahiManagerZeroDuration -------------------------------------------
+
+ScopedFakeMahiManagerZeroDuration::ScopedFakeMahiManagerZeroDuration() {
+  CHECK(!g_use_zero_duration);
+  g_use_zero_duration = true;
+}
+
+ScopedFakeMahiManagerZeroDuration::~ScopedFakeMahiManagerZeroDuration() {
+  CHECK(g_use_zero_duration);
+  g_use_zero_duration = false;
+}
 
 }  // namespace ash

@@ -17,6 +17,8 @@
 
 namespace ash {
 
+// FakeMahiManager -------------------------------------------------------------
+
 // A fake implementation of `MahiManager` used for development only. Returns
 // predetermined contents asyncly. Created only when
 // `chromeos::switches::kUseFakeMahiManager` is enabled.
@@ -47,6 +49,8 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
 
+  MahiUiController* ui_controller() { return &ui_controller_; }
+
   void set_answer_text(const std::u16string& answer_text) {
     answer_text_ = answer_text;
   }
@@ -71,6 +75,20 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
   std::optional<std::u16string> summary_text_;
 
   MahiUiController ui_controller_;
+};
+
+// ScopedFakeMahiManagerZeroDuration -------------------------------------------
+
+// A scoped class that applies a zero duration to `FakeMahiManager` callback
+// handling. NOTE: This class should not be used interleavingly.
+class ASH_EXPORT ScopedFakeMahiManagerZeroDuration {
+ public:
+  ScopedFakeMahiManagerZeroDuration();
+  ScopedFakeMahiManagerZeroDuration(const ScopedFakeMahiManagerZeroDuration&) =
+      delete;
+  ScopedFakeMahiManagerZeroDuration& operator=(
+      const ScopedFakeMahiManagerZeroDuration&) = delete;
+  ~ScopedFakeMahiManagerZeroDuration();
 };
 
 }  // namespace ash
