@@ -10,7 +10,10 @@ import("//build/config/profiling/profiling.gni")
 import("//build/toolchain/toolchain.gni")
 
 declare_args() {
-  # Compile for Address Sanitizer to find memory bugs.
+  # Compile for Address Sanitizer to find memory bugs. Also enables a subset of
+  # Undefined Behavior Sanitizer, to find other types of undefined behavior.
+  #
+  # TODO(crbug.com/40248746): Enable all of UBSan here.
   is_asan = false
 
   # Compile for Hardware-Assisted Address Sanitizer to find memory bugs
@@ -28,7 +31,11 @@ declare_args() {
   is_tsan = false
 
   # Compile for Undefined Behaviour Sanitizer to find various types of
-  # undefined behaviour (excludes vptr checks).
+  # undefined behaviour (excludes vptr checks). This flag currently enables
+  # additional checks from UBSan that are not covered by is_asan above, because
+  # those checks are not yet green. https://crbug.com/40248746 and
+  # https://crbug.com/40942951 track enabling the remaining checks, at which
+  # point these options can be unified.
   is_ubsan = false
 
   # Halt the program if a problem is detected.
