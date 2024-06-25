@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom-forward.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -815,10 +814,10 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
                                 maximum_font_scale_logging + 1);
   std::string font_name =
       prefs->GetString(prefs::kAccessibilityReadAnythingFontName);
-  if (font_map_.find(font_name) != font_map_.end()) {
-    ReadAnythingFont font = font_map_.at(font_name);
-    base::UmaHistogramEnumeration(string_constants::kFontNameHistogramName,
-                                  font);
+  if (fonts::kFontInfos.contains(font_name)) {
+    base::UmaHistogramEnumeration(
+        string_constants::kFontNameHistogramName,
+        fonts::kFontInfos.at(font_name).logging_value);
   }
   read_anything::mojom::Colors color =
       static_cast<read_anything::mojom::Colors>(

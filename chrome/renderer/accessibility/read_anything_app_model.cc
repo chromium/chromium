@@ -53,7 +53,7 @@ bool GetIsGoogleDocs(const GURL& url) {
 ReadAnythingAppModel::ReadAnythingAppModel() {
   // We default to true since base_language_code_ is en by default and that
   // supports all these fonts.
-  for (const auto* font : kReadAnythingFonts) {
+  for (const auto* font : fonts::kReadAnythingFonts) {
     supported_fonts_[font] = true;
   }
 }
@@ -966,25 +966,21 @@ void ReadAnythingAppModel::ToggleImagesEnabled() {
 
 void ReadAnythingAppModel::SetBaseLanguageCode(const std::string code) {
   base_language_code_ = code;
-  supported_fonts_["Poppins"] =
-      base::Contains(kLanguagesSupportedByPoppins, code);
-  supported_fonts_["Comic Neue"] =
-      base::Contains(kLanguagesSupportedByComicNeue, code);
-  supported_fonts_["Lexend Deca"] =
-      base::Contains(kLanguagesSupportedByLexendDeca, code);
-  supported_fonts_["EB Garamond"] =
-      base::Contains(kLanguagesSupportedByEbGaramond, code);
-  supported_fonts_["STIX Two Text"] =
-      base::Contains(kLanguagesSupportedByStixTwoText, code);
-  supported_fonts_["Andika"] =
-      base::Contains(kLanguagesSupportedByAndika, code);
-  supported_fonts_["Atkinson Hyperlegible"] =
-      base::Contains(kLanguagesSupportedByAtkinsonHyperlegible, code);
+  // Update whether each font is supported by the new language code.
+  for (const auto& [font, font_info] : fonts::kFontInfos) {
+    if (font_info.num_langs_supported > 0) {
+      supported_fonts_[font] =
+          (std::find(font_info.langs_supported,
+                     font_info.langs_supported + font_info.num_langs_supported,
+                     code) !=
+           font_info.langs_supported + font_info.num_langs_supported);
+    }
+  }
 }
 
 std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
   std::vector<std::string> font_choices_;
-  for (const auto* font : kReadAnythingFonts) {
+  for (const auto* font : fonts::kReadAnythingFonts) {
     if (supported_fonts_[font]) {
       font_choices_.emplace_back(font);
     }

@@ -24,7 +24,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, validatedFontName} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout} from './common.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
@@ -221,7 +221,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private startTime = Date.now();
   private constructorTime: number;
 
-  // If you change these fonts, please also update read_anything_constants.h
   private fontOptions_: string[] = [];
 
   private letterSpacingOptions_: Array<MenuStateItem<number>> = [
@@ -449,9 +448,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'style';
-    link.href =
-        'https://fonts.googleapis.com/css?family=Poppins|Comic+Neue|Lexend+Deca|' +
-        'EB+Garamond|STIX+Two+Text|Andika|Atkinson+Hyperlegible';
+    link.href = 'https://fonts.googleapis.com/css?family=';
+    link.href += chrome.readingMode.allFonts.join('|');
+    link.href = link.href.replace(' ', '+');
 
     link.addEventListener('load', () => {
       link.media = 'all';
@@ -748,7 +747,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.emitEvent_(FONT_EVENT, {
       fontName,
     });
-    this.style.fontFamily = validatedFontName(fontName);
+    this.style.fontFamily = chrome.readingMode.getValidatedFontName(fontName);
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {

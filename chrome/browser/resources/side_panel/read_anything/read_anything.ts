@@ -11,7 +11,7 @@ export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 export type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 export type {ReadAnythingElement, WordBoundaryState} from './app.js';
 export {currentReadHighlightClass, PauseActionSource, previousReadHighlightClass, WordBoundaryMode} from './app.js';
-export {defaultFontName, getCurrentSpeechRate, playFromSelectionTimeout} from './common.js';
+export {getCurrentSpeechRate, playFromSelectionTimeout} from './common.js';
 export type {LanguageMenuElement} from './language_menu.js';
 export {LANGUAGE_TOGGLE_EVENT} from './language_menu.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';

@@ -5,12 +5,17 @@
 #ifndef CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_
 #define CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_
 
+#include <string>
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
 #include "ui/accessibility/ax_mode.h"
 
 // Various constants used throughout the Read Anything feature.
 namespace string_constants {
 
 extern const char kReadAnythingPlaceholderFontName[];
+extern const char kReadAnythingDefaultFont[];
 extern const char kReadAnythingPlaceholderVoiceName[];
 extern const char kLetterSpacingHistogramName[];
 extern const char kLineSpacingHistogramName[];
@@ -22,6 +27,99 @@ extern const char kEmptyStateHistogramName[];
 extern const char kLanguageHistogramName[];
 
 }  // namespace string_constants
+
+// When adding a new font, add info to ReadAnythingFont, kReadAnythingFonts,
+// and GetFontInfos() below.
+namespace fonts {
+// Enum for logging the user-chosen font.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadAnythingFont {
+  kPoppins = 0,
+  kSansSerif = 1,
+  kSerif = 2,
+  kComicNeue = 3,
+  kLexendDeca = 4,
+  kEbGaramond = 5,
+  kStixTwoText = 6,
+  kAndika = 7,
+  kAtkinsonHyperlegible = 8,
+  kMaxValue = kAtkinsonHyperlegible,
+};
+
+// Holds compile-time known information about each of Read Anything's supported
+// fonts. If num_langs_supported is 0, then that font supports all languages.
+struct FontInfo {
+  ReadAnythingFont logging_value;
+  const char* css_name;
+  const char* langs_supported[40];
+  size_t num_langs_supported;
+};
+
+inline const char* kReadAnythingFonts[] = {
+    "Poppins",       "Sans-serif",  "Serif",
+    "Comic Neue",    "Lexend Deca", "EB Garamond",
+    "STIX Two Text", "Andika",      "Atkinson Hyperlegible",
+};
+inline constexpr FontInfo kPoppinsFontInfo = {
+    ReadAnythingFont::kPoppins,
+    /*css_name=*/"Poppins",
+    {"af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+     "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",
+     "nl", "pl", "pt", "ro", "sk", "sl", "sv", "sw", "tr"},
+    /*num_langs_supported=*/29};
+inline constexpr FontInfo kSansSerifFontInfo = {ReadAnythingFont::kSansSerif,
+                                                /*css_name=*/"sans-serif",
+                                                {},
+                                                /*num_langs_supported=*/0};
+inline constexpr FontInfo kSerifFontInfo = {ReadAnythingFont::kSerif,
+                                            /*css_name=*/"serif",
+                                            {},
+                                            /*num_langs_supported=*/0};
+inline constexpr FontInfo kComicNeueFontInfo = {
+    ReadAnythingFont::kComicNeue,
+    /*css_name=*/"\"Comic Neue\"",
+    {"af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil", "fr", "hr",
+     "hu", "id", "it", "ms", "nl", "pl", "pt", "sk", "sl", "sv",  "sw"},
+    /*num_langs_supported=*/23};
+inline constexpr FontInfo kLexendDecaFontInfo = {
+    ReadAnythingFont::kLexendDeca,
+    /*css_name=*/"\"Lexend Deca\"",
+    {"af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+     "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl",
+     "pt", "ro", "sk", "sl", "sv", "sw", "tr", "vi"},
+    /*num_langs_supported=*/28};
+inline constexpr FontInfo kEbGaramondFontInfo = {
+    ReadAnythingFont::kEbGaramond,
+    /*css_name=*/"\"EB Garamond\"",
+    {"af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+     "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
+     "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"},
+    /*num_langs_supported=*/32};
+inline constexpr FontInfo kStixTwoTextFontInfo = {
+    ReadAnythingFont::kStixTwoText,
+    /*css_name=*/"STIX \"Two Text\"",
+    {"af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
+     "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
+     "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"},
+    /*num_langs_supported=*/32};
+inline constexpr FontInfo kAndikaFontInfo = {
+    ReadAnythingFont::kAndika,
+    /*css_name=*/"Andika",
+    {"af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil", "fr",
+     "hr", "hu", "id", "it", "kr", "lt", "lu", "lv", "ms", "nd", "nl",  "nr",
+     "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk",  "vi"},
+    /*num_langs_supported=*/36};
+inline constexpr FontInfo kAtkinsonHyperlegibleFontInfo = {
+    ReadAnythingFont::kAtkinsonHyperlegible,
+    /*css_name=*/"Atkinson Hyperlegible",
+    {"af", "ca", "cs", "da", "de", "en", "es", "et", "eu", "fi", "fil", "fr",
+     "gl", "hr", "hu", "id", "is", "it", "kk", "lt", "ms", "nl", "no",  "pl",
+     "pt", "pt", "ro", "sl", "sq", "sr", "sr", "sv", "sw", "zu"},
+    /*num_langs_supported=*/34};
+extern const base::fixed_flat_map<std::string_view, FontInfo, 9> kFontInfos;
+
+}  // namespace fonts
 
 namespace {
 
@@ -42,66 +140,6 @@ inline constexpr double kReadAnythingFontScaleIncrement = 0.25;
 // Display settings.
 inline constexpr bool kReadAnythingDefaultLinksEnabled = true;
 inline constexpr bool kReadAnythingDefaultImagesEnabled = false;
-
-// List of fonts supported by Read Anything in the order they should be
-// displayed.
-// TODO(crbug.com/348497904): Consolidate with duplicated lists in common.ts and
-// read_anything_untrusted_page_handler.h.
-const char* kReadAnythingFonts[] = {
-    "Poppins",       "Sans-serif",  "Serif",
-    "Comic Neue",    "Lexend Deca", "EB Garamond",
-    "STIX Two Text", "Andika",      "Atkinson Hyperlegible",
-};
-
-const char* kLanguagesSupportedByPoppins[] = {
-    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
-    "fr", "hi", "hr", "hu", "id", "it", "lt", "lv", "mr", "ms",
-    "nl", "pl", "pt", "ro", "sk", "sl", "sv", "sw", "tr"};
-
-const char* kLanguagesSupportedByComicNeue[] = {
-    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil", "fr", "hr",
-    "hu", "id", "it", "ms", "nl", "pl", "pt", "sk", "sl", "sv", "sw"};
-
-const char* kLanguagesSupportedByLexendDeca[] = {
-    "af", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
-    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl",
-    "pt", "ro", "sk", "sl", "sv", "sw", "tr", "vi"};
-
-const char* kLanguagesSupportedByEbGaramond[] = {
-    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
-    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
-    "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"};
-
-const char* kLanguagesSupportedByStixTwoText[] = {
-    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil",
-    "fr", "hr", "hu", "id", "it", "lt", "lv", "ms", "nl", "pl", "pt",
-    "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk", "vi"};
-
-const char* kLanguagesSupportedByAndika[] = {
-    "af", "bg", "ca", "cs", "da", "de", "en", "es", "et", "fi", "fil", "fr",
-    "hr", "hu", "id", "it", "kr", "lt", "lu", "lv", "ms", "nd", "nl",  "nr",
-    "pl", "pt", "ro", "ru", "sk", "sl", "sr", "sv", "sw", "tr", "uk",  "vi"};
-
-const char* kLanguagesSupportedByAtkinsonHyperlegible[] = {
-    "af", "ca", "cs", "da", "de", "en", "es", "et", "eu", "fi", "fil", "fr",
-    "gl", "hr", "hu", "id", "is", "it", "kk", "lt", "ms", "nl", "no",  "pl",
-    "pt", "pt", "ro", "sl", "sq", "sr", "sr", "sv", "sw", "zu"};
-
-// Enum for logging the user-chosen font.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ReadAnythingFont {
-  kPoppins = 0,
-  kSansSerif = 1,
-  kSerif = 2,
-  kComicNeue = 3,
-  kLexendDeca = 4,
-  kEbGaramond = 5,
-  kStixTwoText = 6,
-  kAndika = 7,
-  kAtkinsonHyperlegible = 8,
-  kMaxValue = kAtkinsonHyperlegible,
-};
 
 // Enum for logging how a scroll occurs.
 // These values are persisted to logs. Entries should not be renumbered and

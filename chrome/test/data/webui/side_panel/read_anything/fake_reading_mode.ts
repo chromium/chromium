@@ -211,6 +211,11 @@ export class FakeReadingMode {
     this.colorTheme = this.blueTheme;
   }
 
+  // Returns the css name of the given font, or the default if it's not valid.
+  getValidatedFontName(font: string) {
+    return font;
+  }
+
   // Called when the font is changed via the webui toolbar.
   onFontChange(font: string) {
     this.fontName = font;

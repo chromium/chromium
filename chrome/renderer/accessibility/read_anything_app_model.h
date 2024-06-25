@@ -362,7 +362,7 @@ class ReadAnythingAppModel {
   };
 
   // Maps fonts to whether the current base_language_code_ supports that font.
-  std::map<std::string, bool> supported_fonts_;
+  std::map<std::string_view, bool> supported_fonts_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

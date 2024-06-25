@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 #include "components/language/core/common/locale_util.h"
@@ -855,6 +856,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::OnCollapseSelection)
       .SetProperty("supportedFonts",
                    &ReadAnythingAppController::GetSupportedFonts)
+      .SetProperty("allFonts", &ReadAnythingAppController::GetAllFonts)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
       .SetMethod("setLanguageForTesting",
@@ -893,7 +895,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getNodeIdForCurrentSegmentIndex",
                  &ReadAnythingAppController::GetNodeIdForCurrentSegmentIndex)
       .SetMethod("getNextWordHighlightLength",
-                 &ReadAnythingAppController::GetNextWordHighlightLength);
+                 &ReadAnythingAppController::GetNextWordHighlightLength)
+      .SetMethod("getValidatedFontName",
+                 &ReadAnythingAppController::GetValidatedFontName);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -1274,6 +1278,18 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
   return model_.GetSupportedFonts();
+}
+
+std::string ReadAnythingAppController::GetValidatedFontName(
+    const std::string& font) const {
+  bool is_valid = base::Contains(fonts::kReadAnythingFonts, font);
+  return is_valid ? fonts::kFontInfos.at(font).css_name
+                  : string_constants::kReadAnythingDefaultFont;
+}
+
+std::vector<std::string> ReadAnythingAppController::GetAllFonts() {
+  return std::vector<std::string>(std::begin(fonts::kReadAnythingFonts),
+                                  std::end(fonts::kReadAnythingFonts));
 }
 
 void ReadAnythingAppController::RequestImageDataUrl(

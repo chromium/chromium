@@ -203,17 +203,6 @@ class ReadAnythingUntrustedPageHandler :
   raw_ptr<ReadAnythingTabHelper> tab_helper_;
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
-  const std::map<std::string, ReadAnythingFont> font_map_ = {
-      {"Poppins", ReadAnythingFont::kPoppins},
-      {"Sans-serif", ReadAnythingFont::kSansSerif},
-      {"Serif", ReadAnythingFont::kSerif},
-      {"Comic Neue", ReadAnythingFont::kComicNeue},
-      {"Lexend Deca", ReadAnythingFont::kLexendDeca},
-      {"EB Garamond", ReadAnythingFont::kEbGaramond},
-      {"STIX Two Text", ReadAnythingFont::kStixTwoText},
-      {"Andika", ReadAnythingFont::kAndika},
-      {"Atkinson Hyperlegible", ReadAnythingFont::kAtkinsonHyperlegible},
-  };
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;
 

@@ -69,8 +69,11 @@ declare namespace chrome {
     // Indicates if this page is a Google doc.
     let isGoogleDocs: boolean;
 
-    // Fonts supported by the browser's preferred language.
+    // Fonts supported by the user's current language.
     let supportedFonts: string[];
+
+    // All fonts supported by Reading mode.
+    let allFonts: string[];
 
     // The base language code that should be used for speech synthesis voices.
     let baseLanguageForSpeech: string;
@@ -177,6 +180,9 @@ declare namespace chrome {
     function onDarkTheme(): void;
     function onYellowTheme(): void;
     function onBlueTheme(): void;
+
+    // Returns the css name of the given font, or the default if it's not valid.
+    function getValidatedFontName(font: string): string;
 
     // Called when the font is changed via the webui toolbar.
     function onFontChange(font: string): void;

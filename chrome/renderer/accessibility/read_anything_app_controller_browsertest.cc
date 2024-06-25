@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
@@ -445,6 +446,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetAccessibleBoundary(text, max_text_length);
   }
 
+  std::string GetValidatedFont(const std::string& font) {
+    return controller_->GetValidatedFontName(font);
+  }
+
   void ResetReadAloudState() {
     controller_->read_aloud_model_.ResetReadAloudState();
   }
@@ -527,6 +532,30 @@ TEST_F(ReadAnythingAppControllerTest, OnFontChange_UpdatesFont) {
 
   EXPECT_CALL(page_handler_, OnFontChange(expected_font)).Times(1);
   ASSERT_EQ(FontName(), expected_font);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_FontWithQuotes) {
+  std::string expected_font = "\"Lexend Deca\"";
+  std::string actual_font = GetValidatedFont("Lexend Deca");
+  ASSERT_EQ(actual_font, expected_font);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_FontWithoutQuotes) {
+  std::string expected_font = "serif";
+  std::string actual_font = GetValidatedFont("Serif");
+  ASSERT_EQ(actual_font, expected_font);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_InvalidFont) {
+  std::string expected_font = string_constants::kReadAnythingDefaultFont;
+  std::string actual_font = GetValidatedFont("not a real font");
+  ASSERT_EQ(actual_font, expected_font);
+}
+
+TEST_F(ReadAnythingAppControllerTest, GetValidatedFontName_UnsupportedFont) {
+  std::string expected_font = string_constants::kReadAnythingDefaultFont;
+  std::string actual_font = GetValidatedFont("Times New Roman");
+  ASSERT_EQ(actual_font, expected_font);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnSpeechRateChange) {

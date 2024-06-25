@@ -12,31 +12,7 @@ export const spinnerDebounceTimeout = 150;
 export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
 export const toastDurationMs = 10000;
 
-export const defaultFontName: string = 'sans-serif';
-
-// Defines the valid font names that can be passed to front-end and maps
-// them to a corresponding class style in app.html. Must stay in-sync with
-// the names set in read_anything_model.cc.
-const validFontNames: Array<{name: string, css: string}> = [
-  {name: 'Poppins', css: 'Poppins'},
-  {name: 'Sans-serif', css: 'sans-serif'},
-  {name: 'Serif', css: 'serif'},
-  {name: 'Comic Neue', css: '"Comic Neue"'},
-  {name: 'Lexend Deca', css: '"Lexend Deca"'},
-  {name: 'EB Garamond', css: '"EB Garamond"'},
-  {name: 'STIX Two Text', css: '"STIX Two Text"'},
-  {name: 'Andika', css: 'Andika'},
-  {name: 'Atkinson Hyperlegible', css: 'Atkinson Hyperlegible'},
-];
-
 const ACTIVE_CSS_CLASS = 'active';
-
-// Validate that the given font name is a valid choice, or use the default.
-export function validatedFontName(fontName: string): string {
-  const validFontName =
-      validFontNames.find((f: {name: string}) => f.name === fontName);
-  return validFontName ? validFontName.css : defaultFontName;
-}
 
 export function getCurrentSpeechRate(): number {
   return parseFloat(chrome.readingMode.speechRate.toFixed(1));

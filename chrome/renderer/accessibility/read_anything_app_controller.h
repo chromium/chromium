@@ -224,6 +224,8 @@ class ReadAnythingAppController
   void RequestImageDataUrl(ui::AXNodeID node_id) const;
   std::string GetImageDataUrl(ui::AXNodeID node_id) const;
   void OnSpeechPlayingStateChanged(bool paused);
+  std::string GetValidatedFontName(const std::string& font) const;
+  std::vector<std::string> GetAllFonts();
 
   // The language code that should be used to determine which voices are
   // supported for speech.

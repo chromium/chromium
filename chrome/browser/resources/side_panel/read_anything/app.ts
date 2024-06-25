@@ -19,7 +19,7 @@ import {listenOnce} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
@@ -2289,7 +2289,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private updateFont_(fontName: string) {
-    const validFontName = validatedFontName(fontName);
+    const validFontName = chrome.readingMode.getValidatedFontName(fontName);
     this.updateStyles({
       '--font-family': validFontName,
     });
