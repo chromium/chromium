@@ -28,9 +28,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SVG_PAINT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_SVG_PAINT_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

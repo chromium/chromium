@@ -32,12 +32,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
 
 #include <memory>
+
 #include "base/check.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace ui {
@@ -45,6 +48,10 @@ class ColorProvider;
 }  // namespace ui
 
 namespace blink {
+
+namespace cssvalue {
+class CSSColorMixValue;
+}  // namespace cssvalue
 
 class CORE_EXPORT StyleColor {
   DISALLOW_NEW();
@@ -77,10 +84,12 @@ class CORE_EXPORT StyleColor {
       kCurrentColor,
     };
 
-    UnresolvedColorMix(const cssvalue::CSSColorMixValue* in,
+    UnresolvedColorMix(Color::ColorSpace color_interpolation_space,
+                       Color::HueInterpolationMethod hue_interpolation_method,
                        const StyleColor& c1,
-                       const StyleColor& c2);
-    UnresolvedColorMix();
+                       const StyleColor& c2,
+                       double percentage,
+                       double alpha_multiplier);
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(color1_);

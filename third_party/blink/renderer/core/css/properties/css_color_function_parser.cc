@@ -221,12 +221,10 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
     auto color1 = TryResolveAtParseTime(color_mix_value->Color1());
     auto color2 = TryResolveAtParseTime(color_mix_value->Color2());
-    if (color1 && color2) {
-      return StyleColor::UnresolvedColorMix(
-                 color_mix_value, StyleColor(*color1), StyleColor(*color2))
-          .Resolve(Color());
+    if (!color1 || !color2) {
+      return std::nullopt;
     }
-    return std::nullopt;
+    return color_mix_value->Mix(*color1, *color2);
   }
   return std::nullopt;
 }

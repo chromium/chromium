@@ -2396,40 +2396,30 @@ StyleColor ResolveColorValue(const CSSValue& value,
   }
 
   if (auto* color_mix_value = DynamicTo<cssvalue::CSSColorMixValue>(value)) {
-    const CSSValue& color1 = color_mix_value->Color1();
-    const CSSValue& color2 = color_mix_value->Color2();
     const StyleColor style_color1 =
-        ResolveColorValue(color1, text_link_colors, used_color_scheme,
-                          color_provider, for_visited_link);
+        ResolveColorValue(color_mix_value->Color1(), text_link_colors,
+                          used_color_scheme, color_provider, for_visited_link);
     const StyleColor style_color2 =
-        ResolveColorValue(color2, text_link_colors, used_color_scheme,
-                          color_provider, for_visited_link);
-
+        ResolveColorValue(color_mix_value->Color2(), text_link_colors,
+                          used_color_scheme, color_provider, for_visited_link);
     // If neither color is "currentcolor" (or a color-mix function containing a
     // currentcolor) then color-mix functions can be resolved right now like
     // other colors. Otherwise we need to store an unresolved value on
     // StyleColor.
-    if (!style_color1.IsAbsoluteColor() || !style_color2.IsAbsoluteColor()) {
-      return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
-          color_mix_value, style_color1, style_color2));
+    if (style_color1.IsAbsoluteColor() && style_color2.IsAbsoluteColor()) {
+      const Color c1 = style_color1.Resolve(Color(), used_color_scheme);
+      const Color c2 = style_color2.Resolve(Color(), used_color_scheme);
+      return StyleColor(color_mix_value->Mix(c1, c2));
     }
-
-    double alpha_multiplier;
-    double mix_amount;
-    if (!cssvalue::CSSColorMixValue::NormalizePercentages(
-            color_mix_value->Percentage1(), color_mix_value->Percentage2(),
-            mix_amount, alpha_multiplier)) {
-      // TODO(crbug.com/1362022): Not sure what is appropriate to return when
-      // both mix amounts are zero.
-      return StyleColor(Color());
-    }
-
-    Color c1 = style_color1.Resolve(Color(), used_color_scheme);
-    Color c2 = style_color2.Resolve(Color(), used_color_scheme);
-    return StyleColor(
-        Color::FromColorMix(color_mix_value->ColorInterpolationSpace(),
-                            color_mix_value->HueInterpolationMethod(), c1, c2,
-                            mix_amount, alpha_multiplier));
+    double alpha_multiplier = 0.0;
+    double mix_amount = 0.0;
+    // TODO(crbug.com/40238188): Not sure what is appropriate to return when
+    // both mix amounts are zero.
+    color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier);
+    return StyleColor(MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
+        color_mix_value->ColorInterpolationSpace(),
+        color_mix_value->HueInterpolationMethod(), style_color1, style_color2,
+        mix_amount, alpha_multiplier));
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);

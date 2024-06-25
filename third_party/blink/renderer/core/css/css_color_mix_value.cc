@@ -16,16 +16,18 @@ bool CSSColorMixValue::NormalizePercentages(
     double& mix_amount,
     double& alpha_multiplier) {
   double p1 = 0.5;
-  double p2 = 0.5;
-  if (percentage1 && !percentage2) {
+  if (percentage1) {
     p1 = ClampTo<double>(percentage1->GetDoubleValue(), 0.0, 100.0) / 100.0;
+  }
+  double p2 = 0.5;
+  if (percentage2) {
+    p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
+  }
+
+  if (percentage1 && !percentage2) {
     p2 = 1.0 - p1;
   } else if (percentage2 && !percentage1) {
-    p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
     p1 = 1.0 - p2;
-  } else if (percentage1 && percentage2) {
-    p1 = ClampTo<double>(percentage1->GetDoubleValue(), 0.0, 100.0) / 100.0;
-    p2 = ClampTo<double>(percentage2->GetDoubleValue(), 0.0, 100.0) / 100.0;
   }
 
   if (p1 == 0.0 && p2 == 0.0) {
@@ -49,6 +51,17 @@ bool CSSColorMixValue::NormalizePercentages(
   }
 
   return true;
+}
+
+Color CSSColorMixValue::Mix(const Color& color1, const Color& color2) const {
+  double alpha_multiplier;
+  double mix_amount;
+  if (!NormalizePercentages(mix_amount, alpha_multiplier)) {
+    return Color();
+  }
+  return Color::FromColorMix(ColorInterpolationSpace(),
+                             HueInterpolationMethod(), color1, color2,
+                             mix_amount, alpha_multiplier);
 }
 
 bool CSSColorMixValue::Equals(const CSSColorMixValue& other) const {
