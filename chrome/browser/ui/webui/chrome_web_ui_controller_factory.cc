@@ -435,8 +435,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #endif
   if (url.host_piece() == chrome::kChromeUIDeviceLogHost)
     return &NewWebUI<chromeos::DeviceLogUI>;
-  if (url.host_piece() == chrome::kChromeUIDownloadInternalsHost)
-    return &NewWebUI<DownloadInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIGCMInternalsHost)
     return &NewWebUI<GCMInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIInternalsHost)
