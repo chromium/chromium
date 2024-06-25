@@ -34,6 +34,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
@@ -1159,7 +1160,7 @@ TEST_P(WallpaperControllerTest, WallpaperMovementDuringUnlock) {
   // that will animate in on top of the old one.
   controller->CreateEmptyWallpaperForTesting();
 
-  const bool forest_enabled = features::IsForestFeatureEnabled();
+  const bool forest_enabled = IsForestFeatureEnabled();
 
   // In this state we have a wallpaper views stored in
   // LockScreenWallpaperContainer.
@@ -3419,7 +3420,7 @@ TEST_P(WallpaperControllerTest, WallpaperBlurDuringLockScreenTransition) {
       controller_->GetWallpaperType()));
   ASSERT_FALSE(controller_->IsWallpaperBlurredForLockState());
 
-  const bool forest_enabled = features::IsForestFeatureEnabled();
+  const bool forest_enabled = IsForestFeatureEnabled();
   if (forest_enabled) {
     // There are three layers: underlay, original and old layers.
     ASSERT_EQ(3u, wallpaper_view()->layer()->parent()->children().size());

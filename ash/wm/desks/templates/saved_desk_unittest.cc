@@ -21,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -636,7 +637,7 @@ TEST_F(SavedDeskTest, NoAppSplitScreenLabelOnSavedDeskGridShow) {
   // With forest, the saved desk library button is hidden once we snap a
   // window. Therefore, we cannot show the grid while the labels are shown.
   // TODO(sammiequon): Remove this test once forest is fully launched.
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     return;
   }
 

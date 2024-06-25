@@ -18,6 +18,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/close_button.h"
 #include "ash/style/style_util.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk_action_button.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
@@ -446,7 +447,7 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   // button.
   // Don't show save options if there are no windows in the desk, or if the
   // desk bar did not originate from overview.
-  if (features::IsForestFeatureEnabled() && desk_->is_active() &&
+  if (IsForestFeatureEnabled() && desk_->is_active() &&
       ContainsAppWindows(desk_) &&
       owner_bar_->type() == DeskBarViewBase::Type::kOverview) {
     if (saved_desk_util::AreDesksTemplatesEnabled()) {

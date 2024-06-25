@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/cancel_mode.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -21,6 +20,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/utility/forest_util.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
@@ -449,7 +449,7 @@ void LockStateController::RequestShutdown(ShutdownReason reason) {
   }
 
   HideAndMaybeLockCursor(/*lock=*/true);
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     SessionStateChangeWithInformedRestore(RequestedSessionState::kShutdown);
   } else {
     StartSessionStateChange(RequestedSessionState::kShutdown);
@@ -461,7 +461,7 @@ void LockStateController::RequestCancelableShutdown(ShutdownReason reason) {
   shutdown_canceled_ = false;
 
   HideAndMaybeLockCursor(/*lock=*/false);
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     SessionStateChangeWithInformedRestore(
         RequestedSessionState::kCancelableShutdown);
   } else {
@@ -483,7 +483,7 @@ bool LockStateController::MaybeCancelShutdownAnimation() {
       SessionStateAnimator::ANIMATION_UNDO_GRAYSCALE_BRIGHTNESS,
       SessionStateAnimator::ANIMATION_SPEED_REVERT_SHUTDOWN);
   shutdown_canceled_ = true;
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     // Shutdown maybe canceled before or after image saved. So we need to delete
     // both here and `OnImageSaved`.
     DeleteInformedRestoreImage(informed_restore_image_callback_for_test_,
@@ -496,7 +496,7 @@ bool LockStateController::MaybeCancelShutdownAnimation() {
 void LockStateController::RequestRestart(
     power_manager::RequestRestartReason reason,
     const std::string& description) {
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     HideAndMaybeLockCursor(/*lock=*/false);
     restart_callback_ =
         base::BindOnce(&LockStateController::DoRestart, base::Unretained(this),
@@ -508,7 +508,7 @@ void LockStateController::RequestRestart(
 }
 
 void LockStateController::RequestSignOut() {
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureEnabled()) {
     SessionStateChangeWithInformedRestore(RequestedSessionState::kSignOut);
   } else {
     Shell::Get()->session_controller()->RequestSignOut();

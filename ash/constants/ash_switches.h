@@ -507,6 +507,12 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsConchSecretKeyMatched();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsForestSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+void SetIgnoreForestSecretKeyForTest(bool ignore);
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsMahiSecretKeyMatched();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)

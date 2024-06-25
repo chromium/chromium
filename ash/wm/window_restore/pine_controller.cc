@@ -5,7 +5,6 @@
 #include "ash/wm/window_restore/pine_controller.h"
 
 #include "ash/birch/birch_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -22,6 +21,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -221,7 +221,7 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 
 void PineController::MaybeStartPineOverviewSession(
     std::unique_ptr<InformedRestoreContentsData> contents_data) {
-  CHECK(features::IsForestFeatureEnabled());
+  CHECK(IsForestFeatureEnabled());
 
   if (OverviewController::Get()->InOverviewSession()) {
     return;
@@ -296,7 +296,7 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   // In multi-user scenario, forest may have been available for the user that
   // started overview, but not for the current user. (Switching users ends
   // overview.)
-  if (!features::IsForestFeatureEnabled()) {
+  if (!IsForestFeatureEnabled()) {
     return;
   }
 

@@ -201,6 +201,7 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_delegate.h"
+#include "ash/utility/forest_util.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/ash_focus_rules.h"
@@ -1605,7 +1606,7 @@ void Shell::Init(
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
 
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureFlagEnabled()) {
     birch_model_ = std::make_unique<BirchModel>();
   }
 
@@ -1779,7 +1780,7 @@ void Shell::Init(
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
   float_controller_ = std::make_unique<FloatController>();
-  if (features::IsForestFeatureEnabled()) {
+  if (IsForestFeatureFlagEnabled()) {
     pine_controller_ = std::make_unique<PineController>();
   }
   pip_controller_ = std::make_unique<PipController>();

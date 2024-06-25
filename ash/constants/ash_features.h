@@ -1121,7 +1121,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFocusModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognitionForDev();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsForceReSyncDriveEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsForestFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherListViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

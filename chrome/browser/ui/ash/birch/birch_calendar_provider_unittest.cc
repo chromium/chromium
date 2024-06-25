@@ -9,6 +9,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "base/check.h"
@@ -71,8 +72,13 @@ class CountingCalendarFetcher : public BirchCalendarFetcher {
 // a BirchModel) needed by the test.
 class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
  public:
-  BirchCalendarProviderTest() = default;
-  ~BirchCalendarProviderTest() override = default;
+  BirchCalendarProviderTest() {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+    feature_list_.InitAndEnableFeature(features::kForestFeature);
+  }
+  ~BirchCalendarProviderTest() override {
+    switches::SetIgnoreForestSecretKeyForTest(false);
+  }
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -88,7 +94,7 @@ class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
 };

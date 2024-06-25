@@ -48,6 +48,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/test_widget_builder.h"
+#include "ash/utility/forest_util.h"
 #include "ash/wm/desks/default_desk_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_button.h"
@@ -9526,7 +9527,7 @@ TEST_P(DeskBarTest, Basic) {
   UpdateDisplay("800x600");
 
   const int expected_expanded_overview_height =
-      features::IsForestFeatureEnabled() ? 114 : 98;
+      IsForestFeatureEnabled() ? 114 : 98;
 
   const DeskBarTestBasicCase tests[] = {
       {.test_name = "single desk + bottom shelf + saved desks",
@@ -9660,7 +9661,7 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
   ASSERT_TRUE(desk_bar_widget);
 
   const int expected_expanded_overview_height =
-      features::IsForestFeatureEnabled() ? 114 : 98;
+      IsForestFeatureEnabled() ? 114 : 98;
 
   if (bar_type_ == DeskBarViewBase::Type::kOverview) {
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
