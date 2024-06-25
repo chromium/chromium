@@ -431,7 +431,7 @@ template("generate_jni_impl") {
         prevent_excluded_classes_from_classpath = true
         deps = [
           ":$_jni_zero_action_target_name",
-          "//third_party/jni_zero:gendeps_java",
+          "//third_party/jni_zero:jni_zero_java",
         ]
       }
     }

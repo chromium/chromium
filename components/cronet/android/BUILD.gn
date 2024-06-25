@@ -1262,7 +1262,6 @@ cronet_javatests_deps_to_package = [
   ":flags_java_proto",
   "//base:base_java",
   "//third_party/jni_zero:jni_zero_java",
-  "//third_party/jni_zero:jni_zero_jni_java",
   "//base:base_java_test_support",
 
   "//net/android:embedded_test_server_aidl_java",

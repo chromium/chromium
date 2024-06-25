@@ -19,14 +19,8 @@ config("jni_zero_defines") {
 }
 
 generate_jni("jni_zero_jni") {
-  sources = [
-    "java/src/org/jni_zero/JniInit.java",
-    "java/src/org/jni_zero/JniUtil.java",
-  ]
-  visibility = [
-    ":*",
-    "//components/cronet/android/*",
-  ]
+  sources = [ "java/src/org/jni_zero/JniUtil.java" ]
+  visibility = [ ":*" ]
 }
 
 generate_jar_jni("system_jni") {
@@ -75,34 +69,23 @@ if (enable_java_templates && is_android) {
   import("//build/config/android/rules.gni")
 
   android_library("jni_zero_java") {
-    deps = [
-      ":jni_zero_jni_java",
-      "//build/android:build_java",
-    ]
-    public_deps = [ ":gendeps_java" ]
-    preferred_dep = true
+    supports_android = true
+    deps = [ "//build/android:build_java" ]
     sources = [
       "java/src/org/jni_zero/AccessedByNative.java",
       "java/src/org/jni_zero/CalledByNative.java",
       "java/src/org/jni_zero/CalledByNativeForTesting.java",
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
+      "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JNINamespace.java",
-      "java/src/org/jni_zero/JniInit.java",
+      "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/JniType.java",
       "java/src/org/jni_zero/JniUtil.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
+      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
       "java/src/org/jni_zero/NativeMethods.java",
     ]
     proguard_configs = [ "proguard.flags" ]
-  }
-
-  # Classes referenced by generated code.
-  android_library("gendeps_java") {
-    sources = [
-      "java/src/org/jni_zero/CheckDiscard.java",
-      "java/src/org/jni_zero/JniStaticTestMocker.java",
-      "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
-    ]
   }
 
   group("jni_zero_tests") {
