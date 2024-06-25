@@ -217,15 +217,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         signInPreference.initialize(getProfile(), profileDataCache, accountManagerFacade);
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
-            googleServicePreference.setIcon(R.drawable.ic_google_services_48dp_with_bg);
-            googleServicePreference.setViewId(R.id.account_management_google_services_row);
-        }
-
         cachePreferences();
-
         updateAutofillPreferences();
         updatePlusAddressesPreference();
 
@@ -315,6 +307,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         updateManageSyncPreference();
+        updateGoogleServicePreference();
         updateSearchEnginePreference();
         updateAutofillPreferences();
         updatePlusAddressesPreference();
@@ -361,6 +354,18 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private void removePreferenceIfPresent(String key) {
         Preference preference = getPreferenceScreen().findPreference(key);
         if (preference != null) getPreferenceScreen().removePreference(preference);
+    }
+
+    // Update the icon of the google services preference. Must be called after each theme change
+    // to ensure the correct color is set for SurfaceColorDrawable.
+    // See https://crbug.com/349112129.
+    private void updateGoogleServicePreference() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
+            googleServicePreference.setIcon(R.drawable.ic_google_services_48dp_with_bg);
+            googleServicePreference.setViewId(R.id.account_management_google_services_row);
+        }
     }
 
     private void updateManageSyncPreference() {
