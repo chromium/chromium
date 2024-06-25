@@ -555,6 +555,9 @@ public final class ProductionSupportedFlagList {
                 "Allows creating WebRTC Encoded Transforms without the "
                         + "encodedInsertableStreams RTCPeerConnection Parameter."),
         Flag.baseFeature(
+                "WebRtcEncodedTransformDirectCallback",
+                "Directly invoke WebRTC Encoded Transform callbacks in a worker."),
+        Flag.baseFeature(
                 "RTCAlignReceivedEncodedVideoTransforms",
                 "Aligns the JS calls by WebRTC Encoded Transforms on Video Frames with a Metronome"
                         + " to save power."),
