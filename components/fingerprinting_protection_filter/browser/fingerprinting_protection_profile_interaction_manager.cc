@@ -8,6 +8,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -20,10 +21,10 @@ using ::subresource_filter::ActivationDecision;
 using ::subresource_filter::mojom::ActivationLevel;
 
 ProfileInteractionManager::ProfileInteractionManager(
-    PrefService* pref_service,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings)
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+    PrefService* prefs)
     : tracking_protection_settings_(tracking_protection_settings),
-      prefs_(pref_service) {}
+      prefs_(prefs) {}
 
 ProfileInteractionManager::~ProfileInteractionManager() = default;
 
@@ -44,11 +45,21 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   if (*decision == ActivationDecision::UNKNOWN) {
     return ActivationLevel::kDisabled;
   }
+  // If we don't have access to `TrackingProtectionSettings`, we don't have a
+  // basis to modify the initial activation level anyway.
+  if (!tracking_protection_settings_) {
+    return initial_activation_level;
+  }
+  // dry_run mode will skip the check for user opt-in, since it is not visible
+  // to the user.
+  if (initial_activation_level == ActivationLevel::kDryRun) {
+    return initial_activation_level;
+  }
+
   // We enable fingerprinting protection if the user has turned the feature on
   // in settings.
   bool enable_fp =
       tracking_protection_settings_->IsFingerprintingProtectionEnabled();
-
   if (features::kEnableOn3pcBlocked.Get()) {
     // The value of prefs::kCookieControlsMode reflects the state of third-party
     // cookies being disabled, i.e. 3PCD is on or user blocks 3PC.

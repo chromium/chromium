@@ -240,6 +240,8 @@
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
@@ -5202,6 +5204,14 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
           subresource_filter::ContentSubresourceFilterThrottleManager::
               FromNavigationHandle(*handle)) {
     throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
+  }
+
+  if (base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
+                                       kEnableFingerprintingProtectionFilter)) {
+    if (auto* throttle_manager = fingerprinting_protection_filter::
+            ThrottleManager::FromNavigationHandle(*handle)) {
+      throttle_manager->MaybeAppendNavigationThrottles(handle, &throttles);
+    }
   }
 
   MaybeAddThrottle(

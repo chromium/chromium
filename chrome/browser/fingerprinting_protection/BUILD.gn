@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("fingerprinting_protection") {
+  sources = [
+    "chrome_fingerprinting_protection_web_contents_helper_factory.cc",
+    "chrome_fingerprinting_protection_web_contents_helper_factory.h",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//components/fingerprinting_protection_filter/browser",
+    "//components/prefs",
+    "//components/privacy_sandbox:tracking_protection_settings",
+    "//components/subresource_filter/content/shared/browser",
+    "//content/public/browser",
+  ]
+}

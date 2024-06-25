@@ -2072,6 +2072,7 @@ static_library("browser") {
     "//chrome/browser/devtools",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/favicon",
+    "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",

@@ -23,12 +23,19 @@ namespace fingerprinting_protection_filter {
 using ::subresource_filter::ActivationDecision;
 using ::subresource_filter::mojom::ActivationLevel;
 
+// TODO(https://crbug.com/40280666): This doesn't actually throttle any
+// navigations - use a different object to kick off the
+// `ProfileInteractionManager`.
 FingerprintingProtectionPageActivationThrottle::
     FingerprintingProtectionPageActivationThrottle(
         content::NavigationHandle* handle,
-        ProfileInteractionManager* profile_interaction_manager)
+        privacy_sandbox::TrackingProtectionSettings*
+            tracking_protection_settings,
+        PrefService* prefs)
     : NavigationThrottle(handle),
-      profile_interaction_manager_(profile_interaction_manager) {}
+      profile_interaction_manager_(std::make_unique<ProfileInteractionManager>(
+          tracking_protection_settings,
+          prefs)) {}
 
 FingerprintingProtectionPageActivationThrottle::
     ~FingerprintingProtectionPageActivationThrottle() = default;
@@ -70,13 +77,21 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
     return;
   }
   ActivationLevel activation_level = features::kActivationLevel.Get();
-  if (profile_interaction_manager_) {
+  if (profile_interaction_manager_.get()) {
     activation_level = profile_interaction_manager_->OnPageActivationComputed(
         navigation_handle(), activation_level, &decision);
   }
-  FingerprintingProtectionWebContentsHelper::FromWebContents(
-      navigation_handle()->GetWebContents())
-      ->NotifyPageActivationComputed(navigation_handle(), decision);
+  subresource_filter::mojom::ActivationState activation_state;
+  activation_state.activation_level = activation_level;
+  auto* web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          navigation_handle()->GetWebContents());
+  // Making sure the WebContentsHelper exists is outside the scope of this
+  // class.
+  if (web_contents_helper) {
+    web_contents_helper->NotifyPageActivationComputed(navigation_handle(),
+                                                      activation_state);
+  }
 
   LogMetricsOnChecksComplete(decision, activation_level);
 }

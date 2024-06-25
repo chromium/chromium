@@ -5,17 +5,30 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_PAGE_ACTIVATION_THROTTLE_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_PAGE_ACTIVATION_THROTTLE_H_
 
-#include "base/memory/raw_ptr.h"
+#include <memory>
+
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
 #include "content/public/browser/navigation_throttle.h"
 
+class PrefService;
+
+namespace privacy_sandbox {
+class TrackingProtectionSettings;
+}
+
 namespace subresource_filter {
 enum class ActivationDecision;
+namespace mojom {
+enum class ActivationLevel;
+}  // namespace mojom
 }  // namespace subresource_filter
 
 namespace fingerprinting_protection_filter {
+
+class ProfileInteractionManager;
 
 // Navigation throttle responsible for activating subresource filtering on page
 // loads that match the Fingerprinting Protection Filtering criteria.
@@ -27,7 +40,8 @@ class FingerprintingProtectionPageActivationThrottle
   // decisions made by the throttle.
   FingerprintingProtectionPageActivationThrottle(
       content::NavigationHandle* handle,
-      ProfileInteractionManager* profile_interaction_manager);
+      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
+      PrefService* prefs);
 
   FingerprintingProtectionPageActivationThrottle(
       const FingerprintingProtectionPageActivationThrottle&) = delete;
@@ -44,6 +58,9 @@ class FingerprintingProtectionPageActivationThrottle
   const char* GetNameForLogging() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FingerprintingProtectionPageActivationThrottleTest,
+                           FlagEnabledDefaultActivatedParams_IsAllowlisted);
+
   void CheckCurrentUrl();
   virtual void NotifyResult(subresource_filter::ActivationDecision decision);
 
@@ -53,8 +70,7 @@ class FingerprintingProtectionPageActivationThrottle
 
   subresource_filter::ActivationDecision GetActivationDecision() const;
 
-  // May be null. If non-null, must outlive this class.
-  raw_ptr<ProfileInteractionManager> profile_interaction_manager_;
+  std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
 
   // Set to TimeTicks::Now() when the navigation is deferred in
   // WillProcessResponse. If deferral was not necessary, will remain null.

@@ -34,6 +34,7 @@
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
+#include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -103,11 +104,11 @@
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -133,7 +134,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/feed/buildflags.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -408,10 +408,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   FindBarState::ConfigureWebContents(web_contents);
   if (base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
                                        kEnableFingerprintingProtectionFilter)) {
-    fingerprinting_protection_filter::
-        FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-            web_contents, profile->GetPrefs(),
-            TrackingProtectionSettingsFactory::GetForProfile(profile));
+    // TODO(https://crbug.com/40280666): Move this to TabFeatures.
+    CreateFingerprintingProtectionWebContentsHelper(
+        web_contents, profile->GetPrefs(),
+        TrackingProtectionSettingsFactory::GetForProfile(profile));
   }
   download::DownloadNavigationObserver::CreateForWebContents(
       web_contents,

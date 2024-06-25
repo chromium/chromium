@@ -10,6 +10,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/fingerprinting_protection/chrome_fingerprinting_protection_web_contents_helper_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -1519,9 +1520,9 @@ TEST_F(CookieControlsUserBypassTest, SubresourceBlocked) {
   fingerprinting_protection_feature_list.InitAndEnableFeature(
       fingerprinting_protection_filter::features::
           kEnableFingerprintingProtectionFilter);
-  fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
-      CreateForWebContents(web_contents(), /*pref_service=*/nullptr,
-                           /*tracking_protection_settings=*/nullptr);
+  CreateFingerprintingProtectionWebContentsHelper(
+      web_contents(), /*pref_service=*/nullptr,
+      /*tracking_protection_settings=*/nullptr);
 
   NavigateAndCommit(GURL("https://example.com"));
   fingerprinting_protection_filter::FingerprintingProtectionWebContentsHelper::
