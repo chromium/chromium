@@ -1155,7 +1155,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   MinMaxSizesResult CachedIndefiniteIntrinsicLogicalWidths() const {
     NOT_DESTROYED();
     DCHECK(!IntrinsicLogicalWidthsDirty());
-    DCHECK(!IntrinsicLogicalWidthsChildDependsOnBlockConstraints());
     return {intrinsic_logical_widths_,
             IntrinsicLogicalWidthsDependsOnBlockConstraints()};
   }
@@ -1185,21 +1184,17 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Sets the min/max sizes for this box.
   void SetIntrinsicLogicalWidths(LayoutUnit initial_block_size,
-                                 bool depends_on_block_constraints,
-                                 bool child_depends_on_block_constraints,
-                                 const MinMaxSizes& sizes) {
+                                 const MinMaxSizesResult& result) {
     NOT_DESTROYED();
     // Write to the "indefinite" cache slot if:
     //  - If the initial block-size is indefinite.
     //  - If we don't have any children which depend on the initial block-size
     //    (it can change and we wouldn't give a different answer).
     if (initial_block_size == kIndefiniteSize ||
-        !child_depends_on_block_constraints) {
-      intrinsic_logical_widths_ = sizes;
+        !result.depends_on_block_constraints) {
+      intrinsic_logical_widths_ = result.sizes;
       SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
-          depends_on_block_constraints);
-      SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
-          child_depends_on_block_constraints);
+          result.depends_on_block_constraints);
       SetIndefiniteIntrinsicLogicalWidthsDirty(false);
     } else {
       if (!min_max_sizes_cache_) {
@@ -1207,8 +1202,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       } else if (DefiniteIntrinsicLogicalWidthsDirty()) {
         min_max_sizes_cache_->Clear();
       }
-      min_max_sizes_cache_->Add(sizes, initial_block_size,
-                                depends_on_block_constraints);
+      min_max_sizes_cache_->Add(result.sizes, initial_block_size,
+                                result.depends_on_block_constraints);
       SetDefiniteIntrinsicLogicalWidthsDirty(false);
     }
     ClearIntrinsicLogicalWidthsDirty();

@@ -243,12 +243,6 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
     return false;
   }
 
-  if (node.HasAspectRatio() &&
-      (style.LogicalMinHeight().HasPercentOrStretch() ||
-       style.LogicalMaxHeight().HasPercentOrStretch())) {
-    return false;
-  }
-
   if (node.IsTableCell() && To<LayoutTableCell>(node.GetLayoutBox())
                                     ->IntrinsicLogicalWidthsBorderSizes() !=
                                 constraint_space.TableCellBorders()) {
@@ -259,9 +253,17 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
   // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
   // In this specific case our min/max sizes are now dependent on what
   // "min-width" resolves to - which is unique to grid.
-  if (node.IsGrid() && (style.LogicalMinWidth().HasPercentOrStretch() ||
-                        style.LogicalMaxWidth().HasPercentOrStretch())) {
-    return false;
+  if (node.IsGrid()) {
+    if (style.LogicalMinWidth().HasPercentOrStretch() ||
+        style.LogicalMaxWidth().HasPercentOrStretch()) {
+      return false;
+    }
+    // Also consider transferred min/max sizes.
+    if (node.HasAspectRatio() &&
+        (style.LogicalMinHeight().HasPercentOrStretch() ||
+         style.LogicalMaxHeight().HasPercentOrStretch())) {
+      return false;
+    }
   }
 
   return true;
@@ -847,6 +849,19 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   if (IsListItem())
     To<LayoutListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 
+  // There is a path below for which we don't need to compute the (relatively)
+  // expensive geometry.
+  std::optional<FragmentGeometry> cached_fragment_geometry;
+  auto IntrinsicFragmentGeometry = [&]() -> FragmentGeometry& {
+    if (!cached_fragment_geometry) {
+      cached_fragment_geometry =
+          CalculateInitialFragmentGeometry(constraint_space, *this,
+                                           /* break_token */ nullptr,
+                                           /* is_intrinsic */ true);
+    }
+    return *cached_fragment_geometry;
+  };
+
   const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
   // In some scenarios, GridNG and FlexNG will run layout on their items during
   // MinMaxSizes computation. Instead of running (and possible caching incorrect
@@ -854,10 +869,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   if (!is_in_perform_layout &&
       (IsGrid() ||
        (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection()))) {
-    const FragmentGeometry fragment_geometry =
-        CalculateInitialFragmentGeometry(constraint_space, *this,
-                                         /* break_token */ nullptr,
-                                         /* is_intrinsic */ true);
+    const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     MinMaxSizes sizes;
@@ -907,12 +919,6 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
             constraint_space.IsBlockAutoBehaviorStretch());
   };
 
-  auto IntrinsicFragmentGeometry = [&]() -> FragmentGeometry {
-    return CalculateInitialFragmentGeometry(constraint_space, *this,
-                                            /* break_token */ nullptr,
-                                            /* is_intrinsic */ true);
-  };
-
   // Directly handle replaced elements, caching doesn't have substantial gains
   // as most layouts are interested in the min/max content contribution which
   // calls `ComputeReplacedSize` directly. This is mainly used by flex.
@@ -924,7 +930,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
 
   const bool has_aspect_ratio = !Style().AspectRatio().IsAuto();
   if (has_aspect_ratio && type == MinMaxSizesType::kContent) {
-    const FragmentGeometry fragment_geometry = IntrinsicFragmentGeometry();
+    const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     if (fragment_geometry.border_box_size.block_size != kIndefiniteSize) {
@@ -945,67 +951,70 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
   }
 
+  std::optional<MinMaxSizesResult> result;
+
   // Use our cached sizes if we don't have a descendant which depends on our
   // block constraints.
   if (can_use_cached_intrinsic_inline_sizes &&
-      !box_->IntrinsicLogicalWidthsChildDependsOnBlockConstraints()) {
-    return box_->CachedIndefiniteIntrinsicLogicalWidths();
+      !box_->IntrinsicLogicalWidthsDependsOnBlockConstraints()) {
+    result = box_->CachedIndefiniteIntrinsicLogicalWidths();
   }
 
-  const FragmentGeometry fragment_geometry = IntrinsicFragmentGeometry();
-  const LayoutUnit initial_block_size =
-      fragment_geometry.border_box_size.block_size;
-
-  // We might still be able to use the cached values if our children don't
-  // depend on the *input* %-block-size.
-  if (can_use_cached_intrinsic_inline_sizes &&
+  // We might still be able to use the cached values for a specific initial
+  // block-size.
+  if (!result && can_use_cached_intrinsic_inline_sizes &&
       !UseParentPercentageResolutionBlockSizeForChildren()) {
-    if (auto result = box_->CachedIntrinsicLogicalWidths(initial_block_size)) {
-      return *result;
+    result = box_->CachedIntrinsicLogicalWidths(
+        IntrinsicFragmentGeometry().border_box_size.block_size);
+  }
+
+  if (!result) {
+    const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
+    result = ComputeMinMaxSizesWithAlgorithm(
+        LayoutAlgorithmParams(*this, fragment_geometry, constraint_space),
+        float_input);
+
+    const BoxStrut border_padding =
+        fragment_geometry.border + fragment_geometry.padding;
+    if (auto min_size = ContentMinimumInlineSize(*this, border_padding)) {
+      result->sizes.min_size = *min_size;
+    }
+
+    // Update the cache with this intermediate value.
+    box_->SetIntrinsicLogicalWidths(
+        fragment_geometry.border_box_size.block_size, *result);
+    if (IsTableCell()) {
+      To<LayoutTableCell>(box_.Get())
+          ->SetIntrinsicLogicalWidthsBorderSizes(
+              constraint_space.TableCellBorders());
     }
   }
 
-  const BoxStrut border_padding =
-      fragment_geometry.border + fragment_geometry.padding;
-
-  MinMaxSizesResult result = ComputeMinMaxSizesWithAlgorithm(
-      LayoutAlgorithmParams(*this, fragment_geometry, constraint_space),
-      float_input);
-
-  if (auto min_size = ContentMinimumInlineSize(*this, border_padding))
-    result.sizes.min_size = *min_size;
+  if (has_aspect_ratio) {
+    const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
+    if (fragment_geometry.border_box_size.block_size == kIndefiniteSize) {
+      // If the block size will be computed from the aspect ratio, we need
+      // to take the max-block-size into account.
+      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
+      const BoxStrut border_padding =
+          fragment_geometry.border + fragment_geometry.padding;
+      const MinMaxSizes min_max = ComputeMinMaxInlineSizesFromAspectRatio(
+          constraint_space, Style(), border_padding);
+      result->sizes.min_size =
+          min_max.ClampSizeToMinAndMax(result->sizes.min_size);
+      result->sizes.max_size =
+          min_max.ClampSizeToMinAndMax(result->sizes.max_size);
+    }
+  }
 
   // Determine if we are dependent on the block-constraints.
-  bool depends_on_block_constraints =
-      (DependsOnBlockConstraints() ||
-       UseParentPercentageResolutionBlockSizeForChildren()) &&
-      (result.depends_on_block_constraints || has_aspect_ratio);
-
-  if (has_aspect_ratio && initial_block_size == kIndefiniteSize) {
-    // If the block size will be computed from the aspect ratio, we need
-    // to take the max-block-size into account.
-    // https://drafts.csswg.org/css-sizing-4/#aspect-ratio
-    MinMaxSizes min_max = ComputeMinMaxInlineSizesFromAspectRatio(
-        constraint_space, Style(), border_padding);
-    result.sizes.min_size = min_max.ClampSizeToMinAndMax(result.sizes.min_size);
-    result.sizes.max_size = min_max.ClampSizeToMinAndMax(result.sizes.max_size);
-  }
-
-  box_->SetIntrinsicLogicalWidths(
-      initial_block_size, depends_on_block_constraints,
-      /* child_depends_on_block_constraints */
-      result.depends_on_block_constraints, result.sizes);
-
-  if (IsTableCell()) {
-    To<LayoutTableCell>(box_.Get())
-        ->SetIntrinsicLogicalWidthsBorderSizes(
-            constraint_space.TableCellBorders());
-  }
-
   // We report to our parent if we depend on the %-block-size if we used the
   // input %-block-size, or one of children said it depended on this.
-  result.depends_on_block_constraints = depends_on_block_constraints;
-  return result;
+  result->depends_on_block_constraints =
+      (DependsOnBlockConstraints() ||
+       UseParentPercentageResolutionBlockSizeForChildren()) &&
+      (result->depends_on_block_constraints || has_aspect_ratio);
+  return *result;
 }
 
 LayoutInputNode BlockNode::NextSibling() const {
