@@ -111,8 +111,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="16dp">
 
         <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/signin_fre_footer"
@@ -120,10 +119,13 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:text="@string/signin_fre_footer"
-            app:leading="@dimen/text_size_small_leading" />
+            app:leading="@dimen/text_size_small_leading"
+            android:visibility="gone"/>
     </FrameLayout>
 
     <ProgressBar
