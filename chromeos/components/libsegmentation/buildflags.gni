@@ -5,4 +5,7 @@
 declare_args() {
   # Request to merge features.
   enable_merge_request = false
+
+  # Compiled on a board overlay that supports CBX
+  overlay_include_cbx = false
 }
