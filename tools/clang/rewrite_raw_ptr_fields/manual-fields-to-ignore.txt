@@ -11,15 +11,6 @@
 # Populated manually - double implicit-cast required.
 PaintManager::instance_
 
-# Populated manually - templates make it difficult for the rewriter to see that
-# |.get()| needs to be appended.
-blink::xpath::EvaluationContext::node
-WTF::HashTableAddResult::container_
-WTF::HashTableAddResult::stored_value
-cast_channel::CastTransportTest::logger_
-content::IndexedDBDispatcherHost::indexed_db_context_
-ServiceProcessState::state_
-
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
 extensions::GlobalShortcutListenerX11::x_display_

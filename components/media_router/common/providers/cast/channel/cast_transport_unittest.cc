@@ -15,7 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -176,9 +176,7 @@ class CastTransportTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<MockCastTransportDelegate, DanglingUntriaged> delegate_;
   MockSocket mock_socket_;
-  // This field is not a raw_ptr<> because templates made it difficult for the
-  // rewriter to see that |.get()| needs to be appended.
-  RAW_PTR_EXCLUSION Logger* logger_;
+  scoped_refptr<Logger> logger_;
   std::unique_ptr<CastTransport> transport_;
 };
 
