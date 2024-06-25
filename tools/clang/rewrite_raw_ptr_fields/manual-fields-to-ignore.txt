@@ -214,9 +214,6 @@ blink::CacheEntry::prev_
 WTF::LruCache::MappedListNodeWithKey::next_
 WTF::LruCache::MappedListNodeWithKey::prev_
 
-# Populated manually - these pointers crash, due to use-after-move.
-gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
-
 #######
 # End of BackupRefPtr-specific sections
 #######
@@ -588,6 +585,8 @@ gpu::SharedImageRepresentation::manager_
 gpu::SharedImageRepresentation::backing_
 gpu::SharedImageRepresentation::tracker_
 gpu::SchedulerDfs::Sequence::scheduler_
+# crrev.com/c/5647253
+gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 
 #######
 # End of recent manual exclusions

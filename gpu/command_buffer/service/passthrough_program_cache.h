@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_PROGRAM_CACHE_H_
 
 #include <mutex>
+
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -95,9 +96,8 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
    private:
     Value program_blob_;
 
-    // TODO(crbug.com/40150759): Change this into raw_ptr<...>, after
-    // investigating an earlier crash report most likely caused by a
-    // use-after-move.
+    // RAW_PTR_EXCLUSION: Performance (motionmark_ramp_composite_ganesh
+    // regression).
     RAW_PTR_EXCLUSION PassthroughProgramCache* program_cache_;
   };
 
