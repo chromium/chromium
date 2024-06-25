@@ -276,6 +276,10 @@ network::NetToMojoPendingBuffer::buffer_
 policy::PolicyMap::Entry::details
 blink::SVGFilterBuilder::last_effect_
 net::HttpCache::Transaction::SetRequest(const NetLogWithSource &)::(anonymous struct)::search
+# Unrewritten in crrev.com/c/5349143 and excluded in crrev.com/c/5353647.
+# TODO(crbug.com/348793154): Remove once clang plugin no longer enforces those.
+blink::(anonymous namespace)::MockClient::delegate_
+blink::(anonymous namespace)::PaymentResponseFunction::value_
 
 # Populated manually - Field initialized with non-nullptr value in constexpr.
 enterprise_connectors::ServiceProvider::analysis

@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 
 #include <memory>
-#include "base/memory/raw_ptr.h"
+
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,7 +68,11 @@ class MockClient final : public GarbageCollected<MockClient>,
  private:
   Member<DetachableConsoleLogger> console_logger_ =
       MakeGarbageCollected<DetachableConsoleLogger>();
-  MockClientDelegate* delegate_;
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (GC'ed type), so
+  // there is no benefit to using a raw_ptr, only cost.
+  // TODO(crbug.com/348793154): Remove once clang plugin no longer enforces
+  // those.
+  RAW_PTR_EXCLUSION MockClientDelegate* delegate_;
   bool was_run_ = false;
 };
 
