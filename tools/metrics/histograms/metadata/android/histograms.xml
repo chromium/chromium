@@ -4664,6 +4664,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabStrip.TabGroupCollapsed" enum="Boolean"
+    expires_after="2024-09-13">
+  <owner>nemco@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <summary>
+    Recorded when the user clicks on the tab group title indicator to collapse
+    or expand it. True if the user is collapsing a group and false if a user is
+    expanding it. We don't record when the collapsed state changes
+    automatically. e.g. Selecting a tab automatically expands its group and
+    groups created through sync are automatically collapsed.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabStrip.TimeToBufferSwapAfterInitializeTabState"
     units="ms" expires_after="2024-11-17">
   <owner>nemco@google.com</owner>
