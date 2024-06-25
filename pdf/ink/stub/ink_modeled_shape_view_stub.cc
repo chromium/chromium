@@ -19,4 +19,8 @@ std::vector<InkModeledShapeView::Outline> InkModeledShapeViewStub::GetOutlines(
   return {};
 }
 
+InkRect InkModeledShapeViewStub::Bounds() const {
+  return {};
+}
+
 }  // namespace chrome_pdf

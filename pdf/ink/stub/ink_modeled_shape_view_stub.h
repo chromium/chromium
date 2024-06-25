@@ -19,6 +19,7 @@ class InkModeledShapeViewStub : public InkModeledShapeView {
   // InkModeledShapeView:
   uint32_t RenderGroupCount() const override;
   std::vector<Outline> GetOutlines(uint32_t group_index) const override;
+  InkRect Bounds() const override;
 };
 
 }  // namespace chrome_pdf

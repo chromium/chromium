@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "pdf/ink/ink_rect.h"
+
 namespace chrome_pdf {
 
 class InkModeledShapeView {
@@ -23,6 +25,9 @@ class InkModeledShapeView {
 
   virtual uint32_t RenderGroupCount() const = 0;
   virtual std::vector<Outline> GetOutlines(uint32_t group_index) const = 0;
+
+  // Note that the return type is simpler and more straight-forward than Ink's.
+  virtual InkRect Bounds() const = 0;
 };
 
 }  // namespace chrome_pdf
