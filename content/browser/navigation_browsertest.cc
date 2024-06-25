@@ -9074,37 +9074,34 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NavigationBrowserTestPaintHoldingSubframe,
                          ::testing::Bool());
 
+RenderFrameHostImpl* GetMainFrameSpeculativeRFH(WebContentsImpl* web_contents) {
+  return web_contents->GetPrimaryFrameTree()
+      .root()
+      ->render_manager()
+      ->speculative_frame_host();
+}
+
 class DeferSpeculativeRFHCreationTest : public NavigationBrowserTest {
  public:
   DeferSpeculativeRFHCreationTest() {
     feature_list_.InitAndEnableFeature(features::kDeferSpeculativeRFHCreation);
-  }
-
-  RenderFrameHostImpl* GetMainFrameSpeculativeRFH(
-      WebContentsImpl* web_contents) {
-    return web_contents->GetPrimaryFrameTree()
-        .root()
-        ->render_manager()
-        ->speculative_frame_host();
+    // Enable render document for all frames to ensure a speculative RFH
+    // will be created during navigation.
+    InitAndEnableRenderDocumentFeature(
+        &render_document_feature_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList render_document_feature_;
 };
 
 // Verify the common flow for with DeferSpeculativeRFHCreation feature.
 // The creation of the speculative RFH will be deferred until the network
 // request is sent.
-// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
-// bfcache bots.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#define MAYBE_SpeculativeRFHCreationDeferred \
-  DISABLED_SpeculativeRFHCreationDeferred
-#else
-#define MAYBE_SpeculativeRFHCreationDeferred SpeculativeRFHCreationDeferred
-#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       MAYBE_SpeculativeRFHCreationDeferred) {
+                       SpeculativeRFHCreationDeferred) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9187,30 +9184,6 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
 }
 
-// Verify that navigating with the same RFH will reuse the RFH at once.
-IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       ReuseSameRFHNotDeferred) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
-  TestNavigationManager nav_manager(web_contents, url);
-  // Navigation from about:blank will reuse the render frame host.
-  // The RFH will be set to current when the navigation request is created.
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
-  NavigationRequest* navigation_request =
-      NavigationRequest::From(nav_manager.GetNavigationHandle());
-  ASSERT_EQ(navigation_request->state(),
-            NavigationRequest::NavigationState::WILL_START_REQUEST);
-  ASSERT_FALSE(navigation_request->HasLoader());
-  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
-  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
-            NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
-  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
-  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
-}
-
 // Verify that the creation of the speculative RFH is not deferred for the
 // web pages.
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
@@ -9237,17 +9210,8 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 
 // Verify that the creation of the speculative RFH is not deferred for the
 // pages without a URL loader.
-// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
-// bfcache bots.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#define MAYBE_CreationNotDeferredWithoutURLLoader \
-  DISABLED_CreationNotDeferredWithoutURLLoader
-#else
-#define MAYBE_CreationNotDeferredWithoutURLLoader \
-  CreationNotDeferredWithoutURLLoader
-#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       MAYBE_CreationNotDeferredWithoutURLLoader) {
+                       CreationNotDeferredWithoutURLLoader) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9271,15 +9235,8 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 
 // Verify that the created speculative RFH after the network request will
 // be correctly replaced if the redirection points to a different site.
-// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
-// bfcache bots.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#define MAYBE_SpeculativeRFHWithRedirect DISABLED_SpeculativeRFHWithRedirect
-#else
-#define MAYBE_SpeculativeRFHWithRedirect SpeculativeRFHWithRedirect
-#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       MAYBE_SpeculativeRFHWithRedirect) {
+                       SpeculativeRFHWithRedirect) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9287,7 +9244,7 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 
   GURL redirect_url = embedded_test_server()->GetURL("b.com", "/title1.html");
   GURL url = embedded_test_server()->GetURL(
-      "a.com", "/server-redirect?" + redirect_url.spec());
+      "c.com", "/server-redirect?" + redirect_url.spec());
   TestNavigationManager nav_manager(web_contents, url);
 
   // The speculative RFH shall not be created when the navigation request is
@@ -9342,15 +9299,8 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
 // Test that if there is a navigation pending for commit, the deferred
 // speculative RFH will not be created event after the request is sent. The new
 // navigation will be queued until the pending navigation commits.
-// TODO(crbug.com/348564931): Test is failing consistently on Android and Linux
-// bfcache bots.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-#define MAYBE_NavigateWithPendingCommit DISABLED_NavigateWithPendingCommit
-#else
-#define MAYBE_NavigateWithPendingCommit NavigateWithPendingCommit
-#endif
 IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
-                       MAYBE_NavigateWithPendingCommit) {
+                       NavigateWithPendingCommit) {
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
@@ -9416,6 +9366,41 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationTest,
   EXPECT_EQ(url_b, results[0].url);
   EXPECT_TRUE(results[1].committed);
   EXPECT_EQ(url_c, results[1].url);
+}
+
+class DeferSpeculativeRFHCreationReuseRFHTest : public NavigationBrowserTest {
+ public:
+  DeferSpeculativeRFHCreationReuseRFHTest() {
+    feature_list_.InitAndEnableFeature(features::kDeferSpeculativeRFHCreation);
+    render_document_feature_.InitAndDisableFeature(features::kRenderDocument);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList render_document_feature_;
+};
+
+// Verify that navigating with the same RFH will reuse the RFH at once.
+IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationReuseRFHTest,
+                       ReuseSameRFHNotDeferred) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  TestNavigationManager nav_manager(web_contents, url);
+  // Navigation from about:blank will reuse the render frame host.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url));
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(nav_manager.GetNavigationHandle());
+  ASSERT_EQ(navigation_request->state(),
+            NavigationRequest::NavigationState::WILL_START_REQUEST);
+  ASSERT_FALSE(navigation_request->HasLoader());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+  ASSERT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
 }
 
 }  // namespace content
