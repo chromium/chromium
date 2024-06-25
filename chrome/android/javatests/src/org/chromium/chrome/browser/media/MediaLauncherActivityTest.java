@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -25,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -59,6 +62,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/349384291")
     public void testHandleVideoIntent() throws Exception {
         String url = TestContentProvider.createContentUrl("media/test.mp4");
         expectMediaToBeHandled(url, "video/mp4");
@@ -66,6 +70,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/349384291")
     public void testHandleAudioIntent() throws Exception {
         String url = TestContentProvider.createContentUrl("media/audio.mp3");
         expectMediaToBeHandled(url, "audio/mp3");
@@ -73,6 +78,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/349384291")
     public void testHandleImageIntent() throws Exception {
         String url = TestContentProvider.createContentUrl("google.png");
         expectMediaToBeHandled(url, "image/png");
@@ -80,6 +86,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/349384291")
     public void testHandleFileURIIntent() throws Exception {
         String url = UrlUtils.getTestFileUrl("google.png");
         expectMediaToBeHandled(url, "image/png");
@@ -87,6 +94,7 @@ public class MediaLauncherActivityTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2, message = "crbug.com/1498165")
     public void testFilterURI() {
         List<Pair<String, String>> testCases =
                 Arrays.asList(
