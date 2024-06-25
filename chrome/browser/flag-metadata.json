@@ -6166,6 +6166,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "ntp-most-relevant-tab-resumption-module-local",
+    "owners": [ "mfacey@chromium.org", "romanarora@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "ntp-outlook-calendar-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 130

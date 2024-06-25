@@ -136,6 +136,17 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetTabs) {
                                     std::move(url_visit_aggregates));
           }));
 
+  EXPECT_CALL(*mock_visited_url_ranking_service,
+              RankURLVisitAggregates(_, _, _))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [](const visited_url_ranking::Config& config,
+             std::vector<URLVisitAggregate> visits,
+             VisitedURLRankingService::RankURLVisitAggregatesCallback
+                 callback) {
+            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+          }));
+
   auto tabs_mojom = RunGetTabs();
   ASSERT_EQ(2u, tabs_mojom.size());
   for (const auto& tab_mojom : tabs_mojom) {
@@ -170,6 +181,17 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreTab) {
 
             std::move(callback).Run(ResultStatus::kSuccess,
                                     std::move(url_visit_aggregates));
+          }));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service,
+              RankURLVisitAggregates(_, _, _))
+      .Times(3)
+      .WillRepeatedly(testing::Invoke(
+          [](const visited_url_ranking::Config& config,
+             std::vector<URLVisitAggregate> visits,
+             VisitedURLRankingService::RankURLVisitAggregatesCallback
+                 callback) {
+            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
           }));
 
   visited_url_ranking::ScoredURLUserAction expected_action;
@@ -223,6 +245,17 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
 
             std::move(callback).Run(ResultStatus::kSuccess,
                                     std::move(url_visit_aggregates));
+          }));
+
+  EXPECT_CALL(*mock_visited_url_ranking_service,
+              RankURLVisitAggregates(_, _, _))
+      .Times(3)
+      .WillRepeatedly(testing::Invoke(
+          [](const visited_url_ranking::Config& config,
+             std::vector<URLVisitAggregate> visits,
+             VisitedURLRankingService::RankURLVisitAggregatesCallback
+                 callback) {
+            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
           }));
 
   std::vector<visited_url_ranking::ScoredURLUserAction> expected_actions;
