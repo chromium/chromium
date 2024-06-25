@@ -94,7 +94,6 @@ class ChildAccountService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
