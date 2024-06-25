@@ -10469,12 +10469,13 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
     return FrameIterationAction::kContinue;
 
   // For a case like A(B(A)), it's not necessary to send an IPC for the
-  // innermost frame, as Blink will walk all same-site (local)
+  // innermost frame, as Blink will walk all local (same-SiteInstanceGroup)
   // descendants. Detect cases like this and skip them.
   bool has_same_site_ancestor = false;
   for (RenderFrameHostImpl* added_rfh : beforeunload_pending_replies_) {
     if (rfh->IsDescendantOfWithinFrameTree(added_rfh) &&
-        rfh->GetSiteInstance() == added_rfh->GetSiteInstance()) {
+        rfh->GetSiteInstance()->group() ==
+            added_rfh->GetSiteInstance()->group()) {
       has_same_site_ancestor = true;
       break;
     }
