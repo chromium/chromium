@@ -174,6 +174,11 @@ public final class ReadAloudFeatures {
         }
     }
 
+    /** Return the metrics client ID or empty string if it isn't available. */
+    public static String getMetricsId() {
+        return ReadAloudFeaturesJni.get().getMetricsId();
+    }
+
     @NativeMethods
     public interface Natives {
         // Create a native readaloud::SyntheticTrial and return its address. It must be
@@ -190,5 +195,8 @@ public final class ReadAloudFeatures {
         // Check stored synthetic trial reactivation prefs and delete those that don't
         // match current field trial state.
         void clearStaleSyntheticTrialPrefs();
+
+        // Get metrics client ID or empty string if it isn't available.
+        String getMetricsId();
     }
 }

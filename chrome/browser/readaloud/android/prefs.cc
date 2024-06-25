@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/readaloud/android/prefs.h"
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/hash/hash.h"
+#include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -25,6 +29,9 @@ using base::android::MethodID;
 using base::android::ScopedJavaLocalRef;
 
 namespace readaloud {
+namespace {
+inline constexpr char kReadAloudSalt[] = "readaloud.salt";
+}
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(
@@ -38,6 +45,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kListenToThisPageEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterUint64Pref(kReadAloudSalt, 0);
 }
 
 void RegisterLocalPrefs(PrefRegistrySimple* registry) {
@@ -76,6 +84,35 @@ void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
       prefs::kReadAloudVoiceSettings)
       ->Set(ConvertJavaStringToUTF8(env, j_language),
             ConvertJavaStringToUTF8(env, j_voice_id));
+}
+
+jlong JNI_ReadAloudPrefs_GetReliabilityLoggingId(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_pref_service,
+    const JavaParamRef<jstring>& j_metrics_id) {
+  PrefService* prefs =
+      PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
+  if (!prefs) {
+    return 0L;
+  }
+  return GetReliabilityLoggingId(*prefs, ConvertJavaStringToUTF8(j_metrics_id));
+}
+
+uint64_t GetReliabilityLoggingId(PrefService& prefs,
+                                 const std::string& metrics_id) {
+  if (metrics_id.empty()) {
+    return 0L;
+  }
+
+  uint64_t salt;
+  if (!prefs.HasPrefPath(kReadAloudSalt)) {
+    salt = base::RandUint64();
+    prefs.SetUint64(kReadAloudSalt, salt);
+  } else {
+    salt = prefs.GetUint64(kReadAloudSalt);
+  }
+  return base::FastHash(base::StrCat(
+      {metrics_id, std::string(reinterpret_cast<char*>(&salt), sizeof(salt))}));
 }
 
 }  // namespace readaloud
