@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -270,9 +269,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   raw_ptr<MutatorHostClient> mutator_host_client_ = nullptr;
 
   // This is only non-null within the call scope of PushPropertiesTo().
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION const PropertyTrees* property_trees_ = nullptr;
+  raw_ptr<const PropertyTrees> property_trees_ = nullptr;
 
   // Exactly one of scroll_offset_animations_ and scroll_offset_animations_impl_
   // will be non-null for a given AnimationHost instance (the former if

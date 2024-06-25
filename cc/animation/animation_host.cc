@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -330,8 +331,8 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
                                      const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);
 
-  base::AutoReset<const PropertyTrees*> properties(&property_trees_,
-                                                   &property_trees);
+  base::AutoReset<raw_ptr<const PropertyTrees>> properties(&property_trees_,
+                                                           &property_trees);
 
   // Update animation counts and whether raf was requested. These explicitly
   // do not request push properties and are pushed as part of the next commit
@@ -387,8 +388,8 @@ void AnimationHost::RemoveTimelinesFromImplThread(
 }
 
 void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
-  base::AutoReset<const PropertyTrees*> properties(&host_impl->property_trees_,
-                                                   property_trees_);
+  base::AutoReset<raw_ptr<const PropertyTrees>> properties(
+      &host_impl->property_trees_, property_trees_);
 
   // Sync all animations with impl thread to create ElementAnimations. This
   // needs to happen before the element animations are synced below.
