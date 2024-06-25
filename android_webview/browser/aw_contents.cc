@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "android_webview/browser/aw_app_defined_websites.h"
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
@@ -151,6 +152,16 @@ std::string* g_locale() {
 std::string* g_locale_list() {
   static base::NoDestructor<std::string> locale_list;
   return locale_list.get();
+}
+
+std::vector<std::string>* g_app_defined_domains() {
+  // This list of domains doesn't change between app launches.
+  // For that reason, it is better to cache it for every navigation.
+  static base::NoDestructor<std::vector<std::string>> app_defined_domains(
+      GetAppDefinedDomains(
+          AppDefinedDomainCriteria::kAndroidAssetStatementsAndWebLinks));
+
+  return app_defined_domains.get();
 }
 
 const void* const kAwContentsUserDataKey = &kAwContentsUserDataKey;
@@ -1207,6 +1218,26 @@ void AwContents::SetDipScaleInternal(float dip_scale) {
   browser_view_renderer_.SetDipScale(dip_scale);
 }
 
+void AwContents::LogSiteVisit(std::string etld_plus1, jlong site_hash) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_ref = java_ref_.get(env);
+
+  auto* app_defined_domains = g_app_defined_domains();
+
+  bool site_related =
+      std::find_if(app_defined_domains->begin(), app_defined_domains->end(),
+                   [&etld_plus1](const std::string& domain) {
+                     std::string domain_etld =
+                         net::registry_controlled_domains::GetDomainAndRegistry(
+                             domain, net::registry_controlled_domains::
+                                         INCLUDE_PRIVATE_REGISTRIES);
+
+                     return etld_plus1 == domain_etld;
+                   }) != app_defined_domains->end();
+
+  Java_AwContents_logSiteVisit(env, j_ref, site_hash, site_related);
+}
+
 void AwContents::ScrollTo(JNIEnv* env, jint x, jint y) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   browser_view_renderer_.ScrollTo(gfx::Point(x, y));
@@ -1492,7 +1523,11 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
       jlong j_etld_plus1_hash = static_cast<jlong>(etld_plus1_hash);
 
       Java_AwContents_logOriginVisit(env, j_ref, j_origin_hash);
-      Java_AwContents_logSiteVisit(env, j_ref, j_etld_plus1_hash);
+
+      base::ThreadPool::PostTask(
+          FROM_HERE, base::BindOnce(&AwContents::LogSiteVisit,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(etld_plus1), j_etld_plus1_hash));
     }
   }
 

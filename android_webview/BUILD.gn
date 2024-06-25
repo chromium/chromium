@@ -499,6 +499,7 @@ generate_jni("common_jni") {
 generate_jni("browser_jni_headers") {
   sources = [
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
+    "java/src/org/chromium/android_webview/AppDefinedDomains.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
     "java/src/org/chromium/android_webview/AwBrowserContextStore.java",
     "java/src/org/chromium/android_webview/AwBrowserProcess.java",
@@ -538,7 +539,6 @@ generate_jni("browser_jni_headers") {
     "java/src/org/chromium/android_webview/gfx/AwPicture.java",
     "java/src/org/chromium/android_webview/gfx/JavaBrowserViewRendererHelper.java",
     "java/src/org/chromium/android_webview/gfx/RootBeginFrameSourceWebView.java",
-    "java/src/org/chromium/android_webview/ip_protection/ExclusionUtilities.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsServiceClient.java",
     "java/src/org/chromium/android_webview/permission/AwPermissionRequest.java",
     "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingConfigHelper.java",
@@ -551,6 +551,7 @@ generate_jni("browser_jni_headers") {
 android_library("browser_java") {
   sources = [
     "java/src/org/chromium/android_webview/AndroidProtocolHandler.java",
+    "java/src/org/chromium/android_webview/AppDefinedDomains.java",
     "java/src/org/chromium/android_webview/AwActionModeCallback.java",
     "java/src/org/chromium/android_webview/AwBrowserContext.java",
     "java/src/org/chromium/android_webview/AwBrowserContextStore.java",
@@ -649,7 +650,6 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/gfx/JavaBrowserViewRendererHelper.java",
     "java/src/org/chromium/android_webview/gfx/RectUtils.java",
     "java/src/org/chromium/android_webview/gfx/RootBeginFrameSourceWebView.java",
-    "java/src/org/chromium/android_webview/ip_protection/ExclusionUtilities.java",
     "java/src/org/chromium/android_webview/media_integrity/AwMediaIntegrityServiceFactory.java",
     "java/src/org/chromium/android_webview/media_integrity/AwMediaIntegrityServiceImpl.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsLogUploader.java",

@@ -10,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "android_webview/browser/aw_ip_protection_proxy_bypass_info.h"
+#include "android_webview/browser/aw_app_defined_websites.h"
+#include "android_webview/common/aw_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -46,11 +47,15 @@ void LoadMaskedDomainListComponent(ComponentLoaderPolicyVector& policies) {
       /* on_list_ready=*/base::BindRepeating(
           [](base::Version version,
              std::optional<mojo_base::ProtoWrapper> mdl) {
+            auto exclusion_policy = static_cast<AppDefinedDomainCriteria>(
+                features::kWebViewIpProtectionExclusionCriteria.Get());
+
             if (mdl.has_value()) {
               base::ThreadPool::PostTaskAndReplyWithResult(
                   FROM_HERE,
                   {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-                  base::BindOnce(&android_webview::LoadExclusionList),
+                  base::BindOnce(&GetAppDefinedDomains,
+                                 std::move(exclusion_policy)),
                   base::BindOnce(&UpdateMaskedDomainList,
                                  std::move(mdl.value())));
             } else {

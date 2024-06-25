@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.ip_protection;
+package org.chromium.android_webview;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Utility class for fetching different kinds of lists containing domains which have some form of
- * first-party relationship (e.g. digital asset links) with the embedding app.
+ * Utility class for fetching different kinds of lists containing domains embedding apps have some
+ * of relationship with (e.g. digital asset links, or web links).
  */
-@JNINamespace("exclusion_utilities")
-public class ExclusionUtilities {
+@JNINamespace("android_webview")
+public class AppDefinedDomains {
 
     private static final String ASSET_STATEMENTS_IDENTIFIER = "asset_statements";
     private static final String TARGET_IDENTIFIER = "target";
@@ -277,6 +277,9 @@ public class ExclusionUtilities {
         DomainVerificationManager manager =
                 ContextUtils.getApplicationContext()
                         .getSystemService(DomainVerificationManager.class);
+        if (manager == null) {
+            return new ArrayList<>();
+        }
         DomainVerificationUserState userState;
         try {
             userState = manager.getDomainVerificationUserState(getPackageName());

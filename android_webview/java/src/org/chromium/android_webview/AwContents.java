@@ -4132,10 +4132,9 @@ public class AwContents implements SmartClipProvider {
     }
 
     @CalledByNative
-    private void logSiteVisit(long siteHash) {
+    private void logSiteVisit(long siteHash, boolean isRelated) {
         if (isDestroyed(NO_WARN)) return;
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> AwSiteVisitLogger.logVisit(siteHash));
+        AwSiteVisitLogger.logVisit(siteHash, isRelated);
     }
 
     @CalledByNative

@@ -6158,6 +6158,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.RelatedSitesVisitedWeekly" units="sites"
+    expires_after="2025-06-25">
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This is the same as Android.WebView.SitesVisitedWeekly. The only difference
+    is this metric is filtered to only be reported for sites where the app
+    declared it has a relationship with the site. A site is considered related
+    if the app references it in its manifest through web links or app links.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.RequestedWithHeader.CommittedHeaderMode"
     enum="CommittedRequestedWithHeaderMode" expires_after="2025-03-01">
   <owner>pbirk@chromium.org</owner>
