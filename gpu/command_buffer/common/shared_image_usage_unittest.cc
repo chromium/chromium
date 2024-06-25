@@ -10,6 +10,13 @@
 
 namespace gpu {
 
+TEST(SharedImageUsage, ConstructionFromInitializerList) {
+  SharedImageUsageSet usage_set = {SHARED_IMAGE_USAGE_GLES2_READ,
+                                   SHARED_IMAGE_USAGE_GLES2_WRITE};
+  EXPECT_TRUE(usage_set.HasAll({SHARED_IMAGE_USAGE_GLES2_READ}));
+  EXPECT_TRUE(usage_set.HasAll({SHARED_IMAGE_USAGE_GLES2_WRITE}));
+}
+
 TEST(SharedImageUsage, FunctionsMemberOperator) {
   SharedImageUsageSet as_usage_set = SHARED_IMAGE_USAGE_GLES2_READ;
   as_usage_set |= SHARED_IMAGE_USAGE_SCANOUT;

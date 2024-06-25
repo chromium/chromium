@@ -6,6 +6,8 @@
 #define GPU_COMMAND_BUFFER_COMMON_SHARED_IMAGE_USAGE_H_
 
 #include <stdint.h>
+
+#include <initializer_list>
 #include <string>
 
 #include "gpu/gpu_export.h"
@@ -120,6 +122,13 @@ class SharedImageUsageSet {
   // 'UntypedMaskCast'. This will allow easly track any remaining non typed
   // usage.
   explicit constexpr SharedImageUsageSet(uint32_t mask) : set_storage_(mask) {}
+
+  constexpr SharedImageUsageSet(
+      std::initializer_list<SharedImageUsage> usages) {
+    for (auto usage : usages) {
+      set_storage_ |= usage;
+    }
+  }
 
   // Unions with 'set_b' and returns result.
   inline constexpr void PutAll(gpu::SharedImageUsageSet set_b) {
