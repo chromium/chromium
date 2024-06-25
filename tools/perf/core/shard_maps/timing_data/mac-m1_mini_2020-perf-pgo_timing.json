@@ -1,10 +1,10 @@
 [
     {
-        "duration": "69.0",
+        "duration": "63.0",
         "name": "jetstream2/JetStream2"
     },
     {
-        "duration": "330.0",
+        "duration": "331.0",
         "name": "rendering.desktop.notracing/motionmark_ramp_composite"
     },
     {
@@ -12,7 +12,7 @@
         "name": "speedometer2/Speedometer2"
     },
     {
-        "duration": "29.0",
+        "duration": "25.0",
         "name": "speedometer3/Speedometer3"
     }
 ]

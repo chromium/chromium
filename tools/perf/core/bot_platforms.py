@@ -379,7 +379,13 @@ def _crossbench_jetstream2_1(estimated_runtime=180):
                           estimated_runtime=estimated_runtime)
 
 
-_CROSSBENCH_BENCHMARKS_SPEEDOMETER = frozenset([
+_CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
+    _crossbench_jetstream2_1(),
+    _crossbench_speedometer3_0(),
+])
+
+_CROSSBENCH_MOTIONMARK_SPEEDOMETER = frozenset([
+    _crossbench_motionmark1_3(),
     _crossbench_speedometer3_0(),
 ])
 
@@ -685,7 +691,7 @@ LINUX = PerfPlatform('linux-perf',
                      26,
                      'linux',
                      executables=_LINUX_EXECUTABLE_CONFIGS,
-                     crossbench=_CROSSBENCH_BENCHMARKS_SPEEDOMETER)
+                     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 LINUX_PGO = PerfPlatform('linux-perf-pgo',
                          'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
                          _LINUX_BENCHMARK_CONFIGS,
@@ -702,7 +708,8 @@ LINUX_R350 = PerfPlatform('linux-r350-perf',
                           _LINUX_BENCHMARK_CONFIGS_WITH_MINORMS_PREDICTABLE,
                           30,
                           'linux',
-                          executables=_LINUX_EXECUTABLE_CONFIGS)
+                          executables=_LINUX_EXECUTABLE_CONFIGS,
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 
 # Mac
 MAC_HIGH_END_LAPTOP = PerfPlatform(
@@ -711,7 +718,8 @@ MAC_HIGH_END_LAPTOP = PerfPlatform(
     _MAC_HIGH_END_BENCHMARK_CONFIGS,
     23,
     'mac',
-    executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
+    executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_HIGH_END_LAPTOP_PGO = PerfPlatform(
     'mac-laptop_high_end-perf-pgo',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
@@ -726,7 +734,8 @@ MAC_LOW_END_LAPTOP = PerfPlatform(
     _MAC_LOW_END_BENCHMARK_CONFIGS,
     23,
     'mac',
-    executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
+    executables=_MAC_LOW_END_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_MOTIONMARK_SPEEDOMETER)
 MAC_LOW_END_LAPTOP_PGO = PerfPlatform(
     'mac-laptop_low_end-perf-pgo',
     'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
@@ -742,34 +751,34 @@ MAC_M1_MINI_2020 = PerfPlatform(
     26,
     'mac',
     executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_BENCHMARKS_SPEEDOMETER)
-MAC_M1_MINI_2020_PGO = PerfPlatform(
-    'mac-m1_mini_2020-perf-pgo',
-    'Mac M1 Mini 2020',
-    _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
-    4,
-    'mac')
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+MAC_M1_MINI_2020_PGO = PerfPlatform('mac-m1_mini_2020-perf-pgo',
+                                    'Mac M1 Mini 2020',
+                                    _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
+                                    4,
+                                    'mac',
+                                    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 MAC_M1_MINI_2020_NO_BRP = PerfPlatform(
-    'mac-m1_mini_2020-no-brp-perf',
-    'Mac M1 Mini 2020 with BRP disabled',
-    _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS,
-    20,
-    'mac')
-MAC_M1_PRO = PerfPlatform(
-    'mac-m1-pro-perf',
-    'Mac M1 PRO 2020',
-    _MAC_M1_PRO_BENCHMARK_CONFIGS,
-    1,
-    'mac')
-MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf', 'Mac M2 PRO Baremetal ARM',
-                          _MAC_M2_PRO_BENCHMARK_CONFIGS, 20, 'mac')
-MAC_14_M1_PRO = PerfPlatform(
-    'mac-14-m1-pro-perf',
-    'Mac M1 PRO 2020 running MacOS 14',
-    _MAC_M1_PRO_BENCHMARK_CONFIGS,
-    1,
-    'mac',
-    pinpoint_only=True)
+    'mac-m1_mini_2020-no-brp-perf', 'Mac M1 Mini 2020 with BRP disabled',
+    _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS, 20, 'mac')
+MAC_M1_PRO = PerfPlatform('mac-m1-pro-perf',
+                          'Mac M1 PRO 2020',
+                          _MAC_M1_PRO_BENCHMARK_CONFIGS,
+                          1,
+                          'mac',
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf',
+                          'Mac M2 PRO Baremetal ARM',
+                          _MAC_M2_PRO_BENCHMARK_CONFIGS,
+                          20,
+                          'mac',
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+MAC_14_M1_PRO = PerfPlatform('mac-14-m1-pro-perf',
+                             'Mac M1 PRO 2020 running MacOS 14',
+                             _MAC_M1_PRO_BENCHMARK_CONFIGS,
+                             1,
+                             'mac',
+                             pinpoint_only=True)
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
@@ -779,7 +788,8 @@ WIN_10_LOW_END = PerfPlatform(
     _WIN_10_LOW_END_BENCHMARK_CONFIGS,
     # TODO(b/278947510): Increase the count when m.2 disks stop failing.
     48,
-    'win')
+    'win',
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_10_LOW_END_PGO = PerfPlatform(
     'win-10_laptop_low_end-perf-pgo',
     'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
@@ -796,7 +806,8 @@ WIN_10 = PerfPlatform(
     _WIN_10_BENCHMARK_CONFIGS,
     14,  # TODO(b/344927054): reset to 20 when the dimensions are updated.
     'win',
-    executables=_WIN_10_EXECUTABLE_CONFIGS)
+    executables=_WIN_10_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_10_PGO = PerfPlatform(
     'win-10-perf-pgo',
     'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
@@ -808,7 +819,10 @@ WIN_10_PGO = PerfPlatform(
     pinpoint_only=True)
 WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
                                  'Windows 10 Laptop with AMD chipset.',
-                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 3, 'win')
+                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
+                                 3,
+                                 'win',
+                                 crossbench=_CROSSBENCH_JETSTREAM_SPEEDOMETER)
 WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      'Windows 10 Laptop with AMD chipset.',
                                      _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
@@ -821,7 +835,7 @@ WIN_11 = PerfPlatform('win-11-perf',
                       20,
                       'win',
                       executables=_WIN_11_EXECUTABLE_CONFIGS,
-                      crossbench=_CROSSBENCH_BENCHMARKS_SPEEDOMETER)
+                      crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'Windows Dell PowerEdge R350',
                           _WIN_11_BENCHMARK_CONFIGS,
