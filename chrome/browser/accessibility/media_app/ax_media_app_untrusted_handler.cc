@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <numeric>
 #include <utility>
 
@@ -970,7 +971,8 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
   if (HasRendererTerminatedDueToBadPageId("OnPageOcred", dirty_page_id)) {
     return;
   }
-  if (!pages_.contains(dirty_page_id)) {
+  auto pages_it = pages_.find(dirty_page_id);
+  if (pages_it == pages_.end()) {
     // Add a newly generated tree id to the tree update so that the new
     // `AXSerializableTree` that's generated has a non-empty tree id.
     complete_tree_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
@@ -980,29 +982,30 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
         base::WrapUnique<TreeSource>(page_tree->CreateTreeSource());
     page_serializers_[dirty_page_id] = std::make_unique<TreeSerializer>(
         page_sources_[dirty_page_id].get(), /* crash_on_error */ true);
-    pages_[dirty_page_id] =
-        std::make_unique<ui::AXTreeManager>(std::move(page_tree));
+    pages_it =
+        pages_
+            .insert({dirty_page_id,
+                     std::make_unique<ui::AXTreeManager>(std::move(page_tree))})
+            .first;
     ui::AXActionHandlerRegistry::GetInstance()->SetAXTreeID(
         complete_tree_update.tree_data.tree_id, this);
   } else {
-    complete_tree_update.tree_data.tree_id =
-        pages_.at(dirty_page_id)->GetTreeID();
-    if (!pages_.at(dirty_page_id)->ax_tree() ||
-        !pages_.at(dirty_page_id)
-             ->ax_tree()
-             ->Unserialize(complete_tree_update)) {
-      mojo::ReportBadMessage(pages_.at(dirty_page_id)->ax_tree()->error());
+    std::unique_ptr<ui::AXTreeManager>& page = pages_it->second;
+    complete_tree_update.tree_data.tree_id = page->GetTreeID();
+    if (!page->ax_tree() ||
+        !page->ax_tree()->Unserialize(complete_tree_update)) {
+      mojo::ReportBadMessage(page->ax_tree()->error());
       return;
     }
   }
-  DCHECK_NE(pages_.at(dirty_page_id)->GetTreeID().type(),
+  DCHECK_NE(pages_it->second->GetTreeID().type(),
             ax::mojom::AXTreeIDType::kUnknown);
 
   // Update the page location again - running the page through OCR overwrites
   // the previous `AXTree` it was given and thus the page location it was
   // already given in `PageMetadataUpdated()`. Restore it here.
   UpdatePageLocation(dirty_page_id, page_metadata_[dirty_page_id].rect);
-  SendAXTreeToAccessibilityService(*pages_.at(dirty_page_id),
+  SendAXTreeToAccessibilityService(*pages_it->second,
                                    *page_serializers_.at(dirty_page_id));
   if (pages_ocred_on_initial_load_ < page_metadata_.size()) {
     ++pages_ocred_on_initial_load_;
