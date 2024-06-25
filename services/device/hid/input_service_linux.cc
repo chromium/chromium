@@ -7,13 +7,14 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
-#include "base/scoped_observation.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "device/base/device_monitor_linux.h"
-#include "device/udev_linux/udev.h"
+#include "base/threading/sequence_bound.h"
+#include "device/udev_linux/scoped_udev.h"
+#include "device/udev_linux/udev_watcher.h"
 
 namespace device {
 
@@ -81,31 +82,70 @@ std::string GetParentDeviceName(udev_device* device, const char* subsystem) {
   return result;
 }
 
-class InputServiceLinuxImpl : public InputServiceLinux,
-                              public DeviceMonitorLinux::Observer {
+class InputServiceLinuxImpl : public InputServiceLinux {
  public:
   InputServiceLinuxImpl(const InputServiceLinuxImpl&) = delete;
   InputServiceLinuxImpl& operator=(const InputServiceLinuxImpl&) = delete;
 
-  // Implements DeviceMonitorLinux::Observer:
-  void OnDeviceAdded(udev_device* device) override;
-  void OnDeviceRemoved(udev_device* device) override;
-
  private:
   friend class InputServiceLinux;
+
+  class BlockingTaskRunnerHelper;
 
   InputServiceLinuxImpl();
   ~InputServiceLinuxImpl() override;
 
-  base::ScopedObservation<DeviceMonitorLinux, DeviceMonitorLinux::Observer>
-      observation_{this};
+  base::SequenceBound<BlockingTaskRunnerHelper> helper_;
+  base::WeakPtrFactory<InputServiceLinuxImpl> weak_factory_{this};
+};
+
+class InputServiceLinuxImpl::BlockingTaskRunnerHelper
+    : public UdevWatcher::Observer {
+ public:
+  BlockingTaskRunnerHelper(base::WeakPtr<InputServiceLinuxImpl> service,
+                           scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : service_(service), task_runner_(std::move(task_runner)) {
+    watcher_ = UdevWatcher::StartWatching(
+        this, {{
+                  UdevWatcher::Filter(kSubsystemHid, ""),
+                  UdevWatcher::Filter(kSubsystemInput, ""),
+              }});
+    watcher_->EnumerateExistingDevices();
+  }
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
+  ~BlockingTaskRunnerHelper() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+  // UdevWatcher::Observer
+  void OnDeviceAdded(ScopedUdevDevicePtr device) override;
+  void OnDeviceRemoved(ScopedUdevDevicePtr device) override;
+  void OnDeviceChanged(ScopedUdevDevicePtr) override;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  std::unique_ptr<UdevWatcher> watcher_;
+
+  // This weak pointer is only valid when checked on this task runner.
+  base::WeakPtr<InputServiceLinuxImpl> service_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 InputServiceLinuxImpl::InputServiceLinuxImpl() {
-  DeviceMonitorLinux* monitor = DeviceMonitorLinux::GetInstance();
-  observation_.Observe(monitor);
-  monitor->Enumerate(base::BindRepeating(&InputServiceLinuxImpl::OnDeviceAdded,
-                                         base::Unretained(this)));
+  helper_ = base::SequenceBound<BlockingTaskRunnerHelper>(
+      // These task traits are to be used for posting blocking tasks to the
+      // thread pool. This helper is for running device event handler from
+      // UdevWatcher so it uses USER_VISIBLE priority for being important to
+      // notify users new device events, and CONTINUE_ON_SHUTDOWN behavior for
+      // not blocking shutdown.
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+      weak_factory_.GetWeakPtr(),
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 InputServiceLinuxImpl::~InputServiceLinuxImpl() {
@@ -113,65 +153,75 @@ InputServiceLinuxImpl::~InputServiceLinuxImpl() {
   NOTREACHED_IN_MIGRATION();
 }
 
-void InputServiceLinuxImpl::OnDeviceAdded(udev_device* device) {
-  DCHECK(CalledOnValidThread());
+void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceAdded(
+    ScopedUdevDevicePtr device) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   if (!device)
     return;
-  const char* devnode = udev_device_get_devnode(device);
+  const char* devnode = udev_device_get_devnode(device.get());
   if (!devnode)
     return;
 
   auto info = mojom::InputDeviceInfo::New();
   info->id = devnode;
 
-  const char* subsystem = udev_device_get_subsystem(device);
+  const char* subsystem = udev_device_get_subsystem(device.get());
   if (!subsystem)
     return;
   if (strcmp(subsystem, kSubsystemHid) == 0) {
     info->subsystem = mojom::InputDeviceSubsystem::SUBSYSTEM_HID;
-    info->name = GetParentDeviceName(device, kSubsystemHid);
+    info->name = GetParentDeviceName(device.get(), kSubsystemHid);
   } else if (strcmp(subsystem, kSubsystemInput) == 0) {
     info->subsystem = mojom::InputDeviceSubsystem::SUBSYSTEM_INPUT;
-    info->name = GetParentDeviceName(device, kSubsystemInput);
+    info->name = GetParentDeviceName(device.get(), kSubsystemInput);
   } else {
     return;
   }
 
-  info->type = GetDeviceType(device);
+  info->type = GetDeviceType(device.get());
 
-  info->is_accelerometer = GetBoolProperty(device, kIdInputAccelerometer);
-  info->is_joystick = GetBoolProperty(device, kIdInputJoystick);
-  info->is_key = GetBoolProperty(device, kIdInputKey);
-  info->is_keyboard = GetBoolProperty(device, kIdInputKeyboard);
-  info->is_mouse = GetBoolProperty(device, kIdInputMouse);
-  info->is_tablet = GetBoolProperty(device, kIdInputTablet);
-  info->is_touchpad = GetBoolProperty(device, kIdInputTouchpad);
-  info->is_touchscreen = GetBoolProperty(device, kIdInputTouchscreen);
+  info->is_accelerometer = GetBoolProperty(device.get(), kIdInputAccelerometer);
+  info->is_joystick = GetBoolProperty(device.get(), kIdInputJoystick);
+  info->is_key = GetBoolProperty(device.get(), kIdInputKey);
+  info->is_keyboard = GetBoolProperty(device.get(), kIdInputKeyboard);
+  info->is_mouse = GetBoolProperty(device.get(), kIdInputMouse);
+  info->is_tablet = GetBoolProperty(device.get(), kIdInputTablet);
+  info->is_touchpad = GetBoolProperty(device.get(), kIdInputTouchpad);
+  info->is_touchscreen = GetBoolProperty(device.get(), kIdInputTouchscreen);
 
-  AddDevice(std::move(info));
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InputServiceLinux::AddDevice, service_, std::move(info)));
 }
 
-void InputServiceLinuxImpl::OnDeviceRemoved(udev_device* device) {
-  DCHECK(CalledOnValidThread());
+void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceRemoved(
+    ScopedUdevDevicePtr device) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!device)
     return;
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  const char* devnode = udev_device_get_devnode(device);
-  if (devnode)
-    RemoveDevice(devnode);
+  const char* devnode = udev_device_get_devnode(device.get());
+  if (devnode) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&InputServiceLinux::RemoveDevice, service_,
+                                  std::string(devnode)));
+  }
 }
+
+void InputServiceLinuxImpl::BlockingTaskRunnerHelper::OnDeviceChanged(
+    ScopedUdevDevicePtr device) {}
 
 }  // namespace
 
-InputServiceLinux::InputServiceLinux() {}
+InputServiceLinux::InputServiceLinux() = default;
 
 InputServiceLinux::~InputServiceLinux() {
-  DCHECK(CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 // static
@@ -218,7 +268,7 @@ void InputServiceLinux::GetDevicesAndSetClient(
 }
 
 void InputServiceLinux::GetDevices(GetDevicesCallback callback) {
-  DCHECK(CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::vector<mojom::InputDeviceInfoPtr> devices;
   for (auto& device : devices_)
     devices.push_back(device.second->Clone());
@@ -239,10 +289,6 @@ void InputServiceLinux::RemoveDevice(const std::string& id) {
 
   for (auto& client : clients_)
     client->InputDeviceRemoved(id);
-}
-
-bool InputServiceLinux::CalledOnValidThread() const {
-  return thread_checker_.CalledOnValidThread();
 }
 
 }  // namespace device
