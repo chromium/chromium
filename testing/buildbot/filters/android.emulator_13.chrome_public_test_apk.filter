@@ -21,10 +21,6 @@
 # crbug.com/339496718
 -org.chromium.chrome.browser.signin.UpgradePromoIntegrationTest.testUserAlreadySignedIn_onlyShowsHistorySync
 
-# crbug.com/339500648
--org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testOnClose
--org.chromium.chrome.browser.media.router.MediaRouterIntegrationTest.testSendAndOnMessage
-
 # crbug.com/339502391
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 

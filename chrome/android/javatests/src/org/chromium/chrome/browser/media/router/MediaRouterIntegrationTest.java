@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media.router;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.app.Dialog;
+import android.os.Build;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -25,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -212,6 +214,9 @@ public class MediaRouterIntegrationTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"MediaRouter"})
     @LargeTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.R,
+            message = "https://crbug.com/339500648")
     public void testSendAndOnMessage() {
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
         WebContents webContents = mActivityTestRule.getWebContents();
@@ -231,6 +236,9 @@ public class MediaRouterIntegrationTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"MediaRouter"})
     @LargeTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.R,
+            message = "https://crbug.com/339500648")
     public void testOnClose() {
         MockMediaRouteProvider.Factory.sProvider.setCloseRouteWithErrorOnSend(true);
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
