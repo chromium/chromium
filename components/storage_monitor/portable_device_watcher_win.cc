@@ -15,6 +15,7 @@
 #include <wrl/client.h>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -423,8 +424,9 @@ bool EnumerateAttachedDevicesOnBlockingThread(
   if (FAILED(hr))
     return false;
 
-  std::unique_ptr<wchar_t*[]> pnp_device_ids(new wchar_t*[pnp_device_count]);
-  hr = portable_device_mgr->GetDevices(pnp_device_ids.get(), &pnp_device_count);
+  auto pnp_device_ids = base::HeapArray<wchar_t*>::Uninit(pnp_device_count);
+  hr =
+      portable_device_mgr->GetDevices(pnp_device_ids.data(), &pnp_device_count);
   if (FAILED(hr))
     return false;
 
