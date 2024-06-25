@@ -2078,6 +2078,9 @@ public class ExternalNavigationHandlerTest {
     @Test
     @SuppressLint("SdCardPath")
     @SmallTest
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.S,
+            reason = "T changed external storage permissions so we no longer handle this intent.")
     public void testFileAccessImage() {
         String fileUrl = "file://file.png";
 
