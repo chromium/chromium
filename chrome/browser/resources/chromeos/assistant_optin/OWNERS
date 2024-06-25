@@ -1,4 +1,6 @@
-xiaohuic@chromium.org
+# Please use this reviewer queue instead of specifying an individual reviewer
+# unless there is a specific reason for it.
+assistive-code-review@google.com
 
-#This UI is a part of OOBE/First login:
-file://chrome/browser/resources/chromeos/login/OWNERS
+xiaohuic@chromium.org #{LAST_RESORT_SUGGESTION}
+yawano@google.com #{LAST_RESORT_SUGGESTION}
