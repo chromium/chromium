@@ -15,6 +15,10 @@ extern NSString* const kPlusAddressSheetDescriptionAccessibilityIdentifier;
 // the error message in automation.
 extern NSString* const kPlusAddressSheetErrorMessageAccessibilityIdentifier;
 
+// Accessibility identifier for the bottom sheet's notice message used to locate
+// the notice message in automation.
+extern NSString* const kPlusAddressSheetNoticeMessageAccessibilityIdentifier;
+
 // The margin to be shown under the user's primary email address, and above the
 // reserved plus address element in the bottom sheet.
 extern const CGFloat kPlusAddressSheetPrimaryAddressBottomMargin;

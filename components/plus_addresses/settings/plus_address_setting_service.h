@@ -41,6 +41,9 @@ class PlusAddressSettingService : public KeyedService {
   // This is necessary, since group targeted rollouts are per installation.
   bool GetIsOptedInToDogfood() const;
 
+  // Sets the state that the user has accepted the notice to true.
+  virtual void SetHasAcceptedNotice();
+
   // Returns a controller delegate for the `sync_bridge_` owned by this service.
   std::unique_ptr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();

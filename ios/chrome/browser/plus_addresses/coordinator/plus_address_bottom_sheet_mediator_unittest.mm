@@ -13,6 +13,7 @@
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -26,7 +27,30 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
+namespace {
 using plus_addresses::FakePlusAddressService;
+
+class TestPlusAddressSettingService
+    : public plus_addresses::PlusAddressSettingService {
+ public:
+  TestPlusAddressSettingService()
+      : PlusAddressSettingService(base::DoNothing()) {}
+
+  MOCK_METHOD(void, SetHasAcceptedNotice, (), (override));
+};
+
+}  // namespace
+
+@interface TestPlusAddressBottomSheetMediator : PlusAddressBottomSheetMediator
+@end
+
+@implementation TestPlusAddressBottomSheetMediator
+
+- (BOOL)shouldShowNotice {
+  return YES;
+}
+
+@end
 
 class PlusAddressBottomSheetMediatorTest : public PlatformTest {
  protected:
@@ -41,8 +65,9 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(&browser_));
     BOOL incognito = browser_state_.get()->IsOffTheRecord();
-    mediator_ = [[PlusAddressBottomSheetMediator alloc]
+    mediator_ = [[TestPlusAddressBottomSheetMediator alloc]
         initWithPlusAddressService:&service()
+         plusAddressSettingService:&test_plus_address_setting_service_
                          activeUrl:GURL(FakePlusAddressService::kFacet)
                   autofillCallback:base::DoNothing()
                          urlLoader:url_loader_
@@ -51,6 +76,9 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
   }
 
   FakePlusAddressService& service() { return service_; }
+  TestPlusAddressSettingService& test_plus_address_setting_service() {
+    return test_plus_address_setting_service_;
+  }
   PlusAddressBottomSheetMediator* mediator() { return mediator_; }
   FakeUrlLoadingBrowserAgent* url_loader() { return url_loader_.get(); }
 
@@ -61,8 +89,9 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TestBrowser browser_;
   FakePlusAddressService service_;
+  TestPlusAddressSettingService test_plus_address_setting_service_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
-  PlusAddressBottomSheetMediator* mediator_ = nil;
+  TestPlusAddressBottomSheetMediator* mediator_ = nil;
 };
 
 // Ensure that the consumer is notified when a plus address is successfully
@@ -91,6 +120,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
                                 FakePlusAddressService::kFakePlusAddress)]);
+  EXPECT_CALL(test_plus_address_setting_service(), SetHasAcceptedNotice());
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);
@@ -139,6 +169,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, didTapRefresh) {
                                 FakePlusAddressService::kFakePlusAddress)]);
   [mediator() didTapRefreshButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_CALL(test_plus_address_setting_service(), SetHasAcceptedNotice());
   OCMExpect([consumer_ didConfirmPlusAddress]);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);

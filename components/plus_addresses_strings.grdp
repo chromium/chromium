@@ -54,6 +54,12 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
     </message>
+   <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_IOS" desc="The notice text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>). <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>
+    </message>
+    <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_SCREEN" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    </message>
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS" desc="The error message shown on the iOS bottomsheet." translateable="false">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
     </message>

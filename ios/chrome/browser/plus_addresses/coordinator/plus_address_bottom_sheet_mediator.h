@@ -13,6 +13,7 @@
 
 namespace plus_addresses {
 class PlusAddressService;
+class PlusAddressSettingService;
 }  // namespace plus_addresses
 
 @protocol PlusAddressBottomSheetConsumer;
@@ -28,6 +29,8 @@ class UrlLoadingBrowserAgent;
 // `mainFrameOrigin` is the origin any plus addresses will be scoped to.
 - (instancetype)
     initWithPlusAddressService:(plus_addresses::PlusAddressService*)service
+     plusAddressSettingService:
+         (plus_addresses::PlusAddressSettingService*)plusAddressSettingService
                      activeUrl:(GURL)activeUrl
               autofillCallback:(plus_addresses::PlusAddressCallback)callback
                      urlLoader:(UrlLoadingBrowserAgent*)urlLoader

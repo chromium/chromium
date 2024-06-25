@@ -32,7 +32,52 @@
 
 namespace {
 
-// Generates the description to be displayed in the bottomsheet.
+// Generates the notice to be displayed in the bottomsheet, which includes an
+// attributed string.
+NSAttributedString* NoticeMessage(NSString* primaryEmailAddress) {
+  // Create and format the text.
+  NSDictionary* text_attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+  };
+
+  NSString* message =
+      l10n_util::GetNSStringF(IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_IOS,
+                              base::SysNSStringToUTF16(primaryEmailAddress));
+
+  NSDictionary* link_attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+    // Opening notice page is handled by the delegate.
+    NSLinkAttributeName : @"",
+  };
+
+  return AttributedStringFromStringWithLink(message, text_attributes,
+                                            link_attributes);
+}
+
+// Generates the description to be displayed in the bottomsheet when the notice
+// is presented.
+NSAttributedString* DescriptionMessageOnNoticeDisplayed() {
+  // Create and format the text.
+  NSDictionary* text_attributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+  };
+
+  NSString* message = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_SCREEN);
+
+  return [[NSMutableAttributedString alloc] initWithString:message
+                                                attributes:text_attributes];
+}
+
+// Generates the description to be displayed in the bottomsheet that contains
+// the email.
 NSAttributedString* DescriptionMessageWithEmail(NSString* primaryEmailAddress) {
   // Create and format the text.
   NSDictionary* text_attributes = @{
@@ -119,6 +164,8 @@ UIImageView* BrandingImageView() {
       _bottomSheetErrorStatus;
   // Keeps track of the number of times the refresh button was hit.
   NSInteger _refreshCount;
+  // The notice message if it will be shown.
+  UITextView* _noticeMessage;
 }
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
@@ -241,6 +288,9 @@ UIImageView* BrandingImageView() {
   CHECK(textView == _errorMessage || textView == _description);
   if (textView == _errorMessage) {
     [_delegate openNewTab:PlusAddressURLType::kErrorReport];
+  } else if (textView == _noticeMessage) {
+    // TODO(crbug.com/348353662): Update it with the notice URL.
+    [_delegate openNewTab:PlusAddressURLType::kManagement];
   } else {
     [_delegate openNewTab:PlusAddressURLType::kManagement];
   }
@@ -363,6 +413,22 @@ UIImageView* BrandingImageView() {
   return errorMessageView;
 }
 
+- (UITextView*)noticeMessageViewWithMessage:(NSAttributedString*)message {
+  UITextView* noticeMessageView = CreateUITextViewWithTextKit1();
+  noticeMessageView.accessibilityIdentifier =
+      kPlusAddressSheetNoticeMessageAccessibilityIdentifier;
+  noticeMessageView.scrollEnabled = NO;
+  noticeMessageView.editable = NO;
+  noticeMessageView.delegate = self;
+  noticeMessageView.backgroundColor = [UIColor clearColor];
+  noticeMessageView.adjustsFontForContentSizeCategory = YES;
+  noticeMessageView.translatesAutoresizingMaskIntoConstraints = NO;
+  noticeMessageView.textContainerInset = UIEdgeInsetsZero;
+  noticeMessageView.attributedText = message;
+  noticeMessageView.textAlignment = NSTextAlignmentCenter;
+  return noticeMessageView;
+}
+
 - (void)setupAboveTitleView {
   _activityIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
@@ -380,15 +446,22 @@ UIImageView* BrandingImageView() {
 - (UIView*)setUpUnderTitleView {
   // Set up the view that will indicate the reserved plus address to the user
   // for confirmation.
+  NSString* email = [_delegate primaryEmailAddress];
+  BOOL showNotice = [_delegate shouldShowNotice];
   _reservedPlusAddressTableView = [self reservedPlusAddressView];
-  _description = [self descriptionView:DescriptionMessageWithEmail(
-                                           [_delegate primaryEmailAddress])];
+  _description =
+      [self descriptionView:(showNotice ? DescriptionMessageOnNoticeDisplayed()
+                                        : DescriptionMessageWithEmail(email))];
   _errorMessage = [self errorMessageViewWithMessage:ErrorMessage()];
+  _noticeMessage =
+      [self noticeMessageViewWithMessage:NoticeMessage(
+                                             [_delegate primaryEmailAddress])];
 
   UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _description, _reservedPlusAddressTableView, _errorMessage
+    _description, _reservedPlusAddressTableView, _errorMessage, _noticeMessage
   ]];
   _errorMessage.hidden = YES;
+  _noticeMessage.hidden = !showNotice;
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.spacing = 0;
   verticalStack.distribution = UIStackViewDistributionFill;
@@ -397,6 +470,10 @@ UIImageView* BrandingImageView() {
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
   [verticalStack setCustomSpacing:kPlusAddressSheetPrimaryAddressBottomMargin
                         afterView:_description];
+  if (showNotice) {
+    [verticalStack setCustomSpacing:kPlusAddressSheetPrimaryAddressBottomMargin
+                          afterView:_reservedPlusAddressTableView];
+  }
   return verticalStack;
 }
 

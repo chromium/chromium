@@ -11,6 +11,7 @@
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -21,6 +22,8 @@
 @implementation PlusAddressBottomSheetMediator {
   // The service implementation that owns the data.
   raw_ptr<plus_addresses::PlusAddressService> _plusAddressService;
+  // Manages settings for `PlusAddressService`.
+  raw_ptr<plus_addresses::PlusAddressSettingService> _plusAddressSettingService;
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
   // The autofill callback to be run if the process completes via confirmation
@@ -34,6 +37,8 @@
 
 - (instancetype)
     initWithPlusAddressService:(plus_addresses::PlusAddressService*)service
+     plusAddressSettingService:
+         (plus_addresses::PlusAddressSettingService*)plusAddressSettingService
                      activeUrl:(GURL)activeUrl
               autofillCallback:(plus_addresses::PlusAddressCallback)callback
                      urlLoader:(UrlLoadingBrowserAgent*)urlLoader
@@ -44,6 +49,7 @@
   self = [super init];
   if (self) {
     _plusAddressService = service;
+    _plusAddressSettingService = plusAddressSettingService;
     _mainFrameOrigin = url::Origin::Create(activeUrl);
     _autofillCallback = std::move(callback);
     _urlLoader = urlLoader;
@@ -135,6 +141,11 @@
                                           std::move(callback));
 }
 
+- (BOOL)shouldShowNotice {
+  // TODO(crbug.com/348353662): Should not return NO by default. Update!
+  return NO;
+}
+
 #pragma mark - Private
 
 // Runs the autofill callback and notifies the consumer of the successful
@@ -142,6 +153,9 @@
 - (void)runAutofillCallback:(NSString*)confirmedPlusAddress {
   std::move(_autofillCallback)
       .Run(base::SysNSStringToUTF8(confirmedPlusAddress));
+  if ([self shouldShowNotice]) {
+    _plusAddressSettingService->SetHasAcceptedNotice();
+  }
   [_consumer didConfirmPlusAddress];
 }
 

@@ -31,6 +31,9 @@ enum class PlusAddressURLType;
 // Informs the delegate that the refresh button has been tapped by the user.
 - (void)didTapRefreshButton;
 
+// Informs the delegate whether to show the notice in the view or not.
+- (BOOL)shouldShowNotice;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_DELEGATE_H_

@@ -33,18 +33,22 @@ PlusAddressSettingService::PlusAddressSettingService(
 PlusAddressSettingService::~PlusAddressSettingService() = default;
 
 bool PlusAddressSettingService::GetIsPlusAddressesEnabled() const {
-  // TODO(b/342089839): Finalize setting name.
+  // TODO(crbug.com/342089839): Finalize setting name.
   return GetBoolean("plus_address.is_enabled");
 }
 
 bool PlusAddressSettingService::GetHasAcceptedNotice() const {
-  // TODO(b/342089839): Finalize setting name.
+  // TODO(crbug.com/342089839): Finalize setting name.
   return GetBoolean("plus_address.has_accepted_notice");
 }
 
 bool PlusAddressSettingService::GetIsOptedInToDogfood() const {
-  // TODO(b/342089839): Finalize setting name.
+  // TODO(crbug.com/342089839): Finalize setting name.
   return GetBoolean("plus_address.is_opted_in_to_dogfood");
+}
+
+void PlusAddressSettingService::SetHasAcceptedNotice() {
+  // TODO(crbug.com/342089839): Implement.
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>

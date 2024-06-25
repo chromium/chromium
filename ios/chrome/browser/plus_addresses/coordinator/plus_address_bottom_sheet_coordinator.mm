@@ -7,9 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -36,6 +38,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   plus_addresses::PlusAddressService* plusAddressService =
       PlusAddressServiceFactory::GetForBrowserState(browserState);
+  plus_addresses::PlusAddressSettingService* plusAddressSettingService =
+      PlusAddressSettingServiceFactory::GetForBrowserState(browserState);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   // TODO(crbug.com/40276862): Move this to the mediator to reduce model
@@ -44,6 +48,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       AutofillBottomSheetTabHelper::FromWebState(activeWebState);
   _mediator = [[PlusAddressBottomSheetMediator alloc]
       initWithPlusAddressService:plusAddressService
+       plusAddressSettingService:plusAddressSettingService
                        activeUrl:activeWebState->GetLastCommittedURL()
                 autofillCallback:bottomSheetTabHelper
                                      ->GetPendingPlusAddressFillCallback()
