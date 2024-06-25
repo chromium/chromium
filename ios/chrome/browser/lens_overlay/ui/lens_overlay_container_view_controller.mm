@@ -10,6 +10,29 @@
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+
+  if (!self.selectionViewController) {
+    return;
+  }
+  [self addChildViewController:self.selectionViewController];
+  [self.view addSubview:self.selectionViewController.view];
+
+  self.selectionViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.selectionViewController.view.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:80.0f],
+    [self.selectionViewController.view.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-80.0f],
+    [self.selectionViewController.view.leftAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor],
+    [self.selectionViewController.view.rightAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor],
+  ]];
+
+  [self.selectionViewController didMoveToParentViewController:self];
 }
 
 @end

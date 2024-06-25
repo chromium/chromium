@@ -273,6 +273,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/itunes_urls/model:unit_tests",
     "//ios/chrome/browser/language/model:unit_tests",
     "//ios/chrome/browser/lens/model:unit_tests",
+    "//ios/chrome/browser/lens_overlay/coordinator:unit_tests",
     "//ios/chrome/browser/lens_overlay/model:unit_tests",
     "//ios/chrome/browser/link_to_text/model:unit_tests",
     "//ios/chrome/browser/main/model:unit_tests",

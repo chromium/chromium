@@ -2,12 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("protocols") {
+  sources = [
+    "lens_overlay_result_consumer.h",
+    "lens_overlay_selection_delegate.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("view_controller") {
   sources = [
     "lens_overlay_container_view_controller.h",
     "lens_overlay_container_view_controller.mm",
+    "lens_overlay_selection_placeholder_view_controller.h",
+    "lens_overlay_selection_placeholder_view_controller.mm",
   ]
   deps = [
+    ":protocols",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -18,6 +29,7 @@ source_set("view_controller") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }

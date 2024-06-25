@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -25,9 +27,33 @@
   /// Hosts all of lens UI: contains the selection UI, presents the results UI
   /// modally.
   LensOverlayContainerViewController* _containerViewController;
+
+  /// Selection view controller.
+  LensOverlaySelectionPlaceholderViewController* _selectionViewController;
+
+  /// The mediator for lens overlay.
+  LensOverlayMediator* _mediator;
 }
 
 #pragma mark - properties
+
+- (void)createUI {
+  [self createContainerViewController];
+  [self createSelectionViewController];
+  [self createMediator];
+
+  // Wire up consumers and delegates
+  _containerViewController.selectionViewController = _selectionViewController;
+  _selectionViewController.delegate = _mediator;
+}
+
+- (void)createSelectionViewController {
+  if (_selectionViewController) {
+    return;
+  }
+  _selectionViewController =
+      [[LensOverlaySelectionPlaceholderViewController alloc] init];
+}
 
 - (void)createContainerViewController {
   if (_containerViewController) {
@@ -38,6 +64,13 @@
       UIModalPresentationOverFullScreen;
   _containerViewController.modalTransitionStyle =
       UIModalTransitionStyleCrossDissolve;
+}
+
+- (void)createMediator {
+  if (_mediator) {
+    return;
+  }
+  _mediator = [[LensOverlayMediator alloc] init];
 }
 
 - (LensOverlayTabHelper*)tabHelper {
@@ -93,7 +126,7 @@
     tabHelper->SetLensOverlayShown(true);
   }
 
-  [self createContainerViewController];
+  [self createUI];
   [self showLensUI:animated];
 }
 
