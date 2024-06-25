@@ -4,8 +4,6 @@
 
 package org.chromium.shape_detection;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,8 +16,8 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Manual;
 import org.chromium.shape_detection.mojom.BarcodeDetection;
 import org.chromium.shape_detection.mojom.BarcodeDetectionProvider;
 import org.chromium.shape_detection.mojom.BarcodeDetectionResult;
@@ -35,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ParameterizedRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-@DisabledTest(message = "https://crbug.com/1153716")
 public class BarcodeDetectionImplTest {
     private static final float BOUNDS_TOLERANCE = 4.0f;
 
@@ -121,7 +118,7 @@ public class BarcodeDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testEnumerateSupportedFormats() {
         int[] results = enumerateSupportedFormats();
@@ -264,7 +261,7 @@ public class BarcodeDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @UseMethodParameter(BarcodeExampleParams.class)
     @Feature({"ShapeDetection"})
     public void testDetectBarcodeWithHint(
@@ -287,7 +284,7 @@ public class BarcodeDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @UseMethodParameter(BarcodeExampleParams.class)
     @Feature({"ShapeDetection"})
     public void testDetectBarcodeWithoutHint(
@@ -310,7 +307,7 @@ public class BarcodeDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testTryDetectQrCodeWithAztecHint() {
         BarcodeDetectionResult[] results = detectWithHint(QR_CODE_BITMAP, BarcodeFormat.AZTEC);

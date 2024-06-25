@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.offlinepages;
 
 import android.net.Uri;
+import android.os.Build.VERSION_CODES;
 import android.util.Base64;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -43,7 +44,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -460,7 +460,7 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976971
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q) // https://crbug.com/40188570
     public void testGetLoadUrlParamsForOpeningMhtmlFileUrl() throws Exception {
         sActivityTestRule.loadUrl(mTestPage);
         savePage(SavePageResult.SUCCESS, mTestPage);

@@ -45,16 +45,6 @@
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabSwitchBackToSuspended
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabUnsuspendedInBackground
 
-# crbug.com/1036571
--org.chromium.shape_detection.BarcodeDetectionImplTest.testDetectBarcodeWithHint
--org.chromium.shape_detection.BarcodeDetectionImplTest.testDetectBarcodeWithoutHint
--org.chromium.shape_detection.FaceDetectionImplTest.testDetectFacesInProfileWithGmsCore
--org.chromium.shape_detection.FaceDetectionImplTest.testDetectRotatedFaceWithGmsCore
--org.chromium.shape_detection.FaceDetectionImplTest.testDetectValidImageWithGmsCore
--org.chromium.shape_detection.TextDetectionImplTest.testDetectSucceedsOnValidBitmap
--org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testBarcodeDetection
--org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
-
 # crbug.com/1034412
 -org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testEnterPip
 -org.chromium.chrome.browser.media.ui.FullscreenVideoPictureInPictureControllerTest.testReenterPip

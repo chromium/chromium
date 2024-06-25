@@ -4,8 +4,6 @@
 
 package org.chromium.shape_detection;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +11,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Manual;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.shape_detection.mojom.TextDetection;
 import org.chromium.shape_detection.mojom.TextDetectionResult;
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 /** Test suite for TextDetectionImpl. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@DisabledTest(message = "https://crbug.com/1153716")
 public class TextDetectionImplTest {
     private static final float BOUNDS_TOLERANCE = 20.0f;
     private static final String[] DETECTION_EXPECTED_TEXT = {
@@ -65,7 +62,7 @@ public class TextDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testDetectSucceedsOnValidBitmap() {
         TextDetectionResult[] results = detect(TEXT_DETECTION_BITMAP);

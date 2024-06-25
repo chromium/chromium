@@ -1,9 +1,3 @@
-# crbug.com/1225754
--org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
-
-# crbug.com/1036571
--org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
-
 # crbug.com/1276402
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.*
 

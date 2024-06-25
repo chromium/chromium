@@ -1,9 +1,6 @@
 # vr tests do not apply to emulator
 -org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
 
-# crbug.com/1036571
--org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
-
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 
@@ -12,9 +9,6 @@
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
 -org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
-
-# crbug.com/1225754
--org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
 
 # crbug.com/1231259
 -org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
