@@ -271,6 +271,7 @@ def _skylab(
         *,
         cros_board = "",
         cros_img = "",
+        cros_build_target = "",
         use_lkgm = False,
         cros_model = None,
         autotest_name = None,
@@ -284,7 +285,9 @@ def _skylab(
     """Define a Skylab test target.
 
     Args:
-        cros_board: The CrOS build target name, e.g. "eve", "kevin".
+        cros_board: The CrOS DUT board name, e.g. "eve", "kevin".
+        cros_build_target: The CrOS build target name, e.g. "eve-arc-t".
+            If unspecified, the build target equals to cros_board will be used.
         cros_img: ChromeOS image version to be deployed to DUT.
             Must be empty when use_lkgm is true.
             For example, "brya-release/R118-15604.42.0"
@@ -309,6 +312,7 @@ def _skylab(
     """
     return struct(
         cros_board = cros_board,
+        cros_build_target = cros_build_target,
         cros_img = cros_img,
         use_lkgm = use_lkgm,
         cros_model = cros_model,
@@ -1240,6 +1244,8 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.open_scope("'skylab': {")
         if skylab.cros_board:
             formatter.add_line("'cros_board': '{}',".format(skylab.cros_board))
+        if skylab.cros_build_target:
+            formatter.add_line("'cros_build_target': '{}',".format(skylab.cros_build_target))
         if skylab.cros_model:
             formatter.add_line("'cros_model': '{}',".format(skylab.cros_model))
         if skylab.cros_img:

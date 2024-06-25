@@ -1565,6 +1565,13 @@ targets.mixin(
     ),
 )
 
+targets.mixin(
+    name = "betty-arc-t",
+    skylab = targets.skylab(
+        cros_build_target = "betty-arc-t",
+    ),
+)
+
 # Pixel Tablet
 targets.mixin(
     name = "tangorpro",

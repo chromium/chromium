@@ -6704,6 +6704,9 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'betty-arc-t',
+        ],
         'test_suites': {
           'skylab_tests': 'chromeos_betty_vmlab_tests',
         },

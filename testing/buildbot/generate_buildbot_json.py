@@ -875,6 +875,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           'dut_pool')
     if 'run_cft' in result or 'run_cft' in tester_config:
       result['run_cft'] = tester_config.get('run_cft') or result.get('run_cft')
+    if 'cros_build_target' in result or 'cros_build_target' in tester_config:
+      result['cros_build_target'] = tester_config.get(
+          'cros_build_target') or result.get('cros_build_target')
 
     # Skylab tests enable the shard-level-retry by default.
     if ('shard_level_retries_on_ctp' in result

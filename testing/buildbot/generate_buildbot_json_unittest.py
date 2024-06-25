@@ -4318,6 +4318,27 @@ MATRIX_SKYLAB_WATERFALL = """\
 ]
 """
 
+MATRIX_SKYLAB_WATERFALL_WITH_BUILD_TARGET_VARIANT = """\
+[
+  {
+    'project': 'chromium',
+    'bucket': 'ci',
+    'name': 'chromium.test',
+    'machines': {
+      'Fake Tester': {
+        'test_suites': {
+          'skylab_tests': 'cros_skylab_basic_x86',
+        },
+        'cros_board': 'octopus',
+        'cros_build_target': 'octopus-arc-t',
+        'cros_dut_pool': 'chromium',
+        'run_cft': True,
+      },
+    },
+  },
+]
+"""
+
 MATRIX_COMPOUND_SKYLAB_REF = """\
 {
   'basic_suites': {
@@ -4385,6 +4406,38 @@ SKYLAB_VARIANTS = """\
     'skylab': {
       'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-release/R88-13597.23.0',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT-1',
+  },
+}
+"""
+
+SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
+{
+  'octopus-89': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_model': 'casta',
+      'cros_chrome_version': '89.0.3234.0',
+      'cros_img': 'octopus-arc-t-release/R89-13655.0.0',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT',
+  },
+  'octopus-89-with-autotest-name': {
+    'skylab': {
+      'cros_chrome_version': '89.0.3234.0',
+      'cros_img': 'octopus-arc-t-release/R89-13655.0.0',
+      'autotest_name': 'unique_autotest_name',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT',
+  },
+  'octopus-88': {
+    'skylab': {
+      'cros_chrome_version': '88.0.2324.0',
+      'cros_img': 'octopus-arc-t-release/R88-13597.23.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_TOT-1',
@@ -4669,6 +4722,17 @@ class MatrixCompositionTests(TestCase):
                     LUCI_MILO_CFG,
                     exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS,
                     variants=SKYLAB_VARIANTS)
+    fbb.check_input_file_consistency(verbose=True)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_good_skylab_matrix_with_build_target_variant_and_variants(self):
+    fbb = FakeBBGen(self.args,
+                    MATRIX_SKYLAB_WATERFALL_WITH_BUILD_TARGET_VARIANT,
+                    MATRIX_COMPOUND_SKYLAB_REF,
+                    LUCI_MILO_CFG,
+                    exceptions=EMPTY_SKYLAB_TEST_EXCEPTIONS,
+                    variants=SKYLAB_VARIANTS_WITH_BUILD_VARIANT)
     fbb.check_input_file_consistency(verbose=True)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
