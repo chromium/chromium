@@ -18,6 +18,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/x/randr.h"
 
 namespace {
 
@@ -65,13 +66,41 @@ VirtualDisplayUtilLinux::~VirtualDisplayUtilLinux() {
 
 // static
 bool VirtualDisplayUtilLinux::IsAPIAvailable() {
-  // Wayland is currently unimplemented. Note that this detection uses
-  // XDG_SESSION_TYPE environment variable. When running in a pure SSH / virtual
-  // X server, it may be necessary to manually set XDG_SESSION_TYPE=x11 in the
-  // command.
-  static base::nix::SessionType session_type =
-      base::nix::GetSessionType(*base::Environment::Create());
-  return session_type == base::nix::SessionType::kX11;
+  // Check if XRandR is running with a sufficient number of connected outputs.
+  // Skip base::nix::GetSessionType(...), which may return kTty instead of kX11
+  // in SSH sessions with virtualized X11 environments.
+
+  constexpr auto kConnected = static_cast<x11::RandR::RandRConnection>(0);
+  constexpr auto kDisabled = static_cast<x11::RandR::Crtc>(0);
+  x11::Connection* x11_connection = x11::Connection::Get();
+  if (!x11_connection) {
+    LOG(ERROR) << "X11 is not present.";
+    return false;
+  }
+  x11::RandR& xrandr = x11_connection->randr();
+  if (!xrandr.present()) {
+    LOG(ERROR) << "XRandR is not present.";
+    return false;
+  }
+  x11::Response<x11::RandR::GetScreenResourcesCurrentReply> screen_resources =
+      xrandr.GetScreenResourcesCurrent({x11_connection->default_screen().root})
+          .Sync();
+  if (!screen_resources.reply) {
+    LOG(ERROR) << "GetScreenResourcesCurrent failed.";
+    return false;
+  }
+  int connected_and_disabled_outputs = 0;
+  for (const auto& output : screen_resources.reply->outputs) {
+    std::unique_ptr<x11::RandR::GetOutputInfoReply> output_reply =
+        xrandr.GetOutputInfo(output, screen_resources.reply->config_timestamp)
+            .Sync()
+            .reply;
+    if (output_reply && output_reply->connection == kConnected &&
+        output_reply->crtc == kDisabled) {
+      connected_and_disabled_outputs++;
+    }
+  }
+  return connected_and_disabled_outputs >= kMaxDisplays;
 }
 
 int64_t VirtualDisplayUtilLinux::AddDisplay(
