@@ -994,7 +994,8 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
     complete_tree_update.tree_data.tree_id = page->GetTreeID();
     if (!page->ax_tree() ||
         !page->ax_tree()->Unserialize(complete_tree_update)) {
-      mojo::ReportBadMessage(page->ax_tree()->error());
+      mojo::ReportBadMessage(page->ax_tree() ? page->ax_tree()->error()
+                                             : "Missing page ax_tree");
       return;
     }
   }
