@@ -1281,7 +1281,8 @@ class TabListMediator {
     }
 
     private void selectTab(int oldIndex, int newIndex) {
-        if (oldIndex != TabModel.INVALID_TAB_INDEX) {
+        // TODO(crbug.com/347886633): Change the bounds check to an assert.
+        if (oldIndex != TabModel.INVALID_TAB_INDEX && oldIndex < mModel.size()) {
             int lastId = mModel.get(oldIndex).model.get(TAB_ID);
             mModel.get(oldIndex).model.set(TabProperties.IS_SELECTED, false);
             if (mActionsOnAllRelatedTabs && mThumbnailProvider != null && mShowingTabs) {
@@ -1501,12 +1502,14 @@ class TabListMediator {
         }
         if (areTabsUnchanged(tabs)) {
             if (tabs == null) return true;
+
+            int currentTabId = TabModelUtils.getCurrentTabId(filter.getTabModel());
             for (int i = 0; i < tabs.size(); i++) {
                 Tab tab = tabs.get(i);
-                int currentTabId = TabModelUtils.getCurrentTabId(filter.getTabModel());
                 boolean isSelected = isSelectedTab(tab, currentTabId);
                 updateTab(mModel.indexOfNthTabCard(i), tab, isSelected, false, quickMode);
             }
+            mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
             return true;
         }
         mModel.set(new ArrayList<>());

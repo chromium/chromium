@@ -1173,6 +1173,66 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void tabAddition_GTS_delayAdd_WithUnexpectedUpdate() {
+        mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+        initAndAssertAllProperties();
+
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
+        doReturn(newTab).when(mTabGroupModelFilter).getTabAt(2);
+        doReturn(Arrays.asList(mTab1)).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(Arrays.asList(mTab2)).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
+        doReturn(3).when(mTabGroupModelFilter).getCount();
+        assertEquals(mModel.size(), 2);
+
+        // Add tab marked as delayed.
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        newTab,
+                        TabLaunchType.FROM_TAB_SWITCHER_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        true);
+
+        // Verify tab did not get added and delayed tab is captured.
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mMediator.getTabToAddDelayedForTesting(), equalTo(newTab));
+
+        // Select delayed tab.
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(newTab, TabSelectionType.FROM_USER, mTab2.getId());
+        // Assert old tab is still marked as selected.
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+
+        // Remove the first two tabs.
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false);
+        doReturn(newTab).when(mTabGroupModelFilter).getTabAt(0);
+        when(mTabModel.getTabAt(0)).thenReturn(newTab);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(newTab);
+        when(mTabGroupModelFilter.getTabAt(1)).thenReturn(null);
+        when(mTabGroupModelFilter.getTabAt(2)).thenReturn(null);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+
+        // Hide GTS to complete tab addition and selection.
+        mMediator.postHiding();
+        // Assert tab added and selected. Assert old tab is de-selected.
+        assertThat(mModel.size(), equalTo(1));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertNull(mMediator.getTabToAddDelayedForTesting());
+        verify(mTab1).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTab2).removeObserver(mTabObserverCaptor.getValue());
+        verify(newTab).removeObserver(mTabObserverCaptor.getValue());
+        verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabGroupModelFilter)
+                .removeTabGroupObserver(mTabGroupModelFilterObserverCaptor.getValue());
+    }
+
+    @Test
     public void tabAddition_GTS_Skip() {
         // Add a new tab to the group with mTab2.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
