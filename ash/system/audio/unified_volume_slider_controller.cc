@@ -65,6 +65,10 @@ void UnifiedVolumeSliderController::SetMapDeviceSliderCallbackForTest(
 }
 
 std::unique_ptr<UnifiedSliderView> UnifiedVolumeSliderController::CreateView() {
+#if DCHECK_IS_ON()
+  DCHECK(!created_view_);
+  created_view_ = true;
+#endif
   return std::make_unique<UnifiedVolumeView>(this, delegate_,
                                              /*is_active_output_node=*/true);
 }

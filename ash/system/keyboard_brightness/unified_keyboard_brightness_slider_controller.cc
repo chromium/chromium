@@ -134,10 +134,11 @@ UnifiedKeyboardBrightnessSliderController::
 
 std::unique_ptr<UnifiedSliderView>
 UnifiedKeyboardBrightnessSliderController::CreateView() {
-  DCHECK(!slider_);
-  auto slider = std::make_unique<UnifiedKeyboardBrightnessView>(this, model_);
-  slider_ = slider.get();
-  return slider;
+#if DCHECK_IS_ON()
+  DCHECK(!created_view_);
+  created_view_ = true;
+#endif
+  return std::make_unique<UnifiedKeyboardBrightnessView>(this, model_);
 }
 
 QsSliderCatalogName

@@ -47,6 +47,10 @@ class ASH_EXPORT MicGainSliderController : public UnifiedSliderListener {
   // Timer used to prevent the input gain from recording each time the user
   // moves the slider while setting the desired volume.
   base::DelayTimer input_gain_metric_delay_timer_;
+
+#if DCHECK_IS_ON()
+  bool created_view_ = false;
+#endif
 };
 
 }  // namespace ash

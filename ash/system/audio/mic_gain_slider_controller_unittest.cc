@@ -42,9 +42,7 @@ class MicGainSliderControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  std::unique_ptr<views::View> GetMuteToastView() {
-    return mic_gain_slider_controller_.CreateView();
-  }
+  views::View* GetMuteToastView() { return slider_view_.get(); }
 
  protected:
   void UpdateSliderValue(float new_value) {
@@ -104,7 +102,7 @@ TEST_F(MicGainSliderControllerTest, RecordInputGainChangedSource) {
 }
 
 TEST_F(MicGainSliderControllerTest, CreateMuteToastView) {
-  auto toast_view = GetMuteToastView();
+  auto* toast_view = GetMuteToastView();
   // `MicGainSliderView` is the first child in the toast view and is visible.
   EXPECT_TRUE(toast_view->children()[0]->GetVisible());
 }

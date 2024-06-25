@@ -48,9 +48,8 @@ UnifiedBrightnessSliderController::CreateView() {
 #endif
   // Consuming `callback_` is safe here; `CreateView()` should only be called
   // once per controller instance per the DCHECK() above.
-  auto slider = std::make_unique<UnifiedBrightnessView>(this, model_,
-                                                        std::move(callback_));
-  return slider;
+  return std::make_unique<UnifiedBrightnessView>(this, model_,
+                                                 std::move(callback_));
 }
 
 QsSliderCatalogName UnifiedBrightnessSliderController::GetCatalogName() {

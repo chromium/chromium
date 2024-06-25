@@ -47,5 +47,26 @@ TEST_F(UnifiedSliderBubbleControllerTest, ShowAndHideBubble) {
   }
 }
 
+// Regression test for b/342513656.
+TEST_F(UnifiedSliderBubbleControllerTest, UpdateBubble) {
+  std::vector<SliderType> types = {
+      SliderType::SLIDER_TYPE_VOLUME,
+      SliderType::SLIDER_TYPE_DISPLAY_BRIGHTNESS,
+      SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_OFF,
+      SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_ON,
+      SliderType::SLIDER_TYPE_KEYBOARD_BRIGHTNESS,
+      SliderType::SLIDER_TYPE_MIC};
+
+  UnifiedSliderBubbleController controller(
+      GetPrimaryShelf()->GetStatusAreaWidget()->unified_system_tray());
+
+  for (auto type : types) {
+    controller.ShowBubble(type);
+
+    EXPECT_TRUE(controller.IsBubbleShown());
+    EXPECT_TRUE(controller.slider_view());
+  }
+}
+
 }  // namespace
 }  // namespace ash

@@ -99,11 +99,12 @@ KeyboardBacklightToggleController::~KeyboardBacklightToggleController() =
 
 std::unique_ptr<UnifiedSliderView>
 KeyboardBacklightToggleController::CreateView() {
-  DCHECK(!slider_);
-  auto slider = std::make_unique<UnifiedKeyboardBacklightToggleView>(
-      this, model_, toggled_on_);
-  slider_ = slider.get();
-  return slider;
+#if DCHECK_IS_ON()
+  DCHECK(!created_view_);
+  created_view_ = true;
+#endif
+  return std::make_unique<UnifiedKeyboardBacklightToggleView>(this, model_,
+                                                              toggled_on_);
 }
 
 QsSliderCatalogName KeyboardBacklightToggleController::GetCatalogName() {
