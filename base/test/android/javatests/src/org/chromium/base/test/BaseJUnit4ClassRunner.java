@@ -40,6 +40,7 @@ import org.chromium.base.test.util.DisableIfSkipCheck;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
+import org.chromium.base.test.util.TestAnimations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -433,6 +434,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
         Class<?> testClass = getTestClass().getJavaClass();
         CommandLineFlags.reset(testClass.getAnnotations(), method.getAnnotations());
+        TestAnimations.reset(testClass, method.getMethod());
 
         blockUnitTestsFromStartingBrowser(method);
         UmaRecorderHolder.resetForTesting();
@@ -449,6 +451,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
 
         CommandLineFlags.reset(testClass.getAnnotations(), null);
+        TestAnimations.reset(testClass, null);
 
         Context targetContext = InstrumentationRegistry.getTargetContext();
         for (ClassHook hook : getPreClassHooks()) {

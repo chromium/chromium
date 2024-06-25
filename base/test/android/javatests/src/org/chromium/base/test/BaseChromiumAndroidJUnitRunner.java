@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.base.test.util.TestAnimations;
 import org.chromium.build.BuildConfig;
 import org.chromium.testing.TestListInstrumentationRunListener;
 
@@ -494,6 +495,9 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             super.finish(resultCode, results);
             return;
         }
+
+        // Leave animations in the default state.
+        TestAnimations.setEnabled(true);
 
         try {
             writeClangCoverageProfileIfEnabled();

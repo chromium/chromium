@@ -5170,6 +5170,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/RestrictionSkipCheck.java",
       "test/android/javatests/src/org/chromium/base/test/util/ScalableTimeout.java",
       "test/android/javatests/src/org/chromium/base/test/util/SkipCheck.java",
+      "test/android/javatests/src/org/chromium/base/test/util/TestAnimations.java",
       "test/android/javatests/src/org/chromium/base/test/util/TestFileUtil.java",
       "test/android/javatests/src/org/chromium/base/test/util/TestThreadUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",

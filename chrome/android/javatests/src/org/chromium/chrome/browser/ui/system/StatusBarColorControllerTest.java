@@ -66,7 +66,6 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 
@@ -81,10 +80,6 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class StatusBarColorControllerTest {
-    @ClassRule
-    public static DisableAnimationsTestRule sEnableAnimationsRule =
-            new DisableAnimationsTestRule(false);
-
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
