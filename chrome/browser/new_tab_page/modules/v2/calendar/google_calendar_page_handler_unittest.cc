@@ -82,7 +82,7 @@ base::Value::Dict CreateEvent(int index) {
 
 bool CreateEventsJson(std::string* json) {
   base::Value::List events = base::Value::List();
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 10; i++) {
     events.Append(CreateEvent(i));
   }
   base::Value::Dict result_dict =
@@ -297,9 +297,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
 
-  // The test data has 3 events, but we should only have 2, since the all day
-  // event is filtered out.
-  ASSERT_EQ(response.size(), 2u);
+  // The test data has 10 events, but we never return more than 6.
+  ASSERT_EQ(response.size(), 6u);
   // The first event was the all day event that was filtered out, so the rest
   // of the events should have one number higher in their fields.
   for (int i = 0; i < 2; i++) {
@@ -325,4 +324,34 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
                 "https://foo-icon.com/" + base::NumberToString(j));
     }
   }
+}
+
+TEST_F(GoogleCalendarPageHandlerTest, GetEventsWithFeatureParams) {
+  base::FieldTrialParams params;
+  params[ntp_features::kNtpCalendarModuleMaxEventsParam.name] = "3";
+  feature_list().Reset();
+  feature_list().InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpCalendarModule, params);
+
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
+  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+            response = std::move(events);
+          }));
+
+  std::string json;
+  bool data_success = CreateEventsJson(&json);
+  ASSERT_TRUE(data_success);
+  std::unique_ptr<GoogleCalendarPageHandler> handler =
+      CreateHandlerWithTestData(std::move(json));
+
+  base::RunLoop run_loop;
+  handler->GetEvents(
+      google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
+  run_loop.Run();
+
+  EXPECT_EQ(response.size(), 3u);
 }

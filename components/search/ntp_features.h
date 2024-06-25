@@ -227,6 +227,8 @@ extern const char kNtpTabResumptionModuleVisibilityThresholdDataParam[];
 // Parameter determining the trigger delay of the Wallpaper Search HaTS survey.
 extern const char kWallpaperSearchHatsDelayParam[];
 
+// Parameter determining the number of events to show on the calendar module.
+extern const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam;
 // Parameter determining the background color of the expanded state realbox.
 extern const base::FeatureParam<bool>
     kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;

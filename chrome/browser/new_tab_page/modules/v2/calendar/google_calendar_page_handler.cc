@@ -213,8 +213,14 @@ void GoogleCalendarPageHandler::OnRequestComplete(
     google_apis::ApiErrorCode response_code,
     std::unique_ptr<google_apis::calendar::EventList> events) {
   std::vector<ntp::calendar::mojom::CalendarEventPtr> result;
+  size_t max_events =
+      static_cast<size_t>(ntp_features::kNtpCalendarModuleMaxEventsParam.Get());
   if (response_code == google_apis::ApiErrorCode::HTTP_SUCCESS) {
     for (const auto& event : events->items()) {
+      // If the result is already at max length, stop.
+      if (result.size() == max_events) {
+        break;
+      }
       // Do not include all day events in response.
       if (event->all_day_event()) {
         continue;

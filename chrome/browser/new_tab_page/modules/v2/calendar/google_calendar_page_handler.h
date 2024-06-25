@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_GOOGLE_CALENDAR_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "google_apis/calendar/calendar_api_url_generator.h"
 #include "google_apis/common/api_error_codes.h"

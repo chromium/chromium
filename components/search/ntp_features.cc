@@ -538,6 +538,10 @@ const char kNtpTabResumptionModuleVisibilityThresholdDataParam[] =
     "NtpTabResumptionModuleVisibilityThresholdDataParam";
 const char kWallpaperSearchHatsDelayParam[] = "WallpaperSearchHatsDelayParam";
 
+const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam(
+    &ntp_features::kNtpCalendarModule,
+    "NtpCalendarModuleMaxEventsParam",
+    6);
 const base::FeatureParam<bool> kNtpRealboxCr23ExpandedStateBgMatchesOmnibox(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23ExpandedStateBgMatchesOmnibox",
