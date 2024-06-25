@@ -5,9 +5,6 @@
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectionClearedAfterLossOfFocus
 -org.chromium.content.browser.ContentTextSelectionTest.testSelectionPreservedAfterLossOfFocusIfRequested
 
-# crbug.com/1233309
--org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
-
 # crbug.com/1233311
 -org.chromium.content.browser.VideoFullscreenOrientationLockTest.testEnterExitFullscreenWithControlsButton
 
