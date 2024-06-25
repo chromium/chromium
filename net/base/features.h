@@ -522,6 +522,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kStorageAccessHeaders);
 // not causing any problems.
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdySessionForProxyAdditionalChecks);
 
+// Enables enterprises to use the Reporting API to collect 3PCD-related
+// issues from sites used in their organization.
+NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiEnableEnterpriseCookieIssues);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
