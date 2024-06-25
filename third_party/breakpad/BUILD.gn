@@ -397,13 +397,6 @@ if (!is_win) {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
-    if (use_centipede || use_libfuzzer) {
-      copy_exe("minidump_fuzzer") {
-        testonly = true
-        has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
-        target = ":$target_name($_tests_launcher_toolchain)"
-      }
-    }
   }
 }
 
