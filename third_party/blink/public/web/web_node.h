@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_NODE_H_
 
+#include <iosfwd>
+
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
 #include "cc/paint/element_id.h"
@@ -151,6 +153,8 @@ class BLINK_EXPORT WebNode {
   // be performed.
   template <typename T>
   T DynamicTo() const;
+
+  BLINK_EXPORT friend std::ostream& operator<<(std::ostream&, const WebNode&);
 
 #if INSIDE_BLINK
   WebNode(Node*);
