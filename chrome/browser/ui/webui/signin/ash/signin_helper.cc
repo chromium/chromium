@@ -39,6 +39,10 @@ void SigninHelper::ArcHelper::SetIsAvailableInArc(bool is_available_in_arc) {
   is_available_in_arc_ = is_available_in_arc;
 }
 
+bool SigninHelper::ArcHelper::IsAvailableInArc() const {
+  return is_available_in_arc_;
+}
+
 void SigninHelper::ArcHelper::OnAccountAdded(
     const account_manager::Account& account) {
   // Don't change ARC availability after reauthentication.
@@ -89,6 +93,10 @@ SigninHelper::SigninHelper(
 }
 
 SigninHelper::~SigninHelper() = default;
+
+bool SigninHelper::IsAvailableInArc() const {
+  return arc_helper_ && arc_helper_->IsAvailableInArc();
+}
 
 void SigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
   refresh_token_ = result.refresh_token;
