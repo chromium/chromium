@@ -114,9 +114,13 @@ class MockPageActivationThrottle : public content::NavigationThrottle {
     if (throttle_state == activation_throttle_state_) {
       auto it = mock_page_activations_.find(navigation_handle()->GetURL());
       if (it != mock_page_activations_.end()) {
-        FingerprintingProtectionWebContentsHelper::FromWebContents(
-            navigation_handle()->GetWebContents())
-            ->NotifyPageActivationComputed(navigation_handle(), it->second);
+        auto* web_contents_helper =
+            FingerprintingProtectionWebContentsHelper::FromWebContents(
+                navigation_handle()->GetWebContents());
+        if (web_contents_helper) {
+          web_contents_helper->NotifyPageActivationComputed(navigation_handle(),
+                                                            it->second);
+        }
       }
     }
     return content::NavigationThrottle::PROCEED;
