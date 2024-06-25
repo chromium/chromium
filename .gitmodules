@@ -614,10 +614,6 @@
 	path = chromeos/assistant/internal
 	url = https://chrome-internal.googlesource.com/chrome/assistant
 	gclient-condition = checkout_src_internal and checkout_chromeos
-[submodule "ash/webui/conch"]
-	path = ash/webui/conch
-	url = https://chrome-internal.googlesource.com/ash/webui/conch
-	gclient-condition = checkout_src_internal and checkout_chromeos
 [submodule "build/fuchsia/internal"]
 	path = build/fuchsia/internal
 	url = https://chrome-internal.googlesource.com/fuchsia/build

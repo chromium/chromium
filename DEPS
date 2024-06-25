@@ -4502,12 +4502,6 @@ deps = {
       'condition': 'checkout_src_internal and checkout_chromeos',
     },
 
-  'src/ash/webui/conch': {
-      'url': Var('chrome_git') + '/ash/webui/conch.git' + '@' +
-        'a392942d0ed65999f48d5df9e66f1ccec5e03eb1',
-      'condition': 'checkout_src_internal and checkout_chromeos',
-  },
-
   'src/ui/gl/resources/angle-metal': {
     'packages': [{
        'package': 'chromium/gpu/angle-metal-shader-libraries',
