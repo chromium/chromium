@@ -4,9 +4,14 @@
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_java_script_feature.h"
 
+#import "base/feature_list.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
+#import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
 namespace {
@@ -96,6 +101,21 @@ ChooseFileAccept BucketForChooseFileEvent(int accept_type,
       NOTREACHED_NORETURN();
   }
 }
+
+// Applies `parse_function` to the attribute value associated with
+// `attribute_name` in `dict`. If there is no such attribute in `dict`, returns
+// an empty vector.
+using ParseFunction = std::vector<std::string> (*)(std::string_view);
+std::vector<std::string> ParseAttributeFromValue(
+    const base::Value::Dict& dict,
+    std::string_view attribute_name,
+    ParseFunction parse_function) {
+  if (const std::string* attribute_value = dict.FindString(attribute_name)) {
+    return parse_function(*attribute_value);
+  }
+  return {};
+}
+
 }  // namespace
 
 ChooseFileJavaScriptFeature::ChooseFileJavaScriptFeature()
@@ -141,6 +161,18 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   }
 
   LogChooseFileEvent(accept_type_int, *has_multiple);
+
+  if (base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+    std::vector<std::string> accept_file_extensions = ParseAttributeFromValue(
+        body_dict, "fileExtensions", ParseAcceptAttributeFileExtensions);
+    std::vector<std::string> accept_mime_types = ParseAttributeFromValue(
+        body_dict, "mimeTypes", ParseAcceptAttributeMimeTypes);
+    base::UmaHistogramBoolean("IOS.Web.FileInput.EventDropped",
+                              last_choose_file_event_.has_value());
+    last_choose_file_event_ = std::make_optional<ChooseFileEvent>(
+        *has_multiple, std::move(accept_file_extensions),
+        std::move(accept_mime_types), web_state);
+  }
 }
 
 void ChooseFileJavaScriptFeature::LogChooseFileEvent(
@@ -149,4 +181,9 @@ void ChooseFileJavaScriptFeature::LogChooseFileEvent(
   base::UmaHistogramEnumeration(
       "IOS.Web.FileInput.Clicked",
       BucketForChooseFileEvent(accept_type, allow_multiple_files));
+}
+
+std::optional<ChooseFileEvent>
+ChooseFileJavaScriptFeature::ResetLastChooseFileEvent() {
+  return std::exchange(last_choose_file_event_, std::nullopt);
 }

@@ -85,21 +85,111 @@ function stringToAcceptType(acceptString: String): AcceptType {
 // Converts a multiple accept string to an AcceptType
 function MultipleStringToAcceptType(acceptString: String): AcceptType {
   const accepts = acceptString.split(',');
-  var type = AcceptType.NoAccept;
+  var acceptType = AcceptType.NoAccept;
   for (const accept of accepts) {
     const current = stringToAcceptType(accept);
-    if (type == AcceptType.NoAccept || type == AcceptType.UnknownAccept) {
-      type = current;
+    if (acceptType == AcceptType.NoAccept ||
+        acceptType == AcceptType.UnknownAccept) {
+      acceptType = current;
       continue;
     }
-    if (type == current || current == AcceptType.UnknownAccept ||
+    if (acceptType == current || current == AcceptType.UnknownAccept ||
         current == AcceptType.NoAccept) {
       continue;
     }
     // Types are different and neither is Unknown, so it is Mixed.
     return AcceptType.MixedAccept;
   }
-  return type;
+  return acceptType;
+}
+
+// Returns whether `ch` is a string with a single UTF-16 code unit which is a
+// valid RFC2616 token character. This is mimicking verifications done by Blink.
+function isRFC2616TokenCharacter(ch: String): boolean {
+  const code = ch.charCodeAt(0);
+  if (code < 32 || code > 127) {
+    return false;
+  }
+  switch (ch) {
+    case '(':
+    case ')':
+    case '<':
+    case '>':
+    case '@':
+    case ',':
+    case ';':
+    case ':':
+    case '\\':
+    case '"':
+    case '/':
+    case '[':
+    case ']':
+    case '?':
+    case '=':
+    case '{':
+    case '}':
+    case String.fromCharCode(0x20):  // SP
+    case String.fromCharCode(0x09):  // HT
+    case String.fromCharCode(0x7f):  // DEL
+      return false;
+    default:
+      return true;
+  }
+}
+
+// Returns whether `mimeType` is a string which represents a valid MIME type.
+function isValidMIMEType(mimeType: String): boolean {
+  let slashPosition = mimeType.indexOf('/');
+  if (slashPosition == -1 || slashPosition == mimeType.length - 1 ||
+      slashPosition == 0) {
+    return false;
+  }
+  for (let i = 0; i < mimeType.length; i++) {
+    if (!isRFC2616TokenCharacter(mimeType[i]!) && i != slashPosition) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Returns whether `fileExtension` is a string which represents a valid file
+// extension.
+function isValidFileExtension(fileExtension: String): boolean {
+  if (fileExtension.length < 2) {
+    return false;
+  }
+  for (let i = 0; i < fileExtension.length; i++) {
+    if (!isRFC2616TokenCharacter(fileExtension[i]!)) {
+      return false;
+    }
+  }
+  return fileExtension[0] == '.';
+}
+
+// Filters `acceptString` so it only contains valid MIME types.
+function parseAcceptAttributeMimeTypes(acceptString: String): String {
+  const acceptTypes = acceptString.split(',');
+  var mimeTypes: String[] = [];
+  for (const acceptType of acceptTypes) {
+    const trimmedType = acceptType.trim();
+    if (isValidMIMEType(trimmedType)) {
+      mimeTypes.push(trimmedType);
+    }
+  }
+  return mimeTypes.join(',');
+}
+
+// Filters `acceptString` so it only contains valid file extensions.
+function parseAcceptAttributeFileExtensions(acceptString: String): String {
+  const acceptTypes = acceptString.split(',');
+  var fileExtensions: String[] = [];
+  for (const acceptType of acceptTypes) {
+    const trimmedType = acceptType.trim();
+    if (isValidFileExtension(trimmedType)) {
+      fileExtensions.push(trimmedType);
+    }
+  }
+  return fileExtensions.join(',');
 }
 
 // Sends data about the event.
@@ -112,14 +202,18 @@ function processChooseFileClick(inputEvent: MouseEvent): void {
     return;
   }
   var accept = AcceptType.NoAccept;
-  if (target.hasAttribute('accept')) {
-    accept = MultipleStringToAcceptType(target.getAttribute('accept')!);
+  var acceptString = target.getAttribute('accept')
+  if (acceptString) {
+    accept = MultipleStringToAcceptType(acceptString!);
   }
 
+  acceptString = acceptString ? acceptString : '';
   const response = {
     'hasMultiple': target.hasAttribute('multiple'),
     'acceptType': accept,
-  }
+    'mimeTypes': parseAcceptAttributeMimeTypes(acceptString),
+    'fileExtensions': parseAcceptAttributeFileExtensions(acceptString),
+  };
 
   sendWebKitMessage(CHOOSE_FILE_INPUT_HANDLER_NAME, response);
 }

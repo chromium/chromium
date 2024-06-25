@@ -4460,6 +4460,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.Web.FileInput.EventDropped" enum="Boolean"
+    expires_after="2024-12-15">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Histogram describing whether a &quot;Choose File&quot; event was dropped in
+    order to record a new incoming &quot;Choose File&quot; event. Logged when a
+    new &quot;Choose File&quot; event is triggered by the web page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
     expires_after="2024-11-19">
   <owner>gambard@chromium.org</owner>
