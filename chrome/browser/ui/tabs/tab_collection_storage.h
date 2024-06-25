@@ -28,10 +28,10 @@ using ChildrenVector = std::vector<
 // collection tree
 // - MaybeRemoveTab/MaybeRemoveCollection - the storage layer doesn't get to say
 // no
-class TabCollectionStorage {
+class TabCollectionStorage final {
  public:
   explicit TabCollectionStorage(TabCollection& owner);
-  virtual ~TabCollectionStorage();
+  ~TabCollectionStorage();
   TabCollectionStorage(const TabCollectionStorage&) = delete;
   TabCollectionStorage& operator=(const TabCollectionStorage&) = delete;
 
