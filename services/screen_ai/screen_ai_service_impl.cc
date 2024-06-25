@@ -23,8 +23,9 @@
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "services/screen_ai/proto/visual_annotator_proto_convertor.h"
 #include "services/screen_ai/public/cpp/utilities.h"
-#include "services/screen_ai/screen_ai_ax_tree_serializer.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
 

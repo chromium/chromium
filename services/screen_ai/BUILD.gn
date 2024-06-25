@@ -10,8 +10,6 @@ assert(enable_screen_ai_service)
 
 source_set("screen_ai") {
   sources = [
-    "screen_ai_ax_tree_serializer.cc",
-    "screen_ai_ax_tree_serializer.h",
     "screen_ai_library_wrapper.h",
     "screen_ai_service_impl.cc",
     "screen_ai_service_impl.h",
@@ -98,7 +96,6 @@ source_set("unit_tests") {
   sources = [
     "proto/main_content_extractor_proto_convertor_unittest.cc",
     "proto/visual_annotator_proto_convertor_unittest.cc",
-    "screen_ai_ax_tree_serializer_unittest.cc",
     "screen_ai_service_impl_unittest.cc",
   ]
 
