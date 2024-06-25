@@ -8,6 +8,7 @@
 #include <iterator>
 #include <numeric>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram.h"
@@ -21,6 +22,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -69,6 +71,10 @@ namespace {
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
 bool g_prompt_disabled_for_tests = false;
+
+bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
+  return command_line.HasSwitch(switches::kNoFirstRun);
+}
 
 // Returns whether 3P cookies are blocked by |cookie_settings|. This can be
 // either through blocking 3P cookies directly, or blocking all cookies.
@@ -1060,6 +1066,12 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   if (privacy_sandbox::
           kPrivacySandboxSettings4ForceShowNoticeRestrictedForTesting.Get()) {
     return PromptType::kM1NoticeRestricted;
+  }
+
+  // Suppress the prompt if we force --no-first-run for testing
+  // and benchmarking.
+  if (IsFirstRunSuppressed(*base::CommandLine::ForCurrentProcess())) {
+    return PromptType::kNone;
   }
 
   // If this a non-Chrome build, do not show a prompt.
