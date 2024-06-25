@@ -123,6 +123,10 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)> callback) override;
 
+  std::unique_ptr<content::VideoOverlayWindow>
+  CreateWindowForVideoPictureInPicture(
+      content::VideoPictureInPictureWindowController* controller) override;
+
  private:
   class StubBadgeService;
 

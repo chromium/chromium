@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -67,18 +68,43 @@
 
 namespace headless {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 namespace {
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 int GetCrashSignalFD(const base::CommandLine& command_line,
                      const HeadlessBrowser::Options& options) {
   int fd;
   pid_t pid;
   return crash_reporter::GetHandlerSocket(&fd, &pid) ? fd : -1;
 }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
+ public:
+  bool IsActive() const override { return false; }
+  void Close() override {}
+  void ShowInactive() override {}
+  void Hide() override {}
+  bool IsVisible() const override { return false; }
+  gfx::Rect GetBounds() override { return gfx::Rect(); }
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {}
+  void SetPlaybackState(PlaybackState playback_state) override {}
+  void SetPlayPauseButtonVisibility(bool is_visible) override {}
+  void SetSkipAdButtonVisibility(bool is_visible) override {}
+  void SetNextTrackButtonVisibility(bool is_visible) override {}
+  void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetMicrophoneMuted(bool muted) override {}
+  void SetCameraState(bool turned_on) override {}
+  void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
+  void SetToggleCameraButtonVisibility(bool is_visible) override {}
+  void SetHangUpButtonVisibility(bool is_visible) override {}
+  void SetNextSlideButtonVisibility(bool is_visible) override {}
+  void SetPreviousSlideButtonVisibility(bool is_visible) override {}
+
+  void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
+};
 
 }  // namespace
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Implements a stub BadgeService. This implementation does nothing, but is
 // required because inbound Mojo messages which do not have a registered
@@ -415,6 +441,12 @@ void HeadlessContentBrowserClient::GetHyphenationDictionary(
     dir = dir.AppendASCII("hyphen-data");
     std::move(callback).Run(dir);
   }
+}
+
+std::unique_ptr<content::VideoOverlayWindow>
+HeadlessContentBrowserClient::CreateWindowForVideoPictureInPicture(
+    content::VideoPictureInPictureWindowController* controller) {
+  return std::make_unique<HeadlessVideoOverlayWindow>();
 }
 
 }  // namespace headless

@@ -208,6 +208,11 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     DirectoryEnumerator::Start(path, std::move(listener));
   }
 
+  content::PictureInPictureResult EnterPictureInPicture(
+      content::WebContents* web_contents) override {
+    return content::PictureInPictureResult::kSuccess;
+  }
+
   bool IsBackForwardCacheSupported(
       content::WebContents& web_contents) override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
