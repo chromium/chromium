@@ -5,13 +5,13 @@
 create {
   source {
     script {
-      name: "fetch.py"
+      name: "3pp.py"
       use_fetch_checkout_workflow: true
     }
   }
 
   build {
-    install: "install.py"
+    install: ["3pp.py", "install"]
     tool: "chromium/third_party/maven"
     dep: "chromium/third_party/jdk"
   }
