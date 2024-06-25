@@ -20,8 +20,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
@@ -30,7 +32,25 @@
 
 namespace net {
 
+BASE_FEATURE(kTransportSecurityFileWriterSchedule,
+             "TransportSecurityFileWriterSchedule",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
+
+// From kDefaultCommitInterval in base/files/important_file_writer.cc.
+// kTransportSecurityFileWriterScheduleCommitInterval won't set the commit
+// interval to less than this, for performance.
+constexpr base::TimeDelta kMinCommitInterval = base::Seconds(10);
+
+// Max safe commit interval for the ImportantFileWriter.
+constexpr base::TimeDelta kMaxCommitInterval = base::Minutes(10);
+
+// Overrides the default commit interval for the ImportantFileWriter.
+const base::FeatureParam<base::TimeDelta> kCommitIntervalParam(
+    &kTransportSecurityFileWriterSchedule,
+    "commit_interval",
+    kMinCommitInterval);
 
 constexpr const char* kHistogramSuffix = "TransportSecurityPersister";
 
@@ -188,7 +208,10 @@ TransportSecurityPersister::TransportSecurityPersister(
     const scoped_refptr<base::SequencedTaskRunner>& background_runner,
     const base::FilePath& data_path)
     : transport_security_state_(state),
-      writer_(data_path, background_runner, kHistogramSuffix),
+      writer_(data_path,
+              background_runner,
+              GetCommitInterval(),
+              kHistogramSuffix),
       foreground_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       background_runner_(background_runner) {
   transport_security_state_->SetDelegate(this);
@@ -263,6 +286,12 @@ void TransportSecurityPersister::LoadEntries(const std::string& serialized) {
   if (contains_legacy_expect_ct_data) {
     StateIsDirty(transport_security_state_);
   }
+}
+
+// static
+base::TimeDelta TransportSecurityPersister::GetCommitInterval() {
+  return std::clamp(kCommitIntervalParam.Get(), kMinCommitInterval,
+                    kMaxCommitInterval);
 }
 
 void TransportSecurityPersister::Deserialize(
