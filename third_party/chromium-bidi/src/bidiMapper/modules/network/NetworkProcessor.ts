@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {Protocol} from 'devtools-protocol';
 
 import {
   Network,
@@ -26,10 +25,6 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js'
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';
-import {
-  cdpFetchHeadersFromBidiNetworkHeaders,
-  cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
-} from './NetworkUtils.js';
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
@@ -73,21 +68,15 @@ export class NetworkProcessor {
   async continueRequest(
     params: Network.ContinueRequestParameters
   ): Promise<EmptyResult> {
-    const {
-      url,
-      method,
-      headers: commandHeaders,
-      body,
-      request: networkId,
-    } = params;
-
     if (params.url !== undefined) {
       NetworkProcessor.parseUrlString(params.url);
     }
 
     if (params.method !== undefined) {
       if (!NetworkProcessor.isMethodValid(params.method)) {
-        throw new InvalidArgumentException(`Method '${method}' is invalid.`);
+        throw new InvalidArgumentException(
+          `Method '${params.method}' is invalid.`
+        );
       }
     }
 
@@ -95,22 +84,14 @@ export class NetworkProcessor {
       NetworkProcessor.validateHeaders(params.headers);
     }
 
-    const request = this.#getBlockedRequestOrFail(networkId, [
+    const request = this.#getBlockedRequestOrFail(params.request, [
       Network.InterceptPhase.BeforeRequestSent,
     ]);
-
-    const headers: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(commandHeaders);
 
     // TODO: Set / expand.
     // ; Step 9. cookies
     try {
-      await request.continueRequest({
-        url,
-        method,
-        headers,
-        postData: getCdpBodyFromBiDiBytesValue(body),
-      });
+      await request.continueRequest(params);
     } catch (error) {
       throw NetworkProcessor.wrapInterceptionError(error);
     }
@@ -121,52 +102,21 @@ export class NetworkProcessor {
   async continueResponse(
     params: Network.ContinueResponseParameters
   ): Promise<EmptyResult> {
-    const {request: networkId, statusCode, reasonPhrase, headers} = params;
-
     if (params.headers) {
       NetworkProcessor.validateHeaders(params.headers);
     }
 
-    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(headers);
-
-    const request = this.#getBlockedRequestOrFail(networkId, [
+    const request = this.#getBlockedRequestOrFail(params.request, [
       Network.InterceptPhase.AuthRequired,
       Network.InterceptPhase.ResponseStarted,
     ]);
 
-    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
-      if (params.credentials) {
-        await Promise.all([
-          request.waitNextPhase,
-          request.continueWithAuth({
-            response: 'ProvideCredentials',
-            username: params.credentials.username,
-            password: params.credentials.password,
-          }),
-        ]);
-      } else {
-        // We need to use `ProvideCredentials`
-        // As `Default` may cancel the request
-        await request.continueWithAuth({
-          response: 'ProvideCredentials',
-        });
-        return {};
-      }
-    }
-
-    if (request.interceptPhase === Network.InterceptPhase.ResponseStarted) {
-      // TODO: Set / expand.
-      // ; Step 10. cookies
-      try {
-        await request.continueResponse({
-          responseCode: statusCode,
-          responsePhrase: reasonPhrase,
-          responseHeaders,
-        });
-      } catch (error) {
-        throw NetworkProcessor.wrapInterceptionError(error);
-      }
+    // TODO: Set / expand.
+    // ; Step 10. cookies
+    try {
+      await request.continueResponse(params);
+    } catch (error) {
+      throw NetworkProcessor.wrapInterceptionError(error);
     }
 
     return {};
@@ -180,25 +130,7 @@ export class NetworkProcessor {
       Network.InterceptPhase.AuthRequired,
     ]);
 
-    let username: string | undefined;
-    let password: string | undefined;
-
-    if (params.action === 'provideCredentials') {
-      const {credentials} = params;
-
-      username = credentials.username;
-      password = credentials.password;
-    }
-
-    const response = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(
-      params.action
-    );
-
-    await request.continueWithAuth({
-      response,
-      username,
-      password,
-    });
+    await request.continueWithAuth(params);
 
     return {};
   }
@@ -226,58 +158,20 @@ export class NetworkProcessor {
   async provideResponse(
     params: Network.ProvideResponseParameters
   ): Promise<EmptyResult> {
-    const {
-      statusCode,
-      reasonPhrase: responsePhrase,
-      headers,
-      body,
-      request: networkId,
-    } = params;
-
     if (params.headers) {
       NetworkProcessor.validateHeaders(params.headers);
     }
 
-    // TODO: Step 6
-    // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
-    const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
-      cdpFetchHeadersFromBidiNetworkHeaders(headers);
-
     // TODO: Set / expand.
     // ; Step 10. cookies
-    const request = this.#getBlockedRequestOrFail(networkId, [
+    const request = this.#getBlockedRequestOrFail(params.request, [
       Network.InterceptPhase.BeforeRequestSent,
       Network.InterceptPhase.ResponseStarted,
       Network.InterceptPhase.AuthRequired,
     ]);
 
-    // We need to pass through if the request is already in
-    // AuthRequired phase
-    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
-      // We need to use `ProvideCredentials`
-      // As `Default` may cancel the request
-      await request.continueWithAuth({
-        response: 'ProvideCredentials',
-      });
-      return {};
-    }
-
-    // If we don't modify the response
-    // just continue the request
-    if (!body && !headers) {
-      await request.continueRequest();
-      return {};
-    }
-
-    const responseCode = statusCode ?? request.statusCode ?? 200;
-
     try {
-      await request.provideResponse({
-        responseCode,
-        responsePhrase,
-        responseHeaders,
-        body: getCdpBodyFromBiDiBytesValue(body),
-      });
+      await request.provideResponse(params);
     } catch (error) {
       throw NetworkProcessor.wrapInterceptionError(error);
     }
@@ -500,16 +394,4 @@ function unescapeURLPattern(pattern: string) {
     isEscaped = false;
   }
   return result;
-}
-
-function getCdpBodyFromBiDiBytesValue(
-  body?: Network.BytesValue
-): string | undefined {
-  let parsedBody: string | undefined;
-  if (body?.type === 'string') {
-    parsedBody = btoa(body.value);
-  } else if (body?.type === 'base64') {
-    parsedBody = body.value;
-  }
-  return parsedBody;
 }
