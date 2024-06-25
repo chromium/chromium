@@ -29,6 +29,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "chrome/test/supervised_user/test_state_seeded_observer.h"
+#include "family_live_test.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
@@ -38,11 +39,11 @@ namespace supervised_user {
 namespace {
 
 // When enabled the tests explicitly wait for sync invalidation to be ready.
-const char* kWaitForSyncInvalidationReadyFlag =
+const char* kWaitForSyncInvalidationReadySwitch =
     "supervised-tests-wait-for-sync-invalidation-ready";
 // When enabled, the browser opens extra debugging tabs & the logging is more
 // detailed.
-const char* kDebug = "supervised-tests-debug-features";
+const char* kDebugSwitch = "supervised-tests-debug-features";
 
 bool IsFeatureFlagEnabled(const char* flag) {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(flag);
@@ -61,9 +62,8 @@ Profile& CreateNewProfile() {
   return profiles::testing::CreateProfileSync(profile_manager, profile_path);
 }
 
-std::string GetFamilyMemberIdentifier(FamilyIdentifier family_identifier,
-                                      std::string_view member_identifier) {
-  return family_identifier.value() + "_" + std::string(member_identifier);
+std::string GetFamilyMemberIdentifier(std::string_view member_identifier) {
+  return GetFamilyIdentifier() + "_" + std::string(member_identifier);
 }
 
 bool HasAuthError(syncer::SyncServiceImpl* service) {
@@ -99,13 +99,18 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
 
 }  // namespace
 
-FamilyLiveTest::FamilyLiveTest(FamilyIdentifier family_identifier)
-    : family_identifier_(family_identifier) {}
+std::string GetFamilyIdentifier() {
+  CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kFamilyIdentifierSwitch))
+      << "Please specify " << kFamilyIdentifierSwitch << " switch";
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      kFamilyIdentifierSwitch);
+}
+
+FamilyLiveTest::FamilyLiveTest() = default;
 FamilyLiveTest::FamilyLiveTest(
-    FamilyIdentifier famiy_identifier,
     const std::vector<std::string>& extra_enabled_hosts)
-    : family_identifier_(famiy_identifier),
-      extra_enabled_hosts_(extra_enabled_hosts) {}
+    : extra_enabled_hosts_(extra_enabled_hosts) {}
 FamilyLiveTest::~FamilyLiveTest() = default;
 
 void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
@@ -115,13 +120,13 @@ void FamilyLiveTest::TurnOnSyncFor(FamilyMember& member) {
   member.browser()->tab_strip_model()->CloseWebContentsAt(
       1, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
-  if (IsFeatureFlagEnabled(kDebug)) {
+  if (IsFeatureFlagEnabled(kDebugSwitch)) {
     CHECK(AddTabAtIndexToBrowser(member.browser(), 1,
                                  GURL("chrome://sync-internals"),
                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
   }
 
-  if (IsFeatureFlagEnabled(kWaitForSyncInvalidationReadyFlag)) {
+  if (IsFeatureFlagEnabled(kWaitForSyncInvalidationReadySwitch)) {
     // After turning the sync on, wait until this is fully initialized.
     LOG(INFO) << "Waiting for sync service to set up invalidations.";
     syncer::SyncServiceImpl* service =
@@ -145,10 +150,10 @@ void FamilyLiveTest::SetUp() {
 void FamilyLiveTest::SetUpOnMainThread() {
   signin::test::LiveTest::SetUpOnMainThread();
 
-  child_ = MakeSignedInBrowser(
-      GetFamilyMemberIdentifier(family_identifier_, kChildAccountIdSuffix));
-  head_of_household_ = MakeSignedInBrowser(GetFamilyMemberIdentifier(
-      family_identifier_, kHeadOfHouseholdAccountIdSuffix));
+  child_ =
+      MakeSignedInBrowser(GetFamilyMemberIdentifier(kChildAccountIdSuffix));
+  head_of_household_ = MakeSignedInBrowser(
+      GetFamilyMemberIdentifier(kHeadOfHouseholdAccountIdSuffix));
 }
 
 void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
@@ -204,14 +209,10 @@ GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
       << "Supplied url_spec is not routed in this test fixture.";
 }
 
+InteractiveFamilyLiveTest::InteractiveFamilyLiveTest() = default;
 InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
-    FamilyIdentifier family_identifier)
-    : InteractiveBrowserTestT<FamilyLiveTest>(family_identifier) {}
-InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
-    FamilyIdentifier family_identifier,
     const std::vector<std::string>& extra_enabled_hosts)
-    : InteractiveBrowserTestT<FamilyLiveTest>(family_identifier,
-                                              extra_enabled_hosts) {}
+    : InteractiveBrowserTestT<FamilyLiveTest>(extra_enabled_hosts) {}
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveFamilyLiveTest::WaitForStateSeeding(

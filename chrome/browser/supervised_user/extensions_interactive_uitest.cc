@@ -74,7 +74,6 @@ InteractiveBrowserTestApi::StateChange PageWithMatchingTitle(
 class SupervisedUserExtensionsParentalControlsUiTest
     : public InteractiveFamilyLiveTest,
       public testing::WithParamInterface<std::tuple<
-          FamilyIdentifier,
           /*permissions_switch_state=*/FamilyLinkToggleState,
           /*extensions_switch_state=*/FamilyLinkToggleState,
           // Depending on the ExtensionHandlingMode only one switch
@@ -82,8 +81,7 @@ class SupervisedUserExtensionsParentalControlsUiTest
           // Toggling the other switch should have no effect to the result.
           /*extensions_handling_mode=*/ExtensionHandlingMode>> {
  public:
-  SupervisedUserExtensionsParentalControlsUiTest()
-      : InteractiveFamilyLiveTest(std::get<0>(GetParam())) {
+  SupervisedUserExtensionsParentalControlsUiTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -276,15 +274,15 @@ class SupervisedUserExtensionsParentalControlsUiTest
   }
 
   static FamilyLinkToggleState GetPermissionsSwitchTargetState() {
-    return std::get<1>(GetParam());
+    return std::get<0>(GetParam());
   }
 
   static FamilyLinkToggleState GetExtensionsSwitchTargetState() {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
 
   static ExtensionHandlingMode GetExtensionHandlingMode() {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
  private:
@@ -355,9 +353,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SupervisedUserExtensionsParentalControlsUiTest,
     testing::Combine(
-        testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBLE_NO_CONSENT"),
-                        FamilyIdentifier("FAMILY_DMA_ELIGIBLE_WITH_CONSENT"),
-                        FamilyIdentifier("FAMILY_DMA_INELIGIBLE")),
         /*permissions_switch_target_value=*/
         testing::Values(FamilyLinkToggleState::kEnabled,
                         FamilyLinkToggleState::kDisabled),
@@ -369,16 +364,15 @@ INSTANTIATE_TEST_SUITE_P(
             ExtensionHandlingMode::kExtensionsGovernedByPermissionsSwitch,
             ExtensionHandlingMode::kExtensionsGovernedByExtensionsSwitch)),
     [](const auto& info) {
-      return std::string(std::get<0>(info.param)->data()) +
-             std::string(
-                 (std::get<1>(info.param) == FamilyLinkToggleState::kEnabled
+      return std::string(
+                 (std::get<0>(info.param) == FamilyLinkToggleState::kEnabled
                       ? "WithPermissionsOn"
                       : "WithPermissionsOff")) +
              std::string(
-                 (std::get<2>(info.param) == FamilyLinkToggleState::kEnabled
+                 (std::get<1>(info.param) == FamilyLinkToggleState::kEnabled
                       ? "WithExtensionsOn"
                       : "WithExtensionsOff")) +
-             std::string((std::get<3>(info.param) ==
+             std::string((std::get<2>(info.param) ==
                                   ExtensionHandlingMode::
                                       kExtensionsGovernedByPermissionsSwitch
                               ? "ManagedByPermissionsSwitch"

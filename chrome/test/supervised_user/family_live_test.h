@@ -10,7 +10,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/types/strong_alias.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
@@ -24,24 +23,23 @@
 
 namespace supervised_user {
 
-// A unique prefix identifier for a household (containing parents and children)
-// from source chrome/browser/internal/resources/signin/test_accounts.json.
-using FamilyIdentifier =
-    base::StrongAlias<class FamilyIdentifierTag, std::string>;
+// Refers to the family prefix in resources/signin/test_accounts.json
+const char* const kFamilyIdentifierSwitch =
+    "supervised-tests-family-identifier";
+
+std::string GetFamilyIdentifier();
 
 // A LiveTest which assumes a specific structure of provided test accounts,
 // which are forming a family:
 // * head of household,
 // * child.
+// The family is read from command line switch at kFamilyIdentifierSwitch.
 class FamilyLiveTest : public signin::test::LiveTest {
  public:
-  FamilyLiveTest() = delete;
-  // Navigation will be allowed to extra hosts.
-  explicit FamilyLiveTest(FamilyIdentifier family_identifier);
+  FamilyLiveTest();
   // The provided family identifier will be used to select the test accounts.
   // Navigation will be allowed to extra hosts.
-  FamilyLiveTest(FamilyIdentifier family_identifier,
-                 const std::vector<std::string>& extra_enabled_hosts);
+  explicit FamilyLiveTest(const std::vector<std::string>& extra_enabled_hosts);
 
   ~FamilyLiveTest() override;
 
@@ -59,13 +57,12 @@ class FamilyLiveTest : public signin::test::LiveTest {
   GURL GetRoutedUrl(std::string_view url_spec) const;
 
   FamilyMember& head_of_household() {
-    CHECK(head_of_household_) << "No head of household found in family: " +
-                                     std::string(family_identifier_->data());
+    CHECK(head_of_household_)
+        << "No head of household found in family: " + GetFamilyIdentifier();
     return *head_of_household_;
   }
   FamilyMember& child() {
-    CHECK(child_) << "No child found in family: " +
-                         std::string(family_identifier_->data());
+    CHECK(child_) << "No child found in family: " + GetFamilyIdentifier();
     return *child_;
   }
 
@@ -80,7 +77,6 @@ class FamilyLiveTest : public signin::test::LiveTest {
   std::unique_ptr<FamilyMember> MakeSignedInBrowser(
       std::string_view account_name);
 
-  FamilyIdentifier family_identifier_;
   std::unique_ptr<FamilyMember> head_of_household_;
   std::unique_ptr<FamilyMember> child_;
 
@@ -94,10 +90,8 @@ class FamilyLiveTest : public signin::test::LiveTest {
 class InteractiveFamilyLiveTest
     : public InteractiveBrowserTestT<FamilyLiveTest> {
  public:
-  InteractiveFamilyLiveTest() = delete;
-  explicit InteractiveFamilyLiveTest(FamilyIdentifier family_identifier);
-  InteractiveFamilyLiveTest(
-      FamilyIdentifier family_identifier,
+  InteractiveFamilyLiveTest();
+  explicit InteractiveFamilyLiveTest(
       const std::vector<std::string>& extra_enabled_hosts);
 
  protected:
