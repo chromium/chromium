@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 
 #include <memory>
@@ -49,10 +43,8 @@ bool IsValidDragImage(const gfx::ImageSkia& image) {
   // transparent image.
   const SkBitmap* in_bitmap = image.bitmap();
   for (int y = 0; y < in_bitmap->height(); ++y) {
-    uint32_t* in_row = in_bitmap->getAddr32(0, y);
-
     for (int x = 0; x < in_bitmap->width(); ++x) {
-      if (SkColorGetA(in_row[x]) > kMinAlpha) {
+      if (SkColorGetA(in_bitmap->getColor(x, y)) > kMinAlpha) {
         return true;
       }
     }
