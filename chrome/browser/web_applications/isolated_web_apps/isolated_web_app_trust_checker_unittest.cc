@@ -92,9 +92,9 @@ class IsolatedWebAppTrustCheckerTest : public WebAppTest {
       web_package::Ed25519PublicKey::Create(base::make_span(kPublicKeyBytes2));
 
   const web_package::SignedWebBundleId kWebBundleId1 =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(kPublicKey1);
+      web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey1);
   const web_package::SignedWebBundleId kWebBundleId2 =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(kPublicKey2);
+      web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey2);
 
   const GURL kStartUrl1 =
       GURL(std::string(chrome::kIsolatedAppScheme) +
@@ -270,7 +270,7 @@ class ShimlessProfileIsolatedWebAppTrustCheckerTest : public ::testing::Test {
       web_package::Ed25519PublicKey::Create(
           base::make_span(kShimless3pDiagnosticsDevPublicKeyBytes));
   const web_package::SignedWebBundleId k3pDiagnosticsDevWebBundleId =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+      web_package::SignedWebBundleId::CreateForPublicKey(
           k3pDiagnosticsDevPublicKey);
 
  private:

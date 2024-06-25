@@ -152,8 +152,7 @@ TestSignedWebBundle TestSignedWebBundleBuilder::Build() {
       web_package::WebBundleSigner::SignBundle(
           builder_.CreateBundle(), {key_pair_}, /*ib_attributes=*/{},
           errors_for_testing_),
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          key_pair_.public_key));
+      web_package::SignedWebBundleId::CreateForPublicKey(key_pair_.public_key));
 }
 
 TestSignedWebBundle TestSignedWebBundleBuilder::BuildDefault(

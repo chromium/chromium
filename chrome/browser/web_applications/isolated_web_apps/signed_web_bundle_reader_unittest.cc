@@ -1023,9 +1023,8 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ReadValidId) {
   ASSERT_TRUE(bundle_id_result.has_value());
   web_package::Ed25519PublicKey public_key =
       web_package::Ed25519PublicKey::Create(base::make_span(kTestPublicKey));
-  EXPECT_THAT(
-      bundle_id_result.value(),
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(public_key));
+  EXPECT_THAT(bundle_id_result.value(),
+              web_package::SignedWebBundleId::CreateForPublicKey(public_key));
 }
 
 TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {

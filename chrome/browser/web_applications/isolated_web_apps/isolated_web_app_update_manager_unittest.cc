@@ -273,7 +273,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
 
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          web_package::SignedWebBundleId::CreateForPublicKey(
               key_pair.public_key));
 
   AddDummyIsolatedAppToRegistry(
@@ -324,7 +324,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
             base::Version update_version,
             std::string update_app_name)
         : url_info(IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-              web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+              web_package::SignedWebBundleId::CreateForPublicKey(
                   key_pair.public_key))),
           key_pair(std::move(key_pair)),
           installed_location(std::move(installed_location)),

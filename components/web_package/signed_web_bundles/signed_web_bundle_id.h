@@ -80,24 +80,14 @@ class SignedWebBundleId {
   static base::expected<SignedWebBundleId, std::string> Create(
       std::string_view base32_encoded_id);
 
-  static SignedWebBundleId CreateForEd25519PublicKey(
+  static SignedWebBundleId CreateForPublicKey(
       const Ed25519PublicKey& public_key);
 
-  static SignedWebBundleId CreateForEcdsaP256PublicKey(
+  static SignedWebBundleId CreateForPublicKey(
       const EcdsaP256PublicKey& public_key);
 
   static SignedWebBundleId CreateForProxyMode(
       base::span<const uint8_t, kProxyModeKeyLength> data);
-
-  static SignedWebBundleId CreateForPublicKey(
-      const Ed25519PublicKey& public_key) {
-    return CreateForEd25519PublicKey(public_key);
-  }
-
-  static SignedWebBundleId CreateForPublicKey(
-      const EcdsaP256PublicKey& public_key) {
-    return CreateForEcdsaP256PublicKey(public_key);
-  }
 
   static SignedWebBundleId CreateRandomForProxyMode();
 

@@ -106,7 +106,7 @@ class SubAppsPermissionsPolicyBrowserTest
 
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-            web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+            web_package::SignedWebBundleId::CreateForPublicKey(
                 key_pair_.public_key));
 
     parent_app_id_ = url_info.app_id();

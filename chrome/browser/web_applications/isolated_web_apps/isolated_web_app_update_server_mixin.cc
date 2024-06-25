@@ -58,8 +58,8 @@ void IsolatedWebAppUpdateServerMixin::SetUpFilesAndServer() {
   iwa_server_.ServeFilesFromDirectory(temp_dir_);
   EXPECT_TRUE(iwa_server_.Start());
 
-  auto bundle_id = web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-      key_pair_.public_key);
+  auto bundle_id =
+      web_package::SignedWebBundleId::CreateForPublicKey(key_pair_.public_key);
   url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
 
   auto builder = IsolatedWebAppBuilder(

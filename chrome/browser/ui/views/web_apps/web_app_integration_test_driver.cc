@@ -4111,8 +4111,7 @@ webapps::AppId GetAppIdForIsolatedSite(Site site) {
       GetKeyPairForSite(parent_site ? parent_site.value() : site);
 
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          key_pair.public_key));
+      web_package::SignedWebBundleId::CreateForPublicKey(key_pair.public_key));
 
   if (parent_site) {
     // The scope and manifest ID of an Isolated Web App are always the unique

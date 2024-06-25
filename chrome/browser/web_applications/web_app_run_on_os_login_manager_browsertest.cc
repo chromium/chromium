@@ -649,7 +649,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
 
     auto key_pair = web_package::WebBundleSigner::Ed25519KeyPair(
         kTestPublicKey, kTestPrivateKey);
-    auto bundle_id = web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+    auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
         key_pair_.public_key);
     url_info_ = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
 

@@ -142,7 +142,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
 
   IsolatedWebAppUrlInfo url_info_ =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          web_package::SignedWebBundleId::CreateForPublicKey(
               key_pair_.public_key));
 
   base::FilePath installed_bundle_path_;

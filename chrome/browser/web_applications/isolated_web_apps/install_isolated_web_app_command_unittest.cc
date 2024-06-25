@@ -118,7 +118,7 @@ IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
 
 IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
   web_package::SignedWebBundleId signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+      web_package::SignedWebBundleId::CreateForPublicKey(
           web_package::Ed25519PublicKey::Create(
               base::make_span(kTestPublicKey)));
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(

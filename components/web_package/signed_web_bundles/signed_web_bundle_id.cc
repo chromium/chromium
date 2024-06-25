@@ -82,7 +82,7 @@ base::expected<SignedWebBundleId, std::string> SignedWebBundleId::Create(
 }
 
 // static
-SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
+SignedWebBundleId SignedWebBundleId::CreateForPublicKey(
     const Ed25519PublicKey& public_key) {
   std::array<uint8_t, kEd25519DecodedIdLength> decoded_id;
   base::ranges::copy(public_key.bytes(), decoded_id.begin());
@@ -96,7 +96,7 @@ SignedWebBundleId SignedWebBundleId::CreateForEd25519PublicKey(
 }
 
 // static
-SignedWebBundleId SignedWebBundleId::CreateForEcdsaP256PublicKey(
+SignedWebBundleId SignedWebBundleId::CreateForPublicKey(
     const EcdsaP256PublicKey& public_key) {
   std::array<uint8_t, kEcdsaP256DecodedIdLength> decoded_id;
   base::ranges::copy(public_key.bytes(), decoded_id.begin());
