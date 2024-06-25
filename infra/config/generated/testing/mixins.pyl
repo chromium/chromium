@@ -341,31 +341,6 @@
       },
     },
   },
-  'chromeos-reven': {
-    'args': [
-      '--magic-vm-cache=magic_cros_reven_vm_cache',
-    ],
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'kvm': '1',
-        'gce': '1',
-        'os': 'Ubuntu-22.04',
-        'pool': 'chrome.tests',
-      },
-      'optional_dimensions': {
-        '60': {
-          'caches': 'cros_reven_vm',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'cros_reven_vm',
-          'path': 'magic_cros_reven_vm_cache',
-        },
-      ],
-    },
-  },
   'chromeos-tast-public-builder': {
     'args': ["tast.setup.FieldTrialConfig=enable", "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)", "shard_method=hash"],
   },

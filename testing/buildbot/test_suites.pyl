@@ -6810,7 +6810,7 @@
       },
     },
 
-    'chromeos_reven_vmlab_tests': {
+    'chromeos_reven_vmlab_tests_no_gtests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
           'experiments',
@@ -6828,38 +6828,6 @@
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
-        'mixins': [
-          'experiments',
-        ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_device_only_gtests': {
-        'mixins': [
-          'experiments',
-        ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_integration_tests_suite': {
-        'mixins': [
-          'experiments',
-        ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_system_friendly_gtests': {
-        'mixins': [
-          'experiments',
-        ],
-        'variants': [
-          'CROS_RELEASE_LKGM',
-        ],
-      },
-      'chromeos_vaapi_gtests': {
         'mixins': [
           'experiments',
         ],

@@ -138,6 +138,7 @@
       "is_chrome_branded": true,
       "is_chromeos_device": true,
       "is_official_build": true,
+      "is_skylab": true,
       "ozone_platform_headless": true,
       "use_remoteexec": true
     }

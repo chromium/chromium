@@ -250,7 +250,7 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "chromeos_reven_vmlab_tests",
+    name = "chromeos_reven_vmlab_tests_no_gtests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
@@ -271,42 +271,6 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
-            mixins = [
-                "experiments",
-            ],
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-        "chromeos_integration_tests_suite": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
-            mixins = [
-                "experiments",
-            ],
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
-            mixins = [
-                "experiments",
-            ],
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-        "chromeos_system_friendly_gtests": targets.legacy_matrix_config(
-            # TODO: remove experimentals after stablization.
-            mixins = [
-                "experiments",
-            ],
-            variants = [
-                "CROS_RELEASE_LKGM",
-            ],
-        ),
-        "chromeos_vaapi_gtests": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
             mixins = [
                 "experiments",

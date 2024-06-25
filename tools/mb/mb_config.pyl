@@ -537,11 +537,11 @@
     ],
 
     'chromeos_reven_include_unwind_tables_official_dchecks': [
-      'chromeos_device', 'reven', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'chromeos_device', 'reven', 'include_unwind_tables', 'official', 'is_skylab', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
     'chromeos_reven_include_unwind_tables_official_dchecks_reclient': [
-      'chromeos_device_reclient', 'reven', 'include_unwind_tables', 'official', 'dcheck_always_on',
+      'chromeos_device_reclient', 'reven', 'include_unwind_tables', 'official', 'is_skylab', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
     ],
 

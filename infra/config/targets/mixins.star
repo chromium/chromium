@@ -442,35 +442,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chromeos-reven",
-    args = [
-        "--magic-vm-cache=magic_cros_reven_vm_cache",
-    ],
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "kvm": "1",
-            "gce": "1",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests",
-        },
-        optional_dimensions = {
-            60: {
-                "caches": "cros_reven_vm",
-            },
-        },
-        # See the 'chromeos-amd64-generic' mixin above for the purpose of this
-        # cache.
-        named_caches = [
-            swarming.cache(
-                name = "cros_reven_vm",
-                path = "magic_cros_reven_vm_cache",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
     name = "chromium-tester-dev-service-account",
     swarming = targets.swarming(
         service_account = "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
