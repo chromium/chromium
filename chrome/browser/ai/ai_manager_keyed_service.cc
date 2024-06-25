@@ -85,6 +85,9 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
       return blink::mojom::ModelAvailabilityCheckResult::kNoValidationPending;
     case optimization_guide::OnDeviceModelEligibilityReason::kValidationFailed:
       return blink::mojom::ModelAvailabilityCheckResult::kNoValidationFailed;
+    case optimization_guide::OnDeviceModelEligibilityReason::
+        kModelToBeInstalled:
+      return blink::mojom::ModelAvailabilityCheckResult::kAfterDownload;
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
       NOTREACHED_IN_MIGRATION();
   }

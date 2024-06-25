@@ -120,6 +120,9 @@ class OnDeviceModelComponentStateManager
   // Called after the installer is successfully registered.
   void InstallerRegistered();
 
+  // Returns the current OnDeviceModelStatus.
+  OnDeviceModelStatus GetOnDeviceModelStatus();
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

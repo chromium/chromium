@@ -118,12 +118,15 @@ enum class OnDeviceModelEligibilityReason {
   kValidationPending = 13,
   // Validation failed for the model.
   kValidationFailed = 14,
+  // There was no on-device model available, but it may be downloaded and
+  // installed later.
+  kModelToBeInstalled = 15,
 
   // This must be kept in sync with
   // OptimizationGuideOnDeviceModelEligibilityReason in optimization/enums.xml.
 
   // Insert new values before this line.
-  kMaxValue = kValidationFailed,
+  kMaxValue = kModelToBeInstalled,
 };
 
 // Observer that is notified when the on-device model availability changes for

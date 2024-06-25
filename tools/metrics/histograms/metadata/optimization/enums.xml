@@ -397,6 +397,10 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Model validation failed">
     Model validation failed for this device.
   </int>
+  <int value="15" label="Model to be installed">
+    The on-device model is not available, but it may be downloaded and installed
+    later.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideOnDeviceModelStatus">

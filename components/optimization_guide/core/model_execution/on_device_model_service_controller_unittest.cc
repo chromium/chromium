@@ -751,7 +751,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_THAT(streamed_responses_, ElementsAreArray(expected_responses));
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelNotAvailable) {
+TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelToBeInstalled) {
   Initialize({.model_component_ready = false});
 
   base::HistogramTester histogram_tester;
@@ -762,7 +762,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionModelNotAvailable) {
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
-      OnDeviceModelEligibilityReason::kModelNotAvailable, 1);
+      OnDeviceModelEligibilityReason::kModelToBeInstalled, 1);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ModelAvailableAfterInit) {

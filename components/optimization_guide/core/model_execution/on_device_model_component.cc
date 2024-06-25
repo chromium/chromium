@@ -144,30 +144,33 @@ void OnDeviceModelComponentStateManager::UninstallComplete() {
   component_installer_registered_ = false;
 }
 
+OnDeviceModelStatus
+OnDeviceModelComponentStateManager::GetOnDeviceModelStatus() {
+  if (GetState() != nullptr) {
+    return OnDeviceModelStatus::kReady;
+  }
+  if (!registration_criteria_) {
+    return OnDeviceModelStatus::kNotReadyForUnknownReason;
+  }
+  if (component_installer_registered_) {
+    return OnDeviceModelStatus::kInstallNotComplete;
+  }
+  if (registration_criteria_->should_install()) {
+    // This may happen before the first registration.
+    return OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
+  }
+  return OnDeviceModelStatus::kNotEligible;
+}
+
 void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
     ModelBasedCapabilityKey feature) {
   local_state_->SetTime(
       model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
       base::Time::Now());
 
-  OnDeviceModelStatus status;
-  if (GetState() != nullptr) {
-    status = OnDeviceModelStatus::kReady;
-  } else if (!registration_criteria_) {
-    status = OnDeviceModelStatus::kNotReadyForUnknownReason;
-  } else {
-    if (component_installer_registered_) {
-      status = OnDeviceModelStatus::kInstallNotComplete;
-    } else if (registration_criteria_->should_install()) {
-      status =
-          OnDeviceModelStatus::kModelInstallerNotRegisteredForUnknownReason;
-    } else {
-      status = OnDeviceModelStatus::kNotEligible;
-    }
-  }
-
   base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime", status);
+      "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
+      GetOnDeviceModelStatus());
 
   if (registration_criteria_) {
     LogInstallCriteria(*registration_criteria_, "AtAttemptedUse");

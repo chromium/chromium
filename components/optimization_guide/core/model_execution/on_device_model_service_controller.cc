@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -26,6 +27,7 @@
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -95,7 +97,23 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
   }
 
   if (!model_metadata_) {
-    return OnDeviceModelEligibilityReason::kModelNotAvailable;
+    if (!on_device_component_state_manager_) {
+      return OnDeviceModelEligibilityReason::kModelNotAvailable;
+    }
+
+    switch (on_device_component_state_manager_->GetOnDeviceModelStatus()) {
+      case optimization_guide::OnDeviceModelStatus::kNotEligible:
+        return OnDeviceModelEligibilityReason::kModelNotAvailable;
+      case optimization_guide::OnDeviceModelStatus::kInstallNotComplete:
+      case optimization_guide::OnDeviceModelStatus::
+          kModelInstallerNotRegisteredForUnknownReason:
+      case optimization_guide::OnDeviceModelStatus::kModelInstalledTooLate:
+      case optimization_guide::OnDeviceModelStatus::kNotReadyForUnknownReason:
+        return OnDeviceModelEligibilityReason::kModelToBeInstalled;
+      case optimization_guide::OnDeviceModelStatus::kReady:
+        // This case shouldn't be reached as the model_metadata_ is null.
+        NOTREACHED_IN_MIGRATION();
+    }
   }
 
   // Check feature config.

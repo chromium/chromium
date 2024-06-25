@@ -104,7 +104,8 @@ ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
           ResolveAvailability(resolver, ModelAvailability::kReadily);
         } else if (result ==
                    mojom::blink::ModelAvailabilityCheckResult::kAfterDownload) {
-          // TODO(crbug.com/345357441): Implement the kAfterDownload event.
+          // TODO(crbug.com/345357441): Implement the
+          // `ontextmodeldownloadprogress` event.
           ResolveAvailability(resolver, ModelAvailability::kAfterDownload);
         } else {
           // If the text session cannot be created, logs the error message to
