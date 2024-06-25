@@ -21,6 +21,7 @@ struct SearchPasswordsWidget: Widget {
     .supportedFamilies([.systemSmall])
     .crDisfavoredLocations()
     .crContentMarginsDisabled()
+    .crContainerBackgroundRemovable(false)
   }
 }
 

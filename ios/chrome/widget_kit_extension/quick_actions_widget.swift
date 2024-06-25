@@ -90,6 +90,7 @@ struct QuickActionsWidget: Widget {
     .supportedFamilies([.systemMedium])
     .crDisfavoredLocations()
     .crContentMarginsDisabled()
+    .crContainerBackgroundRemovable(false)
   }
 }
 
