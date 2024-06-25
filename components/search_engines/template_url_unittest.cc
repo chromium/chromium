@@ -1022,9 +1022,12 @@ TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
 // Tests appending attribution parameter to queries originating from Play API
 // search engine.
-TEST_F(TemplateURLTest, PlayAPIAttribution) {
+TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kSearchEngineChoiceAttribution};
   const struct TestData {
     const char* url;
     std::u16string terms;
@@ -1047,6 +1050,32 @@ TEST_F(TemplateURLTest, PlayAPIAttribution) {
     EXPECT_EQ(entry.output, result.spec());
   }
 }
+
+TEST_F(TemplateURLTest, PlayAPIAttributionDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kSearchEngineChoiceAttribution);
+  const struct TestData {
+    const char* url;
+    std::u16string terms;
+    bool created_from_play_api;
+    const char* output;
+  } test_data[] = {
+      {"http://foo/?q={searchTerms}", u"bar", false, "http://foo/?q=bar"},
+      {"http://foo/?q={searchTerms}", u"bar", true, "http://foo/?q=bar"}};
+  TemplateURLData data;
+  for (const auto& entry : test_data) {
+    data.SetURL(entry.url);
+    data.created_from_play_api = entry.created_from_play_api;
+    TemplateURL url(data);
+    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
+    GURL result(url.url_ref().ReplaceSearchTerms(
+        TemplateURLRef::SearchTermsArgs(entry.terms), search_terms_data_));
+    ASSERT_TRUE(result.is_valid());
+    EXPECT_EQ(entry.output, result.spec());
+  }
+}
+#endif
 
 TEST_F(TemplateURLTest, Suggestions) {
   struct TestData {

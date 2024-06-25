@@ -20143,6 +20143,27 @@
             ]
         }
     ],
+    "SearchEngineChoiceAttribution": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "SearchEngineChoiceAttribution"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchEngineChoiceAttribution"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchInCCT": [
         {
             "platforms": [

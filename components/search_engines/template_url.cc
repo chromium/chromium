@@ -469,11 +469,14 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     query_params.push_back(search_terms_args.additional_query_params);
   if (!gurl.query().empty())
     query_params.push_back(gurl.query());
-  if (owner_->created_from_play_api()) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceAttribution) &&
+      owner_->created_from_play_api()) {
     // Append attribution parameter to query originating from Play API search
     // engine.
     query_params.push_back("chrome_dse_attribution=1");
   }
+#endif
 
   if (query_params.empty())
     return url;
