@@ -20,6 +20,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/ash_user_education/enums.xml",
   "//tools/metrics/histograms/metadata/ash_user_education/histograms.xml",
   "//tools/metrics/histograms/metadata/assistant/histograms.xml",
+  "//tools/metrics/histograms/metadata/attribution_reporting/histograms.xml",
   "//tools/metrics/histograms/metadata/auto/histograms.xml",
   "//tools/metrics/histograms/metadata/autofill/enums.xml",
   "//tools/metrics/histograms/metadata/autofill/histograms.xml",

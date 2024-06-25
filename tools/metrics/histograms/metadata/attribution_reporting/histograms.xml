@@ -1,0 +1,1436 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of others histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="AttributionReportingAggregatableContextType">
+  <variant name=""/>
+  <variant name="ContextID."/>
+  <variant name="NoContextID."/>
+</variants>
+
+<histogram
+    name="Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-30">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an aggregatable debug report, recorded for each sent
+    aggregatable debug report. The net error code is recorded if the HTTP
+    response code is unavailable.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableDebugReport.ProcessResult"
+    enum="ConversionAggregatableDebugReportProcessResult"
+    expires_after="2024-11-29">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable debug reports are processed successfully or
+    null-ed and why. Recorded once for each aggregatable debug report created
+    and processed by the attribution resolver layer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableDebugReporting.SourceRegistrationError"
+    enum="ConversionAggregatableDebugReportingRegistrationError"
+    expires_after="2024-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable debug reporting parsing in source
+    registration failed and why. Recorded only when parsing failed; not recorded
+    when parsing succeeded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableDebugReporting.TriggerRegistrationError"
+    enum="ConversionAggregatableDebugReportingRegistrationError"
+    expires_after="2024-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable debug reporting parsing in trigger
+    registration failed and why. Recorded only when parsing failed; not recorded
+    when parsing succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableKeysPerSource" units="keys"
+    expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of aggregation keys provided in attribution source
+    registration headers. Recorded once for each source registration header when
+    parsed from the attributionsrc response.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.AssembleReportStatus"
+    enum="ConversionAssembleAggregatableReportStatus"
+    expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable reports are assembled successfully or failed
+    and why. Recorded once for each aggregatable report processed by the
+    aggregation service on each send attempt.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.CreateReportStatus4"
+    enum="ConversionCreateAggregatableReportStatus" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable reports are stored successfully or rejected
+    and why. Recorded once for each trigger event processed by the attribution
+    storage layer. `kNotRegistered` will be logged if the source or trigger
+    doesn't declare aggregatable data.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.DroppedKeysPercentage"
+    units="%" expires_after="2024-12-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the percentage of aggregation keys dropped per trigger. Recorded
+    when creating the aggregatable histogram. Not recorded if no aggregation
+    keys were declared.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend"
+    units="ms" expires_after="2024-09-15">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to confirm the
+    aggregatable attribution report was sent. This is primarily due to a
+    report's scheduled report time taking place while the browser is closed or
+    there is network issue. Recorded when an aggregatable report is successfully
+    sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
+    units="%" expires_after="2024-09-01">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the percentage of aggregatable trigger data filtered per trigger.
+    Recorded when creating the aggregatable histogram. Not recorded if no
+    trigger data was declared. This is effectively how many trigger side
+    dimensions the reporter declared, but were not used for histogram
+    generation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.NumContributionsPerReport2"
+    units="contribution" expires_after="2024-10-28">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of aggregatable histogram contributions per report.
+    Recorded when creating the aggregatable histogram.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.PendingAndBrowserWentOffline.{TimeSpan}"
+    units="ms" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Upon storing an Aggregatable Report at `creation_time`, it is scheduled with
+    a `reporting_delay` to send at time `report_time` and is pending until then.
+
+    If the browser closes or the device goes offline, and until it re-opens or
+    re-connects, we are unable to send reports. On such events, for each pending
+    reports, we record two {TimeSpan}s: [1] TimeSinceCreation: The time elapsed
+    since the report was created (creation_time - now). [2] TimeUntilReportTime:
+    The time remaining for the report to be sent (report_time - now).
+
+    The metrics will enable us to quantify the extent to which reducing
+    `reporting_delay` would increase the number of reports sent before an
+    unavailability event.
+
+    [Limitation] To limit memory usage, a maximum of 50 pending reports timings
+    are handled. Past this number, reports are dropped (until reports get sent
+    or an unavailability event occurs). Given that the most recent reports can
+    be dropped, we can expect the `TimeSinceCreation` to be biased down slightly
+    and `TimeUntilReportTime` to be biased up slightly. We expect this situation
+    to be infrequent given the 10-60 minutes reporting window.
+  </summary>
+  <token key="TimeSpan">
+    <variant name="TimeSinceCreation"/>
+    <variant name="TimeUntilReportTime"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.ReportSendOutcome2"
+    enum="ConversionReportSendOutcome" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an aggregatable report. Recorded
+    once per aggregatable report. For aggregatable report that has been retried,
+    only the last retry will be counted.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.SchedulerReportDelay"
+    units="ms" expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time difference from when the report was intended to be sent,
+    and the actual report time. This is different from
+    Conversions.AggregatableReport.ExtraReportDelay because it uses the send
+    attempt report time, rather than initial report time assigned by the API.
+    Accounts for any delays in Chrome scheduling the report. Recorded when an
+    aggregatabl report is to be assembled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2"
+    units="ms" expires_after="2024-12-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its assembly. This is emitted
+    whenever an aggregatable report is to be assembled by the aggregation
+    service.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully"
+    units="ms" expires_after="2024-12-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its reporting. This is emitted only
+    when an aggregatable report is sent succeessfully to the reporting endpoint,
+    and not emitted for debug reports.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.TotalBudgetPerReport"
+    units="budget consumed" expires_after="2024-10-30">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the total budget consumed per aggregatable report. Recorded as
+    100,000 when the total budget exceeds 65,536. Recorded when creating the
+    aggregatable histogram.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.{ContextType}ExtraReportDelay"
+    units="ms" expires_after="2024-10-04">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to send a
+    particular aggregatable attribution report. This is primarily due to a
+    report's scheduled report time taking place while the browser is closed or
+    there is network issue. Recorded when an aggregatable report is to be
+    assembled.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.AllowedByPermissionPolicy" enum="BooleanAllowed"
+    expires_after="2024-12-31">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether an attribution event is allowed by the client's permission
+    policy. This is emitted whenever the permission policy is checked upon an
+    attribution event.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AndroidOperationResult2.{Operation}"
+    enum="ConversionAndroidOperationResult" expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often attribution OS operations were successfully delegated to
+    Android or failed and why. Only recorded on Android when the
+    AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
+    operation processed by the Java attribution OS-level manager.
+  </summary>
+  <token key="Operation">
+    <variant name="DeleteRegistrations"/>
+    <variant name="GetMeasurementApiStatus"/>
+    <variant name="RegisterSource"/>
+    <variant name="RegisterTrigger"/>
+    <variant name="RegisterWebSource"/>
+    <variant name="RegisterWebTrigger"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.AttributionBehavior"
+    enum="ConversionAttributionBehavior" expires_after="2024-10-24">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the Attribution Behavior for WebView set via the androidx.webkit
+    WebSettingsCompat#setAttributionRegistrationBehavior method. This setting
+    allows developers to configure whether Attribution sources and triggers are
+    registered as coming from the app itself or coming from the web content in
+    the WebView, or if Attribution should be disabled.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AttributionOsLevelApiState"
+    enum="ConversionAttributionOsLevelApiState" expires_after="2024-10-24">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether OS-level attribution is supported on the device. Only
+    recorded on Android when the AttributionReportingCrossAppWeb feature is
+    enabled. Recorded once per browser session when the browser starts up.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AttributionResult"
+    enum="ConversionAttributionResult" expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often an attribution trigger creates an event-level report, an
+    aggregatable report, or both. Recorded once for each attribution trigger
+    that would create an attribution rate-limit record.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AttributionSrcRequestStatus"
+    enum="ConversionAttributionSrcRequestStatus" expires_after="2024-10-28">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of the attributionsrc requests. Recorded when the request
+    started and finished.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.BackgroundNavigation.Outcome"
+    enum="ConversionBackgroundNavigationOutcome" expires_after="2024-11-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When background registrations tied to a navigation are received, they need
+    additional context from the navigation itself to be able to process
+    registrations data.
+
+    The histogram emits if we were able to tie/link the navigation context with
+    the background registrations request.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ClearDataTime" units="ms"
+    expires_after="2024-05-10">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time it takes to clear conversion data. Logged any time site
+    data is cleared in Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.CorruptReportsInDatabase5"
+    enum="ConversionCorruptReportStatus" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the cause of report corruption when deserializing from the database.
+    Multiple ReportCorruptionStatus values can be associated to a single report
+    as a report can be corrupted for multiple reasons. Reports are scanned
+    during database initialization and migration.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Corrupt{Types}DeletedOnMigration" units="count"
+    expires_after="2024-11-17">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of corrupted reports/sources with reports deleted from
+    the database. Reports/sources are deleted during database migration.
+  </summary>
+  <token key="Types">
+    <variant name="Reports"/>
+    <variant name="Sources"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.CreateReportStatus9"
+    enum="ConversionStorageCreateReportStatus" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often event-level triggers are stored successfully or rejected
+    and why. Recorded once for each conversion event processed by the
+    attribution storage layer.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DbVersionOnReportSentAndDeleted" units="Report"
+    expires_after="2024-09-15">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the DB version every time `AttributionStorageSql::DeleteReport` is
+    invoked, i.e. whenever a report is sent or hits the max number of send
+    attempts and is subsequently deleted. This metric was added starting with DB
+    version 58.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DbVersionOnSourceStored" units="Source"
+    expires_after="2024-11-17">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the DB version on every successful source or noised source stored.
+    This metric was added starting with version 56.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.DebugReport.HttpResponseOrNetErrorCodeAggregatable"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-05-10">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a debug attribution report, recorded for each sent
+    aggregatable report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.HttpResponseOrNetErrorCodeEventLevel"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a debug attribution report, recorded for each sent
+    event-level report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportRetrySucceedAggregatable"
+    enum="BooleanSuccess" expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular aggregatable debug attribution report was
+    successful. Emitted for all aggregatable debug attribution reports that
+    retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportRetrySucceedEventLevel"
+    enum="BooleanSuccess" expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular event-level debug attribution report was
+    successful. Emitted for all event-level debug attribution reports that
+    retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportStatusAggregatable"
+    enum="ConversionReportStatus" expires_after="2024-05-10">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of an aggregatable debug attribution
+    report. Recorded for every debug aggregatable attribution report sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DebugReport.ReportStatusEventLevel"
+    enum="ConversionReportStatus" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high-level request status of an event-level debug attribution
+    report. Recorded for every debug event-level attribution report sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DeferredDataHostProcessedAfterTimeout"
+    enum="Boolean" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When registering an attribution data host, its registration will be deferred
+    if it can register triggers and there are pending navigation-source
+    registrations from the page that navigated to that page. Receivers are
+    deferred until the pending navigation-source registrations complete or a
+    timeout is reached.
+
+    When processing a deferred attribution data host registration, this metric
+    records if it's due to a timeout.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DelayOnAttestationsLoaded" units="ms"
+    expires_after="2024-12-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time it took for the attribution manager to be ready upon
+    attestations loading. Recorded once per storage partition when the
+    attribution manager was created.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.DestinationRateLimitResult"
+    enum="AttributionDestinationRateLimitResult" expires_after="2024-06-30">
+  <owner>csharrison@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    For every successfully parsed attribution source that is also allowed by
+    browser policy, records the result of the time-based destination limit,
+    which governs whether a source can proceed to the storage layer.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.EnqueueEventAllowed" enum="BooleanAllowed"
+    expires_after="2024-11-17">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often sources and triggers are allowed to be enqueued for
+    processing in the attribution manager. If the queue reaches a maximum size,
+    additional sources and triggers are dropped. Events are enqueued while
+    waiting for a previous debug-cookie check to complete.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.EnqueueOsEventAllowed" enum="BooleanAllowed"
+    expires_after="2024-11-17">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often OS sources and triggers are allowed to be enqueued for
+    processing in the attribution manager. If the queue reaches a maximum size,
+    additional OS sources and triggers are dropped. Events are enqueued while
+    waiting for a previous debug-cookie check to complete. Only recorded on
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ExtraReportDelay2" units="ms"
+    expires_after="2024-12-15">
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to send a
+    particular conversion report. This is primarily due to a report's scheduled
+    report time taking place while the browser is closed. Recorded when a
+    conversion report is to be sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ExtraReportDelayForSuccessfulSend" units="ms"
+    expires_after="2024-11-17">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to confirm the
+    particular attribution report was sent. This is primarily due to a report's
+    scheduled report time taking place while the browser is closed. Recorded
+    when an attribution report is successfully sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.FiltersPerFilterData" units="filters"
+    expires_after="2024-10-04">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures filter sizes in source and trigger registrations. This includes
+    filter data in source, top-level trigger, event-level and aggregatable
+    trigger data. Recorded once for each filter data when parsed from the
+    attributionsrc response.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.GetMeasurementStatusTime" units="ms"
+    expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time it took to go througth JNI to invoke Android API to get
+    measurement status. Only recorded on Android when the
+    AttributionReportingCrossAppWeb feature is enabled. Recorded once per
+    browser session when the browser starts up. Only recorded if
+    base::ThreadTicks is suppported.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.HasAttributionHeaderInAttributionSrcResponse"
+    enum="Boolean" expires_after="2024-12-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether the response to an attributionsrc request contains
+    Attribution Reporting headers. This is emitted whenever a redirect or final
+    response to an attributionsrc request is received.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.HeadersSize.Register{Type}" units="bytes"
+    expires_after="2024-11-03">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the size of attribution response headers for registering sources or
+    triggers in bytes. Recorded when Attribution Response Headers are received
+    and handled.
+  </summary>
+  <token key="Type">
+    <variant name="OsSource"/>
+    <variant name="OsTrigger"/>
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.HttpResponseOrNetErrorCodeEventLevel"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each sent
+    event-level report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ImpressionNavigationHasDeadInitiator"
+    enum="Boolean" expires_after="2024-05-12">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Measures how often impressions are ignored because the initiator frame is
+    dead by the time the navigation reaches the browser.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ImpressionsDeletedInDataClearOperation"
+    units="impressions" expires_after="2024-11-17">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the number of impressions deleted per clearing operation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.IncrementalTaintingFailures"
+    units="failed registrations" expires_after="2024-11-17">
+  <owner>csharrison@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of failures via the proposed insecure tainting
+    mechanism, where a redirect chain will be considered &quot;tainted&quot;
+    when it encounters its first insecure redirect, causing any subsequent
+    registrations to fail even if they are secure. This metric attempts to
+    measure the breakage. It is emitted on the completion of any main frame
+    navigation which had at least one secure response register ARA headers. It
+    counts how many failed registrations that navigation would have observed
+    with tainting enabled.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.NavigationDataHostStatus3"
+    enum="ConversionNavigationDataHostStatus" expires_after="2024-12-08">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records status for navigation data hosts. A single navigation data host may
+    emit two status, one when the navigation started and the data host was
+    registered, and one when the navigation finished or failed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.NavigationSourceRegistrationsPerReportingOriginPerBatch"
+    units="registrations" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how many parsable navigation source registrations tied to a single
+    reporting origin were received in a single navigation event. Records
+    immediately after the source registration is successfully parsed.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.NavigationUnexpectedRegistration"
+    enum="ConversionNavigationUnexpectedRegistration" expires_after="M130">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Used to further investigate the root cause of https://crbug.com/1500667.
+
+    Upon starting a foreground navigation registration for a given token, if the
+    registration already exists, records `kRegistrationAlreadyExists`.
+
+    Upon trying to register foreground navigation data, if the registration
+    isn't available and prevents the data from being processed, records
+    `kRegistrationMissingUponReceivingData`.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationItemsPerBatch" units="count"
+    expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of registration items submitted to the OS per batch (or
+    registration chain).
+
+    A registration chain might record more than one event if the chain records
+    more than 20 registration items.
+
+    Emitted when submitting OS registrations to the AttributionManager.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationItemsPerHeader" units="count"
+    expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of registration items per OS attribution header.
+
+    Emitted when parsing an OS attribution header.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationResult.{Type}"
+    enum="ConversionOsRegistrationResult" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often attribution OS registrations were successfully registered
+    with Android or failed and why. Only recorded on Android when the
+    AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
+    registration processed by the attribution manager layer.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
+  </summary>
+  <token key="Type">
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsBufferFlushReason"
+    enum="ConversionOsRegistrationsBufferFlushReason"
+    expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    To ensure that buffered OS registrations are eventually sent to the OS, we
+    flush the buffer after 20s if we haven't had confirmation yet that the
+    navigation will no longer receive any more registrations.
+
+    When flushing an OS registrations buffer, this histogram emits the reason
+    why the buffer was flushed. It will only emit if there actually are buffered
+    registrations to flush.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsBufferWithSameContext"
+    enum="Boolean" expires_after="2024-10-20">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    Registrations buffered in one buffer should all have equivalent contexts.
+    This histogram emits a boolean indicating if the context is considered
+    equivalent to the first buffered registration.
+
+    Contexts are considered equivalent if their properties are equal except for
+    those influenced by the registration method.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
+    units="count" expires_after="2024-10-20">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    The OS allows associating a navigation's input event to a single call. As a
+    result, all registrations tied to a navigation are buffered before
+    delegating them to the OS.
+
+    To ensure that buffered OS registrations are eventually sent to the OS, we
+    flush the buffer after 20s if we haven't had confirmation yet that the
+    navigation will no longer receive any more registrations.
+
+    If we do receive registrations after a buffer has been flushed, we still
+    attempt to send them to the OS with a previously used input event and emit
+    this histogram.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ProcessRegisterDataHostDelay" units="ms"
+    expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the delay between a data host registration being deferred by the
+    AttributionDataHostManagerImpl and it being processed. Only recorded for
+    data host that are deferred rather than processed immediately or dropped.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegisterDataHostOutcome"
+    enum="ConversionRegisterDataHostOutcome" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of a data host registraton. Its status is influenced by
+    trigger buffering.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationInfoError"
+    enum="ConversionRegistrationInfoError" expires_after="2024-12-19">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often registration info parsing failed and why. Recorded only
+    when parsing failed; not recorded when parsing succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationMethod2"
+    enum="ConversionsRegistrationMethod" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the method used to register an attribution.
+
+    Recorded once per valid source, trigger or OS registrations header parsed
+    and submitted to the AttributionManager.
+
+    For buffered OS registrations, the event is emitted when buffering the
+    registrations items. There is negligible probability that items won't reach
+    the manager for the case where the AttributionDataHostManager is destroyed
+    before flushing the buffer.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RegistrationsPerRedirectChain"
+    units="registrations" expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of sources or triggers registered per redirect chain.
+    Recorded when the corresponding resource client finishes.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportRetrySucceedEventLevel"
+    enum="BooleanSuccess" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular event-level attribution report was successful.
+    Emitted for all attribution event-level reports which retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportsDeletedInDataClearOperation.Aggregatable"
+    units="conversions" expires_after="2024-09-15">
+  <owner>johnidel@chromium.org</owner>
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of aggregatable attribution reports deleted per clearing
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportsDeletedInDataClearOperation.Event"
+    units="conversions" expires_after="2024-11-17">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the number of event-level attribution reports deleted per clearing
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportSendOutcome3"
+    enum="ConversionReportSendOutcome" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of a conversion report. Recorded once
+    per conversion report. For conversion report that has been retried, only the
+    last retry will be counted.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportStatusEventLevel"
+    enum="ConversionReportStatus" expires_after="2024-11-17">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an attribution report. Recorded for
+    every event-level attribution report sent. For attribution report that has
+    been retried, every retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportVerification.DestinationOriginStatus"
+    enum="ConversionsTriggerVerificationDestinationOriginStatus"
+    expires_after="M126">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the top_frame origin status when an attempting to complete a trigger
+    verification. In the attribution context, the origin represents the
+    destination origin which is required to complete the verification operation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportVerification.Duration.{TimeSpan}.{Outcome}"
+    units="ms" expires_after="M126">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Time taken to execute various parts of a Trigger Verification operation: [1]
+    GetKeyCommitment = time taken to retrieve the issuer's key commitment. [2]
+    InitializeCryptographer = time taken to initialize the BoringSSL
+    cryptographer with the issuer's keys. [3] BlindMessage = time taken by the
+    cryptographer to blind the message. [4] Issuer = time from the end of the
+    outbound BlindMessage half to the beginning of the inbound UnblindSignature
+    half. [5] UnblindSignature = time taken to unblind the blind signature
+    received from the issuer. [6] Total = GetKeyCommitment +
+    InitializeCryptographer + BlindMessage + UnblindSignature (only recorded for
+    operations that see issuer's responses)
+
+    Each part of the operation can be a Failure or a Success. e.g. if we are
+    unable to retrieve key commitment for an issuer, it is a failure. The
+    metrics are recorded when the verification operation finish.
+  </summary>
+  <token key="TimeSpan">
+    <variant name="BlindMessage"/>
+    <variant name="GetKeyCommitment"/>
+    <variant name="InitializeCryptographer"/>
+    <variant name="SignBlindMessage"/>
+    <variant name="Total"/>
+    <variant name="UnblindSignature"/>
+  </token>
+  <token key="Outcome">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.ReportVerification.GetHeadersStatus"
+    enum="ConversionTriggerVerificationGetHeadersStatus" expires_after="M126">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of the initial part of a verification operation which
+    attempts to retrieve verification headers to be added to a trigger
+    registration request.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportVerification.ProcessVerificationStatus"
+    enum="ConversionTriggerVerificationProcessVerificationStatus"
+    expires_after="M126">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of the second part of a verification operation which
+    processes the private state issuer's signature to generate a verification
+    token.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.RequestSupportHeader"
+    enum="ConversionRequestSupportHeader" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the Attribution-Reporting-Support header value of outgoing
+    attribution-eligible requests. This is only recorded when the cross app web
+    feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SchedulerReportDelay" units="ms"
+    expires_after="2024-11-03">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time difference from when the report was intended to be sent,
+    and the actual report time. This is different from
+    Conversions.ExtraReportDelay2 because it uses the send attempt report time,
+    rather than initial report time assigned by the API. Accounts for any delays
+    in Chrome scheduling the report. Recorded when an event-level report is to
+    be sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SentVerboseDebugReportType4"
+    enum="ConversionVerboseDebugReportType" expires_after="2024-07-31">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often verbose debug reports are sent and the corresponding
+    report type. Recorded when the verbose debug report is created. As there may
+    be more than one report type per report, multiple entries may be logged for
+    a report.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SourceDestinationLimitResult"
+    enum="AttributionSourceDestinationRateLimitResult"
+    expires_after="2024-11-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the result of the destination limit covered by unexpired sources
+    (https://wicg.github.io/attribution-reporting-api/#max-destinations-covered-by-unexpired-sources)
+    when the destination limit algorithm feature is enabled. Recorded for every
+    source that was checked against the destination limit in the storage layer.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SourceRegistrationError13"
+    enum="ConversionSourceRegistrationError" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often source registration parsing failed and why. Recorded only
+    when parsing failed; not recorded when parsing succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SourcesPerSourceOrigin2.{Position}"
+    units="sources" expires_after="2024-11-03">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When the storage database is initialized upon the API's first use, count and
+    sort in descending order the number of sources per source origin. The metric
+    records the count at the {Position} position. Only recorded if
+    initialization is successful.
+  </summary>
+  <token key="Position">
+    <variant name="1st"/>
+    <variant name="3rd"/>
+    <variant name="7th"/>
+    <variant name="20th"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.SourceStoredStatus8"
+    enum="ConversionStorageSourceStatus" expires_after="never">
+<!-- expires-never: critical system health metric for monitoring -->
+
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often sources are stored successfully or rejected and why.
+    Recorded once for each source event processed by the attribution storage
+    layer.
+
+    This is a critical histogram monitored by alerts to
+    measurement-api-dev+alerts@google.com. Please make sure future versions of
+    this histogram are properly set up for alerting, but prefer not to version
+    the histogram if possible.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.ClearDataWithFilterDuration" units="ms"
+    expires_after="2024-05-10">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time it took to do perform a clear operation on the database
+    when supplied an origin filter. Recorded when the conversion database
+    finishes performing a clear operation. Note that filters may vary in size
+    and computation complexity, skewing this metric aribtrarily.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.CreationTime" units="ms"
+    expires_after="2024-12-08">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time it took to initialize a new conversions database from
+    scratch. Recorded when the conversion database finishes initialization. Only
+    recorded on platforms with base::ThreadTicks support.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.MigrationTime" units="ms"
+    expires_after="2024-07-14">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time it took to migrate a preexisting conversions database to
+    the latest schema. Recorded when the conversion database finishes
+    initialization. Only recorded on platforms with base::ThreadTicks support.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.Sql.FileSize2" units="KB"
+    expires_after="2024-11-24">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When the storage database is initialized upon the API's first use, records
+    the file size of the database in KB. Only recorded if initialization is
+    successful.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.Sql.FileSize2.PerSource" units="bytes"
+    expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    When the storage database is initialized upon the API's first use, records
+    the file size of the database in bytes divided by the number of sources in
+    storage. Only recorded if initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2"
+    units="KB" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the file size of the storage database in KB when the max sources per
+    origin limit is reached. Emitted whenever a source fails to be stored due to
+    this limit.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2.PerSource"
+    units="bytes" expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the file size of the storage database in bytes divided by the number
+    of sources in storage. Reported when the max sources per origin limit is
+    reached. Emitted whenever a source fails to be stored due to this limit.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.Storage.Sql.InitStatus2"
+    enum="ConversionStorageSqlInitStatus" expires_after="2024-12-08">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records initialisation statuses of ConversionStorageSql. Note: currently
+    ConversionStorageSql is initialised lazily.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
+    expires_after="2024-07-14">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the time between a conversion and its reporting. This is emitted
+    whenever a conversion report is sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
+    units="hours" expires_after="2024-11-10">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its reporting. This is emitted only
+    when an event-level report is sent successfully to the reporting endpoint,
+    and not emitted for debug reports.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerRegistrationError11"
+    enum="ConversionTriggerRegistrationError" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often trigger registration parsing failed and why. Recorded
+    only when parsing failed; not recorded when parsing succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerTimeLessThanSourceTime" enum="Boolean"
+    expires_after="2024-09-29">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often a trigger time is found to be less than the attributed
+    source's source time. This will help us determine how often clock changes
+    affect attribution and the urgency to which it needs be addressed. Recorded
+    when a source is chosen for attribution.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ValidReportsInDatabase" units="Reports"
+    expires_after="2024-11-03">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of valid reports in a client's database. Reports are
+    scanned during database initialization.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ValuesPerFilter" units="values"
+    expires_after="2024-12-15">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of values in a filter. This includes filter data in
+    source, top-level trigger, event-level and aggregatable trigger data.
+    Recorded once for each filter in the filter data when parsed from the
+    attributionsrc response.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-04">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending a verbose debug report, recorded for each sent
+    verbose debug report. The net error code is recorded if the HTTP response
+    code is unavailable.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.{ContextType}HttpResponseOrNetErrorCodeAggregatable"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an attribution report, recorded for each sent
+    aggregatable report. The HTTP response code is recorded if there is no net
+    error code for the request, or the net error code indicates there was a
+    response code failure.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ContextType}ReportRetrySucceedAggregatable"
+    enum="BooleanSuccess" expires_after="2024-12-08">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether a particular aggregatable attribution report was successful.
+    Emitted for all conversion aggregatable reports which retry.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ContextType}ReportStatusAggregatable"
+    enum="ConversionReportStatus" expires_after="2024-09-15">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an attribution report. Recorded for
+    every aggregatable attribution report sent. For attribution report that has
+    been retried, every retry will be counted.
+  </summary>
+  <token key="ContextType"
+      variants="AttributionReportingAggregatableContextType"/>
+</histogram>
+
+<histogram name="Conversions.{ReportType}.NetworkConnectionTypeOnFailure"
+    enum="NetworkConnectionType" expires_after="2024-11-17">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the network connection type in the event that the report failed to
+    be sent due to network issues. Recorded for each report sending attempt that
+    failed.
+  </summary>
+  <token key="ReportType">
+    <variant name="AggregatableReport"/>
+    <variant name="EventLevelReport"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.{ReportType}.ReportRetriesTillSuccessOrFailure"
+    enum="ConversionReportSendRetryCount" expires_after="2024-12-08">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of retries before a report is successfully sent or
+    records 'Failed' if report delivery fails after reaching the max number of
+    retries (2).
+  </summary>
+  <token key="ReportType">
+    <variant name="AggregatableReport"/>
+    <variant name="EventLevelReport"/>
+  </token>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>
