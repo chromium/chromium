@@ -277,6 +277,7 @@ network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
 policy::PolicyMap::Entry::details
 blink::SVGFilterBuilder::last_effect_
+net::HttpCache::Transaction::SetRequest(const NetLogWithSource &)::(anonymous struct)::search
 
 # Populated manually - Field initialized with non-nullptr value in constexpr.
 enterprise_connectors::ServiceProvider::analysis
