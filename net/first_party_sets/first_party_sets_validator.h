@@ -8,10 +8,9 @@
 #include <map>
 
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 
 namespace net {
-
-class SchemefulSite;
 
 // The helper class to check the validity of the Related Website Sets
 // (First-Party Sets). E.g. Check whether the sets contain any singleton or
@@ -42,15 +41,27 @@ class NET_EXPORT FirstPartySetsValidator {
 
  private:
   struct PrimarySiteState {
+    bool IsValid() const;
+
     // A primary site is a singleton iff it is never used as the primary in some
     // other site's entry.
     bool has_nonself_entry = false;
     // A primary site induces orphaned non-primary sites iff it is used as the
     // primary site in some other site's entry, but it has no entry itself.
     bool has_self_entry = false;
+    // True iff none of the sites in this primary's set appear in any other set.
+    bool is_disjoint = true;
   };
 
+  struct SiteState {
+    SchemefulSite first_seen_primary;
+  };
+
+  // Tracks validity states for each primary site.
   std::map<SchemefulSite, PrimarySiteState> primary_states_;
+
+  // Tracks metadata for each site.
+  std::map<SchemefulSite, SiteState> site_metadatas_;
 };
 
 }  // namespace net

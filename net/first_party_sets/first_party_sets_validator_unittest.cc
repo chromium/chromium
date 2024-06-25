@@ -16,12 +16,15 @@ namespace net {
 
 namespace {
 
-const SchemefulSite kPrimary(GURL("https://primary.test"));
-const SchemefulSite kPrimaryCctld(GURL("https://primary.ccltd"));
+const SchemefulSite kPrimary1(GURL("https://primary1.test"));
+const SchemefulSite kPrimary1Cctld(GURL("https://primary1.ccltd"));
 const SchemefulSite kPrimary2(GURL("https://primary2.test"));
+const SchemefulSite kPrimary3(GURL("https://primary3.test"));
 const SchemefulSite kAssociated1(GURL("https://associated1.test"));
 const SchemefulSite kAssociated2(GURL("https://associated2.test"));
-const SchemefulSite kService(GURL("https://service.test"));
+const SchemefulSite kAssociated3(GURL("https://associated3.test"));
+const SchemefulSite kService1(GURL("https://service1.test"));
+const SchemefulSite kService2(GURL("https://service2.test"));
 
 struct SiteEntry {
   SchemefulSite site;
@@ -41,47 +44,71 @@ FirstPartySetsValidator ValidateSets(std::initializer_list<SiteEntry> sites) {
 TEST(FirstPartySetsValidator, Default) {
   FirstPartySetsValidator validator;
   EXPECT_TRUE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
 }
 
 TEST(FirstPartySetsValidator, Valid) {
   // This is a valid RWSs.
   FirstPartySetsValidator validator = ValidateSets({
-      {kAssociated1, kPrimary},
-      {kPrimary, kPrimary},
-      {kService, kPrimary2},
+      {kAssociated1, kPrimary1},
+      {kPrimary1, kPrimary1},
+
+      {kService1, kPrimary2},
       {kPrimary2, kPrimary2},
   });
 
   EXPECT_TRUE(validator.IsValid());
-  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary1));
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
 TEST(FirstPartySetsValidator, Invalid_Singleton) {
-  // `kPrimary` is a singleton.
+  // `kPrimary1` is a singleton.
   FirstPartySetsValidator validator = ValidateSets({
-      {kPrimary, kPrimary},
-      {kService, kPrimary2},
+      {kPrimary1, kPrimary1},
+
+      {kService1, kPrimary2},
       {kPrimary2, kPrimary2},
   });
 
   EXPECT_FALSE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
 }
 
 TEST(FirstPartySetsValidator, Invalid_Orphan) {
   // `kAssociated1` is an orphan.
   FirstPartySetsValidator validator = ValidateSets({
-      {kAssociated1, kPrimary},
-      {kService, kPrimary2},
+      {kAssociated1, kPrimary1},
+
+      {kService1, kPrimary2},
       {kPrimary2, kPrimary2},
   });
 
   EXPECT_FALSE(validator.IsValid());
-  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
   EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary2));
+}
+
+TEST(FirstPartySetsValidator, Invalid_Nondisjoint) {
+  // `kAssociated1` is listed in more than one set.
+  FirstPartySetsValidator validator = ValidateSets({
+      {kAssociated1, kPrimary1},
+      {kService1, kPrimary1},
+      {kPrimary1, kPrimary1},
+
+      {kAssociated1, kPrimary2},
+      {kService2, kPrimary2},
+      {kPrimary2, kPrimary2},
+
+      {kAssociated3, kPrimary3},
+      {kPrimary3, kPrimary3},
+  });
+
+  EXPECT_FALSE(validator.IsValid());
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary1));
+  EXPECT_FALSE(validator.IsSitePrimaryValid(kPrimary2));
+  EXPECT_TRUE(validator.IsSitePrimaryValid(kPrimary3));
 }
 
 }  // namespace net

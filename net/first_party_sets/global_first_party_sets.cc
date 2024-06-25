@@ -91,8 +91,7 @@ GlobalFirstPartySets::GlobalFirstPartySets(
   CHECK(base::ranges::all_of(aliases_, [&](const auto& pair) {
     return entries_.contains(pair.second);
   }));
-  CHECK(IsValid(), base::NotFatalUntil::M130)
-      << "Sets must not contain singleton or orphan";
+  CHECK(IsValid(), base::NotFatalUntil::M130) << "Sets must be valid";
 }
 
 GlobalFirstPartySets::GlobalFirstPartySets(GlobalFirstPartySets&&) = default;
@@ -202,8 +201,7 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
       /*addition_sets=*/{}));
   manual_aliases_ = std::move(manual_aliases);
 
-  CHECK(IsValid(), base::NotFatalUntil::M130)
-      << "Sets must not contain singleton or orphan";
+  CHECK(IsValid(), base::NotFatalUntil::M130) << "Sets must be valid";
 }
 
 void GlobalFirstPartySets::UnsafeSetManualConfig(
