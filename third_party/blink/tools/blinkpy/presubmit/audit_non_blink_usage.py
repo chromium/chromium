@@ -1109,6 +1109,7 @@ _CONFIG = [
             'third_party/blink/public',
         ],
         'allowed': [
+            'base::FeatureParam',
             'base::OnceCallback',
             'base::OnceClosure',
             'base::RepeatingCallback',
