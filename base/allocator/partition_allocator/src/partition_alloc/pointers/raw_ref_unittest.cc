@@ -7,14 +7,10 @@
 #include <functional>
 #include <type_traits>
 
-// TODO(crbug.com/41455655): including logging.h is required because of the
-// raw_ptr_traits definition that actually requires all types pointed with
-// raw_ptr to be defined.
-#include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/pointers/raw_ptr.h"
 #include "partition_alloc/pointers/raw_ptr_counting_impl_for_test.h"
 #include "partition_alloc/pointers/raw_ptr_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"

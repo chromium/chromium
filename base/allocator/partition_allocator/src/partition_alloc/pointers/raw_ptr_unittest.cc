@@ -13,14 +13,11 @@
 #include <thread>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/cpu.h"
-#include "base/logging.h"
-#include "base/memory/raw_ptr_asan_service.h"
-#include "base/metrics/histogram_base.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/memory/dangling_ptr_instrumentation.h"
@@ -30,6 +27,8 @@
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_base/cpu.h"
+#include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -43,7 +42,6 @@
 #include "partition_alloc/tagging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #include <sanitizer/asan_interface.h>
@@ -1447,21 +1445,21 @@ TEST_F(RawPtrTest, WorksWithOptional) {
 
 TEST_F(RawPtrTest, WorksWithVariant) {
   int x = 100;
-  absl::variant<int, raw_ptr<int>> vary;
+  std::variant<int, raw_ptr<int>> vary;
   ASSERT_EQ(0u, vary.index());
-  EXPECT_EQ(0, absl::get<int>(vary));
+  EXPECT_EQ(0, std::get<int>(vary));
 
   vary = x;
   ASSERT_EQ(0u, vary.index());
-  EXPECT_EQ(100, absl::get<int>(vary));
+  EXPECT_EQ(100, std::get<int>(vary));
 
   vary = nullptr;
   ASSERT_EQ(1u, vary.index());
-  EXPECT_EQ(nullptr, absl::get<raw_ptr<int>>(vary));
+  EXPECT_EQ(nullptr, std::get<raw_ptr<int>>(vary));
 
   vary = &x;
   ASSERT_EQ(1u, vary.index());
-  EXPECT_EQ(&x, absl::get<raw_ptr<int>>(vary));
+  EXPECT_EQ(&x, std::get<raw_ptr<int>>(vary));
 }
 
 TEST_F(RawPtrTest, CrossKindConversion) {
@@ -2052,7 +2050,7 @@ TEST_F(BackupRefPtrTest, WorksWithOptional) {
   allocator_.root()->Free(ptr);
 }
 
-// Tests that ref-count management is correct, despite `absl::variant` may be
+// Tests that ref-count management is correct, despite `std::variant` may be
 // using `union` underneath.
 TEST_F(BackupRefPtrTest, WorksWithVariant) {
   void* ptr = allocator_.root()->Alloc(16);
@@ -2060,7 +2058,7 @@ TEST_F(BackupRefPtrTest, WorksWithVariant) {
       allocator_.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
-  absl::variant<uintptr_t, raw_ptr<void>> vary = ptr;
+  std::variant<uintptr_t, raw_ptr<void>> vary = ptr;
   ASSERT_EQ(1u, vary.index());
   EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
 
@@ -2077,7 +2075,7 @@ TEST_F(BackupRefPtrTest, WorksWithVariant) {
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   {
-    absl::variant<uintptr_t, raw_ptr<void>> vary2 = ptr;
+    std::variant<uintptr_t, raw_ptr<void>> vary2 = ptr;
     ASSERT_EQ(1u, vary2.index());
     EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
   }

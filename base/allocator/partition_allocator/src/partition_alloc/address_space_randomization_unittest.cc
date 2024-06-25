@@ -16,8 +16,6 @@
 
 #if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "base/win/windows_version.h"
 #endif
 
 namespace partition_alloc {

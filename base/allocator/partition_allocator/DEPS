@@ -9,35 +9,51 @@ noparent = True
 # `partition_alloc` can depend only on itself, via its `include_dirs`.
 include_rules = [ "+partition_alloc" ]
 
+# TODO(crbug.com/40158212): Depending on what is tested, split the tests in
+# between chromium and partition_alloc. Remove those exceptions:
 specific_include_rules = {
-  ".*_(perf|unit)test\.cc$": [
-    "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
-    "+base/allocator/dispatcher/dispatcher.h",
-    "+base/debug/allocation_trace.h",
-    "+base/debug/debugging_buildflags.h",
-    "+base/debug/proc_maps_linux.h",
-    "+base/system/sys_info.h",
-    "+base/test/gtest_util.h",
-    "+base/timer/lap_timer.h",
-    "+base/win/windows_version.h",
+  # Dependencies on //testing:
+  ".*_(perf|unit)?test.*\.(h|cc)": [
     "+testing/gmock/include/gmock/gmock.h",
     "+testing/gtest/include/gtest/gtest.h",
     "+testing/perf/perf_result_reporter.h",
   ],
-  "extended_api\.cc$": [
+
+  # Dependencies on //base:
+  "extended_api\.cc": [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
   ],
-  "raw_(ptr|ref)_unittest\.cc$": [
-    "+base",
-    "+third_party/abseil-cpp/absl/types/optional.h",
-    "+third_party/abseil-cpp/absl/types/variant.h",
+  "page_allocator_unittest\.cc": [
+    "+base/debug/proc_maps_linux.h",
   ],
-  "raw_ptr_test_support\.h$": [
-    "+testing/gmock/include/gmock/gmock.h",
-    "+third_party/abseil-cpp/absl/types/optional.h",
+  "partition_alloc_perftest\.cc": [
+    "+base/allocator/dispatcher/dispatcher.h",
+    "+base/debug/allocation_trace.h",
+    "+base/debug/debugging_buildflags.h",
+    "+base/timer/lap_timer.h",
   ],
-  "use_death_tests\.h$": [
-    "+testing/gtest/include/gtest/gtest.h",
+  "partition_alloc_unittest\.cc": [
+    "+base/system/sys_info.h",
+    "+base/test/gtest_util.h",
+  ],
+  "partition_lock_perftest\.cc": [
+    "+base/timer/lap_timer.h",
+  ],
+  "raw_ptr_unittest\.cc": [
+    "+base/allocator/partition_alloc_features.h",
+    "+base/allocator/partition_alloc_support.h",
+    "+base/cpu.h",
+    "+base/debug/asan_service.h",
+    "+base/test/bind.h",
+    "+base/test/gtest_util.h",
+    "+base/test/memory/dangling_ptr_instrumentation.h",
+    "+base/test/scoped_feature_list.h",
+    "+base/types/to_address.h",
+  ],
+  "raw_ref_unittest\.cc": [
+    "+base/debug/asan_service.h",
+    "+base/memory/raw_ptr_asan_service.h",
+    "+base/test/gtest_util.h",
   ],
 }
 
