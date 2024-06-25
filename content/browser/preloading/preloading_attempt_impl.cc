@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/preloading/preloading_attempt_impl.h"
 
 #include "base/containers/span.h"
@@ -262,8 +257,8 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
 
   for (const auto& predictor : GetPredictors()) {
     uint32_t sampled_num = sampling_seed_;
-    sampled_num = base::Crc32(
-        sampled_num, base::as_bytes(base::make_span(&sampling_source, 1u)));
+    sampled_num =
+        base::Crc32(sampled_num, base::byte_span_from_ref(sampling_source));
 
     double sampling_likelihood =
         config.SamplingLikelihood(preloading_type_, predictor);
