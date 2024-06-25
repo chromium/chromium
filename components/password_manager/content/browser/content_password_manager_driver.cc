@@ -64,7 +64,7 @@ bool HasValidURL(content::RenderFrameHost* render_frame_host) {
   if (!url.is_valid())
     return false;
 
-  return password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+  return password_manager::bad_message::CheckForIllegalURL(
       render_frame_host, url,
       password_manager::BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED);
 }
