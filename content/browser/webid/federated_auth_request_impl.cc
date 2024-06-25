@@ -2176,14 +2176,10 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   for (auto& account : accounts) {
     // Record when IDP and browser have different user sign-in states.
     bool idp_claimed_sign_in = account.login_state == LoginState::kSignIn;
-    // TODO(crbug.com/347963515): use the last used timestamp in the UI.
-    bool browser_observed_sign_in =
-        permission_delegate_
-            ->GetLastUsedTimestamp(origin(), GetEmbeddingOrigin(), idp_origin,
-                                   account.id)
-            .has_value();
+    account.last_used_timestamp = permission_delegate_->GetLastUsedTimestamp(
+        origin(), GetEmbeddingOrigin(), idp_origin, account.id);
 
-    if (idp_claimed_sign_in == browser_observed_sign_in) {
+    if (idp_claimed_sign_in == account.last_used_timestamp.has_value()) {
       fedcm_metrics_->RecordSignInStateMatchStatus(
           idp_config_url, SignInStateMatchStatus::kMatch);
     } else if (idp_claimed_sign_in) {
@@ -2197,43 +2193,46 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
     // We set the login state based on the IDP response if it sends
     // back an approved_clients list. If it does not, we need to set
     // it here based on browser state.
-    if (account.login_state) {
-      continue;
+    if (!account.login_state) {
+      // Consider this a sign-in if we have seen a successful sign-up for
+      // this account before.
+      account.login_state = account.last_used_timestamp.has_value()
+                                ? LoginState::kSignIn
+                                : LoginState::kSignUp;
     }
-    LoginState login_state = LoginState::kSignUp;
-    // Consider this a sign-in if we have seen a successful sign-up for
-    // this account before.
-    if (browser_observed_sign_in) {
-      login_state = LoginState::kSignIn;
-    }
-    account.login_state = login_state;
-  }
 
-  // Populate the accounts' browser trusted login state. This bit may be useful
-  // to widget flow in the future and we can drop the condition if needed. So
-  // far the bit for the widget flow will always be kSignUp.
-  if (rp_mode_ == RpMode::kButton) {
-    for (auto& account : accounts) {
-      account.browser_trusted_login_state = LoginState::kSignUp;
-      if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
-              render_frame_host(), /*provider_url=*/idp_config_url,
-              GetEmbeddingOrigin(), origin(), account.id, permission_delegate_,
-              api_permission_delegate_)) {
-        // At this moment we can trust login_state even though it's controlled
-        // by IdP. If it's kSignUp, it could mean that the browser's sharing
-        // permission is obsolete.
-        account.browser_trusted_login_state = account.login_state.value();
-      }
+    if (webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
+            render_frame_host(), /*provider_url=*/idp_config_url,
+            GetEmbeddingOrigin(), origin(), account.id, permission_delegate_,
+            api_permission_delegate_)) {
+      // At this moment we can trust login_state even though it's controlled
+      // by IdP. If it's kSignUp, it could mean that the browser's sharing
+      // permission is obsolete.
+      account.browser_trusted_login_state = account.login_state.value();
     }
   }
 
   // Now that the login states have been computed, order accounts so that the
-  // returning accounts go first and the other accounts go afterwards. Since the
-  // number of accounts is likely very small, sorting by login_state should be
-  // fast.
-  std::sort(accounts.begin(), accounts.end(), [](const auto& a, const auto& b) {
-    return a.login_state < b.login_state;
-  });
+  // returning accounts go first and the other accounts go afterwards. Within
+  // returning accounts, most recently used accounts go first. In particular,
+  // returning accounts for which we do not have a last used timestamp go last.
+  // Since the number of accounts is likely very small, sorting by login_state
+  // should be fast.
+  std::stable_sort(accounts.begin(), accounts.end(),
+                   [](const auto& a, const auto& b) {
+                     if (a.login_state != b.login_state) {
+                       return a.login_state < b.login_state;
+                     }
+                     // Within accounts with the same `login_state`, prefer to
+                     // put first those with timestamps, the higher the better.
+                     if (!a.last_used_timestamp) {
+                       return false;
+                     }
+                     if (!b.last_used_timestamp) {
+                       return true;
+                     }
+                     return *a.last_used_timestamp > *b.last_used_timestamp;
+                   });
 }
 
 void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,

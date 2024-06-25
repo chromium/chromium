@@ -2075,7 +2075,6 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::make_optional<base::Time>()));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -2102,7 +2101,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
 TEST_F(FederatedAuthRequestImplTest,
        LoginStateSuccessfulSignUpGrantsSharingPermission) {
   EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp(_, _, _, _))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(
       *test_permission_delegate_,
       GrantSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
@@ -2115,7 +2114,7 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest,
        LoginStateFailedSignUpNotGrantSharingPermission) {
   EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp(_, _, _, _))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(*test_permission_delegate_, GrantSharingPermission(_, _, _, _))
       .Times(0);
 
@@ -2148,7 +2147,6 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::make_optional<base::Time>()));
 
   // Pretend the auto re-authn permission has been granted.
@@ -2185,7 +2183,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::make_optional<base::Time>()));
 
   // Pretend the auto re-authn permission has been granted.
@@ -2224,14 +2221,13 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderUrlFull), kAccountIdNicolas))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdPeter))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2240,7 +2236,7 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -2277,7 +2273,6 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderUrlFull), kAccountIdNicolas))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2286,7 +2281,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdPeter))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2295,7 +2289,7 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -2330,7 +2324,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -2366,7 +2360,8 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(std::make_optional<base::Time>(base::Time::Now())));
+      .WillRepeatedly(
+          Return(std::make_optional<base::Time>(base::Time::Now())));
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kRequired;
@@ -2388,7 +2383,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2430,7 +2424,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2466,7 +2459,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the auto re-authn permission has been granted.
@@ -2499,8 +2491,7 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(1)
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -2514,7 +2505,7 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_CALL(*test_api_permission_delegate_,
               HasThirdPartyCookiesAccess(_, GURL(kProviderUrlFull),
                                          OriginFromString(kRpUrl)))
-      .WillOnce(Return(true));
+      .WillRepeatedly(Return(true));
 
   // Sharing permission won't be granted with this setup.
   EXPECT_CALL(*test_permission_delegate_,
@@ -2811,7 +2802,6 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderUrlFull), kAccountIdNicolas))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2820,7 +2810,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdPeter))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -2829,16 +2818,14 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountIdZach))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
-      .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
-      .Times(2)
       .WillRepeatedly(Return(false));
 
   RequestExpectations expectations = {
@@ -2877,7 +2864,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnMediationRequired) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts[0].login_state =
@@ -2899,7 +2886,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(_, _, OriginFromString(kProviderUrlFull),
                                    kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -3066,7 +3052,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(_, _, OriginFromString(kProviderUrlFull),
                                    kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::make_optional<base::Time>()));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -3094,7 +3079,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(_, _, OriginFromString(kProviderUrlFull),
                                    kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -3166,7 +3150,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSignedInOnBothIdpAndBrowser) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -3199,7 +3182,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   base::RunLoop ukm_loop;
   ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
@@ -3225,7 +3208,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::nullopt));
 
   base::RunLoop ukm_loop;
@@ -3258,7 +3240,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -3498,7 +3479,8 @@ TEST_F(FederatedAuthRequestImplTest, DisclosureTextNotShownForReturningUser) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(std::make_optional<base::Time>(base::Time::Now())));
+      .WillRepeatedly(
+          Return(std::make_optional<base::Time>(base::Time::Now())));
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
@@ -3555,7 +3537,8 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(std::make_optional<base::Time>(base::Time::Now())));
+      .WillRepeatedly(
+          Return(std::make_optional<base::Time>(base::Time::Now())));
 
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
@@ -3580,7 +3563,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -3613,7 +3595,6 @@ TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagIfInQuietPeriod) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(Return(std::make_optional<base::Time>()));
 
   // Pretend the auto re-authn permission has been granted.
@@ -4662,18 +4643,17 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdPeter))
-      .Times(2)
       .WillRepeatedly(Return(std::make_optional<base::Time>()));
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdNicolas))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdZach))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Ensure auto reauthn is not considered as disabled.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -4722,7 +4702,6 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -4737,28 +4716,25 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdPeter))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdNicolas))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdZach))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Ensure auto reauthn is not considered as disabled.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnSettingEnabled())
-      .Times(3)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
-      .Times(3)
       .WillRepeatedly(Return(false));
 
   RequestExpectations expectations = {
@@ -4810,7 +4786,6 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdPeter))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 
@@ -4818,12 +4793,12 @@ TEST_F(FederatedAuthRequestImplTest,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdZach))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   EXPECT_CALL(*test_permission_delegate_,
               GetLastUsedTimestamp(
                   OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                   OriginFromString(kProviderTwoUrlFull), kAccountIdNicolas))
-      .WillOnce(Return(std::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
 
   // Ensure auto reauthn is not considered as disabled.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -5181,6 +5156,42 @@ TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdpFail) {
       metrics_recorder->get_metrics_endpoints_notified_success().empty());
   EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
               ElementsAre(kMetricsEndpoint, "https://idp2.example/metrics"));
+}
+
+TEST_F(FederatedAuthRequestImplTest, AccountsSortedWithTimestamps) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
+  // First account is kSignUp so the fact that it has a last used timestamp
+  // should not affect its relative ordering.
+  EXPECT_CALL(*test_permission_delegate_,
+              GetLastUsedTimestamp(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), kAccountIdNicolas))
+      .WillRepeatedly(Return(std::make_optional<base::Time>(
+          base::Time() + base::Microseconds(10))));
+  // The second account is marked signed in but has no last used timestamp.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdPeter))
+      .WillRepeatedly(Return(std::nullopt));
+  // The third account is marked sign (as is the second), but since it has a
+  // timestamp it should show first.
+  configuration.idp_info[kProviderUrlFull].accounts[2].login_state =
+      LoginState::kSignIn;
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdZach))
+      .WillRepeatedly(Return(std::make_optional<base::Time>(
+          base::Time() + base::Microseconds(1))));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  ASSERT_EQ(displayed_accounts().size(), 3u);
+  // Account order should be: accounts[2], accounts[1], accounts[0].
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdZach);
+  EXPECT_EQ(displayed_accounts()[1].id, kAccountIdPeter);
+  EXPECT_EQ(displayed_accounts()[2].id, kAccountIdNicolas);
 }
 
 TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsNoMatch) {
@@ -7082,7 +7093,6 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
       *test_permission_delegate_,
       GetLastUsedTimestamp(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .Times(2)
       .WillRepeatedly(
           Return(std::make_optional<base::Time>(base::Time::Now())));
 

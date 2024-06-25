@@ -242,7 +242,8 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
     bool should_hover,
     bool should_include_idp,
     bool is_modal_dialog,
-    int additional_vertical_padding) {
+    int additional_vertical_padding,
+    std::optional<std::u16string> last_used_string) {
   int avatar_size = is_modal_dialog ? kModalAvatarSize : kDesiredAvatarSize;
   views::style::TextStyle account_name_style =
       is_modal_dialog ? views::style::STYLE_BODY_3_MEDIUM
@@ -313,10 +314,18 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
           vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kArrowIconSize));
     }
 
+    std::u16string footer = u"";
+    if (should_include_idp) {
+      if (last_used_string) {
+        footer = l10n_util::GetStringFUTF16(
+            IDS_MULTI_IDP_ACCOUNT_ORIGIN_AND_LAST_USED,
+            idp_display_data.idp_etld_plus_one, *last_used_string);
+      } else {
+        footer = idp_display_data.idp_etld_plus_one;
+      }
+    }
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
     // data.
-    std::u16string footer =
-        should_include_idp ? idp_display_data.idp_etld_plus_one : u"";
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(
             &AccountSelectionViewBase::Observer::OnAccountSelected,

@@ -65,11 +65,17 @@ class AccountSelectionViewTestBase {
 
   content::IdentityRequestAccount CreateTestIdentityRequestAccount(
       const std::string& account_suffix,
-      content::IdentityRequestAccount::LoginState login_state);
+      content::IdentityRequestAccount::LoginState login_state,
+      std::optional<base::Time> last_used_timestamp = std::nullopt);
+  // Creates a vector of accounts. When `login_states` are not passed, sets the
+  // accounts' login states to LoginState::kSignUp. When `last_used_timestamps`
+  // are not passed, sets accounts' last used timestamp to std::nullopt.
   std::vector<content::IdentityRequestAccount>
   CreateTestIdentityRequestAccounts(
       const std::vector<std::string>& account_suffixes,
-      content::IdentityRequestAccount::LoginState login_state);
+      const std::vector<content::IdentityRequestAccount::LoginState>&
+          login_states = {},
+      const std::vector<std::optional<base::Time>>& last_used_timestamps = {});
   content::ClientMetadata CreateTestClientMetadata(
       const std::string& terms_of_service_url);
 

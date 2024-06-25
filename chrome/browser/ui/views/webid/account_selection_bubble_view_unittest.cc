@@ -43,6 +43,8 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
+using LoginState = content::IdentityRequestAccount::LoginState;
+
 class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                                        public AccountSelectionViewTestBase {
  public:
@@ -94,9 +96,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       const std::vector<std::string>& account_suffixes,
       bool supports_add_account = false) {
     std::vector<content::IdentityRequestAccount> account_list =
-        CreateTestIdentityRequestAccounts(
-            account_suffixes,
-            content::IdentityRequestAccount::LoginState::kSignUp);
+        CreateTestIdentityRequestAccounts(account_suffixes);
 
     CreateAccountSelectionBubble(/*exclude_title=*/false,
                                  /*exclude_iframe=*/true);
@@ -173,8 +173,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                          const std::optional<std::u16string> expected_subtitle,
                          bool expect_idp_brand_icon_in_header) {
     const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+    content::IdentityRequestAccount account(
+        CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignUp));
     CreateAndShowSingleAccountPicker(
         /*show_back_button=*/false, account,
         content::IdentityProviderMetadata(), kTermsOfServiceUrl);
@@ -242,8 +242,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                          const std::optional<std::u16string> expected_subtitle,
                          bool expect_idp_brand_icon_in_header) {
     const std::string kAccountSuffix = "suffix";
-    content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+    content::IdentityRequestAccount account =
+        CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignIn);
 
     CreateAccountSelectionBubble(
         /*exclude_title=*/false,
@@ -451,8 +451,8 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignUp);
   CreateAndShowSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
       /*terms_of_service_url=*/"");
@@ -503,8 +503,8 @@ TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccount) {
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignIn);
   CreateAndShowSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
       /*terms_of_service_url=*/"");
@@ -535,8 +535,8 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
 
 TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignUp);
   CreateAndShowSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
       /*terms_of_service_url=*/"",
@@ -569,8 +569,8 @@ TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
 TEST_F(AccountSelectionBubbleViewTest,
        ContinueButtonWithProperBackgroundColor) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignIn);
 
   CreateAccountSelectionBubble(/*exclude_title=*/false,
                                /*exclude_iframe=*/true);
@@ -614,8 +614,8 @@ TEST_F(AccountSelectionBubbleViewTest,
 TEST_F(AccountSelectionBubbleViewTest,
        ContinueButtonWithImproperBackgroundColor) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignIn);
 
   CreateAccountSelectionBubble(/*exclude_title=*/false,
                                /*exclude_iframe=*/true);
@@ -660,8 +660,8 @@ TEST_F(AccountSelectionBubbleViewTest,
 
 TEST_F(AccountSelectionBubbleViewTest, Verifying) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignIn);
   IdentityProviderDisplayData idp_data(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       content::ClientMetadata(GURL(), GURL(), GURL()), {account},
@@ -687,8 +687,8 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
 
 TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignIn);
   IdentityProviderDisplayData idp_data(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       content::ClientMetadata(GURL(), GURL(), GURL()), {account},
@@ -723,8 +723,8 @@ TEST_F(AccountSelectionBubbleViewTest, Failure) {
 // header of an account picker.
 TEST_F(AccountSelectionBubbleViewTest, SuccessIframeSubtitleInHeader) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
-      {kAccountSuffix}, content::IdentityRequestAccount::LoginState::kSignUp);
+  content::IdentityRequestAccount account =
+      CreateTestIdentityRequestAccount({kAccountSuffix}, LoginState::kSignUp);
   CreateAndShowSingleAccountPicker(
       /*show_back_button=*/false, account, content::IdentityProviderMetadata(),
       /*terms_of_service_url=*/"", /*exclude_iframe=*/false);
@@ -785,8 +785,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3", "4"};
   std::vector<IdentityProviderDisplayData> idp_data;
-  std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
-      kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
+  std::vector<Account> accounts_first_idp =
+      CreateTestIdentityRequestAccounts(kAccountSuffixes1);
   idp_data.emplace_back(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata(kTermsOfServiceUrl), accounts_first_idp,
@@ -794,9 +794,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   idp_data.emplace_back(
       kSecondIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-2.com"),
-      CreateTestIdentityRequestAccounts(
-          kAccountSuffixes2,
-          content::IdentityRequestAccount::LoginState::kSignUp),
+      CreateTestIdentityRequestAccounts(kAccountSuffixes2),
       /*request_permission=*/true, /*has_login_status_mismatch=*/false);
   CreateAndShowMultiIdpAccountPicker(idp_data);
 
@@ -836,8 +834,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   std::vector<IdentityProviderDisplayData> idp_data;
-  std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
-      kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
+  std::vector<Account> accounts_first_idp =
+      CreateTestIdentityRequestAccounts(kAccountSuffixes1);
   idp_data.emplace_back(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata(kTermsOfServiceUrl), accounts_first_idp,
@@ -846,7 +844,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
       kSecondIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-2.com"),
       CreateTestIdentityRequestAccounts(
-          {}, content::IdentityRequestAccount::LoginState::kSignUp),
+          /*account_suffixes=*/{}),
       /*request_permission=*/true, /*has_login_status_mismatch=*/true);
   CreateAndShowMultiIdpAccountPicker(idp_data);
 
@@ -912,8 +910,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
   std::vector<IdentityProviderDisplayData> idp_data;
-  std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
-      kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
+  std::vector<Account> accounts_first_idp =
+      CreateTestIdentityRequestAccounts(kAccountSuffixes1);
   content::IdentityProviderMetadata idp_with_supports_add =
       content::IdentityProviderMetadata();
   idp_with_supports_add.supports_add_account = true;
@@ -921,13 +919,11 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
       kIdpETLDPlusOne, idp_with_supports_add,
       CreateTestClientMetadata(kTermsOfServiceUrl), accounts_first_idp,
       /*request_permission=*/true, /*has_login_status_mismatch=*/false);
-  idp_data.emplace_back(
-      kSecondIdpETLDPlusOne, idp_with_supports_add,
-      CreateTestClientMetadata("https://tos-2.com"),
-      CreateTestIdentityRequestAccounts(
-          kAccountSuffixes2,
-          content::IdentityRequestAccount::LoginState::kSignUp),
-      /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+  idp_data.emplace_back(kSecondIdpETLDPlusOne, idp_with_supports_add,
+                        CreateTestClientMetadata("https://tos-2.com"),
+                        CreateTestIdentityRequestAccounts(kAccountSuffixes2),
+                        /*request_permission=*/true,
+                        /*has_login_status_mismatch=*/false);
   CreateAndShowMultiIdpAccountPicker(idp_data);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
@@ -970,8 +966,8 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
   std::vector<IdentityProviderDisplayData> idp_data;
-  std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
-      kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
+  std::vector<Account> accounts_first_idp =
+      CreateTestIdentityRequestAccounts(kAccountSuffixes1);
   idp_data.emplace_back(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata(kTermsOfServiceUrl), accounts_first_idp,
@@ -979,21 +975,18 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   idp_data.emplace_back(
       kSecondIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-2.com"),
-      CreateTestIdentityRequestAccounts(
-          kAccountSuffixes2,
-          content::IdentityRequestAccount::LoginState::kSignIn),
+      CreateTestIdentityRequestAccounts(kAccountSuffixes2,
+                                        {LoginState::kSignIn}),
       /*request_permission=*/true, /*has_login_status_mismatch=*/false);
   idp_data.emplace_back(
       u"idp3.com", content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-3.com"),
-      CreateTestIdentityRequestAccounts(
-          {}, content::IdentityRequestAccount::LoginState::kSignUp),
+      CreateTestIdentityRequestAccounts(/*account_suffixes=*/{}),
       /*request_permission=*/true, /*has_login_status_mismatch=*/true);
   idp_data.emplace_back(
       u"idp4.com", content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-4.com"),
-      CreateTestIdentityRequestAccounts(
-          {}, content::IdentityRequestAccount::LoginState::kSignUp),
+      CreateTestIdentityRequestAccounts(/*account_suffixes=*/{}),
       /*request_permission=*/true, /*has_login_status_mismatch=*/true);
   CreateAccountSelectionBubble(/*exclude_title=*/true, /*exclude_iframe=*/true);
   dialog_->ShowSingleReturningAccountDialog(idp_data);
@@ -1032,14 +1025,12 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
   idp_data.emplace_back(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata(kTermsOfServiceUrl),
-      CreateTestIdentityRequestAccounts(
-          {}, content::IdentityRequestAccount::LoginState::kSignUp),
+      CreateTestIdentityRequestAccounts(/*account_suffixes=*/{}),
       /*request_permission=*/true, /*has_login_status_mismatch=*/true);
   idp_data.emplace_back(
       kSecondIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-2.com"),
-      CreateTestIdentityRequestAccounts(
-          {}, content::IdentityRequestAccount::LoginState::kSignUp),
+      CreateTestIdentityRequestAccounts(/*account_suffixes=*/{}),
       /*request_permission=*/true, /*has_login_status_mismatch=*/true);
   CreateAndShowMultiIdpAccountPicker(idp_data);
 
@@ -1089,18 +1080,14 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
   const std::vector<std::string> kAccountSuffixes2 = {"new2", "returning2"};
   std::vector<IdentityProviderDisplayData> idp_data;
   std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
-      kAccountSuffixes1, content::IdentityRequestAccount::LoginState::kSignUp);
-  accounts_first_idp[1].login_state =
-      content::IdentityRequestAccount::LoginState::kSignIn;
+      kAccountSuffixes1, {LoginState::kSignUp, LoginState::kSignIn});
   idp_data.emplace_back(
       kIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata(kTermsOfServiceUrl), accounts_first_idp,
       /*request_permission=*/true, /*has_login_status_mismatch=*/false);
 
   std::vector<Account> accounts_second_idp = CreateTestIdentityRequestAccounts(
-      kAccountSuffixes2, content::IdentityRequestAccount::LoginState::kSignUp);
-  accounts_second_idp[1].login_state =
-      content::IdentityRequestAccount::LoginState::kSignIn;
+      kAccountSuffixes2, {LoginState::kSignUp, LoginState::kSignIn});
   idp_data.emplace_back(
       kSecondIdpETLDPlusOne, content::IdentityProviderMetadata(),
       CreateTestClientMetadata("https://tos-2.com"), accounts_second_idp,
@@ -1129,9 +1116,71 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
 
   ASSERT_EQ(4u, accounts.size());
 
-  // Check the first IDP.
+  // Returning accounts are shown first.
   const std::vector<std::string> expected_account_order = {
       "returning1", "returning2", "new1", "new2"};
+  size_t accounts_index = 0;
+  CheckHoverableAccountRows(accounts, expected_account_order, accounts_index,
+                            /*expect_idp=*/true);
+}
+
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
+       MultipleReturningAccountsWithTimestamps) {
+  const std::vector<std::string> kAccountSuffixes1 = {"new1", "returning1",
+                                                      "returning2"};
+  const std::vector<std::string> kAccountSuffixes2 = {"new2", "returning3",
+                                                      "returning4"};
+  std::vector<IdentityProviderDisplayData> idp_data;
+  std::vector<Account> accounts_first_idp = CreateTestIdentityRequestAccounts(
+      kAccountSuffixes1,
+      {LoginState::kSignUp, LoginState::kSignIn, LoginState::kSignIn},
+      {std::nullopt, base::Time() + base::Microseconds(1), base::Time()});
+  idp_data.emplace_back(
+      kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+      CreateTestClientMetadata(kTermsOfServiceUrl), accounts_first_idp,
+      /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+
+  std::vector<Account> accounts_second_idp = CreateTestIdentityRequestAccounts(
+      kAccountSuffixes2,
+      {LoginState::kSignUp, LoginState::kSignIn, LoginState::kSignIn},
+      {base::Time() + base::Microseconds(3),
+       base::Time() + base::Microseconds(2), base::Time()});
+  idp_data.emplace_back(
+      kSecondIdpETLDPlusOne, content::IdentityProviderMetadata(),
+      CreateTestClientMetadata("https://tos-2.com"), accounts_second_idp,
+      /*request_permission=*/true, /*has_login_status_mismatch=*/false);
+  CreateAndShowMultiIdpAccountPicker(idp_data);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
+                      /*expected_subtitle=*/std::nullopt,
+                      /*expect_idp_brand_icon_in_header=*/false);
+  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
+
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
+  views::View* contents = scroller->contents();
+  ASSERT_TRUE(contents);
+
+  views::BoxLayout* layout_manager =
+      static_cast<views::BoxLayout*>(contents->GetLayoutManager());
+  EXPECT_TRUE(layout_manager);
+  EXPECT_EQ(layout_manager->GetOrientation(),
+            views::BoxLayout::Orientation::kVertical);
+  std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+      contents->children();
+
+  ASSERT_EQ(6u, accounts.size());
+
+  // The expected order is as follows:
+  // 1. "returning3" since it is returning and has the latest timestamp.
+  // 2. "returning1": returning, has a timestamp.
+  // 3. "returning2" and "returning4": returning ones without timestamp.
+  // 4. "new1", "new2": non returning. Note that the last used timestamp from
+  // "new2" does not impact its place since it is considered not returning.
+  const std::vector<std::string> expected_account_order = {
+      "returning3", "returning1", "returning2", "returning4", "new1", "new2"};
   size_t accounts_index = 0;
   CheckHoverableAccountRows(accounts, expected_account_order, accounts_index,
                             /*expect_idp=*/true);
@@ -1330,8 +1379,8 @@ TEST_F(AccountSelectionBubbleViewTest, BoundsChangedAfterWebContentsDestroyed) {
 // Tests that the brand icon view is hidden if the brand icon URL is invalid.
 TEST_F(AccountSelectionBubbleViewTest, InvalidBrandIconUrlHidesBrandIcon) {
   const std::string kAccountSuffix = "suffix";
-  content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
-      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+  content::IdentityRequestAccount account(
+      CreateTestIdentityRequestAccount(kAccountSuffix, LoginState::kSignUp));
   content::IdentityProviderMetadata idp_metadata;
   idp_metadata.brand_icon_url = GURL("invalid url");
   CreateAndShowSingleAccountPicker(

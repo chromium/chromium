@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -784,10 +785,9 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       views::BoxLayout::Orientation::kVertical));
   bool is_multi_idp = idp_display_data_list.size() > 1u;
   // Add returning accounts first and then other accounts.
+  AddSignInAccounts(idp_display_data_list, accounts_content);
   AddAccounts(idp_display_data_list, accounts_content,
-              content::IdentityRequestAccount::LoginState::kSignIn);
-  AddAccounts(idp_display_data_list, accounts_content,
-              content::IdentityRequestAccount::LoginState::kSignUp);
+              Account::LoginState::kSignUp);
   size_t num_rows = 0;
   bool has_mismatches = false;
   for (const auto& idp_display_data : idp_display_data_list) {
@@ -864,7 +864,7 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
 void AccountSelectionBubbleView::AddAccounts(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
     views::View* accounts_content,
-    content::IdentityRequestAccount::LoginState login_state) {
+    Account::LoginState login_state) {
   bool is_multi_idp = idp_display_data_list.size() > 1u;
   for (const auto& idp_display_data : idp_display_data_list) {
     for (const auto& account : idp_display_data.accounts) {
@@ -874,6 +874,76 @@ void AccountSelectionBubbleView::AddAccounts(
                              /*should_include_idp=*/is_multi_idp));
       }
     }
+  }
+}
+
+void AccountSelectionBubbleView::AddSignInAccounts(
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+    views::View* accounts_content) {
+  bool is_multi_idp = idp_display_data_list.size() > 1u;
+  if (!is_multi_idp) {
+    // Optimization for single IDP case: no need to re-sort accounts.
+    AddAccounts(idp_display_data_list, accounts_content,
+                Account::LoginState::kSignIn);
+    return;
+  }
+
+  // Even though accounts are sorted in each IDP, we want to show accounts in
+  // order of timestamps, so we need to re-sort them in the multi IDP case. So
+  // we add all returning accounts and sort them by last used timestamp. Note:
+  // we avoid copying accounts and IDP data by storing pointers. It would be
+  // incorrect to copy them as otherwise they would be destroyed at the end of
+  // this method call since CreateAccountRow() does not take ownership.
+  std::vector<std::pair<const Account*, const IdentityProviderDisplayData*>>
+      sorted_accounts;
+  for (const auto& idp_display_data : idp_display_data_list) {
+    for (const auto& account : idp_display_data.accounts) {
+      if (account.login_state == Account::LoginState::kSignIn) {
+        sorted_accounts.emplace_back(&account, &idp_display_data);
+      }
+    }
+  }
+  std::stable_sort(sorted_accounts.begin(), sorted_accounts.end(),
+                   [](const auto& a, const auto& b) {
+                     if (!a.first->last_used_timestamp) {
+                       return false;
+                     }
+                     if (!b.first->last_used_timestamp) {
+                       return true;
+                     }
+                     return *a.first->last_used_timestamp >
+                            *b.first->last_used_timestamp;
+                   });
+
+  std::optional<base::Time> now;
+  for (const auto& pair : sorted_accounts) {
+    std::optional<std::u16string> last_used_string;
+    if (pair.first->last_used_timestamp) {
+      // For the most recently used account, we want to show "last used on this
+      // site" while for all other accounts we want to show timing regarding
+      // when it was last used ("last used 1 month ago"). |now| is set when the
+      // first account is seen, so !|now| is only true for the most recently
+      // used account.
+      if (!now) {
+        last_used_string = l10n_util::GetStringUTF16(
+            IDS_MULTI_IDP_ACCOUNT_LAST_USED_ON_THIS_SITE);
+        now = base::Time::Now();
+      } else {
+        // ui::TimeFormat::SimpleWithMonthAndYear does not support negative
+        // values, so if the value is negative, make it 0.
+        base::TimeDelta delta = std::max(
+            *now - *pair.first->last_used_timestamp, base::TimeDelta());
+        last_used_string = l10n_util::GetStringFUTF16(
+            IDS_MULTI_IDP_ACCOUNT_USED_TIME_AGO,
+            ui::TimeFormat::SimpleWithMonthAndYear(
+                ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
+                delta, true));
+      }
+    }
+    accounts_content->AddChildView(CreateAccountRow(
+        *pair.first, *pair.second, /*should_hover=*/true,
+        /*should_include_idp=*/is_multi_idp, /*is_modal_dialog=*/false,
+        /*additional_vertical_padding=*/0, last_used_string));
   }
 }
 
@@ -905,9 +975,17 @@ AccountSelectionBubbleView::CreateSingleReturningAccountChooser(
   auto content = std::make_unique<views::View>();
   content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  std::optional<std::u16string> last_used_string =
+      returning_account->last_used_timestamp
+          ? std::make_optional<std::u16string>(l10n_util::GetStringUTF16(
+                IDS_MULTI_IDP_ACCOUNT_LAST_USED_ON_THIS_SITE))
+          : std::nullopt;
   content->AddChildView(CreateAccountRow(*returning_account, *returning_idp,
                                          /*should_hover=*/true,
-                                         /*should_include_idp=*/true));
+                                         /*should_include_idp=*/true,
+                                         /*is_modal_dialog=*/false,
+                                         /*additional_vertical_padding=*/0,
+                                         last_used_string));
   content->AddChildView(std::make_unique<views::Separator>());
   content->AddChildView(
       CreateChooseAnAccountButton(mismatch_idps, non_mismatch_idps));

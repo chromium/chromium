@@ -117,11 +117,20 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
 
-  // Adds the accounts matching the provided LoginState to the given view.
+  // Adds the accounts matching the provided LoginState to the given view. This
+  // method does not reorder the accounts, and assumes they are provided in the
+  // correct order.
   void AddAccounts(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
       views::View* accounts_content,
       content::IdentityRequestAccount::LoginState login_state);
+
+  // Adds the signin accounts to the given view. In case there are multiple
+  // IDPs, the accounts are ordered first so that most recently used ones are
+  // used first. In the other case, AddAccounts() can be invoked directly.
+  void AddSignInAccounts(
+      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
+      views::View* accounts_content);
 
   // Returns a View containing a single returning account as well as a button to
   // 'choose an account' which will show all accounts and IDPs that are

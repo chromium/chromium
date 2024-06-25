@@ -335,7 +335,8 @@ class AccountSelectionViewBase {
       bool should_hover,
       bool should_include_idp,
       bool is_modal_dialog = false,
-      int additional_vertical_padding = 0);
+      int additional_vertical_padding = 0,
+      std::optional<std::u16string> last_used_string = std::nullopt);
 
   // Returns a StyledLabel containing a disclosure label. The label links to
   // privacy policy and terms of service URLs, if available.

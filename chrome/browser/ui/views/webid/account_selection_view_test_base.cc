@@ -43,7 +43,8 @@ views::View* AccountSelectionViewTestBase::GetHoverButtonSecondaryView(
 content::IdentityRequestAccount
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
-    content::IdentityRequestAccount::LoginState login_state) {
+    content::IdentityRequestAccount::LoginState login_state,
+    std::optional<base::Time> last_used_timestamp) {
   return content::IdentityRequestAccount(
       std::string(kIdBase) + account_suffix,
       std::string(kEmailBase) + account_suffix,
@@ -51,17 +52,36 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
       std::string(kGivenNameBase) + account_suffix, GURL(),
       /*login_hints=*/std::vector<std::string>(),
       /*domain_hints=*/std::vector<std::string>(),
-      /*labels=*/std::vector<std::string>(), login_state);
+      /*labels=*/std::vector<std::string>(), login_state,
+      /*browser_trusted_login_state=*/
+      content::IdentityRequestAccount::LoginState::kSignUp,
+      last_used_timestamp);
 }
 
 std::vector<content::IdentityRequestAccount>
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
     const std::vector<std::string>& account_suffixes,
-    content::IdentityRequestAccount::LoginState login_state) {
+    const std::vector<content::IdentityRequestAccount::LoginState>&
+        login_states,
+    const std::vector<std::optional<base::Time>>& last_used_timestamps) {
+  if (!login_states.empty()) {
+    CHECK_EQ(account_suffixes.size(), login_states.size());
+  }
+  if (!last_used_timestamps.empty()) {
+    CHECK_EQ(account_suffixes.size(), last_used_timestamps.size());
+  }
   std::vector<content::IdentityRequestAccount> accounts;
+  size_t idx = 0;
   for (const std::string& account_suffix : account_suffixes) {
-    accounts.push_back(
-        CreateTestIdentityRequestAccount(account_suffix, login_state));
+    content::IdentityRequestAccount::LoginState login_state =
+        login_states.empty()
+            ? content::IdentityRequestAccount::LoginState::kSignUp
+            : login_states[idx];
+    std::optional<base::Time> last_used_timestamp =
+        last_used_timestamps.empty() ? std::nullopt : last_used_timestamps[idx];
+    accounts.push_back(CreateTestIdentityRequestAccount(
+        account_suffix, login_state, last_used_timestamp));
+    ++idx;
   }
   return accounts;
 }

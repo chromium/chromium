@@ -83,9 +83,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       const std::vector<std::string>& account_suffixes,
       bool supports_add_account = false) {
     std::vector<content::IdentityRequestAccount> account_list =
-        CreateTestIdentityRequestAccounts(
-            account_suffixes,
-            content::IdentityRequestAccount::LoginState::kSignUp);
+        CreateTestIdentityRequestAccounts(account_suffixes);
 
     CreateAccountSelectionModal();
     std::vector<IdentityProviderDisplayData> idp_data;

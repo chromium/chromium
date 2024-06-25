@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image.h"
@@ -51,7 +52,8 @@ struct CONTENT_EXPORT IdentityRequestAccount {
       std::vector<std::string> domain_hints,
       std::vector<std::string> labels,
       std::optional<LoginState> login_state = std::nullopt,
-      LoginState browser_trusted_login_state = LoginState::kSignUp);
+      LoginState browser_trusted_login_state = LoginState::kSignUp,
+      std::optional<base::Time> last_used_timestamp = std::nullopt);
   IdentityRequestAccount(const IdentityRequestAccount&);
   ~IdentityRequestAccount();
 
@@ -73,6 +75,9 @@ struct CONTENT_EXPORT IdentityRequestAccount {
 
   // The account login state that the browser can trust.
   LoginState browser_trusted_login_state;
+  // The last used timestamp, or nullopt if the account has not been used
+  // before.
+  std::optional<base::Time> last_used_timestamp;
 };
 
 }  // namespace content
