@@ -3,7 +3,7 @@
    Tentative; contingent on merge of:
    https://github.com/w3c/pointerevents/pull/495
 
-   This manual test validates the behavior of PointerEvent.deviceProperties.uniqueId.
+   This manual test validates the behavior of PointerEvent.persistentDeviceId.
    Specifically, this test ensures that pointing devices get their own unique id, and
    that the unique id is persistent over the session.
 
@@ -11,7 +11,7 @@
    pen and a mouse. Please follow the instructions exactly as written in order to ensure
    the correct results are obtained.
 -->
-<title>DeviceProperties.uniqueId is unique for pointer events from different devices</title>
+<title>persistentDeviceId is unique for pointer events from different devices</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -94,13 +94,10 @@
     setup({explicit_timeout: true, explicit_done: true});
 
     function LogDeviceId(event, list) {
-        if (event.deviceProperties) {
-            const uniqueId = event.deviceProperties.uniqueId;
-            currentuniqueid.innerText = uniqueId ? uniqueId : "Unknown";
-            if (!uniqueId) {
-                return;
-            }
-            list.push(uniqueId);
+        if (event.persistentDeviceId) {
+            const persistentDeviceId = event.persistentDeviceId;
+            currentuniqueid.innerText = persistentDeviceId ? persistentDeviceId : "Unknown";
+            list.push(persistentDeviceId);
         }
     }
 
@@ -117,17 +114,17 @@
         let device2UniqueIds = new Set(device2Ids);
 
         test(function () {
-            assert_greater_than(device1Ids.length, 1, "Events from Device 1 have uniqueIds.");
-            assert_equals(device1UniqueIds.size, 1, "Device 1 has a consistent uniqueId.");
-        }, "uniqueId is consistent for device 1");
+            assert_greater_than(device1Ids.length, 1, "Events from Device 1 have deviceIds.");
+            assert_equals(device1UniqueIds.size, 1, "Device 1 has a consistent deviceId.");
+        }, "deviceId is consistent for device 1");
         test(function () {
-            assert_greater_than(device2Ids.length, 1, "Events from Device 2 have uniqueIds.");
-            assert_equals(device2UniqueIds.size, 1, "Device 2 has a consistent uniqueId.");
-        }, "uniqueId is consistent for device 2");
+            assert_greater_than(device2Ids.length, 1, "Events from Device 2 have deviceIds.");
+            assert_equals(device2UniqueIds.size, 1, "Device 2 has a consistent deviceId.");
+        }, "deviceId is consistent for device 2");
         test(function () {
             // Ensure the two sets are different.
-            assert_equals(device1UniqueIds.intersection(device2UniqueIds).size, 0, "Device 1 and 2 have different uniqueIds.");
-        }, "uniqueId is unique to device 1 and device 2");
+            assert_equals(device1UniqueIds.intersection(device2UniqueIds).size, 0, "Device 1 and 2 have different deviceIds.");
+        }, "deviceId is unique to device 1 and device 2");
         done();
     }
 

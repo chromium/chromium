@@ -655,9 +655,9 @@ TEST_F(PointerEventFactoryTest, MousePointerKeyStates) {
                                        event_type_names::kPointerover);
 }
 
-class PointerEventFactoryDevicePropertiesTest : public SimTest {
+class PointerEventFactoryDeviceIdTest : public SimTest {
  protected:
-  PointerEventFactoryDevicePropertiesTest() {
+  PointerEventFactoryDeviceIdTest() {
     feature_list_.InitAndEnableFeature(features::kPointerEventDeviceId);
   }
   PointerEvent* CreatePointerEvent(
@@ -699,7 +699,7 @@ class PointerEventFactoryDevicePropertiesTest : public SimTest {
         PointerEventFactory::PointerTypeNameForWebPointPointerType(
             pointer_type);
     EXPECT_EQ(expected_pointer_type, pointer_event->pointerType());
-    return pointer_event->deviceProperties()->uniqueId();
+    return pointer_event->persistentDeviceId();
   }
 
   PointerEventFactory pointer_event_factory_;
@@ -709,7 +709,7 @@ class PointerEventFactoryDevicePropertiesTest : public SimTest {
 // This test validates that the unique device id provided to blink is reset upon
 // a new document being created. Furthermore, it validates that the id is random
 // for the same pen but across different documents.
-TEST_F(PointerEventFactoryDevicePropertiesTest, UniqueIdResetAfterClear) {
+TEST_F(PointerEventFactoryDeviceIdTest, UniqueIdResetAfterClear) {
   int32_t blink_device_id_1 = CreatePointerEventAndGetUniqueId(
       WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 0,
       /* Device id */ kBrowserDeviceId0);
@@ -752,7 +752,7 @@ TEST_F(PointerEventFactoryDevicePropertiesTest, UniqueIdResetAfterClear) {
 // Erasers on the surface hub have a pointer type of
 // WebPointerProperties::PointerType::kEraser. Verify that an eraser is treated
 // just like a pen event would be.
-TEST_F(PointerEventFactoryDevicePropertiesTest, DeviceIdForMousePointerType) {
+TEST_F(PointerEventFactoryDeviceIdTest, DeviceIdForMousePointerType) {
   int32_t blink_device_id_1 = CreatePointerEventAndGetUniqueId(
       WebPointerProperties::PointerType::kEraser, /* Raw pointer id */ 0,
       /* Device id */ kBrowserDeviceId0);
@@ -787,5 +787,22 @@ TEST_F(PointerEventFactoryDevicePropertiesTest, DeviceIdForMousePointerType) {
       /* Device id */ -1);
   ASSERT_EQ(3, blink_device_id_6);
   pointer_event_factory_.Clear();
+}
+
+TEST_F(PointerEventFactoryDeviceIdTest, PersistentDeviceIdUseCounterUpdated) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kV8PointerEvent_PersistentDeviceId_AttributeGetter));
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(
+      "const pe = new PointerEvent(\"pointermove\");"
+      "pe.persistentDeviceId();")
+      ->RunScript(GetDocument().domWindow());
+
+  CreatePointerEventAndGetUniqueId(WebPointerProperties::PointerType::kPen,
+                                   /* Raw pointer id */ 0,
+                                   /* Device id */ kBrowserDeviceId0);
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kV8PointerEvent_PersistentDeviceId_AttributeGetter));
 }
 }  // namespace blink

@@ -16,13 +16,13 @@
 </style>
 <div id="logger" draggable="false"></div>
 <div id="console"></div>
-<!-- This test verifies that pointerEvent.deviceProperties.uniqueId is 0
+<!-- This test verifies that pointerEvent.persistentDeviceId is 0
      by default for a pointer with an invalid hardware id - in this case
      a testdriver generated event, which does not support hardware id. -->
 <script>
     function CheckDeviceId(event) {
         eventFired++;
-        assert_equals(event.deviceProperties.uniqueId, 0, "deviceId is 0");
+        assert_equals(event.persistentDeviceId, 0, "deviceId is 0");
     }
 
     window.addEventListener("pointerdown", CheckDeviceId, false);
@@ -41,5 +41,5 @@
         await actions.send();
 
         assert_true(eventFired == 2);
-    }, 'PointerEvent.deviceProperties.uniqueId');
+    }, 'PointerEvent.persistentDeviceId');
 </script>

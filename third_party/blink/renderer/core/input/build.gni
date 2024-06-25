@@ -7,7 +7,6 @@ blink_core_sources_input = [
   "boundary_event_dispatcher.h",
   "context_menu_allowed_scope.cc",
   "context_menu_allowed_scope.h",
-  "device_properties.h",
   "event_handler.cc",
   "event_handler.h",
   "event_handling_util.cc",

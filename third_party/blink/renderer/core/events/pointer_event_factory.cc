@@ -5,13 +5,11 @@
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_device_properties_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/input/device_properties.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
@@ -211,9 +209,9 @@ HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(
 
       last_global_position = event.PositionInScreen();
 
-      if (pointer_event_init->hasDeviceProperties()) {
-        new_event_init->setDeviceProperties(
-            pointer_event_init->deviceProperties());
+      if (pointer_event_init->hasPersistentDeviceId()) {
+        new_event_init->setPersistentDeviceId(
+            pointer_event_init->persistentDeviceId());
       }
 
       PointerEvent* pointer_event =
@@ -379,10 +377,8 @@ PointerEvent* PointerEventFactory::Create(
   SetLastPosition(pointer_event_init->pointerId(),
                   web_pointer_event.PositionInScreen(), event_type);
 
-  DevicePropertiesInit* device_properties_init = DevicePropertiesInit::Create();
-  device_properties_init->setUniqueId(GetBlinkDeviceId(web_pointer_event));
-  pointer_event_init->setDeviceProperties(
-      DeviceProperties::Create(device_properties_init));
+  pointer_event_init->setPersistentDeviceId(
+      GetBlinkDeviceId(web_pointer_event));
 
   return PointerEvent::Create(type, pointer_event_init,
                               web_pointer_event.TimeStamp());
@@ -452,10 +448,7 @@ PointerEvent* PointerEventFactory::CreatePointerCancelEvent(
 
   SetEventSpecificFields(pointer_event_init, event_type_names::kPointercancel);
 
-  DevicePropertiesInit* device_properties_init = DevicePropertiesInit::Create();
-  device_properties_init->setUniqueId(device_id);
-  pointer_event_init->setDeviceProperties(
-      DeviceProperties::Create(device_properties_init));
+  pointer_event_init->setPersistentDeviceId(device_id);
 
   return PointerEvent::Create(event_type_names::kPointercancel,
                               pointer_event_init, platfrom_time_stamp);
@@ -485,9 +478,8 @@ PointerEvent* PointerEventFactory::CreatePointerEventFrom(
       pointer_event->tangentialPressure());
   pointer_event_init->setTwist(pointer_event->twist());
   pointer_event_init->setView(pointer_event->view());
-  if (pointer_event->deviceProperties()) {
-    pointer_event_init->setDeviceProperties(pointer_event->deviceProperties());
-  }
+  pointer_event_init->setPersistentDeviceId(
+      pointer_event->persistentDeviceId());
 
   SetEventSpecificFields(pointer_event_init, type);
 

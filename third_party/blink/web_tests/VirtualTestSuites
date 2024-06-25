@@ -2123,15 +2123,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "disable-device-id-pointer-event",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/events/pointerevents/device-id"],
-    "args": [
-      "--disable-blink-features=PointerEventDeviceId"
-    ],
-    "expires": "Jul 1, 2024"
-  },
-  {
     "prefix": "keepalive-in-browser-migration",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

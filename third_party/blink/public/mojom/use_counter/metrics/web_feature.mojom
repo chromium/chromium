@@ -4030,7 +4030,6 @@ enum WebFeature {
   kTextWrapPretty = 4674,
   // The items above roughly this point are available in the M119 branch.
 
-  kOBSOLETE_V8PointerEvent_DeviceId_AttributeGetter  = 4675,
   kSourceMappingUrlMagicCommentAtSign = 4676,
   kHTMLDetailsElementNameAttribute = 4677,
   kHTMLDetailsElementNameAttributeClosesSelf = 4678,
@@ -4306,7 +4305,7 @@ enum WebFeature {
   kStaticPropertyInAnimation = 4940,
   kSimplifyLoadingTransparentPlaceholderImage = 4941,
   kIdentityDigitalCredentialsSuccess = 4942,
-  kV8DeviceProperties_UniqueId_AttributeGetter = 4943,
+  kOBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter = 4943,
   // The items above roughly this point are available in the M125 branch.
 
   kSharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient = 4944,
@@ -4383,6 +4382,7 @@ enum WebFeature {
   kDeprecatedAITextSessionExecuteStreaming = 5013,
   kARIAColIndexTextAttribute = 5014,
   kARIARowIndexTextAttribute = 5015,
+  kV8PointerEvent_PersistentDeviceId_AttributeGetter = 5016,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

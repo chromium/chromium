@@ -11021,7 +11021,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4940" label="StaticPropertyInAnimation"/>
   <int value="4941" label="SimplifyLoadingTransparentPlaceholderImage"/>
   <int value="4942" label="IdentityDigitalCredentialsSuccess"/>
-  <int value="4943" label="V8DeviceProperties_UniqueId_AttributeGetter"/>
+  <int value="4943"
+      label="OBSOLETE_V8DeviceProperties_UniqueId_AttributeGetter"/>
   <int value="4944"
       label="SharedStorageAPI_SelectURLOverallPageloadBudgetInsufficient"/>
   <int value="4945" label="V8LanguageTranslator_Translate_Method"/>
@@ -11097,6 +11098,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5013" label="DeprecatedAITextSessionExecuteStreaming"/>
   <int value="5014" label="ARIAColIndexTextAttribute"/>
   <int value="5015" label="ARIARowIndexTextAttribute"/>
+  <int value="5016" label="V8PointerEvent_PersistentDeviceId_AttributeGetter"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

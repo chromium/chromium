@@ -717,7 +717,7 @@ WebInputEventResult PointerEventManager::HandlePointerEvent(
           pointer_event_target.target_element,
           pointer_event_factory_.CreatePointerCancelEvent(
               core_pointer_event->pointerId(), event.TimeStamp(),
-              core_pointer_event->deviceProperties()->uniqueId()),
+              core_pointer_event->persistentDeviceId()),
           event.hovering);
     }
 
