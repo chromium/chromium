@@ -4153,6 +4153,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT" desc="Dialog primary button label to validate the account picked to save a file to Google Drive. [iOS only]" meaning="This button saves the file to the user's Google Drive storage i.e. this means 'Save' as in 'Save in Google Drive'.">
         Save
       </message>
+      <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_GOOGLE_PHOTOS_TITLE" desc="The title of the save to photos account picker. [iOS only]" meaning="This title represents the `Google Photos` brand, and the current string represents the `Photos` part of the brand's' name.">
+        Photos
+      </message>
       <message name="IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME" desc="Switch label to let the user choose whether they want to pick an account every time. [iOS only]">
         Ask which account to use every time
       </message>

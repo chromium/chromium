@@ -7,11 +7,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/font/font_api.h"
 
-namespace {
-// Horizontal spacing between the logo and the title label.
-const CGFloat kHorizontalSpacing = 9.0;
-}  // namespace
-
 @interface BrandedNavigationItemTitleView () {
   UILabel* _titleLabel;
   UIImageView* _logoImageView;
@@ -69,6 +64,14 @@ const CGFloat kHorizontalSpacing = 9.0;
   return _logoImageView.image;
 }
 
+- (void)setTitleLogoSpacing:(CGFloat)titleLogoSpacing {
+  _containerStackView.spacing = titleLogoSpacing;
+}
+
+- (CGFloat)titleLogoSpacing {
+  return _containerStackView.spacing;
+}
+
 #pragma mark - Private
 
 // Returns a newly created title label.
@@ -102,7 +105,6 @@ const CGFloat kHorizontalSpacing = 9.0;
   UIStackView* stackView = [[UIStackView alloc]
       initWithArrangedSubviews:@[ _logoImageView, _titleLabel ]];
   stackView.axis = UILayoutConstraintAxisHorizontal;
-  stackView.spacing = kHorizontalSpacing;
   stackView.alignment = UIStackViewAlignmentCenter;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
 

@@ -19,6 +19,7 @@ NSString* const kChromeSearchEngineChoiceIcon =
     @"chrome_search_engine_choice_icon";
 NSString* const kChromeSigninBannerImage = @"chrome_signin_banner";
 NSString* const kChromeSigninPromoLogoImage = @"chrome_signin_promo_logo";
+NSString* const kGoogleFullSymbol = @"google_full";
 NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kGoogleMapsSymbol = @"google_maps";

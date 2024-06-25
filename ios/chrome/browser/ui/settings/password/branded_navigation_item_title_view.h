@@ -16,6 +16,9 @@
 // The logo displayed next to the title.
 @property(nonatomic, strong) UIImage* imageLogo;
 
+// The spacing between the title and the image logo.
+@property(nonatomic, assign) CGFloat titleLogoSpacing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_BRANDED_NAVIGATION_ITEM_TITLE_VIEW_H_

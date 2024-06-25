@@ -7,12 +7,15 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_constants.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_layout_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
+#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -32,6 +35,13 @@ constexpr CGFloat kContentSpacing = 16.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
 
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+// The coefficient to multiply the title view font with to get the logo size.
+constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
+// The spacing between the logo and the title label in the title view.
+constexpr CGFloat kTitleLogoSpacing = 3.0;
+#endif
+
 // Returns font to use for the navigation bar title.
 UIFont* GetNavigationBarTitleFont() {
   UITraitCollection* large_trait_collection =
@@ -50,6 +60,32 @@ CGFloat GetPixelLength() {
   return 1.0 / [UIScreen mainScreen].scale;
 }
 
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+// Creates the google photos branded title view for the navigation.
+BrandedNavigationItemTitleView* CreateGooglePhotosImageView() {
+  BrandedNavigationItemTitleView* title_view =
+      [[BrandedNavigationItemTitleView alloc] init];
+  title_view.title = l10n_util::GetNSString(
+      IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_GOOGLE_PHOTOS_TITLE);
+  title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+  title_view.titleLogoSpacing = kTitleLogoSpacing;
+  return title_view;
+}
+#else
+// Creates the google photos title label for the navigation.
+UILabel* CreateGooglePhotosTitleLabel() {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.font = GetNavigationBarTitleFont();
+  titleLabel.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_DOWNLOADS_SAVE_TO_PHOTOS_HEADER);
+  titleLabel.textAlignment = NSTextAlignmentLeft;
+  titleLabel.adjustsFontSizeToFitWidth = YES;
+  titleLabel.minimumScaleFactor = 0.1;
+  return titleLabel;
+}
+#endif
 }  // namespace
 
 @implementation AccountPickerConfirmationScreenViewController {
@@ -163,18 +199,27 @@ CGFloat GetPixelLength() {
   [super viewDidLoad];
   // Set the navigation title in the left bar button item to have left
   // alignment.
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.font = GetNavigationBarTitleFont();
-  titleLabel.text = _configuration.titleText;
-  titleLabel.textAlignment = NSTextAlignmentLeft;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.1;
-
-  // Add the title label to the navigation bar.
-  UIBarButtonItem* leftItem =
-      [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
-  self.navigationItem.leftBarButtonItem = leftItem;
+  if (IsSaveToPhotosTitleImprovementEnabled()) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    self.navigationItem.titleView = CreateGooglePhotosImageView();
+#else
+    self.navigationItem.titleView = CreateGooglePhotosTitleLabel();
+#endif
+  } else {
+    // Set the navigation title in the left bar button item to have left
+    // alignment.
+    UILabel* titleLabel = [[UILabel alloc] init];
+    titleLabel.adjustsFontForContentSizeCategory = YES;
+    titleLabel.font = GetNavigationBarTitleFont();
+    titleLabel.text = _configuration.titleText;
+    titleLabel.textAlignment = NSTextAlignmentLeft;
+    titleLabel.adjustsFontSizeToFitWidth = YES;
+    titleLabel.minimumScaleFactor = 0.1;
+    // Add the title label to the navigation bar.
+    UIBarButtonItem* leftItem =
+        [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
+    self.navigationItem.leftBarButtonItem = leftItem;
+  }
   self.navigationController.navigationBar.minimumContentSizeCategory =
       UIContentSizeCategoryLarge;
   self.navigationController.navigationBar.maximumContentSizeCategory =

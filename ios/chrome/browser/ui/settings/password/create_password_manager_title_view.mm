@@ -16,6 +16,9 @@ namespace {
 // Point size of the SF Symbol used for the logo.
 const CGFloat kSymbolPointSize = 17.0;
 
+// Horizontal spacing between the logo and the title label.
+const CGFloat kHorizontalSpacing = 9.0;
+
 }  // namespace
 
 namespace password_manager {
@@ -34,6 +37,8 @@ BrandedNavigationItemTitleView* CreatePasswordManagerTitleView(
 
   title_view.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_MANAGER_TITLE_VIEW_ACCESSIBILITY_LABEL);
+
+  title_view.titleLogoSpacing = kHorizontalSpacing;
 
   return title_view;
 }
