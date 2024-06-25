@@ -149,17 +149,10 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
   return absl::visit(
-      base::Overloaded{
-          [](const web_package::WebBundleSigner::Ed25519KeyPair&
-                 ed25519_key_pair) {
-            return web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-                ed25519_key_pair.public_key);
-          },
-          [](const web_package::WebBundleSigner::EcdsaP256KeyPair&
-                 ecdsa_p256_key_pair) {
-            return web_package::SignedWebBundleId::CreateForEcdsaP256PublicKey(
-                ecdsa_p256_key_pair.public_key);
-          }},
+      [](const auto& key_pair) {
+        return web_package::SignedWebBundleId::CreateForPublicKey(
+            key_pair.public_key);
+      },
       key_pair);
 }
 

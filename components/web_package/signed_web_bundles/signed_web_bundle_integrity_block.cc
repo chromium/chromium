@@ -69,20 +69,12 @@ bool SignedWebBundleIntegrityBlock::operator!=(
 SignedWebBundleId SignedWebBundleIntegrityBlock::web_bundle_id() const {
   // TODO(b/346753548): Check `attributes_` first.
   return absl::visit(
-      base::Overloaded{
-          [](const SignedWebBundleSignatureInfoEd25519& ed25519_signature_info)
-              -> SignedWebBundleId {
-            return SignedWebBundleId::CreateForEd25519PublicKey(
-                ed25519_signature_info.public_key());
-          },
-          [](const SignedWebBundleSignatureInfoEcdsaP256SHA256&
-                 ecdsa_p256_sha256_signature_info) {
-            return SignedWebBundleId::CreateForEcdsaP256PublicKey(
-                ecdsa_p256_sha256_signature_info.public_key());
-          },
-          [](const SignedWebBundleSignatureInfoUnknown&) -> SignedWebBundleId {
-            NOTREACHED_NORETURN();
-          }},
+      base::Overloaded{[](const auto& signature_info) {
+                         return SignedWebBundleId::CreateForPublicKey(
+                             signature_info.public_key());
+                       },
+                       [](const SignedWebBundleSignatureInfoUnknown&)
+                           -> SignedWebBundleId { NOTREACHED_NORETURN(); }},
       signature_stack_.entries()[0].signature_info());
 }
 
