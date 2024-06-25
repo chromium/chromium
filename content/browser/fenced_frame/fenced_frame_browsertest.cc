@@ -3770,6 +3770,36 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                    .has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       RTCPeerConnectionDisabled) {
+  GURL main_url(https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
+  GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHost* primary_rfh = primary_main_frame_host();
+  RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh,
+                                                   fenced_frame_url);
+
+  // Copied from https://webrtc.org/getting-started/peer-connections.
+  // The contents of the configuration object doesn't matter here,
+  // because construction should fail before the information becomes
+  // relevant.
+  auto result = EvalJs(fenced_frame_host, R"(
+    const configuration = {
+      'iceServers': [{'urls': 'stun:stun.example.com:19302'}]
+    };
+    const peerConnection = new RTCPeerConnection(configuration);
+  )");
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("Failed to construct 'RTCPeerConnection': "
+                         "RTCPeerConnection is not allowed in fenced frames."));
+}
+
 namespace {
 class InsecureContentTestContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {

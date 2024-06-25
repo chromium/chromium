@@ -587,6 +587,20 @@ RTCPeerConnection::RTCPeerConnection(
                          : nullptr) {
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
+  // WebRTC peer connections are not allowed in fenced frames.
+  // Given the complex scaffolding for setting up fenced frames testing, this
+  // is tested in the following locations:
+  // * third_party/blink/web_tests/external/wpt/fenced-frame/webrtc-peer-connection.https.html
+  // * content/browser/fenced_frame/fenced_frame_browsertest.cc
+  if (RuntimeEnabledFeatures::
+          FencedFramesLocalUnpartitionedDataAccessEnabled() &&
+      window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "RTCPeerConnection is not allowed in fenced frames.");
+    return;
+  }
+
   InstanceCounters::IncrementCounter(
       InstanceCounters::kRTCPeerConnectionCounter);
   // If we fail, set |m_closed| and |m_stopped| to true, to avoid hitting the
