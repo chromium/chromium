@@ -164,21 +164,17 @@ using NativeCallbackType = base::OnceCallback<void(int)>;
 }  // namespace
 
 SearchEngineChoiceService::SearchEngineChoiceService(PrefService& profile_prefs,
-                                                     PrefService* local_state,
+                                                     PrefService& local_state,
                                                      int variations_country_id)
     : profile_prefs_(profile_prefs),
       variations_country_id_(variations_country_id) {
-  if (local_state) {
-    ProcessPendingChoiceScreenDisplayState(*local_state);
-  } else {
-    CHECK_IS_TEST();
-  }
+  ProcessPendingChoiceScreenDisplayState(local_state);
   PreprocessPrefsForReprompt();
 }
 
 SearchEngineChoiceService::SearchEngineChoiceService(
     PrefService& profile_prefs,
-    PrefService* local_state,
+    PrefService& local_state,
     variations::VariationsService* variations_service)
     : SearchEngineChoiceService(profile_prefs,
                                 local_state,

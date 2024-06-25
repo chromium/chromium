@@ -121,7 +121,7 @@ class SearchEngineChoiceServiceTest : public ::testing::Test {
       CHECK(!search_engine_choice_service_);
     }
     search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-        pref_service_, &local_state_, variation_country_id);
+        pref_service_, local_state_, variation_country_id);
   }
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
@@ -1666,7 +1666,7 @@ class SearchEngineChoiceUtilsResourceIdsTest : public ::testing::Test {
         metrics::prefs::kMetricsReportingEnabled, true);
 
     search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
-        pref_service_, &local_state_);
+        pref_service_, local_state_);
   }
 
   ~SearchEngineChoiceUtilsResourceIdsTest() override = default;
@@ -1739,7 +1739,7 @@ TEST_F(SearchEngineChoiceServiceWithVariationsTest, NoVariationsCountry) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kSearchEngineChoiceCountry));
   SearchEngineChoiceService search_engine_choice_service(
-      pref_service(), &local_state(), country_codes::kCountryIDUnknown);
+      pref_service(), local_state(), country_codes::kCountryIDUnknown);
 
   EXPECT_EQ(search_engine_choice_service.GetCountryId(),
             country_codes::GetCurrentCountryID());
@@ -1757,7 +1757,7 @@ TEST_F(SearchEngineChoiceServiceWithVariationsTest, WithVariationsCountry) {
   }
 
   SearchEngineChoiceService search_engine_choice_service(
-      pref_service(), &local_state(), variation_country_id);
+      pref_service(), local_state(), variation_country_id);
 
   EXPECT_EQ(variation_country_id, search_engine_choice_service.GetCountryId());
 }

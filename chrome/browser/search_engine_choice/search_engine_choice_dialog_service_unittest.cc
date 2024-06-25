@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/dialog_test_browser_window.h"
@@ -94,9 +95,15 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+    search_engines::SearchEngineChoiceServiceFactory::GetInstance()
+        ->SetTestingFactory(profile(),
+                            search_engines::SearchEngineChoiceServiceFactory::
+                                GetDefaultFactory());
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    SearchEngineChoiceDialogServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), SearchEngineChoiceDialogServiceFactory::GetDefaultFactory());
 
     // The search engine choice feature is only enabled for countries in the
     // EEA region.

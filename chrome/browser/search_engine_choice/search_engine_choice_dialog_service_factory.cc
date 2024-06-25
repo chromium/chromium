@@ -79,6 +79,36 @@ bool IsProfileEligibleForChoiceScreen(Profile& profile) {
          search_engines::SearchEngineChoiceScreenConditions::kEligible;
 }
 
+std::unique_ptr<KeyedService> BuildSearchEngineChoiceDialogService(
+    content::BrowserContext* context) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(CHROME_FOR_TESTING)
+  return nullptr;
+#else
+  if (!g_is_chrome_build && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                switches::kForceSearchEngineChoiceScreen)) {
+    return nullptr;
+  }
+
+  auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
+  search_engines::SearchEngineChoiceService& search_engine_choice_service =
+      CHECK_DEREF(
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              &profile));
+
+  if (!IsProfileEligibleForChoiceScreen(profile)) {
+    DVLOG(1) << "Profile not eligible, removing tag for profile "
+             << profile.GetBaseName();
+    profile.GetPrefs()->ClearPref(prefs::kDefaultSearchProviderChoicePending);
+    return nullptr;
+  }
+
+  TemplateURLService& template_url_service =
+      CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
+  return std::make_unique<SearchEngineChoiceDialogService>(
+      profile, search_engine_choice_service, template_url_service);
+#endif
+}
+
 }  // namespace
 
 SearchEngineChoiceDialogServiceFactory::SearchEngineChoiceDialogServiceFactory()
@@ -128,30 +158,20 @@ bool SearchEngineChoiceDialogServiceFactory::
 std::unique_ptr<KeyedService>
 SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(CHROME_FOR_TESTING)
-  return nullptr;
-#else
-  if (!g_is_chrome_build && !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                switches::kForceSearchEngineChoiceScreen)) {
-    return nullptr;
-  }
+  return BuildSearchEngineChoiceDialogService(context);
+}
 
-  auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
-  search_engines::SearchEngineChoiceService& search_engine_choice_service =
-      CHECK_DEREF(
-          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
-              &profile));
+// `SearchEngineChoiceService` is null in tests. We create it in
+// `SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext`
+// so we need to stop creating the `SearchEngineChoiceDialogService` by
+// default in tests and create it when needed.
+bool SearchEngineChoiceDialogServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
 
-  if (!IsProfileEligibleForChoiceScreen(profile)) {
-    DVLOG(1) << "Profile not eligible, removing tag for profile "
-             << profile.GetBaseName();
-    profile.GetPrefs()->ClearPref(prefs::kDefaultSearchProviderChoicePending);
-    return nullptr;
-  }
-
-  TemplateURLService& template_url_service =
-      CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
-  return std::make_unique<SearchEngineChoiceDialogService>(
-      profile, search_engine_choice_service, template_url_service);
-#endif
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+SearchEngineChoiceDialogServiceFactory::GetDefaultFactory() {
+  CHECK_IS_TEST();
+  return base::BindRepeating(&BuildSearchEngineChoiceDialogService);
 }

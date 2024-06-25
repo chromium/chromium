@@ -408,9 +408,10 @@ TemplateURLService::TemplateURLService(
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
           ),
       enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs)) {
-  if (!search_engine_choice_service_) {
+  // TODO(b/40287734): Update tests to pass the correct arguments to the
+  // constructor instead of null.
+  if (!search_engine_choice_service_ || !prefs) {
     CHECK_IS_TEST();
-    CHECK(!prefs);
   }
   DCHECK(search_terms_data_);
   Init();
@@ -434,6 +435,8 @@ TemplateURLService::TemplateURLService(
       ) {
   // This constructor is not intended to be used outside of tests.
   CHECK_IS_TEST();
+  // TODO(b/40287734): Update tests to pass the correct arguments to the
+  // constructor instead of null.
   CHECK(search_engine_choice_service_ || !prefs);
   ApplyInitializersForTesting(initializers);  // IN-TEST
 }

@@ -7,6 +7,8 @@
 #import <memory>
 
 #import "base/check_deref.h"
+#import "base/check_is_test.h"
+#import "base/functional/bind.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/variations/service/variations_service.h"
@@ -17,12 +19,37 @@
 
 namespace ios {
 
+namespace {
+// Returns a `unique_ptr` to the `SearchEngineChoiceService` class.
+std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
+    web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<search_engines::SearchEngineChoiceService>(
+      CHECK_DEREF(browser_state->GetPrefs()),
+      CHECK_DEREF(GetApplicationContext()->GetLocalState()),
+      GetApplicationContext()->GetVariationsService());
+}
+
+}  // namespace
+
 SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "SearchEngineChoiceServiceFactory",
           BrowserStateDependencyManager::GetInstance()) {}
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
+
+bool SearchEngineChoiceServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+SearchEngineChoiceServiceFactory::GetDefaultFactory() {
+  CHECK_IS_TEST();
+  return base::BindRepeating(&BuildSearchEngineChoiceService);
+}
 
 // static
 SearchEngineChoiceServiceFactory*
@@ -42,12 +69,7 @@ SearchEngineChoiceServiceFactory::GetForBrowserState(
 std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<search_engines::SearchEngineChoiceService>(
-      CHECK_DEREF(browser_state->GetPrefs()),
-      GetApplicationContext()->GetLocalState(),
-      GetApplicationContext()->GetVariationsService());
+  return BuildSearchEngineChoiceService(context);
 }
 
 web::BrowserState* SearchEngineChoiceServiceFactory::GetBrowserStateToUse(

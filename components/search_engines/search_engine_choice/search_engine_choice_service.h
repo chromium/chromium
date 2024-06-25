@@ -31,15 +31,12 @@ namespace search_engines {
 class SearchEngineChoiceService : public KeyedService {
  public:
   // This constructor should only be used in tests.
-  // `local_state` can only be null in tests`.
-  // TODO(b/342110115): Change `local_state` to a ref and fix failing tests.
-  explicit SearchEngineChoiceService(
+  SearchEngineChoiceService(
       PrefService& profile_prefs,
-      PrefService* local_state,
+      PrefService& local_state,
       int variations_country_id = country_codes::kCountryIDUnknown);
-  // TODO(b/342110115): Change `local_state` to a ref and fix failing tests.
   SearchEngineChoiceService(PrefService& profile_prefs,
-                            PrefService* local_state,
+                            PrefService& local_state,
                             variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 

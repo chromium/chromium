@@ -18,7 +18,8 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
     content::BrowserContext* context) {
   auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
   return std::make_unique<SearchEngineChoiceService>(
-      *profile.GetPrefs(), g_browser_process->local_state(),
+      CHECK_DEREF(profile.GetPrefs()),
+      CHECK_DEREF(g_browser_process->local_state()),
       g_browser_process->variations_service());
 }
 }  // namespace
@@ -59,6 +60,10 @@ std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return BuildSearchEngineChoiceService(context);
+}
+
+bool SearchEngineChoiceServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
 }
 
 }  // namespace search_engines

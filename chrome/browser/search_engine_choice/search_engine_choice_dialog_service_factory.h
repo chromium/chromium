@@ -37,6 +37,11 @@ class SearchEngineChoiceDialogServiceFactory
   // Exposes an internal helper and should only be used for testing purposes.
   static bool IsProfileEligibleForChoiceScreenForTesting(Profile& profile);
 
+  // Returns the default factory used to build SearchEngineChoiceDialogService.
+  // Can be registered with SetTestingFactory to use real instances during
+  // testing.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<SearchEngineChoiceDialogServiceFactory>;
 
@@ -46,6 +51,7 @@ class SearchEngineChoiceDialogServiceFactory
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_FACTORY_H_

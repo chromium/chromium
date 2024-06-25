@@ -111,7 +111,7 @@ class DefaultSearchManagerTest : public testing::Test {
 
     search_engine_choice_service_ =
         std::make_unique<search_engines::SearchEngineChoiceService>(
-            *pref_service_, &local_state_);
+            *pref_service_, local_state_);
 
     // Override the country checks to simulate being in the US.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

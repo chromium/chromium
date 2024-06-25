@@ -39,6 +39,13 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   // ProfileKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  // The service uses the browser local state which is null in unit tests. If
+  // the service was non null in unittests, then tests using `TestingProfile`
+  // would cause the `SearchEngineChoiceService` to crash, unless they
+  // explicitly create the local state.
+  // We stop creating the service by default in tests and create it when
+  // needed.
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace search_engines

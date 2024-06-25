@@ -11,7 +11,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/policy/core/common/mock_policy_service.h"
-#import "components/prefs/testing_pref_service.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
@@ -19,11 +18,12 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_switches.h"
-#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector_mock.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -35,15 +35,6 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
         switches::kSearchEngineChoiceTrigger,
         {{switches::kSearchEngineChoiceTriggerForTaggedProfilesOnly.name,
           "false"}});
-    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
-    DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
-    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
-    local_state_.registry()->RegisterBooleanPref(
-        metrics::prefs::kMetricsReportingEnabled, true);
-
-    search_engine_choice_service_ =
-        std::make_unique<search_engines::SearchEngineChoiceService>(
-            pref_service_, &local_state_);
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -54,6 +45,9 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
     builder.SetPolicyConnector(
         std::make_unique<BrowserStatePolicyConnectorMock>(
             std::move(policy_service_), &schema_registry_));
+    builder.AddTestingFactory(
+        ios::SearchEngineChoiceServiceFactory::GetInstance(),
+        ios::SearchEngineChoiceServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -72,10 +66,6 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
-  search_engines::SearchEngineChoiceService& search_engine_choice_service() {
-    return CHECK_DEREF(search_engine_choice_service_.get());
-  }
-
  private:
   void InitMockPolicyService() {
     policy_service_ = std::make_unique<policy::MockPolicyService>();
@@ -87,10 +77,7 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   policy::SchemaRegistry schema_registry_;
-  std::unique_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
-  TestingPrefServiceSimple local_state_;
+  IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   // Owned by browser_state_.

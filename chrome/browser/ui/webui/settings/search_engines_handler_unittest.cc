@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -67,6 +68,13 @@ class SearchEnginesHandlerTestBase : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
 
+    // The `SearchEngineChoiceServiceFactory` should be set before the
+    // `TemplateURLServiceFactory` because the initialization of the latter
+    // depends on the `SearchEngineChoiceService` created by the former.
+    search_engines::SearchEngineChoiceServiceFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            profile(), search_engines::SearchEngineChoiceServiceFactory::
+                           GetDefaultFactory());
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
