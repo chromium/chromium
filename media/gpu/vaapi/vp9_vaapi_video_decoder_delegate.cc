@@ -273,10 +273,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VaapiVP9Picture* vaapi_pic = pic->AsVaapiVP9Picture();
-  CHECK(
-      gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
-
-  bool success = vaapi_wrapper_->MapAndCopyAndExecute(
+  const bool success = vaapi_wrapper_->MapAndCopyAndExecute(
       vaapi_pic->va_surface()->id(), buffers);
   if (!success && NeedsProtectedSessionRecovery())
     return DecodeStatus::kTryAgain;

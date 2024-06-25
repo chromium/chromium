@@ -489,9 +489,6 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const VaapiH265Picture* vaapi_pic = pic->AsVaapiH265Picture();
-  CHECK(
-      gfx::Rect(vaapi_pic->va_surface()->size()).Contains(pic->visible_rect()));
-
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       vaapi_pic->va_surface()->id());
   ref_pic_list_pocs_.clear();

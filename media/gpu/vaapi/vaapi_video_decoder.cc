@@ -560,6 +560,11 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   DCHECK_EQ(output_frames_.count(va_surface_id), 1u);
   scoped_refptr<FrameResource> frame = output_frames_[va_surface_id];
 
+  CHECK(
+      gfx::Rect(
+          allocated_va_surfaces_.Lookup(frame->GetSharedMemoryId().id)->size())
+          .Contains(visible_rect));
+
   // Set the timestamp at which the decode operation started on the
   // |frame|. If the frame has been outputted before (e.g. because of VP9
   // show-existing-frame feature) we can't overwrite the timestamp directly, as
