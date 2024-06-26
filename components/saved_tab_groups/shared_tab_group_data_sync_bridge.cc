@@ -525,6 +525,38 @@ void SharedTabGroupDataSyncBridge::SavedTabGroupUpdatedLocally(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void SharedTabGroupDataSyncBridge::SavedTabGroupRemovedLocally(
+    const SavedTabGroup& removed_group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!store_ || !model_->is_loaded()) {
+    // Ignore any changes before the model is successfully initialized.
+    VLOG(2) << "SavedTabGroupRemovedLocally called while not initialized";
+    return;
+  }
+
+  if (!removed_group.is_shared_tab_group()) {
+    // Ignore changes for non-shared tab groups.
+    return;
+  }
+
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+
+  // Intentionally only remove the group (creating orphaned tabs in the
+  // process), so other devices with the group open in the Tabstrip can react to
+  // the deletion appropriately (i.e. We do not have to determine if a tab
+  // deletion was part of a group deletion).
+  // TODO(crbug.com/319521964): consider if this is required for shared tab
+  // groups.
+  RemoveEntitySpecifics(removed_group.saved_guid(), write_batch.get());
+
+  // TODO(crbug.com/319521964): handle tabs missing groups.
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&SharedTabGroupDataSyncBridge::OnDatabaseSave,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void SharedTabGroupDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::ModelTypeStore> store) {

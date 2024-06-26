@@ -795,5 +795,34 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
                                "collaboration"));
 }
 
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab2);
+  model()->Add(group);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  // Only the group is removed, its tabs remain orphaned.
+  EXPECT_CALL(mock_processor(),
+              Delete(group.saved_guid().AsLowercaseString(), _, _));
+  EXPECT_CALL(mock_processor(),
+              Delete(tab1.saved_tab_guid().AsLowercaseString(), _, _))
+      .Times(0);
+  EXPECT_CALL(mock_processor(),
+              Delete(tab2.saved_tab_guid().AsLowercaseString(), _, _))
+      .Times(0);
+  model()->Remove(group.saved_guid());
+}
+
 }  // namespace
 }  // namespace tab_groups

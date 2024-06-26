@@ -75,9 +75,8 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge,
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
       const std::optional<base::Uuid>& tab_guid) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
   // TODO(crbug.com/319521964): implement the following methods.
-  // void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group)
-  // override;
   // void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid)
   // override;
   // void SavedTabGroupReorderedLocally() override;
