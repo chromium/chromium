@@ -5100,12 +5100,6 @@ crbug.com/1345752 [ Win ] media/controls/overflow-menu-focus.html [ Failure Pass
 crbug.com/1450030 [ Mac ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 crbug.com/1450030 [ Release Win11-arm64 ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass Timeout ]
 
-# Temporarily disable to land V8 CL (https://crrev.com/c/5633534)
-crbug.com/344629939 http/tests/devtools/console/console-log-object-with-getter.js [ Failure Pass ]
-crbug.com/344629939 http/tests/devtools/console/console-xpath.js [ Failure Pass ]
-crbug.com/344629939 http/tests/inspector-protocol/device-access/cancel-bluetooth-prompt-after-advertisement.js [ Failure Pass ]
-crbug.com/344629939 http/tests/inspector-protocol/device-access/cancel-bluetooth-prompt.js [ Failure Pass ]
-
 # Flaky tests in mac11-arm64 or mac12-arm64 or mac13-arm64
 crbug.com/1249176 [ Mac11-arm64 ] transforms/3d/general/cssmatrix-3d-zoom.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/plaintext-mode-2.html [ Failure Pass ]
