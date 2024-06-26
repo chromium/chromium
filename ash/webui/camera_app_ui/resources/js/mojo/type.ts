@@ -52,6 +52,7 @@ export {
   Mode,
   OcrEventType,
   PerfEventType,
+  Pressure,
   RecordType,
   ResolutionLevel,
   ShutterType,

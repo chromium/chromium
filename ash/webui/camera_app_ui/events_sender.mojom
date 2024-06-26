@@ -33,6 +33,13 @@ enum Facing {
   kUnknown,
 };
 
+enum Pressure {
+  kNominal,
+  kFair,
+  kSerious,
+  kCritical,
+};
+
 enum GridType {
   kNone,
   k3X3,
@@ -269,6 +276,7 @@ struct PerfEventParams {
   int32 resolution_height;
   // Only for kDocumentPdfSaving
   uint32 page_count;
+  Pressure pressure;
 };
 
 enum UserBehavior {

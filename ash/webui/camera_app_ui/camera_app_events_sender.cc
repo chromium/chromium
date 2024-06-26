@@ -336,7 +336,9 @@ void CameraAppEventsSender::SendPerfEvent(
           .SetFacing(static_cast<cros_events::CameraAppFacing>(params->facing))
           .SetResolutionWidth(static_cast<int64_t>(params->resolution_width))
           .SetResolutionHeight(static_cast<int64_t>(params->resolution_height))
-          .SetPageCount(static_cast<int64_t>(params->page_count))));
+          .SetPageCount(static_cast<int64_t>(params->page_count))
+          .SetPressure(
+              static_cast<cros_events::CameraAppPressure>(params->pressure))));
 }
 
 void CameraAppEventsSender::SendUnsupportedProtocolEvent() {

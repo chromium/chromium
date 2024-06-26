@@ -25,6 +25,7 @@ import {
   Mode,
   PerfEvent,
   PhotoResolutionLevel,
+  Pressure,
   VideoResolutionLevel,
 } from '../type.js';
 
@@ -76,6 +77,24 @@ export function convertFacingToMojo(facing: Facing|null): mojoType.Facing {
       return mojoType.Facing.kExternal;
     default:
       return mojoType.Facing.kUnknown;
+  }
+}
+
+/**
+ * Converts the CPU pressure to the mojo enum to be used in metrics.
+ */
+export function convertPressureToMojo(pressure: Pressure): mojoType.Pressure {
+  switch (pressure) {
+    case Pressure.NOMINAL:
+      return mojoType.Pressure.kNominal;
+    case Pressure.FAIR:
+      return mojoType.Pressure.kFair;
+    case Pressure.SERIOUS:
+      return mojoType.Pressure.kSerious;
+    case Pressure.CRITICAL:
+      return mojoType.Pressure.kCritical;
+    default:
+      assertNotReached();
   }
 }
 

@@ -94,6 +94,7 @@ export enum GaMetricDimension {
   IS_PRIMARY_LANGUAGE = 43,
   LINE_COUNT = 44,
   WORD_COUNT = 45,
+  PRESSURE = 46,
 }
 
 export enum Ga4MetricDimension {
@@ -129,6 +130,7 @@ export enum Ga4MetricDimension {
   MICROPHONE = 'microphone',
   MIRROR = 'mirror',
   OS_VERSION = 'os_version',
+  PRESSURE = 'pressure',
   RECORD_TYPE = 'record_type',
   RESOLUTION = 'resolution',
   RESOLUTION_LEVEL = 'resolution_level',

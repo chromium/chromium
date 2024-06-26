@@ -331,6 +331,7 @@ TEST_F(CameraAppEventsSenderTest, Perf) {
   params->resolution_width = 1920;
   params->resolution_height = 1080;
   params->page_count = 10;
+  params->pressure = ash::camera_app::mojom::Pressure::kFair;
 
   cros_events::CameraApp_Perf expected_event;
   expected_event
@@ -340,7 +341,9 @@ TEST_F(CameraAppEventsSenderTest, Perf) {
       .SetFacing(static_cast<cros_events::CameraAppFacing>(params->facing))
       .SetResolutionWidth(static_cast<int64_t>(params->resolution_width))
       .SetResolutionHeight(static_cast<int64_t>(params->resolution_height))
-      .SetPageCount(static_cast<int64_t>(params->page_count));
+      .SetPageCount(static_cast<int64_t>(params->page_count))
+      .SetPressure(
+          static_cast<cros_events::CameraAppPressure>(params->pressure));
 
   events_sender_->SendPerfEvent(std::move(params));
 

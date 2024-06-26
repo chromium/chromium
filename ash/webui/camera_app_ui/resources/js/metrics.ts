@@ -503,6 +503,7 @@ export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
   const resolution = perfInfo.resolution ?? '';
   const facing = perfInfo.facing ?? '';
   const pageCount = perfInfo.pageCount ?? '';
+  const pressure = assertExists(perfInfo.pressure);
   sendEvent(
       {
         eventCategory: 'perf',
@@ -513,6 +514,7 @@ export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
       new Map([
         [GaMetricDimension.RESOLUTION, `${resolution}`],
         [GaMetricDimension.DOC_PAGE_COUNT, `${pageCount}`],
+        [GaMetricDimension.PRESSURE, `${pressure}`],
       ]));
   void (async () => {
     (await getEventsSender()).sendPerfEvent({
@@ -522,6 +524,7 @@ export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
       resolutionWidth: perfInfo.resolution?.width ?? 0,
       resolutionHeight: perfInfo.resolution?.height ?? 0,
       pageCount: perfInfo.pageCount ?? 0,
+      pressure: mojoTypeUtils.convertPressureToMojo(pressure),
     });
   })();
 }

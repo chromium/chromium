@@ -1050,6 +1050,13 @@
     <variant value="5">VOLUME_KEY</variant>
   </enum>
 
+  <enum name="CameraAppPressure">
+    <variant value="0">NOMINAL</variant>
+    <variant value="1">FAIR</variant>
+    <variant value="2">SERIOUS</variant>
+    <variant value="3">CRITICAL</variant>
+  </enum>
+
   <enum name="CameraAppAndroidIntentResultType">
     <variant value="0">NON_INTENT</variant>
     <variant value="1">CONFIRMED</variant>
@@ -1783,6 +1790,11 @@
     <metric name="PageCount" type="int">
       <summary>
         Integer indicating how many pages are there in the document scanning result.
+      </summary>
+    </metric>
+    <metric name="Pressure" type="CameraAppPressure">
+      <summary>
+        The CPU pressure level.
       </summary>
     </metric>
   </event>
