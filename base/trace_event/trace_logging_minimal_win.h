@@ -33,6 +33,7 @@
 #include <evntprov.h>
 #include <stdint.h>
 
+#include <concepts>
 #include <cstdint>
 // TODO(joel@microsoft.com) Update headers and use defined constants instead
 // of magic numbers after crbug.com/1089996 is resolved.
@@ -119,6 +120,21 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
+namespace base::trace_event {
+class MultiEtwPayloadHandler;
+
+template <typename T>
+concept EtwFieldBaseType = requires(T t) {
+  { t.Name() } -> std::same_as<const char*>;
+  {
+    t.FillEventDescriptor(std::declval<EVENT_DATA_DESCRIPTOR*>())
+  } -> std::same_as<void>;
+  { t.GetInType() } -> std::same_as<uint8_t>;
+  { t.GetOutType() } -> std::same_as<uint8_t>;
+};
+}  // namespace base::trace_event
 
 class BASE_EXPORT TlmProvider {
  public:
@@ -192,7 +208,7 @@ class BASE_EXPORT TlmProvider {
   // If any active trace listeners are interested in events from this provider
   // with the specified level and keyword, packs the data into an event and
   // sends it to ETW. Returns Win32 error code or 0 for success.
-  template <class... FieldTys>
+  template <base::trace_event::EtwFieldBaseType... FieldTys>
   ULONG WriteEvent(std::string_view event_name,
                    const EVENT_DESCRIPTOR& event_descriptor,
                    const FieldTys&... event_fields) const noexcept {
@@ -206,8 +222,8 @@ class BASE_EXPORT TlmProvider {
     metadata_index = EventBegin(metadata, event_name);
     {  // scope for dummy array (simulates a C++17 comma-fold expression)
       char dummy[sizeof...(FieldTys) == 0 ? 1 : sizeof...(FieldTys)] = {
-          EventAddField(metadata, &metadata_index, event_fields.in_type_,
-                        event_fields.out_type_, event_fields.Name())...};
+          EventAddField(metadata, &metadata_index, event_fields.GetInType(),
+                        event_fields.GetOutType(), event_fields.Name())...};
       DCHECK(dummy);
     }
 
@@ -229,6 +245,8 @@ class BASE_EXPORT TlmProvider {
   }
 
  private:
+  friend class base::trace_event::MultiEtwPayloadHandler;
+
   // Size of the buffer used for provider metadata (field within the
   // TlmProvider object). Provider metadata consists of the nul-terminated
   // provider name plus a few sizes and flags, so this buffer needs to be
@@ -308,15 +326,36 @@ class BASE_EXPORT TlmProvider {
 };
 
 // Base class for field types.
+// It's expected that data (name, value) will outlive the TlmFieldBase object.
+class BASE_EXPORT TlmFieldBase {
+ public:
+  constexpr const char* Name() const noexcept { return name_.data(); }
+
+ protected:
+  explicit TlmFieldBase(const char* name) noexcept;
+  explicit TlmFieldBase(std::string_view name) noexcept;
+
+  // Copy operations are suppressed. Only declare move operations.
+  TlmFieldBase(TlmFieldBase&&) noexcept;
+  TlmFieldBase& operator=(TlmFieldBase&&) noexcept;
+  ~TlmFieldBase();
+
+ private:
+  std::string_view name_;
+};
+
 template <uint8_t data_desc_count,
           uint8_t in_type,
           uint8_t out_type = 0>  // Default out_type is TlgOutNULL
-class TlmFieldBase {
+class TlmFieldWithConstants : public TlmFieldBase {
  public:
-  constexpr const char* Name() const noexcept { return name_; }
+  uint8_t GetDataDescCount() const noexcept { return data_desc_count_; }
+  uint8_t GetInType() const noexcept { return in_type_; }
+  uint8_t GetOutType() const noexcept { return out_type_; }
 
  protected:
-  explicit constexpr TlmFieldBase(const char* name) noexcept : name_(name) {}
+  explicit constexpr TlmFieldWithConstants(const char* name) noexcept
+      : TlmFieldBase(name) {}
 
  private:
   friend class TlmProvider;
@@ -324,13 +363,12 @@ class TlmFieldBase {
   static constexpr uint8_t data_desc_count_ = data_desc_count;
   static constexpr uint8_t in_type_ = in_type;
   static constexpr uint8_t out_type_ = out_type;
-
-  const char* name_;
 };
 
-// Class that represents an event field containing nul-terminated MBCS data.
-class TlmMbcsStringField
-    : public TlmFieldBase<1, 2>  // 1 data descriptor, Type = TlgInANSISTRING
+// Class that represents an event field containing nul-terminated MBCS data
+class BASE_EXPORT TlmMbcsStringField
+    : public TlmFieldWithConstants<1, 2>  // 1 data descriptor, Type =
+                                          // TlgInANSISTRING
 {
  public:
   // name is a utf-8 nul-terminated string.
@@ -347,9 +385,9 @@ class TlmMbcsStringField
 };
 
 // Class that represents an event field containing nul-terminated UTF-8 data.
-class TlmUtf8StringField
-    : public TlmFieldBase<1, 2, 35>  // 1 data descriptor, Type =
-                                     // TlgInANSISTRING + TlgOutUTF8
+class BASE_EXPORT TlmUtf8StringField
+    : public TlmFieldWithConstants<1, 2, 35>  // 1 data descriptor, Type =
+                                              // TlgInANSISTRING + TlgOutUTF8
 {
  public:
   // name and value are utf-8 nul-terminated strings.
@@ -364,8 +402,9 @@ class TlmUtf8StringField
 };
 
 // Class that represents an event field containing a 64 bit signed integer.
-class TlmInt64Field
-    : public TlmFieldBase<1, 9>  // 1 data descriptor, Type = _TlgInINT64
+class BASE_EXPORT TlmInt64Field
+    : public TlmFieldWithConstants<1,
+                                   9>  // 1 data descriptor, Type = _TlgInINT64
 {
  public:
   // name is a utf-8 nul-terminated string.
@@ -378,8 +417,9 @@ class TlmInt64Field
   const int64_t value_;
 };
 
-class TlmUInt64Field
-    : public TlmFieldBase<1, 10>  // 1 data descriptor, Type = _TlgInUINT64
+class BASE_EXPORT TlmUInt64Field
+    : public TlmFieldWithConstants<1, 10>  // 1 data descriptor, Type =
+                                           // _TlgInUINT64
 {
  public:
   // name is a utf-8 nul-terminated string.
