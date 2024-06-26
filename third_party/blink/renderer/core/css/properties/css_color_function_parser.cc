@@ -573,43 +573,40 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
   return true;
 }
 
-bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
+CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     CSSParserTokenRange& input_range,
-    const CSSParserContext& context,
-    Color& result) {
-  return ConsumeFunctionalSyntaxColorInternal(input_range, context, result);
+    const CSSParserContext& context) {
+  return ConsumeFunctionalSyntaxColorInternal(input_range, context);
 }
 
-bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
+CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     CSSParserTokenStream& input_stream,
-    const CSSParserContext& context,
-    Color& result) {
-  return ConsumeFunctionalSyntaxColorInternal(input_stream, context, result);
+    const CSSParserContext& context) {
+  return ConsumeFunctionalSyntaxColorInternal(input_stream, context);
 }
 
 template <class T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
-bool ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
+CSSValue* ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
     T& range,
-    const CSSParserContext& context,
-    Color& result) {
+    const CSSParserContext& context) {
   CSSParserSavePoint savepoint(range);
 
   CSSValueID function_id = range.Peek().FunctionId();
   if (!IsValidColorFunction(function_id)) {
-    return false;
+    return nullptr;
   }
 
   CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range);
   if (!ConsumeColorSpaceAndOriginColor(args, function_id, context)) {
-    return false;
+    return nullptr;
   }
 
   // Parse the three color channel params.
   for (int i = 0; i < 3; i++) {
     if (!ConsumeChannel(args, context, i)) {
-      return false;
+      return nullptr;
     }
     // Potentially expect a separator after the first and second channel. The
     // separator for a potential alpha channel is handled below.
@@ -620,11 +617,11 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
         // We've parsed one separating comma token, so we expect the second
         // separator to match.
         if (!matched_comma) {
-          return false;
+          return nullptr;
         }
       } else if (matched_comma) {
         if (is_relative_color_) {
-          return false;
+          return nullptr;
         }
         is_legacy_syntax_ = true;
       }
@@ -635,7 +632,7 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
   bool expect_alpha = false;
   if (is_legacy_syntax_) {
     if (!Color::IsLegacyColorSpace(color_space_)) {
-      return false;
+      return nullptr;
     }
     // , <alpha-value>?
     if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
@@ -649,7 +646,7 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
   }
   if (expect_alpha) {
     if (!ConsumeAlpha(args, context)) {
-      return false;
+      return nullptr;
     }
   } else if (is_relative_color_) {
     alpha_ = channel_keyword_values_.at(CSSValueID::kAlpha);
@@ -657,15 +654,15 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
 
   // "None" is not a part of the legacy syntax.
   if (!args.AtEnd() || (is_legacy_syntax_ && has_none_)) {
-    return false;
+    return nullptr;
   }
 
   if (!MakePerColorSpaceAdjustments()) {
-    return false;
+    return nullptr;
   }
 
-  result = Color::FromColorSpace(color_space_, channels_[0], channels_[1],
-                                 channels_[2], alpha_);
+  Color result = Color::FromColorSpace(color_space_, channels_[0], channels_[1],
+                                       channels_[2], alpha_);
   if (is_relative_color_ && Color::IsLegacyColorSpace(color_space_)) {
     result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
   }
@@ -713,7 +710,7 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColorInternal(
     }
   }
 
-  return true;
+  return cssvalue::CSSColor::Create(result);
 }
 
 }  // namespace blink

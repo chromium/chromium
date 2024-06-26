@@ -2639,8 +2639,9 @@ CSSValue* ConsumeColorInternal(T& range,
   // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(),
   // oklab(), lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
   ColorFunctionParser parser;
-  if (parser.ConsumeFunctionalSyntaxColor(range, context, color)) {
-    return cssvalue::CSSColor::Create(color);
+  if (CSSValue* functional_syntax_color =
+          parser.ConsumeFunctionalSyntaxColor(range, context)) {
+    return functional_syntax_color;
   }
 
   if (RuntimeEnabledFeatures::StylableSelectEnabled() &&

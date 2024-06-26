@@ -13,17 +13,17 @@
 
 namespace blink {
 
+class CSSValue;
+
 class CORE_EXPORT ColorFunctionParser {
  public:
   ColorFunctionParser() = default;
   // Parses the color inputs rgb(), rgba(), hsl(), hsla(), hwb(), lab(),
   // oklab(), lch(), oklch() and color(). https://www.w3.org/TR/css-color-4/
-  bool ConsumeFunctionalSyntaxColor(CSSParserTokenRange& input_range,
-                                    const CSSParserContext& context,
-                                    Color& result);
-  bool ConsumeFunctionalSyntaxColor(CSSParserTokenStream& input_stream,
-                                    const CSSParserContext& context,
-                                    Color& result);
+  CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenRange& input_range,
+                                         const CSSParserContext& context);
+  CSSValue* ConsumeFunctionalSyntaxColor(CSSParserTokenStream& input_stream,
+                                         const CSSParserContext& context);
 
   struct FunctionMetadata;
 
@@ -31,9 +31,9 @@ class CORE_EXPORT ColorFunctionParser {
   template <class T>
     requires std::is_same_v<T, CSSParserTokenStream> ||
              std::is_same_v<T, CSSParserTokenRange>
-  bool ConsumeFunctionalSyntaxColorInternal(T& input_range,
-                                            const CSSParserContext& context,
-                                            Color& result);
+  CSSValue* ConsumeFunctionalSyntaxColorInternal(
+      T& input_range,
+      const CSSParserContext& context);
 
   enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
   bool ConsumeColorSpaceAndOriginColor(CSSParserTokenRange& args,
