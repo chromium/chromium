@@ -403,8 +403,8 @@ chromium-metrics-reviews@google.com.
       summary="read later context menu entry point"/>
   <variant name="IPH_ReopenTab" summary="reopening closed tabs"/>
   <variant name="IPH_RequestDesktopSiteAppMenu"
-      summary="educating users about using the desktop site app menu item to
-               add a site-level exception"/>
+      summary="(obsolete) educating users about using the desktop site app
+               menu item to add a site-level exception"/>
   <variant name="IPH_RequestDesktopSiteDefaultOn"
       summary="the in product help message to let users opt out of desktop
                site global settings default-on"/>

@@ -2686,9 +2686,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     currentTab,
                     usingDesktopUserAgent,
                     UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
-            // TODO(crbug.com/40917998): Remove this IPH when the usage is low.
-            RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
-                    profile, this, getModalDialogManager());
             TrackerFactory.getTrackerForProfile(profile)
                     .notifyEvent(EventConstants.APP_MENU_DESKTOP_SITE_EXCEPTION_ADDED);
             RequestDesktopUtils.recordUserChangeUserAgent(usingDesktopUserAgent, getActivityTab());

@@ -43684,7 +43684,7 @@ should be able to be added at any place in this file.
       label="For ReadLaterContextMenu feature."/>
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <suffix name="RequestDesktopSiteAppMenu"
-      label="For the RequestDesktopSiteAppMenu feature."/>
+      label="For the RequestDesktopSiteAppMenu feature. (obsolete)"/>
   <suffix name="RequestDesktopSiteDefaultOn"
       label="For the RequestDesktopSiteDefaultOn feature."/>
   <suffix name="RequestDesktopSiteExceptionsGeneric"

@@ -77,11 +77,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -182,7 +177,6 @@ public class RequestDesktopUtilsUnitTest {
     @Mock private WindowManager.LayoutParams mLayoutParams;
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private Profile mProfile;
-    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Tracker mTracker;
     @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private DisplayAndroid mDisplayAndroid;
@@ -736,47 +730,6 @@ public class RequestDesktopUtilsUnitTest {
                         mProfile, mMessageDispatcher, mActivity);
         Assert.assertFalse(
                 "Message should not be shown if the content setting is disabled.", shown);
-    }
-
-    @Test
-    public void testMaybeShowUserEducationPromptForAppMenuSelection() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE))
-                .thenReturn(true);
-        boolean shown =
-                RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
-                        mProfile, mActivity, mModalDialogManager);
-        Assert.assertTrue("User education prompt should be shown.", shown);
-        ArgumentCaptor<PropertyModel> dialog = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager).showDialog(dialog.capture(), eq(ModalDialogType.APP), eq(true));
-        Assert.assertEquals(
-                "Dialog title should match.",
-                mResources.getString(R.string.rds_app_menu_user_education_dialog_title),
-                dialog.getValue().get(ModalDialogProperties.TITLE));
-        Assert.assertEquals(
-                "Dialog message should match.",
-                mResources.getString(R.string.rds_app_menu_user_education_dialog_message),
-                dialog.getValue().get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
-        Assert.assertEquals(
-                "Dialog button text should match.",
-                mResources.getString(R.string.got_it),
-                dialog.getValue().get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        Assert.assertTrue(
-                "Dialog should be dismissed on touch outside.",
-                dialog.getValue().get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
-
-        // Verify that the button click dismisses the dialog.
-        dialog.getValue()
-                .get(ModalDialogProperties.CONTROLLER)
-                .onClick(dialog.getValue(), ButtonType.POSITIVE);
-        verify(mModalDialogManager)
-                .dismissDialog(
-                        eq(dialog.getValue()), eq(DialogDismissalCause.POSITIVE_BUTTON_CLICKED));
-
-        // Verify that dialog dismissal dismisses the feature in the tracker.
-        dialog.getValue()
-                .get(ModalDialogProperties.CONTROLLER)
-                .onDismiss(dialog.getValue(), DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        verify(mTracker).dismissed(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE);
     }
 
     @Test

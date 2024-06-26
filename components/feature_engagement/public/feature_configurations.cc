@@ -1501,23 +1501,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHRequestDesktopSiteAppMenuFeature.name == feature->name) {
-    // A config that allows the RDS site-level setting user education prompt to
-    // be shown:
-    // * If the user has used the RDS (tab-level) setting on the app menu at
-    // least once.
-    // * If the prompt has never been shown before.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->used = EventConfig("app_menu_desktop_site_for_tab_clicked",
-                               Comparator(GREATER_THAN_OR_EQUAL, 1), 180, 180);
-    config->trigger = EventConfig("request_desktop_site_app_menu_iph_trigger",
-                                  Comparator(EQUAL, 0), 180, 180);
-    return config;
-  }
-
   if (kIPHRequestDesktopSiteDefaultOnFeature.name == feature->name) {
     // A config that allows the RDS default-on message to be shown:
     // * If the user has never accepted the message.

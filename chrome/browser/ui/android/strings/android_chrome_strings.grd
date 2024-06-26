@@ -4571,12 +4571,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_RDS_WINDOW_SETTING_MESSAGE_BUTTON" desc="Text on the button allowing users to manage the setting.">
         Go to Settings
       </message>
-      <message name="IDS_RDS_APP_MENU_USER_EDUCATION_DIALOG_TITLE" desc="Title of the dialog shown to educate the user about the desktop site app menu site-level setting.">
-        Chrome will remember your choice
-      </message>
-      <message name="IDS_RDS_APP_MENU_USER_EDUCATION_DIALOG_MESSAGE" desc="Message on the dialog shown to educate the user about the desktop site app menu site-level setting.">
-        When you select desktop site once, the setting is applied to the site each time you visit
-      </message>
       <message name="IDS_RDS_SITE_SETTINGS_GENERIC_IPH_TEXT_DESKTOP" desc="Message on the generic text bubble shown to educate the user about using the desktop site site-level setting to switch to desktop mode.">
         You can request the desktop site for <ph name="HOST_NAME">%1$s<ex>www.example.com</ex></ph>
       </message>
