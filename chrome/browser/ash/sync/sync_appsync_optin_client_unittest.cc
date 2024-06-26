@@ -58,14 +58,6 @@ class FakeSyncService : public syncer::TestSyncService {
     NotifyObserversOfStateChanged();
   }
 
-  void SetUserFromAccountId(const AccountId& account_id) {
-    CoreAccountInfo account_info;
-    account_info.account_id = CoreAccountId::FromGaiaId(account_id.GetGaiaId());
-    account_info.gaia = account_id.GetGaiaId();
-    account_info.email = account_id.GetUserEmail();
-    SetAccountInfo(account_info);
-  }
-
   void SetAppsyncOptin(bool opted_in) {
     if (opted_in) {
       GetUserSettings()->SetSelectedOsTypes(
@@ -134,7 +126,11 @@ class SyncAppsyncOptinClientTest : public testing::Test {
     auto account_id = AccountId::FromUserEmailGaiaId("test@test.com", "1");
     auto* test_user = RegisterUser(account_id);
     LoginUser(test_user);
-    test_sync_service_->SetUserFromAccountId(account_id);
+    CoreAccountInfo account_info;
+    account_info.account_id = CoreAccountId::FromGaiaId(account_id.GetGaiaId());
+    account_info.gaia = account_id.GetGaiaId();
+    account_info.email = account_id.GetUserEmail();
+    test_sync_service_->SetSignedInWithSyncFeatureOn(account_info);
     test_sync_service_->SetStatus(/*has_passphrase=*/false, /*active=*/true);
   }
 

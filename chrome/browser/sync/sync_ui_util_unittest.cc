@@ -285,8 +285,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
   const AccountInfo primary_account_info =
       environment.MakePrimaryAccountAvailable(kTestUser,
                                               signin::ConsentLevel::kSync);
-  service.SetAccountInfo(primary_account_info);
-  service.SetInitialSyncFeatureSetupComplete(true);
+  service.SetSignedInWithSyncFeatureOn(primary_account_info);
 
   // Setup a secondary account.
   const AccountInfo secondary_account_info =

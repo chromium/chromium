@@ -59,7 +59,7 @@ void TestSyncService::SetSignedInWithoutSyncFeature(
   user_settings_.ClearInitialSyncFeatureSetupComplete();
   SetTransportState(TransportState::ACTIVE);
   SetDisableReasons({});
-  SetAccountInfo(account_info);
+  account_info_ = account_info;
 }
 
 void TestSyncService::SetSignedInWithSyncFeatureOn() {
@@ -76,7 +76,7 @@ void TestSyncService::SetSignedInWithSyncFeatureOn(
 void TestSyncService::SetSignedOut() {
   SetHasSyncConsent(false);
   user_settings_.ClearInitialSyncFeatureSetupComplete();
-  SetAccountInfo(CoreAccountInfo());
+  account_info_ = CoreAccountInfo();
   SetDisableReasons({DISABLE_REASON_NOT_SIGNED_IN});
   CHECK_EQ(GetTransportState(), TransportState::DISABLED);
 }
@@ -106,10 +106,6 @@ void TestSyncService::SetTransportState(TransportState transport_state) {
 
 void TestSyncService::SetLocalSyncEnabled(bool local_sync_enabled) {
   local_sync_enabled_ = local_sync_enabled;
-}
-
-void TestSyncService::SetAccountInfo(const CoreAccountInfo& account_info) {
-  account_info_ = account_info;
 }
 
 void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
