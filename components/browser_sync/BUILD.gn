@@ -34,6 +34,7 @@ static_library("browser_sync") {
     "//components/bookmarks/browser",
     "//components/commerce/core:feature_list",
     "//components/commerce/core/product_specifications:product_specifications",
+    "//components/consent_auditor",
     "//components/data_sharing/public",
     "//components/history/core/browser",
     "//components/history/core/common",
@@ -58,6 +59,7 @@ static_library("browser_sync") {
     "//components/version_info",
     "//components/version_info:generate_version_info",
     "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
     "//ui/base",
   ]
 

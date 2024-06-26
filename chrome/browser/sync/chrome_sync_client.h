@@ -40,9 +40,11 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  webauthn::PasskeyModel* GetPasskeyModel() override;
   ReadingListModel* GetReadingListModel() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
@@ -50,14 +52,13 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   password_manager::PasswordReceiverService* GetPasswordReceiverService()
       override;
   password_manager::PasswordSenderService* GetPasswordSenderService() override;
+  syncer::UserEventService* GetUserEventService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
       syncer::SyncService* sync_service) override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetControllerDelegateForModelType(syncer::ModelType type) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   bool IsCustomPassphraseAllowed() override;
   bool IsPasswordSyncAllowed() override;

@@ -43,13 +43,16 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
+  webauthn::PasskeyModel* GetPasskeyModel() override;
   ReadingListModel* GetReadingListModel() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
+  syncer::UserEventService* GetUserEventService() override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
   password_manager::PasswordReceiverService* GetPasswordReceiverService()
       override;
@@ -59,8 +62,6 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetControllerDelegateForModelType(syncer::ModelType type) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   bool IsCustomPassphraseAllowed() override;
   bool IsPasswordSyncAllowed() override;

@@ -10,7 +10,6 @@
 #import "base/command_line.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/notreached.h"
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -133,6 +132,10 @@ syncer::ModelTypeStoreService* WebViewSyncClient::GetModelTypeStoreService() {
   return model_type_store_service_;
 }
 
+consent_auditor::ConsentAuditor* WebViewSyncClient::GetConsentAuditor() {
+  return nullptr;
+}
+
 syncer::DeviceInfoSyncService* WebViewSyncClient::GetDeviceInfoSyncService() {
   return device_info_sync_service_;
 }
@@ -145,7 +148,15 @@ history::HistoryService* WebViewSyncClient::GetHistoryService() {
   return nullptr;
 }
 
+webauthn::PasskeyModel* WebViewSyncClient::GetPasskeyModel() {
+  return nullptr;
+}
+
 ReadingListModel* WebViewSyncClient::GetReadingListModel() {
+  return nullptr;
+}
+
+syncer::UserEventService* WebViewSyncClient::GetUserEventService() {
   return nullptr;
 }
 
@@ -192,12 +203,6 @@ trusted_vault::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
 scoped_refptr<syncer::ExtensionsActivity>
 WebViewSyncClient::GetExtensionsActivity() {
   return nullptr;
-}
-
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-WebViewSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
-  NOTREACHED_IN_MIGRATION();
-  return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 }
 
 syncer::SyncApiComponentFactory*

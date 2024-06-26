@@ -112,11 +112,6 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       const signin::GaiaIdHash& gaia_id_hash) override;
 
  private:
-  // Factory function for ModelTypeControllerDelegate instances for models
-  // living in `ui_thread_` that have their delegate accessible via SyncClient.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
-  CreateForwardingControllerDelegate(syncer::ModelType type);
-
   // Factory function for ModelTypeController instances for wallet-related
   // datatypes, which live in `db_thread_` and have a delegate accessible via
   // AutofillWebDataService.

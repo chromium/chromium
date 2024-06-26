@@ -173,6 +173,11 @@ syncer::ModelTypeStoreService* IOSChromeSyncClient::GetModelTypeStoreService() {
   return ModelTypeStoreServiceFactory::GetForBrowserState(browser_state_);
 }
 
+consent_auditor::ConsentAuditor* IOSChromeSyncClient::GetConsentAuditor() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return ConsentAuditorFactory::GetForBrowserState(browser_state_);
+}
+
 syncer::DeviceInfoSyncService* IOSChromeSyncClient::GetDeviceInfoSyncService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_);
@@ -190,9 +195,19 @@ history::HistoryService* IOSChromeSyncClient::GetHistoryService() {
       browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
+webauthn::PasskeyModel* IOSChromeSyncClient::GetPasskeyModel() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return IOSPasskeyModelFactory::GetForBrowserState(browser_state_);
+}
+
 ReadingListModel* IOSChromeSyncClient::GetReadingListModel() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return ReadingListModelFactory::GetForBrowserState(browser_state_);
+}
+
+syncer::UserEventService* IOSChromeSyncClient::GetUserEventService() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return IOSUserEventServiceFactory::GetForBrowserState(browser_state_);
 }
 
 send_tab_to_self::SendTabToSelfSyncService*
@@ -235,15 +250,20 @@ IOSChromeSyncClient::CreateModelTypeControllers(
           /*disabled_types=*/{}, sync_service);
 
   if (IsTabGroupSyncEnabled()) {
+    syncer::ModelTypeControllerDelegate* delegate =
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            browser_state_)
+            ->GetSavedTabGroupControllerDelegate()
+            .get();
     // TODO(crbug.com/344893270): Move this controller to
     // CreateCommonModelTypeControllers().
     controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::SAVED_TAB_GROUP, /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP).get()),
+            delegate),
         /*delegate_for_transport_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP).get())));
+            delegate)));
   }
 
   return controllers;
@@ -263,46 +283,6 @@ IOSChromeSyncClient::GetTrustedVaultClient() {
 scoped_refptr<syncer::ExtensionsActivity>
 IOSChromeSyncClient::GetExtensionsActivity() {
   return nullptr;
-}
-
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-IOSChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
-  switch (type) {
-    case syncer::USER_CONSENTS:
-      return ConsentAuditorFactory::GetForBrowserState(browser_state_)
-          ->GetControllerDelegate();
-    case syncer::USER_EVENTS:
-      return IOSUserEventServiceFactory::GetForBrowserState(browser_state_)
-          ->GetControllerDelegate();
-    case syncer::WEBAUTHN_CREDENTIAL:
-      return IOSPasskeyModelFactory::GetForBrowserState(browser_state_)
-          ->GetModelTypeControllerDelegate();
-    case syncer::SAVED_TAB_GROUP: {
-      if (IsTabGroupSyncEnabled()) {
-        return tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-                   browser_state_)
-            ->GetSavedTabGroupControllerDelegate();
-      }
-      NOTREACHED_NORETURN();
-    }
-
-    // We don't exercise this function for certain datatypes, because their
-    // controllers get the delegate elsewhere.
-    case syncer::AUTOFILL:
-    case syncer::AUTOFILL_PROFILE:
-    case syncer::AUTOFILL_WALLET_DATA:
-    case syncer::AUTOFILL_WALLET_METADATA:
-    case syncer::BOOKMARKS:
-    case syncer::DEVICE_INFO:
-    case syncer::READING_LIST:
-    case syncer::SESSIONS:
-      NOTREACHED_IN_MIGRATION();
-      return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
-
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
-  }
 }
 
 syncer::SyncApiComponentFactory*

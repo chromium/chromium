@@ -29,6 +29,7 @@
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
@@ -70,6 +71,8 @@
 #include "components/sync_sessions/session_model_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_model_type_controller.h"
+#include "components/sync_user_events/user_event_service.h"
+#include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_type_controller.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -545,16 +548,20 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   }
 
   if (!disabled_types.Has(syncer::USER_EVENTS)) {
-    controllers.push_back(
-        std::make_unique<syncer::UserEventModelTypeController>(
-            sync_service,
-            /*delegate_for_full_sync_mode=*/
-            CreateForwardingControllerDelegate(syncer::USER_EVENTS),
-            /*delegate_for_transport_mode=*/
-            base::FeatureList::IsEnabled(
-                syncer::kReplaceSyncPromosWithSignInPromos)
-                ? CreateForwardingControllerDelegate(syncer::USER_EVENTS)
-                : nullptr));
+    syncer::ModelTypeControllerDelegate* delegate =
+        sync_client_->GetUserEventService()->GetControllerDelegate().get();
+
+    controllers.push_back(std::make_unique<
+                          syncer::UserEventModelTypeController>(
+        sync_service,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode=*/
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                  delegate)
+            : nullptr));
   }
 
   if (!disabled_types.Has(syncer::SEND_TAB_TO_SELF)) {
@@ -573,27 +580,37 @@ SyncApiComponentFactoryImpl::CreateCommonModelTypeControllers(
   }
 
   if (!disabled_types.Has(syncer::USER_CONSENTS)) {
+    syncer::ModelTypeControllerDelegate* delegate =
+        sync_client_->GetConsentAuditor()->GetControllerDelegate().get();
+
     // Forward both full-sync and transport-only modes to the same delegate,
     // since behavior for USER_CONSENTS does not differ (they are always
     // persisted).
     controllers.push_back(std::make_unique<ModelTypeController>(
         syncer::USER_CONSENTS,
         /*delegate_for_full_sync_mode=*/
-        CreateForwardingControllerDelegate(syncer::USER_CONSENTS),
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate),
         /*delegate_for_transport_mode=*/
-        CreateForwardingControllerDelegate(syncer::USER_CONSENTS)));
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate)));
   }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       !disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
+    syncer::ModelTypeControllerDelegate* delegate =
+        sync_client_->GetPasskeyModel()->GetModelTypeControllerDelegate().get();
+
     controllers.push_back(
         std::make_unique<webauthn::PasskeyModelTypeController>(
             sync_service,
             /*delegate_for_full_sync_mode=*/
-            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL),
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate),
             /*delegate_for_transport_mode=*/
-            CreateForwardingControllerDelegate(syncer::WEBAUTHN_CREDENTIAL)));
+            std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                delegate)));
   }
 #endif
 
@@ -687,13 +704,6 @@ void SyncApiComponentFactoryImpl::ClearTransportDataForAccount(
   syncer::SyncTransportDataPrefs prefs(sync_client_->GetPrefService(),
                                        gaia_id_hash);
   prefs.ClearForCurrentAccount();
-}
-
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
-SyncApiComponentFactoryImpl::CreateForwardingControllerDelegate(
-    syncer::ModelType type) {
-  return std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-      sync_client_->GetControllerDelegateForModelType(type).get());
 }
 
 std::unique_ptr<ModelTypeController>
