@@ -38,7 +38,7 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
     std::u16string item_description,
     bool enabled,
     views::Button::PressedCallback callback) {
-  constexpr int kChevronSize = 8;
+  constexpr int kChevronSize = 20;
   auto secondary_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kSubmenuArrowChromeRefreshIcon,
