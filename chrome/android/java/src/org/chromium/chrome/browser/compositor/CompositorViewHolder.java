@@ -225,12 +225,6 @@ public class CompositorViewHolder extends FrameLayout
     private long mBuffersSwappedTimestamp;
     private long mTabStateInitializedTimestamp;
 
-    /**
-     * Last MotionEvent dispatched to this object for a currently active gesture. If there is no
-     * active gesture, this is null.
-     */
-    private @Nullable MotionEvent mLastActiveTouchEvent;
-
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private final EventOffsetHandler mEventOffsetHandler =
@@ -267,34 +261,6 @@ public class CompositorViewHolder extends FrameLayout
                         }
                     });
 
-    private final OnLayoutChangeListener mLayoutChangeListender =
-            new OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(
-                        View v,
-                        int left,
-                        int top,
-                        int right,
-                        int bottom,
-                        int oldLeft,
-                        int oldTop,
-                        int oldRight,
-                        int oldBottom) {
-                    v.removeOnLayoutChangeListener(this);
-                    if (mLastActiveTouchEvent == null) return;
-                    MotionEvent touchEvent = MotionEvent.obtain(mLastActiveTouchEvent);
-                    touchEvent.setAction(MotionEvent.ACTION_DOWN);
-                    CompositorViewHolder.this.dispatchTouchEvent(touchEvent);
-                    for (int i = 1; i < mLastActiveTouchEvent.getPointerCount(); i++) {
-                        MotionEvent pointerDownEvent = MotionEvent.obtain(mLastActiveTouchEvent);
-                        pointerDownEvent.setAction(
-                                MotionEvent.ACTION_POINTER_DOWN
-                                        | (i << MotionEvent.ACTION_POINTER_INDEX_SHIFT));
-                        CompositorViewHolder.this.dispatchTouchEvent(pointerDownEvent);
-                    }
-                }
-            };
-
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
                 @Override
@@ -312,21 +278,6 @@ public class CompositorViewHolder extends FrameLayout
                 @Override
                 public void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {
                     CompositorViewHolder.this.onWillShowBrowserControls(viewTransitionOptIn);
-                }
-
-                @Override
-                public void onWebContentsSwapped(
-                        Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                    // After swapping web contents, any gesture active in the old ContentView is
-                    // cancelled. We still want to continue a previously running gesture in the new
-                    // ContentView, so we synthetically dispatch a new ACTION_DOWN MotionEvent with
-                    // the coordinates of where we estimate the pointer currently is (the
-                    // coordinates of the last ACTION_MOVE MotionEvent received before the swap).
-                    //
-                    // We wait for layout to happen as the newly created ContentView currently
-                    // has a width and height of zero, which would result in the event not being
-                    // dispatched.
-                    mView.addOnLayoutChangeListener(mLayoutChangeListender);
                 }
 
                 @Override
@@ -799,7 +750,6 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
         assert e != null : "The motion event dispatched shouldn't be null!";
-        updateLastActiveTouchEvent(e);
         updateIsInGesture(e);
         for (TouchEventObserver o : mTouchEventObservers) {
             if (o.dispatchTouchEvent(e)) return true;
@@ -812,19 +762,6 @@ public class CompositorViewHolder extends FrameLayout
 
         updateInMotion();
         return handled;
-    }
-
-    private void updateLastActiveTouchEvent(MotionEvent e) {
-        if (e.getActionMasked() == MotionEvent.ACTION_MOVE
-                || e.getActionMasked() == MotionEvent.ACTION_DOWN
-                || e.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN
-                || e.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
-            mLastActiveTouchEvent = e;
-        }
-        if (e.getActionMasked() == MotionEvent.ACTION_CANCEL
-                || e.getActionMasked() == MotionEvent.ACTION_UP) {
-            mLastActiveTouchEvent = null;
-        }
     }
 
     /**
