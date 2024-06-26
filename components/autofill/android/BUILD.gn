@@ -209,6 +209,12 @@ java_cpp_features("java_features_srcjar") {
       "//components/autofill/android/java_templates/AutofillFeatures.java.tmpl"
 }
 
+java_cpp_strings("java_switches_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "//components/autofill/core/common/autofill_switches.cc" ]
+  template = "java_templates/AutofillSwitches.java.tmpl"
+}
+
 # We intentionally do not include :autofill_payments_java_resources not to
 # bloat targets that may not require it.
 android_library("main_autofill_java") {
@@ -251,6 +257,11 @@ generate_jni("main_autofill_jni_headers") {
 # A minimal library used to expose autofill features to webview.
 android_library("autofill_features_java") {
   srcjar_deps = [ ":java_features_srcjar" ]
+}
+
+# A minimal library used to expose autofill switches to java.
+android_library("autofill_switches_java") {
+  srcjar_deps = [ ":java_switches_srcjar" ]
 }
 
 # A library containing the minimal deps for payments, so that ui_java_resources
