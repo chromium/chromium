@@ -5350,6 +5350,7 @@ static_library("browser") {
       "//chrome/browser/ash/lock_screen_apps",
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mojo_service_manager:mojo_service_manager",
+      "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/phonehub",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/ash/privacy_hub",

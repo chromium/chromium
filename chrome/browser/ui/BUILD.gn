@@ -3832,6 +3832,7 @@ static_library("ui") {
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mahi/media_app",
       "//chrome/browser/ash/mobile",
+      "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/phonehub",
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/sharesheet",

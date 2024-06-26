@@ -34,6 +34,7 @@ source_set("eche_app") {
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ash/phonehub",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/common:channel_info",
