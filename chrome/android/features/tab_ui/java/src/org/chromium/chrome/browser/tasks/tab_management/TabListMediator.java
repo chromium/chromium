@@ -1208,21 +1208,30 @@ class TabListMediator {
         TabActionListener swipeSafeTabActionListener =
                 (view, tabId) -> {
                     // The DefaultItemAnimator is prone to crashing in combination with the swipe
-                    // animation.
+                    // animation when closing the last tab.
                     // Avoid this issue by disabling the default item animation for the duration of
-                    // the tab removal. This is a framework issue. For more details see
+                    // the removal of the last tab. This is a framework issue. For more details see
                     // crbug/1319859.
-                    mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
+                    boolean shouldDisableItemAnimations =
+                            mCurrentTabModelFilterSupplier.hasValue()
+                                    && mCurrentTabModelFilterSupplier.get().getTotalTabCount() <= 1;
+                    if (shouldDisableItemAnimations) {
+                        mRecyclerViewItemAnimationToggle.setDisableItemAnimations(true);
+                    }
+
                     mTabClosedListener.run(view, tabId);
+
                     // It is necessary to post the restoration as otherwise any animation triggered
                     // by removing the tab will still use the animator as they are also posted to
                     // the UI thread.
-                    new Handler()
-                            .post(
-                                    () -> {
-                                        mRecyclerViewItemAnimationToggle.setDisableItemAnimations(
-                                                false);
-                                    });
+                    if (shouldDisableItemAnimations) {
+                        new Handler()
+                                .post(
+                                        () -> {
+                                            mRecyclerViewItemAnimationToggle
+                                                    .setDisableItemAnimations(false);
+                                        });
+                    }
                 };
 
         var tabGroupCreationDialogManager =
