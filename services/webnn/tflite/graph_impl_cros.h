@@ -8,6 +8,7 @@
 #include "components/ml/mojom/web_platform_model.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::tflite {
@@ -20,9 +21,10 @@ class ContextImplCrOS;
 // then initializing and executing the graph with ML Service.
 class GraphImplCrOS final : public WebNNGraphImpl {
  public:
-  static void CreateAndBuild(ContextImplCrOS* context_impl,
-                             mojom::GraphInfoPtr graph_info,
-                             mojom::WebNNContext::CreateGraphCallback callback);
+  static void CreateAndBuild(
+      ContextImplCrOS* context_impl,
+      mojom::GraphInfoPtr graph_info,
+      WebNNContextImpl::CreateGraphImplCallback callback);
 
   GraphImplCrOS(const GraphImplCrOS&) = delete;
   GraphImplCrOS& operator=(const GraphImplCrOS&) = delete;

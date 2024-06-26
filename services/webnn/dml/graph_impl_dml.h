@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
@@ -53,7 +54,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   static void CreateAndBuild(scoped_refptr<Adapter> adapter,
                              base::WeakPtr<ContextImplDml> context,
                              mojom::GraphInfoPtr graph_info,
-                             mojom::WebNNContext::CreateGraphCallback callback,
+                             WebNNContextImpl::CreateGraphImplCallback callback,
                              bool pass_dml_execution_disable_meta_commands);
 
   GraphImplDml(const GraphImplDml&) = delete;
@@ -240,7 +241,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   static void OnCompilationComplete(
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
-      mojom::WebNNContext::CreateGraphCallback callback,
+      WebNNContextImpl::CreateGraphImplCallback callback,
       std::unique_ptr<CommandRecorder> inference_command_recorder,
       base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
@@ -261,7 +262,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
       ComputeResourceInfo compute_resource_info,
       GraphBufferBindingInfo graph_buffer_binding_info,
-      mojom::WebNNContext::CreateGraphCallback callback,
+      WebNNContextImpl::CreateGraphImplCallback callback,
       HRESULT hr);
 
   // After the computation is completed, copy the output data from GPU readback

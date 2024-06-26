@@ -7,6 +7,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/tflite/context_impl_cros.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"
@@ -19,12 +20,12 @@ namespace webnn::tflite {
 void GraphImplCrOS::CreateAndBuild(
     ContextImplCrOS* context_impl,
     mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    WebNNContextImpl::CreateGraphImplCallback callback) {
   base::expected<flatbuffers::DetachedBuffer, std::string> conversion_result =
       GraphBuilderTflite::CreateAndBuild(*graph_info);
   if (!conversion_result.has_value()) {
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError, conversion_result.error()));
+    std::move(callback).Run(base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError, conversion_result.error())));
     return;
   }
 
@@ -32,27 +33,21 @@ void GraphImplCrOS::CreateAndBuild(
       std::move(conversion_result.value()),
       base::BindOnce(
           [](ComputeResourceInfo compute_resource_info,
-             mojom::WebNNContext::CreateGraphCallback callback,
+             WebNNContextImpl::CreateGraphImplCallback callback,
              ml::model_loader::mojom::LoadModelResult result,
              mojo::PendingRemote<ml::model_loader::mojom::Model> pending_remote,
              ml::model_loader::mojom::ModelInfoPtr tensor_info) {
             if (result != ml::model_loader::mojom::LoadModelResult::kOk) {
-              std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-                  mojom::Error::Code::kUnknownError,
-                  "Failed to load model with ml service."));
+              std::move(callback).Run(base::unexpected(
+                  mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                    "Failed to load model with ml service.")));
               return;
             }
 
             // TODO(crbug.com/330806169): Pass `WebNNGraph` directly to ML
             // Service and not have to bounce through the browser process.
-            mojo::PendingAssociatedRemote<mojom::WebNNGraph> graph;
-            mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
-                base::WrapUnique(
-                    new GraphImplCrOS(std::move(compute_resource_info),
-                                      std::move(pending_remote))),
-                graph.InitWithNewEndpointAndPassReceiver());
-            std::move(callback).Run(
-                mojom::CreateGraphResult::NewGraphRemote(std::move(graph)));
+            std::move(callback).Run(base::WrapUnique(new GraphImplCrOS(
+                std::move(compute_resource_info), std::move(pending_remote))));
           },
           ComputeResourceInfo(graph_info), std::move(callback)));
 }

@@ -7,6 +7,9 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -14,6 +17,7 @@
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
 
@@ -26,6 +30,9 @@ class WebNNGraphImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public mojom::WebNNContext {
  public:
+  using CreateGraphImplCallback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
+
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                    WebNNContextProviderImpl* context_provider,
                    mojom::ContextPropertiesPtr properties);
@@ -40,14 +47,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // call, it is no longer safe to use the WebNNBufferImpl.
   void DisconnectAndDestroyWebNNBufferImpl(
       const base::UnguessableToken& handle);
-
-  // This method will be called once `WebNNGraph::CreateGraph()` completes
-  // initialization to associate the `WebNNGraph` instance and receiver to
-  // this context. Once called, the `WebNNGraph` instance can safely access the
-  // `WebNNContext` instance in graph operations.
-  void OnWebNNGraphImplCreated(
-      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-      std::unique_ptr<WebNNGraphImpl> graph_impl);
 
   // Retrieves a `WebNNBufferImpl` instance created from this context.
   // Emits a bad message if a buffer with the given handle does not exist.
@@ -72,7 +71,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // validated. A backend subclass should implement this method to build and
   // compile a platform specific graph asynchronously.
   virtual void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
-                               CreateGraphCallback callback) = 0;
+                               CreateGraphImplCallback callback) = 0;
+
+  void DidCreateWebNNGraphImpl(
+      CreateGraphCallback callback,
+      base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result);
 
   // This method will be called by `CreateBuffer()` after the buffer info is
   // validated. A backend subclass should implement this method to create and
@@ -101,6 +104,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // GraphsImpls which are stored on the context to allow graph
   // operations to use this context safely via a raw_ptr.
   mojo::UniqueAssociatedReceiverSet<mojom::WebNNGraph> graph_impls_;
+
+  base::WeakPtrFactory<WebNNContextImpl> weak_factory_{this};
 };
 
 }  // namespace webnn

@@ -40,12 +40,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors;
   };
 
-  // TODO(crbug.com/333188631): remove once no GraphImpls need to be created as
-  // self-receiver.
+  // Same as below, but the graph does not have access to `context_`.
+  //
+  // TODO(crbug.com/333188631): Remove this overload.
   explicit WebNNGraphImpl(ComputeResourceInfo compute_resource_info);
 
   // Constructs a graph where the receiever and implementation is owned by the
-  // context upon calling WebNNContextImpl::OnWebNNGraphImplCreated.
+  // context.
   WebNNGraphImpl(WebNNContextImpl* context,
                  ComputeResourceInfo compute_resource_info);
 

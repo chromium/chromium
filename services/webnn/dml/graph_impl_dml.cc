@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -4777,8 +4778,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForWhere(
 // If graph creation fails, log the error message and report it.
 void HandleGraphCreationFailure(
     const std::string& error_message,
-    mojom::WebNNContext::CreateGraphCallback callback) {
-  std::move(callback).Run(CreateGraphResult::NewError(
+    WebNNContextImpl::CreateGraphImplCallback callback) {
+  std::move(callback).Run(base::unexpected(
       CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
 
@@ -4788,14 +4789,14 @@ void HandleGraphCreationFailure(
 void HandleGraphCreationFailure(
     const std::string& error_message,
     HRESULT hr,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    WebNNContextImpl::CreateGraphImplCallback callback) {
   DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
   if (hr == E_OUTOFMEMORY) {
-    std::move(callback).Run(CreateGraphResult::NewError(CreateError(
+    std::move(callback).Run(base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError,
         error_message + " No enough memory resources are available.")));
   } else {
-    std::move(callback).Run(CreateGraphResult::NewError(
+    std::move(callback).Run(base::unexpected(
         CreateError(mojom::Error::Code::kUnknownError, error_message)));
   }
 }
@@ -5180,7 +5181,7 @@ HRESULT GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread(
 void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
-    mojom::WebNNContext::CreateGraphCallback callback,
+    WebNNContextImpl::CreateGraphImplCallback callback,
     std::unique_ptr<CommandRecorder> inference_command_recorder,
     base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
     std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
@@ -5401,7 +5402,7 @@ void GraphImplDml::OnInitializationComplete(
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
-    mojom::WebNNContext::CreateGraphCallback callback,
+    WebNNContextImpl::CreateGraphImplCallback callback,
     HRESULT hr) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnInitializationComplete");
   if (FAILED(hr)) {
@@ -5446,19 +5447,13 @@ void GraphImplDml::OnInitializationComplete(
   }
 
   scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
-  // The remote sent to the renderer.
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> blink_remote;
   // The receiver bound to GraphImplDml.
-  context->OnWebNNGraphImplCreated(
-      blink_remote.InitWithNewEndpointAndPassReceiver(),
-      base::WrapUnique(new GraphImplDml(
-          std::move(adapter), context.get(), std::move(command_recorder),
-          std::move(persistent_resource), std::move(compiled_operator),
-          std::move(compute_resource_info),
-          std::move(graph_buffer_binding_info), std::move(compute_resources))));
+  std::move(callback).Run(base::WrapUnique(new GraphImplDml(
+      std::move(adapter), context.get(), std::move(command_recorder),
+      std::move(persistent_resource), std::move(compiled_operator),
+      std::move(compute_resource_info), std::move(graph_buffer_binding_info),
+      std::move(compute_resources))));
   command_queue->ReleaseCompletedResources();
-  std::move(callback).Run(
-      CreateGraphResult::NewGraphRemote(std::move(blink_remote)));
 }
 
 // static
@@ -5466,7 +5461,7 @@ void GraphImplDml::CreateAndBuild(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback,
+    WebNNContextImpl::CreateGraphImplCallback callback,
     const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");
   // `CommandRecorder` would keep reference of command queue and DML device.
@@ -5849,8 +5844,8 @@ void GraphImplDml::CreateAndBuild(
       }
     }
     if (!create_operator_result.has_value()) {
-      std::move(callback).Run(CreateGraphResult::NewError(
-          std::move(create_operator_result.error())));
+      std::move(callback).Run(
+          base::unexpected(std::move(create_operator_result.error())));
       return;
     }
   }

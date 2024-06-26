@@ -35,6 +35,7 @@
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_switches.h"
 
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
@@ -154,7 +155,7 @@ void GraphImplCoreml::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
     mojom::CreateContextOptionsPtr context_options,
     mojom::ContextPropertiesPtr context_properties,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    WebNNContextImpl::CreateGraphImplCallback callback) {
   auto current_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -172,7 +173,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::CreateContextOptionsPtr context_options,
     mojom::ContextPropertiesPtr context_properties,
     scoped_refptr<base::SequencedTaskRunner> originating_sequence,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    WebNNContextImpl::CreateGraphImplCallback callback) {
   CHECK(graph_info);
   base::ScopedTempDir model_file_dir;
   if (!model_file_dir.CreateUniqueTempDir()) {
@@ -192,8 +193,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
       [&](mojom::ErrorPtr error) {
         originating_sequence->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback),
-                                      mojom::CreateGraphResult::NewError(
-                                          std::move(error))));
+                                      base::unexpected(std::move(error))));
         return;
       });
   UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",
@@ -310,28 +310,22 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
 
 // static
 void GraphImplCoreml::OnCreateAndBuildFailure(
-    mojom::WebNNContext::CreateGraphCallback callback,
+    WebNNContextImpl::CreateGraphImplCallback callback,
     std::string error) {
   DLOG(ERROR) << error;
-  std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-      mojom::Error::Code::kUnknownError, std::move(error)));
+  std::move(callback).Run(base::unexpected(
+      mojom::Error::New(mojom::Error::Code::kUnknownError, std::move(error))));
 }
 
 // static
 void GraphImplCoreml::OnCreateAndBuildSuccess(
     std::unique_ptr<CompilationContext> context) {
   CHECK(context->ml_model);
-  // The remote sent to the renderer.
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> webnn_graph;
-  // The receiver bound to GraphImplCoreml.
-  mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImplCoreml(
+  std::move(context->callback)
+      .Run(base::WrapUnique(new GraphImplCoreml(
           std::move(context->compute_resource_info),
           std::move(context->input_feature_info),
-          std::move(context->coreml_name_to_operand_name), context->ml_model)),
-      webnn_graph.InitWithNewEndpointAndPassReceiver());
-  std::move(context->callback)
-      .Run(mojom::CreateGraphResult::NewGraphRemote(std::move(webnn_graph)));
+          std::move(context->coreml_name_to_operand_name), context->ml_model)));
 }
 
 // static
@@ -551,7 +545,7 @@ GraphImplCoreml::CompilationContext::CompilationContext(
     base::flat_map<std::string, std::string> coreml_name_to_operand_name,
     base::ScopedTempDir model_file_dir,
     mojom::CreateContextOptionsPtr context_options,
-    mojom::WebNNContext::CreateGraphCallback callback)
+    WebNNContextImpl::CreateGraphImplCallback callback)
     : compute_resource_info(std::move(compute_resource_info)),
       input_feature_info(std::move(input_feature_info)),
       coreml_name_to_operand_name(std::move(coreml_name_to_operand_name)),

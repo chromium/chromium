@@ -50,7 +50,7 @@ ContextImplDml::~ContextImplDml() = default;
 
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    WebNNContextImpl::CreateGraphImplCallback callback) {
   GraphImplDml::CreateAndBuild(adapter_, weak_factory_.GetWeakPtr(),
                             std::move(graph_info), std::move(callback),
                             gpu_feature_info_->IsWorkaroundEnabled(

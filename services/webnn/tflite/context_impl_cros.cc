@@ -83,9 +83,8 @@ void ContextImplCrOS::OnModelLoaderCreated(
   }
 }
 
-void ContextImplCrOS::CreateGraphImpl(
-    mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+void ContextImplCrOS::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
+                                      CreateGraphImplCallback callback) {
   GraphImplCrOS::CreateAndBuild(this, std::move(graph_info),
                                 std::move(callback));
 }

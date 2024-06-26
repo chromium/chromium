@@ -30,21 +30,10 @@ ContextImplTflite::ContextImplTflite(
 
 ContextImplTflite::~ContextImplTflite() = default;
 
-void ContextImplTflite::CreateGraphImpl(
-    mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
-  ASSIGN_OR_RETURN(std::unique_ptr<GraphImplTflite> graph,
-                   GraphImplTflite::CreateAndBuild(std::move(graph_info), this),
-                   [&callback](mojom::ErrorPtr error) {
-                     std::move(callback).Run(
-                         mojom::CreateGraphResult::NewError(std::move(error)));
-                   });
-
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
-  graph_receivers_.Add(std::move(graph),
-                       remote.InitWithNewEndpointAndPassReceiver());
+void ContextImplTflite::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
+                                        CreateGraphImplCallback callback) {
   std::move(callback).Run(
-      mojom::CreateGraphResult::NewGraphRemote(std::move(remote)));
+      GraphImplTflite::CreateAndBuild(std::move(graph_info), this));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplTflite::CreateBufferImpl(

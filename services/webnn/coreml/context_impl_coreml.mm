@@ -23,9 +23,8 @@ ContextImplCoreml::ContextImplCoreml(
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 
-void ContextImplCoreml::CreateGraphImpl(
-    mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+void ContextImplCoreml::CreateGraphImpl(mojom::GraphInfoPtr graph_info,
+                                        CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(std::move(graph_info), options_.Clone(),
                                   properties().Clone(), std::move(callback));
 }

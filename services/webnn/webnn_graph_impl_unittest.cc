@@ -55,15 +55,9 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
   static void CreateAndBuild(
       WebNNContextImpl* context,
       const mojom::GraphInfoPtr& graph_info,
-      mojom::WebNNContext::CreateGraphCallback callback) {
-    mojo::PendingAssociatedRemote<mojom::WebNNGraph> blink_remote;
-    // The receiver bound to FakeWebNNGraphImpl.
-    context->OnWebNNGraphImplCreated(
-        blink_remote.InitWithNewEndpointAndPassReceiver(),
-        std::make_unique<FakeWebNNGraphImpl>(context,
-                                             ComputeResourceInfo(graph_info)));
-    std::move(callback).Run(
-        mojom::CreateGraphResult::NewGraphRemote(std::move(blink_remote)));
+      WebNNContextImpl::CreateGraphImplCallback callback) {
+    std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
+        context, ComputeResourceInfo(graph_info)));
   }
 
  private:
@@ -118,9 +112,8 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
   ~FakeWebNNContextImpl() override = default;
 
  private:
-  void CreateGraphImpl(
-      mojom::GraphInfoPtr graph_info,
-      mojom::WebNNContext::CreateGraphCallback callback) override {
+  void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
+                       CreateGraphImplCallback callback) override {
     FakeWebNNGraphImpl::CreateAndBuild(this, std::move(graph_info),
                                        std::move(callback));
   }

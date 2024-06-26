@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -44,7 +45,10 @@ void WebNNContextImpl::CreateGraph(
     return;
   }
   // Call CreateGraphImpl() implemented by a backend.
-  CreateGraphImpl(std::move(graph_info), std::move(callback));
+  CreateGraphImpl(
+      std::move(graph_info),
+      base::BindOnce(&WebNNContextImpl::DidCreateWebNNGraphImpl,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebNNContextImpl::CreateBuffer(
@@ -83,10 +87,20 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
   buffer_impls_.erase(it);
 }
 
-void WebNNContextImpl::OnWebNNGraphImplCreated(
-    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-    std::unique_ptr<WebNNGraphImpl> graph_impl) {
-  graph_impls_.Add(std::move(graph_impl), std::move(receiver));
+void WebNNContextImpl::DidCreateWebNNGraphImpl(
+    mojom::WebNNContext::CreateGraphCallback callback,
+    base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(
+        mojom::CreateGraphResult::NewError(std::move(result.error())));
+    return;
+  }
+
+  mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver;
+  std::move(callback).Run(mojom::CreateGraphResult::NewGraphRemote(
+      receiver.InitWithNewEndpointAndPassRemote()));
+
+  graph_impls_.Add(*std::move(result), std::move(receiver));
 }
 
 base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(

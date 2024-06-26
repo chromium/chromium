@@ -18,6 +18,7 @@
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::coreml {
@@ -33,10 +34,11 @@ namespace webnn::coreml {
 // uint8 tensors to match WebNN expectations.
 class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
-  static void CreateAndBuild(mojom::GraphInfoPtr graph_info,
-                             mojom::CreateContextOptionsPtr context_options,
-                             mojom::ContextPropertiesPtr context_properties,
-                             mojom::WebNNContext::CreateGraphCallback callback);
+  static void CreateAndBuild(
+      mojom::GraphInfoPtr graph_info,
+      mojom::CreateContextOptionsPtr context_options,
+      mojom::ContextPropertiesPtr context_properties,
+      WebNNContextImpl::CreateGraphImplCallback callback);
 
   GraphImplCoreml(const GraphImplCoreml&) = delete;
   GraphImplCoreml& operator=(const GraphImplCoreml&) = delete;
@@ -79,7 +81,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
       mojom::CreateContextOptionsPtr context_options,
       mojom::ContextPropertiesPtr context_properties,
       scoped_refptr<base::SequencedTaskRunner> originating_sequence,
-      mojom::WebNNContext::CreateGraphCallback callback);
+      WebNNContextImpl::CreateGraphImplCallback callback);
 
   // CompilationContext shuttles objects between the background thread,
   // CoreML callback from compilation and back to the originating thread.
@@ -92,7 +94,7 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
         base::flat_map<std::string, std::string> coreml_name_to_operand_name,
         base::ScopedTempDir model_file_dir,
         mojom::CreateContextOptionsPtr context_options,
-        mojom::WebNNContext::CreateGraphCallback callback);
+        WebNNContextImpl::CreateGraphImplCallback callback);
     ~CompilationContext();
 
     base::ElapsedTimer compilation_timer;
@@ -103,10 +105,10 @@ class API_AVAILABLE(macos(14.0)) GraphImplCoreml final : public WebNNGraphImpl {
     base::ScopedTempDir compiled_model_dir;
     MLModel* __strong ml_model;
     mojom::CreateContextOptionsPtr context_options;
-    mojom::WebNNContext::CreateGraphCallback callback;
+    WebNNContextImpl::CreateGraphImplCallback callback;
   };
   static void OnCreateAndBuildFailure(
-      mojom::WebNNContext::CreateGraphCallback callback,
+      WebNNContextImpl::CreateGraphImplCallback callback,
       std::string error);
   static void OnCreateAndBuildSuccess(
       std::unique_ptr<CompilationContext> context);
