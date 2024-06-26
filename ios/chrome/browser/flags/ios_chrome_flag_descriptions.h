@@ -303,11 +303,6 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDisableFullscreenScrollingName[];
 extern const char kDisableFullscreenScrollingDescription[];
 
-// Title and description for the flag that adds the sport card to the Discover
-// feed.
-extern const char kDiscoverFeedSportCardName[];
-extern const char kDiscoverFeedSportCardDescription[];
-
 // Title and description for the flag to enable the color Lens and voice icons
 // in the home screen widget.
 extern const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[];

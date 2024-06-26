@@ -337,10 +337,6 @@ BASE_FEATURE(kEnableFollowUIUpdate,
              "EnableFollowUIUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDiscoverFeedSportCard,
-             "DiscoverFeedSportCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kContentPushNotificationsExperimentType[] =
     "ContentPushNotificationsExperimentType";
 

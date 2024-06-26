@@ -11259,21 +11259,6 @@
             ]
         }
     ],
-    "IOSDiscoverFeedSportCard": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DiscoverFeedSportCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDockingPromo": [
         {
             "platforms": [

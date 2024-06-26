@@ -368,10 +368,6 @@ const char kDisableFullscreenScrollingDescription[] =
     "When this flag is enabled and a user scroll a web page, toolbars will "
     "stay extanded and the user will not enter in fullscreen mode.";
 
-const char kDiscoverFeedSportCardName[] = "Sport card in Discover feed";
-const char kDiscoverFeedSportCardDescription[] =
-    "Enables the live sport card in the NTP's Discover feed";
-
 const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[] =
     "Enable color Lens and voice icons in home screen widget.";
 const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription[] =
