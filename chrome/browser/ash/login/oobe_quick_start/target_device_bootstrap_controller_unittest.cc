@@ -700,7 +700,6 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   const auto gaia_creds =
       absl::get<TargetDeviceBootstrapController::GaiaCredentials>(payload);
   EXPECT_EQ(gaia_creds.auth_code, kTestAuthCode);
-  EXPECT_TRUE(GetSessionContext()->did_set_up_gaia());
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,

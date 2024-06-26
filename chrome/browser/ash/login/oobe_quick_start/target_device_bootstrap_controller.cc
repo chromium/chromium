@@ -477,7 +477,6 @@ void TargetDeviceBootstrapController::OnAuthCodeReceived(
             UpdateStatus(/*step=*/Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
                          /*payload=*/gaia_creds);
             is_error = false;
-            session_context_.SetDidSetUpGaia(true);
           },
           [&](SecondDeviceAuthBroker::
                   AuthCodeAdditionalChallengesOnTargetResponse res) {

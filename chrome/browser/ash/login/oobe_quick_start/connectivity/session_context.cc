@@ -103,10 +103,6 @@ void SessionContext::SetDidTransferWifi(bool did_transfer_wifi) {
   did_transfer_wifi_ = did_transfer_wifi;
 }
 
-void SessionContext::SetDidSetUpGaia(bool did_set_up_gaia) {
-  did_set_up_gaia_ = did_set_up_gaia;
-}
-
 void SessionContext::PopulateRandomSessionContext() {
   // The session_id_ should be in range (INT32_MAX, INT64_MAX].
   int64_t min = static_cast<int64_t>(INT32_MAX) + 1;
@@ -116,7 +112,6 @@ void SessionContext::PopulateRandomSessionContext() {
   crypto::RandBytes(shared_secret_);
   crypto::RandBytes(secondary_shared_secret_);
   did_transfer_wifi_ = false;
-  did_set_up_gaia_ = false;
 }
 
 void SessionContext::FetchPersistedSessionContext() {
