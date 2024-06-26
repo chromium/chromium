@@ -7754,9 +7754,6 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
       return nullptr;
     }
     list->Append(*size);
-    if (stream.AtEnd()) {
-      return list;
-    }
     if (auto* sink_type =
             ConsumeIdent<CSSValueID::kDrop, CSSValueID::kRaise>(stream)) {
       list->Append(*sink_type);
@@ -7767,6 +7764,7 @@ CSSValue* ConsumeInitialLetter(CSSParserTokenStream& stream,
       list->Append(*sink);
       return list;
     }
+    return list;
   }
 
   return nullptr;
@@ -7958,9 +7956,6 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
   }
   // The second parameter is optional, the first parameter will be used for
   // both if the second parameter is not provided.
-  if (stream.AtEnd()) {
-    return over_type;
-  }
   if (CSSIdentifierValue* under_type =
           ConsumeIdent<CSSValueID::kText, CSSValueID::kAlphabetic>(stream);
       under_type) {
@@ -7985,7 +7980,7 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
     list->Append(*under_type);
     return list;
   }
-  return nullptr;
+  return over_type;
 }
 
 // Consume the `autospace` production.

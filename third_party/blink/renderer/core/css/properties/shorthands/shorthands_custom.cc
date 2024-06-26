@@ -1548,6 +1548,7 @@ bool FontVariant::ParseShorthand(
             FontVariantEastAsianParser::ParseResult::kConsumedValue ||
         alternates_parse_result ==
             FontVariantAlternatesParser::ParseResult::kConsumedValue) {
+      first_value = false;
       continue;
     }
 

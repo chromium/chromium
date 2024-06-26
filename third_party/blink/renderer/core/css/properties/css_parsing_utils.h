@@ -855,7 +855,7 @@ CSSValueList* ConsumeSpaceSeparatedList(Func callback,
   do {
     CSSValue* value = callback(stream, std::forward<Args>(args)...);
     if (!value) {
-      return nullptr;
+      return list->length() > 0 ? list : nullptr;
     }
     list->Append(*value);
   } while (!stream.AtEnd());
