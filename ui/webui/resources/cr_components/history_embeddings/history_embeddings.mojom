@@ -70,4 +70,8 @@ interface PageHandler {
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
+
+  // Attempt to show the IPH bubble to promote the feature. Called from the
+  // main history app on page load.
+  MaybeShowFeaturePromo();
 };

@@ -5,10 +5,11 @@
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, CrRouter} from 'chrome://history/history.js';
+import {BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -16,6 +17,8 @@ import {TestBrowserService} from './test_browser_service.js';
 suite('HistoryAppTest', function() {
   let element: HistoryAppElement;
   let browserService: TestBrowserService;
+  let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
+      HistoryEmbeddingsPageHandlerRemote;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -24,6 +27,12 @@ suite('HistoryAppTest', function() {
 
     browserService = new TestBrowserService();
     BrowserServiceImpl.setInstance(browserService);
+    embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
+    HistoryEmbeddingsBrowserProxyImpl.setInstance(
+        new HistoryEmbeddingsBrowserProxyImpl(embeddingsHandler));
+    embeddingsHandler.setResultFor(
+        'search', Promise.resolve({result: {items: []}}));
+
     // Some of the tests below assume the query state is fully reset to empty
     // between tests.
     window.history.replaceState({}, '', '/');
@@ -290,5 +299,15 @@ suite('HistoryAppTest', function() {
 
     element.$.toolbar.dispatchEvent(new CustomEvent('search-term-cleared'));
     assertEquals(0, getCount(), 'resets on clear');
+  });
+
+  test('RegistersAndMaybeShowsPromo', async () => {
+    assertDeepEquals(
+        element.getSortedAnchorStatusesForTesting(),
+        [
+          ['kHistorySearchInputElementId', true],
+        ],
+    );
+    await embeddingsHandler.whenCalled('maybeShowFeaturePromo');
   });
 });

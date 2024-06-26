@@ -14,6 +14,7 @@
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "history_embeddings_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -37,9 +38,11 @@ OptimizationFeedbackFromMojoUserFeedback(
 HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
     mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
         pending_page_handler,
-    base::WeakPtr<Profile> profile)
+    base::WeakPtr<Profile> profile,
+    content::WebUI* web_ui)
     : page_handler_(this, std::move(pending_page_handler)),
-      profile_(std::move(profile)) {}
+      profile_(std::move(profile)),
+      web_ui_(web_ui) {}
 
 HistoryEmbeddingsHandler::~HistoryEmbeddingsHandler() = default;
 
@@ -146,4 +149,13 @@ void HistoryEmbeddingsHandler::SetUserFeedback(
         /*extra_diagnostics=*/std::string(),
         /*autofill_metadata=*/base::Value::Dict(), base::Value::Dict());
   }
+}
+
+void HistoryEmbeddingsHandler::MaybeShowFeaturePromo() {
+  Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
+  if (!browser) {
+    return;
+  }
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHHistorySearchFeature);
 }

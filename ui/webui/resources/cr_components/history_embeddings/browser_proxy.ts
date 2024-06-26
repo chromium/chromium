@@ -11,6 +11,7 @@ export interface HistoryEmbeddingsBrowserProxy {
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean): void;
   setUserFeedback(userFeedback: UserFeedback): void;
+  maybeShowFeaturePromo(): void;
 }
 
 export class HistoryEmbeddingsBrowserProxyImpl implements
@@ -48,5 +49,9 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
 
   setUserFeedback(userFeedback: UserFeedback) {
     this.handler.setUserFeedback(userFeedback);
+  }
+
+  maybeShowFeaturePromo() {
+    this.handler.maybeShowFeaturePromo();
   }
 }

@@ -7,7 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,7 +32,8 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   HistoryEmbeddingsHandler(
       mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
           pending_page_handler,
-      base::WeakPtr<Profile> profile);
+      base::WeakPtr<Profile> profile,
+      content::WebUI* web_ui);
   HistoryEmbeddingsHandler(const HistoryEmbeddingsHandler&) = delete;
   HistoryEmbeddingsHandler& operator=(const HistoryEmbeddingsHandler&) = delete;
   ~HistoryEmbeddingsHandler() override;
@@ -42,6 +45,7 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
                                   bool user_clicked_results) override;
   void SetUserFeedback(
       history_embeddings::mojom::UserFeedback user_feedback) override;
+  void MaybeShowFeaturePromo() override;
   void SendQualityLog(const std::vector<uint32_t>& selected_indices) override;
 
   // Callback for querying `HistoryEmbeddingsService::Search()`.
@@ -55,6 +59,7 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   // search requests.
   const base::WeakPtr<Profile> profile_;
 
+  raw_ptr<content::WebUI> web_ui_;
   history_embeddings::SearchResult last_result_;
   optimization_guide::proto::UserFeedback user_feedback_;
 

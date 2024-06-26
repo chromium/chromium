@@ -19,7 +19,10 @@ import './shared_style.css.js';
 import './side_bar.js';
 import './strings.m.js';
 
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
+import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {Suggestion} from 'chrome://resources/cr_components/history_embeddings/filter_chips.js';
 import type {HistoryEmbeddingsMoreActionsClickEvent} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -138,13 +141,14 @@ export interface HistoryAppElement {
   };
 }
 
-const HistoryAppElementBase =
-    mixinBehaviors(
-        [IronScrollTargetBehavior],
-        FindShortcutMixin(WebUiListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & FindShortcutMixinInterface &
-          IronScrollTargetBehavior & WebUiListenerMixinInterface,
-    };
+const HistoryAppElementBase = mixinBehaviors(
+                                  [IronScrollTargetBehavior],
+                                  HelpBubbleMixin(FindShortcutMixin(
+                                      WebUiListenerMixin(PolymerElement)))) as {
+  new (): PolymerElement & HelpBubbleMixinInterface &
+      FindShortcutMixinInterface & IronScrollTargetBehavior &
+      WebUiListenerMixinInterface,
+};
 
 export class HistoryAppElement extends HistoryAppElementBase {
   static get is() {
@@ -345,6 +349,17 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.addEventListener('history-close-drawer', this.closeDrawer_);
     this.addEventListener('history-view-changed', this.historyViewChanged_);
     this.addEventListener('unselect-all', this.unselectAll);
+
+    if (loadTimeData.getBoolean('enableHistoryEmbeddings')) {
+      this.registerHelpBubble(
+          'kHistorySearchInputElementId', this.$.toolbar.searchField);
+      // TODO(crbug.com/40075330): There might be a race condition if the call
+      //    to show the help bubble comes immediately after registering the
+      //    anchor.
+      setTimeout(() => {
+        HistoryEmbeddingsBrowserProxyImpl.getInstance().maybeShowFeaturePromo();
+      }, 1000);
+    }
   }
 
   private getShowResultsByGroup_() {

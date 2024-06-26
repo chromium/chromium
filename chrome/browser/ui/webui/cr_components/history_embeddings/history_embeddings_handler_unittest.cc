@@ -13,14 +13,17 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/time_format.h"
@@ -59,19 +62,19 @@ std::unique_ptr<KeyedService> BuildTestOptimizationGuideKeyedService(
       testing::NiceMock<MockOptimizationGuideKeyedService>>();
 }
 
-class HistoryEmbeddingsHandlerTest : public testing::Test {
+class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        history_embeddings::kHistoryEmbeddings, {{"UseMlEmbedder", "false"}});
-
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
+    BrowserWithTestWindowTest::SetUp();
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
+                               {{"UseMlEmbedder", "false"}}},
+                              {feature_engagement::kIPHHistorySearchFeature,
+                               {}}},
+        /*disabled_features=*/{});
     MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
 
-    profile_ = profile_manager_->CreateTestingProfile(
+    TestingProfile* profile_ = profile_manager()->CreateTestingProfile(
         "History Embeddings Test User",
         {
             {HistoryServiceFactory::GetInstance(),
@@ -84,21 +87,42 @@ class HistoryEmbeddingsHandlerTest : public testing::Test {
              base::BindRepeating(&BuildTestOptimizationGuideKeyedService)},
         });
 
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile_));
+    web_ui_.set_web_contents(web_contents_.get());
+    browser()->tab_strip_model()->AppendWebContents(std::move(web_contents_),
+                                                    true);
+
+    static_cast<TestBrowserWindow*>(window())->SetFeaturePromoController(
+        std::make_unique<user_education::test::MockFeaturePromoController>());
+
     handler_ = std::make_unique<HistoryEmbeddingsHandler>(
         mojo::PendingReceiver<history_embeddings::mojom::PageHandler>(),
-        profile_->GetWeakPtr());
+        profile_->GetWeakPtr(), web_ui());
   }
 
-  void TearDown() override { handler_.reset(); }
+  void TearDown() override {
+    browser()->tab_strip_model()->CloseAllTabs();
+    web_contents_.reset();
+    handler_.reset();
+    MockOptimizationGuideKeyedService::ResetForTesting();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  content::TestWebUI* web_ui() { return &web_ui_; }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
+  user_education::test::MockFeaturePromoController* mock_promo_controller() {
+    return static_cast<user_education::test::MockFeaturePromoController*>(
+        static_cast<TestBrowserWindow*>(window())->GetFeaturePromoController());
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  content::TestWebUI web_ui_;
   std::unique_ptr<HistoryEmbeddingsHandler> handler_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
   base::HistogramTester histogram_tester_;
 };
 
@@ -160,4 +184,13 @@ TEST_F(HistoryEmbeddingsHandlerTest, RecordsMetrics) {
   histogram_tester().ExpectBucketCount(
       "History.Embeddings.UserActions",
       HistoryEmbeddingsUserActions::kEmbeddingsResultClicked, 1);
+}
+
+TEST_F(HistoryEmbeddingsHandlerTest, ShowsPromo) {
+  EXPECT_CALL(*mock_promo_controller(),
+              MaybeShowPromo(user_education::test::MatchFeaturePromoParams(
+                  feature_engagement::kIPHHistorySearchFeature)))
+      .Times(1)
+      .WillOnce(testing::Return(user_education::FeaturePromoResult::Success()));
+  handler_->MaybeShowFeaturePromo();
 }
