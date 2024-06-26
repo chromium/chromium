@@ -12,6 +12,8 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
@@ -21,8 +23,10 @@
 #include "chrome/browser/ash/input_method/editor_text_query_from_manta.h"
 #include "chrome/browser/ash/input_method/editor_text_query_from_memory.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -235,7 +239,19 @@ void EditorMediator::HandleTrigger(
     case EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
-      mako_bubble_coordinator_.LoadConsentUI(profile_);
+      if (chromeos::features::IsMagicBoostEnabled()) {
+        crosapi::CrosapiManager::Get()
+            ->crosapi_ash()
+            ->magic_boost_controller_ash()
+            ->ShowDisclaimerUi(
+                /*display_id=*/display::Screen::GetScreen()
+                    ->GetPrimaryDisplay()
+                    .id(),
+                /*action=*/crosapi::mojom::MagicBoostController::
+                    TransitionAction::kShowEditorPanel);
+      } else {
+        mako_bubble_coordinator_.LoadConsentUI(profile_);
+      }
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
     case EditorMode::kBlocked:
