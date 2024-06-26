@@ -11,12 +11,31 @@ import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SEA_PEN_SUGGESTIONS} from './constants.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
 
 const SeaPenSuggestionsElementBase = I18nMixin(PolymerElement);
+
+const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';
+
+export class SeaPenSuggestionSelectedEvent extends CustomEvent<string> {
+  constructor(suggestion: string) {
+    super(seaPenSuggestionSelectedEvent, {
+      bubbles: true,
+      composed: true,
+      detail: suggestion,
+    });
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    [seaPenSuggestionSelectedEvent]: SeaPenSuggestionSelectedEvent;
+  }
+}
 
 export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
   static get is() {
@@ -37,6 +56,13 @@ export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
   }
 
   private suggestions: string[];
+
+  private onClickSuggestion_(event: Event) {
+    const target = event.currentTarget as HTMLElement;
+    const suggestion = target.textContent?.trim();
+    assert(suggestion);
+    this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
+  }
 }
 
 customElements.define(SeaPenSuggestionsElement.is, SeaPenSuggestionsElement);

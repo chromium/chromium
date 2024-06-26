@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenInputQueryElement, SeaPenSuggestionsElement} from 'chrome://personalization/js/personalization_app.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -170,5 +171,61 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenInputQueryElement.shadowRoot!.getElementById('promptingGuide');
 
     assertTrue(!!promptingGuide, 'prompting guide link should exist');
+  });
+
+  test('clicking suggestion adds text to whitespace input', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const textValue = '  ';
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+    inputElement.value = textValue;
+    await waitAfterNextRender(seaPenInputQueryElement);
+    assertEquals(textValue, inputElement.value, 'input should show text');
+
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertTrue(!!seaPenSuggestions);
+    const seaPenSuggestionButton =
+        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
+            '.suggestion');
+    assertTrue(!!seaPenSuggestionButton);
+
+    seaPenSuggestionButton.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    assertEquals(inputElement?.value, seaPenSuggestionButton.innerText);
+  });
+
+  test('clicking suggestion adds text to end of input', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+    const textValue = 'Brevity is the soul of wit';
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+    inputElement.value = textValue;
+    await waitAfterNextRender(seaPenInputQueryElement);
+    assertEquals(textValue, inputElement.value, 'input should show text');
+
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    assertTrue(!!seaPenSuggestions, 'suggestions should exist');
+    const seaPenSuggestionButton =
+        seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
+            '.suggestion');
+    assertTrue(!!seaPenSuggestionButton, 'suggestion buttons should exist');
+
+    seaPenSuggestionButton.click();
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    assertEquals(
+        `${textValue}, ${seaPenSuggestionButton.innerText}`, inputElement.value,
+        'suggestion text should be added at the end of the text input');
   });
 });

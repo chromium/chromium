@@ -30,9 +30,14 @@ import {getTemplate} from './sea_pen_input_query_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {logGenerateSeaPenWallpaper, logNumWordsInTextQuery} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
+import {isSelectionEvent} from './sea_pen_utils.js';
 
 export interface SeaPenInputQueryElement {
-  $: {queryInput: CrInputElement};
+  $: {
+    queryInput: CrInputElement,
+    searchButton: HTMLElement,
+  };
 }
 
 export class SeaPenInputQueryElement extends WithSeaPenStore {
@@ -119,6 +124,9 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
   }
 
   private onClickInputQuerySearchButton_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
     assert(this.textValue_, 'input query should not be empty.');
     // This only works for English. We only support English queries for now.
     logNumWordsInTextQuery(this.textValue_.split(/\s+/).length);
@@ -134,6 +142,13 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
 
     // Hide suggestions when creating thumbnails.
     this.shouldShowSuggestions_ = false;
+  }
+
+  private onSuggestionSelected_(event: SeaPenSuggestionSelectedEvent) {
+    this.textValue_ = this.textValue_.trim();
+    this.textValue_ = this.textValue_.length > 0 ?
+        `${this.textValue_}, ${event.detail}` :
+        event.detail;
   }
 
   private updateSearchButton_(thumbnails: SeaPenThumbnail[]|null) {

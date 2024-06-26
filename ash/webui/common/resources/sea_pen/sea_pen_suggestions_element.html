@@ -45,7 +45,9 @@
       selected="0"
       role="radiogroup">
     <template is="dom-repeat" items="[[suggestions]]" as="suggestion">
-      <cr-button class="suggestion">
+      <cr-button
+          class="suggestion"
+          on-click="onClickSuggestion_">
         [[suggestion]]
       </cr-button>
     </template>

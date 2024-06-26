@@ -198,3 +198,9 @@ export function getTemplateIdFromString(templateId: string): SeaPenTemplateId|
 export function isPersonalizationApp(): boolean {
   return window.location.origin === 'chrome://personalization';
 }
+
+/** Returns true if this event is a user action to select an item. */
+export function isSelectionEvent(event: Event): boolean {
+  return (event instanceof MouseEvent && event.type === 'click') ||
+      (event instanceof KeyboardEvent && event.key === 'Enter');
+}

@@ -55,7 +55,8 @@
       value="{{textValue_}}">
   </cr-input>
   <template is="dom-if" if="[[shouldShowSuggestions_]]">
-    <sea-pen-suggestions></sea-pen-suggestions>
+    <sea-pen-suggestions on-sea-pen-suggestion-selected="onSuggestionSelected_">
+    </sea-pen-suggestions>
   </template>
   <div id="searchButtons">
     <template is="dom-if" if="[[thumbnailsLoading_]]">
