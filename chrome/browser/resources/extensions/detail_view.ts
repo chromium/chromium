@@ -607,6 +607,21 @@ export class ExtensionsDetailViewElement extends
         assertNotReached();
     }
   }
+
+  /**
+   * Returns the Manifest V2 deprecation message icon.
+   */
+  private getMv2DeprecationMessageIcon_(): string {
+    switch (this.mv2ExperimentStage_) {
+      case Mv2ExperimentStage.NONE:
+      case Mv2ExperimentStage.WARNING:
+        return 'extensions-icons:my_extensions';
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
+        return 'extensions-icons:extension_off';
+      default:
+        assertNotReached();
+    }
+  }
 }
 
 declare global {
