@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 /**
  * Implemented internally.
@@ -154,7 +153,7 @@ public interface FeedLaunchReliabilityLogger {
     default void cancelPendingFinished() {}
 
     /** Include experiment IDs sent from the server in the reliability log. */
-    default void reportExperiments(List<Integer> experimentIds) {}
+    default void reportExperiments(int[] experimentIds) {}
 
     /**
      * Log when the feed is launched because its UI surface was created.

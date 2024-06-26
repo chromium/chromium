@@ -10,7 +10,6 @@ import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 // TODO(b/269234249): Don't use in Chromium yet, it's not implemented.
 /**
@@ -115,5 +114,5 @@ public interface FeedUserInteractionReliabilityLogger {
     default void onPaginationEnded(@PaginationResult int result) {}
 
     /** Include experiment IDs sent from the server in the reliability log. */
-    default void reportExperiments(List<Integer> experimentIds) {}
+    default void reportExperiments(int[] experimentIds) {}
 }
