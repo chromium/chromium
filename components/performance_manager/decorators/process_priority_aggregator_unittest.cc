@@ -33,19 +33,19 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
   void ExpectPriorityCounts(ProcessNodeImpl* process_node,
                             size_t user_visible_count,
                             size_t user_blocking_count) {
-    auto* data = ProcessPriorityAggregator::Data::GetForTesting(process_node);
-    EXPECT_EQ(user_visible_count, data->user_visible_count_for_testing());
-    EXPECT_EQ(user_blocking_count, data->user_blocking_count_for_testing());
+    auto& data = ProcessPriorityAggregator::Data::Get(process_node);
+    EXPECT_EQ(user_visible_count, data.user_visible_count_for_testing());
+    EXPECT_EQ(user_blocking_count, data.user_blocking_count_for_testing());
 #if DCHECK_IS_ON()
     // In DCHECK mode the exact number of lowest priority contexts is tracked,
     // so IsEmpty only returns true when no ExecutionContexts exist. This is
     // only true during graph shutdown.
-    EXPECT_FALSE(data->IsEmpty());
+    EXPECT_FALSE(data.IsEmpty());
 #else
     // In non-DCHECK builds only the user visible and user blocking contexts
     // are counted.
     EXPECT_EQ(user_visible_count == 0 && user_blocking_count == 0,
-              data->IsEmpty());
+              data.IsEmpty());
 #endif
   }
 

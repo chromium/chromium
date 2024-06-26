@@ -95,7 +95,6 @@ ProcessNodeImpl::~ProcessNodeImpl() {
   //                                  resolved.
   CHECK(worker_nodes_.empty());
   DCHECK(!frozen_frame_data_);
-  DCHECK(!process_priority_data_);
 }
 
 void ProcessNodeImpl::Bind(
@@ -437,8 +436,8 @@ void ProcessNodeImpl::OnBeforeLeavingGraph() {
 
 void ProcessNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DestroyNodeInlineDataStorage();
   frozen_frame_data_.Reset();
-  process_priority_data_.reset();
 }
 
 }  // namespace performance_manager

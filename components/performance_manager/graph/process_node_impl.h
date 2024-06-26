@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PROCESS_NODE_IMPL_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_PROCESS_NODE_IMPL_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 
@@ -15,8 +14,10 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/performance_manager/decorators/process_priority_aggregator_data.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
+#include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/graph/properties.h"
 #include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/graph/process_node.h"
@@ -51,7 +52,8 @@ struct BrowserProcessNodeTag {};
 class ProcessNodeImpl
     : public PublicNodeImpl<ProcessNodeImpl, ProcessNode>,
       public TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>,
-      public mojom::ProcessCoordinationUnit {
+      public mojom::ProcessCoordinationUnit,
+      public SupportsNodeInlineData<ProcessPriorityAggregatorData> {
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
@@ -162,7 +164,6 @@ class ProcessNodeImpl
  private:
   friend class FrozenFrameAggregatorAccess;
   friend class ProcessMetricsDecoratorAccess;
-  friend class ProcessPriorityAggregatorAccess;
 
   using AnyChildProcessHostProxy =
       absl::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
@@ -235,10 +236,6 @@ class ProcessNodeImpl
 
   // Inline storage for FrozenFrameAggregator user data.
   InternalNodeAttachedDataStorage<sizeof(uintptr_t) + 8> frozen_frame_data_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Inline storage for ProcessPriorityAggregator user data.
-  std::unique_ptr<NodeAttachedData> process_priority_data_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtr<ProcessNodeImpl> weak_this_;
