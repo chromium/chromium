@@ -455,14 +455,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Fetches the data required to display a banner for the current page.
   raw_ptr<InstallableManager> manager_;
 
-  // The manifest object. This is never null, it will instead be an empty
-  // manifest so callers don't have to worry about null checks.
-  blink::mojom::ManifestPtr manifest_;
-
-  // The web page metadata object. This is never null, it will instead be
-  // empty so callers don't have to worry about null checks.
-  mojom::WebPageMetadataPtr web_page_metadata_;
-
   // We do not want to trigger a banner when the manager is attached to
   // a WebContents that is playing video. Banners triggering on a site in the
   // background will appear when the tab is reactivated.

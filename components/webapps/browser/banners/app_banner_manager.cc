@@ -315,8 +315,6 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
       SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
           web_contents->GetBrowserContext())),
       manager_(InstallableManager::FromWebContents(web_contents)),
-      manifest_(blink::mojom::Manifest::New()),
-      web_page_metadata_(mojom::WebPageMetadata::New()),
       status_reporter_(std::make_unique<NullStatusReporter>()) {
   DCHECK(manager_);
 
