@@ -720,19 +720,18 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyZeroSizeRejects) {
   EXPECT_EQ(nullptr, provider_->GetNewTexture(kZeroHeight));
 }
 
-// Verifies that GetLastWebGPUMailboxTextureAndSize() returns empty information
-// if no swapbuffer has been created.
+// Verifies that GetLastWebGPUMailboxTexture() returns empty information if no
+// swapbuffer has been created.
 TEST_F(WebGPUSwapBufferProviderTest,
-       GetLastWebGPUMailboxTextureAndSizeReturnsEmptyWithoutSwapBuffer) {
-  auto mailbox_texture_size = provider_->GetLastWebGPUMailboxTextureAndSize();
-  EXPECT_EQ(mailbox_texture_size.mailbox_texture, nullptr);
-  EXPECT_EQ(mailbox_texture_size.size, gfx::Size());
+       GetLastWebGPUMailboxTextureReturnsEmptyWithoutSwapBuffer) {
+  auto mailbox_texture = provider_->GetLastWebGPUMailboxTexture();
+  EXPECT_EQ(mailbox_texture, nullptr);
 }
 
-// Verifies that GetLastWebGPUMailboxTextureAndSize() returns a
-// correctly-configured texture and size if a swapbuffer has been created.
+// Verifies that GetLastWebGPUMailboxTexture() returns a correctly-configured
+// texture if a swapbuffer has been created.
 TEST_F(WebGPUSwapBufferProviderTest,
-       GetLastWebGPUMailboxTextureAndSizeReturnsValidTextureWithSwapBuffer) {
+       GetLastWebGPUMailboxTextureReturnsValidTextureWithSwapBuffer) {
   const gfx::Size kSize(10, 20);
 
   EXPECT_CALL(*webgpu_, ReserveTexture(device_.Get(), _))
@@ -742,11 +741,10 @@ TEST_F(WebGPUSwapBufferProviderTest,
           }));
   provider_->GetNewTexture(kSize);
 
-  auto mailbox_texture_size = provider_->GetLastWebGPUMailboxTextureAndSize();
-  EXPECT_NE(mailbox_texture_size.mailbox_texture, nullptr);
-  EXPECT_EQ(mailbox_texture_size.size, kSize);
+  auto mailbox_texture = provider_->GetLastWebGPUMailboxTexture();
+  EXPECT_NE(mailbox_texture, nullptr);
 
-  auto texture = mailbox_texture_size.mailbox_texture->GetTexture();
+  auto texture = mailbox_texture->GetTexture();
   EXPECT_EQ(texture.GetUsage(), kUsage);
   EXPECT_EQ(texture.GetFormat(), kFormat);
   EXPECT_EQ(texture.GetDepthOrArrayLayers(), 1u);

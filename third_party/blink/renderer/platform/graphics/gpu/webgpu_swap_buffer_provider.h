@@ -88,16 +88,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       const gfx::ColorSpace& dst_color_space,
       WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
-  struct WebGPUMailboxTextureAndSize {
-    scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
-    gfx::Size size;
-
-    WebGPUMailboxTextureAndSize(
-        scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
-        gfx::Size size)
-        : mailbox_texture(std::move(mailbox_texture)), size(size) {}
-  };
-  WebGPUMailboxTextureAndSize GetLastWebGPUMailboxTextureAndSize() const;
+  scoped_refptr<WebGPUMailboxTexture> GetLastWebGPUMailboxTexture() const;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;

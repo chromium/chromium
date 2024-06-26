@@ -273,9 +273,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
 
   return current_swap_buffer_->mailbox_texture;
 }
-
-WebGPUSwapBufferProvider::WebGPUMailboxTextureAndSize
-WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
+scoped_refptr<WebGPUMailboxTexture>
+WebGPUSwapBufferProvider::GetLastWebGPUMailboxTexture() const {
   // It's possible this is called after the canvas context current texture has
   // been destroyed, but `current_swap_buffer_` is still available e.g. when the
   // context is used offscreen only.
@@ -283,7 +282,7 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
       current_swap_buffer_ ? current_swap_buffer_ : last_swap_buffer_;
   auto context_provider = GetContextProviderWeakPtr();
   if (!latest_swap_buffer || !context_provider) {
-    return WebGPUMailboxTextureAndSize(nullptr, gfx::Size());
+    return nullptr;
   }
 
   wgpu::DawnTextureInternalUsageDescriptor internal_usage;
@@ -296,13 +295,11 @@ WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
       .format = format_,
   };
 
-  return WebGPUMailboxTextureAndSize(
-      WebGPUMailboxTexture::FromExistingMailbox(
-          dawn_control_client_, device_, desc,
-          latest_swap_buffer->shared_image->mailbox(),
-          latest_swap_buffer->access_finished_token,
-          gpu::webgpu::WEBGPU_MAILBOX_NONE),
-      latest_swap_buffer->size);
+  return WebGPUMailboxTexture::FromExistingMailbox(
+      dawn_control_client_, device_, desc,
+      latest_swap_buffer->shared_image->mailbox(),
+      latest_swap_buffer->access_finished_token,
+      gpu::webgpu::WEBGPU_MAILBOX_NONE);
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
