@@ -288,6 +288,21 @@ TEST_F(UseCounterImplTest, CSSSelectorPseudoDir) {
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
 
+TEST_F(UseCounterImplTest, CSSSelectorNthChildOfSelector) {
+  auto dummy_page_holder =
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
+  Document& document = dummy_page_holder->GetDocument();
+  WebFeature feature = WebFeature::kCSSSelectorNthChildOfSelector;
+  EXPECT_FALSE(document.IsUseCounted(feature));
+  document.documentElement()->setInnerHTML(
+      "<style>.a:nth-child(3) { color: red; }</style>");
+  EXPECT_FALSE(document.IsUseCounted(feature));
+  document.documentElement()->setInnerHTML(
+      "<style>.a:nth-child(3 of .b) { color: red; }</style>");
+  EXPECT_TRUE(document.IsUseCounted(feature));
+}
+
 TEST_F(UseCounterImplTest, CSSGridLayoutPercentageColumnIndefiniteWidth) {
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));

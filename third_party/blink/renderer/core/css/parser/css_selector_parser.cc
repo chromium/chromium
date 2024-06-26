@@ -2463,6 +2463,11 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoUserInvalid:
       feature = WebFeature::kCSSSelectorUserInvalid;
       break;
+    case CSSSelector::kPseudoNthChild:
+      if (selector->SelectorList()) {
+        feature = WebFeature::kCSSSelectorNthChildOfSelector;
+      }
+      break;
     default:
       break;
   }
