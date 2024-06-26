@@ -5895,7 +5895,7 @@ void GraphImplDml::CreateAndBuild(
                      std::move(graph_info->constant_id_to_buffer_map),
                      std::move(constant_id_to_input_index_map),
                      std::move(graph_buffer_binding_info),
-                     ComputeResourceInfo(graph_info)));
+                     ComputeResourceInfo(*graph_info)));
 }
 
 void GraphImplDml::HandleComputationFailure(

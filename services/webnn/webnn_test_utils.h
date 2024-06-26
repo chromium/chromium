@@ -582,7 +582,7 @@ class GraphInfoBuilder final {
                   std::vector<uint32_t> starts,
                   std::vector<uint32_t> sizes);
 
-  const mojom::GraphInfoPtr& GetGraphInfo() const { return graph_info_; }
+  const mojom::GraphInfo& GetGraphInfo() const { return *graph_info_; }
 
   // Get a clone of internal graph info. This is used by
   // `WebNNContextDMLImplTest` because mojom::WebNNContext::CreateGraph()` needs

@@ -67,7 +67,7 @@ class WebnnGraphLPMFuzzer {
     auto coreml_properties =
         webnn::coreml::GraphBuilderCoreml::GetContextProperties();
     if (webnn::WebNNGraphImpl::ValidateGraph(*coreml_properties,
-                                             graph_info_ptr)) {
+                                             *graph_info_ptr)) {
       // Test the Core ML graph builder.
       base::ScopedTempDir temp_dir;
       CHECK(temp_dir.CreateUniqueTempDir());
@@ -81,7 +81,7 @@ class WebnnGraphLPMFuzzer {
     auto tflite_properties =
         webnn::tflite::GraphBuilderTflite::GetContextProperties();
     if (webnn::WebNNGraphImpl::ValidateGraph(*tflite_properties,
-                                             graph_info_ptr)) {
+                                             *graph_info_ptr)) {
       // Test the TFLite graph builder.
       auto flatbuffer =
           webnn::tflite::GraphBuilderTflite::CreateAndBuild(*graph_info_ptr);

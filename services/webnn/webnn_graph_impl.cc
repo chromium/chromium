@@ -2090,11 +2090,11 @@ bool ValidateWebNNBuffersUsage(
 }  // namespace
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
-    const mojom::GraphInfoPtr& graph_info) {
+    const mojom::GraphInfo& graph_info) {
   input_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
-      graph_info->input_operands, graph_info->id_to_operand_map);
+      graph_info.input_operands, graph_info.id_to_operand_map);
   output_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
-      graph_info->output_operands, graph_info->id_to_operand_map);
+      graph_info.output_operands, graph_info.id_to_operand_map);
 }
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
@@ -2118,10 +2118,10 @@ WebNNGraphImpl::~WebNNGraphImpl() = default;
 
 bool WebNNGraphImpl::ValidateGraph(
     const mojom::ContextProperties& context_properties,
-    const mojom::GraphInfoPtr& graph_info) {
+    const mojom::GraphInfo& graph_info) {
   // The input operands of graph can be empty.
-  if (graph_info->id_to_operand_map.empty() || graph_info->operations.empty() ||
-      graph_info->output_operands.empty()) {
+  if (graph_info.id_to_operand_map.empty() || graph_info.operations.empty() ||
+      graph_info.output_operands.empty()) {
     return false;
   }
 
@@ -2132,19 +2132,19 @@ bool WebNNGraphImpl::ValidateGraph(
 
   // Keeps track of input and output names in order to assert they are unique.
   std::vector<std::string_view> input_names;
-  input_names.reserve(graph_info->input_operands.size());
+  input_names.reserve(graph_info.input_operands.size());
   std::vector<std::string_view> output_names;
-  output_names.reserve(graph_info->output_operands.size());
+  output_names.reserve(graph_info.output_operands.size());
 
   // Validate all operands in the graph for the dimensions and the byte length
   // of operand that can't be out of range, and hold the temporary information
   // of inputs, constants, outputs for further validation.
   std::vector<uint64_t> graph_inputs;
-  graph_inputs.reserve(graph_info->input_operands.size());
+  graph_inputs.reserve(graph_info.input_operands.size());
   std::vector<uint64_t> graph_outputs;
-  graph_outputs.reserve(graph_info->output_operands.size());
+  graph_outputs.reserve(graph_info.output_operands.size());
   base::flat_map<uint64_t, size_t> constant_id_to_byte_length_map;
-  for (auto& [id, operand] : graph_info->id_to_operand_map) {
+  for (auto& [id, operand] : graph_info.id_to_operand_map) {
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {
@@ -2190,8 +2190,8 @@ bool WebNNGraphImpl::ValidateGraph(
   // `graph_outputs` are also an ordered array for the value id, the
   // `input_operands` and `graph_outputs` are also an ordered array configured
   // in blink side.
-  if (graph_info->input_operands != graph_inputs ||
-      graph_info->output_operands != graph_outputs) {
+  if (graph_info.input_operands != graph_inputs ||
+      graph_info.output_operands != graph_outputs) {
     return false;
   }
 
@@ -2206,7 +2206,7 @@ bool WebNNGraphImpl::ValidateGraph(
   }
 
   // Validate the constant weight data are valid.
-  if (!base::ranges::equal(graph_info->constant_id_to_buffer_map,
+  if (!base::ranges::equal(graph_info.constant_id_to_buffer_map,
                            constant_id_to_byte_length_map,
                            [](const auto& iter_a, const auto& iter_b) {
                              // Compare the constant id with the key of map and
@@ -2218,8 +2218,8 @@ bool WebNNGraphImpl::ValidateGraph(
   }
 
   // Validate the operations which are sorted in the topological order.
-  for (auto& operation : graph_info->operations) {
-    if (!ValidateOperation(context_properties, graph_info->id_to_operand_map,
+  for (auto& operation : graph_info.operations) {
+    if (!ValidateOperation(context_properties, graph_info.id_to_operand_map,
                            *operation, processed_operands)) {
       return false;
     }

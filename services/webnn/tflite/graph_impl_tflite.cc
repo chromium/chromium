@@ -217,7 +217,7 @@ GraphImplTflite::CreateAndBuild(mojom::GraphInfoPtr graph_info,
                    ComputeResources::Create(graph_resources, context));
 
   return base::WrapUnique(new GraphImplTflite(
-      ComputeResourceInfo(graph_info), std::move(graph_resources),
+      ComputeResourceInfo(*graph_info), std::move(graph_resources),
       std::move(compute_resources), context));
 }
 

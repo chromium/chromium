@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   // match graph's expectation, the output name and byte length are used to
   // create the result of computation.
   struct COMPONENT_EXPORT(WEBNN_SERVICE) ComputeResourceInfo {
-    explicit ComputeResourceInfo(const mojom::GraphInfoPtr& graph_info);
+    explicit ComputeResourceInfo(const mojom::GraphInfo& graph_info);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
 
   // Return false if the graph is invalid.
   static bool ValidateGraph(const mojom::ContextProperties& context_properties,
-                            const mojom::GraphInfoPtr& graph_info);
+                            const mojom::GraphInfo& graph_info);
 
   const ComputeResourceInfo& compute_resource_info() const {
     return compute_resource_info_;

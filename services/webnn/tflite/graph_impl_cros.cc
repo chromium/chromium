@@ -49,7 +49,7 @@ void GraphImplCrOS::CreateAndBuild(
             std::move(callback).Run(base::WrapUnique(new GraphImplCrOS(
                 std::move(compute_resource_info), std::move(pending_remote))));
           },
-          ComputeResourceInfo(graph_info), std::move(callback)));
+          ComputeResourceInfo(*graph_info), std::move(callback)));
 }
 
 GraphImplCrOS::~GraphImplCrOS() = default;

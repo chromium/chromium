@@ -40,7 +40,7 @@ void WebNNContextImpl::OnConnectionError() {
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  if (!WebNNGraphImpl::ValidateGraph(*properties_, graph_info)) {
+  if (!WebNNGraphImpl::ValidateGraph(*properties_, *graph_info)) {
     receiver_.ReportBadMessage(kBadMessageInvalidGraph);
     return;
   }

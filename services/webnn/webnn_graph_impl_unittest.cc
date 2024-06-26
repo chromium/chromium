@@ -54,7 +54,7 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
 
   static void CreateAndBuild(
       WebNNContextImpl* context,
-      const mojom::GraphInfoPtr& graph_info,
+      const mojom::GraphInfo& graph_info,
       WebNNContextImpl::CreateGraphImplCallback callback) {
     std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
         context, ComputeResourceInfo(graph_info)));
@@ -114,8 +114,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphImplCallback callback) override {
-    FakeWebNNGraphImpl::CreateAndBuild(this, std::move(graph_info),
-                                       std::move(callback));
+    FakeWebNNGraphImpl::CreateAndBuild(this, *graph_info, std::move(callback));
   }
 
   std::unique_ptr<WebNNBufferImpl> CreateBufferImpl(

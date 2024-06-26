@@ -201,7 +201,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
 
   // Collect information about model inputs that are required
   // later for model evaluation.
-  ComputeResourceInfo compute_resource_info(graph_info);
+  ComputeResourceInfo compute_resource_info(*graph_info);
   std::vector<std::pair<std::string, CoreMLFeatureInfo>>
       input_feature_info_vector;
   input_feature_info_vector.reserve(
