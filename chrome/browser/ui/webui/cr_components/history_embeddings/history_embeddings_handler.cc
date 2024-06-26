@@ -17,6 +17,23 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 
+namespace {
+
+optimization_guide::proto::UserFeedback
+OptimizationFeedbackFromMojoUserFeedback(
+    history_embeddings::mojom::UserFeedback feedback) {
+  switch (feedback) {
+    case history_embeddings::mojom::UserFeedback::kUserFeedbackPositive:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP;
+    case history_embeddings::mojom::UserFeedback::kUserFeedbackNegative:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_DOWN;
+    case history_embeddings::mojom::UserFeedback::kUserFeedbackUnspecified:
+      return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+  }
+}
+
+}  // namespace
+
 HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
     mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
         pending_page_handler,
@@ -48,6 +65,10 @@ void HistoryEmbeddingsHandler::Search(
 void HistoryEmbeddingsHandler::OnReceivedSearchResult(
     SearchCallback callback,
     history_embeddings::SearchResult native_search_result) {
+  last_result_ = native_search_result;
+  user_feedback_ =
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   for (history_embeddings::ScoredUrlRow& scored_url_row :
        native_search_result.scored_url_rows) {
@@ -77,6 +98,17 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
   std::move(callback).Run(std::move(mojom_search_result));
 }
 
+void HistoryEmbeddingsHandler::SendQualityLog(
+    const std::vector<uint32_t>& selected_indices) {
+  history_embeddings::HistoryEmbeddingsService* service =
+      HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
+  std::set<size_t> indices_set(selected_indices.begin(),
+                               selected_indices.end());
+  // TODO(crbug.com/339880431): Send accurate number of entered characters.
+  service->SendQualityLog(last_result_, user_feedback_, indices_set,
+                          last_result_.query.size(), false);
+}
+
 void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
     bool non_empty_results,
     bool user_clicked_results) {
@@ -97,8 +129,7 @@ void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
 
 void HistoryEmbeddingsHandler::SetUserFeedback(
     history_embeddings::mojom::UserFeedback user_feedback) {
-  // TODO(crbug.com/345308285): Plumb user_feedback to quality log.
-
+  user_feedback_ = OptimizationFeedbackFromMojoUserFeedback(user_feedback);
   if (user_feedback ==
       history_embeddings::mojom::UserFeedback::kUserFeedbackNegative) {
     Browser* browser = chrome::FindLastActive();

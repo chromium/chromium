@@ -7,6 +7,7 @@ import {PageHandler} from './history_embeddings.mojom-webui.js';
 
 export interface HistoryEmbeddingsBrowserProxy {
   search(query: SearchQuery): Promise<SearchResult>;
+  sendQualityLog(selectedIndices: number[]): void;
   recordSearchResultsMetrics(
       nonEmptyResults: boolean, userClickedResult: boolean): void;
   setUserFeedback(userFeedback: UserFeedback): void;
@@ -33,6 +34,11 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
 
   search(query: SearchQuery) {
     return this.handler.search(query).then(response => response.result);
+  }
+
+
+  sendQualityLog(selectedIndices: number[]) {
+    return this.handler.sendQualityLog(selectedIndices);
   }
 
   recordSearchResultsMetrics(

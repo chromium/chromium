@@ -68,6 +68,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   static get properties() {
     return {
+      clickedIndices_: Array,
       numCharsForQuery: Number,
       feedbackState_: {
         type: String,
@@ -95,8 +96,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   private actionMenuItem_: SearchResultItem|null = null;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
+  private clickedIndices_: Set<number> = new Set();
   private feedbackState_: CrFeedbackOption;
   private loading_ = false;
+  private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
   private searchResult_: SearchResult;
   /**
    * When this is non-null, that means there's a SearchResult that's pending
@@ -113,16 +116,19 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.eventTracker_.add(document, 'visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
-      }
+    this.eventTracker_.add(window, 'beforeunload', () => {
+      // Flush any metrics or logs when the user leaves the page, such as
+      // closing the tab or navigating to another URL.
+      this.flushDebouncedUserMetrics_(/* forceFlush= */ true);
     });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
+    // Flush any metrics or logs when the component is removed, which can
+    // happen if there are no history embedding results left or if the user
+    // navigated to another history page.
+    this.flushDebouncedUserMetrics_(/* forceFlush= */ true);
     this.eventTracker_.removeAll();
   }
 
@@ -192,10 +198,15 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       },
     }));
 
-    this.flushDebouncedUserMetrics_(/*userClickedResult=*/ true);
+    this.clickedIndices_.add(e.model.index);
+    this.browserProxy_.recordSearchResultsMetrics(true, true);
   }
 
   private onSearchQueryChanged_() {
+    // Flush any old results metrics before overwriting the member variable.
+    this.flushDebouncedUserMetrics_();
+    this.clickedIndices_.clear();
+
     this.loading_ = true;
     const query: SearchQuery = {
       query: this.searchQuery,
@@ -207,8 +218,6 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         // Results are for an outdated query. Skip these results.
         return;
       }
-      // Flush any old results metrics before overwriting the member variable.
-      this.flushDebouncedUserMetrics_(/*userClickedResult=*/ false);
 
       // Reset feedback state for new results.
       this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
@@ -221,26 +230,41 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   /**
-   * Flushes any pending query result metric waiting to be logged.
-   * @param userClickedResult Set to true if the flush was triggered by the user
-   * clicking a result.
+   * Flushes any pending query result metric or log waiting to be logged.
    */
-  private flushDebouncedUserMetrics_(userClickedResult: boolean) {
+  private flushDebouncedUserMetrics_(forceFlush = false) {
     if (this.resultPendingMetricsTimestamp_ === null) {
       return;
     }
-    if (userClickedResult ||
+    const userClickedResult = this.clickedIndices_.size > 0;
+    // Search results are fetched as the user is typing, so make sure that
+    // the last set of results were visible on the page for at least 2s. This is
+    // to avoid logging results that may have been transient as the user was
+    // still typing their full query.
+    const resultsWereStable =
         (performance.now() - this.resultPendingMetricsTimestamp_) >=
-            QUERY_RESULT_MINIMUM_AGE) {
+        this.queryResultMinAge_;
+    const canLog = resultsWereStable || forceFlush;
+
+    // Record a metric if a user did not click any results.
+    if (canLog && !userClickedResult) {
       const nonEmptyResults: boolean =
           this.searchResult_.items && this.searchResult_.items.length > 0;
-      this.browserProxy_.recordSearchResultsMetrics(
-          nonEmptyResults, userClickedResult);
+      this.browserProxy_.recordSearchResultsMetrics(nonEmptyResults, false);
+    }
+
+    if (canLog) {
+      this.browserProxy_.sendQualityLog(
+          /*selectedIndices=*/ Array.from(this.clickedIndices_));
     }
 
     // Clear this regardless if it was recorded or not, because we don't want
     // to "try again" to record the same query.
     this.resultPendingMetricsTimestamp_ = null;
+  }
+
+  overrideQueryResultMinAgeForTesting(ms: number) {
+    this.queryResultMinAge_ = ms;
   }
 }
 

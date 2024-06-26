@@ -42,6 +42,7 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
                                   bool user_clicked_results) override;
   void SetUserFeedback(
       history_embeddings::mojom::UserFeedback user_feedback) override;
+  void SendQualityLog(const std::vector<uint32_t>& selected_indices) override;
 
   // Callback for querying `HistoryEmbeddingsService::Search()`.
   void OnReceivedSearchResult(SearchCallback callback,
@@ -53,6 +54,9 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   // The profile is used to get the HistoryEmbeddingsService to fulfill
   // search requests.
   const base::WeakPtr<Profile> profile_;
+
+  history_embeddings::SearchResult last_result_;
+  optimization_guide::proto::UserFeedback user_feedback_;
 
   base::WeakPtrFactory<HistoryEmbeddingsHandler> weak_ptr_factory_{this};
 };

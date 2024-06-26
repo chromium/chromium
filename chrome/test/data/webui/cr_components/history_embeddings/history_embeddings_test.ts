@@ -11,7 +11,7 @@ import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/hi
 import {PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import type {SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -53,6 +53,7 @@ suite('cr-history-embeddings', () => {
 
     element.searchQuery = 'some query';
     await handler.whenCalled('search');
+    element.overrideQueryResultMinAgeForTesting(0);
     return flushTasks();
   });
 
@@ -208,5 +209,74 @@ suite('cr-history-embeddings', () => {
     assertEquals(
         CrFeedbackOption.UNSPECIFIED, element.$.feedbackButtons.selectedOption,
         'defaults back to unspecified when there is a new set of results');
+  });
+
+  test('SendsQualityLog', async () => {
+    // Click on the second result.
+    const resultsElements =
+        element.shadowRoot!.querySelectorAll('cr-url-list-item');
+    resultsElements[1]!.click();
+
+    // Perform a new search, which should log the previous result.
+    element.searchQuery = 'some new query';
+    await handler.whenCalled('search');
+    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    assertDeepEquals([1], clickedIndices);
+    handler.resetResolver('sendQualityLog');
+
+    // Override the minimum result age and ensure transient results are not
+    // logged. Only after the 100ms passes and another search is performed
+    // should the quality log be sent.
+    element.overrideQueryResultMinAgeForTesting(100);
+    element.searchQuery = 'some newer que';
+    await handler.whenCalled('search');
+    element.searchQuery = 'some newer query';
+    await handler.whenCalled('search');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    element.searchQuery = 'some even newer query';
+    await handler.whenCalled('search');
+    assertEquals(1, handler.getCallCount('sendQualityLog'));
+  });
+
+  test('SendsQualityLogOnDisconnect', async () => {
+    element.remove();
+    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    assertDeepEquals([], clickedIndices);
+  });
+
+  test('SendsQualityLogOnBeforeUnload', async () => {
+    window.dispatchEvent(new Event('beforeunload'));
+    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    assertDeepEquals([], clickedIndices);
+  });
+
+  test('ForceFlushesQualityLogOnBeforeUnload', async () => {
+    handler.resetResolver('sendQualityLog');
+    // Make the min age really long so we can test a beforeunload happening
+    // before results are considered 'stable'.
+    element.overrideQueryResultMinAgeForTesting(100000);
+
+    window.dispatchEvent(new Event('beforeunload'));
+
+    // Log should immediately be sent without having to wait the 100000ms.
+    assertEquals(1, handler.getCallCount('sendQualityLog'));
+  });
+
+  test('SendsQualityLogOnlyOnce', async () => {
+    // Click on a couple of the results.
+    const resultsElements =
+        element.shadowRoot!.querySelectorAll('cr-url-list-item');
+    resultsElements[0]!.click();
+    resultsElements[1]!.click();
+
+    // Multiple events that can cause logs.
+    element.searchQuery = 'some newer query';
+    await handler.whenCalled('search');
+    window.dispatchEvent(new Event('beforeunload'));
+    element.remove();
+
+    const clickedIndices = await handler.whenCalled('sendQualityLog');
+    assertDeepEquals([0, 1], clickedIndices);
+    assertEquals(1, handler.getCallCount('sendQualityLog'));
   });
 });
