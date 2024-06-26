@@ -303,6 +303,7 @@ public abstract class ChromeFeatureList {
     public static final String DRAW_KEY_NATIVE_EDGE_TO_EDGE = "DrawKeyNativeEdgeToEdge";
     public static final String DRAW_NATIVE_EDGE_TO_EDGE = "DrawNativeEdgeToEdge";
     public static final String DRAW_WEB_EDGE_TO_EDGE = "DrawWebEdgeToEdge";
+    public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
     public static final String EDUCATIONAL_TIP_MODULE = "EducationalTipModule";
     public static final String ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS =
             "EnablePasswordsAccountStorageForNonSyncingUsers";
@@ -606,6 +607,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDrawNativeEdgeToEdge =
             newCachedFlag(DRAW_NATIVE_EDGE_TO_EDGE, false);
     public static final CachedFlag sDrawWebEdgeToEdge = newCachedFlag(DRAW_WEB_EDGE_TO_EDGE, false);
+    public static final CachedFlag sEdgeToEdgeBottomChin =
+            newCachedFlag(EDGE_TO_EDGE_BOTTOM_CHIN, false);
     public static final CachedFlag sEducationalTipModule =
             newCachedFlag(EDUCATIONAL_TIP_MODULE, false);
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
@@ -744,6 +747,7 @@ public abstract class ChromeFeatureList {
                     sDrawKeyNativeEdgeToEdge,
                     sDrawNativeEdgeToEdge,
                     sDrawWebEdgeToEdge,
+                    sEdgeToEdgeBottomChin,
                     sEducationalTipModule,
                     sFeedLoadingPlaceholder,
                     sForceListTabSwitcher,

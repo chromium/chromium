@@ -92,6 +92,7 @@ BASE_DECLARE_FEATURE(kDrawEdgeToEdge);
 BASE_DECLARE_FEATURE(kDrawKeyNativeEdgeToEdge);
 BASE_DECLARE_FEATURE(kDrawNativeEdgeToEdge);
 BASE_DECLARE_FEATURE(kDrawWebEdgeToEdge);
+BASE_DECLARE_FEATURE(kEdgeToEdgeBottomChin);
 BASE_DECLARE_FEATURE(kDragDropIntoOmnibox);
 BASE_DECLARE_FEATURE(kDragDropTabTearing);
 BASE_DECLARE_FEATURE(kEducationalTipModule);

@@ -2516,6 +2516,9 @@ extern const char kDrawNativeEdgeToEdgeDescription[];
 extern const char kDrawWebEdgeToEdgeName[];
 extern const char kDrawWebEdgeToEdgeDescription[];
 
+extern const char kEdgeToEdgeBottomChinName[];
+extern const char kEdgeToEdgeBottomChinDescription[];
+
 extern const char kEducationalTipModuleName[];
 extern const char kEducationalTipModuleDescription[];
 

@@ -61,6 +61,13 @@ public class EdgeToEdgeUtils {
     }
 
     /**
+     * @return True if the edge-to-edge bottom chin is enabled.
+     */
+    public static boolean isEdgeToEdgeBottomChinEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeBottomChin.isEnabled();
+    }
+
+    /**
      * Record if the current activity is eligible for edge to edge. If not, also record the reason
      * why it is ineligible.
      *

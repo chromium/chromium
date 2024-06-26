@@ -5400,6 +5400,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"draw-web-edge-to-edge", flag_descriptions::kDrawWebEdgeToEdgeName,
      flag_descriptions::kDrawWebEdgeToEdgeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDrawWebEdgeToEdge)},
+    {"edge-to-edge-bottom-chin", flag_descriptions::kEdgeToEdgeBottomChinName,
+     flag_descriptions::kEdgeToEdgeBottomChinDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEdgeToEdgeBottomChin)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"disallow-doc-written-script-loads",
      flag_descriptions::kDisallowDocWrittenScriptsUiName,

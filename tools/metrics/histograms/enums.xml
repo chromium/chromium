@@ -22450,6 +22450,7 @@ from previous Chrome versions.
   <int value="811374216" label="disable-new-bookmark-apps"/>
   <int value="811726957" label="SlideTopChromeWithPageScrolls:enabled"/>
   <int value="812710781" label="SyncUSSBookmarks:disabled"/>
+  <int value="812969700" label="EdgeToEdgeBottomChin:enabled"/>
   <int value="813120521" label="ProjectorUseUSMForS3:enabled"/>
   <int value="813162118" label="TabGroupSyncAndroid:disabled"/>
   <int value="813211869" label="ScrollCapture:disabled"/>
@@ -23470,6 +23471,7 @@ from previous Chrome versions.
   <int value="1261713150" label="ChromeHomeOptOutSnackbar:disabled"/>
   <int value="1262469513" label="GesturePropertiesDBusService:disabled"/>
   <int value="1264183726" label="kOmniboxCR23SteadyStateIcons:enabled"/>
+  <int value="1265411197" label="EdgeToEdgeBottomChin:disabled"/>
   <int value="1265457230" label="MultiZoneRgbKeyboard:disabled"/>
   <int value="1265587614" label="AppDiscoveryForOobe:disabled"/>
   <int value="1265666387" label="DesktopPWAsAppIconShortcutsMenu:disabled"/>

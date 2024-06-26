@@ -4273,6 +4273,11 @@ const char kDrawWebEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on most "
     "web pages.";
 
+const char kEdgeToEdgeBottomChinName[] = "EdgeToEdgeBottomChin";
+const char kEdgeToEdgeBottomChinDescription[] =
+    "Enables the scrollable bottom chin for an intermediate Edge-to-Edge "
+    "experience.";
+
 const char kEducationalTipModuleName[] = "Educational Tip Module";
 const char kEducationalTipModuleDescription[] =
     "Show educational tip module on magic stack in clank";

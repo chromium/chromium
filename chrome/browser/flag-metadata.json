@@ -2277,6 +2277,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "edge-to-edge-bottom-chin",
+    "owners": ["clhager@google.com", "wenyufu@google.com", "twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "elastic-overscroll",
     "owners": [ "arakeri@microsoft.com", "flackr@chromium.org" ],
     "expiry_milestone": 150
