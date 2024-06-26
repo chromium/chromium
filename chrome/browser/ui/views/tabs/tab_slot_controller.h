@@ -122,6 +122,9 @@ class TabSlotController {
   // Returns true if any tab or one of its children has focus.
   virtual bool IsFocusInTabs() const = 0;
 
+  // Returns true if The tab should have a compacted leading edge.
+  virtual bool ShouldCompactLeadingEdge() const = 0;
+
   // Potentially starts a drag for the specified Tab.
   virtual void MaybeStartDrag(
       TabSlotView* source,

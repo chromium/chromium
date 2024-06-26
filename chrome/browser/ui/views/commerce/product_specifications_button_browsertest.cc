@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -86,7 +87,7 @@ class ProductSpecificationsButtonBrowserTest : public InProcessBrowserTest {
   }
 
   bool GetRenderTabSearchBeforeTabStrip() {
-    return TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip();
+    return !tabs::GetTabSearchRightAligned(browser()->profile());
   }
 
   void SetLockedExpansionModeForTesting(LockedExpansionMode mode) {

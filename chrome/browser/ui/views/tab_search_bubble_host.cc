@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -203,9 +204,9 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     const gfx::Rect bounds = button_->GetWidget()->GetWorkAreaBoundsInScreen();
     const int offset = GetLayoutConstant(TAB_STRIP_PADDING);
 
-    const int x = ShouldTabSearchRenderBeforeTabStrip()
-                      ? bounds.x() + offset
-                      : bounds.right() - offset;
+    const int x = tabs::GetTabSearchRightAligned(profile_)
+                      ? bounds.right() - offset
+                      : bounds.x() + offset;
 
     anchor.emplace(gfx::Rect(x, bounds.y() + offset, 0, 0));
   }
@@ -219,9 +220,9 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
       },
       *bubble_created_time_));
   webui_bubble_manager_->ShowBubble(anchor,
-                                    ShouldTabSearchRenderBeforeTabStrip()
-                                        ? views::BubbleBorder::TOP_LEFT
-                                        : views::BubbleBorder::TOP_RIGHT,
+                                    tabs::GetTabSearchRightAligned(profile_)
+                                        ? views::BubbleBorder::TOP_RIGHT
+                                        : views::BubbleBorder::TOP_LEFT,
                                     kTabSearchBubbleElementId);
 
   auto* tracker =
@@ -262,15 +263,4 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     return;
   }
   CloseTabSearchBubble();
-}
-
-bool TabSearchBubbleHost::ShouldTabSearchRenderBeforeTabStrip() {
-// Mac should have tabsearch on the right side. Windows >= Win10 has the
-// Tab Search button as a FrameCaptionButton, but it still needs to be on the
-// left if it exists.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return true;
-#else
-  return false;
-#endif
 }

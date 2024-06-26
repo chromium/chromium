@@ -56,6 +56,7 @@ class FakeTabSlotController : public TabSlotController {
   bool IsTabPinned(const Tab* tab) const override;
   bool IsTabFirst(const Tab* tab) const override;
   bool IsFocusInTabs() const override;
+  bool ShouldCompactLeadingEdge() const override;
   void MaybeStartDrag(
       TabSlotView* source,
       const ui::LocatedEvent& event,
