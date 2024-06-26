@@ -3053,6 +3053,7 @@ static_library("browser") {
       "android/startup_bridge.h",
       "android/tab_android.cc",
       "android/tab_android.h",
+      "android/tab_android_data_provider.h",
       "android/tab_android_user_data.h",
       "android/tab_browser_controls_constraints_helper.cc",
       "android/tab_browser_controls_constraints_helper.h",

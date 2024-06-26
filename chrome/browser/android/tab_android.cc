@@ -156,13 +156,12 @@ TabAndroid::~TabAndroid() {
   Java_TabImpl_clearNativePtr(env, weak_java_tab_.get(env));
 }
 
-base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return weak_java_tab_.get(env);
+SessionID TabAndroid::window_id() const {
+  return session_window_id_;
 }
 
-scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
-  return content_layer_;
+int TabAndroid::GetAndroidId() const {
+  return tab_id_;
 }
 
 std::unique_ptr<WebContentsStateByteBuffer>
@@ -182,12 +181,17 @@ TabAndroid::GetWebContentsByteBuffer() {
   return std::make_unique<WebContentsStateByteBuffer>(state, version);
 }
 
-base::WeakPtr<TabAndroid> TabAndroid::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
+base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return weak_java_tab_.get(env);
 }
 
-int TabAndroid::GetAndroidId() const {
-  return tab_id_;
+scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
+  return content_layer_;
+}
+
+base::WeakPtr<TabAndroid> TabAndroid::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 int TabAndroid::GetLaunchType() const {

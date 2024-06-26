@@ -5,7 +5,7 @@
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/synced_window_delegates_getter_android.h"
 #include "chrome/browser/sync/glue/web_contents_state_synced_tab_delegate.h"
@@ -16,17 +16,18 @@
 
 namespace browser_sync {
 
-SyncedTabDelegateAndroid::SyncedTabDelegateAndroid(TabAndroid* tab_android)
-    : tab_android_(tab_android) {}
+SyncedTabDelegateAndroid::SyncedTabDelegateAndroid(
+    TabAndroidDataProvider* tab_android_data_provider)
+    : tab_android_data_provider_(tab_android_data_provider) {}
 
 SyncedTabDelegateAndroid::~SyncedTabDelegateAndroid() = default;
 
 SessionID SyncedTabDelegateAndroid::GetWindowId() const {
-  return tab_android_->window_id();
+  return tab_android_data_provider_->window_id();
 }
 
 SessionID SyncedTabDelegateAndroid::GetSessionId() const {
-  return SessionIdFromAndroidId(tab_android_->GetAndroidId());
+  return SessionIdFromAndroidId(tab_android_data_provider_->GetAndroidId());
 }
 
 bool SyncedTabDelegateAndroid::IsPlaceholderTab() const {
@@ -39,7 +40,7 @@ bool SyncedTabDelegateAndroid::IsPlaceholderTab() const {
 std::unique_ptr<sync_sessions::SyncedTabDelegate>
 SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate() {
   std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer =
-      tab_android_->GetWebContentsByteBuffer();
+      tab_android_data_provider_->GetWebContentsByteBuffer();
 
   // If the web contents is null return a nullptr to the callback to be handled
   // in local_session_event_handler.
@@ -48,7 +49,7 @@ SyncedTabDelegateAndroid::CreatePlaceholderTabSyncedTabDelegate() {
   }
 
   return browser_sync::WebContentsStateSyncedTabDelegate::Create(
-      tab_android_, std::move(web_contents_byte_buffer));
+      tab_android_data_provider_, std::move(web_contents_byte_buffer));
 }
 
 void SyncedTabDelegateAndroid::SetWebContents(

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_GLUE_WEB_CONTENTS_STATE_SYNCED_TAB_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "components/sessions/core/session_id.h"
@@ -31,7 +31,7 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   ~WebContentsStateSyncedTabDelegate() override;
 
   static std::unique_ptr<WebContentsStateSyncedTabDelegate> Create(
-      TabAndroid* tab_android,
+      TabAndroidDataProvider* tab_android_data_provider,
       std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
 
   // SyncedTabDelegate android specific overrides:
@@ -46,10 +46,10 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
 
  private:
   WebContentsStateSyncedTabDelegate(
-      TabAndroid* tab_android,
+      TabAndroidDataProvider* tab_android_data_provider,
       std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
 
-  raw_ptr<TabAndroid> tab_android_;
+  raw_ptr<TabAndroidDataProvider> tab_android_data_provider_;
   std::unique_ptr<WebContentsStateByteBuffer> web_contents_buffer_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
