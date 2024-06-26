@@ -1997,14 +1997,14 @@ float PdfViewWebPlugin::GetZoom() const {
   return zoom_;
 }
 
-void PdfViewWebPlugin::InkStrokeFinished() {
+bool PdfViewWebPlugin::IsPageVisible(int index) {
+  return engine_->IsPageVisible(index);
+}
+
+void PdfViewWebPlugin::StrokeFinished() {
   base::Value::Dict message;
   message.Set("type", "finishInkStroke");
   client_->PostMessage(std::move(message));
-}
-
-bool PdfViewWebPlugin::IsPageVisible(int index) {
-  return engine_->IsPageVisible(index);
 }
 
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {

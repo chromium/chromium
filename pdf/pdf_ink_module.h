@@ -41,16 +41,15 @@ class PdfInkBrush;
 
 class PdfInkModule {
  public:
-  using InkStrokeInputPoints = std::vector<gfx::PointF>;
+  using StrokeInputPoints = std::vector<gfx::PointF>;
 
   // Each page of a document can have many strokes.  The input points for each
   // stroke are restricted to just one page.
-  using PageInkStrokeInputPoints = std::vector<InkStrokeInputPoints>;
+  using PageStrokeInputPoints = std::vector<StrokeInputPoints>;
 
-  // Mapping of a 0-based page index to the input points that make up the ink
+  // Mapping of a 0-based page index to the input points that make up the
   // strokes for that page.
-  using DocumentInkStrokeInputPointsMap =
-      std::map<int, PageInkStrokeInputPoints>;
+  using DocumentStrokeInputPointsMap = std::map<int, PageStrokeInputPoints>;
 
   using RenderTransformCallback =
       base::RepeatingCallback<void(const InkAffineTransform& transform)>;
@@ -78,7 +77,7 @@ class PdfInkModule {
     virtual float GetZoom() const = 0;
 
     // Notifies the client that a stroke has finished drawing or erasing.
-    virtual void InkStrokeFinished() {}
+    virtual void StrokeFinished() {}
 
     // Notifies the client to invalidate the `rect`.  Coordinates are
     // screen-based, based on the same viewport origin that was used to specify
@@ -100,7 +99,7 @@ class PdfInkModule {
 
   bool enabled() const { return enabled_; }
 
-  // Draws `ink_strokes_` and `ink_inputs_` into `canvas`.
+  // Draws `strokes_` and `inputs_` into `canvas`.
   void Draw(SkCanvas& canvas);
 
   // Returns whether the event was handled or not.
@@ -109,11 +108,11 @@ class PdfInkModule {
   // Returns whether the message was handled or not.
   bool OnMessage(const base::Value::Dict& message);
 
-  // For testing only. Returns the current PDF ink brush used to draw strokes.
+  // For testing only. Returns the current `PdfInkBrush` used to draw strokes.
   const PdfInkBrush* GetPdfInkBrushForTesting() const;
 
   // For testing only. Returns the input positions used for the stroke.
-  DocumentInkStrokeInputPointsMap GetInkStrokesInputPositionsForTesting() const;
+  DocumentStrokeInputPointsMap GetStrokesInputPositionsForTesting() const;
 
   // For testing only. Provide a callback to use whenever the rendering
   // transform is determined for `Draw()`.
@@ -130,25 +129,25 @@ class PdfInkModule {
     ~DrawingStrokeState();
 
     // The current brush to use for drawing strokes. Never null.
-    std::unique_ptr<PdfInkBrush> ink_brush;
+    std::unique_ptr<PdfInkBrush> brush;
 
-    std::optional<base::Time> ink_start_time;
+    std::optional<base::Time> start_time;
 
     // The 0-based page index which is currently being stroked.
-    int ink_page_index = -1;
+    int page_index = -1;
 
-    // The event position for the last ink input.  Coordinates match the
+    // The event position for the last input.  Coordinates match the
     // screen-based position that are provided during stroking from
     // `blink::WebMouseEvent` positions.  Used after stroking has already
     // started, to support invalidation.
-    std::optional<gfx::PointF> ink_input_last_event_position;
+    std::optional<gfx::PointF> input_last_event_position;
 
     // The points that make up the current stroke, divided into
     // StrokeInputSegments.  A new segment will be necessary each time the input
     // leaves the page during collection and then returns back into the original
     // starting page.  The coordinates added into each segment are stored in a
     // canonical format specified in pdf_ink_transform.h.
-    std::vector<StrokeInputSegment> ink_inputs;
+    std::vector<StrokeInputSegment> inputs;
   };
 
   // A stroke that has been completed, its ID, and whether it should be drawn
@@ -174,10 +173,10 @@ class PdfInkModule {
   // Each page of a document can have many strokes.  Each stroke is restricted
   // to just one page.
   // The elements are stored with IDs in an increasing order.
-  using PageInkStrokes = std::vector<FinishedStrokeState>;
+  using PageStrokes = std::vector<FinishedStrokeState>;
 
-  // Mapping of a 0-based page index to the ink strokes for that page.
-  using DocumentInkStrokesMap = std::map<int, PageInkStrokes>;
+  // Mapping of a 0-based page index to the strokes for that page.
+  using DocumentStrokesMap = std::map<int, PageStrokes>;
 
   class StrokeIdGenerator {
    public:
@@ -201,14 +200,14 @@ class PdfInkModule {
   bool OnMouseMove(const blink::WebMouseEvent& event);
 
   // Return values have the same semantics as OnMouse()* above.
-  bool StartInkStroke(const gfx::PointF& position);
-  bool ContinueInkStroke(const gfx::PointF& position);
-  bool FinishInkStroke();
+  bool StartStroke(const gfx::PointF& position);
+  bool ContinueStroke(const gfx::PointF& position);
+  bool FinishStroke();
 
   // Return values have the same semantics as OnMouse*() above.
-  bool StartEraseInkStroke(const gfx::PointF& position);
-  bool ContinueEraseInkStroke(const gfx::PointF& position);
-  bool FinishEraseInkStroke();
+  bool StartEraseStroke(const gfx::PointF& position);
+  bool ContinueEraseStroke(const gfx::PointF& position);
+  bool FinishEraseStroke();
 
   void HandleAnnotationRedoMessage(const base::Value::Dict& message);
   void HandleAnnotationUndoMessage(const base::Value::Dict& message);
@@ -252,7 +251,7 @@ class PdfInkModule {
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;
 
   // The state of the strokes that have been completed.
-  DocumentInkStrokesMap ink_strokes_;
+  DocumentStrokesMap strokes_;
 
   RenderTransformCallback draw_render_transform_callback_for_testing_;
 };

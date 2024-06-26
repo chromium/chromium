@@ -91,8 +91,6 @@ class FakeClient : public PdfInkModule::Client {
 
   float GetZoom() const override { return zoom_; }
 
-  void InkStrokeFinished() override { ++ink_stroke_finished_count_; }
-
   void Invalidate(const gfx::Rect& rect) override {
     invalidations_.push_back(rect);
   }
@@ -100,6 +98,8 @@ class FakeClient : public PdfInkModule::Client {
   bool IsPageVisible(int index) override {
     return base::Contains(visible_page_indices_, index);
   }
+
+  void StrokeFinished() override { ++stroke_finished_count_; }
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
     for (size_t i = 0; i < page_layouts_.size(); ++i) {
@@ -112,7 +112,7 @@ class FakeClient : public PdfInkModule::Client {
     return -1;
   }
 
-  int ink_stroke_finished_count() const { return ink_stroke_finished_count_; }
+  int stroke_finished_count() const { return stroke_finished_count_; }
 
   const std::vector<gfx::Rect>& invalidations() const { return invalidations_; }
 
@@ -144,7 +144,7 @@ class FakeClient : public PdfInkModule::Client {
   void set_zoom(float zoom) { zoom_ = zoom; }
 
  private:
-  int ink_stroke_finished_count_ = 0;
+  int stroke_finished_count_ = 0;
   std::vector<gfx::RectF> page_layouts_;
   std::set<int> visible_page_indices_;
   PageOrientation orientation_ = PageOrientation::kOriginal;
@@ -343,7 +343,7 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     client().set_page_visibility(0, true);
   }
 
-  void ApplyInkStrokeWithMousePoints(
+  void ApplyStrokeWithMousePoints(
       const gfx::PointF& mouse_down_point,
       base::span<const gfx::PointF> mouse_move_points,
       const gfx::PointF& mouse_up_point,
@@ -379,13 +379,13 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
         CreateSetAnnotationModeMessage(annotation_mode_enabled)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
-    ApplyInkStrokeWithMousePoints(
+    ApplyStrokeWithMousePoints(
         kMouseDownLocation, base::span_from_ref(kMouseMoveLocation),
         kMouseUpLocation,
         /*expect_mouse_events_handled=*/annotation_mode_enabled);
 
     const int expected_count = annotation_mode_enabled ? 1 : 0;
-    EXPECT_EQ(expected_count, client().ink_stroke_finished_count());
+    EXPECT_EQ(expected_count, client().stroke_finished_count());
   }
 };
 
@@ -419,11 +419,10 @@ TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
   // the PdfInkModule::Client setup.
   constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
   constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
-  const PdfInkModule::DocumentInkStrokeInputPointsMap
-      document_strokes_positions =
-          ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::DocumentStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetStrokesInputPositionsForTesting();
   EXPECT_THAT(document_strokes_positions,
-              ElementsAre(Pair(0, PdfInkModule::PageInkStrokeInputPoints{
+              ElementsAre(Pair(0, PdfInkModule::PageStrokeInputPoints{
                                       {kCanonicalMouseDownPosition,
                                        kCanonicalMouseMovePosition}})));
 }
@@ -488,17 +487,17 @@ TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
   client().set_page_visibility(1, true);
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 
   // A stroke that starts outside of any page does not generate a stroke, even
   // if it crosses into a page.
-  ApplyInkStrokeWithMousePoints(
+  ApplyStrokeWithMousePoints(
       kTwoPageVerticalLayoutPointOutsidePages,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0,
       /*expect_mouse_events_handled=*/false);
 
-  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 }
 
 TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
@@ -510,31 +509,30 @@ TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
   client().set_page_visibility(1, true);
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 
   // A stroke in the first page generates a stroke only for that page.
-  ApplyInkStrokeWithMousePoints(
+  ApplyStrokeWithMousePoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage0),
       kTwoPageVerticalLayoutPoint3InsidePage0,
       /*expect_mouse_events_handled=*/true);
 
-  const PdfInkModule::DocumentInkStrokeInputPointsMap
-      document_strokes_positions =
-          ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::DocumentStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetStrokesInputPositionsForTesting();
   EXPECT_THAT(document_strokes_positions,
               ElementsAre(Pair(0, testing::SizeIs(1))));
 
   // A stroke in the second page generates a stroke only for that page.
-  ApplyInkStrokeWithMousePoints(
+  ApplyStrokeWithMousePoints(
       kTwoPageVerticalLayoutPoint1InsidePage1,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
       kTwoPageVerticalLayoutPoint3InsidePage1,
       /*expect_mouse_events_handled=*/true);
 
-  const PdfInkModule::DocumentInkStrokeInputPointsMap
+  const PdfInkModule::DocumentStrokeInputPointsMap
       updated_document_strokes_positions =
-          ink_module().GetInkStrokesInputPositionsForTesting();
+          ink_module().GetStrokesInputPositionsForTesting();
   EXPECT_THAT(
       updated_document_strokes_positions,
       ElementsAre(Pair(0, testing::SizeIs(1)), Pair(1, testing::SizeIs(1))));
@@ -549,19 +547,18 @@ TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
   client().set_page_visibility(1, true);
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 
   // A stroke that starts in first page and ends in the second page only
   // generates one stroke in the first page.
-  ApplyInkStrokeWithMousePoints(
+  ApplyStrokeWithMousePoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       base::span_from_ref(kTwoPageVerticalLayoutPoint2InsidePage1),
       kTwoPageVerticalLayoutPoint3InsidePage1,
       /*expect_mouse_events_handled=*/true);
 
-  const PdfInkModule::DocumentInkStrokeInputPointsMap
-      document_strokes_positions =
-          ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::DocumentStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetStrokesInputPositionsForTesting();
   EXPECT_THAT(document_strokes_positions,
               ElementsAre(Pair(0, testing::SizeIs(1))));
 }
@@ -575,7 +572,7 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
   client().set_page_visibility(1, true);
 
   // Start out without any strokes.
-  EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
+  EXPECT_TRUE(ink_module().GetStrokesInputPositionsForTesting().empty());
 
   // A stroke that starts in first page, leaves the bounds of that page, but
   // then moves back into the page results in one stroke with two segments.
@@ -583,20 +580,19 @@ TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
       gfx::PointF(10.0f, 5.0f), gfx::PointF(10.0f, 0.0f),
       gfx::PointF(15.0f, 0.0f), gfx::PointF(15.0f, 5.0f),
       gfx::PointF(15.0f, 10.0f)};
-  ApplyInkStrokeWithMousePoints(kTwoPageVerticalLayoutPoint1InsidePage0,
-                                kStrokeMoves,
-                                kTwoPageVerticalLayoutPoint3InsidePage0,
-                                /*expect_mouse_events_handled=*/true);
+  ApplyStrokeWithMousePoints(kTwoPageVerticalLayoutPoint1InsidePage0,
+                             kStrokeMoves,
+                             kTwoPageVerticalLayoutPoint3InsidePage0,
+                             /*expect_mouse_events_handled=*/true);
 
-  const PdfInkModule::DocumentInkStrokeInputPointsMap
-      document_strokes_positions =
-          ink_module().GetInkStrokesInputPositionsForTesting();
-  const PdfInkModule::InkStrokeInputPoints kSegment1 = {
-      gfx::PointF(5.0f, 5.0f), gfx::PointF(5.0f, 0.0f)};
-  const PdfInkModule::InkStrokeInputPoints kSegment2 = {
-      gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f)};
+  const PdfInkModule::DocumentStrokeInputPointsMap document_strokes_positions =
+      ink_module().GetStrokesInputPositionsForTesting();
+  const PdfInkModule::StrokeInputPoints kSegment1 = {gfx::PointF(5.0f, 5.0f),
+                                                     gfx::PointF(5.0f, 0.0f)};
+  const PdfInkModule::StrokeInputPoints kSegment2 = {gfx::PointF(10.0f, 0.0f),
+                                                     gfx::PointF(10.0f, 5.0f)};
   EXPECT_THAT(document_strokes_positions,
-              ElementsAre(Pair(0, PdfInkModule::PageInkStrokeInputPoints{
+              ElementsAre(Pair(0, PdfInkModule::PageStrokeInputPoints{
                                       {kSegment1, kSegment2}})));
 }
 
