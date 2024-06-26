@@ -479,6 +479,42 @@ String InspectorPageAgent::CachedResourceTypeJson(
   return ResourceTypeJson(ToResourceType(cached_resource.GetType()));
 }
 
+InspectorPageAgent::PageReloadScriptInjection::PageReloadScriptInjection(
+    InspectorAgentState& agent_state)
+    : pending_script_to_evaluate_on_load_once_(&agent_state,
+                                               /*default_value=*/{}),
+      target_url_for_pending_script_(&agent_state,
+                                     /*default_value=*/{}) {}
+
+void InspectorPageAgent::PageReloadScriptInjection::clear() {
+  script_to_evaluate_on_load_once_ = {};
+  pending_script_to_evaluate_on_load_once_.Set({});
+  target_url_for_pending_script_.Set({});
+}
+
+void InspectorPageAgent::PageReloadScriptInjection::SetPending(
+    String script,
+    const KURL& target_url) {
+  pending_script_to_evaluate_on_load_once_.Set(script);
+  target_url_for_pending_script_.Set(target_url.GetString().GetString());
+}
+
+void InspectorPageAgent::PageReloadScriptInjection::PromoteToLoadOnce() {
+  script_to_evaluate_on_load_once_ =
+      pending_script_to_evaluate_on_load_once_.Get();
+  target_url_for_active_script_ = target_url_for_pending_script_.Get();
+  pending_script_to_evaluate_on_load_once_.Set({});
+  target_url_for_pending_script_.Set({});
+}
+
+String InspectorPageAgent::PageReloadScriptInjection::GetScriptForInjection(
+    const KURL& target_url) {
+  if (target_url_for_active_script_ == target_url.GetString()) {
+    return script_to_evaluate_on_load_once_;
+  }
+  return {};
+}
+
 InspectorPageAgent::InspectorPageAgent(
     InspectedFrames* inspected_frames,
     Client* client,
@@ -495,8 +531,6 @@ InspectorPageAgent::InspectorPageAgent(
       screencast_enabled_(&agent_state_, /*default_value=*/false),
       lifecycle_events_enabled_(&agent_state_, /*default_value=*/false),
       bypass_csp_enabled_(&agent_state_, /*default_value=*/false),
-      pending_script_to_evaluate_on_load_once_(&agent_state_,
-                                               /*default_value=*/String()),
       scripts_to_evaluate_on_load_(&agent_state_,
                                    /*default_value=*/String()),
       worlds_to_evaluate_on_load_(&agent_state_,
@@ -506,7 +540,8 @@ InspectorPageAgent::InspectorPageAgent(
           /*default_value=*/false),
       standard_font_size_(&agent_state_, /*default_value=*/0),
       fixed_font_size_(&agent_state_, /*default_value=*/0),
-      script_font_families_cbor_(&agent_state_, std::vector<uint8_t>()) {}
+      script_font_families_cbor_(&agent_state_, std::vector<uint8_t>()),
+      script_injection_on_load_(agent_state_) {}
 
 void InspectorPageAgent::Restore() {
   if (enabled_.Get())
@@ -545,8 +580,7 @@ protocol::Response InspectorPageAgent::enable() {
 protocol::Response InspectorPageAgent::disable() {
   agent_state_.ClearAllFields();
   pending_isolated_worlds_.clear();
-  script_to_evaluate_on_load_once_ = String();
-  pending_script_to_evaluate_on_load_once_.Set(String());
+  script_injection_on_load_.clear();
   instrumenting_agents_->RemoveInspectorPageAgent(this);
   inspector_resource_content_loader_->Cancel(
       resource_content_loader_client_id_);
@@ -673,8 +707,16 @@ protocol::Response InspectorPageAgent::reload(
     Maybe<bool> optional_bypass_cache,
     Maybe<String> optional_script_to_evaluate_on_load,
     Maybe<String> loader_id) {
-  pending_script_to_evaluate_on_load_once_.Set(
-      optional_script_to_evaluate_on_load.value_or(""));
+  if (loader_id.has_value() && inspected_frames_->Root()
+                                       ->Loader()
+                                       .GetDocumentLoader()
+                                       ->GetDevToolsNavigationToken()
+                                       .ToString() != loader_id->Ascii()) {
+    return protocol::Response::InvalidParams("Document already navigated");
+  }
+  script_injection_on_load_.SetPending(
+      optional_script_to_evaluate_on_load.value_or(""),
+      inspected_frames_->Root()->Loader().GetDocumentLoader()->Url());
   v8_session_->setSkipAllPauses(true);
   v8_session_->resume(true /* terminate on resume */);
   return protocol::Response::Success();
@@ -994,7 +1036,9 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
     EvaluateScriptOnNewDocument(*frame, key);
   }
 
-  if (script_to_evaluate_on_load_once_.empty()) {
+  String script = script_injection_on_load_.GetScriptForInjection(
+      frame->Loader().GetDocumentLoader()->Url());
+  if (script.empty()) {
     return;
   }
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
@@ -1002,9 +1046,8 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
     return;
   }
 
-  v8_session_->evaluate(
-      script_state->GetContext(),
-      ToV8InspectorStringView(script_to_evaluate_on_load_once_));
+  v8_session_->evaluate(script_state->GetContext(),
+                        ToV8InspectorStringView(script));
 }
 
 void InspectorPageAgent::EvaluateScriptOnNewDocument(
@@ -1054,9 +1097,7 @@ void InspectorPageAgent::LoadEventFired(LocalFrame* frame) {
 
 void InspectorPageAgent::WillCommitLoad(LocalFrame*, DocumentLoader* loader) {
   if (loader->GetFrame() == inspected_frames_->Root()) {
-    script_to_evaluate_on_load_once_ =
-        pending_script_to_evaluate_on_load_once_.Get();
-    pending_script_to_evaluate_on_load_once_.Set(String());
+    script_injection_on_load_.PromoteToLoadOnce();
   }
   GetFrontend()->frameNavigated(BuildObjectForFrame(loader->GetFrame()),
                                 protocol::Page::NavigationTypeEnum::Navigation);
