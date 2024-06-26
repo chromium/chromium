@@ -85,8 +85,6 @@ bool SnapGroupController::OnWindowSnapped(
     WindowSnapActionSource snap_action_source) {
   // Only consider valid snap action sources or the window is being
   // auto-snapped or transitioned from tablet mode.
-  // TODO(b/327269057): Investigate why transition can use
-  // `kAutoSnapInSplitView` as a snap action source.
   const bool can_group_or_replace =
       CanSnapActionSourceStartFasterSplitView(snap_action_source) ||
       snap_action_source ==
@@ -131,9 +129,10 @@ bool SnapGroupController::OnWindowSnapped(
       case WindowSnapActionSource::kDragWindowToEdgeToSnap:
       case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
       case WindowSnapActionSource::kDragOrSelectOverviewWindowToSnap:
-        // Else respect the opposite window's snap ratio. This is to give the
-        // impression of filling the layout and feels more intuitive to the
-        // user.
+      case WindowSnapActionSource::kAutoSnapInSplitView:
+        // Else if using a drag to snap or auto-snap action source, respect the
+        // opposite window's snap ratio. This is to give the impression of
+        // filling the layout and feels more intuitive to the user.
         target_window = opposite;
         break;
       default:

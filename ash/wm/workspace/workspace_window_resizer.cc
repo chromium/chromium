@@ -864,14 +864,17 @@ void WorkspaceWindowResizer::CompleteDrag() {
 
     // TODO(oshima): Add event source type to WMEvent and move
     // metrics recording inside WindowState::OnWMEvent.
-    // Set the target snap ratio to default for drag to snap.
-    // `SnapGroupController` will adjust the window bounds as needed.
+    // Use the target auto-snap ratio.
+    // TODO(b/349177630): Rename `GetPhantomSnapRatio()`.
     WMEventType type;
+    aura::Window* window = window_state()->window();
     switch (snap_type_) {
       case SnapType::kPrimary: {
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
         const WindowSnapWMEvent snap_primary_event(
-            WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+            WM_EVENT_SNAP_PRIMARY,
+            GetPhantomSnapRatio(window, window->GetRootWindow(),
+                                SnapViewType::kPrimary),
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_primary_event);
         return;
@@ -879,7 +882,9 @@ void WorkspaceWindowResizer::CompleteDrag() {
       case SnapType::kSecondary: {
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
         const WindowSnapWMEvent snap_secondary_event(
-            WM_EVENT_SNAP_SECONDARY, chromeos::kDefaultSnapRatio,
+            WM_EVENT_SNAP_SECONDARY,
+            GetPhantomSnapRatio(window, window->GetRootWindow(),
+                                SnapViewType::kSecondary),
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_secondary_event);
         return;
@@ -892,7 +897,6 @@ void WorkspaceWindowResizer::CompleteDrag() {
         // window is still maximized, telling window state to maximize will be a
         // no-op, so reset the bounds manually here.
         if (window_state()->IsMaximized()) {
-          aura::Window* window = window_state()->window();
           CrossFadeAnimation(
               window, screen_util::GetMaximizedWindowBoundsInParent(window),
               /*maximize=*/true);

@@ -2694,33 +2694,6 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInPortrait) {
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
 
-// Tests that we can create a Snap Group with a floated window.
-TEST_F(SnapGroupTest, SnapGroupCreationWithFloatedWindow) {
-  std::unique_ptr<aura::Window> normal_window(CreateAppWindow());
-  std::unique_ptr<aura::Window> floated_window(CreateAppWindow());
-  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
-  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
-
-  SnapOneTestWindow(normal_window.get(),
-                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
-                    chromeos::kDefaultSnapRatio);
-  VerifySplitViewOverviewSession(normal_window.get());
-  OverviewItemBase* floated_window_overview_item =
-      GetOverviewItemForWindow(floated_window.get());
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
-      floated_window_overview_item->target_bounds().CenterPoint()));
-  event_generator->ClickLeftButton();
-
-  // Verify that Snap Group will be formed after activating `floated_window` in
-  // partial Overview.
-  VerifyNotSplitViewOverviewSession(normal_window.get());
-  EXPECT_FALSE(WindowState::Get(floated_window.get())->IsFloated());
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(
-      normal_window.get(), floated_window.get()));
-}
-
 // Verify snap group will not be formed when attempting to include a window from
 // the always-on-top container.
 TEST_F(SnapGroupTest, DisallowFormSnapGroupWithAlwaysOnTopWindow) {
@@ -3589,6 +3562,106 @@ TEST_F(SnapGroupTest, UnresizableCanSnapWindowWontFormSnapGroup) {
             WindowState::Get(normal.get())->GetStateType());
   EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(normal.get(),
                                                             unresizable.get()));
+}
+
+// -----------------------------------------------------------------------------
+// SnapGroupFloatTest:
+
+using SnapGroupFloatTest = SnapGroupTest;
+
+// Tests that we can create a Snap Group with a floated window.
+TEST_F(SnapGroupFloatTest, SnapGroupCreationWithFloatedWindow) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<aura::Window> normal_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> floated_window(CreateAppWindow());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  SnapOneTestWindow(normal_window.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  WaitForOverviewEntered();
+  VerifySplitViewOverviewSession(normal_window.get());
+  OverviewItemBase* floated_window_overview_item =
+      GetOverviewItemForWindow(floated_window.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
+      floated_window_overview_item->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  WaitForOverviewExitAnimation();
+
+  // Verify that Snap Group will be formed after activating `floated_window` in
+  // partial Overview.
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(WindowState::Get(floated_window.get())->IsFloated());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(
+      normal_window.get(), floated_window.get()));
+  UnionBoundsEqualToWorkAreaBounds(normal_window.get(), floated_window.get(),
+                                   snap_group_divider());
+}
+
+// Tests that creating a snap group, then floating a window in the group, then
+// re-snapping snaps to the correct bounds. See http://b/349177630 for context.
+TEST_F(SnapGroupFloatTest, ReSnapFloatedWindow) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+
+  // 1 - Snap `w1` to 2/3 and `w2` to 1/3.
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kTwoThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  WaitForOverviewEntered();
+  auto* event_generator = GetEventGenerator();
+  ClickOverviewItem(event_generator, w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  WaitForOverviewExitAnimation();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Float `w2`.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(w2.get())->IsFloated());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Drag to snap `w2` to secondary. Test it snaps at 1/3 from the right.
+  event_generator->MoveMouseTo(GetDragPoint(w2.get()));
+  event_generator->DragMouseTo(work_area_bounds().right_center());
+  ASSERT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_EQ(
+      std::round(work_area_bounds().width() * chromeos::kTwoThirdSnapRatio),
+      snap_group_divider_bounds_in_screen().CenterPoint().x());
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio,
+              *WindowState::Get(w1.get())->snap_ratio(), 0.01);
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              *WindowState::Get(w2.get())->snap_ratio(), 0.01);
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Float `w1`.
+  wm::ActivateWindow(w1.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(w1.get())->IsFloated());
+  ASSERT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Drag to snap `w1` to primary. Test it snaps at 2/3 from the left.
+  event_generator->MoveMouseTo(GetDragPoint(w1.get()));
+  event_generator->DragMouseTo(work_area_bounds().left_center());
+  ASSERT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_EQ(
+      std::round(work_area_bounds().width() * chromeos::kTwoThirdSnapRatio),
+      snap_group_divider_bounds_in_screen().CenterPoint().x());
+  EXPECT_NEAR(chromeos::kTwoThirdSnapRatio,
+              *WindowState::Get(w1.get())->snap_ratio(), 0.01);
+  EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
+              *WindowState::Get(w2.get())->snap_ratio(), 0.01);
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
 
 // -----------------------------------------------------------------------------

@@ -565,9 +565,12 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   }
 
   std::unique_ptr<base::AutoReset<bool>> auto_reset;
+  // Ignore received events during the float animation, except for float -> snap
+  // events in order to process the received snapped bounds events.
+  // TODO(b/347723336): See if we can re-enable this for snap events.
   if (event->type() == WM_EVENT_FLOAT ||
       (current_state_->GetType() == chromeos::WindowStateType::kFloated &&
-       event->IsTransitionEvent())) {
+       event->IsTransitionEvent() && !event->IsSnapEvent())) {
     auto_reset = std::make_unique<base::AutoReset<bool>>(
         &is_handling_float_event_, true);
   }
