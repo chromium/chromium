@@ -5250,6 +5250,7 @@ if (!is_android) {
         "//chrome/browser/ash/drive:test_support",
         "//chrome/browser/ash/eche_app:browser_tests",
         "//chrome/browser/ash/geolocation:browser_tests",
+        "//chrome/browser/ash/hats",
         "//chrome/browser/ash/kerberos",
         "//chrome/browser/ash/lock_screen_apps:browser_tests",
         "//chrome/browser/ash/login/oobe_quick_start/connectivity:test_support",

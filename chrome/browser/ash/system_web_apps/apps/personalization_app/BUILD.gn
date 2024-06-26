@@ -57,6 +57,7 @@ source_set("personalization_app") {
     "//ash/webui/personalization_app/mojom:mojom_shared",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
     "//base",
+    "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/profiles:profile",

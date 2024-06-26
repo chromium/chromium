@@ -17,6 +17,7 @@ source_set("privacy_hub") {
   ]
   deps = [
     "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
     "//components/session_manager/core",
   ]
@@ -35,6 +36,7 @@ source_set("browser_tests") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/hats",
     "//chrome/test:test_support",
   ]
 }

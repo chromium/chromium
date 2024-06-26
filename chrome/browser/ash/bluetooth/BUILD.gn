@@ -25,6 +25,7 @@ source_set("bluetooth") {
   public_deps = [
     "//ash",
     "//base",
+    "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//device/bluetooth",
