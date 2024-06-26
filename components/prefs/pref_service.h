@@ -23,6 +23,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -109,7 +110,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
     // Returns the name of the Preference (i.e., the key, e.g.,
     // browser.window_placement).
-    std::string name() const { return name_; }
+    const std::string& name() const { return name_; }
 
     // Returns the registered type of the preference.
     base::Value::Type GetType() const { return type_; }
@@ -196,7 +197,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     const uint32_t registration_flags_;
 
     // Reference to the PrefService in which this pref was created.
-    const raw_ptr<const PrefService> pref_service_;
+    const raw_ref<const PrefService> pref_service_;
   };
 
   // You may wish to use PrefServiceFactory or one of its subclasses

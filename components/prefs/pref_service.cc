@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -615,7 +616,7 @@ PrefService::Preference::Preference(const PrefService* service,
       // Cache the registration flags at creation time to avoid multiple map
       // lookups later.
       registration_flags_(service->pref_registry_->GetRegistrationFlags(name_)),
-      pref_service_(service) {}
+      pref_service_(CHECK_DEREF(service)) {}
 
 const base::Value* PrefService::Preference::GetValue() const {
   return pref_service_->GetPreferenceValue(name_);
