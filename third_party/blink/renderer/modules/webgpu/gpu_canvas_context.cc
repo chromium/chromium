@@ -886,13 +886,13 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   const auto canvas_context_color = CanvasRenderingContextSkColorInfo();
   const auto info =
       SkImageInfo::Make(gfx::SizeToSkISize(size), canvas_context_color);
-  // We tag the SharedImage inside the WebGPUImageProvider with display usage
+  // We tag the SharedImage inside the WebGPUImageProvider with display usages
   // since there are uncommon paths which may use this snapshot for compositing.
   // These paths are usually related to either printing or either video and
   // usually related to OffscreenCanvas; in cases where the image created from
   // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-      info, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      info, swap_buffers_->GetSharedImageUsagesForDisplay());
   if (!resource_provider)
     return nullptr;
 

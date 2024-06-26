@@ -146,10 +146,11 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
     uint32_t usage = gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
                      gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-                     gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+                     GetSharedImageUsagesForDisplay();
     if (usage_ & wgpu::TextureUsage::StorageBinding) {
       usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
     }
+
     auto client_shared_image = sii->CreateSharedImage(
         {Format(), size, PredefinedColorSpaceToGfxColorSpace(color_space_),
          kTopLeft_GrSurfaceOrigin, alpha_mode, usage,
@@ -425,6 +426,21 @@ WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() {
         context_provider->ContextProvider()->SharedImageInterface();
     sii->DestroySharedImage(access_finished_token, std::move(shared_image));
   }
+}
+
+gpu::SharedImageUsageSet
+WebGPUSwapBufferProvider::GetSharedImageUsagesForDisplay() {
+#if BUILDFLAG(IS_MAC)
+  // On Mac it is safe to allow SharedImages created with WebGPU usage that will
+  // be sent to the display to be used as overlays, as specifying WebGPU usage
+  // when creating a SharedImage forces that SharedImage to be backed by an
+  // IOSurface.
+  return gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+#else
+  // On other platforms we cannot assume and do not require that a SharedImage
+  // created with WebGPU usage be backed by a native buffer.
+  return gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+#endif
 }
 
 gpu::Mailbox WebGPUSwapBufferProvider::GetCurrentMailboxForTesting() const {

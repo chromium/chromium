@@ -12,6 +12,7 @@
 #include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
@@ -98,6 +99,10 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
+
+  // Gets the appropriate SharedImage usages to add when a SharedImage that will
+  // be used with WebGPU will additionally be sent to the display.
+  gpu::SharedImageUsageSet GetSharedImageUsagesForDisplay();
 
   gpu::Mailbox GetCurrentMailboxForTesting() const;
 
