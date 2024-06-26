@@ -81,11 +81,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
   override selectable: string = '.selectable';
   isSelectable: (item: T) => boolean = (_item) => false;
   protected numItemsDisplayed_: number = 0;
-
-  // Map for mapping the index in the selectable items to the index in the
-  // full list of items. Used to set numItemsDisplayed_ when a specific
-  // selectable item is specified.
-  private selectableIndexToItemIndex_: Map<number, number> = new Map();
+  protected numItemsSelectable_: number = 0;
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -102,16 +98,11 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     if (changedProperties.has('items') || changedProperties.has('selectable')) {
       // Perform state updates.
       if (this.items.length === 0) {
-        this.selectableIndexToItemIndex_.clear();
+        this.numItemsSelectable_ = 0;
         this.numItemsDisplayed_ = 0;
       } else {
-        this.selectableIndexToItemIndex_.clear();
-        this.items.forEach((item, index) => {
-          if (this.isSelectable(item)) {
-            this.selectableIndexToItemIndex_.set(
-                this.selectableIndexToItemIndex_.size, index);
-          }
-        });
+        this.numItemsSelectable_ =
+            this.items.filter(item => this.isSelectable(item)).length;
         this.numItemsDisplayed_ =
             Math.min(this.numItemsDisplayed_, this.items.length);
       }
@@ -157,7 +148,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
 
   async scrollIndexIntoView(index: number) {
     assert(
-        index >= 0 && index < this.selectableIndexToItemIndex_.size,
+        index >= 0 && index < this.numItemsSelectable_,
         'Index is out of range.');
     await this.ensureSelectableDomItemAvailable_(index);
     this.getSelectableDomItem_(index)!.scrollIntoView(
@@ -171,7 +162,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
   async navigate(key: string, focusItem?: boolean) {
     if ((key === 'ArrowUp' && this.selected === 0) || key === 'End') {
       await this.ensureAllDomItemsAvailable();
-      this.selected = this.selectableIndexToItemIndex_.size - 1;
+      this.selected = this.numItemsSelectable_ - 1;
     } else {
       switch (key) {
         case 'ArrowUp':
@@ -184,7 +175,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
           this.selected = 0;
           break;
         case 'End':
-          this.selected = this.selectableIndexToItemIndex_.size - 1;
+          this.selected = this.numItemsSelectable_ - 1;
           break;
       }
     }
@@ -216,23 +207,28 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
    * item at the specified index is present.
    */
   private async ensureSelectableDomItemAvailable_(selectableItemIndex: number) {
-    const itemIndex =
-        this.selectableIndexToItemIndex_.get(selectableItemIndex)!;
-    if (itemIndex >= this.numItemsDisplayed_) {
-      await this.updateNumItemsDisplayed_(itemIndex + 1);
+    const additionalSelectableItemsToRender =
+        selectableItemIndex + 1 - this.queryItems().length;
+    if (additionalSelectableItemsToRender <= 0) {
+      return;
     }
+
+    let selectableItemsFound = 0;
+    let itemIndex = this.numItemsDisplayed_;
+    while (selectableItemsFound < additionalSelectableItemsToRender) {
+      assert(itemIndex < this.items.length);
+      if (this.isSelectable(this.items[itemIndex]!)) {
+        selectableItemsFound++;
+      }
+      itemIndex++;
+    }
+    await this.updateNumItemsDisplayed_(itemIndex + 1);
   }
 
-  private getDomItem_(index: number): HTMLElement|undefined {
-    const slot = this.shadowRoot!.querySelector('slot');
-    assert(slot);
-    return slot.assignedElements()[index] as HTMLElement;
-  }
-
-  private getSelectableDomItem_(selectableItemIndex: number): HTMLElement
-      |undefined {
-    return this.getDomItem_(
-        this.selectableIndexToItemIndex_.get(selectableItemIndex)!);
+  private getSelectableDomItem_(selectableItemIndex: number): HTMLElement|null {
+    const indexSelector = `[data-selection-index="${selectableItemIndex}"]`;
+    return this.querySelector(
+        `:scope > :is(${this.selectable})${indexSelector}`);
   }
 
   async fillCurrentViewHeight() {
@@ -350,8 +346,8 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
       // Since the new selectable items' length might be smaller than the old
       // selectable items' length, we need to check if the selected index is
       // still valid and if not adjust it.
-      if ((this.selected as number) >= this.selectableIndexToItemIndex_.size) {
-        this.selected = this.selectableIndexToItemIndex_.size - 1;
+      if ((this.selected as number) >= this.numItemsSelectable_) {
+        this.selected = this.numItemsSelectable_ - 1;
       }
 
       // Restore focus to the selected item if necessary.
@@ -413,7 +409,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
       return;
     }
 
-    if (selectedIndex === this.selectableIndexToItemIndex_.size - 1) {
+    if (selectedIndex === this.numItemsSelectable_ - 1) {
       this.selectedItem!.scrollIntoView({behavior: 'smooth'});
       return;
     }
@@ -426,7 +422,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
     }
 
     const nextItemIndex = (this.selected as number) + 1;
-    if (nextItemIndex < this.selectableIndexToItemIndex_.size) {
+    if (nextItemIndex < this.numItemsSelectable_) {
       await this.ensureSelectableDomItemAvailable_(nextItemIndex);
 
       const nextItem = this.getSelectableDomItem_(nextItemIndex)!;
@@ -454,8 +450,7 @@ export class InfiniteList<T = object> extends InfiniteListElementBase {
 
     if (index !== this.selected) {
       assert(
-          index < this.selectableIndexToItemIndex_.size,
-          'Selection index is out of range.');
+          index < this.numItemsSelectable_, 'Selection index is out of range.');
       await this.ensureSelectableDomItemAvailable_(index);
       this.selected = index;
     }
