@@ -59,7 +59,6 @@ class MockInputRouter : public InputRouter {
   void OnHasTouchEventConsumers(
       blink::mojom::TouchEventConsumersPtr consumers) override;
   void WaitForInputProcessed(base::OnceClosure callback) override {}
-  void FlushTouchEventQueue() override {}
 
   bool sent_mouse_event_;
   bool sent_wheel_event_;

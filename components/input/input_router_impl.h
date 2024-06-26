@@ -110,7 +110,6 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
   void OnHasTouchEventConsumers(
       blink::mojom::TouchEventConsumersPtr consumers) override;
   void WaitForInputProcessed(base::OnceClosure callback) override;
-  void FlushTouchEventQueue() override;
 
   // Exposed so that tests can swap out the implementation and intercept calls.
   mojo::Receiver<blink::mojom::WidgetInputHandlerHost>&

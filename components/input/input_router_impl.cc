@@ -784,10 +784,6 @@ void InputRouterImpl::WaitForInputProcessed(base::OnceClosure callback) {
   client_->GetWidgetInputHandler()->WaitForInputProcessed(std::move(callback));
 }
 
-void InputRouterImpl::FlushTouchEventQueue() {
-  touch_event_queue_.FlushQueue();
-}
-
 void InputRouterImpl::ForceSetTouchActionAuto() {
   touch_action_filter_.OnSetTouchAction(cc::TouchAction::kAuto);
   // TODO(xidachen): Call FlushDeferredGestureQueue when this flag is enabled.

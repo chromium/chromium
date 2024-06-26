@@ -107,10 +107,6 @@ class InputRouter {
   // OOPIF hit-testing will need to wait until updated CompositorFrames have
   // been submitted to the browser.
   virtual void WaitForInputProcessed(base::OnceClosure callback) = 0;
-
-  // Acks any pending touch events that are waiting for acks from the renderer.
-  // Any future acks for those events from the renderer will be ignored.
-  virtual void FlushTouchEventQueue() = 0;
 };
 
 }  // namespace input
