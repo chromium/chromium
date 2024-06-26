@@ -498,7 +498,7 @@ public class FeedSurfaceCoordinator
                 SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
                 optionsCoordinator.getView());
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
+        if (mNtpHeader != null && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
             int bottomPadding =
                     mActivity.getResources().getDimensionPixelSize(R.dimen.feed_header_top_margin);
             mNtpHeader.setPadding(

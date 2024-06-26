@@ -9452,6 +9452,21 @@
             ]
         }
     ],
+    "FeedContainment": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FeedContainment"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedLoadingPlaceholder": [
         {
             "platforms": [
