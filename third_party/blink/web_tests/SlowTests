@@ -1325,7 +1325,7 @@ crbug.com/1381545 [ Mac12-arm64 Release ] virtual/wasm-code-caching/http/tests/w
 crbug.com/1381545 [ Release Win ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Slow ]
 
 crbug.com/1410608 http/tests/inspector-protocol/storage/dom-storage-set-items-by-storage-key.js [ Slow ]
-
+crbug.com/349636595 inspector-protocol/layout-fonts/generic-font-families.js [ Slow ]
 
 crbug.com/1376679 [ Mac12 Release ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Slow ]
 crbug.com/1450858 virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Slow ]
