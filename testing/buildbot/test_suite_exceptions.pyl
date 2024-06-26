@@ -1591,34 +1591,6 @@
       },
     },
   },
-  'chrome_sizes': {
-    'modifications': {
-      'lacros-amd64-generic-chrome': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Ubuntu-22.04',
-          },
-        },
-      },
-      'lacros-arm-generic-chrome': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Ubuntu-22.04',
-          },
-        },
-      },
-      'lacros-arm64-generic-chrome': {
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Ubuntu-22.04',
-          },
-        },
-      },
-    },
-  },
   'chromedriver_py_tests': {
     'modifications': {
       'Win10 Tests x64': {
