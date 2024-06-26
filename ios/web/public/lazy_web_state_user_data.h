@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#import "ios/web/public/web_state.h"
+#include "ios/web/public/web_state.h"
 
 // This macro declares a static variable inside the class that inherits from
 // LazyWebStateUserData. The address of this static variable is used as the key
@@ -66,8 +66,9 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
   // action is triggered.
   template <typename... Args>
   static T* GetOrCreateForWebState(WebState* web_state, Args&&... args) {
-    DCHECK(web_state);
+    CHECK(web_state, base::NotFatalUntil::M131);
     if (!FromWebState(web_state)) {
+      CHECK(!web_state->IsBeingDestroyed(), base::NotFatalUntil::M131);
       web_state->SetUserData(
           UserDataKey(),
           base::WrapUnique(new T(web_state, std::forward<Args>(args)...)));
