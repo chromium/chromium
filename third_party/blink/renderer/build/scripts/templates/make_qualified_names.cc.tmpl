@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 namespace {{cpp_namespace}} {
@@ -70,7 +71,7 @@ void Init() {
   {% set attrnames = attrs|map(attribute='name')|list() %}
   static const NameEntry kNames[] = {
   {% for name, tag_list in (tags + attrs)|groupby('name')|sort(attribute=0, case_sensitive=True) %}
-    { "{{name}}", {{name.original|hash}}, {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
+    { "{{name}}", StringHasher::ComputeHashStatically("{{name.original}}"), {{name.original|length}}, {{ (name in tagnames)|int }}, {{ (name in attrnames)|int }} },
   {% endfor %}
   };
 

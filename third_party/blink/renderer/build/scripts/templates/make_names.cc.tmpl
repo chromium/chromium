@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace blink {
 namespace {{namespace}} {
@@ -32,7 +33,7 @@ void Init{{suffix}}() {
 
   static const NameEntry kNames[] = {
   {% for entry in entries|sort(attribute='name', case_sensitive=True) %}
-    { "{{entry|cpp_name}}", {{entry|cpp_name|hash}}, {{entry|cpp_name|length}} },
+    { "{{entry|cpp_name}}", StringHasher::ComputeHashStatically("{{entry|cpp_name}}"), {{entry|cpp_name|length}} },
   {% endfor %}
   };
 

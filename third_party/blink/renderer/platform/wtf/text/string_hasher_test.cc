@@ -427,4 +427,9 @@ TEST(StringHasherTest, StringHasher_hashMemory) {
   EXPECT_EQ(kTestBHash5 & 0xFFFFFF, StringHasher::HashMemory<10>(kTestBUChars));
 }
 
+// Verify that we can use ComputeHashStatically() in a constant expression.
+// The actual value does not matter; it can change if StringHasher changes.
+static_assert(StringHasher::ComputeHashStatically("abc") == 3432278146);
+static_assert(StringHasher::ComputeHashStatically("abc", 3) == 3432278146);
+
 }  // namespace WTF

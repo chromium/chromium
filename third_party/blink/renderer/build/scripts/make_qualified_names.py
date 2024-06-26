@@ -29,7 +29,6 @@
 
 import copy
 
-import hasher
 import json5_generator
 import template_expander
 
@@ -52,7 +51,6 @@ class MakeQualifiedNamesWriter(json5_generator.Writer):
         'namespaceURI': '',
     }
     filters = {
-        'hash': hasher.hash,
         'symbol': _symbol,
         'tag_symbol': tag_symbol_for_entry,
     }

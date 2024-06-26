@@ -29,7 +29,6 @@
 
 import os
 
-import hasher
 import json5_generator
 import template_expander
 import name_utilities
@@ -59,7 +58,6 @@ class MakeNamesWriter(json5_generator.Writer):
     }
     filters = {
         'cpp_name': name_utilities.cpp_name,
-        'hash': hasher.hash,
         'symbol': _symbol,
     }
 
