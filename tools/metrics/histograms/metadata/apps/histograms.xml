@@ -1419,6 +1419,7 @@ chromium-metrics-reviews@google.com.
     per week. It's triggered at user login, and do a quick file scan to get the
     metrics.
   </summary>
+  <token key="SearchFileExtension" variants="SearchFileExtension"/>
 </histogram>
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
