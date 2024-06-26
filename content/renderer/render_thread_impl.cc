@@ -1453,18 +1453,16 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
 }
 
 void RenderThreadImpl::CreateAgentSchedulingGroup(
-    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {
-  agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      *this, std::move(bootstrap), std::move(broker_remote)));
+    mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap) {
+  agent_scheduling_groups_.emplace(
+      std::make_unique<AgentSchedulingGroup>(*this, std::move(bootstrap)));
 }
 
 void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-        agent_scheduling_group,
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote) {
+        agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      *this, std::move(agent_scheduling_group), std::move(broker_remote)));
+      *this, std::move(agent_scheduling_group)));
 }
 
 void RenderThreadImpl::TransferSharedLastForegroundTime(

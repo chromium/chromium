@@ -10,7 +10,6 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -55,10 +54,6 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   WebThreadScheduler& GetMainThreadScheduler() override;
   v8::Isolate* Isolate() override;
 
-  void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
-      override;
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
   void AddAgent(Agent* agent) override;
   void Trace(Visitor*) const override;
   void OnUrgentMessageReceived() override;
@@ -105,9 +100,6 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
           "There is no compelling reason to make base::UnguessableToken "
           "compatible with WTF::HashMap");
   bool is_updating_policy_ = false;
-
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  BrowserInterfaceBrokerProxy broker_;
 };
 
 }  // namespace scheduler

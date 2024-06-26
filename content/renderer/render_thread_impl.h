@@ -403,14 +403,10 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // mojom::Renderer:
   void CreateAgentSchedulingGroup(
-      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
-      override;
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap) override;
   void CreateAssociatedAgentSchedulingGroup(
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-          agent_scheduling_group,
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
-      override;
+          agent_scheduling_group) override;
   void TransferSharedLastForegroundTime(
       base::ReadOnlySharedMemoryRegion last_foreground_time_region) override;
   void OnNetworkConnectionChanged(

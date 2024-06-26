@@ -381,12 +381,6 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   WebThreadScheduler& GetMainThreadScheduler() override {
     return *main_thread_scheduler_;
   }
-  void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote_broker)
-      override {}
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
-    return GetEmptyBrowserInterfaceBroker();
-  }
   v8::Isolate* Isolate() override { return main_thread_scheduler_->Isolate(); }
   void AddAgent(Agent* agent) override {}
   void OnUrgentMessageReceived() override {}

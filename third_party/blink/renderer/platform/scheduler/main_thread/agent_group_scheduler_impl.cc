@@ -93,18 +93,6 @@ WebThreadScheduler& AgentGroupSchedulerImpl::GetMainThreadScheduler() {
   return *main_thread_scheduler_;
 }
 
-void AgentGroupSchedulerImpl::BindInterfaceBroker(
-    mojo::PendingRemote<mojom::BrowserInterfaceBroker> remote_broker) {
-  DCHECK(!broker_.is_bound());
-  broker_.Bind(std::move(remote_broker), default_task_runner_);
-}
-
-BrowserInterfaceBrokerProxy&
-AgentGroupSchedulerImpl::GetBrowserInterfaceBroker() {
-  DCHECK(broker_.is_bound());
-  return broker_;
-}
-
 v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
   // TODO(dtapuska): crbug.com/1051790 implement an Isolate per scheduler.
   v8::Isolate* isolate = main_thread_scheduler_->isolate();

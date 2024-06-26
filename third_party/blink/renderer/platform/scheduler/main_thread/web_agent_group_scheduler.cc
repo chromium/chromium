@@ -21,11 +21,6 @@ AgentGroupScheduler& WebAgentGroupScheduler::GetAgentGroupScheduler() {
   return *private_;
 }
 
-void WebAgentGroupScheduler::BindInterfaceBroker(
-    mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
-  private_->BindInterfaceBroker(std::move(broker));
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 WebAgentGroupScheduler::DefaultTaskRunner() {
   return private_->DefaultTaskRunner();

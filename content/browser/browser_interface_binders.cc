@@ -1659,15 +1659,6 @@ void PopulateBinderMap(ServiceWorkerHost* host, mojo::BinderMap* map) {
   PopulateServiceWorkerBinders(host, map);
 }
 
-// AgentSchedulingGroup
-void PopulateBinderMapWithContext(
-    AgentSchedulingGroupHost* host,
-    mojo::BinderMapWithContext<AgentSchedulingGroupHost*>* map) {}
-void PopulateBinderMap(AgentSchedulingGroupHost* host, mojo::BinderMap* map) {}
-AgentSchedulingGroupHost* GetContextForHost(AgentSchedulingGroupHost* host) {
-  return host;
-}
-
 }  // namespace internal
 
 void OverrideBatteryMonitorBinderForTesting(BatteryMonitorBinder binder) {

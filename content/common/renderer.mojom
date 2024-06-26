@@ -54,11 +54,8 @@ interface Renderer {
   // This will create an "independent" agent scheduling group that is not
   // associated with the process-wide or other groups' IPC channels, meaning
   // there is no guaranteed ordering between them.
-  // `broker_remote` is the BrowserInterfaceBroker bound to the newly-created
-  // AgentSchedulingGroup.
   CreateAgentSchedulingGroup(
-    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap,
-    pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
+    pending_receiver<IPC.mojom.ChannelBootstrap> bootstrap);
 
   // Tells the renderer to create a new AgentSchedulingGroup, that will
   // listen to messages sent by the host via the pending
@@ -66,11 +63,8 @@ interface Renderer {
   // This will create an agent scheduling group that is associated with the
   // process-wide IPC channel, preserving message ordering across different
   // agent scheduling groups.
-  // `broker_remote` is the BrowserInterfaceBroker bound to the newly-created
-  // AgentSchedulingGroup.
   CreateAssociatedAgentSchedulingGroup(
-    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group,
-    pending_remote<blink.mojom.BrowserInterfaceBroker> broker_remote);
+    pending_associated_receiver<AgentSchedulingGroup> agent_scheduling_group);
 
   // Transfers the ReadOnlySharedMemoryRegion which is used to communicate the
   // `std::atomic<base::TimeTicks>` representing the time at which this renderer

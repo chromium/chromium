@@ -35,10 +35,6 @@ class BLINK_PLATFORM_EXPORT WebAgentGroupScheduler
   WebAgentGroupScheduler() = delete;
   ~WebAgentGroupScheduler() override;
 
-  // Bind this AgentSchedulingGroup's BrowserInterfaceBroker.
-  void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>);
-
   // Default task runner for an AgentSchedulingGroup.
   // Default task runners for different AgentSchedulingGroup would be
   // independent and won't have any ordering guarantees between them.

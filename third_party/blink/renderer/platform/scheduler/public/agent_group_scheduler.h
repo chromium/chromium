@@ -7,7 +7,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/urgent_message_observer.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -36,11 +35,6 @@ class BLINK_PLATFORM_EXPORT AgentGroupScheduler
   // associated WebThread.
   virtual std::unique_ptr<PageScheduler> CreatePageScheduler(
       PageScheduler::Delegate*) = 0;
-
-  virtual void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
-          remote_broker) = 0;
-  virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
 
   virtual void AddAgent(Agent* agent) = 0;
 

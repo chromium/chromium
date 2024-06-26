@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
-#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-forward.h"
@@ -57,12 +56,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
  public:
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap,
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
+      mojo::PendingReceiver<IPC::mojom::ChannelBootstrap> bootstrap);
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver,
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote);
+      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
   ~AgentSchedulingGroup() override;
 
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;

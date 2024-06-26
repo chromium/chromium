@@ -38,13 +38,6 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
     return *web_thread_scheduler_;
   }
 
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
-    return GetEmptyBrowserInterfaceBroker();
-  }
-
-  void BindInterfaceBroker(
-      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) override {}
-
   v8::Isolate* Isolate() override {
     NOTREACHED_IN_MIGRATION();
     return nullptr;

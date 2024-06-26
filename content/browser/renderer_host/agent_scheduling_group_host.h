@@ -12,7 +12,6 @@
 #include "base/memory/safe_ref.h"
 #include "base/state_transitions.h"
 #include "base/supports_user_data.h"
-#include "content/browser/browser_interface_broker_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/buildflags.h"
@@ -27,7 +26,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-forward.h"
@@ -110,8 +108,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       blink::mojom::WorkletGlobalScopeCreationParamsPtr
           global_scope_creation_params);
 
-  void ReportNoBinderForInterface(const std::string& error);
-
   static void set_agent_scheduling_group_host_factory_for_testing(
       AgentSchedulingGroupHostFactory* asgh_factory);
   static AgentSchedulingGroupHostFactory*
@@ -183,23 +179,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
   // calls from the (renderer-side) `AgentSchedulingGroup`.
   mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost> receiver_;
-
-  // BrowserInterfaceBroker implementation through which this
-  // AgentSchedulingGroupHost exposes ASG-scoped Mojo services to the
-  // currently active document.
-  //
-  // The interfaces that can be requested from this broker are defined in the
-  // content/browser/browser_interface_binders.cc file, in the functions which
-  // take a `AgentSchedulingGroupHost*` parameter.
-  //
-  // TODO(crbug.com/40150746): Enable capability control for Prerender2 by
-  // initializing BrowserInterfaceBrokerImpl with a non-null
-  // MojoBinderPolicyApplier pointer.
-  BrowserInterfaceBrokerImpl<AgentSchedulingGroupHost,
-                             AgentSchedulingGroupHost*>
-      broker_{this};
-  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
-      &broker_};
 
   // The `mojom::RouteProvider` mojo pair to setup
   // `blink::AssociatedInterfaceProvider` routes between this and the
