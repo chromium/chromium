@@ -44,7 +44,7 @@ message GetHostListResponse {
   repeated remoting.apis.v1.HostInfo hosts = 1;
 }
 
-// Sent from a Me2Me host to update it's info and online presence.
+// Legacy Heartbeat sent to update a host's info and online presence.
 message HeartbeatRequest {
   // Obsolete fields reserved to prevent reuse.
   reserved 1, 5;
@@ -117,6 +117,18 @@ message RegisterHostResponse {
   // An auth code nonce which can be exchanged for a new token from Gaia by the
   // robot account created for the new host instance.
   optional string auth_code = 2;
+}
+
+// Lightweight heartbeat message that just updates the host's timestamp.
+message SendHeartbeatRequest {
+  // Host identity. Normally a UUID.
+  optional string host_id = 1;
+}
+
+// Sent in response to a SendHeartbeatRequest.
+message SendHeartbeatResponse {
+  // The amount of time to wait before the host should send its next update.
+  optional int32 wait_interval_seconds = 1;
 }
 
 // Requests an auth_code with updated OAuth scopes.  Should only be called by
