@@ -64,7 +64,7 @@ enum VideoPixelFormat {
   PIXEL_FORMAT_ABGR = 27,  // 32bpp RGBA (byte-order), 1 plane.
   PIXEL_FORMAT_XBGR = 28,  // 24bpp RGBX (byte-order), 1 plane.
 
-  // 24bpp YUV planar 1x1 Y, 2x2 interleaved UV, 10 bits per channel.
+  // 15bpp YUV planar 1x1 Y, 2x2 interleaved UV, 10 bits per channel.
   // data in the high bits, zeros in the low bits, little-endian.
   PIXEL_FORMAT_P010LE = 29,
 
@@ -95,11 +95,11 @@ enum VideoPixelFormat {
   // 24bpp YUV planar 1x1 Y, 1x1 interleaved UV, 8 bits per channel.
   PIXEL_FORMAT_NV24 = 41,
 
-  // 32bpp YUV planar 1x1 Y, 2x1 interleaved UV, 10 bits per channel.
+  // 20bpp YUV planar 1x1 Y, 2x1 interleaved UV, 10 bits per channel.
   // data in the high bits, zeros in the low bits, little-endian.
   PIXEL_FORMAT_P210LE = 42,
 
-  // 48bpp YUV planar 1x1 Y, 1x1 interleaved UV, 10 bits per channel.
+  // 30bpp YUV planar 1x1 Y, 1x1 interleaved UV, 10 bits per channel.
   // data in the high bits, zeros in the low bits, little-endian.
   PIXEL_FORMAT_P410LE = 43,
 

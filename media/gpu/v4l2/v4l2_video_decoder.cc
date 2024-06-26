@@ -674,10 +674,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     // P010 and NV12, and then down sample to NV12 if it is selected. This is
     // not desired, so drop the candidates that don't match the bit depth of the
     // stream.
-    size_t candidate_bit_depth =
-        (candidate == Fourcc(Fourcc::MT2T))
-            ? 10u
-            : BitDepth(candidate->ToVideoPixelFormat());
+    size_t candidate_bit_depth = BitDepth(candidate->ToVideoPixelFormat());
     if (candidate_bit_depth != bit_depth) {
       DVLOGF(1) << "Enumerated format " << candidate->ToString()
                 << " with a bit depth of " << candidate_bit_depth

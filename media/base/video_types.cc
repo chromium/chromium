@@ -372,15 +372,15 @@ size_t BitDepth(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV420AP10:
     case PIXEL_FORMAT_YUV422AP10:
     case PIXEL_FORMAT_YUV444AP10:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
       return 10;
     case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
       return 12;
     case PIXEL_FORMAT_Y16:
-    case PIXEL_FORMAT_P010LE:
-    case PIXEL_FORMAT_P210LE:
-    case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_RGBAF16:
       return 16;
   }

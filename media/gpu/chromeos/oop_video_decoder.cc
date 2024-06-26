@@ -100,7 +100,7 @@ scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
       mojo_frame->metadata.needs_detiling &&
       mojo_frame->format == PIXEL_FORMAT_P010LE) {
     // This is a tiled, protected MTK format that is true 10bpp so it will
-    // not pass the tests in VerifyGpuMemoryBufferHandle for P016. Instead just
+    // not pass the tests in VerifyGpuMemoryBufferHandle for P010. Instead just
     // do the basic tests that would be done in that call here. This is safe to
     // do because the buffers for this will only go into the secure video
     // decoder which will fail on invalid buffer parameters.
@@ -114,8 +114,8 @@ scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
               << mojo_frame->coded_size.ToString();
       return nullptr;
     }
-    constexpr size_t kNumP016Planes = 2;
-    if (kNumP016Planes != mojo_frame->gpu_memory_buffer_handle
+    constexpr size_t kNumP010Planes = 2;
+    if (kNumP010Planes != mojo_frame->gpu_memory_buffer_handle
                               .native_pixmap_handle.planes.size()) {
       VLOGF(1) << "Invalid number of dmabuf planes passed: "
                << mojo_frame->gpu_memory_buffer_handle.native_pixmap_handle

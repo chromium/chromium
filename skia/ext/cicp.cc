@@ -208,6 +208,11 @@ bool CICPGetSkYUVColorSpace(uint8_t matrix_coefficients,
                                 ? kBT2020_12bit_Full_SkYUVColorSpace
                                 : kBT2020_12bit_Limited_SkYUVColorSpace;
           return true;
+        case 16:
+          yuv_color_space = full_range_flag
+                                ? kBT2020_16bit_Full_SkYUVColorSpace
+                                : kBT2020_16bit_Limited_SkYUVColorSpace;
+          return true;
         default:
           break;
       }

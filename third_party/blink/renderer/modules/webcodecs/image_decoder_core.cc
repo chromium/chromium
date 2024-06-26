@@ -67,12 +67,14 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
     case kBT2020_8bit_Full_SkYUVColorSpace:
     case kBT2020_10bit_Full_SkYUVColorSpace:
     case kBT2020_12bit_Full_SkYUVColorSpace:
+    case kBT2020_16bit_Full_SkYUVColorSpace:
       return gfx::ColorSpace(primary_id, transfer_id,
                              gfx::ColorSpace::MatrixID::BT2020_NCL,
                              gfx::ColorSpace::RangeID::FULL);
     case kBT2020_8bit_Limited_SkYUVColorSpace:
     case kBT2020_10bit_Limited_SkYUVColorSpace:
     case kBT2020_12bit_Limited_SkYUVColorSpace:
+    case kBT2020_16bit_Limited_SkYUVColorSpace:
       return gfx::ColorSpace(primary_id, transfer_id,
                              gfx::ColorSpace::MatrixID::BT2020_NCL,
                              gfx::ColorSpace::RangeID::LIMITED);
@@ -111,17 +113,18 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
     case kYCgCo_8bit_Full_SkYUVColorSpace:
     case kYCgCo_10bit_Full_SkYUVColorSpace:
     case kYCgCo_12bit_Full_SkYUVColorSpace:
+    case kYCgCo_16bit_Full_SkYUVColorSpace:
       return gfx::ColorSpace(primary_id, transfer_id,
                              gfx::ColorSpace::MatrixID::YCOCG,
                              gfx::ColorSpace::RangeID::FULL);
     case kYCgCo_8bit_Limited_SkYUVColorSpace:
     case kYCgCo_10bit_Limited_SkYUVColorSpace:
     case kYCgCo_12bit_Limited_SkYUVColorSpace:
+    case kYCgCo_16bit_Limited_SkYUVColorSpace:
       return gfx::ColorSpace(primary_id, transfer_id,
                              gfx::ColorSpace::MatrixID::YCOCG,
                              gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
-    default:
       NOTREACHED_IN_MIGRATION();
       return gfx::ColorSpace();
   };
@@ -469,7 +472,9 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
          skyuv_cs == kBT2020_10bit_Full_SkYUVColorSpace ||
          skyuv_cs == kBT2020_10bit_Limited_SkYUVColorSpace ||
          skyuv_cs == kBT2020_12bit_Full_SkYUVColorSpace ||
-         skyuv_cs == kBT2020_12bit_Limited_SkYUVColorSpace)
+         skyuv_cs == kBT2020_12bit_Limited_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_16bit_Full_SkYUVColorSpace ||
+         skyuv_cs == kBT2020_16bit_Limited_SkYUVColorSpace)
       << "Unexpected SkYUVColorSpace: " << skyuv_cs;
 
   auto transfer_id = gfx::ColorSpace::TransferID::BT709;
@@ -477,7 +482,9 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
       skyuv_cs == kBT2020_10bit_Limited_SkYUVColorSpace) {
     transfer_id = gfx::ColorSpace::TransferID::BT2020_10;
   } else if (skyuv_cs == kBT2020_12bit_Full_SkYUVColorSpace ||
-             skyuv_cs == kBT2020_12bit_Limited_SkYUVColorSpace) {
+             skyuv_cs == kBT2020_12bit_Limited_SkYUVColorSpace ||
+             skyuv_cs == kBT2020_16bit_Full_SkYUVColorSpace ||
+             skyuv_cs == kBT2020_16bit_Limited_SkYUVColorSpace) {
     transfer_id = gfx::ColorSpace::TransferID::BT2020_12;
   }
 

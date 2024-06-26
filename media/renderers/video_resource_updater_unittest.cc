@@ -298,7 +298,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     return video_frame;
   }
 
-  scoped_refptr<VideoFrame> CreateP016TestFrame() {
+  scoped_refptr<VideoFrame> CreateP010TestFrame() {
     const int kDimension = 10;
     gfx::Size size(kDimension, kDimension);
 
@@ -601,9 +601,9 @@ TEST_F(VideoResourceUpdaterTest, NV12FrameSoftwareCompositor) {
   EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resources.type);
 }
 
-TEST_F(VideoResourceUpdaterTest, P016FrameSoftwareCompositor) {
+TEST_F(VideoResourceUpdaterTest, P010FrameSoftwareCompositor) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForSoftware();
-  scoped_refptr<VideoFrame> video_frame = CreateP016TestFrame();
+  scoped_refptr<VideoFrame> video_frame = CreateP010TestFrame();
 
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
@@ -1119,7 +1119,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
-TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
+TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   constexpr auto kHDR10ColorSpace = gfx::ColorSpace::CreateHDR10();
   gfx::HDRMetadata hdr_metadata{};
   hdr_metadata.smpte_st_2086 =
