@@ -9,10 +9,12 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
 
-class PrefService;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 @class BrowsingDataCounterWrapperProducer;
-
+class PrefService;
 @protocol QuickDeleteConsumer;
 
 // Mediator for the Quick Delete UI.
@@ -23,6 +25,7 @@ class PrefService;
 - (instancetype)initWithPrefs:(PrefService*)prefs
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
+                       identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

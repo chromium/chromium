@@ -19,6 +19,10 @@ enum class TimePeriod;
 // Sets the ViewController with the summary for the browsing data.
 - (void)setBrowsingDataSummary:(NSString*)summary;
 
+// Sets the boolean on whether the ViewController should show the disclaimer
+// footer string or not.
+- (void)setShouldShowFooter:(BOOL)shouldShowFooter;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_QUICK_DELETE_CONSUMER_H_

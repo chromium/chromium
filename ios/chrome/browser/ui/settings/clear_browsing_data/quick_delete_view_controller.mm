@@ -73,6 +73,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UITableView* _tableView;
   browsing_data::TimePeriod _timeRange;
   NSString* _browsingDataSummary;
+  BOOL _shouldShowFooter;
   NSLayoutConstraint* _tableViewHeightConstraint;
 }
 @end
@@ -178,8 +179,9 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
     case SectionIdentifierFooter: {
-      // TODO(crbug.com/341898146): Conditionally show the footer based on
-      // sign-in status and DSE.
+      if (!_shouldShowFooter) {
+        return nil;
+      }
       TableViewLinkHeaderFooterView* footer =
           DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
               _tableView);
@@ -235,6 +237,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   _browsingDataSummary = summary;
 
   // Reload the browsing data row with the new summary.
+  __weak __typeof(self) weakSelf = self;
   NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
       [_dataSource snapshot];
   [snapshot reconfigureItemsWithIdentifiers:@[ @(ItemIdentifierBrowsingData) ]];
@@ -243,7 +246,26 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                   completion:^{
                     // Update the bottom sheet height since the browsing data
                     // row can change height depending on the length of summary.
-                    [self updateBottomSheetHeight];
+                    [weakSelf updateBottomSheetHeight];
+                  }];
+}
+
+- (void)setShouldShowFooter:(BOOL)shouldShowFooter {
+  if (_shouldShowFooter == shouldShowFooter) {
+    return;
+  }
+  _shouldShowFooter = shouldShowFooter;
+  // Reload the footer section.
+  __weak __typeof(self) weakSelf = self;
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reloadSectionsWithIdentifiers:@[ @(SectionIdentifierFooter) ]];
+  [_dataSource applySnapshot:snapshot
+        animatingDifferences:NO
+                  completion:^{
+                    // Update the bottom sheet height in case the footer is
+                    // added or removed.
+                    [weakSelf updateBottomSheetHeight];
                   }];
 }
 

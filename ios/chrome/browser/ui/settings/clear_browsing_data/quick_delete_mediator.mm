@@ -10,14 +10,18 @@
 #import "components/browsing_data/core/counters/passwords_counter.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+@interface QuickDeleteMediator () <IdentityManagerObserverBridgeDelegate>
+@end
+
 @implementation QuickDeleteMediator {
-  PrefService* _prefs;
+  raw_ptr<PrefService> _prefs;
   BrowsingDataCounterWrapperProducer* _counterWrapperProducer;
 
   // Summaries based on the results returned by `_counters`. If they're nil, it
@@ -36,14 +40,26 @@
   // `_consumer` in order to avoid uncessary calls in
   // `dispatchPlaceholderSummary`.
   bool _placeholderSummaryWasDispatched;
+
+  // Used to get the current sign-in state of the primary account.
+  raw_ptr<signin::IdentityManager> _identityManager;
+  // Observer for `IdentityManager`.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
 }
 
 - (instancetype)initWithPrefs:(PrefService*)prefs
     browsingDataCounterWrapperProducer:
-        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer {
+        (BrowsingDataCounterWrapperProducer*)counterWrapperProducer
+                       identityManager:
+                           (signin::IdentityManager*)identityManager {
   if (self = [super init]) {
     _prefs = prefs;
     _counterWrapperProducer = counterWrapperProducer;
+    _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
   }
   return self;
 }
@@ -59,12 +75,18 @@
 
   [self createCounters];
   [self restartCounters];
+
+  BOOL shouldShowFooter =
+      _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  [_consumer setShouldShowFooter:shouldShowFooter];
 }
 
 - (void)disconnect {
   _counters.clear();
   _counterWrapperProducer = nil;
   _prefs = nil;
+  _identityManagerObserver.reset();
+  _identityManager = nil;
 }
 
 #pragma mark - QuickDeleteMutator
@@ -74,6 +96,23 @@
                      static_cast<int>(timeRange));
 
   [self restartCounters];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+// Called when a user changes the sign-in state.
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      [self.consumer setShouldShowFooter:YES];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self.consumer setShouldShowFooter:NO];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 #pragma mark - Private

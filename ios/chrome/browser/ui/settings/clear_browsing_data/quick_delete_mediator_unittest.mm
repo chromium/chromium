@@ -18,8 +18,9 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/fake_browsing_data_counter_wrapper_producer.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -59,15 +60,20 @@ class QuickDeleteMediatorTest : public PlatformTest {
             setBrowsingDataSummary:l10n_util::GetNSString(
                                        IDS_CLEAR_BROWSING_DATA_CALCULATING)])
         .andDo(nil);
+    OCMStub([consumer_ setShouldShowFooter:NO]).andDo(nil);
 
     fake_browsing_data_counter_wrapper_producer_ =
         [[FakeBrowsingDataCounterWrapperProducer alloc]
             initWithBrowserState:browser_state_.get()];
 
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+
     mediator_ = [[QuickDeleteMediator alloc]
                              initWithPrefs:browser_state_.get()->GetPrefs()
         browsingDataCounterWrapperProducer:
-            fake_browsing_data_counter_wrapper_producer_];
+            fake_browsing_data_counter_wrapper_producer_
+                           identityManager:identityManager];
   }
 
   ~QuickDeleteMediatorTest() override {

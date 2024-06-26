@@ -111,6 +111,12 @@ const char kMyActivityURL[] = "myactivity.google.com";
                           IDS_CLEAR_BROWSING_DATA_CALCULATING))];
 }
 
+- (void)signIn {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+}
+
 - (void)signInAndEnableHistorySync {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -666,8 +672,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // recorded in the corrresponding histogram bucket.
 - (void)testOpenSearchHistoryMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-
+  // Sign in is required to show to footer.
+  [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -698,8 +704,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // are recorded in the corrresponding histogram bucket.
 - (void)testOpenOtherFormsOfActivityMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-
+  // Sign in is required to show to footer.
+  [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -723,6 +729,45 @@ void ExpectClearBrowsingDataNavigationHistograms(
 
   // Validate histogram entry for top level is recorded.
   ExpectClearBrowsingDataNavigationHistograms(MyActivityNavigation::kTopLevel);
+}
+
+// Tests the footer discalimer string is hidden when the user is signed out and
+// shown when the user signs in.
+- (void)testHideShowFooterBasedOnSignInStatus {
+  // Open Quick Delete bottom sheet.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the footer is hidden.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kQuickDeleteFooterIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Swipe the bottom sheet down.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Quick Delete has been dismissed.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_nil()];
+
+  // Sign in to the browser.
+  [self signIn];
+
+  // Re-open Quick Delete bottom sheet.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the footer is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kQuickDeleteFooterIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
@@ -32,12 +33,16 @@
 #pragma mark - ChromeCoordinator
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  BrowsingDataCounterWrapperProducer* producer =
+      [[BrowsingDataCounterWrapperProducer alloc]
+          initWithBrowserState:browserState];
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(browserState);
 
   _mediator =
       [[QuickDeleteMediator alloc] initWithPrefs:browserState->GetPrefs()
-              browsingDataCounterWrapperProducer:
-                  [[BrowsingDataCounterWrapperProducer alloc]
-                      initWithBrowserState:browserState]];
+              browsingDataCounterWrapperProducer:producer
+                                 identityManager:identityManager];
 
   _viewController = [[QuickDeleteViewController alloc] init];
   _mediator.consumer = _viewController;
