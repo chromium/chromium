@@ -123,6 +123,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                            const AtomicString& page_name,
                            PageMarginsStyle*);
 
+  // Trigger loading of resources only needed by printing (such as @page
+  // backgrounds, for instance).
+  void LoadPaginationResources();
+
   const ComputedStyle* StyleForText(Text*);
   const ComputedStyle* StyleForViewport();
   const ComputedStyle* StyleForFormattedText(

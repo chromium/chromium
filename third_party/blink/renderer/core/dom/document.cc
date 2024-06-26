@@ -3382,15 +3382,7 @@ bool Document::InitiateStyleOrLayoutDependentLoadForPrint() {
     view->AdjustMediaTypeForPrinting(true);
     GetStyleEngine().UpdateViewportSize();
     UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
-
-    // Even though UpdateStyleAndLayout is called after setting media type to
-    // print, not all print only resources loadings are initiated.
-    // StyleForPage() is needed to trigger the remaining ones, like @page only
-    // background images, via state.LoadPendingResources(). Since it is only
-    // called to trigger the downloads, the ComputedStyle created by
-    // StyleForPage is not needed and can be ignored.
-    GetStyleResolver().StyleForPage(0, /*page_name=*/g_null_atom);
-
+    GetStyleResolver().LoadPaginationResources();
     view->FlushAnyPendingPostLayoutTasks();
 
     view->AdjustMediaTypeForPrinting(false);

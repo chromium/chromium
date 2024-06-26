@@ -1906,8 +1906,24 @@ void StyleResolver::StyleForPageMargins(const ComputedStyle& page_style,
     }
 
     margin_cascade.Apply();
+
+    margin_state.LoadPendingResources();
+
     (*margins_style)[entry.slot] = margin_state.TakeStyle();
   }
+}
+
+void StyleResolver::LoadPaginationResources() {
+  // Compute style for pages and page margins (LoadPendingResources()), to
+  // initiate loading of resources only needed by printing.
+  //
+  // TODO(crbug.com/346799729): Make sure that all resources needed are
+  // loaded. As it is now, only resources needed on the first page (with no page
+  // name) will be loaded. Any resource inside a non-empty @page selector
+  // (unless it happens to match the first page) will be missing.
+  const ComputedStyle* page_style = StyleForPage(0, /*page_name=*/g_null_atom);
+  PageMarginsStyle ignored;
+  StyleForPageMargins(*page_style, 0, /*page_name=*/g_null_atom, &ignored);
 }
 
 const ComputedStyle& StyleResolver::InitialStyle() const {
