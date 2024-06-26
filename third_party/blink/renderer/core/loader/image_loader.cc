@@ -857,12 +857,15 @@ ResourcePriority ImageLoader::ComputeResourcePriority() const {
 
   ResourcePriority priority = image_resource->ComputeResourcePriority();
   priority.source = ResourcePriority::Source::kImageLoader;
-  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+
+  static const bool is_image_lcpp_enabled =
+      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
       features::
           kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
-              .Get()) {
-    auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get());
-    if (html_image_element) {
+              .Get();
+  if (is_image_lcpp_enabled) {
+    if (auto* html_image_element =
+            DynamicTo<HTMLImageElement>(element_.Get())) {
       priority.is_lcp_resource = html_image_element->IsPredictedLcpElement();
     }
   }

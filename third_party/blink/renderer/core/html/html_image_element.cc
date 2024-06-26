@@ -575,12 +575,12 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     }
   }
 
-  static const bool is_lcpp_enabled =
-      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor);
-  if (is_lcpp_enabled &&
+  static const bool is_image_lcpp_enabled =
+      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
       features::
           kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
-              .Get()) {
+              .Get();
+  if (is_image_lcpp_enabled) {
     if (LocalFrame* frame = GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
         if (lcpp->IsElementMatchingLocator(*this)) {
