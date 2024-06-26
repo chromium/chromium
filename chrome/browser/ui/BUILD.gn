@@ -3109,6 +3109,8 @@ static_library("ui") {
       "webui/ash/cloud_upload/cloud_upload_util.h",
       "webui/ash/cloud_upload/drive_upload_handler.cc",
       "webui/ash/cloud_upload/drive_upload_handler.h",
+      "webui/ash/cloud_upload/hats_office_trigger.cc",
+      "webui/ash/cloud_upload/hats_office_trigger.h",
       "webui/ash/cloud_upload/one_drive_upload_handler.cc",
       "webui/ash/cloud_upload/one_drive_upload_handler.h",
       "webui/ash/connectivity_diagnostics_dialog.cc",

@@ -520,6 +520,10 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kHatsPhotosExperienceIsSelected,
                                 false);
 
+  // Office HaTS prefs.
+  registry->RegisterInt64Pref(::prefs::kHatsOfficeSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(::prefs::kHatsOfficeSurveyIsSelected, false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(

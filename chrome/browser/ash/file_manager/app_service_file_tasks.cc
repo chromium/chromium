@@ -36,10 +36,13 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -378,6 +381,16 @@ void ExecuteAppServiceTask(
       apps_util::kIntentActionView, std::move(intent_files));
   intent->activity_name = task.action_id;
 
+  if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice) &&
+      task.app_id == extension_misc::kQuickOfficeComponentExtensionId &&
+      task.action_id == kActionIdQuickOffice) {
+    auto survey_launching_app =
+        chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)
+            ? ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOffice
+            : ash::cloud_upload::HatsOfficeLaunchingApp::kQuickOfficeClippyOff;
+    ash::cloud_upload::HatsOfficeTrigger::Get().ShowSurveyAfterDelay(
+        survey_launching_app);
+  }
   // `window_info` as nullptr sets `display_id` to `display::kInvalidDisplayId`
   // later, which is the default value. `display::kDefaultDisplayId` is not. The
   // default value allows a window on any display to be reused, i.e. a wildcard.
