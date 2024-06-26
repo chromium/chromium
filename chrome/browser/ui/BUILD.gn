@@ -6436,7 +6436,6 @@ static_library("ui") {
     }
 
     deps += [
-      ":webui_name_variants",
       "side_search:side_search_tab_data_proto",
       "//base",
       "//chrome/browser:main_extra_parts",
@@ -6495,7 +6494,10 @@ static_library("ui") {
       "//ui/lottie",
       "//ui/views:buildflags",
     ]
-    public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]
+    public_deps += [
+      ":webui_name_variants",
+      "//ui/base/dragdrop/mojom:mojom_headers",
+    ]
 
     allow_circular_includes_from += [ "//chrome/browser/ui/views" ]
 
