@@ -31,7 +31,7 @@
   _tabURL = item.tabURL;
   _syncedTime = item.syncedTime;
   _faviconImage = item.faviconImage;
-  _salientImage = item.salientImage;
+  _contentImage = item.contentImage;
   _URLKey = item.URLKey;
   _requestID = item.requestID;
 }

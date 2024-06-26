@@ -42,6 +42,7 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/tabs/model:tab_sync_util",

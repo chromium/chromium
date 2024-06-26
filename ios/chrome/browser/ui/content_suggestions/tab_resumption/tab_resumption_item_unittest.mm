@@ -35,7 +35,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item.tabURL = GURL("https://a");
   item.syncedTime = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
   item.faviconImage = DefaultSettingsRootSymbol(@"circle");
-  item.salientImage = DefaultSettingsRootSymbol(@"flame");
+  item.contentImage = DefaultSettingsRootSymbol(@"flame");
   item.commandHandler = command_handler;
   item.URLKey = "url key a";
   item.requestID = segmentation_platform::TrainingRequestId::FromUnsafeValue(1);
@@ -47,7 +47,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item2.tabURL = GURL("https://b");
   item2.syncedTime = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(2));
   item2.faviconImage = DefaultSettingsRootSymbol(@"link");
-  item2.salientImage = DefaultSettingsRootSymbol(@"trash");
+  item2.contentImage = DefaultSettingsRootSymbol(@"trash");
   item2.commandHandler = command_handler;
   item2.URLKey = "url key b";
   item2.requestID =
@@ -61,7 +61,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   EXPECT_EQ(item.syncedTime,
             base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(2)));
   EXPECT_NSEQ(item.faviconImage, item2.faviconImage);
-  EXPECT_NSEQ(item.salientImage, item2.salientImage);
+  EXPECT_NSEQ(item.contentImage, item2.contentImage);
   EXPECT_EQ(item.URLKey, "url key b");
   EXPECT_EQ(item.requestID,
             segmentation_platform::TrainingRequestId::FromUnsafeValue(2));
