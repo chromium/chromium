@@ -254,9 +254,7 @@ stack_scan_supported =
 # Do not clear the following, as they can function outside of PartitionAlloc
 # - has_64_bit_pointers
 # - has_memory_tagging
-if (!use_partition_alloc ||
-    (defined(toolchain_allows_use_partition_alloc_as_malloc) &&
-     !toolchain_allows_use_partition_alloc_as_malloc)) {
+if (!use_partition_alloc) {
   use_partition_alloc_as_malloc = false
   enable_backup_ref_ptr_support = false
   use_raw_ptr_backup_ref_impl = false
@@ -268,7 +266,6 @@ if (!use_partition_alloc ||
   enable_dangling_raw_ptr_feature_flag = false
   enable_pointer_subtraction_check = false
   backup_ref_ptr_poison_oob_ptr = false
-  backup_ref_ptr_extra_oob_checks = false
   enable_backup_ref_ptr_instance_tracer = false
   use_starscan = false
   use_full_mte = false
