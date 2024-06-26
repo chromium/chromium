@@ -48,6 +48,7 @@ WHERE slice.name = 'TranslateAndScaleWebInputEvent';
 -- Associate the gesture scroll update OS timestamp with the delta.
 CREATE PERFETTO TABLE _scroll_deltas_with_timestamp AS
 SELECT
+  slice.id AS event_latency_id,
   slice.ts AS input_ts,
   data.scroll_update_id,
   data.delta_y
@@ -60,6 +61,7 @@ FROM _translate_and_scale_scroll_deltas data
 CREATE PERFETTO TABLE _scroll_deltas_with_scroll_id AS
 SELECT
   scrolls.id AS scroll_id,
+  deltas.event_latency_id,
   deltas.input_ts,
   deltas.scroll_update_id,
   deltas.delta_y
@@ -73,7 +75,8 @@ CREATE PERFETTO TABLE _scroll_deltas_with_delays AS
 SELECT
   deltas.scroll_id,
   delay.total_delta,
-  delay.scroll_update_id,
+  deltas.scroll_update_id,
+  deltas.event_latency_id,
   delay.presentation_timestamp AS presentation_timestamp,
   deltas.input_ts,
   deltas.delta_y
@@ -83,9 +86,14 @@ FROM _scroll_deltas_with_scroll_id AS deltas
 -- The raw coordinates and pixel offsets for all input events which were part of
 -- a scroll.
 CREATE PERFETTO TABLE chrome_scroll_input_offsets(
-  -- Trace id associated with the scroll.
+  -- An ID that ties all EventLatencies in a particular scroll. (implementation
+  -- note: This is the EventLatency TraceId of the GestureScrollbegin).
   scroll_id INT,
-  -- Trace id associated with the scroll.
+  -- An ID for this particular EventLatency regardless of it being presented or
+  -- not.
+  event_latency_id INT,
+  -- An ID that ties this |event_latency_id| with the Trace Id (another
+  -- event_latency_id) that it was presented with.
   scroll_update_id INT,
   -- Timestamp the of the scroll input event.
   ts INT,
@@ -97,6 +105,7 @@ CREATE PERFETTO TABLE chrome_scroll_input_offsets(
 ) AS
 SELECT
   scroll_id,
+  event_latency_id,
   scroll_update_id,
   input_ts AS ts,
   delta_y,
@@ -109,9 +118,14 @@ FROM _scroll_deltas_with_delays;
 -- necessarily inclusive of all user scroll events, rather those scroll events
 -- that are actually processed.
 CREATE PERFETTO TABLE chrome_presented_scroll_offsets(
-  -- Trace id associated with the scroll.
+  -- An ID that ties all EventLatencies in a particular scroll. (implementation
+  -- note: This is the EventLatency TraceId of the GestureScrollbegin).
   scroll_id INT,
-  -- Trace id associated with the scroll update event.
+  -- An ID for this particular EventLatency regardless of it being presented or
+  -- not.
+  event_latency_id INT,
+  -- An ID that ties this |event_latency_id| with the Trace Id (another
+  -- event_latency_id) that it was presented with.
   scroll_update_id INT,
   -- Presentation timestamp.
   ts INT,
@@ -123,10 +137,13 @@ CREATE PERFETTO TABLE chrome_presented_scroll_offsets(
 ) AS
 SELECT
   scroll_id,
+  event_latency_id,
   scroll_update_id,
   presentation_timestamp AS ts,
   total_delta AS delta_y,
   SUM(IFNULL(total_delta, 0)) OVER ( PARTITION BY scroll_id
     ORDER BY scroll_update_id, presentation_timestamp
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS relative_offset_y
-FROM _scroll_deltas_with_delays;
+FROM _scroll_deltas_with_delays
+WHERE presentation_timestamp IS NOT NULL
+;

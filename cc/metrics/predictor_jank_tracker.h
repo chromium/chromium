@@ -41,6 +41,10 @@ class CC_EXPORT PredictorJankTracker {
     scroll_jank_ukm_reporter_ = scroll_jank_ukm_reporter;
   }
 
+  static float GetSlowScrollDeltaThreshold();
+  static float GetSlowScrollJankyThreshold();
+  static float GetFastScrollJankyThreshold();
+
  private:
   // The metric works by storing a sliding window of the previous two
   // frames, this function moves the sliding window storing the newer

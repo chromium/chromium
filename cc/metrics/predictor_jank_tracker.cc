@@ -19,7 +19,7 @@ namespace {
 // We define an irregular sequence of screen displacement as an abrupt
 // change in acceleration in a sequence of 3 frames, meaning that in
 // a sequence of 3 frames acceleration should be ether positive or
-// negatative, and the sequence should either be increasing or decreasing
+// negative, and the sequence should either be increasing or decreasing
 // but not both.
 // for Example [1, 5, 10] and [10, 5, 1] are good screen displacement
 // sequences but [1, 10, 5] is bad, because the acceleration between
@@ -65,6 +65,18 @@ bool VerifyFramesSameDirection(float& d1, float& d2, float& d3) {
 
 PredictorJankTracker::PredictorJankTracker() = default;
 PredictorJankTracker::~PredictorJankTracker() = default;
+
+float PredictorJankTracker::GetSlowScrollDeltaThreshold() {
+  return kScrollDeltaThreshold;
+}
+
+float PredictorJankTracker::GetSlowScrollJankyThreshold() {
+  return kSlowJankyThreshold;
+}
+
+float PredictorJankTracker::GetFastScrollJankyThreshold() {
+  return kFastJankyThreshold;
+}
 
 void PredictorJankTracker::ReportLatestScrollDelta(
     float next_delta,
