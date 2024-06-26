@@ -260,27 +260,29 @@ void AttributionReportNetworkSender::OnReportSent(
 
   loaders_in_progress_.erase(it);
 
-  // Retry reports that have not received headers and failed with one of the
-  // specified error codes. These codes are chosen from the
-  // "Conversions.Report.HttpResponseOrNetErrorCode" histogram. HTTP errors
-  // should not be retried to prevent over requesting servers.
-  bool should_retry =
-      !headers && (net_error == net::ERR_INTERNET_DISCONNECTED ||
-                   net_error == net::ERR_NAME_NOT_RESOLVED ||
-                   net_error == net::ERR_TIMED_OUT ||
-                   net_error == net::ERR_CONNECTION_TIMED_OUT ||
-                   net_error == net::ERR_CONNECTION_ABORTED ||
-                   net_error == net::ERR_CONNECTION_RESET);
-
-  SendResult::Status report_status =
-      (status == Status::kOk)
-          ? SendResult::Status::kSent
-          : (should_retry ? SendResult::Status::kTransientFailure
-                          : SendResult::Status::kFailure);
-
-  std::move(sent_callback)
-      .Run(report, SendResult(report_status, net_error,
-                              headers ? headers->response_code() : 0));
+  if (status == Status::kOk) {
+    std::move(sent_callback)
+        .Run(report,
+             SendResult::Sent(SendResult::Sent::Result::kSent, response_code));
+  } else {
+    // Retry reports that have not received headers and failed with one of the
+    // specified error codes. These codes are chosen from the
+    // "Conversions.Report.HttpResponseOrNetErrorCode" histogram. HTTP errors
+    // should not be retried to prevent over requesting servers.
+    bool should_retry =
+        !headers && (net_error == net::ERR_INTERNET_DISCONNECTED ||
+                     net_error == net::ERR_NAME_NOT_RESOLVED ||
+                     net_error == net::ERR_TIMED_OUT ||
+                     net_error == net::ERR_CONNECTION_TIMED_OUT ||
+                     net_error == net::ERR_CONNECTION_ABORTED ||
+                     net_error == net::ERR_CONNECTION_RESET);
+    std::move(sent_callback)
+        .Run(report,
+             SendResult::Sent(should_retry
+                                  ? SendResult::Sent::Result::kTransientFailure
+                                  : SendResult::Sent::Result::kFailure,
+                              net_error));
+  }
 }
 
 void AttributionReportNetworkSender::OnVerboseDebugReportSent(

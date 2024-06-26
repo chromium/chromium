@@ -379,25 +379,19 @@ void AttributionInternalsHandlerImpl::OnReportSent(
     const AttributionReport& report,
     bool is_debug_report,
     const SendResult& info) {
-  ReportStatusPtr status;
-  switch (info.status) {
-    case SendResult::Status::kSent:
-      status = ReportStatus::NewNetworkStatus(
-          NetworkStatus(info.http_response_code));
-      break;
-    case SendResult::Status::kDropped:
-      status = ReportStatus::NewProhibitedByBrowserPolicy(Empty::New());
-      break;
-    case SendResult::Status::kFailure:
-    case SendResult::Status::kTransientFailure:
-      status =
-          ReportStatus::NewNetworkStatus(NetworkStatus(info.network_error));
-      break;
-    case SendResult::Status::kAssemblyFailure:
-    case SendResult::Status::kTransientAssemblyFailure:
-      status = ReportStatus::NewFailedToAssemble(Empty::New());
-      break;
-  }
+  ReportStatusPtr status = absl::visit(
+      base::Overloaded{
+          [](SendResult::Sent sent) {
+            return ReportStatus::NewNetworkStatus(NetworkStatus(sent.status));
+          },
+          [](SendResult::Dropped) {
+            return ReportStatus::NewProhibitedByBrowserPolicy(Empty::New());
+          },
+          [](SendResult::AssemblyFailure) {
+            return ReportStatus::NewFailedToAssemble(Empty::New());
+          },
+      },
+      info.result);
 
   observer_->OnReportHandled(
       WebUIReport(report, is_debug_report, std::move(status)));

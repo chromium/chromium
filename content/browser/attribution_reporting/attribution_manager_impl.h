@@ -27,7 +27,6 @@
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom-forward.h"
 #include "content/common/content_export.h"
@@ -64,6 +63,7 @@ class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionDebugReport;
 class AttributionOsLevelManager;
+class AttributionReportSender;
 class AttributionResolver;
 class AttributionResolverDelegate;
 class CreateReportResult;
@@ -168,7 +168,8 @@ class CONTENT_EXPORT AttributionManagerImpl
  private:
   friend class AttributionManagerImplTest;
 
-  using ReportSentCallback = AttributionReportSender::ReportSentCallback;
+  using ReportSentCallback =
+      base::OnceCallback<void(const AttributionReport&, SendResult)>;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
 
   struct SourceOrTriggerRFH;
@@ -205,6 +206,9 @@ class CONTENT_EXPORT AttributionManagerImpl
   void PrepareToSendReport(AttributionReport report,
                            bool is_debug_report,
                            ReportSentCallback callback);
+  void SendReport(AttributionReport report,
+                  bool is_debug_report,
+                  ReportSentCallback callback);
   void OnReportSent(base::OnceClosure done,
                     const AttributionReport&,
                     SendResult info);

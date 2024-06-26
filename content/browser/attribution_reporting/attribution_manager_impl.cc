@@ -453,6 +453,28 @@ std::unique_ptr<AttributionOsLevelManager> CreateOsLevelManager() {
   return std::make_unique<NoOpAttributionOsLevelManager>();
 }
 
+// Returns new report time if any.
+std::optional<base::Time> HandleTransientFailureOnSendReport(
+    const AttributionReport& report) {
+  int retry_attempts = report.failed_send_attempts() + 1;
+  if (std::optional<base::TimeDelta> delay =
+          GetFailedReportDelay(retry_attempts)) {
+    return base::Time::Now() + *delay;
+  } else {
+    switch (report.GetReportType()) {
+      case AttributionReport::Type::kEventLevel:
+        RecordReportRetriesEventLevel(retry_attempts);
+        break;
+      case AttributionReport::Type::kAggregatableAttribution:
+        RecordReportRetriesAggregatable(retry_attempts);
+        break;
+      case AttributionReport::Type::kNullAggregatable:
+        break;
+    }
+    return std::nullopt;
+  }
+}
+
 bool g_run_in_memory = false;
 
 }  // namespace
@@ -1158,7 +1180,7 @@ void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
     OnReportSent(std::move(web_ui_callback), std::move(report),
-                 SendResult(SendResult::Status::kDropped));
+                 SendResult(SendResult::Dropped()));
     return;
   }
 
@@ -1183,8 +1205,7 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
                                                  ReportSentCallback callback) {
   switch (report.GetReportType()) {
     case AttributionReport::Type::kEventLevel:
-      report_sender_->SendReport(std::move(report), is_debug_report,
-                                 std::move(callback));
+      SendReport(std::move(report), is_debug_report, std::move(callback));
       break;
     case AttributionReport::Type::kAggregatableAttribution:
     case AttributionReport::Type::kNullAggregatable:
@@ -1192,6 +1213,19 @@ void AttributionManagerImpl::PrepareToSendReport(AttributionReport report,
                                  std::move(callback));
       break;
   }
+}
+
+void AttributionManagerImpl::SendReport(AttributionReport report,
+                                        bool is_debug_report,
+                                        ReportSentCallback callback) {
+  report_sender_->SendReport(
+      std::move(report), is_debug_report,
+      base::BindOnce(
+          [](ReportSentCallback callback, const AttributionReport& report,
+             SendResult::Sent sent) {
+            std::move(callback).Run(report, SendResult(std::move(sent)));
+          },
+          std::move(callback)));
 }
 
 void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
@@ -1203,34 +1237,39 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // update the report's DB state to reflect that. Otherwise, delete the report
   // from storage.
 
-  std::optional<base::Time> new_report_time;
-  // TODO(linnan): Retry on transient assembly failure isn't privacy sensitive,
-  // therefore we could consider subjecting these failures to a different limit.
-  if (info.status == SendResult::Status::kTransientFailure ||
-      info.status == SendResult::Status::kTransientAssemblyFailure) {
-    int retry_attempts = report.failed_send_attempts() + 1;
-    if (std::optional<base::TimeDelta> delay =
-            GetFailedReportDelay(retry_attempts)) {
-      new_report_time = base::Time::Now() + *delay;
-    } else {
-      switch (report.GetReportType()) {
-        case AttributionReport::Type::kEventLevel:
-          RecordReportRetriesEventLevel(retry_attempts);
-          break;
-        case AttributionReport::Type::kAggregatableAttribution:
-          RecordReportRetriesAggregatable(retry_attempts);
-          break;
-        case AttributionReport::Type::kNullAggregatable:
-          break;
-      }
-    }
-  }
-
-  if (info.status == SendResult::Status::kTransientFailure ||
-      info.status == SendResult::Status::kFailure) {
-    RecordNetworkConnectionTypeOnFailure(report.GetReportType(),
-                                         scheduler_timer_->connection_type());
-  }
+  std::optional<base::Time> new_report_time =
+      absl::visit(base::Overloaded{
+                      [&](SendResult::Sent sent) -> std::optional<base::Time> {
+                        switch (sent.result) {
+                          case SendResult::Sent::Result::kSent:
+                            LogMetricsOnReportSent(report);
+                            return std::nullopt;
+                          case SendResult::Sent::Result::kTransientFailure:
+                            RecordNetworkConnectionTypeOnFailure(
+                                report.GetReportType(),
+                                scheduler_timer_->connection_type());
+                            return HandleTransientFailureOnSendReport(report);
+                          case SendResult::Sent::Result::kFailure:
+                            RecordNetworkConnectionTypeOnFailure(
+                                report.GetReportType(),
+                                scheduler_timer_->connection_type());
+                            return std::nullopt;
+                        }
+                      },
+                      [](SendResult::Dropped) -> std::optional<base::Time> {
+                        return std::nullopt;
+                      },
+                      [&](SendResult::AssemblyFailure failure)
+                          -> std::optional<base::Time> {
+                        // TODO(linnan): Retry on transient assembly failure
+                        // isn't privacy sensitive, therefore we could consider
+                        // subjecting these failures to a different limit.
+                        return failure.transient
+                                   ? HandleTransientFailureOnSendReport(report)
+                                   : std::nullopt;
+                      },
+                  },
+                  info.result);
 
   base::OnceCallback then = base::BindOnce(
       [](base::OnceClosure done, base::WeakPtr<AttributionManagerImpl> manager,
@@ -1266,11 +1305,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
       .WithArgs(report.id())
       .Then(std::move(then));
 
-  LogMetricsOnReportCompleted(report, info.status);
-
-  if (info.status == SendResult::Status::kSent) {
-    LogMetricsOnReportSent(report);
-  }
+  LogMetricsOnReportCompleted(report, info.status());
 }
 
 void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,
@@ -1300,8 +1335,9 @@ void AttributionManagerImpl::AssembleAggregatableReport(
   if (!aggregation_service) {
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kAggregationServiceUnavailable);
-    std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kAssemblyFailure));
+    std::move(callback).Run(
+        std::move(report),
+        SendResult(SendResult::AssemblyFailure(/*transient=*/false)));
     return;
   }
 
@@ -1310,8 +1346,9 @@ void AttributionManagerImpl::AssembleAggregatableReport(
   if (!request.has_value()) {
     RecordAssembleAggregatableReportStatus(
         AssembleAggregatableReportStatus::kCreateRequestFailed);
-    std::move(callback).Run(std::move(report),
-                            SendResult(SendResult::Status::kAssemblyFailure));
+    std::move(callback).Run(
+        std::move(report),
+        SendResult(SendResult::AssemblyFailure(/*transient=*/false)));
     return;
   }
 
@@ -1334,7 +1371,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
         AssembleAggregatableReportStatus::kAssembleReportFailed);
     std::move(callback).Run(
         std::move(report),
-        SendResult(SendResult::Status::kTransientAssemblyFailure));
+        SendResult(SendResult::AssemblyFailure(/*transient=*/true)));
     return;
   }
 
@@ -1355,8 +1392,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
   RecordAssembleAggregatableReportStatus(
       AssembleAggregatableReportStatus::kSuccess);
 
-  report_sender_->SendReport(std::move(report), is_debug_report,
-                             std::move(callback));
+  SendReport(std::move(report), is_debug_report, std::move(callback));
 }
 
 void AttributionManagerImpl::NotifySourcesChanged() {

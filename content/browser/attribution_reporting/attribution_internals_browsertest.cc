@@ -75,6 +75,8 @@ using ::attribution_reporting::mojom::SourceType;
 
 using ::base::test::RunOnceCallback;
 
+using SentResult = ::content::SendResult::Sent::Result;
+
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsNull;
@@ -682,20 +684,20 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   const base::Time now = base::Time::Now();
 
-  manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
-                                            SourceBuilder(now).BuildStored())
-                                  .SetReportTime(now + base::Hours(3))
-                                  .Build(),
-                              /*is_debug_report=*/false,
-                              SendResult(SendResult::Status::kSent, net::OK,
-                                         /*http_response_code=*/200));
+  manager()->NotifyReportSent(
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
+          .SetReportTime(now + base::Hours(3))
+          .Build(),
+      /*is_debug_report=*/false,
+      SendResult(SendResult::Sent(SentResult::kSent, /*status=*/200)));
   manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
                                             SourceBuilder(now).BuildStored())
                                   .SetReportTime(now + base::Hours(4))
                                   .SetPriority(-1)
                                   .Build(),
                               /*is_debug_report=*/false,
-                              SendResult(SendResult::Status::kDropped));
+                              SendResult(SendResult::Dropped()));
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder(now).BuildStored())
@@ -703,7 +705,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetPriority(-2)
           .Build(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kFailure, net::ERR_METHOD_NOT_SUPPORTED));
+      SendResult(SendResult::Sent(SentResult::kFailure,
+                                  net::ERR_METHOD_NOT_SUPPORTED)));
 
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
@@ -933,8 +936,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ClickRefreshButton();
   manager()->NotifyReportSent(report,
                               /*is_debug_report=*/false,
-                              SendResult(SendResult::Status::kSent, net::OK,
-                                         /*http_response_code=*/200));
+                              SendResult(SendResult::Sent(SentResult::kSent,
+                                                          /*status=*/200)));
   ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear storage button and expect that the report table is emptied.
@@ -1145,15 +1148,15 @@ IN_PROC_BROWSER_TEST_F(
           .SetVerificationToken("abc")
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kSent, net::OK,
-                 /*http_response_code=*/200));
+      SendResult(SendResult::Sent(SentResult::kSent,
+                                  /*status=*/200)));
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(4))
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
-      /*is_debug_report=*/false, SendResult(SendResult::Status::kDropped));
+      /*is_debug_report=*/false, SendResult(SendResult::Dropped()));
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder(now).BuildStored())
@@ -1161,7 +1164,7 @@ IN_PROC_BROWSER_TEST_F(
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kAssemblyFailure));
+      SendResult(SendResult::AssemblyFailure(/*transient=*/false)));
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder(now).BuildStored())
@@ -1169,14 +1172,15 @@ IN_PROC_BROWSER_TEST_F(
           .SetAggregatableHistogramContributions(contributions)
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/false,
-      SendResult(SendResult::Status::kFailure, net::ERR_INVALID_REDIRECT));
+      SendResult(
+          SendResult::Sent(SentResult::kFailure, net::ERR_INVALID_REDIRECT)));
   manager()->NotifyReportSent(ReportBuilder(AttributionInfoBuilder().Build(),
                                             SourceBuilder(now).BuildStored())
                                   .SetReportTime(now + base::Hours(11))
                                   .BuildNullAggregatable(),
                               /*is_debug_report=*/false,
-                              SendResult(SendResult::Status::kSent, net::OK,
-                                         /*http_response_code=*/200));
+                              SendResult(SendResult::Sent(SentResult::kSent,
+                                                          /*status=*/200)));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
           std::vector<AttributionReport>{
@@ -1461,7 +1465,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest, DebugReports) {
           .SetReportTime(now + base::Hours(1))
           .Build(),
       /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kTransientFailure, net::ERR_TIMED_OUT));
+      SendResult(
+          SendResult::Sent(SentResult::kTransientFailure, net::ERR_TIMED_OUT)));
 
   manager()->NotifyReportSent(
       ReportBuilder(AttributionInfoBuilder().Build(),
@@ -1469,8 +1474,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest, DebugReports) {
           .SetReportTime(now + base::Hours(2))
           .BuildAggregatableAttribution(),
       /*is_debug_report=*/true,
-      SendResult(SendResult::Status::kTransientFailure,
-                 net::ERR_INTERNET_DISCONNECTED));
+      SendResult(SendResult::Sent(SentResult::kTransientFailure,
+                                  net::ERR_INTERNET_DISCONNECTED)));
 
   manager()->NotifyAggregatableDebugReportSent(
       AggregatableDebugReport::CreateForTesting(

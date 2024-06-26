@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -47,6 +48,7 @@
 #include "services/network/public/cpp/trigger_verification_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -837,9 +839,30 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
 }
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info) {
-  return out << "{status=" << info.status
-             << ",network_error=" << net::ErrorToShortString(info.network_error)
-             << ",http_response_code=" << info.http_response_code << "}";
+  absl::visit(base::Overloaded{
+                  [&](SendResult::Sent sent) {
+                    out << "{Sent={result=";
+                    switch (sent.result) {
+                      case SendResult::Sent::Result::kSent:
+                        out << "kSent";
+                        break;
+                      case SendResult::Sent::Result::kTransientFailure:
+                        out << "kTransientFailure";
+                        break;
+                      case SendResult::Sent::Result::kFailure:
+                        out << "kFailure";
+                        break;
+                    }
+                    out << ",status=" << sent.status << "}}";
+                  },
+                  [&](SendResult::Dropped) { out << "{Dropped={}}"; },
+                  [&](SendResult::AssemblyFailure failure) {
+                    out << "{AssemblyFailure={transient=" << failure.transient
+                        << "}}";
+                  },
+              },
+              info.result);
+  return out;
 }
 
 std::ostream& operator<<(std::ostream& out,
