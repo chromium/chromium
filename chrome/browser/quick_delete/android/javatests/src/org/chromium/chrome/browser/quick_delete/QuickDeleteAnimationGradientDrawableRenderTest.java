@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.quick_delete;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -24,6 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -98,6 +100,9 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.TIRAMISU,
+            message = "Crashes emulator https://crbug.com/341168292")
     public void testFadeAnimation() throws Exception {
         View testView = setUpTestView();
         QuickDeleteAnimationGradientDrawable drawable =
