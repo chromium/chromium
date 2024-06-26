@@ -1761,6 +1761,53 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
   p->Remove(kRendererID);
 }
 
+TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  TestBrowserContext browser_context;
+  p->AddForTesting(kRendererID, &browser_context);
+
+  // Create a ProcessLock for a PDF renderer, and lock the kRendererID process
+  // to it.
+  UrlInfo pdf_url_info(UrlInfoInit(GURL("https://foo.com")).WithIsPdf(true));
+  scoped_refptr<SiteInstanceImpl> pdf_instance =
+      SiteInstanceImpl::CreateForUrlInfo(&browser_context, pdf_url_info,
+                                         /*is_guest=*/false,
+                                         /*is_fenced=*/false,
+                                         /*is_fixed_storage_partition=*/false);
+  p->LockProcess(pdf_instance->GetIsolationContext(), kRendererID,
+                 /*is_process_used=*/false,
+                 ProcessLock::FromSiteInfo(pdf_instance->GetSiteInfo()));
+
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com"));
+
+  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
+
+  // A PDF process should be able to commit new URLs that match its ProcessLock.
+  EXPECT_TRUE(p->CanAccessOrigin(kRendererID, foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(kRendererID, bar_origin,
+                                  AccessType::kCanCommitNewOrigin));
+
+  // A PDF process should also be able to claim it's hosting an origin that
+  // matches its ProcessLock; for example, PDF documents can still use
+  // postMessage so they need to use this to validate the source origin.
+  EXPECT_TRUE(
+      p->CanAccessOrigin(kRendererID, foo_origin, AccessType::kHostsOrigin));
+  EXPECT_FALSE(
+      p->CanAccessOrigin(kRendererID, bar_origin, AccessType::kHostsOrigin));
+
+  // A PDF process should not be able to access data for any origin.
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, foo_origin, AccessType::kCanAccessDataForCommittedOrigin));
+  EXPECT_FALSE(p->CanAccessOrigin(
+      kRendererID, bar_origin, AccessType::kCanAccessDataForCommittedOrigin));
+
+  p->Remove(kRendererID);
+}
+
 // Test the granting of origin permissions, and their interactions with
 // granting scheme permissions.
 TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {

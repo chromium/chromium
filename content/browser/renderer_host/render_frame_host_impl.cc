@@ -14461,12 +14461,20 @@ void RenderFrameHostImpl::SendCommitNavigation(
 
   url::Origin origin_to_commit =
       navigation_request->GetOriginToCommit().value();
+
+  // PDF processes should not need to access cookies or storage, so do not set
+  // up those interfaces for them.
+  // TODO(crbug.com/40205612): Remove the kill switch for this check.
+  bool should_block_storage_access_for_pdf =
+      GetSiteInstance()->GetSiteInfo().is_pdf() &&
+      base::FeatureList::IsEnabled(features::kPdfEnforcements);
+
   // Make sure the origin of the isolation info and origin to commit match,
   // otherwise the cookie manager will crash. Sending the cookie manager here
   // is just an optimization, so it is fine for it to be null in the case
   // where these don't match.
-
   if (common_params->url.SchemeIsHTTPOrHTTPS() && !origin_to_commit.opaque() &&
+      !should_block_storage_access_for_pdf &&
       navigation_request->isolation_info_for_subresources()
               .frame_origin()
               .value() == origin_to_commit) {

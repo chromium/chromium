@@ -76,6 +76,7 @@ BASE_FEATURE(kAdditionalNavigationCommitChecks,
 BASE_FEATURE(kSandboxedFrameEnforcements,
              "SandboxedFrameEnforcements",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace content {
@@ -1858,6 +1859,26 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForSandboxedProcess(
   }
 }
 
+bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess(
+    AccessType access_type) {
+  if (!base::FeatureList::IsEnabled(features::kPdfEnforcements)) {
+    return true;
+  }
+
+  // PDF processes are allowed to commit normal URLs, and they should be able to
+  // claim that they host a regular origin for things like verifying source
+  // origins for postMessage. However, PDF renderers should never need to access
+  // passwords, storage, or other data for the PDF document's origin or any
+  // other origin.
+  switch (access_type) {
+    case AccessType::kCanCommitNewOrigin:
+    case AccessType::kHostsOrigin:
+      return true;
+    case AccessType::kCanAccessDataForCommittedOrigin:
+      return false;
+  }
+}
+
 bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     int child_id,
     const GURL& url,
@@ -1899,6 +1920,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
                    actual_process_lock, url, url_is_precursor_of_opaque_origin,
                    access_type)) {
       failure_reason = "sandboxing_restrictions";
+    } else if (actual_process_lock.is_pdf() &&
+               !IsAccessAllowedForPdfProcess(access_type)) {
+      failure_reason = "pdf_restrictions";
     } else {
       // Loop over all BrowsingInstanceIDs in the SecurityState, and return true
       // if any of them would return true, otherwise return false. This allows

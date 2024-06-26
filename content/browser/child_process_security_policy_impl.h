@@ -871,6 +871,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                           bool url_is_for_opaque_origin,
                                           AccessType access_type);
 
+  // Helper used by CanAccessOrigin to impose additional restrictions on a
+  // process that only hosts PDF documents.
+  bool IsAccessAllowedForPdfProcess(AccessType access_type);
+
   // Utility function to simplify lookups for OriginAgentClusterOptInEntry
   // values by origin.
   OriginAgentClusterIsolationState* LookupOriginIsolationState(
