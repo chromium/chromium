@@ -15,7 +15,6 @@ import android.text.TextUtils;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -28,11 +27,9 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -48,12 +45,9 @@ import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -112,43 +106,6 @@ public class ReturnToChromeUtilTest {
                     ApplicationStatus.registerStateListenerForAllActivities(
                             new ActivityInflationObserver());
                 });
-    }
-
-    /**
-     * Test that overview mode is triggered in Single-pane non stack tab switcher variation in
-     * incognito mode when resuming from incognito mode.
-     */
-    @Test
-    @SmallTest
-    @Feature({"ReturnToChrome"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableFeatures({ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
-    public void testTabSwitcherModeTriggeredWithinThreshold_WarmStart_FromIncognito_NON_V2()
-            throws Exception {
-        testTabSwitcherModeTriggeredBeyondThreshold();
-
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                true,
-                true);
-        Assert.assertTrue(
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-
-        // Trigger hide and resume.
-        ChromeApplicationTestUtils.fireHomeScreenIntent(
-                ApplicationProvider.getApplicationContext());
-        mActivityTestRule.resumeMainActivityFromLauncher();
-
-        Assert.assertTrue(
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        assertEquals(3, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
-        Assert.assertNotNull(mBackPressHandler.getHandleBackPressChangedSupplier().get());
-        Assert.assertFalse(mBackPressHandler.getHandleBackPressChangedSupplier().get());
     }
 
     /**
