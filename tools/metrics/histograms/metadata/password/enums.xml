@@ -108,6 +108,12 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Authentication async operation failed"/>
 </enum>
 
+<enum name="AuthenticationStateWin">
+  <summary>State of authenticating using Windows Hello.</summary>
+  <int value="0" label="Authentication was started."/>
+  <int value="1" label="Authentication was finished."/>
+</enum>
+
 <enum name="AutofillSuggestionTriggerSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Form control elemnt clicked"/>

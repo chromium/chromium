@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +38,15 @@
 #include "ui/aura/window.h"
 
 namespace {
+
+// Enum specifying possible states of Windows Hello authentication. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class AuthenticationStateWin {
+  kStarted = 0,
+  kFinished = 1,
+  kMaxValue = kFinished,
+};
 
 using AvailabilityCallback = AuthenticatorWinInterface::AvailabilityCallback;
 using ABI::Windows::Foundation::IAsyncOperation;
@@ -94,6 +104,11 @@ void RecordWindowsHelloAuthenticationResult(
     AuthenticationResultStatusWin result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.RequestVerificationAsyncResult", result);
+}
+
+void RecordAuthenticationState(AuthenticationStateWin state) {
+  base::UmaHistogramEnumeration("PasswordManager.AuthenticationStateWin",
+                                state);
 }
 
 void RecordAuthenticationAsyncOpFailureReson(HRESULT hr) {
@@ -286,6 +301,8 @@ AuthenticatorWin::~AuthenticatorWin() = default;
 void AuthenticatorWin::AuthenticateUser(
     const std::u16string& message,
     base::OnceCallback<void(bool)> result_callback) {
+  RecordAuthenticationState(AuthenticationStateWin::kStarted);
+
   if (base::FeatureList::IsEnabled(
           password_manager::features::kAuthenticateUsingNewWindowsHelloApi)) {
     // Posting authentication using the new API on a background thread causes
@@ -294,10 +311,15 @@ void AuthenticatorWin::AuthenticateUser(
     // because the thread itself is not blocked and there are operations
     // happening while the win hello dialog is visible.
     PerformWindowsHelloAuthenticationAsync(
-        std::move(result_callback),
+        std::move(result_callback)
+            .Then(base::BindOnce(RecordAuthenticationState,
+                                 AuthenticationStateWin::kFinished)),
         base::SequencedTaskRunner::GetCurrentDefault(), message);
   } else {
-    AuthenticateWithLegacyApi(message, std::move(result_callback));
+    AuthenticateWithLegacyApi(
+        message, std::move(result_callback)
+                     .Then(base::BindOnce(RecordAuthenticationState,
+                                          AuthenticationStateWin::kFinished)));
   }
 }
 
