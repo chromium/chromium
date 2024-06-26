@@ -781,6 +781,7 @@ void SafeBrowsingApiHandlerBridge::StartIsVerifyAppsEnabled(
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
     std::move(callback).Run(VerifyAppsEnabledResult::FAILED);
+    return;
   }
 
   jlong callback_id = next_verify_apps_callback_id_++;
@@ -793,6 +794,7 @@ void SafeBrowsingApiHandlerBridge::StartEnableVerifyApps(
   JNIEnv* env = AttachCurrentThread();
   if (!Java_SafeBrowsingApiBridge_ensureSafetyNetApiInitialized(env)) {
     std::move(callback).Run(VerifyAppsEnabledResult::FAILED);
+    return;
   }
 
   jlong callback_id = next_verify_apps_callback_id_++;

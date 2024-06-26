@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
@@ -550,15 +551,22 @@ class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
                                  AppVerificationCallback callback)
       : item_(item), callback_(std::move(callback)) {
     item_->AddObserver(this);
-    safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-        .StartIsVerifyAppsEnabled(
-            base::BindOnce(&DownloadAppVerificationRequest::IsVerifyAppsEnabled,
-                           weak_factory_.GetWeakPtr()));
+    // This is to ensure that `IsVerifyAppsEnabled` is not called before
+    // we exit this constructor.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&DownloadAppVerificationRequest::Start,
+                                  weak_factory_.GetWeakPtr()));
   }
 
   ~DownloadAppVerificationRequest() override { item_->RemoveObserver(this); }
 
  private:
+  void Start() {
+    safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
+        .StartIsVerifyAppsEnabled(
+            base::BindOnce(&DownloadAppVerificationRequest::IsVerifyAppsEnabled,
+                           weak_factory_.GetWeakPtr()));
+  }
   // DownloadItem::Observer
   void OnDownloadDestroyed(download::DownloadItem* item) override {
     // It's safe to pass `item` in the callback because the callback
