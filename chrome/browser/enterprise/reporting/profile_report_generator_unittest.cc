@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -24,6 +25,7 @@
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -196,10 +198,30 @@ TEST_F(ProfileReportGeneratorTest, UnsignedInProfile) {
 }
 
 TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+
   IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
   auto expected_info =
       identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
           "test@mail.com", signin::ConsentLevel::kSync);
+  auto report = GenerateReport();
+  EXPECT_TRUE(report->has_chrome_signed_in_user());
+  EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
+  EXPECT_EQ(expected_info.gaia,
+            report->chrome_signed_in_user().obfuscated_gaia_id());
+}
+
+TEST_F(ProfileReportGeneratorTest,
+       SignedInProfileReplaceSyncPromosWithSigninPromos) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  IdentityTestEnvironmentProfileAdaptor identity_test_env_adaptor(profile());
+  auto expected_info =
+      identity_test_env_adaptor.identity_test_env()->SetPrimaryAccount(
+          "test@mail.com", signin::ConsentLevel::kSignin);
   auto report = GenerateReport();
   EXPECT_TRUE(report->has_chrome_signed_in_user());
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());

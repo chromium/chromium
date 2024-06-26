@@ -25,6 +25,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 
 namespace enterprise_reporting {
 
@@ -42,9 +43,13 @@ bool ProfileReportGeneratorDelegateBase::Init(const base::FilePath& path) {
 
 void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
     enterprise_management::ChromeUserProfileInfo* report) {
+  signin::ConsentLevel consent_level =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync;
   auto account_info =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync);
+          consent_level);
   if (account_info.IsEmpty())
     return;
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
