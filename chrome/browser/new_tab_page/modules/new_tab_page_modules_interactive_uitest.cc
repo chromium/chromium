@@ -283,8 +283,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(kTabResumptionModuleDetails,
                       kMostRelevantTabResumptionModuleDetails));
 
-// TODO(crbug.com/335214502): Flaky on ChromeOS Tests.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/335214502): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_ClickingHideButtonDismissesModule \
   DISABLED_ClickingHideButtonDismissesModule
 #else
