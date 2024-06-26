@@ -7,7 +7,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/chromeos/mailbox_frame_registry.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 
 namespace media {
@@ -68,7 +67,7 @@ void RegisteredMailboxFrameConverter::ConvertFrameImpl(
          const gpu::Mailbox& mailbox) { registry->UnregisterFrame(mailbox); },
       registry_, mailbox));
 
-  Output(VideoFrameResource::Create(std::move(mailbox_frame)));
+  Output(std::move(mailbox_frame));
 }
 
 }  // namespace media

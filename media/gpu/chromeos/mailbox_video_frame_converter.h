@@ -38,9 +38,9 @@ struct GpuFenceHandle;
 namespace media {
 
 // This class is used for converting DMA buffer-backed FrameResources to
-// gpu::Mailbox-backed FrameResources. See ConvertFrameImpl() for more details.
-// After conversion, the returned gpu::Mailbox-backed FrameResource will retain
-// a reference to the FrameResource passed to ConvertFrameImpl().
+// SharedImage-backed VideoFrames. See ConvertFrameImpl() for more details.
+// After conversion, the returned SharedImage VideoFrame will retain a reference
+// to the FrameResource passed to ConvertFrameImpl().
 class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
     : public FrameResourceConverter {
  public:
@@ -115,6 +115,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override;
   void AbortPendingFramesImpl() override;
   bool HasPendingFramesImpl() const override;
+  bool UsesGetOriginalFrameCBImpl() const override;
   void OnError(const base::Location& location, const std::string& msg) override;
 
   // TODO(crbug.com/998279): replace s/OnGPUThread/OnGPUTaskRunner/.

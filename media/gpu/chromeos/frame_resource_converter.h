@@ -17,9 +17,10 @@ class SequencedTaskRunner;
 namespace media {
 
 class FrameResource;
+class VideoFrame;
 
-// This interface is at the end of VideoDecoderPipeline to convert a frame's
-// storage type.
+// This interface is at the end of VideoDecoderPipeline to convert
+// FrameResources to VideoFrames.
 //
 // A FrameResourceConverter is expected to be used as follows:
 //
@@ -36,8 +37,7 @@ class FrameResource;
 //    the destruction can occur on any sequence).
 class FrameResourceConverter {
  public:
-  // TODO(nhebert): change the output type to VideoFrame.
-  using OutputCB = base::RepeatingCallback<void(scoped_refptr<FrameResource>)>;
+  using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
   using GetOriginalFrameCB = base::RepeatingCallback<FrameResource*(
       gfx::GenericSharedMemoryId frame_id)>;
 
@@ -73,11 +73,16 @@ class FrameResourceConverter {
   // ConvertFrame() assumes it's called with unwrapped FrameResources.
   //
   // If used, |get_original_frame_cb| will only be called during a call to
-  // ConvertVideoFrame().
+  // ConvertFrame().
   //
   // Note: if |get_original_frame_cb| is called at all, it will be called on
   // |parent_task_runner_|.
   void set_get_original_frame_cb(GetOriginalFrameCB get_original_frame_cb);
+
+  // Returns true if and only if ConvertFrame() may use the GetOriginalFrameCB
+  // set via set_get_original_frame_cb() (i.e., some implementations don't need
+  // to unwrap incoming frames).
+  bool UsesGetOriginalFrameCB() const;
 
  protected:
   virtual ~FrameResourceConverter();
@@ -117,7 +122,7 @@ class FrameResourceConverter {
   const scoped_refptr<base::SequencedTaskRunner>& parent_task_runner();
 
   // This must be called on |parent_task_runner_|.
-  void Output(scoped_refptr<FrameResource> frame) const;
+  void Output(scoped_refptr<VideoFrame> frame) const;
 
  private:
   friend struct std::default_delete<FrameResourceConverter>;
@@ -138,6 +143,10 @@ class FrameResourceConverter {
   // a pending frame.
   virtual void AbortPendingFramesImpl();
   virtual bool HasPendingFramesImpl() const;
+
+  // Derived classes should override UsesGetOriginalFrameCBImpl() if the class
+  // uses the callback stored in |get_original_frame_cb_|.
+  virtual bool UsesGetOriginalFrameCBImpl() const;
 
   // |get_original_frame_cb_| is used by GetOriginalFrame() to get the original
   // frame.

@@ -122,6 +122,46 @@ scoped_refptr<base::SequencedTaskRunner> GetDecoderTaskRunner(
        base::MayBlock()},
       base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 }
+
+// DefaultFrameConverter uses the FrameResource built-in converters to handle
+// conversion to VideoFrame objects. It is used by VideoDecoderPipeline when a
+// client doesn't specify a FrameConverter.
+class DefaultFrameConverter : public FrameResourceConverter {
+ public:
+  static std::unique_ptr<FrameResourceConverter> Create() {
+    return base::WrapUnique<FrameResourceConverter>(
+        new DefaultFrameConverter());
+  }
+
+  DefaultFrameConverter(const DefaultFrameConverter&) = delete;
+  DefaultFrameConverter& operator=(const DefaultFrameConverter&) = delete;
+
+ private:
+  DefaultFrameConverter() = default;
+  ~DefaultFrameConverter() override = default;
+
+  // FrameConverter overrides.
+  void ConvertFrameImpl(scoped_refptr<FrameResource> frame) override {
+    DVLOGF(4);
+
+    if (!frame) {
+      return OnError(FROM_HERE, "Invalid frame.");
+    }
+    LOG_ASSERT(frame->AsVideoFrameResource() ||
+               frame->AsNativePixmapFrameResource())
+        << "|frame| is expected to be a VideoFrameResource or "
+           "NativePixmapFrameResource";
+    scoped_refptr<VideoFrame> video_frame =
+        frame->AsVideoFrameResource()
+            ? frame->AsVideoFrameResource()->GetMutableVideoFrame()
+            : frame->AsNativePixmapFrameResource()->CreateVideoFrame();
+    if (!video_frame) {
+      return OnError(FROM_HERE,
+                     "Failed to convert FrameResource to VideoFrame.");
+    }
+    Output(std::move(video_frame));
+  }
+};
 }  //  namespace
 
 VideoDecoderMixin::VideoDecoderMixin(
@@ -398,7 +438,8 @@ VideoDecoderPipeline::VideoDecoderPipeline(
               ? client_task_runner_
               : GetDecoderTaskRunner(in_video_decoder_process)),
       main_frame_pool_(std::move(frame_pool)),
-      frame_converter_(std::move(frame_converter)),
+      frame_converter_(frame_converter ? std::move(frame_converter)
+                                       : DefaultFrameConverter::Create()),
       renderable_fourccs_(std::move(renderable_fourccs)),
       media_log_(std::move(media_log)),
       create_decoder_function_cb_(std::move(create_decoder_function_cb)),
@@ -413,8 +454,6 @@ VideoDecoderPipeline::VideoDecoderPipeline(
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();
 
   main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
-  if (!frame_converter_)
-    return;
   frame_converter_->Initialize(
       decoder_task_runner_,
       base::BindRepeating(&VideoDecoderPipeline::OnFrameConverted,
@@ -613,7 +652,7 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     return;
   }
 
-  if (frame_converter_) {
+  if (frame_converter_->UsesGetOriginalFrameCB()) {
     FrameResourceConverter::GetOriginalFrameCB get_original_frame_cb;
 
     if (uses_oop_video_decoder_) {
@@ -628,8 +667,9 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
       CHECK(main_frame_pool_);
       PlatformVideoFramePool* platform_video_frame_pool =
           main_frame_pool_->AsPlatformVideoFramePool();
-      // When a |frame_converter_| is used, the |main_frame_pool_| should always
-      // be a PlatformVideoFramePool.
+      // The only |frame_converter_| that needs the GetOriginalFrameCB callback
+      // is the MailboxVideoFrameConverter. When it is used, the
+      // |main_frame_pool_| should always be a PlatformVideoFramePool.
       CHECK(platform_video_frame_pool);
 
       // Note: base::Unretained() is safe because either a) the
@@ -681,9 +721,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     MEDIA_LOG(ERROR, media_log_)
         << "VideoDecoderPipeline |decoder_| Initialize() failed, status: "
         << static_cast<int>(status.code());
-    if (frame_converter_) {
-      frame_converter_->set_get_original_frame_cb(base::NullCallback());
-    }
+    frame_converter_->set_get_original_frame_cb(base::NullCallback());
 #if BUILDFLAG(IS_CHROMEOS)
     // We always need to destroy |buffer_transcryptor_| if it exists before
     // |decoder_|.
@@ -699,9 +737,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
   if (decoder_ && decoder_->NeedsTranscryption()) {
     if (!cdm_context) {
       VLOGF(1) << "CdmContext required for transcryption";
-      if (frame_converter_) {
-        frame_converter_->set_get_original_frame_cb(base::NullCallback());
-      }
+      frame_converter_->set_get_original_frame_cb(base::NullCallback());
       // We always need to destroy |buffer_transcryptor_| if it exists before
       // |decoder_|.
       buffer_transcryptor_.reset();
@@ -753,8 +789,7 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
 
   if (image_processor_)
     image_processor_->Reset();
-  if (frame_converter_)
-    frame_converter_->AbortPendingFrames();
+  frame_converter_->AbortPendingFrames();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)
@@ -870,11 +905,8 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<FrameResource> frame) {
                        decoder_weak_this_));
     return;
   }
-  if (frame_converter_) {
-    frame_converter_->ConvertFrame(std::move(frame));
-  } else {
-    OnFrameConverted(std::move(frame));
-  }
+
+  frame_converter_->ConvertFrame(std::move(frame));
 }
 
 void VideoDecoderPipeline::OnFrameProcessed(
@@ -883,39 +915,23 @@ void VideoDecoderPipeline::OnFrameProcessed(
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameProcessed",
                "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
-  if (frame_converter_) {
-    frame_converter_->ConvertFrame(std::move(frame));
-  } else {
-    OnFrameConverted(std::move(frame));
-  }
+  frame_converter_->ConvertFrame(std::move(frame));
 }
 
 void VideoDecoderPipeline::OnFrameConverted(
-    scoped_refptr<FrameResource> frame) {
+    scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4);
   TRACE_EVENT1("media,gpu", "VideoDecoderPipeline::OnFrameConverted",
-               "timestamp", (frame ? frame->timestamp().InMicroseconds() : 0));
-  if (!frame)
+               "timestamp",
+               (video_frame ? video_frame->timestamp().InMicroseconds() : 0));
+  if (!video_frame) {
     return OnError("Frame converter returns null frame.");
+  }
   if (has_error_) {
     DVLOGF(2) << "Skip returning frames after error occurs.";
     return;
   }
-
-  // Gets or creates a VideoFrame from |frame|.
-  LOG_ASSERT(frame->AsVideoFrameResource() ||
-             frame->AsNativePixmapFrameResource())
-      << "frame is expected to be a VideoFrameResource or "
-         "NativePixmapFrameResource";
-  scoped_refptr<VideoFrame> video_frame =
-      frame->AsVideoFrameResource()
-          ? frame->AsVideoFrameResource()->GetMutableVideoFrame()
-          : frame->AsNativePixmapFrameResource()->CreateVideoFrame();
-
-  // Invalidates |frame| to avoid accidental usage. |video_frame| is what will
-  // be output.
-  frame.reset();
 
   // Flag that the video frame was decoded in a power efficient way.
   video_frame->metadata().power_efficient = true;
@@ -945,7 +961,7 @@ void VideoDecoderPipeline::OnDecoderWaiting(WaitingReason reason) {
 bool VideoDecoderPipeline::HasPendingFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   const bool frame_converter_has_pending_frames_ =
-      frame_converter_ && frame_converter_->HasPendingFrames();
+      frame_converter_->HasPendingFrames();
   const bool image_processor_has_pending_frames_ =
       image_processor_ && image_processor_->HasPendingFrames();
 
@@ -966,8 +982,7 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
 
   if (image_processor_)
     image_processor_->Reset();
-  if (frame_converter_)
-    frame_converter_->AbortPendingFrames();
+  frame_converter_->AbortPendingFrames();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)
@@ -1117,13 +1132,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
     // to the preferred formats. There's no need to allocate frames.
     // This is not compatible with VdVideoDecodeAccelerator, which
     // expects GPU buffers in VdVideoDecodeAccelerator::GetPicture()
-    //
-    // frame_converter_ is only expected to be nullptr when running tests.
-    // Currently this is because the frame converter doesn't work, and since
-    // the tests don't need to render the frame, it can be bypassed.
-    if (frame_converter_) {
-      frame_converter_->set_get_original_frame_cb(base::NullCallback());
-    }
+    frame_converter_->set_get_original_frame_cb(base::NullCallback());
     main_frame_pool_.reset();
     return *viable_candidate;
   }

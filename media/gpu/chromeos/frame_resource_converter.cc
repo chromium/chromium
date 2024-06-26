@@ -43,6 +43,15 @@ bool FrameResourceConverter::HasPendingFramesImpl() const {
   return false;
 }
 
+bool FrameResourceConverter::UsesGetOriginalFrameCB() const {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
+  return UsesGetOriginalFrameCBImpl();
+}
+
+bool FrameResourceConverter::UsesGetOriginalFrameCBImpl() const {
+  return false;
+}
+
 void FrameResourceConverter::set_get_original_frame_cb(
     GetOriginalFrameCB get_original_frame_cb) {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
@@ -73,7 +82,7 @@ FrameResourceConverter::parent_task_runner() {
   return parent_task_runner_;
 }
 
-void FrameResourceConverter::Output(scoped_refptr<FrameResource> frame) const {
+void FrameResourceConverter::Output(scoped_refptr<VideoFrame> frame) const {
   DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   output_cb_.Run(std::move(frame));
 }

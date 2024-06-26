@@ -25,7 +25,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -417,7 +416,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   mailbox_frame->metadata().is_webgpu_compatible =
       frame->metadata().is_webgpu_compatible;
 
-  Output(VideoFrameResource::Create(std::move(mailbox_frame)));
+  Output(std::move(mailbox_frame));
 }
 
 void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
@@ -634,6 +633,10 @@ bool MailboxVideoFrameConverter::HasPendingFramesImpl() const {
   DVLOGF(4) << "Number of pending frames: " << input_frame_queue_.size();
 
   return !input_frame_queue_.empty();
+}
+
+bool MailboxVideoFrameConverter::UsesGetOriginalFrameCBImpl() const {
+  return true;
 }
 
 void MailboxVideoFrameConverter::OnError(const base::Location& location,
