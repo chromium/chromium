@@ -2455,7 +2455,6 @@ static_library("browser") {
     "//components/site_isolation",
     "//components/spellcheck:buildflags",
     "//components/sqlite_proto",
-    "//components/ssl_errors",
     "//components/startup_metric_utils",
     "//components/storage_monitor",
     "//components/strings",

@@ -114,7 +114,6 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/core/security_state.h"
-#include "components/ssl_errors/error_classification.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_params_manager.h"

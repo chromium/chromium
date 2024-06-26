@@ -2070,7 +2070,6 @@ if (!is_android) {
       "//components/spellcheck/common:interfaces",
       "//components/spellcheck/common:spellcheck_result",
       "//components/spellcheck/renderer",
-      "//components/ssl_errors",
       "//components/strings",
       "//components/subresource_filter/core/browser",
       "//components/subresource_filter/core/browser:test_support",
