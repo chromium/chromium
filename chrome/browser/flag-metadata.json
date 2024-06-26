@@ -544,11 +544,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "audio-hfp-mic-sr",
-    "owners": [ "paulhsia@chromium.org", "cranelw@chromium.org", "chromeos-audio@google.com" ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "audio-hfp-mic-sr-toggle",
     "owners": [ "paulhsia@chromium.org", "cranelw@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 130

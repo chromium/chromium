@@ -5971,11 +5971,6 @@ const char kAudioAPNoiseCancellationName[] = "Audio noise cancellation on AP";
 const char kAudioAPNoiseCancellationDescription[] =
     "Enable noise cancellation on AP";
 
-const char kAudioHFPMicSRName[] =
-    "Audio super-resolution Bluetooth HFP microphone";
-const char kAudioHFPMicSRDescription[] =
-    "Enable super-resolution Bluetooth HFP microphone recording.";
-
 const char kAudioHFPMicSRToggleName[] = "Audio toggle for hfp-mic-sr";
 const char kAudioHFPMicSRToggleDescription[] =
     "Enable the ui to show the toggle for controlling hfp-mic-sr.";

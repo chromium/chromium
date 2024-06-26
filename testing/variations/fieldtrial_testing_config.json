@@ -6235,21 +6235,6 @@
             ]
         }
     ],
-    "CrOSBluetoothMicophoneSuperResolution": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_3",
-                    "enable_features": [
-                        "CrOSLateBootAudioHFPMicSR"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSEnforceSystemAec": [
         {
             "platforms": [
