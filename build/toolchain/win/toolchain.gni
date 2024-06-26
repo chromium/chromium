@@ -734,7 +734,7 @@ template("win_toolchains") {
         is_clang = false
         use_clang_coverage = false
         current_os = "win"
-        current_cpu = rust_host_toolchain_arch
+        current_cpu = toolchain_arch
       }
     }
     msvc_system_allocator_toolchain(
