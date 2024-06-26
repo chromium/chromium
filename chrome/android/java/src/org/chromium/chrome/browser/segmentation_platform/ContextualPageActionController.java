@@ -126,7 +126,7 @@ public class ContextualPageActionController {
             mActionProviders.add(new ReaderModeActionProvider());
         }
         if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
-            mActionProviders.add(new PriceInsightsActionProvider());
+            mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
         }
     }
 
