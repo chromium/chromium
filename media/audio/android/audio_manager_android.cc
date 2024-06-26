@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "media/audio/android/aaudio_input.h"
 #include "media/audio/android/aaudio_output.h"
 #include "media/audio/android/audio_track_output_stream.h"
@@ -61,7 +62,21 @@ bool UseAAudioOutput() {
 }
 
 bool UseAAudioInput() {
-  return base::FeatureList::IsEnabled(features::kUseAAudioInput);
+  if (!base::FeatureList::IsEnabled(features::kUseAAudioInput)) {
+    return false;
+  }
+
+  if (auto* info = base::android::BuildInfo::GetInstance()) {
+    // Disable AAudio input on Unisoc devices running Android 11 and below due
+    // to missing/broken echo cancellation. See https://crbug.com/344607452.
+    if (base::StartsWith(info->board(), "ums",
+                         base::CompareCase::INSENSITIVE_ASCII) &&
+        info->sdk_int() < base::android::SDK_VERSION_S) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
