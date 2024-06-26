@@ -16,6 +16,8 @@ source_set("view_controller") {
     "lens_overlay_container_view_controller.mm",
     "lens_overlay_selection_placeholder_view_controller.h",
     "lens_overlay_selection_placeholder_view_controller.mm",
+    "lens_result_page_view_controller.h",
+    "lens_result_page_view_controller.mm",
   ]
   deps = [
     ":lens_overlay_accessibility_identifier_constants",

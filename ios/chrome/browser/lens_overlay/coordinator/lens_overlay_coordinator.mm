@@ -6,16 +6,19 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-@interface LensOverlayCoordinator () <LensOverlayCommands>
+@interface LensOverlayCoordinator () <LensOverlayCommands,
+                                      UISheetPresentationControllerDelegate>
 
 // The tab helper for the instance for the active web state.
 @property(nonatomic, readonly, assign) LensOverlayTabHelper* tabHelper;
@@ -33,6 +36,11 @@
 
   /// The mediator for lens overlay.
   LensOverlayMediator* _mediator;
+
+  /// The view controller for lens results.
+  LensResultPageViewController* _resultViewController;
+  /// The mediator for lens results.
+  LensResultPageMediator* _resultMediator;
 }
 
 #pragma mark - properties
@@ -168,7 +176,45 @@
   }
 }
 
+#pragma mark - UISheetPresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return presentationController !=
+         _resultViewController.sheetPresentationController;
+}
+
 #pragma mark - private
+
+- (void)startResultPage {
+  _resultMediator = [[LensResultPageMediator alloc] init];
+
+  _resultViewController = [[LensResultPageViewController alloc] init];
+
+  UISheetPresentationController* sheet =
+      _resultViewController.sheetPresentationController;
+  sheet.delegate = self;
+  sheet.prefersEdgeAttachedInCompactHeight = YES;
+  sheet.largestUndimmedDetentIdentifier =
+      [UISheetPresentationControllerDetent largeDetent].identifier;
+  sheet.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
+  sheet.prefersGrabberVisible = YES;
+
+  [_containerViewController presentViewController:_resultViewController
+                                         animated:YES
+                                       completion:nil];
+}
+
+- (void)stopResultPage {
+  [_resultViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _resultViewController = nil;
+  _resultMediator = nil;
+}
 
 - (BOOL)isUICreated {
   return _containerViewController != nil;

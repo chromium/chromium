@@ -8,6 +8,8 @@ source_set("coordinator") {
     "lens_overlay_coordinator.mm",
     "lens_overlay_mediator.h",
     "lens_overlay_mediator.mm",
+    "lens_result_page_mediator.h",
+    "lens_result_page_mediator.mm",
   ]
   deps = [
     "//base",
