@@ -35,10 +35,6 @@ BASE_FEATURE(kMessagesForAndroidAdsBlocked,
              "MessagesForAndroidAdsBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidPopupBlocked,
-             "MessagesForAndroidPopupBlocked",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidSaveCard,
              "MessagesForAndroidSaveCard",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -58,10 +54,6 @@ BASE_FEATURE(kMessagesAndroidExtraHistograms,
 
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
-}
-
-bool IsPopupBlockedMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
 }
 
 bool IsSaveCardMessagesUiEnabled() {

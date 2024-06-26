@@ -241,7 +241,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/incognito/IncognitoTabLauncherTest.java",
   "javatests/src/org/chromium/chrome/browser/infobar/InfoBarAppearanceTest.java",
   "javatests/src/org/chromium/chrome/browser/infobar/InfoBarContainerTest.java",
-  "javatests/src/org/chromium/chrome/browser/infobar/InfoBarTest.java",
   "javatests/src/org/chromium/chrome/browser/init/ChromeBrowserInitializerTest.java",
   "javatests/src/org/chromium/chrome/browser/init/LaunchFailedActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/input/SelectPopupOtherContentViewTest.java",
