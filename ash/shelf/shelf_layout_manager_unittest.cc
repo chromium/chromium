@@ -723,7 +723,7 @@ TEST_F(ShelfLayoutManagerTest,
             GetShelfLayoutManager()->hotseat_state());
 
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 }
 
 // Assertions around SetAutoHideBehavior.
@@ -3394,24 +3394,28 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverview) {
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
+  SwipeUpOnShelf();
+  watcher.CheckEqual({HotseatState::kExtended});
+
   // Fling up from the center of the shelf's bottom.
   StartScroll(shelf_widget_bounds.bottom_center());
   UpdateScroll(
       gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
   EndScroll(
-      true /* is_fling */,
+      /*is_fling=*/true,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 
   watcher.WaitUntilStateChanged();
-  watcher.CheckEqual({HotseatState::kShownHomeLauncher});
+  watcher.CheckEqual(
+      {HotseatState::kExtended, HotseatState::kShownHomeLauncher});
 
   histogram_tester.ExpectBucketCount(
       kHotseatGestureHistogramName,
       InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
   histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 0);
+                                     InAppShelfGestures::kSwipeUpToShow, 1);
 }
 
 // Test that upward fling in overview transitions from home shelf overview to
@@ -3459,10 +3463,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  std::unique_ptr<aura::Window> window1 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  std::unique_ptr<aura::Window> window2 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(400, 400));
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -3479,7 +3481,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   UpdateScroll(gfx::Vector2d(
       0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
-      true /* is_fling */,
+      /*is_fling=*/true,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -3495,13 +3497,16 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   UpdateScroll(gfx::Vector2d(
       0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
-      true /* is_fling */,
+      /*is_fling=*/true,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
-  watcher.CheckEqual({HotseatState::kExtended});
+  watcher.CheckEqual({HotseatState::kExtended, HotseatState::kHidden});
+
+  // Swipe up on the shelf to show the hotseat.
+  SwipeUpOnShelf();
 
   // The same fling gesture should transition to home since overview mode
   // is active.
@@ -3509,35 +3514,34 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
   UpdateScroll(gfx::Vector2d(
       0, -shelf_size - 1.5f * hotseat_size - hotseat_padding_size));
   EndScroll(
-      true /* is_fling */,
+      /*is_fling=*/true,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_FALSE(split_view_controller->InSplitViewMode());
 
   watcher.WaitUntilStateChanged();
-  watcher.CheckEqual(
-      {HotseatState::kExtended, HotseatState::kShownHomeLauncher});
+  watcher.CheckEqual({HotseatState::kExtended, HotseatState::kHidden,
+                      HotseatState::kExtended,
+                      HotseatState::kShownHomeLauncher});
 
   histogram_tester.ExpectBucketCount(
       kHotseatGestureHistogramName,
       InAppShelfGestures::kFlingUpToShowHomeScreen, 1);
   histogram_tester.ExpectBucketCount(kHotseatGestureHistogramName,
-                                     InAppShelfGestures::kSwipeUpToShow, 1);
+                                     InAppShelfGestures::kSwipeUpToShow, 2);
 }
 
-// Test that upward fling in split mode on overview side transitions to home, if
+// Test that upward fling in split view on overview side transitions to home, if
 // the swipe length is long enough.
-TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
+TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitViewWithOverview) {
   const gfx::Rect shelf_widget_bounds =
       GetShelfWidget()->GetWindowBoundsInScreen();
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  std::unique_ptr<aura::Window> window1 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  std::unique_ptr<aura::Window> window2 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(400, 400));
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -3546,7 +3550,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
-  EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
+  EXPECT_EQ(HotseatState::kHidden, GetShelfLayoutManager()->hotseat_state());
 
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
@@ -3557,7 +3561,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
   UpdateScroll(
       gfx::Vector2d(0, -shelf_size - 3 * hotseat_size - hotseat_padding_size));
   EndScroll(
-      true /* is_fling */,
+      /*is_fling=*/true,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   EXPECT_FALSE(overview_controller->InOverviewSession());
@@ -3583,10 +3587,8 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
   const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
-  std::unique_ptr<aura::Window> window1 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  std::unique_ptr<aura::Window> window2 =
-      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow(gfx::Rect(400, 400));
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(400, 400));
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -3605,14 +3607,13 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
       gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size - 10));
   UpdateScroll(gfx::Vector2d(0, -2 * hotseat_size));
   EndScroll(
-      true /* is_fling */,
+      /*is_fling=*/true,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
-  watcher.CheckEqual({HotseatState::kExtended});
-  EXPECT_TRUE(GetPrimaryShelf()->hotseat_widget()->is_manually_extended());
+  watcher.CheckEqual({});
 
   histogram_tester.ExpectBucketCount(
       kHotseatGestureHistogramName,

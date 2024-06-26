@@ -273,16 +273,6 @@ gfx::Rect GetGridBoundsInScreen(
         Shelf::ForWindow(target_root)->shelf_layout_manager()->hotseat_state();
 
     const bool hotseat_extended = hotseat_state == HotseatState::kExtended;
-    // When a window is dragged from the top of the screen, overview gets
-    // entered immediately but the window does not get deactivated right away so
-    // the hotseat state does not get updated until the window gets dragged a
-    // bit. In this case, determine whether the hotseat will be extended to
-    // avoid doing a expensive double grid layout.
-    auto* overview_session = OverviewController::Get()->overview_session();
-    const bool hotseat_will_extend =
-        overview_session && overview_session->ShouldEnterWithoutAnimations() &&
-        !split_view_controller->InSplitViewMode();
-
     const bool show_home_launcher =
         hotseat_state == HotseatState::kShownHomeLauncher;
 
@@ -296,7 +286,7 @@ gfx::Rect GetGridBoundsInScreen(
             /*density=*/HotseatDensity::kNormal) +
         ShelfConfig::Get()->hotseat_bottom_padding();
 
-    if (!oak_enabled && (hotseat_extended || hotseat_will_extend)) {
+    if (!oak_enabled && hotseat_extended) {
       bounds.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
     } else if (oak_enabled && show_home_launcher) {
       bounds.Inset(gfx::Insets::TLBR(

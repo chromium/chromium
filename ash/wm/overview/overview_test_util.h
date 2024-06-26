@@ -52,10 +52,6 @@ std::vector<aura::Window*> GetWindowsListInOverviewGrids();
 // Returns the OverviewItem associated with |window| if it exists.
 OverviewItemBase* GetOverviewItemForWindow(aura::Window* window);
 
-// Returns a rect that accounts for the shelf hotseat. Used by tests which test
-// the grids' bounds in relation to work area or snapped window bounds.
-gfx::Rect ShrinkBoundsByHotseatInset(const gfx::Rect& rect);
-
 // If `drop` is false, the dragged `item` won't be dropped; giving the caller
 // a chance to do some validations before the item is dropped.
 void DragItemToPoint(OverviewItemBase* item,

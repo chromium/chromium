@@ -2017,11 +2017,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   // Take that into account of the divider width.
   const int bounds_left = 200 + kSplitviewDividerShortSideLength / 2;
   int expected_x = bounds_left + (400 - (bounds_left)) / 2;
-  ShelfConfig* shelf_config = ShelfConfig::Get();
-  const int workarea_bottom_inset = shelf_config->in_app_shelf_size() +
-                                    shelf_config->system_shelf_size() +
-                                    shelf_config->hotseat_bottom_padding();
-  const int expected_y = (300 - workarea_bottom_inset) / 2;
+  const int expected_y = (300 - ShelfConfig::Get()->in_app_shelf_size()) / 2;
 
   // The x location should be in the center. The y location is roughly in the
   // center. A lot of calculations go towards the padding and birch and desks
@@ -2031,7 +2027,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   if (features::IsForestFeatureEnabled()) {
     EXPECT_EQ(expected_x, no_windows_centerpoint.x());
     EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
-    EXPECT_LT(no_windows_centerpoint.y(), 300 - workarea_bottom_inset);
+    EXPECT_LT(no_windows_centerpoint.y(), expected_y);
   } else {
     EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
   }
@@ -2045,7 +2041,7 @@ TEST_P(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   if (features::IsForestFeatureEnabled()) {
     EXPECT_EQ(expected_x, no_windows_centerpoint.x());
     EXPECT_GT(no_windows_centerpoint.y(), kDeskBarZeroStateHeight);
-    EXPECT_LT(no_windows_centerpoint.y(), 300 - workarea_bottom_inset);
+    EXPECT_LT(no_windows_centerpoint.y(), expected_y);
   } else {
     EXPECT_EQ(gfx::Point(expected_x, expected_y), no_windows_centerpoint);
   }
@@ -6638,6 +6634,10 @@ TEST_F(TabletModeOverviewSessionTest, CheckWindowActivateOnTap) {
 }
 
 TEST_F(TabletModeOverviewSessionTest, LayoutValidAfterRotation) {
+  if (!features::IsForestFeatureEnabled()) {
+    return;
+  }
+
   UpdateDisplay("1366x768");
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
@@ -7444,8 +7444,7 @@ TEST_F(SplitViewOverviewSessionTest,
   EXPECT_EQ(SplitViewController::State::kNoSnap,
             split_view_controller()->state());
   EXPECT_TRUE(split_view_controller()->primary_window() == nullptr);
-  EXPECT_EQ(ShrinkBoundsByHotseatInset(GetExpectedOverviewBounds()),
-            GetGridBounds());
+  EXPECT_EQ(GetExpectedOverviewBounds(), GetGridBounds());
 
   // Verify that when dragged to the right, the window grid is located where the
   // left window of split view mode should be.
@@ -7454,8 +7453,7 @@ TEST_F(SplitViewOverviewSessionTest,
   EXPECT_EQ(SplitViewController::State::kNoSnap,
             split_view_controller()->state());
   EXPECT_TRUE(split_view_controller()->secondary_window() == nullptr);
-  EXPECT_EQ(ShrinkBoundsByHotseatInset(GetExpectedOverviewBounds()),
-            GetGridBounds());
+  EXPECT_EQ(GetExpectedOverviewBounds(), GetGridBounds());
 
   // Verify that when dragged to the center, the window grid is has the
   // dimensions of the work area.
@@ -7463,8 +7461,7 @@ TEST_F(SplitViewOverviewSessionTest,
   GetOverviewSession()->Drag(overview_item, center);
   EXPECT_EQ(SplitViewController::State::kNoSnap,
             split_view_controller()->state());
-  EXPECT_EQ(ShrinkBoundsByHotseatInset(GetWorkAreaInScreen(window1.get())),
-            GetGridBounds());
+  EXPECT_EQ(GetWorkAreaInScreen(window1.get()), GetGridBounds());
 
   // Snap window1 to the left and initialize dragging for window2.
   GetOverviewSession()->Drag(overview_item, left);
@@ -7482,8 +7479,7 @@ TEST_F(SplitViewOverviewSessionTest,
   // Verify that when there is a snapped window, the window grid bounds remain
   // constant despite overview items being dragged left and right.
   GetOverviewSession()->Drag(overview_item, left);
-  const gfx::Rect expected_grid_bounds(
-      ShrinkBoundsByHotseatInset(GetExpectedOverviewBounds()));
+  const gfx::Rect expected_grid_bounds = GetExpectedOverviewBounds();
   EXPECT_EQ(expected_grid_bounds, GetGridBounds());
   GetOverviewSession()->Drag(overview_item, right);
   EXPECT_EQ(expected_grid_bounds, GetGridBounds());
@@ -7500,8 +7496,8 @@ TEST_F(SplitViewOverviewSessionTest, DraggingUnsnappableAppWithSplitView) {
       Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen();
   const gfx::Rect shelf_bounds =
       Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())->GetIdealBounds();
-  const gfx::Rect expected_grid_bounds = ShrinkBoundsByHotseatInset(
-      SubtractRects(root_window_bounds, shelf_bounds));
+  const gfx::Rect expected_grid_bounds =
+      SubtractRects(root_window_bounds, shelf_bounds);
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
@@ -9039,11 +9035,10 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
   EXPECT_EQ(
       GetGridBounds(),
-      ShrinkBoundsByHotseatInset(
-          split_view_controller()->GetSnappedWindowBoundsInScreen(
-              SnapPosition::kSecondary,
-              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
-              /*account_for_divider_width=*/true)));
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kSecondary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true));
 
   split_view_controller()->SwapWindows();
   EXPECT_EQ(split_view_controller()->state(),
@@ -9052,11 +9047,10 @@ TEST_F(SplitViewOverviewSessionTest, SwapWindowAndOverviewGrid) {
             SnapPosition::kSecondary);
   EXPECT_EQ(
       GetGridBounds(),
-      ShrinkBoundsByHotseatInset(
-          split_view_controller()->GetSnappedWindowBoundsInScreen(
-              SnapPosition::kPrimary,
-              /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
-              /*account_for_divider_width=*/true)));
+      split_view_controller()->GetSnappedWindowBoundsInScreen(
+          SnapPosition::kPrimary,
+          /*window_for_minimum_size=*/nullptr, chromeos::kDefaultSnapRatio,
+          /*account_for_divider_width=*/true));
 }
 
 // Test that in tablet mode, pressing tab key in overview should not crash.

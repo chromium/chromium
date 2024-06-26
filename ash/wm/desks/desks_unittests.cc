@@ -3723,68 +3723,6 @@ TEST_P(TabletModeDesksTest, BackdropsStacking) {
   EXPECT_TRUE(window_util::IsStackedBelow(desk_2_backdrop, win4.get()));
 }
 
-TEST_P(TabletModeDesksTest, HotSeatStateAfterMovingAWindowToAnotherDesk) {
-  // Create 2 desks, and 2 windows, one of them is minimized and the other is
-  // normal. Test that dragging and dropping them to another desk does not hide
-  // the hotseat. https://crbug.com/1063536.
-  auto* controller = DesksController::Get();
-  NewDesk();
-  ASSERT_EQ(2u, controller->desks().size());
-  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto win1 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
-  auto* window_state = WindowState::Get(win0.get());
-  window_state->Minimize();
-  EXPECT_TRUE(window_state->IsMinimized());
-  wm::ActivateWindow(win1.get());
-  EXPECT_EQ(win1.get(), window_util::GetActiveWindow());
-
-  auto* overview_controller = OverviewController::Get();
-  EnterOverview();
-  EXPECT_TRUE(overview_controller->InOverviewSession());
-  auto* overview_session = overview_controller->overview_session();
-
-  HotseatWidget* hotseat_widget =
-      Shelf::ForWindow(win1.get())->hotseat_widget();
-  EXPECT_EQ(HotseatState::kExtended, hotseat_widget->state());
-
-  const struct {
-    raw_ptr<aura::Window> window;
-    const char* trace_message;
-  } kTestTable[] = {{win0.get(), "Minimized window"},
-                    {win1.get(), "Normal window"}};
-
-  for (const auto& test_case : kTestTable) {
-    SCOPED_TRACE(test_case.trace_message);
-    auto* win = test_case.window.get();
-    auto* overview_item = overview_session->GetOverviewItemForWindow(win);
-    ASSERT_TRUE(overview_item);
-
-    auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
-    const auto* desks_bar_view = overview_grid->desks_bar_view();
-    ASSERT_TRUE(desks_bar_view);
-    ASSERT_EQ(2u, desks_bar_view->mini_views().size());
-    auto* desk_2_mini_view = desks_bar_view->mini_views()[1].get();
-    auto* desk_2 = controller->GetDeskAtIndex(1);
-    EXPECT_EQ(desk_2, desk_2_mini_view->desk());
-    auto* event_generator = GetEventGenerator();
-
-    {
-      // For this test to fail without the fix, we need to test while animations
-      // are not disabled.
-      ui::ScopedAnimationDurationScaleMode normal_anim(
-          ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-      DragItemToPoint(overview_item,
-                      desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
-                      event_generator,
-                      /*by_touch_gestures=*/false);
-    }
-
-    EXPECT_TRUE(overview_controller->InOverviewSession());
-    EXPECT_FALSE(DoesActiveDeskContainWindow(win));
-    EXPECT_EQ(HotseatState::kExtended, hotseat_widget->state());
-  }
-}
-
 TEST_P(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
   UpdateDisplay("600x400");
   display::test::DisplayManagerTestApi(display_manager())

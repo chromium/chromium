@@ -1695,13 +1695,6 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
                                       : HotseatState::kExtended;
   }
 
-  bool in_split_view = false;
-  if (in_overview) {
-    auto* split_view_controller =
-        SplitViewController::Get(Shell::GetPrimaryRootWindow());
-    in_split_view =
-        split_view_controller && split_view_controller->InSplitViewMode();
-  }
   const int hotseat_size = shelf_->hotseat_widget()->GetHotseatSize();
   switch (drag_status_) {
     case kDragNone:
@@ -1715,15 +1708,12 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       }
 
       if (in_overview) {
-        if (in_split_view) {
-          return HotseatState::kExtended;
-        }
         // Maintain the ShownHomeLauncher state if we enter overview mode
         // from it.
         if (hotseat_state() == HotseatState::kShownHomeLauncher) {
           return HotseatState::kShownHomeLauncher;
         }
-        return HotseatState::kExtended;
+        return HotseatState::kHidden;
       }
 
       if (state_forced_by_back_gesture_) {
@@ -1767,8 +1757,8 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
         return HotseatState::kShownHomeLauncher;
       }
 
-      if (in_overview && !in_split_view) {
-        return HotseatState::kExtended;
+      if (in_overview && should_hide_hotseat_) {
+        return HotseatState::kHidden;
       }
 
       if (shelf_->hotseat_widget()->IsExtended()) {
@@ -2827,6 +2817,13 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
   DCHECK(!transitioned_from_overview_to_home ||
          !window_drag_result.has_value());
 
+  std::optional<base::AutoReset<bool>> reset;
+  if (window_drag_result &&
+      (*window_drag_result == ShelfWindowDragResult::kGoToOverviewMode ||
+       *window_drag_result == ShelfWindowDragResult::kGoToSplitviewMode)) {
+    reset.emplace(&should_hide_hotseat_, true);
+  }
+
   if (ShouldChangeVisibilityAfterDrag(event_in_screen))
     CompleteDragWithChangedVisibility();
   else
@@ -2889,9 +2886,6 @@ void ShelfLayoutManager::CancelDrag(
     }
   }
   if (hotseat_is_in_drag_) {
-    // If the gesture started the overview session, the hotseat will be
-    // extended, but should not be marked as manually extended, as
-    // extending the hotseat was not the primary goal of the gesture.
     shelf_->hotseat_widget()->set_manually_extended(
         hotseat_state() == HotseatState::kExtended &&
         (!Shell::Get()->overview_controller()->InOverviewSession() ||

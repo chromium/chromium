@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/overview_test_api.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -121,21 +120,6 @@ std::vector<aura::Window*> GetWindowsListInOverviewGrids() {
 
 OverviewItemBase* GetOverviewItemForWindow(aura::Window* window) {
   return GetOverviewSession()->GetOverviewItemForWindow(window);
-}
-
-gfx::Rect ShrinkBoundsByHotseatInset(const gfx::Rect& rect) {
-  // TODO(sammiequon): Forest feature shrinks if the home launcher is visible,
-  // and no-ops otherwise. Determine if we need the home launcher logic here.
-  if (features::IsForestFeatureEnabled()) {
-    return rect;
-  }
-
-  gfx::Rect new_rect = rect;
-  const int hotseat_bottom_inset = ShelfConfig::Get()->GetHotseatSize(
-                                       /*density=*/HotseatDensity::kNormal) +
-                                   ShelfConfig::Get()->hotseat_bottom_padding();
-  new_rect.Inset(gfx::Insets::TLBR(0, 0, hotseat_bottom_inset, 0));
-  return new_rect;
 }
 
 void DragItemToPoint(OverviewItemBase* item,
