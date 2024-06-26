@@ -4240,7 +4240,7 @@
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4107522742068568249">前往“安全检查”页面</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
-<translation id="4110485659976215879">取消忽略警告</translation>
+<translation id="4110485659976215879">恢复警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
 <translation id="4113743276555482284">文件密码</translation>
 <translation id="4114524937989710624">系统会显示推荐的文件，方便您回到最近在 Google 云端硬盘中进行的活动。
@@ -4417,7 +4417,7 @@
 <translation id="4260699894265914672">按一个键盘按键即可自定义</translation>
 <translation id="4260722247480053581">在无痕式窗口中打开</translation>
 <translation id="4261429981378979799">扩展程序权限</translation>
-<translation id="4262004481148703251">关闭警告</translation>
+<translation id="4262004481148703251">忽略警告</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
 <translation id="4263470758446311292">最大限度节省内存。标签页会在更短的一段时间后变为非活跃状态。</translation>
 <translation id="4265096510956307240">验证身份</translation>
@@ -7252,7 +7252,7 @@
 <translation id="6442445294758185945">无法下载此项更新。请稍后再试。</translation>
 <translation id="6444070574980481588">设置日期和时间</translation>
 <translation id="6444147596556711162">使用“下一项”和“上一项”即可在屏幕上的各项内容之间切换</translation>
-<translation id="6444690771728873098">您可以安全地与家人群组成员分享您的密码副本</translation>
+<translation id="6444690771728873098">您可以安全地与家人群组成员分享您的密码</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - 正在搜寻蓝牙设备</translation>
 <translation id="6445450263907939268">如果您不想保留这些更改，可以还原之前的设置。</translation>
 <translation id="6446213738085045933">创建桌面快捷方式</translation>

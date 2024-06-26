@@ -761,7 +761,7 @@
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4904877109095351937">标记为已读</translation>
 <translation id="4908869848243824489">Google 探索</translation>
-<translation id="4913626501929406101">您可以安全地与家人群组成员分享您的密码副本。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4913626501929406101">您可以安全地与家人群组成员分享您的密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4922154083994158612">想提升安全性？</translation>
 <translation id="4930714375720679147">开启</translation>
@@ -818,7 +818,7 @@
 <translation id="5219295696240154694">帮助我们为所有人改善网络安全环境</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
 <translation id="5221339005270097309">正在检查密码…</translation>
-<translation id="5226568866393490213">关闭警告</translation>
+<translation id="5226568866393490213">忽略警告</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
 <translation id="5234094073825090254">{count,plural, =1{书签已保存到您的 Google 账号 {email}。}other{书签已保存到您的 Google 账号 {email}。}}</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -1138,7 +1138,7 @@
 <translation id="672735642903863329">获取您在所有设备上保存的书签、密码等信息。</translation>
 <translation id="6730682669179532099">无法导出密码</translation>
 <translation id="6732087373923685049">摄像头</translation>
-<translation id="6738233953537186295">分享您密码的副本</translation>
+<translation id="6738233953537186295">分享您的密码</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6748108480210050150">发件人</translation>
 <translation id="6753469262000681876">“锁定”模式</translation>
@@ -1578,7 +1578,7 @@
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>
 <translation id="895541991026785598">报告问题</translation>
-<translation id="8961757677053809960">关闭警告？</translation>
+<translation id="8961757677053809960">忽略警告？</translation>
 <translation id="8971545611707025079">再次检查</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>
 <translation id="8975015774710126284">浏览数据已被删除</translation>

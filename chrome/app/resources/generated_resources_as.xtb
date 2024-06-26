@@ -62,7 +62,7 @@
 <translation id="1040761927998636252"><ph name="URL" />ৰ নামবিহীন বুকমাৰ্ক</translation>
 <translation id="1041175011127912238">এই পৃষ্ঠাটোৱে সঁহাৰি জনোৱা নাই</translation>
 <translation id="1041263367839475438">উপলব্ধ ডিভাইচসমূ্হ</translation>
-<translation id="1042174272890264476">আপোনাৰ কম্পিউটাৰৰ সৈতে <ph name="SHORT_PRODUCT_NAME" />ৰ RLZ লাইব্ৰেৰী অন্তনিৰ্মিত ভাৱে আছে। কোনো বিশেষ প্ৰচাৰ অভিযানত ব্যৱহাৰ হোৱা সন্ধান আৰু <ph name="SHORT_PRODUCT_NAME" />ৰ ব্যৱহাৰ জুখিবলৈ RLZএ কোনো অদ্বৈত নোহোৱা, ব্যক্তিগতভাৱে চিনাক্ত কৰিব নোৱাৰা টেগ দিয়ে। এই লেবেলসমূহ কেতিয়াবা <ph name="PRODUCT_NAME" />ৰ Google Searchত কৰা সন্ধানত প্ৰদর্শিত হয়।</translation>
+<translation id="1042174272890264476">আপোনাৰ কম্পিউটাৰৰ সৈতে <ph name="SHORT_PRODUCT_NAME" />ৰ RLZ লাইব্ৰেৰী অন্তনিৰ্মিত ভাৱে আছে। কোনো বিশেষ প্ৰচাৰাভিযান অভিযানত ব্যৱহাৰ হোৱা সন্ধান আৰু <ph name="SHORT_PRODUCT_NAME" />ৰ ব্যৱহাৰ জুখিবলৈ RLZএ কোনো অদ্বৈত নোহোৱা, ব্যক্তিগতভাৱে চিনাক্ত কৰিব নোৱাৰা টেগ দিয়ে। এই লেবেলসমূহ কেতিয়াবা <ph name="PRODUCT_NAME" />ৰ Google Searchত কৰা সন্ধানত প্ৰদর্শিত হয়।</translation>
 <translation id="1042248468362992359">হটস্পট ব্যৱহাৰ কৰিবলৈ ম’বাইল ডেটাৰ সৈতে সংযোগ কৰক। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">কিবা ভুল হ’ল। Linuxক হয়তো আংশিকভাৱেহে আপগ্ৰে’ড কৰিব পৰা যাব। অধিক তথ্যৰ বাবে লগ পৰ্যালোচনা কৰক। ফাইল &gt; মোৰ ফাইল &gt; <ph name="LOG_FILE" />ত লগসমূহ ছেভ কৰা হৈছে</translation>
 <translation id="104419033123549300">কীমেপৰ শৈলী</translation>
@@ -83,7 +83,7 @@
 <translation id="1056980582064308040">ছেটিং সলনি কৰিলে হটস্পটটো ৰিষ্টাৰ্ট হ’ব। হটস্পটটো ব্যৱহাৰ কৰি থকা ডিভাইচসমূহৰ সৈতে সংযোগ বিচ্ছিন্ন হ’ব।</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{আপোনাৰ নতুন পিনটো দিয়ক। এটা পিনত অতি কমেও এটা বৰ্ণ থাকিবই লাগিব যি এটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ’ব পাৰে।}one{আপোনাৰ নতুন পিনটো দিয়ক। এটা পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব যিকেইটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ’ব পাৰে।}other{আপোনাৰ নতুন পিনটো দিয়ক। এটা পিনত অতি কমেও # টা বৰ্ণ থাকিবই লাগিব যিকেইটা আখৰ, সংখ্যা আৰু অন্য বৰ্ণ হ’ব পাৰে।}}</translation>
-<translation id="1059484610606223931">হাইপাৰটেক্স ট্ৰাঞ্চপ'ৰ্ট প্ৰ’ট’কল (HTTPS)</translation>
+<translation id="1059484610606223931">হাইপাৰটেক্স ট্ৰাঞ্চপ'ৰ্ট প্ৰ্ৰ'টকল (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />'ৰ বাবে <ph name="NUM" /> টা টেব পোৱা গৈছে</translation>
 <translation id="1060292118287751956">স্ক্ৰীনখন আপডে’ট হোৱা সঘনতা নিৰ্দিষ্ট কৰে</translation>
 <translation id="1060570945511946595">টিকেট পৰিচালনা কৰক</translation>
@@ -2669,7 +2669,7 @@
 <translation id="2916745397441987255">সন্ধানৰ এক্সটেনশ্বন</translation>
 <translation id="2918484639460781603">ছেটিঙলৈ যাওক</translation>
 <translation id="2918484644467055090">এই ডিভাইচটো আপোনাৰ একাউণ্ট থকা প্ৰতিষ্ঠানটোত পঞ্জীয়ন কৰিব নোৱাৰি কাৰণ অন্য এটা প্ৰতিষ্ঠানে ডিভাইচটো পৰিচালনাৰ বাবে ব্যৱহৃত বুলি চিহ্নিত কৰিছে।</translation>
-<translation id="2920852127376356161">প্ৰট’কল পৰিচালনা কৰাৰ অনুমতি নাই</translation>
+<translation id="2920852127376356161">প্ৰ্ৰ'টকল পৰিচালনা কৰাৰ অনুমতি নাই</translation>
 <translation id="2921081876747860777">আপোনাৰ স্থানীয় ডেটা সুৰক্ষিত কৰিবলৈ অনুগ্ৰহ কৰি এটা পাছৱৰ্ড সৃষ্টি কৰক।</translation>
 <translation id="2923006468155067296">এতিয়া আপোনাৰ <ph name="DEVICE_TYPE" />টো লক কৰা হ'ব।
 <ph name="DOMAIN" />ৰ বাবে আপুনি নিজৰ স্মাৰ্ট কাৰ্ডখন ভৰাই ৰখাৰ আৱশ্যক।</translation>
@@ -3194,7 +3194,7 @@
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ভিডিঅ’ চিত্ৰৰ ভিতৰত চিত্ৰ ম’ডত প্লে’ হৈ আছে</translation>
 <translation id="3335947283844343239">বন্ধ কৰা টেব পুনৰ খোলক</translation>
 <translation id="3336855445806447827">নিশ্চিত নহয়</translation>
-<translation id="3337568642696914359">ছাইটক প্ৰট’কল পৰিচালনা কৰাৰ অনুমতি নিদিব</translation>
+<translation id="3337568642696914359">ছাইটক প্ৰ্ৰ'টকল পৰিচালনা কৰাৰ অনুমতি নিদিব</translation>
 <translation id="3340620525920140773">ডাউনল’ড সম্পূর্ণ হ’ল: <ph name="FILE_NAME" />।</translation>
 <translation id="3340978935015468852">ছেটিংসমূহ</translation>
 <translation id="3341699307020049241">ভুল পিন। আপোনাৰ <ph name="RETRIES" />টা প্ৰচেষ্টা বাকী আছে।</translation>
@@ -5617,7 +5617,7 @@
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> অৱৰোধ কৰা হৈছে</translation>
 <translation id="5163910114647549394">টেবটোক টেবষ্ট্ৰিপৰ শেষ অংশলৈ নিয়া হ'ল</translation>
 <translation id="5164530241085602114"><ph name="SITE" />ৰ জাননীৰ অনুমতি নাই</translation>
-<translation id="516747639689914043">হাইপাৰটেক্স ট্ৰাঞ্চপ'ৰ্ট প্ৰ’ট’কল (HTTP)</translation>
+<translation id="516747639689914043">হাইপাৰটেক্স ট্ৰাঞ্চপ'ৰ্ট প্ৰ্ৰ'টকল (HTTP)</translation>
 <translation id="5170299781084543513">আপুনি অন্বেষণ কৰিব বিচৰা কোনো ছাইট বিচাৰি পোৱাৰ পাছত, আপুনি (ছাইটৰ অনুমতিসমূহ ব্যৱহাৰ কৰি) কোনো ছাইটে কিছুমান নির্দিষ্ট সুবিধা ব্যৱহাৰ কৰিব পাৰে নেকি সেয়া সিদ্ধান্ত লয়, উদাহৰণস্বৰূপে:
       &lt;ul&gt;
         &lt;li&gt;আপোনাৰ ডিভাইচৰ কেমেৰা, অৱস্থান আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰা&lt;/li&gt;
@@ -6731,7 +6731,7 @@
 <translation id="6016972670657536680">ভাষা আৰু কীব’ৰ্ড বুটাম সলনি কৰক। বৰ্তমান বাছনি কৰা ভাষা হৈছে <ph name="LANGUAGE" />।</translation>
 <translation id="6017514345406065928">সেউজীয়া ৰং</translation>
 <translation id="6019169947004469866">ক্ৰপ কৰক</translation>
-<translation id="6019851026059441029">অতি সুন্দৰ - এইচ্ছডি</translation>
+<translation id="6019851026059441029">অতি সুন্দৰ - HD</translation>
 <translation id="6020431688553761150">এই সমল এক্সেছ কৰিবলৈ ছাৰ্ভাৰে আপোনাক অনুমোদন জনোৱা নাই।</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> এপ্‌সমূহ আৰু সমৰ্থিত নহয়</translation>
 <translation id="6021969570711251331">ইণ্টাৰলিভ</translation>
@@ -6908,7 +6908,7 @@
 <translation id="6152918902620844577">পৰৱৰ্তী অপাৰেশ্বনৰ বাবে অপেক্ষা কৰি থকা হৈছে</translation>
 <translation id="6153439704237222699">ট্ৰেক কৰা নিষেধৰ বিষয়ে অধিক জানক</translation>
 <translation id="6154240335466762404">সকলো প’ৰ্ট আঁতৰাওক</translation>
-<translation id="615436196126345398">প্ৰট’কল</translation>
+<translation id="615436196126345398">প্ৰ্ৰ'টকল</translation>
 <translation id="6154739047827675957">OneDrive ছেটআপ কৰিব পৰা নগ’ল</translation>
 <translation id="6154820449290823443">এই Chromebookটোত এক্সেছ পৰিচালনা কৰক আৰু এপ্‌ অৱৰোধ কৰক।</translation>
 <translation id="6155141482566063812">নেপথ্যৰ টেবটোৱে আপোনাৰ স্ক্ৰীন শ্বেয়াৰ কৰি আছে</translation>
@@ -7151,7 +7151,7 @@
 <translation id="6337543438445391085">কিছুমান ব্যক্তিগত তথ্য তথাপিও ডেটাত অন্তৰ্ভুক্ত কৰা হ’ব পাৰে। ৰপ্তানি কৰা ফাইলসমূহ পৰ্যালোচনা কৰাটো নিশ্চিত কৰক।</translation>
 <translation id="6338968693068997776">ইউএছবি ডিভাইচ যোগ দিয়ক</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে এটা নতুন প্ৰ’ফাইল সৃষ্টি কৰক</translation>
-<translation id="6340071272923955280">ইণ্টাৰনেট প্ৰিণ্টিং প্ৰ’ট’কল (IPPS)</translation>
+<translation id="6340071272923955280">ইণ্টাৰনেট প্ৰিণ্টিং প্ৰ্ৰ'টকল (IPPS)</translation>
 <translation id="6340526405444716530">ব্যক্তিগতকৰণ</translation>
 <translation id="6341850831632289108">আপোনাৰ অৱস্থান চিনাক্ত কৰক</translation>
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
@@ -9191,7 +9191,7 @@
 <translation id="7886279613512920452">{COUNT,plural, =1{এটা বস্তু}one{# টা বস্তু}other{# টা বস্তু}}</translation>
 <translation id="7886605625338676841">ই-ছিম</translation>
 <translation id="7887174313503389866">গোপনীয়তা আৰু সুৰক্ষা সম্পৰ্কীয় মুখ্য নিয়ন্ত্ৰণসমূহৰ বিষয়ে এক ধাৰণা লওক। অধিক বিকল্পৰ বাবে, ব্যক্তিগত ছেটিঙলৈ যাওক।</translation>
-<translation id="7887334752153342268">নকল</translation>
+<translation id="7887334752153342268">ডুপ্লিকেট</translation>
 <translation id="7887864092952184874">ব্লুটুথ মাউচ যোৰা লগোৱা হৈছে</translation>
 <translation id="7889371445710865055">শ্ৰুতলিপিৰ ভাষা সলনি কৰক</translation>
 <translation id="7890147169288018054">আপোনাৰ আইপি অথবা MAC ঠিকনাৰ দৰে নেটৱৰ্কৰ তথ্য চাওক</translation>
@@ -10287,7 +10287,7 @@
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="8689811383248488428">প্ৰত্যাখ্যান কৰি প্ৰ’ফাইল বন্ধ কৰক</translation>
 <translation id="8689998525144040851">১০০</translation>
-<translation id="8690129572193755009">ছাইটে প্ৰট’কল পৰিচালনা কৰিবলৈ বিচাৰিব পাৰে</translation>
+<translation id="8690129572193755009">ছাইটে প্ৰ্ৰ'টকল পৰিচালনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="869144235543261764">এই টেবটোৱে picture-in-picture ম’ডত এটা ভিডিঅ’ প্লে’ কৰি আছে</translation>
 <translation id="869167754614449887">ডাউনল’ডৰ ইতিহাসৰ পৰা <ph name="FILE_NAME" /> মচা হৈছে</translation>
 <translation id="8692107307702113268">পাছৱৰ্ডটোত ১০০০ টাতকৈ অধিক বৰ্ণ আছে</translation>
