@@ -2322,6 +2322,7 @@ void WebMediaPlayerImpl::OnDurationChange() {
 
   client_->DurationChanged();
   DidMediaMetadataChange();
+  demuxer_manager_->DurationChanged();
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());

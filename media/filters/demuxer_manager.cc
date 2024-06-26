@@ -495,6 +495,12 @@ void DemuxerManager::OnDataSourcePlaybackRateChange(double rate, bool paused) {
   }
 }
 
+void DemuxerManager::DurationChanged() {
+  // TODO(b/338277331): Record histograms about the manifest content if this
+  // is a MediaUrlDemuxer, as the duration change event signifies that
+  // MediaPlayer was able to successfully start a playback.
+}
+
 bool DemuxerManager::WouldTaintOrigin() const {
   switch (hls_fallback_) {
     case HlsFallbackImplementation::kMediaPlayer: {

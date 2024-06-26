@@ -165,6 +165,9 @@ class MEDIA_EXPORT DemuxerManager {
   int64_t GetDataSourceMemoryUsage();
   void OnDataSourcePlaybackRateChange(double rate, bool paused);
 
+  // Signal that a demuxer (or renderer) has caused a duration change.
+  void DurationChanged();
+
   bool WouldTaintOrigin() const;
   bool HasDataSource() const;
   bool HasDemuxer() const;
