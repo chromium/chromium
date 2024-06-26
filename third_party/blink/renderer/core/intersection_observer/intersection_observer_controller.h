@@ -67,15 +67,19 @@ class IntersectionObserverController
 
  private:
   // IntersectionObserver's with a connected explicit root in this document.
-  HeapHashSet<WeakMember<IntersectionObserver>>
+  HeapHashSet<WeakMember<IntersectionObserver>, WTF::MemberHashRecordReplayRegisteredPointerId<IntersectionObserver>>
       tracked_explicit_root_observers_;
   // IntersectionObservations with an implicit root and connected target in this
   // document.
-  HeapHashSet<WeakMember<IntersectionObservation>>
+  HeapHashSet<WeakMember<IntersectionObservation>, WTF::MemberHashRecordReplayRegisteredPointerId<IntersectionObservation>>
       tracked_implicit_root_observations_;
+
+  HeapHashSet<Member<IntersectionObserver>> replay_strong_tracked_explicit_root_observers_;
+  HeapHashSet<Member<IntersectionObservation>> replay_strong_tracked_implicit_root_observations_;
+
   // IntersectionObservers for which this is the execution context of the
   // callback, and with unsent notifications.
-  HeapHashSet<Member<IntersectionObserver>> pending_intersection_observers_;
+  HeapHashSet<Member<IntersectionObserver>, WTF::MemberHashRecordReplayRegisteredPointerId<IntersectionObserver>> pending_intersection_observers_;
   // This is 'true' if any tracked node is the target of an observer for
   // which observer->trackVisibility() is true.
   bool needs_occlusion_tracking_;

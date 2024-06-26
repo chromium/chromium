@@ -55,8 +55,6 @@ void IntersectionObserverController::DeliverNotifications(
     if (observer->GetDeliveryBehavior() == behavior)
       intersection_observers_being_invoked.push_back(observer);
   }
-  std::sort(intersection_observers_being_invoked.begin(), intersection_observers_being_invoked.end(),
-            recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
   for (auto& observer : intersection_observers_being_invoked) {
     pending_intersection_observers_.erase(observer);
     observer->Deliver();
@@ -75,12 +73,8 @@ bool IntersectionObserverController::ComputeIntersections(
                "computeIntersections");
   HeapVector<Member<IntersectionObserver>> observers_to_process(
       tracked_explicit_root_observers_);
-  std::sort(observers_to_process.begin(), observers_to_process.end(),
-            recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
   HeapVector<Member<IntersectionObservation>> observations_to_process(
       tracked_implicit_root_observations_);
-  std::sort(observations_to_process.begin(), observations_to_process.end(),
-            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
   int64_t internal_observation_count = 0;
   int64_t javascript_observation_count = 0;
   {
@@ -96,6 +90,9 @@ bool IntersectionObserverController::ComputeIntersections(
         needs_occlusion_tracking_ |= observer->trackVisibility();
       } else {
         tracked_explicit_root_observers_.erase(observer);
+        if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserverController")) {
+          replay_strong_tracked_explicit_root_observers_.erase(observer);
+        }
       }
     }
     for (auto& observation : observations_to_process) {
@@ -125,6 +122,9 @@ void IntersectionObserverController::AddTrackedObserver(
   if (observer.RootIsImplicit() || !observer.HasObservations())
     return;
   tracked_explicit_root_observers_.insert(&observer);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserverController")) {
+    replay_strong_tracked_explicit_root_observers_.insert(&observer);
+  }
   if (observer.trackVisibility()) {
     needs_occlusion_tracking_ = true;
     if (LocalFrameView* frame_view = observer.root()->GetDocument().View()) {
@@ -147,6 +147,9 @@ void IntersectionObserverController::RemoveTrackedObserver(
   // compelling reason to do it here, so we avoid the iteration through
   // observers and observations here.
   tracked_explicit_root_observers_.erase(&observer);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserverController")) {
+    replay_strong_tracked_explicit_root_observers_.erase(&observer);
+  }
 }
 
 void IntersectionObserverController::AddTrackedObservation(
@@ -156,6 +159,9 @@ void IntersectionObserverController::AddTrackedObservation(
   if (!observer->RootIsImplicit())
     return;
   tracked_implicit_root_observations_.insert(&observation);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserverController")) {
+    replay_strong_tracked_implicit_root_observations_.insert(&observation);
+  }
   if (observer->trackVisibility()) {
     needs_occlusion_tracking_ = true;
     if (LocalFrameView* frame_view =
@@ -174,11 +180,16 @@ void IntersectionObserverController::RemoveTrackedObservation(
   if (!observer->RootIsImplicit())
     return;
   tracked_implicit_root_observations_.erase(&observation);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserverController")) {
+    replay_strong_tracked_implicit_root_observations_.erase(&observation);
+  }
 }
 
 void IntersectionObserverController::Trace(Visitor* visitor) const {
   visitor->Trace(tracked_explicit_root_observers_);
   visitor->Trace(tracked_implicit_root_observations_);
+  visitor->Trace(replay_strong_tracked_explicit_root_observers_);
+  visitor->Trace(replay_strong_tracked_implicit_root_observations_);
   visitor->Trace(pending_intersection_observers_);
   ExecutionContextClient::Trace(visitor);
 }

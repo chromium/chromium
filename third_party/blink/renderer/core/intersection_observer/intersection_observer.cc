@@ -328,7 +328,9 @@ IntersectionObserver::IntersectionObserver(
 void IntersectionObserver::ProcessCustomWeakness(const LivenessBroker& info) {
   // For explicit-root observers, if the root element disappears for any reason,
   // any remaining obsevations must be dismantled.
-  if (root() && !info.IsHeapObjectAlive(root()))
+  if (root() && !info.IsHeapObjectAlive(root())
+    && !(recordreplay::AreEventsDisallowed() &&
+      recordreplay::FeatureEnabled("leak-references", "IntersectionObserver::ProcessCustomWeakness")))
     root_ = nullptr;
   if (!RootIsImplicit() && !root())
     disconnect();
@@ -350,6 +352,9 @@ void IntersectionObserver::observe(Element* target,
       MakeGarbageCollected<IntersectionObservation>(*this, *target);
   target->EnsureIntersectionObserverData().AddObservation(*observation);
   observations_.insert(observation);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserver")) {
+    replay_strong_observations_.insert(observation);
+  }
   if (root() && root()->isConnected()) {
     root()
         ->GetDocument()
@@ -393,6 +398,9 @@ void IntersectionObserver::unobserve(Element* target,
 
   observation->Disconnect();
   observations_.erase(observation);
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserver")) {
+    replay_strong_observations_.erase(observation);
+  }
   active_observations_.erase(observation);
   if (root() && root()->isConnected() && observations_.empty()) {
     root()
@@ -406,6 +414,9 @@ void IntersectionObserver::disconnect(ExceptionState& exception_state) {
   for (auto& observation : observations_)
     observation->Disconnect();
   observations_.clear();
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers", "IntersectionObserver")) {
+    replay_strong_observations_.clear();
+  }
   active_observations_.clear();
   if (root() && root()->isConnected()) {
     root()
@@ -534,14 +545,7 @@ void IntersectionObserver::Deliver() {
   recordreplay::AutoDependencyExecution execute(
     recordreplay::NewDependencyGraphNode("{\"kind\":\"intersectionChanged\"}")
   );
-
-  HeapVector<Member<IntersectionObservation>> observations_vector;
   for (auto& observation : observations_)
-    observations_vector.push_back(observation);
-  std::sort(observations_vector.begin(), observations_vector.end(),
-            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
-
-  for (auto& observation : observations_vector)
     observation->TakeRecords(entries);
   active_observations_.clear();
   if (entries.size())
@@ -557,6 +561,7 @@ void IntersectionObserver::Trace(Visitor* visitor) const {
       IntersectionObserver, &IntersectionObserver::ProcessCustomWeakness>(this);
   visitor->Trace(delegate_);
   visitor->Trace(observations_);
+  visitor->Trace(replay_strong_observations_);
   visitor->Trace(active_observations_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
