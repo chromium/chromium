@@ -59,6 +59,8 @@ public class ArchivedTabsMessageService extends MessageService
                 @Override
                 public void onTabModelCreated(TabModel archivedTabModel) {
                     mArchivedTabModelOrchestrator.removeObserver(this);
+                    mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
+                    assert mTabArchiveSettings != null;
 
                     mArchivedTabModel = archivedTabModel;
                     mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
@@ -88,7 +90,6 @@ public class ArchivedTabsMessageService extends MessageService
             };
 
     private final @NonNull Context mContext;
-    private final @NonNull TabArchiveSettings mTabArchiveSettings;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull TabContentManager mTabContentManager;
@@ -98,6 +99,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @NonNull TabCreator mRegularTabCreator;
     private final @NonNull BackPressManager mBackPressManager;
 
+    private TabArchiveSettings mTabArchiveSettings;
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     private TabModel mArchivedTabModel;
     private View mCustomCardView;
@@ -134,7 +136,6 @@ public class ArchivedTabsMessageService extends MessageService
         } else {
             mArchivedTabModelOrchestrator.addObserver(mArchivedTabModelOrchestratorObserver);
         }
-        mTabArchiveSettings = mArchivedTabModelOrchestrator.getTabArchiveSettings();
     }
 
     // CustomMessageCardViewProvider implementation.

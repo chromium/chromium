@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -53,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ArchivedTabsMessageServiceUnitTest {
-    private static final int ARCHIVED_TABS = 12;
     private static final int TIME_DELTA_HOURS = (int) TimeUnit.DAYS.toHours(10);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -63,7 +61,6 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabModel mArchivedTabModel;
     @Mock private MessageService.MessageObserver mMessageObserver;
     @Mock private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
-    @Mock private TabModelSelectorBase mArchivedTabModelSelector;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
     @Mock private SnackbarManager mSnackbarManager;
@@ -81,7 +78,6 @@ public class ArchivedTabsMessageServiceUnitTest {
         mRootView = new FrameLayout(mActivity);
 
         doReturn(TIME_DELTA_HOURS).when(mTabArchiveSettings).getArchiveTimeDeltaHours();
-        doReturn(mTabArchiveSettings).when(mArchivedTabModelOrchestrator).getTabArchiveSettings();
         doReturn(mTabCountSupplier).when(mArchivedTabModel).getTabCountSupplier();
 
         mArchivedTabsMessageService =
@@ -98,6 +94,11 @@ public class ArchivedTabsMessageServiceUnitTest {
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);
+
+        // When the service is created, this getter will return null. Only set up the mock right
+        // before onTabModelCreated is called when initialization is nearly over.
+        doReturn(mTabArchiveSettings).when(mArchivedTabModelOrchestrator).getTabArchiveSettings();
+
         mArchivedTabsMessageService
                 .getArchivedTabModelOrchestratorObserverForTesting()
                 .onTabModelCreated(mArchivedTabModel);
