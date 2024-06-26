@@ -7,6 +7,7 @@
  * the template placeholder.
  */
 
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
@@ -16,6 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SEA_PEN_SUGGESTIONS} from './constants.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
+import {shuffle} from './sea_pen_utils.js';
 
 const SeaPenSuggestionsElementBase = I18nMixin(PolymerElement);
 
@@ -62,6 +64,10 @@ export class SeaPenSuggestionsElement extends SeaPenSuggestionsElementBase {
     const suggestion = target.textContent?.trim();
     assert(suggestion);
     this.dispatchEvent(new SeaPenSuggestionSelectedEvent(suggestion));
+  }
+
+  private onShuffleClicked_() {
+    this.suggestions = shuffle(this.suggestions);
   }
 }
 

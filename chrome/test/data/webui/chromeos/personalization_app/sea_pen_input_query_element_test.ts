@@ -33,6 +33,21 @@ suite('SeaPenInputQueryElementTest', function() {
     seaPenInputQueryElement = null;
   });
 
+  function getSuggestions(): string[] {
+    const seaPenSuggestions =
+        seaPenInputQueryElement!.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+    const suggestions =
+        seaPenSuggestions!.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.suggestion');
+    assertTrue(!!suggestions, 'suggestions should exist');
+
+    return Array.from(suggestions).map(suggestion => {
+      assertTrue(!!suggestion.textContent);
+      return suggestion.textContent;
+    });
+  }
+
   test('displays recreate button if thumbnails exist', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnails =
         seaPenProvider.thumbnails;
@@ -162,6 +177,46 @@ suite('SeaPenInputQueryElementTest', function() {
                 SeaPenSuggestionsElement.is);
         assertTrue(!!seaPenSuggestions, 'suggestions element should be shown');
       });
+
+  test('shuffles suggestions', async () => {
+    seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const inputElement =
+        seaPenInputQueryElement.shadowRoot?.querySelector<CrInputElement>(
+            '#queryInput');
+    assertTrue(!!inputElement, 'textInput should exist');
+
+    // Set input text.
+    inputElement.value = 'Love looks not with the eyes, but with the mind';
+    await waitAfterNextRender(seaPenInputQueryElement);
+
+    const seaPenSuggestions =
+        seaPenInputQueryElement.shadowRoot!.querySelector<HTMLElement>(
+            SeaPenSuggestionsElement.is);
+
+    const shuffleButton =
+        seaPenSuggestions!.shadowRoot!.getElementById('shuffle');
+
+    assertTrue(!!shuffleButton, 'suggestions button should exist');
+
+    const originalSuggestions = getSuggestions();
+    const RETRIES_COUNT = 10;
+    for (let i = 0; i < RETRIES_COUNT; i++) {
+      shuffleButton.click();
+      await waitAfterNextRender(seaPenInputQueryElement);
+      try {
+        chai.assert.notSameOrderedMembers(
+            originalSuggestions, getSuggestions());
+        chai.assert.sameMembers(originalSuggestions, getSuggestions());
+      } catch (e) {
+        if (i === RETRIES_COUNT - 1) {
+          throw e;
+        }
+      }
+    }
+  });
+
 
   test('displays prompting guide link', async () => {
     seaPenInputQueryElement = initElement(SeaPenInputQueryElement);
