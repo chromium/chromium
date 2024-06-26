@@ -31,6 +31,7 @@ import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../contr
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {AppearancePageVisibility} from '../page_visibility.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -68,6 +69,7 @@ export interface SettingsAppearancePageElement {
     showSavedTabGroups: SettingsToggleButtonElement,
     autoPinNewTabGroups: SettingsToggleButtonElement,
     zoomLevel: HTMLSelectElement,
+    tabSearchPositionDropdown: SettingsDropdownMenuElement,
   };
 }
 
@@ -83,7 +85,7 @@ export enum SystemTheme {
 }
 
 const SettingsAppearancePageElementBase =
-    I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
+    RelaunchMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement))));
 
 export class SettingsAppearancePageElement extends
     SettingsAppearancePageElementBase {
@@ -236,6 +238,34 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showTabSearchPositionSettings_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showTabSearchPositionSettings');
+        },
+      },
+
+      showTabSearchPositionRestartButton_: {
+        type: Boolean,
+        value: false,
+      },
+
+      tabSearchOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignRight'),
+            },
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignLeft'),
+            },
+          ];
+        },
+      },
     };
   }
 
@@ -244,7 +274,8 @@ export class SettingsAppearancePageElement extends
       'defaultFontSizeChanged_(prefs.webkit.webprefs.default_font_size.value)',
       'themeChanged_(' +
           'prefs.extensions.theme.id.value, systemTheme_, isForcedTheme_)',
-
+      'updateShowTabSearchRestartButton_(' +
+          'prefs.tab_search.is_right_aligned.value)',
       // <if expr="is_linux">
       'systemThemePrefChanged_(prefs.extensions.theme.system_theme.value)',
       // </if>
@@ -272,8 +303,11 @@ export class SettingsAppearancePageElement extends
   private showCustomChromeFrame_: boolean;
   // </if>
 
+  private showTabSearchPositionSettings_: boolean;
+  private showTabSearchPositionRestartButton_: boolean;
   private showManagedThemeDialog_: boolean;
   private sidePanelOptions_: DropdownMenuOptionList;
+  private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =
@@ -496,6 +530,17 @@ export class SettingsAppearancePageElement extends
 
   private onManagedDialogClosed_() {
     this.showManagedThemeDialog_ = false;
+  }
+
+  private onTabSearchPositionRestartClick_(e: Event) {
+    // Prevent event from bubbling up to the toggle button.
+    e.stopPropagation();
+    this.performRestart(RestartType.RESTART);
+  }
+
+  private updateShowTabSearchRestartButton_(newValue: boolean): void {
+    this.showTabSearchPositionRestartButton_ = newValue !==
+        loadTimeData.getBoolean('tabSearchIsRightAlignedAtStartup');
   }
 }
 

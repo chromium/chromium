@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {AppearanceBrowserProxy, CustomizeColorSchemeModeClientRemote, HomeUrlInputElement, SettingsAppearancePageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {AppearanceBrowserProxy, /*CrButtonElement,*/ CustomizeColorSchemeModeClientRemote, SettingsAppearancePageElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {AppearanceBrowserProxyImpl, ColorSchemeMode, CustomizeColorSchemeModeBrowserProxy, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -119,6 +119,7 @@ function createAppearancePage() {
       theme: {
         policy: {
           color: {
+            type: chrome.settingsPrivate.PrefType.NUMBER,
             value: 0,
           },
         },
@@ -127,11 +128,19 @@ function createAppearancePage() {
     extensions: {
       theme: {
         id: {
+          type: chrome.settingsPrivate.PrefType.STRING,
           value: '',
         },
         system_theme: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
           value: SystemTheme.DEFAULT,
         },
+      },
+    },
+    tab_search: {
+      is_right_aligned: {
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
       },
     },
   });
@@ -350,6 +359,26 @@ suite('AppearanceHandler', function() {
         !!appearancePage.shadowRoot!.querySelector('#sidePanelPosition'));
   });
 
+  test('show tab search options', async function() {
+    loadTimeData.overrideValues({
+      showTabSearchPositionSettings: true,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+    assertTrue(
+        !!appearancePage.shadowRoot!.querySelector('#tabSearchPositionRow'));
+  });
+
+  test('hide tab search options', async function() {
+    loadTimeData.overrideValues({
+      showTabSearchPositionSettings: false,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+    assertTrue(
+        !appearancePage.shadowRoot!.querySelector('#tabSearchPositionRow'));
+  });
+
   test('ShowSavedTabGroupsToggleVisible', async function() {
     loadTimeData.overrideValues({
       tabGroupsSaveUIUpdateEnabled: true,
@@ -387,120 +416,117 @@ suite('AppearanceHandler', function() {
   });
 });
 
-suite('HomeUrlInput', function() {
-  let homeUrlInput: HomeUrlInputElement;
+suite('TabSearchPositionSettings', () => {
+  const TAB_SEARCH_IS_RIGHT_ALIGNED_PREF_PATH = 'tab_search.is_right_aligned';
+  const DEFAULT_TAB_SEARCH_IS_RIGHT_ALIGNED = false;
+  const UI_FEATURE_ALIGN_LEFT = 'foo';
+  const UI_FEATURE_ALIGN_RIGHT = 'bar';
+  const FALSEY_STRING = 'false';
+  const TRUTHY_STRING = 'true';
 
-  setup(function() {
-    appearanceBrowserProxy = new TestAppearanceBrowserProxy();
-    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  async function buildPage(startupPref: boolean, currentPref: boolean) {
+    loadTimeData.overrideValues({
+      uiFeatureAlignLeft: UI_FEATURE_ALIGN_LEFT,
+      uiFeatureAlignRight: UI_FEATURE_ALIGN_RIGHT,
+      showTabSearchPositionSettings: true,
+      tabSearchIsRightAlignedAtStartup: startupPref,
+    });
 
-    homeUrlInput = document.createElement('home-url-input');
-    homeUrlInput.set(
-        'pref', {type: chrome.settingsPrivate.PrefType.URL, value: 'test'});
+    createAppearancePage();
 
-    document.body.appendChild(homeUrlInput);
+    appearancePage.setPrefValue(
+        TAB_SEARCH_IS_RIGHT_ALIGNED_PREF_PATH, currentPref);
     flush();
-  });
-
-  test('home button urls', async function() {
-    assertFalse(homeUrlInput.invalid);
-    assertEquals(homeUrlInput.value, 'test');
-
-    homeUrlInput.value = '@@@';
-    appearanceBrowserProxy.setValidStartupPageResponse(false);
-    homeUrlInput.$.input.dispatchEvent(
-        new CustomEvent('input', {bubbles: true, composed: true}));
-
-    const url = await appearanceBrowserProxy.whenCalled('validateStartupPage');
-
-    assertEquals(homeUrlInput.value, url);
-    flush();
-    assertEquals(homeUrlInput.value, '@@@');  // Value hasn't changed.
-    assertTrue(homeUrlInput.invalid);
-
-    // Should reset to default value on change event.
-    homeUrlInput.$.input.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
-    flush();
-    assertEquals(homeUrlInput.value, 'test');
-  });
-});
-
-suite('HoverCardSettings', function() {
-  const HOVER_CARD_IMAGES_PREF = 'browser.hovercard.image_previews_enabled';
-
-  function getMemoryUsageToggle(): SettingsToggleButtonElement|null {
-    return appearancePage.shadowRoot!
-        .querySelector<SettingsToggleButtonElement>(
-            '#hoverCardMemoryUsageToggle');
+    await microtasksFinished();
   }
 
-  function getPreviewImageToggle(): SettingsToggleButtonElement|null {
+  function getTabSearchDropdown(): SettingsDropdownMenuElement|null {
     return appearancePage.shadowRoot!
-        .querySelector<SettingsToggleButtonElement>('#hoverCardImagesToggle');
+        .querySelector<SettingsDropdownMenuElement>(
+            '#tabSearchPositionDropdown');
   }
 
-  test('hover card section not visible in guest mode', function() {
-    loadTimeData.overrideValues({
-      isGuest: true,
-      showHoverCardImagesOption: true,
-    });
-    createAppearancePage();
+  function getTabSearchRestartButton(): HTMLElement|null {
+    return appearancePage.shadowRoot!.querySelector(
+        '#tabSearchPositionRestart');
+  }
 
-    const memoryUsageToggle = getMemoryUsageToggle();
-    assertTrue(!!memoryUsageToggle);
-    assertFalse(isVisible(memoryUsageToggle));
+  async function userClicksDropdownForOption(userChoice: boolean) {
+    const dropdown: SettingsDropdownMenuElement|null = getTabSearchDropdown();
+    if (dropdown === null) {
+      return;
+    }
 
-    const previewImageToggle = getPreviewImageToggle();
-    assertTrue(!!previewImageToggle);
-    assertFalse(isVisible(previewImageToggle));
+    dropdown.$.dropdownMenu.value = userChoice ? TRUTHY_STRING : FALSEY_STRING;
+    dropdown.dispatchEvent(new CustomEvent('change'));
+
+    // simulate the pref changing in the backend, This doesnt get triggered
+    // because the prefs are hardcoded.
+    appearancePage.setPrefValue(
+        TAB_SEARCH_IS_RIGHT_ALIGNED_PREF_PATH, userChoice);
+    flush();
+    await microtasksFinished();
+  }
+
+  setup(async () => {
+    await buildPage(
+        DEFAULT_TAB_SEARCH_IS_RIGHT_ALIGNED,
+        DEFAULT_TAB_SEARCH_IS_RIGHT_ALIGNED);
   });
 
-  test('hide hover card image option', function() {
-    loadTimeData.overrideValues({
-      showHoverCardImagesOption: false,
-    });
-    createAppearancePage();
-
-    const memoryUsageToggle = getMemoryUsageToggle();
-    assertTrue(!!memoryUsageToggle);
-
-    const previewImageToggle = getPreviewImageToggle();
-    assertFalse(!!previewImageToggle);
+  test('shows when showTabSearchPositionSettings is true', () => {
+    assertTrue(!!getTabSearchDropdown());
   });
 
-  test('show hover card image option', async function() {
-    loadTimeData.overrideValues({
-      showHoverCardImagesOption: true,
-    });
-    createAppearancePage();
-    appearancePage.set('prefs.browser', {
-      hovercard: {
-        image_previews_enabled: {
-          value: false,
-        },
-      },
-    });
+  test('dropdown has expected options', () => {
+    const dropdown: SettingsDropdownMenuElement|null = getTabSearchDropdown();
 
-    const memoryUsageToggle = getMemoryUsageToggle();
-    assertTrue(!!memoryUsageToggle);
+    assertTrue(!!dropdown);
+    assertEquals(2, dropdown?.menuOptions.length);
+    assertTrue(!!dropdown?.menuOptions.some(
+        option => option.name === UI_FEATURE_ALIGN_LEFT &&
+            option.value === FALSEY_STRING));
+    assertTrue(!!dropdown?.menuOptions.some(
+        option => option.name === UI_FEATURE_ALIGN_RIGHT &&
+            option.value === TRUTHY_STRING));
+  });
 
-    const previewImageToggle = getPreviewImageToggle();
-    assertTrue(!!previewImageToggle);
-    assertFalse(previewImageToggle.checked);
+  test('dropdown sets the value', async () => {
+    const dropdown: SettingsDropdownMenuElement|null = getTabSearchDropdown();
 
-    previewImageToggle.click();
-    assertTrue(previewImageToggle.checked);
-    assertTrue(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
-    assertTrue(await appearanceBrowserProxy.whenCalled(
-        'recordHoverCardImagesEnabledChanged'));
+    // Should be set to initial option of "False" based on pref.
+    assertEquals(FALSEY_STRING, dropdown?.getSelectedValue());
 
-    appearanceBrowserProxy.reset();
-    previewImageToggle.click();
-    assertFalse(previewImageToggle.checked);
-    assertFalse(appearancePage.getPref(HOVER_CARD_IMAGES_PREF).value);
-    assertFalse(await appearanceBrowserProxy.whenCalled(
-        'recordHoverCardImagesEnabledChanged'));
+    // on user click of true, the dropdown should now show truthy
+    await userClicksDropdownForOption(/*userChoice=*/ true);
+    assertEquals(TRUTHY_STRING, dropdown?.getSelectedValue());
+
+    // on user click of false, the dropdown should now show falsey
+    await userClicksDropdownForOption(/*userChoice=*/ false);
+    assertEquals(FALSEY_STRING, dropdown?.getSelectedValue());
+  });
+
+  test('restart button steady state', async () => {
+    await buildPage(/*startupPref=*/ false, /*currentPref=*/ false);
+    assertFalse(!!getTabSearchRestartButton());
+
+    await buildPage(/*startupPref=*/ false, /*currentPref=*/ true);
+    assertTrue(!!getTabSearchRestartButton());
+
+    await buildPage(/*startupPref=*/ true, /*currentPref=*/ false);
+    assertTrue(!!getTabSearchRestartButton());
+
+    await buildPage(/*startupPref=*/ true, /*currentPref=*/ true);
+    assertFalse(!!getTabSearchRestartButton());
+  });
+
+  test('restart button shows on change', async () => {
+    assertFalse(!!getTabSearchRestartButton());
+
+    await userClicksDropdownForOption(/*userChoice=*/ true);
+    assertTrue(!!getTabSearchRestartButton());
+
+    await userClicksDropdownForOption(/*userChoice=*/ false);
+    assertFalse(!!getTabSearchRestartButton());
   });
 });
