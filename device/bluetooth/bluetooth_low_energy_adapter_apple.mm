@@ -254,9 +254,8 @@ void BluetoothLowEnergyAdapterApple::LazyInitialize() {
     low_energy_central_manager_ = [[CBCentralManager alloc]
         initWithDelegate:low_energy_central_manager_delegate_
                    queue:dispatch_get_main_queue()];
-    low_energy_discovery_manager_->SetCentralManager(
-        low_energy_central_manager_);
   }
+  low_energy_discovery_manager_->SetCentralManager(low_energy_central_manager_);
 
   low_energy_peripheral_manager_ = [[CBPeripheralManager alloc]
       initWithDelegate:low_energy_peripheral_manager_delegate_
