@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_COMPARE_COMPARE_UTILS_H_
 #define COMPONENTS_COMMERCE_CORE_COMPARE_COMPARE_UTILS_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
