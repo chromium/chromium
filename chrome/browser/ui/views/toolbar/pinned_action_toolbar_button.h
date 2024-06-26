@@ -10,11 +10,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 
 class Browser;
 class PinnedToolbarActionsContainer;
@@ -48,6 +50,7 @@ class PinnedActionToolbarButton : public ToolbarButton,
   bool IsIconVisible() { return is_icon_visible_; }
   bool IsPinned() { return pinned_; }
 
+  using views::LabelButton::image_container_view;
   // View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
@@ -56,8 +59,14 @@ class PinnedActionToolbarButton : public ToolbarButton,
       const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
+  void Layout(PassKey) override;
 
   void UpdatePinnedStateForContextMenu();
+  void UpdateStatusIndicator(bool should_show_status_indicator);
+  void HideStatusIndicator();
+  PinnedToolbarButtonStatusIndicator* GetStatusIndicatorForTesting() {
+    return status_indicator_;
+  }
 
   // ui::SimpleMenuModel::Delegate:
   bool IsItemForCommandIdDynamic(int command_id) const override;
@@ -75,6 +84,8 @@ class PinnedActionToolbarButton : public ToolbarButton,
   void OnAnchorCountChanged(size_t anchor_count);
 
   raw_ptr<Browser> browser_;
+  raw_ptr<PinnedToolbarButtonStatusIndicator> status_indicator_;
+
   actions::ActionId action_id_;
   base::CallbackListSubscription action_changed_subscription_;
   base::CallbackListSubscription action_count_changed_subscription_;

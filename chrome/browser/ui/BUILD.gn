@@ -6198,6 +6198,8 @@ static_library("ui") {
       "views/toolbar/pinned_action_toolbar_button.h",
       "views/toolbar/pinned_toolbar_actions_container.cc",
       "views/toolbar/pinned_toolbar_actions_container.h",
+      "views/toolbar/pinned_toolbar_button_status_indicator.cc",
+      "views/toolbar/pinned_toolbar_button_status_indicator.h",
       "views/toolbar/reload_button.cc",
       "views/toolbar/reload_button.h",
       "views/toolbar/toolbar_action_hover_card_bubble_view.cc",

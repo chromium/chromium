@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -26,9 +27,14 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 const gfx::VectorIcon kEmptyIcon;
@@ -65,6 +71,9 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
   action_count_changed_subscription_ = AddAnchorCountChangedCallback(
       base::BindRepeating(&PinnedActionToolbarButton::OnAnchorCountChanged,
                           base::Unretained(this)));
+
+  status_indicator_ =
+      PinnedToolbarButtonStatusIndicator::Install(image_container_view());
 }
 
 PinnedActionToolbarButton::~PinnedActionToolbarButton() {
@@ -159,6 +168,34 @@ gfx::Size PinnedActionToolbarButton::CalculatePreferredSize(
                   [](const gfx::Size s1, const gfx::Size s2) {
                     return s1.width() < s2.width();
                   });
+}
+
+void PinnedActionToolbarButton::Layout(PassKey) {
+  LayoutSuperclass<ToolbarButton>(this);
+  gfx::Rect status_rect(14, 2);
+  status_indicator_->SetColor(
+      GetColorProvider()->GetColor(ui::kColorSysPrimary));
+
+  gfx::Rect image_container_bounds = image_container_view()->GetLocalBounds();
+  int new_x = image_container_bounds.x() +
+              (image_container_bounds.width() - status_rect.width()) / 2;
+  int new_y = image_container_bounds.bottom() + 1;
+  // Set the new origin for status_rect
+  status_rect.set_origin(gfx::Point(new_x, new_y));
+  status_indicator_->SetBoundsRect(status_rect);
+}
+
+void PinnedActionToolbarButton::HideStatusIndicator() {
+  status_indicator_->Hide();
+}
+
+void PinnedActionToolbarButton::UpdateStatusIndicator(
+    bool should_show_status_indicator) {
+  if (should_show_status_indicator) {
+    status_indicator_->Show();
+  } else {
+    status_indicator_->Hide();
+  }
 }
 
 std::unique_ptr<ui::SimpleMenuModel>

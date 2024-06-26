@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -431,6 +432,32 @@ TEST_F(PinnedToolbarActionsContainerTest, ContextMenuPinTest) {
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));
   pop_out_button->ExecuteCommand(IDC_UPDATE_SIDE_PANEL_PIN_STATE, 0);
   CheckIsPinned(actions::kActionCut, true);
+}
+
+TEST_F(PinnedToolbarActionsContainerTest, StatusIndicatorTest) {
+  actions::ActionItem* browser_action_item =
+      browser_view()->browser()->browser_actions()->root_action_item();
+
+  // clang-format on
+  browser_action_item->AddChild(CreateActionItem(actions::kActionCut));
+
+  // Verify there are no pinned buttons.
+  auto pinned_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(pinned_buttons.size(), 0u);
+  // Verify pinning an action adds a button.
+  model()->UpdatePinnedState(actions::kActionCut, true);
+  pinned_buttons = GetChildToolbarButtons();
+  ASSERT_EQ(pinned_buttons.size(), 1u);
+  // Check the status indicator. It should not be visible.
+  PinnedToolbarButtonStatusIndicator* status_indicator =
+      pinned_buttons[0]->GetStatusIndicatorForTesting();
+  EXPECT_EQ(status_indicator->GetVisible(), false);
+  // Make indicator visible.
+  pinned_buttons[0]->UpdateStatusIndicator(true);
+  EXPECT_EQ(status_indicator->GetVisible(), true);
+  // Hide indicator.
+  pinned_buttons[0]->HideStatusIndicator();
+  EXPECT_EQ(status_indicator->GetVisible(), false);
 }
 
 TEST_F(PinnedToolbarActionsContainerTest, UpdatesFromSyncUpdateContainer) {
