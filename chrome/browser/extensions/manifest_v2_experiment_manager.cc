@@ -263,6 +263,30 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
   }
 }
 
+void ManifestV2ExperimentManager::MaybeReEnableExtension(
+    const Extension& extension) {
+  if (!extension_prefs()->HasDisableReason(
+          extension.id(),
+          disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION)) {
+    return;
+  }
+
+  if (impact_checker_.IsExtensionAffected(extension)) {
+    return;
+  }
+
+  ExtensionService* extension_service =
+      ExtensionSystem::Get(browser_context_)->extension_service();
+  // Remove the bit that the extension was disabled by the MV2 deprecation,
+  // since it no longer is. This also ensures we don't count it as user-
+  // re-enabled, if it gets re-enabled below.
+  extension_prefs()->SetBooleanPref(extension.id(),
+                                    kMV2DeprecationDidDisablePref, false);
+  // Remove the disable reason (possibly re-enabling the extension).
+  extension_service->RemoveDisableReasonAndMaybeEnable(
+      extension.id(), disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+}
+
 bool ManifestV2ExperimentManager::DidUserReEnableExtension(
     const ExtensionId& extension_id) {
   bool acknowledged = false;
@@ -286,9 +310,26 @@ void ManifestV2ExperimentManager::OnExtensionLoaded(
                                     kMV2DeprecationUserReEnabledPref, true);
 }
 
+void ManifestV2ExperimentManager::OnExtensionInstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    bool is_update) {
+  if (!is_update) {
+    // We would only ever re-enable a disabled extension if it was already
+    // installed. No need to look at new installs.
+    return;
+  }
+
+  MaybeReEnableExtension(*extension);
+}
+
 bool ManifestV2ExperimentManager::DidUserReEnableExtensionForTesting(
     const ExtensionId& extension_id) {
   return DidUserReEnableExtension(extension_id);
+}
+
+void ManifestV2ExperimentManager::DisableAffectedExtensionsForTesting() {
+  DisableAffectedExtensions();
 }
 
 }  // namespace extensions

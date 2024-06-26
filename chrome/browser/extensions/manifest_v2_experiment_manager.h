@@ -82,6 +82,11 @@ class ManifestV2ExperimentManager : public KeyedService,
 
   bool DidUserReEnableExtensionForTesting(const ExtensionId& extension_id);
 
+  // Calls DisableAffectedExtensions() directly for testing purposes. This is
+  // useful to have an extension that's installed in the body of a test get
+  // disabled, since this normally only happens on startup.
+  void DisableAffectedExtensionsForTesting();
+
  private:
   // Lazily initialize and access `extension_prefs_`. We do this lazily because:
   // - This service is created on Profile creation.
@@ -98,6 +103,10 @@ class ManifestV2ExperimentManager : public KeyedService,
   // if the user hasn't chosen to re-enable them.
   void DisableAffectedExtensions();
 
+  // Re-enables the `extension` if it should no longer be disabled by the MV2
+  // deprecation (e.g., if it updated to MV3).
+  void MaybeReEnableExtension(const Extension& extension);
+
   // Returns true if a user re-enabled an extension after it was explicitly
   // disabled by the MV2 deprecation.
   bool DidUserReEnableExtension(const ExtensionId& extension_id);
@@ -105,6 +114,9 @@ class ManifestV2ExperimentManager : public KeyedService,
   // ExtensionRegistry:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
+  void OnExtensionInstalled(content::BrowserContext* browser_context,
+                            const Extension* extension,
+                            bool is_update) override;
 
   // The current stage of the MV2 deprecation experiments.
   const MV2ExperimentStage experiment_stage_;

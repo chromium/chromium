@@ -51,6 +51,8 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
        MV2ExperimentStage::kDisableWithReEnable},
       {"ExtensionsCanBeReEnabledByUsers",
        MV2ExperimentStage::kDisableWithReEnable},
+      {"ExtensionsAreReEnabledWhenUpdatedToMV3",
+       MV2ExperimentStage::kDisableWithReEnable},
   };
 
   for (const auto& test_stage : test_stages) {
@@ -251,6 +253,65 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
 
   EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
+}
+
+// Tests that extensions are re-enabled automatically if they update to MV3.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       ExtensionsAreReEnabledWhenUpdatedToMV3) {
+  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
+            GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  static constexpr char kManifestTemplate[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": %d,
+           "version": "%s"
+         })";
+  std::string mv2_manifest = base::StringPrintf(kManifestTemplate, 2, "1.0");
+  std::string mv3_manifest = base::StringPrintf(kManifestTemplate, 3, "2.0");
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(mv2_manifest);
+  base::FilePath mv2_crx = test_dir.Pack("mv2.crx");
+  test_dir.WriteManifest(mv3_manifest);
+  base::FilePath mv3_crx = test_dir.Pack("mv3.crx");
+
+  const Extension* extension = InstallExtension(
+      mv2_crx, /*expected_change=*/1, mojom::ManifestLocation::kInternal);
+  ASSERT_TRUE(extension);
+  const ExtensionId extension_id = extension->id();
+
+  // Technically, this could be accomplished using a PRE_ test, similar to
+  // other browser tests in this file. However, that makes it much more
+  // difficult to update the extension to an MV3 version, since we couldn't
+  // construct the extension dynamically.
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+
+  // The MV2 extension is disabled.
+  EXPECT_TRUE(
+      extension_registry()->disabled_extensions().Contains(extension_id));
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs()->GetDisableReasons(extension_id));
+
+  // Update the extension to MV3. Note: Even though this doesn't result in a
+  // _new_ extension, the `expected_change` is 1 here because this results in
+  // the extension being added to the enabled set (so the enabled extension
+  // count is 1 higher than it was before).
+  const Extension* updated_extension = UpdateExtension(extension_id, mv3_crx,
+                                                       /*expected_change=*/1);
+  ASSERT_TRUE(updated_extension);
+  EXPECT_EQ(updated_extension->id(), extension_id);
+
+  // The new MV3 extension should be enabled.
+  EXPECT_EQ(3, updated_extension->manifest_version());
+  EXPECT_TRUE(
+      extension_registry()->enabled_extensions().Contains(extension_id));
+  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
+  // The user didn't re-enable the extension, so it shouldn't be marked as such.
+  EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id));
 }
 
 }  // namespace extensions
