@@ -215,11 +215,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // resetting speech right after starting it.
   private willDrawAgainSoon_: boolean = false;
 
-  // TODO: b/346868764- firstUtteranceSpoken shouldn't be public just for tests.
   // After the first utterance has been spoken, we should assume that the
   // speech engine has loaded, and we shouldn't adjust the play / pause
   // disabled state based on the message.onStart callback to avoid flickering.
-  firstUtteranceSpoken = false;
+  private firstUtteranceSpoken_ = false;
 
   synth = window.speechSynthesis;
 
@@ -328,7 +327,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // not always reliabled called.
       this.synth.cancel();
       this.hasContent_ = false;
-      this.firstUtteranceSpoken = false;
+      this.firstUtteranceSpoken_ = false;
       this.firstTextNodeSetForReadAloud = null;
       this.domNodeToAxNodeIdMap_.clear();
       this.clearReadAloudState();
@@ -1846,9 +1845,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     message.rate = utteranceSettings.rate;
 
 
-    if (!this.firstUtteranceSpoken) {
+    if (!this.firstUtteranceSpoken_) {
       this.speechEngineLoaded = false;
-      this.firstUtteranceSpoken = true;
+      this.firstUtteranceSpoken_ = true;
     }
     this.synth.speak(message);
   }

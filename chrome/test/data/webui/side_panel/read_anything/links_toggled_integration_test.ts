@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT, PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
@@ -14,7 +14,6 @@ import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './
 suite('LinksToggledIntegration', () => {
   let app: ReadAnythingElement;
   let linksToggleButton: CrIconButtonElement;
-  let playPauseButton: CrIconButtonElement;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -72,14 +71,10 @@ suite('LinksToggledIntegration', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    app.firstUtteranceSpoken = true;
     flush();
     linksToggleButton =
         app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
             '#' + LINK_TOGGLE_BUTTON_ID)!;
-    playPauseButton =
-        app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
-            '#play-pause')!;
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
     app.enabledLangs = ['en-US'];
     app.selectedVoice =
@@ -113,7 +108,7 @@ suite('LinksToggledIntegration', () => {
 
   suite('after speech starts', () => {
     setup(() => {
-      playPauseButton.click();
+      app.playSpeech();
     });
 
     test('container does not have links', () => {
@@ -141,8 +136,8 @@ suite('LinksToggledIntegration', () => {
 
   suite('after speech pauses', () => {
     setup(() => {
-      playPauseButton.click();
-      playPauseButton.click();
+      app.playSpeech();
+      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
     });
 
     test('container has links again', () => {
@@ -171,7 +166,7 @@ suite('LinksToggledIntegration', () => {
 
     suite('after speech starts', () => {
       setup(() => {
-        playPauseButton.click();
+        app.playSpeech();
       });
 
       test('container does not have links', () => {
@@ -187,8 +182,8 @@ suite('LinksToggledIntegration', () => {
 
     suite('after speech pauses', () => {
       setup(() => {
-        playPauseButton.click();
-        playPauseButton.click();
+        app.playSpeech();
+        app.stopSpeech(PauseActionSource.BUTTON_CLICK);
       });
 
       test('container does not have links', () => {

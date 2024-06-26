@@ -4,10 +4,9 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
-import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
@@ -16,7 +15,6 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('WordBoundariesUsedForSpeech', () => {
   let app: ReadAnythingElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let playPauseButton: CrIconButtonElement;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -71,15 +69,11 @@ suite('WordBoundariesUsedForSpeech', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    app.firstUtteranceSpoken = true;
     app.enabledLangs = ['en-US'];
     app.selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     app.getSpeechSynthesisVoice();
     flush();
-    playPauseButton =
-        app.$.toolbar.shadowRoot!.querySelector<CrIconButtonElement>(
-            '#play-pause')!;
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });
 
@@ -94,7 +88,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
   suite('during speech with no word boundaries ', () => {
     setup(() => {
-      playPauseButton.click();
+      app.playSpeech();
     });
 
     test('wordBoundaryState in default state during speech', () => {
@@ -116,7 +110,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
   suite('during speech with one initial word boundary ', () => {
     setup(() => {
-      playPauseButton.click();
+      app.playSpeech();
       app.updateBoundary(10);
     });
 
@@ -130,18 +124,18 @@ suite('WordBoundariesUsedForSpeech', () => {
     test(
         'pause / play toggle updates speechResumedOnPreviousWordBoundary',
         () => {
-          playPauseButton.click();
-          playPauseButton.click();
+          app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+          app.playSpeech();
           const state: WordBoundaryState = app.wordBoundaryState;
           assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
-          assertTrue(app.getSpeechSynthesisVoice() !== undefined);
+          assertTrue(!!app.getSpeechSynthesisVoice());
           assertEquals(0, state.previouslySpokenIndex);
           assertEquals(10, state.speechUtteranceStartIndex);
         });
 
-    test('word boundaries update after play / pause toggle', () => {
-      playPauseButton.click();
-      playPauseButton.click();
+    test('word boundaries update after pause / play toggle', () => {
+      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      app.playSpeech();
       app.updateBoundary(3);
       const state: WordBoundaryState = app.wordBoundaryState;
       assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
@@ -149,15 +143,15 @@ suite('WordBoundariesUsedForSpeech', () => {
       assertEquals(10, state.speechUtteranceStartIndex);
     });
 
-    test('word boundaries correct after multiple play / pause toggles', () => {
-      playPauseButton.click();
-      playPauseButton.click();
+    test('word boundaries correct after multiple pause / play toggles', () => {
+      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      app.playSpeech();
       app.updateBoundary(3);
-      playPauseButton.click();
-      playPauseButton.click();
+      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      app.playSpeech();
       app.updateBoundary(7);
-      playPauseButton.click();
-      playPauseButton.click();
+      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+      app.playSpeech();
       app.updateBoundary(1);
       const state: WordBoundaryState = app.wordBoundaryState;
       assertEquals(WordBoundaryMode.BOUNDARY_DETECTED, state.mode);
@@ -176,7 +170,7 @@ suite('WordBoundariesUsedForSpeech', () => {
 
   suite('during speech with multiple word boundaries ', () => {
     setup(() => {
-      playPauseButton.click();
+      app.playSpeech();
       app.updateBoundary(10);
       app.updateBoundary(15);
       app.updateBoundary(25);
