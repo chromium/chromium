@@ -11,6 +11,10 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
@@ -30,6 +34,7 @@ import android.widget.ListAdapter;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleableRes;
@@ -472,5 +477,65 @@ public class UiUtils {
         // tappableElements is non-zero even when gesture mode is on.
         Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemGestures());
         return insets.left > 0;
+    }
+
+    /**
+     * Draws a badge (a {@code badgeColorResId} colored dot) on icon.
+     *
+     * @param context The activity context.
+     * @param icon The icon to draw the badge on.
+     * @param iconColorResId The resource id of the color to color the icon with.
+     * @param badgeRadius The size of the badge to be drawn (resource id).
+     * @param badgeBorderSize The size of the transparent border that will surround the badge
+     *     (resource id).
+     * @param badgeColorResId The resource id of the color of the badge to be drawn.
+     * @return A new drawable that portrays a badge on the passed icon.
+     */
+    public static Drawable drawIconWithBadge(
+            Context context,
+            Drawable icon,
+            @ColorRes int iconColorResId,
+            @DimenRes int badgeSizeResId,
+            @DimenRes int badgeBorderSizeResId,
+            @ColorRes int badgeColorResId) {
+        if (icon == null || icon.getIntrinsicWidth() <= 0 || icon.getIntrinsicHeight() <= 0) {
+            return icon;
+        }
+
+        int width = icon.getIntrinsicWidth();
+        int height = icon.getIntrinsicHeight();
+
+        // Create new drawable.
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        icon.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        icon.draw(canvas);
+
+        // Color the icon.
+        canvas.drawColor(context.getColor(iconColorResId), PorterDuff.Mode.SRC_IN);
+
+        int badgeRadius = context.getResources().getDimensionPixelSize(badgeSizeResId) / 2;
+        int badgeCenterX = width - badgeRadius;
+        int badgeCenterY = height / 2 - badgeRadius;
+
+        // Cut a transparent hole through the background icon. This will serve as a border to
+        // the badge being overlaid.
+        Paint hole = new Paint();
+        hole.setAntiAlias(true);
+        hole.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas.drawCircle(
+                badgeCenterX,
+                badgeCenterY,
+                badgeRadius + context.getResources().getDimensionPixelSize(badgeBorderSizeResId),
+                hole);
+
+        // Draw the red badge.
+        Paint badge = new Paint();
+        hole.setAntiAlias(true);
+        badge.setColor(context.getColor(badgeColorResId));
+        canvas.drawCircle(badgeCenterX, badgeCenterY, badgeRadius, badge);
+
+        return new BitmapDrawable(context.getResources(), bitmap);
     }
 }

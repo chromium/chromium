@@ -358,7 +358,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         }
     }
 
-    // TODO(crbug.com/40944114): Consider moving the following to UiUtils or somewhere re-usable.
+    // TODO(crbug.com/40944114): Consider using UiUtils.drawIconWithBadge instead.
     private Drawable overlayBadgeOnUserPicture(BadgeConfig badgeConfig, Drawable userPicture) {
         int badgeSize = badgeConfig.getBadgeSize();
         int badgedPictureWidth = Math.max(badgeConfig.getPosition().x + badgeSize, mImageSize);
