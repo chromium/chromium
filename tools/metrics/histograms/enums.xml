@@ -34023,6 +34023,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2" label="Canceled"/>
 </enum>
 
+<!-- LINT.IfChange(WebsiteSettingsAction) -->
+
 <enum name="WebsiteSettingsAction">
   <int value="0" label="Opened"/>
   <int value="1" label="(Deprecated) Selected Permissions tab"/>
@@ -34061,6 +34063,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="34" label="Cookies settings opened"/>
   <int value="35" label="'All sites' settings opened with a filter for FPS"/>
 </enum>
+
+<!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->
 
 <enum name="WebUIPreloadResult">
   <int value="0"
