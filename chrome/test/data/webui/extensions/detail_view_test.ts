@@ -726,6 +726,13 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(!!removeButton);
     assertFalse(isVisible(removeButton));
 
+    // Action menu is always hidden.
+    const actionMenu =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('#actionMenu');
+    assertTrue(!!actionMenu);
+    assertFalse(isVisible(actionMenu));
+
     // Add a recommendations url to the extension.
     const id = 'a'.repeat(32);
     const recommendationsUrl =
@@ -776,6 +783,35 @@ suite('ExtensionDetailViewTest', function() {
     // call.
     await mockDelegate.testClickingCalls(
         removeButton, 'deleteItem', [extensionData.id]);
+
+    // Action menu is always visible.
+    const actionMenu =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('#actionMenuButton');
+    assertTrue(!!actionMenu);
+    assertTrue(isVisible(actionMenu));
+
+    // Open the action menu to verify its items.
+    actionMenu.click();
+
+    // Find alternative action is not visible when the extension doesn't have a
+    // recommendations url.
+    const findAlternativeAction =
+        item.shadowRoot!.querySelector<HTMLElement>('#findAlternativeAction');
+    assertFalse(isVisible(findAlternativeAction));
+
+    // Add a recommendations url to the extension.
+    const id = 'a'.repeat(32);
+    const recommendationsUrl =
+        `https://chromewebstore.google.com/detail/${id}` +
+        `/related-recommendations`;
+    item.set('data.recommendationsUrl', recommendationsUrl);
+    flush();
+
+    // Find alternative action is visible when the extension has a
+    // recommendations url.
+    assertTrue(isVisible(findAlternativeAction));
+
   });
 
   test('PinnedToToolbar', async function() {

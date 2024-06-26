@@ -263,6 +263,23 @@ this text can be found by Ctrl + F because it isn't hidden. -->
           hidden$="[[!showMv2DeprecationRemoveButton_]]">
         $i18n{mv2DeprecationMessageRemoveButton}
       </cr-button>
+      <cr-icon-button class="icon-more-vert header-aligned-button"
+          id="actionMenuButton"
+          on-click="onActionMenuButtonClick_"
+          title="$i18n{moreOptions}"
+          aria-label="[[getActionMenuButtonLabel_()]]"
+          hidden$="[[!showMv2DeprecationActionMenu_]]">
+      </cr-icon-button>
+      <cr-action-menu id="actionMenu">
+        <button class="dropdown-item" id="findAlternativeAction"
+            hidden="[[!data.recommendationsUrl]]"
+            on-click="onFindAlternativeActionClick_">
+          $i18n{mv2DeprecationPanelFindAlternativeButton}
+        </button>
+        <!-- TODO(crbug.com/339061151): Add "keep for now" action. This action
+          should always be visible (meaning the action menu will always have at
+          least one item.)-->
+      </cr-action-menu>
     </div>
 
     <div class="cr-row first control-line" id="enable-section">

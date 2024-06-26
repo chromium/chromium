@@ -24,6 +24,8 @@ import './shared_vars.css.js';
 import './strings.m.js';
 import './toggle_row.js';
 
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -44,6 +46,7 @@ import type {ExtensionsToggleRowElement} from './toggle_row.js';
 
 export interface ExtensionsDetailViewElement {
   $: {
+    actionMenu: CrActionMenuElement,
     closeButton: HTMLElement,
     description: HTMLElement,
     enableToggle: CrToggleElement,
@@ -110,7 +113,7 @@ export class ExtensionsDetailViewElement extends
         observer: 'onShowSafetyCheckChanged_',
       },
 
-      /** Whether the mv2 deprecation message warning is shown. */
+      /** Whether the mv2 deprecation message is shown. */
       showMv2DeprecationMessage_: {
         type: Boolean,
         computed: 'computeShowMv2DeprecationMessage_(' +
@@ -130,8 +133,13 @@ export class ExtensionsDetailViewElement extends
       /** Whether the remove button in the mv2 deprecation message is shown. */
       showMv2DeprecationRemoveButton_: {
         type: Boolean,
-        computed: 'computeShowMv2DeprecationRemoveButton_(' +
-            'mv2ExperimentStage_)',
+        computed: 'computeShowMv2DeprecationRemoveButton_(mv2ExperimentStage_)',
+      },
+
+      /** Whether the action menu in the mv2 deprecation message is shown. */
+      showMv2DeprecationActionMenu_: {
+        type: Boolean,
+        computed: 'computeShowMv2DeprecationActionMenu_(mv2ExperimentStage_)',
       },
 
       /** Whether the extensions blocklist text is shown. */
@@ -175,6 +183,7 @@ export class ExtensionsDetailViewElement extends
   private showMv2DeprecationMessage_: boolean;
   private showMv2DeprecationFindAlternativeButton_: boolean;
   private showMv2DeprecationRemoveButton_: boolean;
+  private showMv2DeprecationActionMenu_: boolean;
   private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
@@ -546,6 +555,15 @@ export class ExtensionsDetailViewElement extends
         Mv2ExperimentStage.DISABLE_WITH_REENABLE;
   }
 
+  /**
+   * Returns whether the remove button in the mv2 deprecation message should be
+   * displayed.
+   */
+  private computeShowMv2DeprecationActionMenu_(): boolean {
+    return this.mv2ExperimentStage_ ===
+        Mv2ExperimentStage.DISABLE_WITH_REENABLE;
+  }
+
   private onShowSafetyCheckChanged_() {
     if (this.showSafetyCheck_) {
       chrome.metricsPrivate.recordUserAction('SafetyCheck.DetailWarningShown');
@@ -574,6 +592,27 @@ export class ExtensionsDetailViewElement extends
     // included in the Safe Browsing allowlist.
     return this.data.showSafeBrowsingAllowlistWarning &&
         !this.data.blacklistText;
+  }
+
+  /** Opens the action menu for the extension. */
+  private onActionMenuButtonClick_(event: MouseEvent): void {
+    this.$.actionMenu.showAt(
+        event.target as HTMLElement,
+        {anchorAlignmentY: AnchorAlignment.AFTER_END});
+  }
+
+  /**
+   * Opens a URL in the Web Store with extensions recommendations for the
+   * extension.
+   */
+  private onFindAlternativeActionClick_(): void {
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtension');
+    this.$.actionMenu.close();
+
+    const recommendationsUrl: string|undefined = this.data.recommendationsUrl;
+    assert(!!recommendationsUrl);
+    this.delegate.openUrl(recommendationsUrl);
   }
 
   /**
@@ -621,6 +660,12 @@ export class ExtensionsDetailViewElement extends
       default:
         assertNotReached();
     }
+  }
+
+  /** Returns the accessible label for the action menu button */
+  private getActionMenuButtonLabel_(): string {
+    return this.i18n(
+        'mv2DeprecationPanelExtensionActionMenuLabel', this.data.name);
   }
 }
 
