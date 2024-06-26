@@ -109,6 +109,13 @@ const CGFloat closeButtonTrailingPadding = 16.0;
   return _closeButton;
 }
 
+#pragma mark - Accessibility
+
+- (BOOL)accessibilityPerformEscape {
+  [self closeButtonPressed];
+  return YES;
+}
+
 #pragma mark - Actions
 
 - (void)closeButtonPressed {
