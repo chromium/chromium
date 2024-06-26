@@ -172,7 +172,16 @@ void av1_convolve_2d_sr_intrabc_neon(const uint8_t *src, int src_stride, uint8_t
 #define av1_convolve_2d_sr_intrabc av1_convolve_2d_sr_intrabc_neon
 
 void av1_convolve_horiz_rs_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const int16_t *x_filters, int x0_qn, int x_step_qn);
-#define av1_convolve_horiz_rs av1_convolve_horiz_rs_c
+void av1_convolve_horiz_rs_neon(const uint8_t* src,
+                                int src_stride,
+                                uint8_t* dst,
+                                int dst_stride,
+                                int w,
+                                int h,
+                                const int16_t* x_filters,
+                                int x0_qn,
+                                int x_step_qn);
+#define av1_convolve_horiz_rs av1_convolve_horiz_rs_neon
 
 void av1_convolve_x_sr_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const int subpel_x_qn, ConvolveParams *conv_params);
 void av1_convolve_x_sr_neon(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const int subpel_x_qn, ConvolveParams *conv_params);

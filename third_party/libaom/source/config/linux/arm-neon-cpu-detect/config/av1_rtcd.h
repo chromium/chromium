@@ -193,7 +193,24 @@ void av1_convolve_2d_sr_intrabc_neon(const uint8_t *src, int src_stride, uint8_t
 RTCD_EXTERN void (*av1_convolve_2d_sr_intrabc)(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int subpel_y_qn, ConvolveParams *conv_params);
 
 void av1_convolve_horiz_rs_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const int16_t *x_filters, int x0_qn, int x_step_qn);
-#define av1_convolve_horiz_rs av1_convolve_horiz_rs_c
+void av1_convolve_horiz_rs_neon(const uint8_t* src,
+                                int src_stride,
+                                uint8_t* dst,
+                                int dst_stride,
+                                int w,
+                                int h,
+                                const int16_t* x_filters,
+                                int x0_qn,
+                                int x_step_qn);
+RTCD_EXTERN void (*av1_convolve_horiz_rs)(const uint8_t* src,
+                                          int src_stride,
+                                          uint8_t* dst,
+                                          int dst_stride,
+                                          int w,
+                                          int h,
+                                          const int16_t* x_filters,
+                                          int x0_qn,
+                                          int x_step_qn);
 
 void av1_convolve_x_sr_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const int subpel_x_qn, ConvolveParams *conv_params);
 void av1_convolve_x_sr_neon(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const int subpel_x_qn, ConvolveParams *conv_params);
@@ -614,6 +631,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_convolve_2d_sr = av1_convolve_2d_sr_neon;
     av1_convolve_2d_sr_intrabc = av1_convolve_2d_sr_intrabc_c;
     if (flags & HAS_NEON) av1_convolve_2d_sr_intrabc = av1_convolve_2d_sr_intrabc_neon;
+    av1_convolve_horiz_rs = av1_convolve_horiz_rs_c;
+    if (flags & HAS_NEON) {
+      av1_convolve_horiz_rs = av1_convolve_horiz_rs_neon;
+    }
     av1_convolve_x_sr = av1_convolve_x_sr_c;
     if (flags & HAS_NEON) av1_convolve_x_sr = av1_convolve_x_sr_neon;
     av1_convolve_x_sr_intrabc = av1_convolve_x_sr_intrabc_c;
