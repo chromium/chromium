@@ -10,8 +10,8 @@
 
 namespace {
 
-// Top margin for the resting place of a medium detent sheet.
-const int kMediumDetentTopMargin = 300;
+// Height for the resting place of a medium detent sheet.
+const int kMediumDetentHeight = 450;
 
 // Top margin for the resting place of a large detent sheet.
 const int kLargeDetentTopMargin = 50;
@@ -23,8 +23,8 @@ const int kLargeDetentTopThreshold = 150;
 // Threshold for where ending a swipe gesture closes the sheet.
 const int kCloseBottomThreshold = 250;
 
-// Duration for the animation of the sheet's top margin.
-const CGFloat kTopMarginAnimationDuration = 0.2;
+// Duration for the animation of the sheet's height.
+const CGFloat kHeightAnimationDuration = 0.2;
 
 }  // namespace
 
@@ -32,13 +32,13 @@ const CGFloat kTopMarginAnimationDuration = 0.2;
   // Gesture recognizer used to expand and dismiss the sheet.
   UIPanGestureRecognizer* _panGestureRecognizer;
 
-  // Constraint between the top of the sheet and the superview that changes
+  // Constraint for the height of the sheet that changes
   // as the sheet expands.
-  NSLayoutConstraint* _topConstraint;
+  NSLayoutConstraint* _heightConstraint;
 
-  // Stores the initial value of the topConstraint when the pan gesture starts
-  // for use in calculation.
-  CGFloat _initialTopConstraintConstant;
+  // Stores the initial value of the heightConstraint when the pan gesture
+  // starts for use in calculation.
+  CGFloat _initialHeightConstraintConstant;
 }
 
 - (void)viewDidLoad {
@@ -52,7 +52,7 @@ const CGFloat kTopMarginAnimationDuration = 0.2;
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   if (!parent) {
-    _topConstraint = nil;
+    _heightConstraint = nil;
     return;
   }
 
@@ -61,55 +61,57 @@ const CGFloat kTopMarginAnimationDuration = 0.2;
       self.view.superview, self.view,
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
 
-  _topConstraint = [self.view.topAnchor
-      constraintEqualToAnchor:self.view.superview.topAnchor];
-  _topConstraint.constant = kMediumDetentTopMargin;
-  _topConstraint.active = YES;
+  _heightConstraint =
+      [self.view.heightAnchor constraintEqualToConstant:kMediumDetentHeight];
+  _heightConstraint.active = YES;
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer*)sender {
   if (sender.state == UIGestureRecognizerStateBegan) {
-    _initialTopConstraintConstant = _topConstraint.constant;
+    _initialHeightConstraintConstant = _heightConstraint.constant;
   }
 
   CGFloat translation = [sender translationInView:self.view].y;
 
-  _topConstraint.constant = _initialTopConstraintConstant + translation;
+  _heightConstraint.constant = _initialHeightConstraintConstant - translation;
+
+  CGFloat superviewHeight = self.view.superview.frame.size.height;
 
   if (sender.state == UIGestureRecognizerStateEnded) {
-    if (_topConstraint.constant < kLargeDetentTopThreshold) {
-      [self animateTopConstraintToConstant:kLargeDetentTopMargin];
-    } else if (_topConstraint.constant >
-               self.view.superview.frame.size.height - kCloseBottomThreshold) {
+    if (superviewHeight - _heightConstraint.constant <
+        kLargeDetentTopThreshold) {
+      [self animateHeightConstraintToConstant:superviewHeight -
+                                              kLargeDetentTopMargin];
+    } else if (_heightConstraint.constant < kCloseBottomThreshold) {
       [self.contextualSheetHandler closeContextualSheet];
     } else {
-      [self animateTopConstraintToConstant:kMediumDetentTopMargin];
+      [self animateHeightConstraintToConstant:kMediumDetentHeight];
     }
   }
 }
 
 - (void)animateAppearance {
-  _topConstraint.constant = self.view.superview.frame.size.height;
+  _heightConstraint.constant = 0;
   // Make sure the view is laid out offscreen to prepare for the animation in.
   [self.view.superview layoutIfNeeded];
 
-  [self animateTopConstraintToConstant:kMediumDetentTopMargin];
+  [self animateHeightConstraintToConstant:kMediumDetentHeight];
 }
 
-- (void)animateTopConstraintToConstant:(CGFloat)constant {
+- (void)animateHeightConstraintToConstant:(CGFloat)constant {
   __weak __typeof(self) weakSelf = self;
-  [UIView
-      animateWithDuration:kTopMarginAnimationDuration
-                    delay:0
-                  options:UIViewAnimationOptionCurveEaseInOut
-               animations:^{
-                 [weakSelf blockForAnimatingTopConstraintToConstant:constant];
-               }
-               completion:nil];
+  [UIView animateWithDuration:kHeightAnimationDuration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut
+                   animations:^{
+                     [weakSelf
+                         blockForAnimatingHeightConstraintToConstant:constant];
+                   }
+                   completion:nil];
 }
 
-- (void)blockForAnimatingTopConstraintToConstant:(CGFloat)constant {
-  _topConstraint.constant = constant;
+- (void)blockForAnimatingHeightConstraintToConstant:(CGFloat)constant {
+  _heightConstraint.constant = constant;
   [self.view.superview layoutIfNeeded];
 }
 
