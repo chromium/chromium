@@ -963,9 +963,6 @@ void SharedContextState::RemoveContextLostObserver(ContextLostObserver* obs) {
 
 void SharedContextState::PurgeMemory(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (!gr_context_)
-    return;
-
   // Ensure the context is current before doing any GPU cleanup.
   if (!MakeCurrent(nullptr))
     return;
@@ -976,8 +973,11 @@ void SharedContextState::PurgeMemory(
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
       // With moderate pressure, clear any unlocked resources.
       sk_surface_cache_.Clear();
-      gr_context_->purgeUnlockedResources(
-          GrPurgeResourceOptions::kScratchResourcesOnly);
+      // TODO(crbug.com/337979844): Determine if we want a Graphite equivalent.
+      if (gr_context_) {
+        gr_context_->purgeUnlockedResources(
+            GrPurgeResourceOptions::kScratchResourcesOnly);
+      }
       UpdateSkiaOwnedMemorySize();
       scratch_deserialization_buffer_.resize(
           kInitialScratchDeserializationBufferSize);
@@ -992,7 +992,11 @@ void SharedContextState::PurgeMemory(
         // while accessing GrShaderCache. Note that since the actual client_id
         // here does not matter, we are using gpu::kDisplayCompositorClientId.
         UseShaderCache(cache_use, kDisplayCompositorClientId);
-        gr_context_->freeGpuResources();
+        if (gr_context_) {
+          gr_context_->freeGpuResources();
+        } else if (graphite_context_) {
+          graphite_context_->freeGpuResources();
+        }
       }
       UpdateSkiaOwnedMemorySize();
       scratch_deserialization_buffer_.resize(0u);
