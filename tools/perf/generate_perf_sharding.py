@@ -123,6 +123,7 @@ def _DumpJson(data, output_path):
             newline='') if sys.version_info.major == 3 else open(
                 output_path, 'wb') as output_file:
     json.dump(data, output_file, indent=4, separators=(',', ': '))
+    output_file.write('\n')
 
 
 def _LoadTimingData(args):
