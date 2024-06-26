@@ -8,9 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
@@ -24,10 +22,7 @@ using ::testing::ElementsAre;
 
 class ImageServiceConsentHelperTest : public testing::Test {
  public:
-  ImageServiceConsentHelperTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kImageServiceObserveSyncDownloadStatus);
-  }
+  ImageServiceConsentHelperTest() = default;
 
   void SetUp() override {
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
@@ -62,8 +57,6 @@ class ImageServiceConsentHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
   std::unique_ptr<ImageServiceConsentHelper> consent_helper_;
@@ -226,33 +219,6 @@ TEST_F(ImageServiceConsentHelperTest, CallbacksMakingNewRequests) {
   EXPECT_EQ(results.size(), 2U);
   FastForwardBy(base::Seconds(12));
   EXPECT_EQ(results.size(), 4U);
-}
-
-class ImageServiceConsentHelperDownloadStatusKillSwitchTest
-    : public ImageServiceConsentHelperTest {
- public:
-  ImageServiceConsentHelperDownloadStatusKillSwitchTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        kImageServiceObserveSyncDownloadStatus);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ImageServiceConsentHelperDownloadStatusKillSwitchTest,
-       SyncStatusNotObserved) {
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kBookmarks});
-  sync_service()->FireStateChanged();
-  EXPECT_EQ(GetResultSynchronously(), PageImageServiceConsentStatus::kSuccess);
-
-  // Error notification would normally be false but we shouldn't be listening to
-  // the download status.
-  SetDownloadStatusAndFireNotification(
-      syncer::SyncService::ModelTypeDownloadStatus::kError);
-  EXPECT_EQ(GetResultSynchronously(), PageImageServiceConsentStatus::kSuccess);
 }
 
 }  // namespace

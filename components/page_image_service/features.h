@@ -12,7 +12,6 @@ namespace page_image_service {
 BASE_DECLARE_FEATURE(kImageService);
 BASE_DECLARE_FEATURE(kImageServiceSuggestPoweredImages);
 BASE_DECLARE_FEATURE(kImageServiceOptimizationGuideSalientImages);
-BASE_DECLARE_FEATURE(kImageServiceObserveSyncDownloadStatus);
 
 }  // namespace page_image_service
 

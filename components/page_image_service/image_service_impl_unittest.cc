@@ -77,8 +77,7 @@ class ImageServiceImplTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {kImageService, kImageServiceSuggestPoweredImages,
-         kImageServiceOptimizationGuideSalientImages,
-         kImageServiceObserveSyncDownloadStatus},
+         kImageServiceOptimizationGuideSalientImages},
         {});
 
     template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);

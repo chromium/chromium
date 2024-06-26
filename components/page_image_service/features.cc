@@ -19,10 +19,4 @@ BASE_FEATURE(kImageServiceOptimizationGuideSalientImages,
              "ImageServiceOptimizationGuideSalientImages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables observing sync service for download status to determine whether
-// images for already synced sync entities can be fetched.
-BASE_FEATURE(kImageServiceObserveSyncDownloadStatus,
-             "ImageServiceObserveSyncDownloadStatus",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace page_image_service

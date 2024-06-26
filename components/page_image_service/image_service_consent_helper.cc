@@ -4,27 +4,14 @@
 
 #include "components/page_image_service/image_service_consent_helper.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/page_image_service/features.h"
 #include "components/page_image_service/metrics_util.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
-#include "components/unified_consent/consent_throttle.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 namespace page_image_service {
 
 namespace {
-
-void RunConsentThrottleCallback(
-    base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
-    bool success) {
-  std::move(callback).Run(success ? PageImageServiceConsentStatus::kSuccess
-                                  : PageImageServiceConsentStatus::kFailure);
-}
 
 PageImageServiceConsentStatus ConsentStatusToUmaStatus(
     std::optional<bool> consent_status) {
@@ -42,30 +29,8 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
     syncer::ModelType model_type)
     : sync_service_(sync_service),
       model_type_(model_type),
-      timeout_duration_(base::Seconds(GetFieldTrialParamByFeatureAsInt(
-          kImageServiceObserveSyncDownloadStatus,
-          "timeout_seconds",
-          10))) {
-  if (base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus)) {
-    sync_service_observer_.Observe(sync_service);
-  } else if (model_type == syncer::ModelType::BOOKMARKS) {
-    consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
-        unified_consent::UrlKeyedDataCollectionConsentHelper::
-            NewPersonalizedBookmarksDataCollectionConsentHelper(
-                sync_service,
-                /*require_sync_feature_enabled=*/!base::FeatureList::IsEnabled(
-                    syncer::kReplaceSyncPromosWithSignInPromos) &&
-                    !base::FeatureList::IsEnabled(
-                        syncer::kSyncEnableBookmarksInTransportMode)),
-        timeout_duration_);
-  } else if (model_type == syncer::ModelType::HISTORY_DELETE_DIRECTIVES) {
-    consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
-        unified_consent::UrlKeyedDataCollectionConsentHelper::
-            NewPersonalizedDataCollectionConsentHelper(sync_service),
-        timeout_duration_);
-  } else {
-    NOTREACHED_IN_MIGRATION();
-  }
+      timeout_duration_(base::Seconds(10)) {
+  sync_service_observer_.Observe(sync_service);
 }
 
 ImageServiceConsentHelper::~ImageServiceConsentHelper() = default;
@@ -74,11 +39,6 @@ void ImageServiceConsentHelper::EnqueueRequest(
     base::OnceCallback<void(PageImageServiceConsentStatus)> callback,
     mojom::ClientId client_id) {
   base::UmaHistogramBoolean("PageImageService.ConsentStatusRequestCount", true);
-  if (consent_throttle_) {
-    consent_throttle_->EnqueueRequest(
-        base::BindOnce(&RunConsentThrottleCallback, std::move(callback)));
-    return;
-  }
 
   std::optional<bool> consent_status = GetConsentStatus();
   if (consent_status.has_value()) {
@@ -100,7 +60,6 @@ void ImageServiceConsentHelper::EnqueueRequest(
 void ImageServiceConsentHelper::OnStateChanged(
     syncer::SyncService* sync_service) {
   CHECK_EQ(sync_service_, sync_service);
-  CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
   std::optional<bool> consent_status = GetConsentStatus();
   if (!consent_status.has_value()) {
@@ -125,15 +84,12 @@ void ImageServiceConsentHelper::OnStateChanged(
 void ImageServiceConsentHelper::OnSyncShutdown(
     syncer::SyncService* sync_service) {
   CHECK_EQ(sync_service_, sync_service);
-  CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
 
   sync_service_observer_.Reset();
   sync_service_ = nullptr;
 }
 
 std::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
-  CHECK(base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus));
-
   if (!sync_service_) {
     return false;
   }

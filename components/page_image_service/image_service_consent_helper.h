@@ -20,10 +20,6 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace unified_consent {
-class ConsentThrottle;
-}  // namespace unified_consent
-
 namespace page_image_service {
 
 enum class PageImageServiceConsentStatus;
@@ -70,9 +66,6 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   std::vector<std::pair<base::OnceCallback<void(PageImageServiceConsentStatus)>,
                         mojom::ClientId>>
       enqueued_request_callbacks_;
-
-  // Consent throttle to be used if sync service is not being directly observed.
-  std::unique_ptr<unified_consent::ConsentThrottle> consent_throttle_;
 
   // The duration to wait before returning some answer back for the request.
   const base::TimeDelta timeout_duration_;
