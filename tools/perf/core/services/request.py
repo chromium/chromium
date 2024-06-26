@@ -152,6 +152,7 @@ def Request(url, method='GET', params=None, data=None, accept=None,
     raise BuildRequestError(url, response, content)
 
   if accept == 'json':
+    content = content.decode('utf-8')
     if content[:4] == JSON_SECURITY_PREFIX:
       content = content[4:]  # Strip off security prefix if found.
     content = json.loads(content)

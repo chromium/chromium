@@ -33,16 +33,16 @@ class TestRequest(unittest.TestCase):
         'http://example.com/', method='GET', body=None, headers=mock.ANY)
 
   def testRequest_acceptJson(self):
-    self.http.request.return_value = Response(200, '{"code": "ok!"}')
-    self.assertEqual(
-        request.Request('http://example.com/', accept='json'), {'code': 'ok!'})
+    self.http.request.return_value = Response(200, b'{"code": "ok!"}')
+    self.assertEqual(request.Request('http://example.com/', accept='json'),
+                     {'code': 'ok!'})
     self.http.request.assert_called_once_with(
         'http://example.com/', method='GET', body=None, headers=mock.ANY)
 
   def testRequest_acceptJsonWithSecurityPrefix(self):
-    self.http.request.return_value = Response(200, ')]}\'{"code": "ok!"}')
-    self.assertEqual(
-        request.Request('http://example.com/', accept='json'), {'code': 'ok!'})
+    self.http.request.return_value = Response(200, b')]}\'{"code": "ok!"}')
+    self.assertEqual(request.Request('http://example.com/', accept='json'),
+                     {'code': 'ok!'})
     self.http.request.assert_called_once_with(
         'http://example.com/', method='GET', body=None, headers=mock.ANY)
 
