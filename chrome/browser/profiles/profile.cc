@@ -356,8 +356,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kPartitionDefaultZoomLevel);
   registry->RegisterDictionaryPref(prefs::kPartitionPerHostZoomLevels);
   registry->RegisterStringPref(prefs::kPreinstalledApps, "install");
-  registry->RegisterBooleanPref(prefs::kSpeechRecognitionFilterProfanities,
-                                true);
   registry->RegisterIntegerPref(prefs::kProfileIconVersion, 0);
   registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);
 #if BUILDFLAG(IS_CHROMEOS)

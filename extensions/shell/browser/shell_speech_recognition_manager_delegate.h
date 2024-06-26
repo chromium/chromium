@@ -56,7 +56,6 @@ class ShellSpeechRecognitionManagerDelegate
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback)
       override;
   content::SpeechRecognitionEventListener* GetEventListener() override;
-  bool FilterProfanities(int render_process_id) override;
 
   static void CheckRenderFrameType(
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,

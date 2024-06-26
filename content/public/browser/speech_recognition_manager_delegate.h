@@ -34,10 +34,6 @@ class SpeechRecognitionManagerDelegate {
   // This is called on the IO thread.
   virtual SpeechRecognitionEventListener* GetEventListener() = 0;
 
-  // Checks whether the speech recognition for the given renderer should filter
-  // profanities or not.
-  virtual bool FilterProfanities(int render_process_id) = 0;
-
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   // This interfaces is used to bind the On-Device Speech Recognition Service on
   // the non-android platforms.

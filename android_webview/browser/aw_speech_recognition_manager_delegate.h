@@ -52,7 +52,6 @@ class AwSpeechRecognitionManagerDelegate
       base::OnceCallback<void(bool ask_user, bool is_allowed)> callback)
       override;
   content::SpeechRecognitionEventListener* GetEventListener() override;
-  bool FilterProfanities(int render_process_id) override;
 
  private:
   // Checks for mojom::ViewType::kTabContents host in the UI thread and notifies

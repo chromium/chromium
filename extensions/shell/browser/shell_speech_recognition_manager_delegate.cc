@@ -88,12 +88,6 @@ ShellSpeechRecognitionManagerDelegate::GetEventListener() {
   return this;
 }
 
-bool ShellSpeechRecognitionManagerDelegate::FilterProfanities(
-    int render_process_id) {
-  // TODO(zork): Determine where this preference should come from.
-  return true;
-}
-
 // static
 void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,

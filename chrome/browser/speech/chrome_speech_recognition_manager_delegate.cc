@@ -128,17 +128,6 @@ ChromeSpeechRecognitionManagerDelegate::GetEventListener() {
   return this;
 }
 
-bool ChromeSpeechRecognitionManagerDelegate::FilterProfanities(
-    int render_process_id) {
-  content::RenderProcessHost* rph =
-      content::RenderProcessHost::FromID(render_process_id);
-  if (!rph)  // Guard against race conditions on RPH lifetime.
-    return true;
-
-  return Profile::FromBrowserContext(rph->GetBrowserContext())->GetPrefs()->
-      GetBoolean(prefs::kSpeechRecognitionFilterProfanities);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>

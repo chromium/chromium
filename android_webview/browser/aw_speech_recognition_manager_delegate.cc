@@ -87,13 +87,6 @@ AwSpeechRecognitionManagerDelegate::GetEventListener() {
   return this;
 }
 
-bool AwSpeechRecognitionManagerDelegate::FilterProfanities(
-    int render_process_id) {
-  // TODO: to confirm whether this setting is relevant for android,
-  // https://crbug.com/876801.
-  return false;
-}
-
 // static.
 void AwSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,

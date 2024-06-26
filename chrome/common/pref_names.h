@@ -1330,11 +1330,6 @@ inline constexpr char kShowHomeButton[] = "browser.show_home_button";
 // toolbar.
 inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 
-// Boolean pref to define the default setting for "block offensive words".
-// The old key value is kept to avoid unnecessary migration code.
-inline constexpr char kSpeechRecognitionFilterProfanities[] =
-    "browser.speechinput_censor_results";
-
 // Comma separated list of domain names (e.g. "google.com,school.edu").
 // When this pref is set, the user will be able to access Google Apps
 // only using an account that belongs to one of the domains from this pref.

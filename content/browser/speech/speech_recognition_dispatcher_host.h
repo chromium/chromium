@@ -63,7 +63,6 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
       int embedder_render_process_id,
       int embedder_render_frame_id,
       const url::Origin& origin,
-      bool filter_profanities,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_shared_url_loader_factory,
       const std::string& accept_language);

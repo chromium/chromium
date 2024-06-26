@@ -94,12 +94,6 @@ FakeSpeechRecognitionManagerDelegate::GetEventListener() {
   return nullptr;
 }
 
-bool FakeSpeechRecognitionManagerDelegate::FilterProfanities(
-    int render_process_id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 void FakeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   if (speech_service_) {

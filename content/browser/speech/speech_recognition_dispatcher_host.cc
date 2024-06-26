@@ -122,13 +122,6 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
     DCHECK_NE(embedder_render_frame_id, MSG_ROUTING_NONE);
   }
 
-  bool filter_profanities =
-      SpeechRecognitionManagerImpl::GetInstance() &&
-      SpeechRecognitionManagerImpl::GetInstance()->delegate() &&
-      SpeechRecognitionManagerImpl::GetInstance()
-          ->delegate()
-          ->FilterProfanities(embedder_render_process_id);
-
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   StoragePartition* storage_partition =
       browser_context->GetStoragePartition(web_contents->GetSiteInstance());
@@ -139,7 +132,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
           &SpeechRecognitionDispatcherHost::StartSessionOnIO,
           speech_recognition_dispatcher_host, std::move(params),
           embedder_render_process_id, embedder_render_frame_id,
-          rfh->GetLastCommittedOrigin(), filter_profanities,
+          rfh->GetLastCommittedOrigin(),
           storage_partition->GetURLLoaderFactoryForBrowserProcessIOThread(),
           GetContentClient()->browser()->GetAcceptLangs(browser_context)));
 }
@@ -149,7 +142,6 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
     int embedder_render_process_id,
     int embedder_render_frame_id,
     const url::Origin& origin,
-    bool filter_profanities,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_shared_url_loader_factory,
     const std::string& accept_language) {
@@ -173,7 +165,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   config.initial_context = context;
   config.shared_url_loader_factory = network::SharedURLLoaderFactory::Create(
       std::move(pending_shared_url_loader_factory));
-  config.filter_profanities = filter_profanities;
+  config.filter_profanities = false;
   config.continuous = params->continuous;
   config.interim_results = params->interim_results;
   config.event_listener = session->AsWeakPtr();
