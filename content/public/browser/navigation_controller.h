@@ -550,29 +550,10 @@ class NavigationController {
   virtual void CopyStateFrom(NavigationController* source,
                              bool needs_reload) = 0;
 
-  // A variant of CopyStateFrom. Removes all entries from this except the last
-  // committed entry, and inserts all entries from |source| before and including
-  // its last committed entry. For example:
-  // source: A B *C* D
-  // this:   E F *G*
-  // result: A B C *G*
-  // If there is a pending entry after *G* in |this|, it is also preserved.
-  // If |replace_entry| is true, the current entry in |source| is replaced. So
-  // the result above would be A B *G*.
-  // This ignores any pending entry in |source|.  Callers must ensure that
-  // |CanPruneAllButLastCommitted| returns true before calling this, or it will
-  // crash.
-  virtual void CopyStateFromAndPrune(NavigationController* source,
-                                     bool replace_entry) = 0;
-
-  // Returns whether it is safe to call PruneAllButLastCommitted or
-  // CopyStateFromAndPrune.  There must be a last committed entry, and if there
-  // is a pending entry, it must be new and not an existing entry.
+  // Returns whether it is safe to call PruneAllButLastCommitted. There must be
+  // a last committed entry, and if there is a pending entry, it must be new and
+  // not an existing entry.
   //
-  // If there were no last committed entry, the pending entry might not commit,
-  // leaving us with a blank page.  This is unsafe when used with
-  // |CopyStateFromAndPrune|, which would show an existing entry above the blank
-  // page.
   // If there were an existing pending entry, we could not prune the last
   // committed entry, in case it did not commit.  That would leave us with no
   // sensible place to put the pending entry when it did commit, after all other

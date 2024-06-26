@@ -2510,47 +2510,8 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
   FinishRestore(source->last_committed_entry_index_, RestoreType::kRestored);
 }
 
-void NavigationControllerImpl::CopyStateFromAndPrune(NavigationController* temp,
-                                                     bool replace_entry) {
-  // It is up to callers to check the invariants before calling this.
-  CHECK(CanPruneAllButLastCommitted());
-
-  NavigationControllerImpl* source =
-      static_cast<NavigationControllerImpl*>(temp);
-
-  // Remove all the entries leaving the last committed entry.
-  PruneAllButLastCommittedInternal();
-
-  // We now have one entry, possibly with a new pending entry.  Ensure that
-  // adding the entries from source won't put us over the limit.
-  DCHECK_EQ(1, GetEntryCount());
-  if (!replace_entry)
-    source->PruneOldestSkippableEntryIfFull();
-
-  // Insert the entries from source. Ignore any pending entry, since it has not
-  // committed in source.
-  int max_source_index = source->last_committed_entry_index_;
-  DCHECK_NE(max_source_index, -1);
-  max_source_index++;
-
-  // Ignore the source's current entry if merging with replacement.
-  // TODO(davidben): This should preserve entries forward of the current
-  // too. http://crbug.com/317872
-  if (replace_entry && max_source_index > 0)
-    max_source_index--;
-
-  InsertEntriesFrom(source, max_source_index);
-
-  // Adjust indices such that the last entry and pending are at the end now.
-  last_committed_entry_index_ = GetEntryCount() - 1;
-
-  BroadcastHistoryOffsetAndLength();
-}
-
 bool NavigationControllerImpl::CanPruneAllButLastCommitted() {
-  // If there is no last committed entry, we cannot prune.  Even if there is a
-  // pending entry, it may not commit, leaving this WebContents blank, despite
-  // possibly giving it new entries via CopyStateFromAndPrune.
+  // If there is no last committed entry, we cannot prune.
   if (last_committed_entry_index_ == -1)
     return false;
 

@@ -147,8 +147,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void Reload(ReloadType reload_type, bool check_for_repost) override;
   void NotifyEntryChanged(NavigationEntry* entry) override;
   void CopyStateFrom(NavigationController* source, bool needs_reload) override;
-  void CopyStateFromAndPrune(NavigationController* source,
-                             bool replace_entry) override;
   bool CanPruneAllButLastCommitted() override;
   void PruneAllButLastCommitted() override;
   void DeleteNavigationEntries(
