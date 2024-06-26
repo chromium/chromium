@@ -3123,13 +3123,17 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   if (IsMinimized())
     return ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED;
 
-  PageActionIconView* translate_icon =
+  views::Button* translate_icon =
       toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kTranslate);
+  views::View* anchor_view =
+      toolbar_button_provider()->GetAnchorView(PageActionIconType::kTranslate);
+  if (features::IsToolbarPinningEnabled() &&
+      views::Button::AsButton(anchor_view)) {
+    translate_icon = views::Button::AsButton(anchor_view);
+  }
   TranslateBubbleController::GetOrCreate(web_contents)
-      ->ShowTranslateBubble(toolbar_button_provider()->GetAnchorView(
-                                PageActionIconType::kTranslate),
-                            translate_icon, step, source_language,
+      ->ShowTranslateBubble(anchor_view, translate_icon, step, source_language,
                             target_language, error_type,
                             is_user_gesture ? TranslateBubbleView::USER_GESTURE
                                             : TranslateBubbleView::AUTOMATIC);
