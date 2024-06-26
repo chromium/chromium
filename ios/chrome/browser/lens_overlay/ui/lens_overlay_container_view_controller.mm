@@ -11,7 +11,7 @@
 namespace {
 
 // The close button top padding.
-const CGFloat closeButtonTopPadding = 54.0;
+const CGFloat closeButtonTopPadding = 10.0;
 // The close button trailing padding.
 const CGFloat closeButtonTrailingPadding = 16.0;
 
