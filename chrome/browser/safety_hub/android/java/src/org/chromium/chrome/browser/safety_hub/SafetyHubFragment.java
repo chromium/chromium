@@ -61,8 +61,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
                         .with(
-                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
-                                () -> mDelegate.showPasswordCheckUI(getContext()))
+                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                v -> mDelegate.showPasswordCheckUI(getContext()))
+                        .with(
+                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                v -> mDelegate.showPasswordCheckUI(getContext()))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -80,8 +83,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
                         .with(
-                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
-                                () -> mDelegate.openGooglePlayStore(getContext()))
+                                SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER,
+                                v -> mDelegate.openGooglePlayStore(getContext()))
+                        .with(
+                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                v -> mDelegate.openGooglePlayStore(getContext()))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -98,8 +104,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
-                                () ->
+                                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                                v ->
                                         mSettingsLauncher.launchSettingsActivity(
                                                 getContext(), SafetyHubPermissionsFragment.class))
                         .build();
@@ -122,8 +128,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
-                                () ->
+                                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                                v ->
                                         mSettingsLauncher.launchSettingsActivity(
                                                 getContext(), SafetyHubNotificationsFragment.class))
                         .build();
@@ -145,8 +151,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                 new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(
-                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
-                                () ->
+                                SafetyHubModuleProperties.SECONDARY_BUTTON_LISTENER,
+                                v ->
+                                        mSettingsLauncher.launchSettingsActivity(
+                                                getContext(), SafeBrowsingSettingsFragment.class))
+                        .with(
+                                SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER,
+                                v ->
                                         mSettingsLauncher.launchSettingsActivity(
                                                 getContext(), SafeBrowsingSettingsFragment.class))
                         .build();

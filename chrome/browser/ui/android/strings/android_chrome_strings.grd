@@ -1785,7 +1785,6 @@ Your Google account may have other forms of browsing history like searches and a
         Go to notifications
       </message>
 
-
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">
         Safe Browsing

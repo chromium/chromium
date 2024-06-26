@@ -227,7 +227,7 @@ public final class SafetyHubTest {
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
         // Open the permissions subpage.
-        onView(withText(permissionsTitle)).perform(click());
+        clickOnSecondaryButtonNextToText(permissionsTitle);
 
         // Verify that 2 sites are displayed.
         onView(withText(PERMISSIONS_DATA_1.getOrigin())).check(matches(isDisplayed()));
@@ -325,7 +325,7 @@ public final class SafetyHubTest {
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
         // Open the notifications subpage.
-        onView(withText(notificationsTitle)).perform(click());
+        clickOnSecondaryButtonNextToText(notificationsTitle);
 
         // Verify that 2 sites are displayed.
         onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern()))
@@ -366,7 +366,7 @@ public final class SafetyHubTest {
         onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
 
         // Open the Safe Browsing settings.
-        onView(withText(safeBrowsingTitle)).perform(click());
+        clickOnSecondaryButtonNextToText(safeBrowsingTitle);
 
         onViewWaiting(withText(R.string.prefs_safe_browsing_title)).check(matches(isDisplayed()));
     }
@@ -393,7 +393,7 @@ public final class SafetyHubTest {
             executeWhileCapturingIntents(
                     () -> {
                         // Open the Play Store.
-                        onView(withText(updateCheckTitle)).perform(click());
+                        clickOnPrimaryButtonNextToText(updateCheckTitle);
 
                         intended(
                                 IntentMatchers.hasData(
@@ -406,6 +406,22 @@ public final class SafetyHubTest {
 
     private void clickOnButtonNextToText(String text) {
         onViewWaiting(allOf(withId(R.id.button), withParent(hasSibling(withChild(withText(text))))))
+                .perform(click());
+    }
+
+    private void clickOnPrimaryButtonNextToText(String text) {
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.primary_button),
+                                withParent(hasSibling(withChild(withChild(withText(text)))))))
+                .perform(click());
+    }
+
+    private void clickOnSecondaryButtonNextToText(String text) {
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.secondary_button),
+                                withParent(hasSibling(withChild(withChild(withText(text)))))))
                 .perform(click());
     }
 

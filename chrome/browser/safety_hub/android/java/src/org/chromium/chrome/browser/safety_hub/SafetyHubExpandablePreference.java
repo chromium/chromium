@@ -18,6 +18,8 @@ import org.chromium.ui.widget.ButtonCompat;
 public class SafetyHubExpandablePreference extends ChromeBasePreference {
     private String mPrimaryButtonText;
     private String mSecondaryButtonText;
+    private View.OnClickListener mPrimaryButtonClickListener;
+    private View.OnClickListener mSecondaryButtonClickListener;
 
     public SafetyHubExpandablePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,6 +37,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         if (!TextUtils.isEmpty(mPrimaryButtonText)) {
             primaryButton.setText(mPrimaryButtonText);
             primaryButton.setVisibility(View.VISIBLE);
+            primaryButton.setOnClickListener(mPrimaryButtonClickListener);
         } else {
             primaryButton.setVisibility(View.GONE);
         }
@@ -44,6 +47,7 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         if (!TextUtils.isEmpty(mSecondaryButtonText)) {
             secondaryButton.setText(mSecondaryButtonText);
             secondaryButton.setVisibility(View.VISIBLE);
+            secondaryButton.setOnClickListener(mSecondaryButtonClickListener);
         } else {
             secondaryButton.setVisibility(View.GONE);
         }
@@ -59,6 +63,20 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     void setSecondaryButtonText(@Nullable String buttonText) {
         if (!TextUtils.equals(mSecondaryButtonText, buttonText)) {
             mSecondaryButtonText = buttonText;
+            this.notifyChanged();
+        }
+    }
+
+    void setPrimaryButtonClickListener(@Nullable View.OnClickListener clickListener) {
+        if (mPrimaryButtonClickListener != clickListener) {
+            mPrimaryButtonClickListener = clickListener;
+            this.notifyChanged();
+        }
+    }
+
+    void setSecondaryButtonClickListener(@Nullable View.OnClickListener clickListener) {
+        if (mSecondaryButtonClickListener != clickListener) {
+            mSecondaryButtonClickListener = clickListener;
             this.notifyChanged();
         }
     }
