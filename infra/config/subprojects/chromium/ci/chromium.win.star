@@ -358,6 +358,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-desktop-engprod@google.com",
+    # Can flakily hit the default 3 hour timeout due to inconsistent compile
+    # times.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
