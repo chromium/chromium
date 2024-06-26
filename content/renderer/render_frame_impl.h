@@ -667,7 +667,8 @@ class CONTENT_EXPORT RenderFrameImpl
   scoped_refptr<blink::WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() override;
   void OnStopLoading() override;
-  blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
+  const blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
+      override;
   blink::WebView* CreateNewWindow(
       const blink::WebURLRequest& request,
       const blink::WebWindowFeatures& features,

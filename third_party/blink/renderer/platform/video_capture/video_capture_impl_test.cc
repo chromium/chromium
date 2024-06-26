@@ -162,7 +162,7 @@ class VideoCaptureImplTest : public ::testing::Test {
       : video_capture_impl_(new VideoCaptureImpl(
             session_id_,
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            &GetEmptyBrowserInterfaceBroker())) {
+            GetEmptyBrowserInterfaceBroker())) {
     params_small_.requested_format = media::VideoCaptureFormat(
         gfx::Size(176, 144), 30, media::PIXEL_FORMAT_I420);
     params_large_.requested_format = media::VideoCaptureFormat(

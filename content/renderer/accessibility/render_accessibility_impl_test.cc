@@ -29,9 +29,9 @@ class RenderAccessibilityHostInterceptor
     : public blink::mojom::RenderAccessibilityHostInterceptorForTesting {
  public:
   explicit RenderAccessibilityHostInterceptor(
-      blink::BrowserInterfaceBrokerProxy* broker) {
-    broker->GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
-    broker->SetBinderForTesting(
+      const blink::BrowserInterfaceBrokerProxy& broker) {
+    broker.GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
+    broker.SetBinderForTesting(
         blink::mojom::RenderAccessibilityHost::Name_,
         base::BindRepeating(&RenderAccessibilityHostInterceptor::
                                 BindRenderAccessibilityHostReceiver,

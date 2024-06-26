@@ -92,7 +92,7 @@ WebVideoCaptureImplManager::~WebVideoCaptureImplManager() {
 
 base::OnceClosure WebVideoCaptureImplManager::UseDevice(
     const media::VideoCaptureSessionId& id,
-    BrowserInterfaceBrokerProxy* browser_interface_broker) {
+    const BrowserInterfaceBrokerProxy& browser_interface_broker) {
   DVLOG(1) << __func__ << " session id: " << id;
   DCHECK(render_main_task_runner_->BelongsToCurrentThread());
   auto it = base::ranges::find(devices_, id, &DeviceEntry::session_id);
@@ -217,7 +217,7 @@ void WebVideoCaptureImplManager::GetDeviceFormatsInUse(
 std::unique_ptr<VideoCaptureImpl>
 WebVideoCaptureImplManager::CreateVideoCaptureImpl(
     const media::VideoCaptureSessionId& session_id,
-    BrowserInterfaceBrokerProxy* browser_interface_broker) const {
+    const BrowserInterfaceBrokerProxy& browser_interface_broker) const {
   return std::make_unique<VideoCaptureImpl>(
       session_id, render_main_task_runner_, browser_interface_broker);
 }

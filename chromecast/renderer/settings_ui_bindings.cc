@@ -153,7 +153,7 @@ void SettingsUiBindings::ReconnectMojo() {
   if (settings_platform_ptr_.is_bound())
     settings_platform_ptr_.reset();
 
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       settings_platform_ptr_.BindNewPipeAndPassReceiver());
   settings_platform_ptr_.set_disconnect_handler(base::BindOnce(
       &SettingsUiBindings::OnMojoConnectionError, weak_factory_.GetWeakPtr()));

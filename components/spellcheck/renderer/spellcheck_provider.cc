@@ -250,7 +250,7 @@ spellcheck::mojom::SpellCheckHost& SpellCheckProvider::GetSpellCheckHost() {
   // We shodulnt't get here in tests, `spell_check_host_` should have been set.
   CHECK(render_frame());
 
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       spell_check_host_.BindNewPipeAndPassReceiver());
   return *spell_check_host_.get();
 }

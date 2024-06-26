@@ -133,7 +133,7 @@ TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
   AudioOutputIPCFactory ipc_factory(io_thread->task_runner());
 
   ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId),
-                                    &interface_broker);
+                                    interface_broker);
 
   // To make sure that the pointer stored in |ipc_factory| is connected to
   // |remote_factory|, and also that it's bound to |io_thread|, we create an
@@ -182,7 +182,7 @@ TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
 
   for (int i = 0; i < n_factories; i++) {
     ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId + i),
-                                      &interface_broker);
+                                      interface_broker);
   }
 
   base::RunLoop run_loop;
@@ -239,7 +239,7 @@ TEST_F(AudioOutputIPCFactoryTest, RegisterDeregisterBackToBack_Deregisters) {
   AudioOutputIPCFactory ipc_factory(io_thread->task_runner());
 
   ipc_factory.RegisterRemoteFactory(TokenFromInt(kRenderFrameId),
-                                    &interface_broker);
+                                    interface_broker);
   ipc_factory.MaybeDeregisterRemoteFactory(TokenFromInt(kRenderFrameId));
   // That there is no factory remaining at destruction is DCHECKed in the
   // AudioOutputIPCFactory destructor.

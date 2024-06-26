@@ -662,7 +662,7 @@ class FrameHostTestInterfaceRequestIssuer : public RenderFrameObserver {
   void RequestTestInterfaceOnFrameEvent(const std::string& event) {
     mojo::Remote<mojom::FrameHostTestInterface> remote;
     blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         remote.BindNewPipeAndPassReceiver());
     remote->Ping(
         !document.IsNull() ? GURL(document.Url()) : GURL(kNoDocumentMarkerURL),

@@ -29,8 +29,7 @@ LocalVideoCapturerSource::LocalVideoCapturerSource(
       manager_(Platform::Current()->GetVideoCaptureImplManager()),
       frame_token_(frame->GetLocalFrameToken()),
       release_device_cb_(
-          manager_->UseDevice(session_id_,
-                              &frame->GetBrowserInterfaceBroker())),
+          manager_->UseDevice(session_id_, frame->GetBrowserInterfaceBroker())),
       task_runner_(std::move(task_runner)) {}
 
 LocalVideoCapturerSource::~LocalVideoCapturerSource() {
@@ -135,7 +134,7 @@ void LocalVideoCapturerSource::OnStateUpdate(blink::VideoCaptureState state) {
       release_device_cb_ =
           frame && frame->Client()
               ? manager_->UseDevice(session_id_,
-                                    &frame->GetBrowserInterfaceBroker())
+                                    frame->GetBrowserInterfaceBroker())
               : base::DoNothing();
       OnLog(
           "LocalVideoCapturerSource::OnStateUpdate signaling to "

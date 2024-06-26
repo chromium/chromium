@@ -36,7 +36,7 @@ class TestTextInputHostWaiter : public mojom::blink::TextInputHost {
   ~TestTextInputHostWaiter() override = default;
 
   void Init(base::OnceClosure callback,
-            blink::BrowserInterfaceBrokerProxy& provider) {
+            const blink::BrowserInterfaceBrokerProxy& provider) {
     callback_ = std::move(callback);
     provider.SetBinderForTesting(
         mojom::blink::TextInputHost::Name_,

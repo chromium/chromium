@@ -223,7 +223,7 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
 
  public:
   TestPluginWebFrameClient() {
-    mock_clipboard_host_provider_.Install(*GetBrowserInterfaceBroker());
+    mock_clipboard_host_provider_.Install(GetBrowserInterfaceBroker());
   }
 
   void OnPrintPage() { printed_page_ = true; }

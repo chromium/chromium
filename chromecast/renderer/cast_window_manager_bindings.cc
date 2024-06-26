@@ -202,7 +202,7 @@ void CastWindowManagerBindings::BindGestureSource() {
   if (gesture_source_.is_bound() && gesture_source_.is_connected())
     return;
   gesture_source_.reset();
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       gesture_source_.BindNewPipeAndPassReceiver());
   gesture_source_.set_disconnect_handler(
       base::BindRepeating(&OnGestureSourceDisconnectionError));
@@ -214,7 +214,7 @@ void CastWindowManagerBindings::BindWindow() {
   if (window_.is_bound() && window_.is_connected())
     return;
   window_.reset();
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       window_.BindNewPipeAndPassReceiver());
   window_.set_disconnect_handler(base::BindRepeating(&OnWindowDisconnect));
 }

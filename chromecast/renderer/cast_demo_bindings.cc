@@ -352,7 +352,7 @@ void CastDemoBindings::PersistLocalStorage() {
 }
 
 void CastDemoBindings::ReconnectMojo() {
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       cast_demo_.BindNewPipeAndPassReceiver());
   DCHECK(cast_demo_.is_bound());
   cast_demo_.set_disconnect_handler(base::BindOnce(

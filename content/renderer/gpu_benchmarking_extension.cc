@@ -632,7 +632,7 @@ GpuBenchmarking::~GpuBenchmarking() = default;
 
 void GpuBenchmarking::EnsureRemoteInterface() {
   if (!input_injector_) {
-    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame_->GetBrowserInterfaceBroker().GetInterface(
         input_injector_.BindNewPipeAndPassReceiver(
             render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)));
   }

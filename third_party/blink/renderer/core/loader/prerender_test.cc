@@ -172,7 +172,7 @@ class PrerenderTest : public testing::Test {
         mojom::blink::NoStatePrefetchProcessor::Name_, {});
   }
 
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() {
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() {
     return web_view_helper_.LocalMainFrame()
         ->GetFrame()
         ->GetBrowserInterfaceBroker();

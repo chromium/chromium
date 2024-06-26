@@ -62,9 +62,9 @@ class NonSwitchableAudioRendererSink
       : frame_token_(frame_token), sink_params_(params) {
     auto* render_frame = GetRenderFrameForToken(frame_token);
     DCHECK(render_frame);
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         pending_audio_socket_broker_.InitWithNewPipeAndPassReceiver());
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         pending_app_media_info_manager_.InitWithNewPipeAndPassReceiver());
   }
 

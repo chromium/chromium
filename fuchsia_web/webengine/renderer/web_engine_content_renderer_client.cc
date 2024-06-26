@@ -306,10 +306,8 @@ WebEngineContentRendererClient::GetBaseRendererFactory(
     base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
         get_gpu_factories_cb,
     int element_id) {
-  auto* interface_broker = render_frame->GetBrowserInterfaceBroker();
-
   mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;
-  interface_broker->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
 
   bool use_audio_consumer = false;

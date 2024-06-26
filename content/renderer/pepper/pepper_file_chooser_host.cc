@@ -41,7 +41,7 @@ class PepperFileChooserHost::CompletionHandler {
                        blink::mojom::FileChooserParamsPtr params) {
     if (!render_frame)
       return false;
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         file_chooser_.BindNewPipeAndPassReceiver());
     file_chooser_.set_disconnect_handler(base::BindOnce(
         &CompletionHandler::OnConnectionError, base::Unretained(this)));

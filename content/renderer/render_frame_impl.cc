@@ -3369,9 +3369,9 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
 
 // blink::WebLocalFrameClient implementation
 // ----------------------------------------
-blink::BrowserInterfaceBrokerProxy*
+const blink::BrowserInterfaceBrokerProxy&
 RenderFrameImpl::GetBrowserInterfaceBroker() {
-  return &browser_interface_broker_proxy_;
+  return browser_interface_broker_proxy_;
 }
 
 bool RenderFrameImpl::IsPluginHandledExternally(
@@ -4758,7 +4758,7 @@ bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
 blink::mojom::RendererAudioInputStreamFactory*
 RenderFrameImpl::GetAudioInputStreamFactory() {
   if (!audio_input_stream_factory_)
-    GetBrowserInterfaceBroker()->GetInterface(
+    GetBrowserInterfaceBroker().GetInterface(
         audio_input_stream_factory_.BindNewPipeAndPassReceiver(
             agent_scheduling_group_->agent_group_scheduler()
                 .DefaultTaskRunner()));

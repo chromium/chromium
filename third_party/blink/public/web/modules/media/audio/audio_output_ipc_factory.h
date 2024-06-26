@@ -48,7 +48,7 @@ class BLINK_MODULES_EXPORT AudioOutputIPCFactory {
   // Does nothing if not using mojo factories.
   void RegisterRemoteFactory(
       const blink::LocalFrameToken& frame_token,
-      blink::BrowserInterfaceBrokerProxy* interface_broker);
+      const blink::BrowserInterfaceBrokerProxy& interface_broker);
 
   // Every call to the above method must be matched by a call to this one when
   // the frame is destroyed. Does nothing if not using mojo factories.

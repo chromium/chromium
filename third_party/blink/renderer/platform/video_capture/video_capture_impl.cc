@@ -657,7 +657,7 @@ struct VideoCaptureImpl::ClientInfo {
 VideoCaptureImpl::VideoCaptureImpl(
     media::VideoCaptureSessionId session_id,
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    BrowserInterfaceBrokerProxy* browser_interface_broker)
+    const BrowserInterfaceBrokerProxy& browser_interface_broker)
     : device_id_(session_id),
       session_id_(session_id),
       video_capture_host_for_testing_(nullptr),
@@ -669,7 +669,7 @@ VideoCaptureImpl::VideoCaptureImpl(
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(io_thread_checker_);
 
-  browser_interface_broker->GetInterface(
+  browser_interface_broker.GetInterface(
       pending_video_capture_host_.InitWithNewPipeAndPassReceiver());
 
   gpu_factories_ = Platform::Current()->GetGpuFactories();

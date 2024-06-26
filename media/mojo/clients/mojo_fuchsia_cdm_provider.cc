@@ -9,7 +9,7 @@
 namespace media {
 
 MojoFuchsiaCdmProvider::MojoFuchsiaCdmProvider(
-    blink::BrowserInterfaceBrokerProxy* interface_broker)
+    const blink::BrowserInterfaceBrokerProxy* interface_broker)
     : interface_broker_(interface_broker) {
   DCHECK(interface_broker_);
 }

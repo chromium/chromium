@@ -52,7 +52,7 @@ void PageAutoFetcherHelper::CancelSchedule() {
 bool PageAutoFetcherHelper::Bind() {
   if (fetcher_)
     return true;
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame_->GetBrowserInterfaceBroker().GetInterface(
       fetcher_.BindNewPipeAndPassReceiver());
   return fetcher_.is_bound();
 }

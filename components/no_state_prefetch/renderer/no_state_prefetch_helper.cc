@@ -47,7 +47,7 @@ NoStatePrefetchHelper::MaybeCreateThrottle(
     return nullptr;
 
   mojo::PendingRemote<mojom::PrerenderCanceler> canceler;
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       canceler.InitWithNewPipeAndPassReceiver());
 
   auto throttle =
@@ -93,7 +93,7 @@ void NoStatePrefetchHelper::SendPrefetchFinished() {
   DCHECK(prefetch_count_ == 0 && prefetch_finished_);
 
   mojo::Remote<mojom::PrerenderCanceler> canceler;
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       canceler.BindNewPipeAndPassReceiver());
   canceler->CancelPrerenderForNoStatePrefetch();
 }

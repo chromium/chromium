@@ -75,10 +75,10 @@ AudioOutputIPCFactory::CreateAudioOutputIPC(
 
 void AudioOutputIPCFactory::RegisterRemoteFactory(
     const blink::LocalFrameToken& frame_token,
-    blink::BrowserInterfaceBrokerProxy* interface_broker) {
+    const blink::BrowserInterfaceBrokerProxy& interface_broker) {
   mojo::PendingRemote<mojom::blink::RendererAudioOutputStreamFactory>
       factory_remote;
-  interface_broker->GetInterface(
+  interface_broker.GetInterface(
       factory_remote.InitWithNewPipeAndPassReceiver());
   // Unretained is safe due to the contract at the top of the header file.
   // It's safe to pass the |factory_remote| PendingRemote between threads.

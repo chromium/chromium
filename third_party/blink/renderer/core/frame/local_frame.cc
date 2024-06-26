@@ -2238,7 +2238,7 @@ ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {
   return content_capture_manager_.Get();
 }
 
-BrowserInterfaceBrokerProxy& LocalFrame::GetBrowserInterfaceBroker() {
+const BrowserInterfaceBrokerProxy& LocalFrame::GetBrowserInterfaceBroker() {
   DCHECK(Client());
   return Client()->GetBrowserInterfaceBroker();
 }

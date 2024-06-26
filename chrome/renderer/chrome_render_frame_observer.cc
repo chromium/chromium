@@ -260,7 +260,7 @@ void ChromeRenderFrameObserver::DidFinishLoad() {
   if (!osdd_url.is_empty()) {
     mojo::Remote<chrome::mojom::OpenSearchDescriptionDocumentHandler>
         osdd_handler;
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         osdd_handler.BindNewPipeAndPassReceiver());
     osdd_handler->PageHasOpenSearchDescriptionDocument(
         frame->GetDocument().Url(), osdd_url);

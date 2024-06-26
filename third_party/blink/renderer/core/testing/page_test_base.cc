@@ -74,7 +74,7 @@ void ToSimpleLayoutTree(std::ostream& ostream,
 }  // namespace
 
 PageTestBase::MockClipboardHostProvider::MockClipboardHostProvider(
-    blink::BrowserInterfaceBrokerProxy& interface_broker) {
+    const blink::BrowserInterfaceBrokerProxy& interface_broker) {
   Install(interface_broker);
 }
 
@@ -88,7 +88,7 @@ PageTestBase::MockClipboardHostProvider::~MockClipboardHostProvider() {
 }
 
 void PageTestBase::MockClipboardHostProvider::Install(
-    blink::BrowserInterfaceBrokerProxy& interface_broker) {
+    const blink::BrowserInterfaceBrokerProxy& interface_broker) {
   interface_broker_ = &interface_broker;
   interface_broker_->SetBinderForTesting(
       blink::mojom::blink::ClipboardHost::Name_,

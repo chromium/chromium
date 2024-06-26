@@ -311,7 +311,7 @@ void GamepadController::Install(RenderFrame* frame) {
   if (!gamepads_)
     return;  // Shared memory failed.
 
-  frame->GetBrowserInterfaceBroker()->SetBinderForTesting(
+  frame->GetBrowserInterfaceBroker().SetBinderForTesting(
       device::mojom::GamepadMonitor::Name_,
       base::BindRepeating(&GamepadController::OnInterfaceRequest,
                           base::Unretained(this)));

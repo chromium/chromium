@@ -259,7 +259,7 @@ void AXTreeDistiller::ScreenAIServiceReady(content::RenderFrame* render_frame) {
   if (main_content_extractor_.is_bound() || !render_frame) {
     return;
   }
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       main_content_extractor_.BindNewPipeAndPassReceiver());
   main_content_extractor_.set_disconnect_handler(
       base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,

@@ -113,7 +113,7 @@ void DistillerNativeJavaScript::BindFunctionToObject(
 
 void DistillerNativeJavaScript::EnsureServiceConnected() {
   if (!distiller_js_service_) {
-    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame_->GetBrowserInterfaceBroker().GetInterface(
         distiller_js_service_.BindNewPipeAndPassReceiver());
   }
 }

@@ -12,7 +12,7 @@ namespace network_hints {
 
 WebPrescientNetworkingImpl::WebPrescientNetworkingImpl(
     content::RenderFrame* render_frame) {
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       handler_.BindNewPipeAndPassReceiver());
 }
 

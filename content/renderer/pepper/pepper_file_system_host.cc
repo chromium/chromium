@@ -171,7 +171,7 @@ blink::mojom::FileSystemManager* PepperFileSystemHost::GetFileSystemManager() {
         renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance());
     if (!frame)
       return nullptr;
-    frame->GetBrowserInterfaceBroker()->GetInterface(
+    frame->GetBrowserInterfaceBroker().GetInterface(
         file_system_manager_remote_.BindNewPipeAndPassReceiver());
   }
   return file_system_manager_remote_.get();

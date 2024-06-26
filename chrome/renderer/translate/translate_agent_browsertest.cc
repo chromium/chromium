@@ -194,7 +194,7 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
         translate::kTFLiteLanguageDetectionEnabled);
     translate_agent_ = new TestTranslateAgent(GetMainRenderFrame());
 
-    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+    GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         translate::mojom::ContentTranslateDriver::Name_,
         base::BindRepeating(&FakeContentTranslateDriver::BindHandle,
                             base::Unretained(&fake_translate_driver_)));
@@ -204,7 +204,7 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
   }
 
   void TearDown() override {
-    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+    GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         translate::mojom::ContentTranslateDriver::Name_, {});
 
     delete translate_agent_;

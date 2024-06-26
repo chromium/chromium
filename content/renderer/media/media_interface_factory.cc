@@ -17,7 +17,7 @@
 namespace content {
 
 MediaInterfaceFactory::MediaInterfaceFactory(
-    blink::BrowserInterfaceBrokerProxy* interface_broker)
+    const blink::BrowserInterfaceBrokerProxy* interface_broker)
     : interface_broker_(interface_broker) {
   task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   weak_this_ = weak_factory_.GetWeakPtr();

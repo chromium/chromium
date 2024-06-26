@@ -498,7 +498,7 @@ class CORE_EXPORT LocalFrame final
 
   // Return this frame's BrowserInterfaceBroker. Must not be called on detached
   // frames (that is, frames where `Client()` returns nullptr).
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker();
 
   InterfaceRegistry* GetInterfaceRegistry() { return interface_registry_; }
 

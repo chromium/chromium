@@ -55,7 +55,7 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
                        base::OnceClosure destruct_callback)
       : VideoCaptureImpl(session_id,
                          scheduler::GetSingleThreadTaskRunnerForTesting(),
-                         &GetEmptyBrowserInterfaceBroker()),
+                         GetEmptyBrowserInterfaceBroker()),
         pause_callback_(pause_callback),
         destruct_callback_(std::move(destruct_callback)) {}
 
@@ -128,7 +128,7 @@ class MockVideoCaptureImplManager : public WebVideoCaptureImplManager {
  private:
   std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImpl(
       const media::VideoCaptureSessionId& session_id,
-      BrowserInterfaceBrokerProxy*) const override {
+      const BrowserInterfaceBrokerProxy&) const override {
     auto video_capture_impl = std::make_unique<MockVideoCaptureImpl>(
         session_id, pause_callback_, stop_capture_callback_);
     video_capture_impl->SetVideoCaptureHostForTesting(video_capture_impl.get());
@@ -244,7 +244,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
       platform_;
   base::RunLoop cleanup_run_loop_;
   std::unique_ptr<MockVideoCaptureImplManager> manager_;
-  raw_ptr<BrowserInterfaceBrokerProxy> browser_interface_broker_;
+  raw_ptr<const BrowserInterfaceBrokerProxy> browser_interface_broker_;
 };
 
 // Multiple clients with the same session id. There is only one
@@ -253,7 +253,7 @@ TEST_F(VideoCaptureImplManagerTest, MultipleClients) {
   std::array<base::OnceClosure, kNumClients> release_callbacks;
   for (size_t i = 0; i < kNumClients; ++i) {
     release_callbacks[i] =
-        manager_->UseDevice(session_ids_[0], browser_interface_broker_);
+        manager_->UseDevice(session_ids_[0], *browser_interface_broker_);
   }
   std::array<base::OnceClosure, kNumClients> stop_callbacks =
       StartCaptureForAllClients(true);
@@ -264,7 +264,7 @@ TEST_F(VideoCaptureImplManagerTest, MultipleClients) {
 }
 
 TEST_F(VideoCaptureImplManagerTest, NoLeak) {
-  manager_->UseDevice(session_ids_[0], browser_interface_broker_).Reset();
+  manager_->UseDevice(session_ids_[0], *browser_interface_broker_).Reset();
   manager_.reset();
   cleanup_run_loop_.Run();
 }
@@ -274,7 +274,7 @@ TEST_F(VideoCaptureImplManagerTest, SuspendAndResumeSessions) {
   MediaStreamDevices video_devices;
   for (size_t i = 0; i < kNumClients; ++i) {
     release_callbacks[i] =
-        manager_->UseDevice(session_ids_[i], browser_interface_broker_);
+        manager_->UseDevice(session_ids_[i], *browser_interface_broker_);
     MediaStreamDevice video_device;
     video_device.set_session_id(session_ids_[i]);
     video_devices.push_back(video_device);

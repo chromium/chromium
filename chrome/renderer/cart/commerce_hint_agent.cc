@@ -281,7 +281,7 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
   // Subframes including fenced frames shouldn't be reached here.
   DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
 
-  render_frame->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame->GetBrowserInterfaceBroker().GetInterface(
       observer.BindNewPipeAndPassReceiver());
   return observer;
 }

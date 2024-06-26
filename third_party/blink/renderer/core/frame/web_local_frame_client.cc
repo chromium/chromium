@@ -12,10 +12,11 @@
 
 namespace blink {
 
-BrowserInterfaceBrokerProxy* WebLocalFrameClient::GetBrowserInterfaceBroker() {
+const BrowserInterfaceBrokerProxy&
+WebLocalFrameClient::GetBrowserInterfaceBroker() {
   // TODO(dtapuska): We should make this interface a pure virtual so we don't
   // have this implementation in the base class.
-  return &GetEmptyBrowserInterfaceBroker();
+  return GetEmptyBrowserInterfaceBroker();
 }
 
 AssociatedInterfaceProvider*

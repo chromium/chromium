@@ -29,7 +29,7 @@ namespace blink {
 class MockFileSystemAccessManager
     : public mojom::blink::FileSystemAccessManager {
  public:
-  MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker,
+  MockFileSystemAccessManager(const BrowserInterfaceBrokerProxy& broker,
                               base::OnceClosure reached_callback)
       : reached_callback_(std::move(reached_callback)), broker_(broker) {
     broker_->SetBinderForTesting(
@@ -38,7 +38,8 @@ class MockFileSystemAccessManager
             &MockFileSystemAccessManager::BindFileSystemAccessManager,
             WTF::Unretained(this)));
   }
-  MockFileSystemAccessManager(BrowserInterfaceBrokerProxy& broker)
+  explicit MockFileSystemAccessManager(
+      const BrowserInterfaceBrokerProxy& broker)
       : broker_(broker) {
     broker_->SetBinderForTesting(
         mojom::blink::FileSystemAccessManager::Name_,
@@ -109,7 +110,7 @@ class MockFileSystemAccessManager
   base::OnceClosure reached_callback_;
   ChooseEntriesResponseCallback choose_entries_response_callback_;
   mojo::ReceiverSet<mojom::blink::FileSystemAccessManager> receivers_;
-  const raw_ref<BrowserInterfaceBrokerProxy> broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy> broker_;
 };
 
 class GlobalFileSystemAccessTest : public PageTestBase {

@@ -117,7 +117,7 @@ class VisualQueryClassifierAgentTest : public ChromeRenderViewTest {
     agent_ = VisualQueryClassifierAgent::Create(render_frame);
     model_file_ = LoadModelFile(model_file_path());
     base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
-    render_frame->GetBrowserInterfaceBroker()->SetBinderForTesting(
+    render_frame->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::VisualSuggestionsModelProvider::Name_,
         base::BindRepeating(&FakeModelProvider::BindHandle,
                             base::Unretained(&fake_provider_)));
@@ -128,7 +128,7 @@ class VisualQueryClassifierAgentTest : public ChromeRenderViewTest {
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
     // Simulate RenderFrame OnDestruct() call.
     agent_->OnDestruct();
-    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+    GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::VisualSuggestionsModelProvider::Name_, {});
     ChromeRenderViewTest::TearDown();
   }

@@ -52,7 +52,7 @@ ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
   // function is not destructed by the caller.
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
   RenderFrameImpl* impl = static_cast<RenderFrameImpl*>(render_frame);
-  impl->GetBrowserInterfaceBroker()->GetInterface(
+  impl->GetBrowserInterfaceBroker().GetInterface(
       key_system_support.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;

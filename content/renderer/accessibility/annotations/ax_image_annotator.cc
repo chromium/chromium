@@ -220,7 +220,7 @@ void AXImageAnnotator::EnableAnnotations() {
   mojo::PendingRemote<image_annotation::mojom::Annotator> annotator;
   render_accessibility_->render_frame()
       ->GetBrowserInterfaceBroker()
-      ->GetInterface(annotator.InitWithNewPipeAndPassReceiver());
+      .GetInterface(annotator.InitWithNewPipeAndPassReceiver());
   annotator_remote_.Bind(std::move(annotator));
 }
 

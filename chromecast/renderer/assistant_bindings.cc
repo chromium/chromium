@@ -157,7 +157,7 @@ void AssistantBindings::FlushV8ToAssistantQueue() {
 const mojo::Remote<chromecast::mojom::AssistantMessageService>&
 AssistantBindings::GetMojoInterface() {
   if (!assistant_.is_bound()) {
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         assistant_.BindNewPipeAndPassReceiver());
     assistant_.set_disconnect_handler(base::BindOnce(
         &AssistantBindings::OnAssistantConnectionError, weak_this_));

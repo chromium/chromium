@@ -74,7 +74,7 @@ WebEngineAudioDeviceFactory::NewAudioRendererSink(
     CHECK(render_frame);
 
     // Connect WebEngineMediaResourceProvider.
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         media_resource_provider.BindNewPipeAndPassReceiver());
 
     bool result =

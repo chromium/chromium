@@ -1044,9 +1044,9 @@ LocalFrameClientImpl::MaybeGetBackgroundResourceFetchAssets() {
   return web_frame_->Client()->MaybeGetBackgroundResourceFetchAssets();
 }
 
-blink::BrowserInterfaceBrokerProxy&
+const blink::BrowserInterfaceBrokerProxy&
 LocalFrameClientImpl::GetBrowserInterfaceBroker() {
-  return *web_frame_->Client()->GetBrowserInterfaceBroker();
+  return web_frame_->Client()->GetBrowserInterfaceBroker();
 }
 
 AssociatedInterfaceProvider*

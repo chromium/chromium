@@ -230,7 +230,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   scoped_refptr<WebBackgroundResourceFetchAssets>
   MaybeGetBackgroundResourceFetchAssets() override;
 
-  blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
+  const blink::BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
+      override;
 
   AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
       override;

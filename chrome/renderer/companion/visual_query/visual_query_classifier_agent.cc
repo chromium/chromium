@@ -309,7 +309,7 @@ void VisualQueryClassifierAgent::DidFinishLoad() {
     return;
   }
 
-  render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame_->GetBrowserInterfaceBroker().GetInterface(
       model_provider_.BindNewPipeAndPassReceiver());
 
   if (model_provider_.is_bound()) {

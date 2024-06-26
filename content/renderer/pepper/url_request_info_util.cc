@@ -59,7 +59,7 @@ mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager;
   RenderFrame* frame = renderer_ppapi_host->GetRenderFrameForInstance(instance);
   if (frame)
-    frame->GetBrowserInterfaceBroker()->GetInterface(
+    frame->GetBrowserInterfaceBroker().GetInterface(
         file_system_manager.BindNewPipeAndPassReceiver());
   return file_system_manager;
 }

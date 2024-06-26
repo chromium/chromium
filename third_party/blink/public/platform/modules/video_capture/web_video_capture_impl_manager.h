@@ -55,7 +55,7 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // resources.
   base::OnceClosure UseDevice(
       const media::VideoCaptureSessionId& id,
-      BrowserInterfaceBrokerProxy* browser_interface_broker);
+      const BrowserInterfaceBrokerProxy& browser_interface_broker);
 
   // Start receiving video frames for the given session ID.
   //
@@ -131,7 +131,7 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
 
   virtual std::unique_ptr<VideoCaptureImpl> CreateVideoCaptureImpl(
       const media::VideoCaptureSessionId& session_id,
-      BrowserInterfaceBrokerProxy* browser_interface_broker) const;
+      const BrowserInterfaceBrokerProxy& browser_interface_broker) const;
 
   static void ProcessFeedback(VideoCaptureFeedbackCB callback_to_io_thread,
                               const media::VideoCaptureFeedback& feedback);

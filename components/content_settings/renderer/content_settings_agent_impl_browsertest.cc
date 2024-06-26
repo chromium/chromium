@@ -191,7 +191,7 @@ class ContentSettingsAgentImplBrowserTest
     // Bind a FakeCodeCacheHost which handles FetchCachedCode() method, because
     // script loading is blocked until the callback of FetchCachedCode() is
     // called.
-    GetMainRenderFrame()->GetBrowserInterfaceBroker()->SetBinderForTesting(
+    GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         blink::mojom::CodeCacheHost::Name_,
         base::BindRepeating(
             &ContentSettingsAgentImplBrowserTest::OnCodeCacheHostRequest,

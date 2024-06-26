@@ -45,7 +45,7 @@ void AXMainNodeAnnotator::EnableAnnotations() {
   mojo::PendingRemote<screen_ai::mojom::Screen2xMainContentExtractor> annotator;
   render_accessibility_->render_frame()
       ->GetBrowserInterfaceBroker()
-      ->GetInterface(annotator.InitWithNewPipeAndPassReceiver());
+      .GetInterface(annotator.InitWithNewPipeAndPassReceiver());
   annotator_remote_.Bind(std::move(annotator));
 }
 

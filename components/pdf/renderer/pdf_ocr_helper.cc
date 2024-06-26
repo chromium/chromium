@@ -45,7 +45,7 @@ PdfOcrHelper::PdfOcrHelper(
       root_node_id_(root_node_id),
       on_ocr_data_received_callback_(std::move(callback)) {
   CHECK(features::IsPdfOcrEnabled());
-  render_frame.GetBrowserInterfaceBroker()->GetInterface(
+  render_frame.GetBrowserInterfaceBroker().GetInterface(
       screen_ai_annotator_.BindNewPipeAndPassReceiver());
   screen_ai_annotator_->SetClientType(
       screen_ai::mojom::OcrClientType::kPdfViewer);

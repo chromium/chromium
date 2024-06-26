@@ -62,7 +62,7 @@ class MediaLoadDeferrer : public blink::WebViewObserver {
     mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient>
         media_player_observer_client_receiver =
             media_player_observer_client_.BindNewPipeAndPassReceiver();
-    render_frame->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame->GetBrowserInterfaceBroker().GetInterface(
         std::move(media_player_observer_client_receiver));
     media_player_observer_client_->GetHasPlayedBefore(
         base::BindOnce(&MediaLoadDeferrer::OnGetHasPlayedBeforeCallback,

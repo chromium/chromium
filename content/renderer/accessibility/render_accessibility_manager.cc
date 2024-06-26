@@ -120,7 +120,7 @@ void RenderAccessibilityManager::HandleAccessibilityEvents(
 mojo::Remote<blink::mojom::RenderAccessibilityHost>&
 RenderAccessibilityManager::GetOrCreateRemoteRenderAccessibilityHost() {
   if (!render_accessibility_host_) {
-    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame_->GetBrowserInterfaceBroker().GetInterface(
         render_accessibility_host_.BindNewPipeAndPassReceiver());
   }
   return render_accessibility_host_;

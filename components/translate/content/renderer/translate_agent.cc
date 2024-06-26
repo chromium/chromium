@@ -612,7 +612,7 @@ void TranslateAgent::NotifyBrowserTranslationFailed(TranslateErrors error) {
 const mojo::Remote<mojom::ContentTranslateDriver>&
 TranslateAgent::GetTranslateHandler() {
   if (!translate_handler_) {
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         translate_handler_.BindNewPipeAndPassReceiver());
     return translate_handler_;
   }
@@ -624,7 +624,7 @@ TranslateAgent::GetTranslateHandler() {
     return translate_handler_;
 
   translate_handler_.reset();
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       translate_handler_.BindNewPipeAndPassReceiver());
   return translate_handler_;
 }

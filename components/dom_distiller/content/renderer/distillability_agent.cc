@@ -201,7 +201,7 @@ void DistillabilityAgent::DidMeaningfulLayout(
   bool is_last = IsLast(is_loaded);
   // Connect to Mojo service on browser to notify page distillability.
   mojo::Remote<mojom::DistillabilityService> distillability_service;
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       distillability_service.BindNewPipeAndPassReceiver());
   if (!distillability_service.is_bound())
     return;

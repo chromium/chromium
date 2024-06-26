@@ -67,7 +67,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
  public:
   VideoCaptureImpl(media::VideoCaptureSessionId session_id,
                    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-                   BrowserInterfaceBrokerProxy* browser_interface_broker);
+                   const BrowserInterfaceBrokerProxy& browser_interface_broker);
   VideoCaptureImpl(const VideoCaptureImpl&) = delete;
   VideoCaptureImpl& operator=(const VideoCaptureImpl&) = delete;
   ~VideoCaptureImpl() override;

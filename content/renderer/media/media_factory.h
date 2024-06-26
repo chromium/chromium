@@ -168,6 +168,8 @@ class MediaFactory {
 
   std::unique_ptr<media::MojoRendererFactory> CreateMojoRendererFactory();
 
+  const blink::BrowserInterfaceBrokerProxy& GetInterfaceBroker() const;
+
   // The render frame we're helping. RenderFrameImpl owns this factory, so the
   // pointer will always be valid.
   raw_ptr<RenderFrameImpl> render_frame_;
@@ -177,12 +179,6 @@ class MediaFactory {
 
   // Injected callback for requesting overlay routing tokens.
   media::RequestRoutingTokenCallback request_routing_token_cb_;
-
-  // Handy pointer to RenderFrame's browser interface broker. Null until
-  // SetupMojo(). Lifetime matches that of the owning |render_frame_|. Will
-  // always be valid once assigned.
-  raw_ptr<blink::BrowserInterfaceBrokerProxy, DanglingUntriaged>
-      interface_broker_ = nullptr;
 
   // Manages play, pause notifications for WebMediaPlayer implementations; its
   // lifetime is tied to the RenderFrame via the RenderFrameObserver interface.
