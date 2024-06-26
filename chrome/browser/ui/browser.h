@@ -1199,11 +1199,6 @@ class Browser : public TabStripModelObserver,
   // is is removed as a delegate.
   void SetAsDelegate(content::WebContents* web_contents, bool set_delegate);
 
-  // Shows the Find Bar, optionally selecting the next entry that matches the
-  // existing search string for that Tab. |forward_direction| controls the
-  // search direction.
-  void FindInPage(bool find_next, bool forward_direction);
-
   void TabDetachedAtImpl(content::WebContents* contents,
                          bool was_active,
                          DetachType type);
