@@ -22,3 +22,8 @@ fun:*v8*internal*GlobalHandles*Node*PostGarbageCollectionProcessing*
 # https://crbug.com/40943968
 [signed-integer-overflow]
 fun:*OT*Layout*propagate_attachment_offsets*
+
+#############################################################################
+# https://github.com/llvm/llvm-project/issues/96772
+[nonnull-attribute]
+src:*/third_party/libFuzzer/*
