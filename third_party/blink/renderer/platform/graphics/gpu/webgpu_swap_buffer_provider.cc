@@ -143,10 +143,11 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
   if (unused_swap_buffers_.empty()) {
     // These SharedImages are read and written by WebGPU clients and can then be
     // sent off to the display compositor.
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                     gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-                     gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-                     GetSharedImageUsagesForDisplay();
+    gpu::SharedImageUsageSet usage =
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+        gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+        GetSharedImageUsagesForDisplay();
     if (usage_ & wgpu::TextureUsage::StorageBinding) {
       usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
     }

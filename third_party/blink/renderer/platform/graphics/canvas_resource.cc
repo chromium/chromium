@@ -1148,11 +1148,11 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   // textures by WebGL (via AcceleratedStaticBitmapImage::CopyToTexture()).
   // Hence, GLES2_READ usage is necessary regardless of whether raster is over
   // GLES.
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                   gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   if (use_oop_rasterization_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
   } else {

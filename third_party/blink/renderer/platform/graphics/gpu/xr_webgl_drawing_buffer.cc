@@ -494,9 +494,9 @@ XRWebGLDrawingBuffer::CreateColorBuffer() {
   // These shared images will be imported into textures on the GL context. We
   // take a read/write access scope whenever the color buffer is used as the
   // back buffer.
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                   gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   auto client_shared_image = sii->CreateSharedImage(
       {alpha_ ? viz::SinglePlaneFormat::kRGBA_8888
               : viz::SinglePlaneFormat::kRGBX_8888,
