@@ -20,7 +20,6 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'activityRequestedByOverlay',
       'closeRequestedByOverlayCloseButton',
       'closeRequestedByOverlayBackgroundClick',
-      'closeRequestedByOverlayEscapeKeyPress',
       'addBackgroundBlur',
       'closeSearchBubble',
       'feedbackRequestedByOverlay',
@@ -42,10 +41,6 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   closeRequestedByOverlayBackgroundClick() {
     this.methodCalled('closeRequestedByOverlayBackgroundClick');
-  }
-
-  closeRequestedByOverlayEscapeKeyPress() {
-    this.methodCalled('closeRequestedByOverlayEscapeKeyPress');
   }
 
   addBackgroundBlur() {

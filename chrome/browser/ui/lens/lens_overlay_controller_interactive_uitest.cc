@@ -224,6 +224,86 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_EscapeKeyClose) {
 // This tests the following CUJ:
 //  (1) User navigates to a website.
 //  (2) User opens lens overlay.
+//  (3) User makes a selection that opens the results side panel.
+//  (4) User presses the escape key to close lens overlay.
+// TODO(b/340343342): Reenable on windows.
+#if BUILDFLAG(IS_WIN) || defined(MEMORY_SANITIZER)
+#define MAYBE_EscapeKeyCloseWithResultsPanel \
+  DISABLED_EscapeKeyCloseWithResultsPanel
+#else
+#define MAYBE_EscapeKeyCloseWithResultsPanel EscapeKeyCloseWithResultsPanel
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
+                       MAYBE_EscapeKeyCloseWithResultsPanel) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+
+  // In kDocumentWithNamedElement.
+  const DeepQuery kPathToBody{
+      "body",
+  };
+
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
+  const DeepQuery kPathToResultsFrame{
+      "lens-side-panel-app",
+      "#results",
+  };
+
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->contents_web_view()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  const ui::Accelerator escape_key(ui::VKEY_ESCAPE, ui::EF_NONE);
+
+  RunTestSequence(
+      OpenLensOverlay(),
+
+      // The overlay controller is an independent floating widget
+      // associated with a tab rather than a browser window, so by
+      // convention gets its own element context.
+      InAnyContext(Steps(InstrumentNonTabWebView(
+                             kOverlayId, LensOverlayController::kOverlayId),
+                         WaitForWebContentsReady(
+                             kOverlayId, GURL("chrome-untrusted://lens")))),
+      // Wait for the webview to finish loading to prevent re-entrancy. Then do
+      // a drag offset from the center. Flush tasks after drag to prevent
+      // flakiness.
+      InSameContext(Steps(FlushEvents(),
+                          WaitForShow(LensOverlayController::kOverlayId),
+                          EnsurePresent(kOverlayId, kPathToRegionSelection),
+                          MoveMouseTo(LensOverlayController::kOverlayId),
+                          DragMouseTo(off_center_point))),
+
+      // The drag should have opened the side panel with the results frame.
+      InAnyContext(Steps(
+          FlushEvents(),
+          InstrumentNonTabWebView(
+              kOverlaySidePanelWebViewId,
+              LensOverlayController::kOverlaySidePanelWebViewId),
+          FlushEvents(),
+          EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame))),
+      // Press the escape key to and ensure the overlay closes.
+      InSameContext(
+          Steps(FlushEvents(),
+                SendAccelerator(kOverlaySidePanelWebViewId, escape_key),
+                WaitForHide(kOverlayId))));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a website.
+//  (2) User opens lens overlay.
 //  (3) User drags to select a manual region on the overlay.
 //  (4) Side panel opens with results.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, SelectManualRegion) {

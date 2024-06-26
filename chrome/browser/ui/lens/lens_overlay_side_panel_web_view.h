@@ -55,10 +55,6 @@ class LensOverlaySidePanelWebView
                            const input::NativeWebKeyboardEvent& event) override;
 
  private:
-  // A handler to handle unhandled keyboard messages coming back from the
-  // renderer process.
-  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
-
   // Indirectly owns this.
   raw_ptr<lens::LensOverlaySidePanelCoordinator> coordinator_;
   base::WeakPtrFactory<LensOverlaySidePanelWebView> weak_factory_{this};

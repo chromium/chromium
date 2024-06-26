@@ -115,10 +115,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayCloseButton) {
   RunOverlayTest("lens/overlay/overlay_close_button_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayEscapeKey) {
-  RunOverlayTest("lens/overlay/overlay_escape_key_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(LensOverlayTest, OverlayMoreOptionsButton) {
   RunOverlayTest("lens/overlay/overlay_more_options_button_test.js",
                  "mocha.run()");
@@ -167,11 +163,6 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelResultsFrame) {
 
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SearchboxBackButton) {
   RunOverlayTest("lens/side_panel/searchbox_back_button_test.js",
-                 "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(LensSidePanelTest, SidePanelEscapeKey) {
-  RunOverlayTest("lens/side_panel/side_panel_escape_key_test.js",
                  "mocha.run()");
 }
 

@@ -27,14 +27,6 @@ import type {OverlayTheme} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 
-// Closes overlay if escape button is pressed.
-function maybeCloseOverlay(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    BrowserProxyImpl.getInstance()
-        .handler.closeRequestedByOverlayEscapeKeyPress();
-  }
-}
-
 export let INVOCATION_SOURCE: string = 'Unknown';
 
 export interface LensOverlayAppElement {
@@ -127,7 +119,6 @@ export class LensOverlayAppElement extends PolymerElement {
         this.isClosing = true;
       }),
     ];
-    window.addEventListener('keyup', maybeCloseOverlay);
     this.eventTracker_.add(
         document, 'set-cursor-tooltip', (e: CustomEvent<CursorTooltipData>) => {
           this.$.cursorTooltip.setTooltip(e.detail.tooltipType);
@@ -139,7 +130,6 @@ export class LensOverlayAppElement extends PolymerElement {
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
-    window.removeEventListener('keyup', maybeCloseOverlay);
     this.eventTracker_.removeAll();
   }
 
