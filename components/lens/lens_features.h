@@ -463,6 +463,11 @@ extern int GetLensOverlayServerRequestTimeout();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlayEnableErrorPage();
 
+// The value of the search companion query parameter `gsc` used in search URLs
+// that are loaded in the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayGscQueryParamValue();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

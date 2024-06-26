@@ -26,7 +26,6 @@ inline constexpr char kTextQueryParameterKey[] = "q";
 
 // Query parameter for denoting a search companion request.
 inline constexpr char kSearchCompanionParameterKey[] = "gsc";
-inline constexpr char kSearchCompanionParameterValue[] = "1";
 
 // Query parameter for denoting an ambient request source.
 inline constexpr char kAmbientParameterKey[] = "masfc";
@@ -145,7 +144,8 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode) {
   GURL new_url = url_to_modify;
   new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kSearchCompanionParameterKey, kSearchCompanionParameterValue);
+      new_url, kSearchCompanionParameterKey,
+      lens::features::GetLensOverlayGscQueryParamValue());
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kLanguageCodeParameterKey,
       g_browser_process->GetApplicationLocale());
