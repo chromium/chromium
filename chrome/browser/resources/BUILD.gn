@@ -97,6 +97,10 @@ group("resources") {
     public_deps += [ "accessibility:reading_mode_gdocs_extension_resources" ]
   }
 
+  if (is_mac) {
+    public_deps += [ "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos_ash) {
     public_deps += [ "connectors_internals:resources" ]
   }
