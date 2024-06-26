@@ -5,21 +5,28 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.CheckableImageView;
 
 public class SafetyHubExpandablePreference extends ChromeBasePreference {
     private String mPrimaryButtonText;
     private String mSecondaryButtonText;
     private View.OnClickListener mPrimaryButtonClickListener;
     private View.OnClickListener mSecondaryButtonClickListener;
+    private boolean mExpanded = true;
+    private Drawable mDrawable;
 
     public SafetyHubExpandablePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -51,6 +58,27 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         } else {
             secondaryButton.setVisibility(View.GONE);
         }
+
+        if (mDrawable == null) {
+            mDrawable = createDrawable(getContext());
+        }
+
+        CheckableImageView expandButton =
+                (CheckableImageView) holder.findViewById(R.id.checkable_image_view);
+        assert expandButton != null;
+        expandButton.setImageDrawable(mDrawable);
+        expandButton.setChecked(mExpanded);
+        expandButton.setOnClickListener((v) -> setExpanded(!isExpanded()));
+    }
+
+    void setExpanded(boolean expanded) {
+        if (mExpanded == expanded) return;
+        mExpanded = expanded;
+        notifyChanged();
+    }
+
+    boolean isExpanded() {
+        return mExpanded;
     }
 
     void setPrimaryButtonText(@Nullable String buttonText) {
@@ -89,5 +117,27 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     @Nullable
     String getSecondaryButtonText() {
         return mSecondaryButtonText;
+    }
+
+    private static Drawable createDrawable(Context context) {
+        // TODO(crbug.com/324562205): Refactor this to avoid duplication with
+        // PrivacySandboxDialogUtils & ExpandablePreferenceGroup.
+        StateListDrawableBuilder builder = new StateListDrawableBuilder(context);
+        StateListDrawableBuilder.State checked =
+                builder.addState(
+                        R.drawable.ic_expand_less_black_24dp, android.R.attr.state_checked);
+        StateListDrawableBuilder.State unchecked =
+                builder.addState(R.drawable.ic_expand_more_black_24dp);
+        builder.addTransition(
+                checked, unchecked, R.drawable.transition_expand_less_expand_more_black_24dp);
+        builder.addTransition(
+                unchecked, checked, R.drawable.transition_expand_more_expand_less_black_24dp);
+
+        Drawable tintableDrawable = DrawableCompat.wrap(builder.build());
+        DrawableCompat.setTintList(
+                tintableDrawable,
+                AppCompatResources.getColorStateList(
+                        context, R.color.default_icon_color_tint_list));
+        return tintableDrawable;
     }
 }

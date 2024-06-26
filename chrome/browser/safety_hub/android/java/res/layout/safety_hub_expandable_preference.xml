@@ -37,11 +37,12 @@ found in the LICENSE file.
         </FrameLayout>
 
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_toEndOf="@id/icon_frame"
+            android:layout_toStartOf="@id/checkable_image_view"
             android:layout_centerVertical="true">
 
             <TextView
@@ -63,6 +64,13 @@ found in the LICENSE file.
                 android:maxLines="4"
                 style="@style/PreferenceSummary" />
         </RelativeLayout>
+
+        <org.chromium.ui.widget.CheckableImageView
+            android:id="@+id/checkable_image_view"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:layout_alignParentEnd="true"/>
     </RelativeLayout>
 
     <RelativeLayout
