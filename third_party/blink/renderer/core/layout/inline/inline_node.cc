@@ -374,7 +374,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
 
       builder->ClearInlineFragment(node);
     } else if (node->IsAtomicInlineLevel()) {
-      if (node->IsBoxListMarkerIncludingNG()) {
+      if (node->IsLayoutOutsideListMarker()) {
         // LayoutListItem produces the 'outside' list marker as an inline
         // block. This is an out-of-flow item whose position is computed
         // automatically.

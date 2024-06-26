@@ -84,7 +84,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsBody() const { return IsBlock() && box_->IsBody(); }
   bool IsView() const { return IsBlock() && box_->IsLayoutView(); }
   bool IsDocumentElement() const { return box_->IsDocumentElement(); }
-  bool IsFlexItem() const { return IsBlock() && box_->IsFlexItemIncludingNG(); }
+  bool IsFlexItem() const { return IsBlock() && box_->IsFlexItem(); }
   bool IsFlexibleBox() const { return IsBlock() && box_->IsFlexibleBox(); }
   bool IsGrid() const { return IsBlock() && box_->IsLayoutGrid(); }
   bool ShouldBeConsideredAsReplaced() const {

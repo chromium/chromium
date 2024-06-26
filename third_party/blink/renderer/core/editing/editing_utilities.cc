@@ -987,8 +987,7 @@ bool IsHTMLListElement(const Node* n) {
 }
 
 bool IsListItem(const Node* n) {
-  return n && n->GetLayoutObject() &&
-         n->GetLayoutObject()->IsListItemIncludingNG();
+  return n && n->GetLayoutObject() && n->GetLayoutObject()->IsListItem();
 }
 
 bool IsListItemTag(const Node* n) {

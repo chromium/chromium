@@ -1840,7 +1840,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
     return ax::mojom::blink::Role::kListMarker;
   }
 
-  if (GetLayoutObject()->IsListItemIncludingNG()) {
+  if (GetLayoutObject()->IsListItem()) {
     return ax::mojom::blink::Role::kListItem;
   }
   if (GetLayoutObject()->IsBR()) {
@@ -7622,7 +7622,7 @@ AXObject* AXNodeObject::NextOnLine() const {
     return nullptr;
   }
 
-  if (layout_object->IsBoxListMarkerIncludingNG()) {
+  if (layout_object->IsLayoutOutsideListMarker()) {
     // A list marker should be followed by a list item on the same line.
     // Note that pseudo content is always included in the tree, so
     // NextSiblingIncludingIgnored() will succeed.
@@ -7745,7 +7745,7 @@ AXObject* AXNodeObject::PreviousOnLine() const {
         previous_sibling, false);
   }
 
-  if (layout_object->IsBoxListMarkerIncludingNG() ||
+  if (layout_object->IsLayoutOutsideListMarker() ||
       !layout_object->IsInLayoutNGInlineFormattingContext()) {
     return nullptr;
   }

@@ -1392,7 +1392,7 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
   Element* block_start = EnclosingBlock(insertion_pos.AnchorNode());
   if ((IsHTMLListElement(inserted_nodes.RefNode()) ||
        (IsHTMLListElement(inserted_nodes.RefNode()->firstChild()))) &&
-      block_start && block_start->GetLayoutObject()->IsListItemIncludingNG() &&
+      block_start && block_start->GetLayoutObject()->IsListItem() &&
       IsEditable(*block_start->parentNode())) {
     inserted_nodes.SetRefNode(InsertAsListItems(
         To<HTMLElement>(inserted_nodes.RefNode()), block_start, insertion_pos,

@@ -165,8 +165,9 @@ bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
   NOT_DESTROYED();
   // Flex layout algorithm uses the intrinsic image width/height even if
   // width/height are specified.
-  if (IsFlexItemIncludingNG())
+  if (IsFlexItem()) {
     return true;
+  }
 
   const auto& style = StyleRef();
   // TODO(https://crbug.com/313072): Should this test min/max-height as well?

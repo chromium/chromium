@@ -858,7 +858,7 @@ bool IsLayoutNGFlexibleBox(const LayoutObject& layout_object) {
 bool IsLayoutNGFlexItem(const LayoutObject& layout_object) {
   return !layout_object.GetNode()->IsDocumentNode() &&
          IsLayoutNGFlexibleBox(*layout_object.Parent()) &&
-         To<LayoutBox>(layout_object).IsFlexItemIncludingNG();
+         To<LayoutBox>(layout_object).IsFlexItem();
 }
 
 std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(

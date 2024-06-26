@@ -297,7 +297,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   // Do not create a layout object for the ::marker in that case.
   if (pseudo_id_ == kPseudoIdMarker) {
     LayoutObject* originating_layout = parentNode()->GetLayoutObject();
-    if (!originating_layout || !originating_layout->IsListItemIncludingNG()) {
+    if (!originating_layout || !originating_layout->IsListItem()) {
       context.counters_context.EnterElement(*this);
       Node::AttachLayoutTree(context);
       context.counters_context.LeaveElement(*this);

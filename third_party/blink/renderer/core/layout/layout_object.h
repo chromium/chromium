@@ -2708,8 +2708,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void Destroy();
 
-  // TODO(1229581): Rename this function.
-  bool IsListItemIncludingNG() const {
+  bool IsListItem() const {
     NOT_DESTROYED();
     return IsLayoutListItem() || IsInlineListItem();
   }
@@ -2718,13 +2717,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // * LayoutInsideListMarker (LayoutInline): for inside markers
   // * LayoutOutsideListMarker (LayoutBlockFlow): for outside markers.
 
-  // Any kind of LayoutBox list marker.
-  // TODO(1229581): Remove this function. Just use
-  // IsLayoutOutsideListMarker().
-  bool IsBoxListMarkerIncludingNG() const {
-    NOT_DESTROYED();
-    return IsLayoutOutsideListMarker();
-  }
   // Any kind of list marker.
   bool IsListMarker() const {
     NOT_DESTROYED();

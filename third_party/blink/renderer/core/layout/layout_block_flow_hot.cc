@@ -19,8 +19,8 @@ DISABLE_CFI_PERF
 bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   if (IsInline() || IsFloatingOrOutOfFlowPositioned() || IsScrollContainer() ||
-      IsFlexItemIncludingNG() || IsCustomItem() || IsDocumentElement() ||
-      IsGridItemIncludingNG() || IsWritingModeRoot() || IsMathItem() ||
+      IsFlexItem() || IsCustomItem() || IsDocumentElement() || IsGridItem() ||
+      IsWritingModeRoot() || IsMathItem() ||
       StyleRef().Display() == EDisplay::kFlowRoot ||
       StyleRef().Display() == EDisplay::kFlowRootListItem ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||

@@ -1343,7 +1343,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   // In general we can't relayout a flex item independently of its container;
   // not only is the result incorrect due to the override size that's set, it
   // also messes with the cached main size on the flexbox.
-  if (box->IsFlexItemIncludingNG()) {
+  if (box->IsFlexItem()) {
     return false;
   }
 

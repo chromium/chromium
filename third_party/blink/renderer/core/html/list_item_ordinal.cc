@@ -28,7 +28,7 @@ bool ListItemOrdinal::IsList(const Node& node) {
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
-  return layout_object && layout_object->IsListItemIncludingNG();
+  return layout_object && layout_object->IsListItem();
 }
 
 bool ListItemOrdinal::IsListItem(const Node& node) {

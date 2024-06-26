@@ -82,7 +82,7 @@ LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* list_item = marker.GetNode()->parentNode()->GetLayoutObject();
   DCHECK(list_item);
-  DCHECK(list_item->IsListItemIncludingNG());
+  DCHECK(list_item->IsListItem());
   return list_item;
 }
 

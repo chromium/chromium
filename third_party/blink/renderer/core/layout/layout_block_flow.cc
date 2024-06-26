@@ -106,8 +106,8 @@ bool LayoutBlockFlow::CanContainFirstFormattedLine() const {
   // line of an element. For example, the first line of an anonymous block
   // box is only affected if it is the first child of its parent element.
   // https://drafts.csswg.org/css-text-3/#text-indent-property
-  return !IsAnonymousBlock() || !PreviousSibling() || IsFlexItemIncludingNG() ||
-         IsGridItemIncludingNG();
+  return !IsAnonymousBlock() || !PreviousSibling() || IsFlexItem() ||
+         IsGridItem();
 }
 
 void LayoutBlockFlow::WillBeDestroyed() {
@@ -708,8 +708,9 @@ void LayoutBlockFlow::CreateOrDestroyMultiColumnFlowThreadIfNeeded(
   if (!specifies_columns)
     return;
 
-  if (IsListItemIncludingNG())
+  if (IsListItem()) {
     UseCounter::Count(GetDocument(), WebFeature::kMultiColAndListItem);
+  }
 
   if (!AllowsColumns())
     return;
