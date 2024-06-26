@@ -83,6 +83,7 @@ NSString* gUserAgentProduct = nil;
 BOOL gChromeContextMenuEnabled = NO;
 BOOL gUseOptimizedSessionStorage = NO;
 BOOL gWebInspectorEnabled = NO;
+BOOL gSkipAccountStorageCheckEnabled = NO;
 
 // A key used in NSCoder to store the session storage object.
 // TODO(crbug.com/40945317): remove once the feature has been launched and
@@ -490,6 +491,14 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 
 + (void)setWebInspectorEnabled:(BOOL)newValue {
   gWebInspectorEnabled = newValue;
+}
+
++ (BOOL)skipAccountStorageCheckEnabled {
+  return gSkipAccountStorageCheckEnabled;
+}
+
++ (void)setSkipAccountStorageCheckEnabled:(BOOL)newValue {
+  gSkipAccountStorageCheckEnabled = newValue;
 }
 
 + (NSString*)customUserAgent {
