@@ -4527,7 +4527,7 @@ if (!is_android) {
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
       ]
       deps += [
-        "//chrome/browser/ash/mahi:mahi_ash",
+        "//chrome/browser/ash/mahi",
         "//chromeos/printing:test_support",
         "//components/global_media_controls:test_support",
       ]

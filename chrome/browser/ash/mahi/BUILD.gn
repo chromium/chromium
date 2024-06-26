@@ -6,36 +6,63 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
 
-source_set("mahi_ash") {
+source_set("mahi") {
   sources = [
     "mahi_browser_client_wrapper.cc",
     "mahi_browser_client_wrapper.h",
     "mahi_browser_delegate_ash.cc",
     "mahi_browser_delegate_ash.h",
+    "mahi_cache_manager.cc",
+    "mahi_cache_manager.h",
+    "mahi_manager_impl.cc",
+    "mahi_manager_impl.h",
   ]
+
   deps = [
     "//ash",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
     "//chromeos/components/mahi/public/cpp",
+    "//chromeos/strings:strings_grit",
+    "//components/feedback",
+    "//components/manta",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [
     "fake_mahi_browser_delegate_ash.cc",
     "fake_mahi_browser_delegate_ash.h",
     "mahi_browser_delegate_ash_unittest.cc",
     "mahi_cache_manager_unittest.cc",
     "mahi_manager_impl_unittest.cc",
-    "media_app/mahi_media_app_client_unittest.cc",
   ]
+
   deps = [
+    ":mahi",
+    "//ash",
     "//ash:test_support",
+    "//ash/constants",
+    "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
+    "//chrome/browser/ash/mahi/media_app:unit_tests",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
     "//services/network:test_support",
     "//ui/aura:test_support",
+    "//ui/gfx",
+    "//ui/lottie",
+    "//ui/views",
   ]
 }
