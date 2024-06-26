@@ -21,6 +21,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -29,6 +30,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @SuppressLint("VisibleForTests")
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+@TestAnimations.EnableAnimations
 public class WebContentsAccessibilityEventsTest {
     // File path that holds all the relevant tests.
     private static final String BASE_FILE_PATH = "content/test/data/accessibility/event/";
