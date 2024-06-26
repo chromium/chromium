@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/string_split_internal.h"
 #include "base/strings/string_util.h"
@@ -15,7 +17,7 @@ namespace base {
 
 namespace {
 
-bool AppendStringKeyValue(StringPiece input,
+bool AppendStringKeyValue(std::string_view input,
                           char delimiter,
                           StringPairs* result) {
   // Always append a new item regardless of success (it might be empty). The
@@ -32,7 +34,8 @@ bool AppendStringKeyValue(StringPiece input,
   result_pair.first = std::string(input.substr(0, end_key_pos));
 
   // Find the value string.
-  StringPiece remains = input.substr(end_key_pos, input.size() - end_key_pos);
+  std::string_view remains =
+      input.substr(end_key_pos, input.size() - end_key_pos);
   size_t begin_value_pos = remains.find_first_not_of(delimiter);
   if (begin_value_pos == StringPiece::npos) {
     DVLOG(1) << "cannot parse value from input: " << input;
@@ -47,60 +50,61 @@ bool AppendStringKeyValue(StringPiece input,
 
 }  // namespace
 
-std::vector<std::string> SplitString(StringPiece input,
-                                     StringPiece separators,
+std::vector<std::string> SplitString(std::string_view input,
+                                     std::string_view separators,
                                      WhitespaceHandling whitespace,
                                      SplitResult result_type) {
   return internal::SplitStringT<std::string>(input, separators, whitespace,
                                              result_type);
 }
 
-std::vector<std::u16string> SplitString(StringPiece16 input,
-                                        StringPiece16 separators,
+std::vector<std::u16string> SplitString(std::u16string_view input,
+                                        std::u16string_view separators,
                                         WhitespaceHandling whitespace,
                                         SplitResult result_type) {
   return internal::SplitStringT<std::u16string>(input, separators, whitespace,
                                                 result_type);
 }
 
-std::vector<StringPiece> SplitStringPiece(StringPiece input,
-                                          StringPiece separators,
-                                          WhitespaceHandling whitespace,
-                                          SplitResult result_type) {
-  return internal::SplitStringT<StringPiece>(input, separators, whitespace,
-                                             result_type);
+std::vector<std::string_view> SplitStringPiece(std::string_view input,
+                                               std::string_view separators,
+                                               WhitespaceHandling whitespace,
+                                               SplitResult result_type) {
+  return internal::SplitStringT<std::string_view>(input, separators, whitespace,
+                                                  result_type);
 }
 
-std::vector<StringPiece16> SplitStringPiece(StringPiece16 input,
-                                            StringPiece16 separators,
-                                            WhitespaceHandling whitespace,
-                                            SplitResult result_type) {
-  return internal::SplitStringT<StringPiece16>(input, separators, whitespace,
-                                               result_type);
+std::vector<std::u16string_view> SplitStringPiece(
+    std::u16string_view input,
+    std::u16string_view separators,
+    WhitespaceHandling whitespace,
+    SplitResult result_type) {
+  return internal::SplitStringT<std::u16string_view>(input, separators,
+                                                     whitespace, result_type);
 }
 
-bool SplitStringIntoKeyValuePairs(StringPiece input,
+bool SplitStringIntoKeyValuePairs(std::string_view input,
                                   char key_value_delimiter,
                                   char key_value_pair_delimiter,
                                   StringPairs* key_value_pairs) {
   return SplitStringIntoKeyValuePairsUsingSubstr(
-      input, key_value_delimiter, StringPiece(&key_value_pair_delimiter, 1),
-      key_value_pairs);
+      input, key_value_delimiter,
+      std::string_view(&key_value_pair_delimiter, 1), key_value_pairs);
 }
 
 bool SplitStringIntoKeyValuePairsUsingSubstr(
-    StringPiece input,
+    std::string_view input,
     char key_value_delimiter,
-    StringPiece key_value_pair_delimiter,
+    std::string_view key_value_pair_delimiter,
     StringPairs* key_value_pairs) {
   key_value_pairs->clear();
 
-  std::vector<StringPiece> pairs = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> pairs = SplitStringPieceUsingSubstr(
       input, key_value_pair_delimiter, TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
   key_value_pairs->reserve(pairs.size());
 
   bool success = true;
-  for (const StringPiece& pair : pairs) {
+  for (std::string_view pair : pairs) {
     if (!AppendStringKeyValue(pair, key_value_delimiter, key_value_pairs)) {
       // Don't return here, to allow for pairs without associated
       // value or key; just record that the split failed.
@@ -111,38 +115,38 @@ bool SplitStringIntoKeyValuePairsUsingSubstr(
 }
 
 std::vector<std::u16string> SplitStringUsingSubstr(
-    StringPiece16 input,
-    StringPiece16 delimiter,
+    std::u16string_view input,
+    std::u16string_view delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) {
   return internal::SplitStringUsingSubstrT<std::u16string>(
       input, delimiter, whitespace, result_type);
 }
 
-std::vector<std::string> SplitStringUsingSubstr(StringPiece input,
-                                                StringPiece delimiter,
+std::vector<std::string> SplitStringUsingSubstr(std::string_view input,
+                                                std::string_view delimiter,
                                                 WhitespaceHandling whitespace,
                                                 SplitResult result_type) {
   return internal::SplitStringUsingSubstrT<std::string>(
       input, delimiter, whitespace, result_type);
 }
 
-std::vector<StringPiece16> SplitStringPieceUsingSubstr(
-    StringPiece16 input,
-    StringPiece16 delimiter,
+std::vector<std::u16string_view> SplitStringPieceUsingSubstr(
+    std::u16string_view input,
+    std::u16string_view delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) {
-  std::vector<StringPiece16> result;
-  return internal::SplitStringUsingSubstrT<StringPiece16>(
+  std::vector<std::u16string_view> result;
+  return internal::SplitStringUsingSubstrT<std::u16string_view>(
       input, delimiter, whitespace, result_type);
 }
 
-std::vector<StringPiece> SplitStringPieceUsingSubstr(
-    StringPiece input,
-    StringPiece delimiter,
+std::vector<std::string_view> SplitStringPieceUsingSubstr(
+    std::string_view input,
+    std::string_view delimiter,
     WhitespaceHandling whitespace,
     SplitResult result_type) {
-  return internal::SplitStringUsingSubstrT<StringPiece>(
+  return internal::SplitStringUsingSubstrT<std::string_view>(
       input, delimiter, whitespace, result_type);
 }
 

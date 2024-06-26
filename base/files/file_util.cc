@@ -9,6 +9,8 @@
 
 #include "base/files/file_util.h"
 
+#include <string_view>
+
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
@@ -33,7 +35,6 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -494,7 +495,7 @@ bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
                    size) == size;
 }
 
-bool WriteFile(const FilePath& filename, StringPiece data) {
+bool WriteFile(const FilePath& filename, std::string_view data) {
   int size = checked_cast<int>(data.size());
   return WriteFile(filename, data.data(), size) == size;
 }

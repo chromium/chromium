@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/third_party/icu/icu_utf.h"
 
 namespace base::internal {
@@ -74,8 +73,8 @@ TrimPositions TrimStringT(T input,
                           TrimPositions positions,
                           std::basic_string<CharT>* output) {
   // Find the edges of leading/trailing whitespace as desired. Need to use
-  // a StringPiece version of input to be able to call find* on it with the
-  // StringPiece version of trim_chars (normally the trim_chars will be a
+  // a std::string_view version of input to be able to call find* on it with the
+  // std::string_view version of trim_chars (normally the trim_chars will be a
   // constant so avoid making a copy).
   const size_t last_char = input.length() - 1;
   const size_t first_good_char =
@@ -207,7 +206,7 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
 }
 
 template <bool (*Validator)(base_icu::UChar32)>
-inline bool DoIsStringUTF8(StringPiece str) {
+inline bool DoIsStringUTF8(std::string_view str) {
   const uint8_t* src = reinterpret_cast<const uint8_t*>(str.data());
   size_t src_len = str.length();
   size_t char_index = 0;
@@ -468,8 +467,8 @@ inline typename string_type::value_type* WriteIntoT(string_type* str,
 
 // Generic version for all JoinString overloads. |list_type| must be a sequence
 // (base::span or std::initializer_list) of strings/StringPieces (std::string,
-// std::u16string, StringPiece or StringPiece16). |CharT| is either char or
-// char16_t.
+// std::u16string, std::string_view or std::u16string_view). |CharT| is either
+// char or char16_t.
 template <typename list_type,
           typename T,
           typename CharT = typename T::value_type>

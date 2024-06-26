@@ -72,19 +72,19 @@ bool IsWprintfFormatPortable(const wchar_t* format) {
   return true;
 }
 
-std::string ToLowerASCII(StringPiece str) {
+std::string ToLowerASCII(std::string_view str) {
   return internal::ToLowerASCIIImpl(str);
 }
 
-std::u16string ToLowerASCII(StringPiece16 str) {
+std::u16string ToLowerASCII(std::u16string_view str) {
   return internal::ToLowerASCIIImpl(str);
 }
 
-std::string ToUpperASCII(StringPiece str) {
+std::string ToUpperASCII(std::string_view str) {
   return internal::ToUpperASCIIImpl(str);
 }
 
-std::u16string ToUpperASCII(StringPiece16 str) {
+std::u16string ToUpperASCII(std::u16string_view str) {
   return internal::ToUpperASCIIImpl(str);
 }
 
@@ -98,55 +98,57 @@ const std::u16string& EmptyString16() {
   return *s16;
 }
 
-bool ReplaceChars(StringPiece16 input,
-                  StringPiece16 replace_chars,
-                  StringPiece16 replace_with,
+bool ReplaceChars(std::u16string_view input,
+                  std::u16string_view replace_chars,
+                  std::u16string_view replace_with,
                   std::u16string* output) {
   return internal::ReplaceCharsT(input, replace_chars, replace_with, output);
 }
 
-bool ReplaceChars(StringPiece input,
-                  StringPiece replace_chars,
-                  StringPiece replace_with,
+bool ReplaceChars(std::string_view input,
+                  std::string_view replace_chars,
+                  std::string_view replace_with,
                   std::string* output) {
   return internal::ReplaceCharsT(input, replace_chars, replace_with, output);
 }
 
-bool RemoveChars(StringPiece16 input,
-                 StringPiece16 remove_chars,
+bool RemoveChars(std::u16string_view input,
+                 std::u16string_view remove_chars,
                  std::u16string* output) {
-  return internal::ReplaceCharsT(input, remove_chars, StringPiece16(), output);
+  return internal::ReplaceCharsT(input, remove_chars, std::u16string_view(),
+                                 output);
 }
 
-bool RemoveChars(StringPiece input,
-                 StringPiece remove_chars,
+bool RemoveChars(std::string_view input,
+                 std::string_view remove_chars,
                  std::string* output) {
-  return internal::ReplaceCharsT(input, remove_chars, StringPiece(), output);
+  return internal::ReplaceCharsT(input, remove_chars, std::string_view(),
+                                 output);
 }
 
-bool TrimString(StringPiece16 input,
-                StringPiece16 trim_chars,
+bool TrimString(std::u16string_view input,
+                std::u16string_view trim_chars,
                 std::u16string* output) {
   return internal::TrimStringT(input, trim_chars, TRIM_ALL, output) !=
          TRIM_NONE;
 }
 
-bool TrimString(StringPiece input,
-                StringPiece trim_chars,
+bool TrimString(std::string_view input,
+                std::string_view trim_chars,
                 std::string* output) {
   return internal::TrimStringT(input, trim_chars, TRIM_ALL, output) !=
          TRIM_NONE;
 }
 
-StringPiece16 TrimString(StringPiece16 input,
-                         StringPiece16 trim_chars,
-                         TrimPositions positions) {
+std::u16string_view TrimString(std::u16string_view input,
+                               std::u16string_view trim_chars,
+                               TrimPositions positions) {
   return internal::TrimStringPieceT(input, trim_chars, positions);
 }
 
-StringPiece TrimString(StringPiece input,
-                       StringPiece trim_chars,
-                       TrimPositions positions) {
+std::string_view TrimString(std::string_view input,
+                            std::string_view trim_chars,
+                            TrimPositions positions) {
   return internal::TrimStringPieceT(input, trim_chars, positions);
 }
 
@@ -187,55 +189,56 @@ void TruncateUTF8ToByteSize(const std::string& input,
     output->clear();
 }
 
-TrimPositions TrimWhitespace(StringPiece16 input,
+TrimPositions TrimWhitespace(std::u16string_view input,
                              TrimPositions positions,
                              std::u16string* output) {
-  return internal::TrimStringT(input, StringPiece16(kWhitespaceUTF16),
+  return internal::TrimStringT(input, std::u16string_view(kWhitespaceUTF16),
                                positions, output);
 }
 
-StringPiece16 TrimWhitespace(StringPiece16 input,
-                             TrimPositions positions) {
-  return internal::TrimStringPieceT(input, StringPiece16(kWhitespaceUTF16),
-                                    positions);
+std::u16string_view TrimWhitespace(std::u16string_view input,
+                                   TrimPositions positions) {
+  return internal::TrimStringPieceT(
+      input, std::u16string_view(kWhitespaceUTF16), positions);
 }
 
-TrimPositions TrimWhitespaceASCII(StringPiece input,
+TrimPositions TrimWhitespaceASCII(std::string_view input,
                                   TrimPositions positions,
                                   std::string* output) {
-  return internal::TrimStringT(input, StringPiece(kWhitespaceASCII), positions,
-                               output);
+  return internal::TrimStringT(input, std::string_view(kWhitespaceASCII),
+                               positions, output);
 }
 
-StringPiece TrimWhitespaceASCII(StringPiece input, TrimPositions positions) {
-  return internal::TrimStringPieceT(input, StringPiece(kWhitespaceASCII),
+std::string_view TrimWhitespaceASCII(std::string_view input,
+                                     TrimPositions positions) {
+  return internal::TrimStringPieceT(input, std::string_view(kWhitespaceASCII),
                                     positions);
 }
 
-std::u16string CollapseWhitespace(StringPiece16 text,
+std::u16string CollapseWhitespace(std::u16string_view text,
                                   bool trim_sequences_with_line_breaks) {
   return internal::CollapseWhitespaceT(text, trim_sequences_with_line_breaks);
 }
 
-std::string CollapseWhitespaceASCII(StringPiece text,
+std::string CollapseWhitespaceASCII(std::string_view text,
                                     bool trim_sequences_with_line_breaks) {
   return internal::CollapseWhitespaceT(text, trim_sequences_with_line_breaks);
 }
 
-bool ContainsOnlyChars(StringPiece input, StringPiece characters) {
+bool ContainsOnlyChars(std::string_view input, std::string_view characters) {
   return input.find_first_not_of(characters) == StringPiece::npos;
 }
 
-bool ContainsOnlyChars(StringPiece16 input, StringPiece16 characters) {
+bool ContainsOnlyChars(std::u16string_view input,
+                       std::u16string_view characters) {
   return input.find_first_not_of(characters) == StringPiece16::npos;
 }
 
-
-bool IsStringASCII(StringPiece str) {
+bool IsStringASCII(std::string_view str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 
-bool IsStringASCII(StringPiece16 str) {
+bool IsStringASCII(std::u16string_view str) {
   return internal::DoIsStringASCII(str.data(), str.length());
 }
 
@@ -245,38 +248,38 @@ bool IsStringASCII(std::wstring_view str) {
 }
 #endif
 
-bool IsStringUTF8(StringPiece str) {
+bool IsStringUTF8(std::string_view str) {
   return internal::DoIsStringUTF8<IsValidCharacter>(str);
 }
 
-bool IsStringUTF8AllowingNoncharacters(StringPiece str) {
+bool IsStringUTF8AllowingNoncharacters(std::string_view str) {
   return internal::DoIsStringUTF8<IsValidCodepoint>(str);
 }
 
-bool EqualsASCII(StringPiece16 str, StringPiece ascii) {
+bool EqualsASCII(std::u16string_view str, std::string_view ascii) {
   return ranges::equal(ascii, str);
 }
 
-bool StartsWith(StringPiece str,
-                StringPiece search_for,
+bool StartsWith(std::string_view str,
+                std::string_view search_for,
                 CompareCase case_sensitivity) {
   return internal::StartsWithT(str, search_for, case_sensitivity);
 }
 
-bool StartsWith(StringPiece16 str,
-                StringPiece16 search_for,
+bool StartsWith(std::u16string_view str,
+                std::u16string_view search_for,
                 CompareCase case_sensitivity) {
   return internal::StartsWithT(str, search_for, case_sensitivity);
 }
 
-bool EndsWith(StringPiece str,
-              StringPiece search_for,
+bool EndsWith(std::string_view str,
+              std::string_view search_for,
               CompareCase case_sensitivity) {
   return internal::EndsWithT(str, search_for, case_sensitivity);
 }
 
-bool EndsWith(StringPiece16 str,
-              StringPiece16 search_for,
+bool EndsWith(std::u16string_view str,
+              std::u16string_view search_for,
               CompareCase case_sensitivity) {
   return internal::EndsWithT(str, search_for, case_sensitivity);
 }
@@ -322,8 +325,8 @@ std::u16string FormatBytesUnlocalized(int64_t bytes) {
 
 void ReplaceFirstSubstringAfterOffset(std::u16string* str,
                                       size_t start_offset,
-                                      StringPiece16 find_this,
-                                      StringPiece16 replace_with) {
+                                      std::u16string_view find_this,
+                                      std::u16string_view replace_with) {
   internal::DoReplaceMatchesAfterOffset(
       str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
@@ -331,8 +334,8 @@ void ReplaceFirstSubstringAfterOffset(std::u16string* str,
 
 void ReplaceFirstSubstringAfterOffset(std::string* str,
                                       size_t start_offset,
-                                      StringPiece find_this,
-                                      StringPiece replace_with) {
+                                      std::string_view find_this,
+                                      std::string_view replace_with) {
   internal::DoReplaceMatchesAfterOffset(
       str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_FIRST);
@@ -340,8 +343,8 @@ void ReplaceFirstSubstringAfterOffset(std::string* str,
 
 void ReplaceSubstringsAfterOffset(std::u16string* str,
                                   size_t start_offset,
-                                  StringPiece16 find_this,
-                                  StringPiece16 replace_with) {
+                                  std::u16string_view find_this,
+                                  std::u16string_view replace_with) {
   internal::DoReplaceMatchesAfterOffset(
       str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
@@ -349,8 +352,8 @@ void ReplaceSubstringsAfterOffset(std::u16string* str,
 
 void ReplaceSubstringsAfterOffset(std::string* str,
                                   size_t start_offset,
-                                  StringPiece find_this,
-                                  StringPiece replace_with) {
+                                  std::string_view find_this,
+                                  std::string_view replace_with) {
   internal::DoReplaceMatchesAfterOffset(
       str, start_offset, internal::MakeSubstringMatcher(find_this),
       replace_with, internal::ReplaceType::REPLACE_ALL);
@@ -364,36 +367,38 @@ char16_t* WriteInto(std::u16string* str, size_t length_with_null) {
   return internal::WriteIntoT(str, length_with_null);
 }
 
-std::string JoinString(span<const std::string> parts, StringPiece separator) {
+std::string JoinString(span<const std::string> parts,
+                       std::string_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
 std::u16string JoinString(span<const std::u16string> parts,
-                          StringPiece16 separator) {
+                          std::u16string_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::string JoinString(span<const StringPiece> parts, StringPiece separator) {
+std::string JoinString(span<const std::string_view> parts,
+                       std::string_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::u16string JoinString(span<const StringPiece16> parts,
-                          StringPiece16 separator) {
+std::u16string JoinString(span<const std::u16string_view> parts,
+                          std::u16string_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::string JoinString(std::initializer_list<StringPiece> parts,
-                       StringPiece separator) {
+std::string JoinString(std::initializer_list<std::string_view> parts,
+                       std::string_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
-std::u16string JoinString(std::initializer_list<StringPiece16> parts,
-                          StringPiece16 separator) {
+std::u16string JoinString(std::initializer_list<std::u16string_view> parts,
+                          std::u16string_view separator) {
   return internal::JoinStringT(parts, separator);
 }
 
 std::u16string ReplaceStringPlaceholders(
-    StringPiece16 format_string,
+    std::u16string_view format_string,
     const std::vector<std::u16string>& subst,
     std::vector<size_t>* offsets) {
   std::optional<std::u16string> replacement =
@@ -407,7 +412,7 @@ std::u16string ReplaceStringPlaceholders(
   return replacement.value();
 }
 
-std::string ReplaceStringPlaceholders(StringPiece format_string,
+std::string ReplaceStringPlaceholders(std::string_view format_string,
                                       const std::vector<std::string>& subst,
                                       std::vector<size_t>* offsets) {
   std::optional<std::string> replacement =

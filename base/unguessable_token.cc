@@ -5,6 +5,7 @@
 #include "base/unguessable_token.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/format_macros.h"
@@ -47,7 +48,7 @@ std::optional<UnguessableToken> UnguessableToken::Deserialize(uint64_t high,
 
 // static
 std::optional<UnguessableToken> UnguessableToken::DeserializeFromString(
-    StringPiece string_representation) {
+    std::string_view string_representation) {
   auto token = Token::FromString(string_representation);
   // A zeroed out token means that it's not initialized via Create().
   if (!token.has_value() || token.value().is_zero()) {

@@ -4,6 +4,8 @@
 
 #include "base/strings/string_piece_rust.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -11,16 +13,16 @@ namespace {
 
 TEST(BaseStringPieceRustTest, StrRoundTrip) {
   std::string data = "hello";
-  StringPiece data_piece(data);
+  std::string_view data_piece(data);
   rust::Str rust_str = StringPieceToRustStrUTF8(data_piece);
   EXPECT_EQ(5ul, rust_str.length());
-  StringPiece data_piece2 = RustStrToStringPiece(rust_str);
+  std::string_view data_piece2 = RustStrToStringPiece(rust_str);
   EXPECT_EQ(data_piece, data_piece2);
 }
 
 TEST(BaseStringPieceRustTest, StrToSlice) {
   std::string data = "hello";
-  StringPiece data_piece(data);
+  std::string_view data_piece(data);
   rust::Slice<const uint8_t> rust_slice = StringPieceToRustSlice(data_piece);
   EXPECT_EQ(5ul, rust_slice.length());
   EXPECT_EQ('e', rust_slice[1]);

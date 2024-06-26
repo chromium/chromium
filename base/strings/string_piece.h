@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// This header is deprecated. `base::StringPiece` is now `std::string_view`.
-// Use it and <string_view> instead.
+// This header is deprecated. Use `std::string_view` and <string_view> instead.
 //
 // TODO(crbug.com/40506050): Remove uses of this header.
 

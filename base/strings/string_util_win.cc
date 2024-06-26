@@ -77,7 +77,7 @@ bool ContainsOnlyChars(std::wstring_view input, std::wstring_view characters) {
   return input.find_first_not_of(characters) == StringPiece::npos;
 }
 
-bool EqualsASCII(std::wstring_view str, StringPiece ascii) {
+bool EqualsASCII(std::wstring_view str, std::string_view ascii) {
   return ranges::equal(ascii, str);
 }
 

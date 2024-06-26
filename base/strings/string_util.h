@@ -27,7 +27,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"  // For implicit conversions.
+// For implicit conversions.
 #include "base/strings/string_util_internal.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
@@ -106,12 +106,12 @@ constexpr std::basic_string_view<CharT> MakeBasicStringPiece(Iter begin,
 // Explicit instantiations of MakeBasicStringPiece for the BasicStringPiece
 // aliases defined in base/strings/string_piece.h
 template <typename Iter>
-constexpr StringPiece MakeStringPiece(Iter begin, Iter end) {
+constexpr std::string_view MakeStringPiece(Iter begin, Iter end) {
   return MakeBasicStringPiece<char>(begin, end);
 }
 
 template <typename Iter>
-constexpr StringPiece16 MakeStringPiece16(Iter begin, Iter end) {
+constexpr std::u16string_view MakeStringPiece16(Iter begin, Iter end) {
   return MakeBasicStringPiece<char16_t>(begin, end);
 }
 
@@ -137,20 +137,20 @@ CharT ToUpperASCII(CharT c) {
 }
 
 // Converts the given string to its ASCII-lowercase equivalent. Non-ASCII
-// bytes (or UTF-16 code units in `StringPiece16`) are permitted but will be
-// unmodified.
-BASE_EXPORT std::string ToLowerASCII(StringPiece str);
-BASE_EXPORT std::u16string ToLowerASCII(StringPiece16 str);
+// bytes (or UTF-16 code units in `std::u16string_view`) are permitted but will
+// be unmodified.
+BASE_EXPORT std::string ToLowerASCII(std::string_view str);
+BASE_EXPORT std::u16string ToLowerASCII(std::u16string_view str);
 
 // Converts the given string to its ASCII-uppercase equivalent. Non-ASCII
-// bytes (or UTF-16 code units in `StringPiece16`) are permitted but will be
-// unmodified.
-BASE_EXPORT std::string ToUpperASCII(StringPiece str);
-BASE_EXPORT std::u16string ToUpperASCII(StringPiece16 str);
+// bytes (or UTF-16 code units in `std::u16string_view`) are permitted but will
+// be unmodified.
+BASE_EXPORT std::string ToUpperASCII(std::string_view str);
+BASE_EXPORT std::u16string ToUpperASCII(std::u16string_view str);
 
 // Functor for ASCII case-insensitive comparisons for STL algorithms like
-// std::search. Non-ASCII bytes (or UTF-16 code units in `StringPiece16`) are
-// permitted but will be compared as-is.
+// std::search. Non-ASCII bytes (or UTF-16 code units in `std::u16string_view`)
+// are permitted but will be compared as-is.
 //
 // Note that a full Unicode version of this functor is not possible to write
 // because case mappings might change the number of characters, depend on
@@ -173,32 +173,35 @@ template<typename Char> struct CaseInsensitiveCompareASCII {
 // or base::i18n::FoldCase and then just call the normal string operators on the
 // result.
 //
-// Non-ASCII bytes (or UTF-16 code units in `StringPiece16`) are permitted but
-// will be compared unmodified.
-BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(StringPiece a,
-                                                      StringPiece b) {
+// Non-ASCII bytes (or UTF-16 code units in `std::u16string_view`) are permitted
+// but will be compared unmodified.
+BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(std::string_view a,
+                                                      std::string_view b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
-BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(StringPiece16 a,
-                                                      StringPiece16 b) {
+BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(std::u16string_view a,
+                                                      std::u16string_view b) {
   return internal::CompareCaseInsensitiveASCIIT(a, b);
 }
 
 // Equality for ASCII case-insensitive comparisons. Non-ASCII bytes (or UTF-16
-// code units in `StringPiece16`) are permitted but will be compared unmodified.
-// To compare all Unicode code points case-insensitively, use
+// code units in `std::u16string_view`) are permitted but will be compared
+// unmodified. To compare all Unicode code points case-insensitively, use
 // base::i18n::ToLower or base::i18n::FoldCase and then compare with either ==
 // or !=.
-inline bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b) {
+inline bool EqualsCaseInsensitiveASCII(std::string_view a, std::string_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
-inline bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b) {
+inline bool EqualsCaseInsensitiveASCII(std::u16string_view a,
+                                       std::u16string_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
-inline bool EqualsCaseInsensitiveASCII(StringPiece16 a, StringPiece b) {
+inline bool EqualsCaseInsensitiveASCII(std::u16string_view a,
+                                       std::string_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
-inline bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece16 b) {
+inline bool EqualsCaseInsensitiveASCII(std::string_view a,
+                                       std::u16string_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
 
@@ -237,11 +240,11 @@ BASE_EXPORT extern const char kUtf8ByteOrderMark[];
 // Removes characters in |remove_chars| from anywhere in |input|.  Returns true
 // if any characters were removed.  |remove_chars| must be null-terminated.
 // NOTE: Safe to use the same variable for both |input| and |output|.
-BASE_EXPORT bool RemoveChars(StringPiece16 input,
-                             StringPiece16 remove_chars,
+BASE_EXPORT bool RemoveChars(std::u16string_view input,
+                             std::u16string_view remove_chars,
                              std::u16string* output);
-BASE_EXPORT bool RemoveChars(StringPiece input,
-                             StringPiece remove_chars,
+BASE_EXPORT bool RemoveChars(std::string_view input,
+                             std::string_view remove_chars,
                              std::string* output);
 
 // Replaces characters in |replace_chars| from anywhere in |input| with
@@ -249,13 +252,13 @@ BASE_EXPORT bool RemoveChars(StringPiece input,
 // the |replace_with| string.  Returns true if any characters were replaced.
 // |replace_chars| must be null-terminated.
 // NOTE: Safe to use the same variable for both |input| and |output|.
-BASE_EXPORT bool ReplaceChars(StringPiece16 input,
-                              StringPiece16 replace_chars,
-                              StringPiece16 replace_with,
+BASE_EXPORT bool ReplaceChars(std::u16string_view input,
+                              std::u16string_view replace_chars,
+                              std::u16string_view replace_with,
                               std::u16string* output);
-BASE_EXPORT bool ReplaceChars(StringPiece input,
-                              StringPiece replace_chars,
-                              StringPiece replace_with,
+BASE_EXPORT bool ReplaceChars(std::string_view input,
+                              std::string_view replace_chars,
+                              std::string_view replace_with,
                               std::string* output);
 
 enum TrimPositions {
@@ -271,21 +274,21 @@ enum TrimPositions {
 //
 // It is safe to use the same variable for both |input| and |output| (this is
 // the normal usage to trim in-place).
-BASE_EXPORT bool TrimString(StringPiece16 input,
-                            StringPiece16 trim_chars,
+BASE_EXPORT bool TrimString(std::u16string_view input,
+                            std::u16string_view trim_chars,
                             std::u16string* output);
-BASE_EXPORT bool TrimString(StringPiece input,
-                            StringPiece trim_chars,
+BASE_EXPORT bool TrimString(std::string_view input,
+                            std::string_view trim_chars,
                             std::string* output);
 
-// StringPiece versions of the above. The returned pieces refer to the original
-// buffer.
-BASE_EXPORT StringPiece16 TrimString(StringPiece16 input,
-                                     StringPiece16 trim_chars,
-                                     TrimPositions positions);
-BASE_EXPORT StringPiece TrimString(StringPiece input,
-                                   StringPiece trim_chars,
-                                   TrimPositions positions);
+// std::string_view versions of the above. The returned pieces refer to the
+// original buffer.
+BASE_EXPORT std::u16string_view TrimString(std::u16string_view input,
+                                           std::u16string_view trim_chars,
+                                           TrimPositions positions);
+BASE_EXPORT std::string_view TrimString(std::string_view input,
+                                        std::string_view trim_chars,
+                                        TrimPositions positions);
 
 // Truncates a string to the nearest UTF-8 character that will leave
 // the string less than or equal to the specified byte size.
@@ -295,21 +298,21 @@ BASE_EXPORT void TruncateUTF8ToByteSize(const std::string& input,
 
 // Trims any whitespace from either end of the input string.
 //
-// The StringPiece versions return a substring referencing the input buffer.
-// The ASCII versions look only for ASCII whitespace.
+// The std::string_view versions return a substring referencing the input
+// buffer. The ASCII versions look only for ASCII whitespace.
 //
 // The std::string versions return where whitespace was found.
 // NOTE: Safe to use the same variable for both input and output.
-BASE_EXPORT TrimPositions TrimWhitespace(StringPiece16 input,
+BASE_EXPORT TrimPositions TrimWhitespace(std::u16string_view input,
                                          TrimPositions positions,
                                          std::u16string* output);
-BASE_EXPORT StringPiece16 TrimWhitespace(StringPiece16 input,
-                                         TrimPositions positions);
-BASE_EXPORT TrimPositions TrimWhitespaceASCII(StringPiece input,
+BASE_EXPORT std::u16string_view TrimWhitespace(std::u16string_view input,
+                                               TrimPositions positions);
+BASE_EXPORT TrimPositions TrimWhitespaceASCII(std::string_view input,
                                               TrimPositions positions,
                                               std::string* output);
-BASE_EXPORT StringPiece TrimWhitespaceASCII(StringPiece input,
-                                            TrimPositions positions);
+BASE_EXPORT std::string_view TrimWhitespaceASCII(std::string_view input,
+                                                 TrimPositions positions);
 
 // Searches for CR or LF characters.  Removes all contiguous whitespace
 // strings that contain them.  This is useful when trying to deal with text
@@ -320,28 +323,29 @@ BASE_EXPORT StringPiece TrimWhitespaceASCII(StringPiece input,
 //     sequences containing a CR or LF are trimmed.
 // (3) All other whitespace sequences are converted to single spaces.
 BASE_EXPORT std::u16string CollapseWhitespace(
-    StringPiece16 text,
+    std::u16string_view text,
     bool trim_sequences_with_line_breaks);
 BASE_EXPORT std::string CollapseWhitespaceASCII(
-    StringPiece text,
+    std::string_view text,
     bool trim_sequences_with_line_breaks);
 
 // Returns true if |input| is empty or contains only characters found in
 // |characters|.
-BASE_EXPORT bool ContainsOnlyChars(StringPiece input, StringPiece characters);
-BASE_EXPORT bool ContainsOnlyChars(StringPiece16 input,
-                                   StringPiece16 characters);
+BASE_EXPORT bool ContainsOnlyChars(std::string_view input,
+                                   std::string_view characters);
+BASE_EXPORT bool ContainsOnlyChars(std::u16string_view input,
+                                   std::u16string_view characters);
 
 // Returns true if |str| is structurally valid UTF-8 and also doesn't
 // contain any non-character code point (e.g. U+10FFFE). Prohibiting
 // non-characters increases the likelihood of detecting non-UTF-8 in
 // real-world text, for callers which do not need to accept
 // non-characters in strings.
-BASE_EXPORT bool IsStringUTF8(StringPiece str);
+BASE_EXPORT bool IsStringUTF8(std::string_view str);
 
 // Returns true if |str| contains valid UTF-8, allowing non-character
 // code points.
-BASE_EXPORT bool IsStringUTF8AllowingNoncharacters(StringPiece str);
+BASE_EXPORT bool IsStringUTF8AllowingNoncharacters(std::string_view str);
 
 // Returns true if |str| contains only valid ASCII character values.
 // Note 1: IsStringASCII executes in time determined solely by the
@@ -349,8 +353,8 @@ BASE_EXPORT bool IsStringUTF8AllowingNoncharacters(StringPiece str);
 // timing attacks for all strings of equal length.
 // Note 2: IsStringASCII assumes the input is likely all ASCII, and
 // does not leave early if it is not the case.
-BASE_EXPORT bool IsStringASCII(StringPiece str);
-BASE_EXPORT bool IsStringASCII(StringPiece16 str);
+BASE_EXPORT bool IsStringASCII(std::string_view str);
+BASE_EXPORT bool IsStringASCII(std::u16string_view str);
 
 #if defined(WCHAR_T_IS_32_BIT)
 BASE_EXPORT bool IsStringASCII(std::wstring_view str);
@@ -359,7 +363,7 @@ BASE_EXPORT bool IsStringASCII(std::wstring_view str);
 // Performs a case-sensitive string compare of the given 16-bit string against
 // the given 8-bit ASCII string (typically a constant). The behavior is
 // undefined if the |ascii| string is not ASCII.
-BASE_EXPORT bool EqualsASCII(StringPiece16 str, StringPiece ascii);
+BASE_EXPORT bool EqualsASCII(std::u16string_view str, std::string_view ascii);
 
 // Indicates case sensitivity of comparisons. Only ASCII case insensitivity
 // is supported. Full Unicode case-insensitive conversions would need to go in
@@ -375,20 +379,20 @@ enum class CompareCase {
 };
 
 BASE_EXPORT bool StartsWith(
-    StringPiece str,
-    StringPiece search_for,
+    std::string_view str,
+    std::string_view search_for,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 BASE_EXPORT bool StartsWith(
-    StringPiece16 str,
-    StringPiece16 search_for,
+    std::u16string_view str,
+    std::u16string_view search_for,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 BASE_EXPORT bool EndsWith(
-    StringPiece str,
-    StringPiece search_for,
+    std::string_view str,
+    std::string_view search_for,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 BASE_EXPORT bool EndsWith(
-    StringPiece16 str,
-    StringPiece16 search_for,
+    std::u16string_view str,
+    std::u16string_view search_for,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
 // Determines the type of ASCII character, independent of locale (the C
@@ -504,15 +508,16 @@ BASE_EXPORT std::u16string FormatBytesUnlocalized(int64_t bytes);
 
 // Starting at |start_offset| (usually 0), replace the first instance of
 // |find_this| with |replace_with|.
-BASE_EXPORT void ReplaceFirstSubstringAfterOffset(std::u16string* str,
-                                                  size_t start_offset,
-                                                  StringPiece16 find_this,
-                                                  StringPiece16 replace_with);
+BASE_EXPORT void ReplaceFirstSubstringAfterOffset(
+    std::u16string* str,
+    size_t start_offset,
+    std::u16string_view find_this,
+    std::u16string_view replace_with);
 BASE_EXPORT void ReplaceFirstSubstringAfterOffset(
     std::string* str,
     size_t start_offset,
-    StringPiece find_this,
-    StringPiece replace_with);
+    std::string_view find_this,
+    std::string_view replace_with);
 
 // Starting at |start_offset| (usually 0), look through |str| and replace all
 // instances of |find_this| with |replace_with|.
@@ -522,13 +527,12 @@ BASE_EXPORT void ReplaceFirstSubstringAfterOffset(
 //   std::replace(str.begin(), str.end(), 'a', 'b');
 BASE_EXPORT void ReplaceSubstringsAfterOffset(std::u16string* str,
                                               size_t start_offset,
-                                              StringPiece16 find_this,
-                                              StringPiece16 replace_with);
-BASE_EXPORT void ReplaceSubstringsAfterOffset(
-    std::string* str,
-    size_t start_offset,
-    StringPiece find_this,
-    StringPiece replace_with);
+                                              std::u16string_view find_this,
+                                              std::u16string_view replace_with);
+BASE_EXPORT void ReplaceSubstringsAfterOffset(std::string* str,
+                                              size_t start_offset,
+                                              std::string_view find_this,
+                                              std::string_view replace_with);
 
 // Reserves enough memory in |str| to accommodate |length_with_null| characters,
 // sets the size of |str| to |length_with_null - 1| characters, and returns a
@@ -556,40 +560,41 @@ BASE_EXPORT char16_t* WriteInto(std::u16string* str, size_t length_with_null);
 // string_split.h.
 //
 // If possible, callers should build a vector of StringPieces and use the
-// StringPiece variant, so that they do not create unnecessary copies of
+// std::string_view variant, so that they do not create unnecessary copies of
 // strings. For example, instead of using SplitString, modifying the vector,
 // then using JoinString, use SplitStringPiece followed by JoinString so that no
 // copies of those strings are created until the final join operation.
 //
 // Use StrCat (in base/strings/strcat.h) if you don't need a separator.
 BASE_EXPORT std::string JoinString(span<const std::string> parts,
-                                   StringPiece separator);
+                                   std::string_view separator);
 BASE_EXPORT std::u16string JoinString(span<const std::u16string> parts,
-                                      StringPiece16 separator);
-BASE_EXPORT std::string JoinString(span<const StringPiece> parts,
-                                   StringPiece separator);
-BASE_EXPORT std::u16string JoinString(span<const StringPiece16> parts,
-                                      StringPiece16 separator);
+                                      std::u16string_view separator);
+BASE_EXPORT std::string JoinString(span<const std::string_view> parts,
+                                   std::string_view separator);
+BASE_EXPORT std::u16string JoinString(span<const std::u16string_view> parts,
+                                      std::u16string_view separator);
 // Explicit initializer_list overloads are required to break ambiguity when used
 // with a literal initializer list (otherwise the compiler would not be able to
-// decide between the string and StringPiece overloads).
-BASE_EXPORT std::string JoinString(std::initializer_list<StringPiece> parts,
-                                   StringPiece separator);
+// decide between the string and std::string_view overloads).
+BASE_EXPORT std::string JoinString(
+    std::initializer_list<std::string_view> parts,
+    std::string_view separator);
 BASE_EXPORT std::u16string JoinString(
-    std::initializer_list<StringPiece16> parts,
-    StringPiece16 separator);
+    std::initializer_list<std::u16string_view> parts,
+    std::u16string_view separator);
 
 // Replace $1-$2-$3..$9 in the format string with values from |subst|.
 // Additionally, any number of consecutive '$' characters is replaced by that
 // number less one. Eg $$->$, $$$->$$, etc. The offsets parameter here can be
 // NULL. This only allows you to use up to nine replacements.
 BASE_EXPORT std::u16string ReplaceStringPlaceholders(
-    StringPiece16 format_string,
+    std::u16string_view format_string,
     const std::vector<std::u16string>& subst,
     std::vector<size_t>* offsets);
 
 BASE_EXPORT std::string ReplaceStringPlaceholders(
-    StringPiece format_string,
+    std::string_view format_string,
     const std::vector<std::string>& subst,
     std::vector<size_t>* offsets);
 

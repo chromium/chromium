@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -222,10 +223,10 @@ TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
   // a number.
   EXPECT_TRUE(base::MatchPattern(hardware_model, "iOS Simulator (*)"))
       << hardware_model;
-  std::vector<StringPiece> mainPieces =
+  std::vector<std::string_view> mainPieces =
       SplitStringPiece(hardware_model, "()", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(3u, mainPieces.size()) << hardware_model;
-  std::vector<StringPiece> modelPieces =
+  std::vector<std::string_view> modelPieces =
       SplitStringPiece(mainPieces[1], ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_GE(modelPieces.size(), 1u) << hardware_model;
   if (modelPieces.size() == 1u) {
@@ -239,7 +240,7 @@ TEST_F(SysInfoTest, HardwareModelNameFormatMacAndiOS) {
 #else
   // The expected format is "Foo,Bar" where Foo is "iPhone" or "iPad" and Bar is
   // a number.
-  std::vector<StringPiece> pieces =
+  std::vector<std::string_view> pieces =
       SplitStringPiece(hardware_model, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size()) << hardware_model;
   int value;

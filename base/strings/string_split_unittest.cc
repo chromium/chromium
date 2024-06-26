@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -332,7 +334,7 @@ TEST(SplitStringUsingSubstrTest, TrailingDelimitersSkipped) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, StringWithNoDelimiter) {
-  std::vector<base::StringPiece> results =
+  std::vector<std::string_view> results =
       SplitStringPieceUsingSubstr("alongwordwithnodelimiter", "DELIMITER",
                                   base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(1u, results.size());
@@ -340,7 +342,7 @@ TEST(SplitStringPieceUsingSubstrTest, StringWithNoDelimiter) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, LeadingDelimitersSkipped) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "DELIMITERDELIMITERDELIMITERoneDELIMITERtwoDELIMITERthree", "DELIMITER",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(6u, results.size());
@@ -348,7 +350,7 @@ TEST(SplitStringPieceUsingSubstrTest, LeadingDelimitersSkipped) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, ConsecutiveDelimitersSkipped) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "unoDELIMITERDELIMITERDELIMITERdosDELIMITERtresDELIMITERDELIMITERcuatro",
       "DELIMITER", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(7u, results.size());
@@ -356,7 +358,7 @@ TEST(SplitStringPieceUsingSubstrTest, ConsecutiveDelimitersSkipped) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, TrailingDelimitersSkipped) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "unDELIMITERdeuxDELIMITERtroisDELIMITERquatreDELIMITERDELIMITERDELIMITER",
       "DELIMITER", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(7u, results.size());
@@ -365,7 +367,7 @@ TEST(SplitStringPieceUsingSubstrTest, TrailingDelimitersSkipped) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, KeepWhitespace) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "un DELIMITERdeux\tDELIMITERtrois\nDELIMITERquatre", "DELIMITER",
       base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(4u, results.size());
@@ -373,7 +375,7 @@ TEST(SplitStringPieceUsingSubstrTest, KeepWhitespace) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, TrimWhitespace) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "un DELIMITERdeux\tDELIMITERtrois\nDELIMITERquatre", "DELIMITER",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(4u, results.size());
@@ -381,7 +383,7 @@ TEST(SplitStringPieceUsingSubstrTest, TrimWhitespace) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, SplitWantAll) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "unDELIMITERdeuxDELIMITERtroisDELIMITERDELIMITER", "DELIMITER",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   ASSERT_EQ(5u, results.size());
@@ -389,7 +391,7 @@ TEST(SplitStringPieceUsingSubstrTest, SplitWantAll) {
 }
 
 TEST(SplitStringPieceUsingSubstrTest, SplitWantNonEmpty) {
-  std::vector<base::StringPiece> results = SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> results = SplitStringPieceUsingSubstr(
       "unDELIMITERdeuxDELIMITERtroisDELIMITERDELIMITER", "DELIMITER",
       base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   ASSERT_EQ(3u, results.size());

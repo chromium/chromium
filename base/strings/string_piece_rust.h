@@ -7,8 +7,9 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/rust_buildflags.h"
-#include "base/strings/string_piece.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
 #if !BUILDFLAG(BUILD_RUST_BASE_CONVERSIONS)
@@ -21,21 +22,21 @@ namespace base {
 // if there is any invalid UTF8. If you're concerned about this, then
 // instead use StringPieceToRustSlice and convert the data to a string on
 // the Rust side (or pass in a std::string).
-inline rust::Str StringPieceToRustStrUTF8(StringPiece string_piece) {
+inline rust::Str StringPieceToRustStrUTF8(std::string_view string_piece) {
   return rust::Str(string_piece.data(), string_piece.size());
 }
 
-// Create a Rust slice from a StringPiece. No UTF8 check is performed.
+// Create a Rust slice from a std::string_view. No UTF8 check is performed.
 inline rust::Slice<const uint8_t> StringPieceToRustSlice(
-    StringPiece string_piece) {
+    std::string_view string_piece) {
   return rust::Slice<const uint8_t>(
       reinterpret_cast<const uint8_t*>(string_piece.data()),
-      string_piece.length() * sizeof(StringPiece::value_type));
+      string_piece.length() * sizeof(std::string_view::value_type));
 }
 
-// Create a StringPiece from a Rust str.
-inline StringPiece RustStrToStringPiece(rust::Str str) {
-  return StringPiece(str.data(), str.size());
+// Create a std::string_view from a Rust str.
+inline std::string_view RustStrToStringPiece(rust::Str str) {
+  return std::string_view(str.data(), str.size());
 }
 
 }  // namespace base

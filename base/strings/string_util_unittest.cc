@@ -20,7 +20,6 @@
 #include <type_traits>
 
 #include "base/bits.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,7 +75,7 @@ bool Truncated(const std::string& input,
     return prev != output->length();
 }
 
-using TestFunction = bool (*)(StringPiece str);
+using TestFunction = bool (*)(std::string_view str);
 
 // Helper used to test IsStringUTF8[AllowingNoncharacters].
 void TestStructurallyValidUtf8(TestFunction fn) {
@@ -378,7 +377,7 @@ TEST(StringUtilTest, as_wcstr) {
   static_assert(std::is_same_v<const wchar_t*, decltype(as_wcstr(ro_str))>, "");
   EXPECT_EQ(static_cast<const void*>(ro_str.data()), as_wcstr(ro_str));
 
-  StringPiece16 piece = ro_buffer;
+  std::u16string_view piece = ro_buffer;
   static_assert(std::is_same_v<const wchar_t*, decltype(as_wcstr(piece))>, "");
   EXPECT_EQ(static_cast<const void*>(piece.data()), as_wcstr(piece));
 }
@@ -540,10 +539,11 @@ TEST(StringUtilTest, IsStringASCII) {
     for (size_t offset = 0; offset < 8; ++offset) {
       for (size_t len = 0, max_len = string_length - offset; len < max_len;
            ++len) {
-        EXPECT_TRUE(IsStringASCII(StringPiece(char_ascii + offset, len)));
+        EXPECT_TRUE(IsStringASCII(std::string_view(char_ascii + offset, len)));
         for (size_t char_pos = offset; char_pos < len; ++char_pos) {
           char_ascii[char_pos] |= '\x80';
-          EXPECT_FALSE(IsStringASCII(StringPiece(char_ascii + offset, len)));
+          EXPECT_FALSE(
+              IsStringASCII(std::string_view(char_ascii + offset, len)));
           char_ascii[char_pos] &= ~'\x80';
         }
       }
@@ -555,16 +555,17 @@ TEST(StringUtilTest, IsStringASCII) {
     for (size_t offset = 0; offset < 4; ++offset) {
       for (size_t len = 0, max_len = string_length - offset; len < max_len;
            ++len) {
-        EXPECT_TRUE(IsStringASCII(StringPiece16(char16_ascii + offset, len)));
+        EXPECT_TRUE(
+            IsStringASCII(std::u16string_view(char16_ascii + offset, len)));
         for (size_t char_pos = offset; char_pos < len; ++char_pos) {
           char16_ascii[char_pos] |= 0x80;
           EXPECT_FALSE(
-              IsStringASCII(StringPiece16(char16_ascii + offset, len)));
+              IsStringASCII(std::u16string_view(char16_ascii + offset, len)));
           char16_ascii[char_pos] &= ~0x80;
           // Also test when the upper half is non-zero.
           char16_ascii[char_pos] |= 0x100;
           EXPECT_FALSE(
-              IsStringASCII(StringPiece16(char16_ascii + offset, len)));
+              IsStringASCII(std::u16string_view(char16_ascii + offset, len)));
           char16_ascii[char_pos] &= ~0x100;
         }
       }
@@ -706,11 +707,11 @@ TEST(StringUtilTest, FormatBytesUnlocalized) {
 }
 TEST(StringUtilTest, ReplaceSubstringsAfterOffset) {
   static const struct {
-    StringPiece str;
+    std::string_view str;
     size_t start_offset;
-    StringPiece find_this;
-    StringPiece replace_with;
-    StringPiece expected;
+    std::string_view find_this;
+    std::string_view replace_with;
+    std::string_view expected;
   } cases[] = {
       {"aaa", 0, "", "b", "aaa"},
       {"aaa", 1, "", "b", "aaa"},
@@ -876,11 +877,11 @@ TEST(StringUtilTest, JoinString16) {
 
 TEST(StringUtilTest, JoinStringPiece) {
   std::string separator(", ");
-  std::vector<StringPiece> parts;
+  std::vector<std::string_view> parts;
   EXPECT_EQ(std::string(), JoinString(parts, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  parts.push_back(StringPiece());
+  parts.push_back(std::string_view());
   EXPECT_EQ(std::string(), JoinString(parts, separator));
   parts.clear();
 
@@ -891,7 +892,7 @@ TEST(StringUtilTest, JoinStringPiece) {
   parts.push_back("c");
   EXPECT_EQ("a, b, c", JoinString(parts, separator));
 
-  parts.push_back(StringPiece());
+  parts.push_back(std::string_view());
   EXPECT_EQ("a, b, c, ", JoinString(parts, separator));
   parts.push_back(" ");
   EXPECT_EQ("a|b|c|| ", JoinString(parts, "|"));
@@ -899,11 +900,11 @@ TEST(StringUtilTest, JoinStringPiece) {
 
 TEST(StringUtilTest, JoinStringPiece16) {
   std::u16string separator = u", ";
-  std::vector<StringPiece16> parts;
+  std::vector<std::u16string_view> parts;
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  parts.push_back(StringPiece16());
+  parts.push_back(std::u16string_view());
   EXPECT_EQ(std::u16string(), JoinString(parts, separator));
   parts.clear();
 
@@ -917,7 +918,7 @@ TEST(StringUtilTest, JoinStringPiece16) {
   parts.push_back(kC);
   EXPECT_EQ(u"a, b, c", JoinString(parts, separator));
 
-  parts.push_back(StringPiece16());
+  parts.push_back(std::u16string_view());
   EXPECT_EQ(u"a, b, c, ", JoinString(parts, separator));
   const std::u16string kSpace = u" ";
   parts.push_back(kSpace);
@@ -929,13 +930,15 @@ TEST(StringUtilTest, JoinStringInitializerList) {
   EXPECT_EQ(std::string(), JoinString({}, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  EXPECT_EQ(std::string(), JoinString({StringPiece()}, separator));
+  EXPECT_EQ(std::string(), JoinString({std::string_view()}, separator));
 
   // With const char*s.
   EXPECT_EQ("a", JoinString({"a"}, separator));
   EXPECT_EQ("a, b, c", JoinString({"a", "b", "c"}, separator));
-  EXPECT_EQ("a, b, c, ", JoinString({"a", "b", "c", StringPiece()}, separator));
-  EXPECT_EQ("a|b|c|| ", JoinString({"a", "b", "c", StringPiece(), " "}, "|"));
+  EXPECT_EQ("a, b, c, ",
+            JoinString({"a", "b", "c", std::string_view()}, separator));
+  EXPECT_EQ("a|b|c|| ",
+            JoinString({"a", "b", "c", std::string_view(), " "}, "|"));
 
   // With std::strings.
   const std::string kA = "a";
@@ -943,8 +946,8 @@ TEST(StringUtilTest, JoinStringInitializerList) {
   EXPECT_EQ("a, b", JoinString({kA, kB}, separator));
 
   // With StringPieces.
-  const StringPiece kPieceA = kA;
-  const StringPiece kPieceB = kB;
+  const std::string_view kPieceA = kA;
+  const std::string_view kPieceB = kB;
   EXPECT_EQ("a, b", JoinString({kPieceA, kPieceB}, separator));
 }
 
@@ -953,7 +956,7 @@ TEST(StringUtilTest, JoinStringInitializerList16) {
   EXPECT_EQ(std::u16string(), JoinString({}, separator));
 
   // Test empty first part (https://crbug.com/698073).
-  EXPECT_EQ(std::u16string(), JoinString({StringPiece16()}, separator));
+  EXPECT_EQ(std::u16string(), JoinString({std::u16string_view()}, separator));
 
   // With string16s.
   const std::u16string kA = u"a";
@@ -963,14 +966,15 @@ TEST(StringUtilTest, JoinStringInitializerList16) {
   const std::u16string kC = u"c";
   EXPECT_EQ(u"a, b, c", JoinString({kA, kB, kC}, separator));
 
-  EXPECT_EQ(u"a, b, c, ", JoinString({kA, kB, kC, StringPiece16()}, separator));
+  EXPECT_EQ(u"a, b, c, ",
+            JoinString({kA, kB, kC, std::u16string_view()}, separator));
   const std::u16string kSpace = u" ";
   EXPECT_EQ(u"a|b|c|| ",
-            JoinString({kA, kB, kC, StringPiece16(), kSpace}, u"|"));
+            JoinString({kA, kB, kC, std::u16string_view(), kSpace}, u"|"));
 
   // With StringPiece16s.
-  const StringPiece16 kPieceA = kA;
-  const StringPiece16 kPieceB = kB;
+  const std::u16string_view kPieceA = kA;
+  const std::u16string_view kPieceB = kB;
   EXPECT_EQ(u"a, b", JoinString({kPieceA, kPieceB}, separator));
 }
 

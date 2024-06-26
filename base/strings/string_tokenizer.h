@@ -15,7 +15,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace base {
