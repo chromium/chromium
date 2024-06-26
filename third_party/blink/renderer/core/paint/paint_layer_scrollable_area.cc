@@ -2558,6 +2558,11 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   }
 
   layer_->DidUpdateScrollsOverflow();
+
+  if (AXObjectCache* cache =
+          GetLayoutBox()->GetDocument().ExistingAXObjectCache()) {
+    cache->MarkElementDirty(GetLayoutBox()->GetNode());
+  }
 }
 
 ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()

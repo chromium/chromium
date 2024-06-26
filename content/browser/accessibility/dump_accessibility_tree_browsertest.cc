@@ -2950,6 +2950,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityNameCalcFocusable) {
+  RunHtmlTest(FILE_PATH_LITERAL("name-calc-focusable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityNextOnLineCheckFailure) {
   RunCSSTest(FILE_PATH_LITERAL("next-on-line-check-failure.html"));
 }

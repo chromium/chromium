@@ -1,4 +1,4 @@
-rootWebArea scrollXMin=0 scrollable=true
+rootWebArea focusable scrollXMin=0 scrollable=true
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored className='no-overflow not-scrollable'
@@ -9,7 +9,7 @@ rootWebArea scrollXMin=0 scrollable=true
 ++++++++paragraph
 ++++++++++staticText name='clipped large lots of text more text'
 ++++++++++++inlineTextBox name='clipped large lots of text more text'
-++++++textField multiline className='textarea scrollable' value='ab cd' scrollXMin=0 scrollable=true
+++++++textField focusable multiline className='textarea scrollable' value='ab cd' scrollXMin=0 scrollable=true
 ++++++++genericContainer
 ++++++++++staticText name='ab cd'
 ++++++++++++inlineTextBox name='ab'
@@ -25,15 +25,15 @@ rootWebArea scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=hidden'
 ++++++++++++++inlineTextBox name='x=hidden'
-++++++++genericContainer className='x-hidden-large scrollable' name='x=hidden' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='x-hidden-large scrollable' name='x=hidden' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=hidden'
 ++++++++++++++inlineTextBox name='x=hidden'
-++++++++genericContainer className='x-auto scrollable' name='x=auto' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='x-auto scrollable' name='x=auto' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=auto'
 ++++++++++++++inlineTextBox name='x=auto'
-++++++++genericContainer className='x-scroll scrollable' name='x=scroll' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='x-scroll scrollable' name='x=scroll' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=scroll'
 ++++++++++++++inlineTextBox name='x=scroll'
@@ -46,15 +46,15 @@ rootWebArea scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=hidden'
 ++++++++++++++inlineTextBox name='y=hidden'
-++++++++genericContainer className='y-hidden-large scrollable' name='y=hidden' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='y-hidden-large scrollable' name='y=hidden' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=hidden'
 ++++++++++++++inlineTextBox name='y=hidden'
-++++++++genericContainer className='y-auto scrollable' name='y=auto' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='y-auto scrollable' name='y=auto' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=auto'
 ++++++++++++++inlineTextBox name='y=auto'
-++++++++genericContainer className='y-scroll scrollable' name='y=scroll' scrollXMin=0 scrollable=true
+++++++++genericContainer focusable className='y-scroll scrollable' name='y=scroll' scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=scroll'
 ++++++++++++++inlineTextBox name='y=scroll'

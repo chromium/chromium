@@ -7655,40 +7655,32 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kSubscript:
     case ax::mojom::blink::Role::kSuperscript:
     case ax::mojom::blink::Role::kTime:
+      // Usually these items don't have a name, but Blink provides one if they
+      // are tabbable, as a repair, so that if a user navigates to one, screen
+      // reader users have enough context to understand where they landed.
       if (recursive) {
-        // Use contents if part of a recursive name computation.
+        // Use contents if part of a recursive name computation. This doesn't
+        // affect the final serialized name for this object, but it allows it
+        // to contribute to an ancestor name.
         result = true;
-      } else {
-        // Use contents if tabbable, so that there is a name in the case
-        // where the author mistakenly forgot to provide one.
-        // Exceptions:
+      } else if (IsEditable() || GetAOMPropertyOrARIAAttribute(
+                                     AOMRelationProperty::kActiveDescendant)) {
+        // Handle exceptions:
         // 1.Elements with contenteditable, where using the contents as a name
         //   would cause them to be double-announced.
         // 2.Containers with aria-activedescendant, where the focus is being
         //   forwarded somewhere else.
         result = false;
-        if (!IsEditable() && !GetAOMPropertyOrARIAAttribute(
-                                 AOMRelationProperty::kActiveDescendant)) {
-          if (!GetElement() || !GetDocument()) {
-            return false;
-          }
-          // TODO(accessibility) Scrollables are currently allowed here in order
-          // to keep the current behavior. In the future, this can be removed
-          // because this code will be handled in IsFocusable(), once
-          // KeyboardFocusableScrollersEnabled is permanently enabled.
-          // Note: this uses the same scrollable check that element.cc uses.
-          if (GetDocument()->KeyboardFocusableScrollersEnabled() &&
-              IsUserScrollable()) {
-            return true;
-          }
-          int tab_index = GetElement()->tabIndex();
-          bool is_focused = GetElement() == GetDocument()->FocusedElement();
-          bool is_in_tab_order_or_focused = tab_index >= 0 || is_focused;
-          // Don't repair name from contents to focusable elements unless
-          // tabbable or focused, because providing a repaired accessible name
-          // often leads to redundant verbalizations.
-          return is_in_tab_order_or_focused && CanSetFocusAttribute();
-        }
+      } else if (!CanSetFocusAttribute()) {
+        // This check is added for performance reasons, as this value is cached.
+        result = false;
+      } else {
+        // Don't repair name from contents to focusable elements unless
+        // tabbable or focused, because providing a repaired accessible name
+        // often leads to redundant verbalizations.
+        result = GetDocument()->FocusedElement() == GetElement() ||
+                 GetElement()->IsKeyboardFocusable(
+                     Element::UpdateBehavior::kNoneForAccessibility);
       }
       break;
 

@@ -4403,6 +4403,8 @@ data/accessibility/html/move-child-hypertext-expected-blink.txt
 data/accessibility/html/move-child-hypertext-expected-fuchsia.txt
 data/accessibility/html/move-child-hypertext-expected-win.txt
 data/accessibility/html/move-child-hypertext.html
+data/accessibility/html/name-calc-focusable-expected-blink.txt
+data/accessibility/html/name-calc-focusable.html
 data/accessibility/html/navigation-expected-android-assist-data.txt
 data/accessibility/html/navigation-expected-android-external.txt
 data/accessibility/html/navigation-expected-android.txt
