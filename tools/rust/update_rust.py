@@ -36,7 +36,7 @@ sys.path.append(
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
 RUST_REVISION = '3cf924b934322fd7b514600a7dc84fc517515346'
-RUST_SUB_REVISION = 1
+RUST_SUB_REVISION = 2
 
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that

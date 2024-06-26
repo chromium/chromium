@@ -34,6 +34,19 @@ docs = false
 # with the rust compiler we build.
 profiler = true
 
+# With `extended = true`, `x.py install` will install rustc and the listed
+# tools. This is the *only* way to install rust-analyzer-proc-macro-srv, which
+# is necessary to use rust-analyzer.
+extended = true
+tools = [
+    "cargo",
+    "clippy",
+    "rustfmt",
+    "rust-analyzer",
+    "rust-analyzer-proc-macro-srv",
+    "src",
+]
+
 [install]
 prefix = "$INSTALL_DIR"
 sysconfdir = "etc"

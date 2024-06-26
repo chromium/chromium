@@ -163,12 +163,6 @@ BUILD_TARGETS = [
     'src/tools/rustfmt'
 ]
 
-# Desired tools and libraries in our Rust toolchain.
-DISTRIBUTION_ARTIFACTS = [
-    'cargo', 'clippy', 'compiler/rustc', 'library/std', 'rust-analyzer',
-    'rustfmt', 'src'
-]
-
 # Which test suites to run. Any failure will fail the build.
 TEST_SUITES = [
     'library/std',
@@ -827,8 +821,7 @@ def main():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         RmTree(RUST_TOOLCHAIN_OUT_DIR)
 
-    artifacts = DISTRIBUTION_ARTIFACTS
-    xpy.run('install', xpy_args + artifacts)
+    xpy.run('install', [])
 
     # Copy additional vendored crates required for building stdlib.
     print(f'Copying vendored dependencies to {RUST_TOOLCHAIN_OUT_DIR} ...')
