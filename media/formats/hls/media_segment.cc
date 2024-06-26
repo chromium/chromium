@@ -4,6 +4,8 @@
 
 #include "media/formats/hls/media_segment.h"
 
+#include "base/numerics/byte_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -35,6 +37,28 @@ MediaSegment::EncryptionData::IVContainer MediaSegment::EncryptionData::GetIV(
     return std::make_tuple(0, media_sequence_number);
   }
   return iv_;
+}
+
+std::optional<std::string> MediaSegment::EncryptionData::GetIVStr(
+    types::DecimalInteger media_sequence_number) const {
+  MediaSegment::EncryptionData::IVContainer iv = GetIV(media_sequence_number);
+  if (!iv.has_value()) {
+    return std::nullopt;
+  }
+  std::string str;
+  char* write_buffer = base::WriteInto(&str, 17);
+  uint64_t msb, lsb;
+  std::tie(msb, lsb) = iv.value();
+  msb = base::ByteSwap(msb);
+  lsb = base::ByteSwap(lsb);
+  memcpy(write_buffer, &msb, 8);
+  memcpy(&write_buffer[8], &lsb, 8);
+  return str;
+}
+
+void MediaSegment::EncryptionData::ImportKey(std::string_view key_content) {
+  key_ = crypto::SymmetricKey::Import(crypto::SymmetricKey::AES,
+                                      std::string(key_content));
 }
 
 MediaSegment::MediaSegment(

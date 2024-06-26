@@ -237,7 +237,10 @@ source_set("formats") {
     "hls/variant_stream.cc",
     "hls/variant_stream.h",
   ]
-  deps += [ "//third_party/re2" ]
+  deps += [
+    "//crypto:crypto",
+    "//third_party/re2",
+  ]
   public_deps = [
     "//third_party/abseil-cpp:absl",
 
@@ -369,6 +372,7 @@ source_set("unit_tests") {
     "hls/media_playlist_test_builder.cc",
     "hls/media_playlist_test_builder.h",
     "hls/media_playlist_unittest.cc",
+    "hls/media_segment_unittest.cc",
     "hls/multivariant_playlist_test_builder.cc",
     "hls/multivariant_playlist_test_builder.h",
     "hls/multivariant_playlist_unittest.cc",

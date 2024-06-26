@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "crypto/symmetric_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -44,7 +45,8 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
   class MEDIA_EXPORT EncryptionData : public base::RefCounted<EncryptionData> {
    public:
-    using IVContainer = std::optional<std::tuple<uint64_t, uint64_t>>;
+    using IVType = types::parsing::HexRepr<128>;
+    using IVContainer = std::optional<IVType::Container>;
 
     // Corresponds to `XKeyTagMethod`, though a mode of NONE is represented by
     // a null EncryptionData pointer.
@@ -62,7 +64,19 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
 
     const GURL& GetUri() const { return uri_; }
     Mode GetMode() const { return mode_; }
+    bool NeedsKeyFetch() const { return !!key_; }
+    crypto::SymmetricKey* GetKey() const { return key_.get(); }
+
+    // Gets the InitializationVector, if it exists. If there is no IV, but the
+    // `identity_` flag is set, then use the media sequence number as the IV.
     IVContainer GetIV(types::DecimalInteger media_sequence_number) const;
+
+    // Pack the IV into a string for use in a crypto::Encryptor.
+    std::optional<std::string> GetIVStr(
+        types::DecimalInteger media_sequence_number) const;
+
+    // When `uri_` is fetched, import the raw data.
+    void ImportKey(std::string_view key_content);
 
    private:
     friend class base::RefCounted<EncryptionData>;
@@ -72,6 +86,9 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     const Mode mode_;
     const IVContainer iv_;
     const bool identity_;
+
+    // Used for clear key AES128 and AES256 full segment encryption.
+    std::unique_ptr<crypto::SymmetricKey> key_;
   };
 
   MediaSegment(base::TimeDelta duration,
