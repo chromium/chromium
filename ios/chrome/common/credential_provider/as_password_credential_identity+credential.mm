@@ -14,7 +14,7 @@
           initWithIdentifier:credential.serviceIdentifier
                         type:ASCredentialServiceIdentifierTypeURL];
   return [self initWithServiceIdentifier:serviceIdentifier
-                                    user:credential.user
+                                    user:credential.username
                         recordIdentifier:credential.recordIdentifier];
 }
 

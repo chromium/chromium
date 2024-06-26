@@ -127,7 +127,7 @@
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
       ASPasswordCredential* ASCredential =
-          [ASPasswordCredential credentialWithUser:credential.user
+          [ASPasswordCredential credentialWithUser:credential.username
                                           password:credential.password];
       [self.credentialResponseHandler userSelectedCredential:ASCredential];
     }

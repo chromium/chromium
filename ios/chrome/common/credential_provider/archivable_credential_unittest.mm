@@ -19,7 +19,7 @@ ArchivableCredential* TestCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
-                                                  user:@"user"
+                                              username:@"user"
                                                   note:@"note"];
 }
 
@@ -32,7 +32,7 @@ TEST_F(ArchivableCredentialTest, create) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
-                                               user:@"user"
+                                           username:@"user"
                                                note:@"note"];
   EXPECT_TRUE(credential);
 }
@@ -75,7 +75,7 @@ TEST_F(ArchivableCredentialTest, retrieveData) {
   EXPECT_NSEQ(credential.serviceIdentifier,
               unarchivedCredential.serviceIdentifier);
   EXPECT_NSEQ(credential.serviceName, unarchivedCredential.serviceName);
-  EXPECT_NSEQ(credential.user, unarchivedCredential.user);
+  EXPECT_NSEQ(credential.username, unarchivedCredential.username);
 }
 
 // Tests ArchivableCredential equality.
@@ -92,7 +92,7 @@ TEST_F(ArchivableCredentialTest, equality) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"
                                         serviceName:@"other_serviceName"
-                                               user:@"other_user"
+                                           username:@"other_user"
                                                note:@"other_note"];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
@@ -103,7 +103,7 @@ TEST_F(ArchivableCredentialTest, equality) {
                                    recordIdentifier:@"other_recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
-                                               user:@"user"
+                                           username:@"user"
                                                note:@"note"];
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 

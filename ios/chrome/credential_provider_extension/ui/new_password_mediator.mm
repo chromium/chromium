@@ -131,7 +131,7 @@ using base::SysUTF16ToNSString;
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:identifier
                                            serviceName:url.host ?: identifier
-                                                  user:username
+                                              username:username
                                                   note:note];
 }
 
@@ -157,7 +157,7 @@ using base::SysUTF16ToNSString;
 - (void)userSelectedCredential:(id<Credential>)credential {
   NSString* password = credential.password;
   ASPasswordCredential* ASCredential =
-      [ASPasswordCredential credentialWithUser:credential.user
+      [ASPasswordCredential credentialWithUser:credential.username
                                       password:password];
   [self.credentialResponseHandler userSelectedCredential:ASCredential];
 }

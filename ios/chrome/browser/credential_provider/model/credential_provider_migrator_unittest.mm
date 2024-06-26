@@ -37,7 +37,7 @@ ArchivableCredential* TestCredential() {
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:url
                                            serviceName:nil
-                                                  user:username
+                                              username:username
                                                   note:note];
 }
 

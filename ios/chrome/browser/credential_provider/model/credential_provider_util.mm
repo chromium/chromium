@@ -279,7 +279,7 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
            recordIdentifier:credential.recordIdentifier
           serviceIdentifier:credential.serviceIdentifier
                 serviceName:credential.serviceName
-                       user:credential.user
+                   username:credential.username
                        note:credential.note];
       if ([archivable_store
               credentialWithRecordIdentifier:newCredential.recordIdentifier]) {

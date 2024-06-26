@@ -31,7 +31,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
   form.url = password_manager_util::StripAuthAndParams(url);
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
-  form.username_value = SysNSStringToUTF16(credential.user);
+  form.username_value = SysNSStringToUTF16(credential.username);
   form.password_value = SysNSStringToUTF16(credential.password);
   form.times_used_in_html_form = credential.rank;
   form.SetNoteWithEmptyUniqueDisplayName(SysNSStringToUTF16(credential.note));
@@ -92,7 +92,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)
              serviceIdentifier:serviceIdentifier
                    serviceName:serviceName
-                          user:SysUTF16ToNSString(passwordForm.username_value)
+                      username:SysUTF16ToNSString(passwordForm.username_value)
                           note:note];
 }
 

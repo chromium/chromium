@@ -502,7 +502,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)credentialSaved:(ArchivableCredential*)credential {
   CPENewCredentialUsername usernameType =
-      (credential.user.length)
+      (credential.username.length)
           ? CPENewCredentialUsername::kCredentialWithUsername
           : CPENewCredentialUsername::kCredentialWithoutUsername;
   UpdateHistogramCount(@"IOS.CredentialExtension.NewCredentialUsername",

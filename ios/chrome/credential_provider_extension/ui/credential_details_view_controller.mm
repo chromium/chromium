@@ -135,7 +135,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
       cell.accessoryView = nil;
       cell.textLabel.text = NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_DETAILS_USERNAME", @"Username");
-      cell.detailTextLabel.text = self.credential.user;
+      cell.detailTextLabel.text = self.credential.username;
       break;
     case RowIdentifier::RowIdentifierPassword:
       cell.accessoryView = [self passwordIconButton];
@@ -213,7 +213,7 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 // Copy credential Username to clipboard.
 - (void)copyUsername {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
-  generalPasteboard.string = self.credential.user;
+  generalPasteboard.string = self.credential.username;
   UpdateUMACountForKey(app_group::kCredentialExtensionCopyUsernameCount);
 }
 

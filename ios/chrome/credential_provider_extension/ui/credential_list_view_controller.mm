@@ -206,7 +206,7 @@ UIColor* BackgroundColor() {
         base::apple::ObjCCastStrict<CredentialListCell>(cell);
 
     credentialCell.textLabel.text = credential.serviceName;
-    credentialCell.detailTextLabel.text = credential.user;
+    credentialCell.detailTextLabel.text = credential.username;
     credentialCell.uniqueIdentifier = credential.serviceIdentifier;
     credentialCell.selectionStyle = UITableViewCellSelectionStyleDefault;
     credentialCell.backgroundColor = [UIColor colorNamed:kBackgroundColor];

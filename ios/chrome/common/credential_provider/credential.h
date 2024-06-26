@@ -31,7 +31,7 @@
 @property(nonatomic, readonly) NSString* serviceName;
 
 // Username of the service.
-@property(nonatomic, readonly) NSString* user;
+@property(nonatomic, readonly) NSString* username;
 
 // Attached note to the credential.
 @property(nonatomic, readonly) NSString* note;

@@ -22,12 +22,12 @@ TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
-                                               user:@"user"
+                                           username:@"user"
                                                note:@"note"];
   ASPasswordCredentialIdentity* credentialIdentity =
       [[ASPasswordCredentialIdentity alloc] initWithCredential:credential];
 
-  EXPECT_NSEQ(credential.user, credentialIdentity.user);
+  EXPECT_NSEQ(credential.username, credentialIdentity.user);
   EXPECT_NSEQ(credential.recordIdentifier, credentialIdentity.recordIdentifier);
   EXPECT_EQ(ASCredentialServiceIdentifierTypeURL,
             credentialIdentity.serviceIdentifier.type);

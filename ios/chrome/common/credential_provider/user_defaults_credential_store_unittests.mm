@@ -39,7 +39,7 @@ ArchivableCredential* TestCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
-                                                  user:@"user"
+                                              username:@"user"
                                                   note:@"note"];
 }
 
@@ -82,7 +82,7 @@ TEST_F(UserDefaultsCredentialStoreTest, update) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"
                                         serviceName:@"other_serviceName"
-                                               user:@"other_user"
+                                           username:@"other_user"
                                                note:@"other_note"];
 
   [credentialStore updateCredential:updatedCredential];

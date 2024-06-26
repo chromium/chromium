@@ -104,7 +104,7 @@ ArchivableCredential* TestCredential(NSString* recordIdentifier) {
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
-                                                  user:@"user"
+                                              username:@"user"
                                                   note:@"note"];
 }
 
@@ -198,7 +198,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   EXPECT_TRUE(freshCredentialStore);
   EXPECT_TRUE(freshCredentialStore.credentials);
   EXPECT_EQ(2u, freshCredentialStore.credentials.count);
-  EXPECT_NSEQ(testUsername, freshCredentialStore.credentials[1].user);
+  EXPECT_NSEQ(testUsername, freshCredentialStore.credentials[1].username);
 }
 
 // Tests that `-saveNewCredential:completion:` updates an existing credential
@@ -269,6 +269,8 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   EXPECT_TRUE(freshCredentialStore);
   EXPECT_TRUE(freshCredentialStore.credentials);
   EXPECT_EQ(1u, freshCredentialStore.credentials.count);
-  EXPECT_NSEQ(testUsername, freshCredentialStore.credentials.firstObject.user);
+  EXPECT_NSEQ(testUsername,
+              freshCredentialStore.credentials.firstObject.username);
 }
-}
+
+}  // namespace

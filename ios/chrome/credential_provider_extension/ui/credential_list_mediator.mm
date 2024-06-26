@@ -139,7 +139,7 @@
   NSMutableArray<id<Credential>>* suggested = [[NSMutableArray alloc] init];
   for (id<Credential> credential in self.suggestedCredentials) {
     if ([credential.serviceName localizedStandardContainsString:filter] ||
-        [credential.user localizedStandardContainsString:filter]) {
+        [credential.username localizedStandardContainsString:filter]) {
       [suggested addObject:credential];
     }
   }
@@ -147,7 +147,7 @@
   NSMutableArray<id<Credential>>* all = [[NSMutableArray alloc] init];
   for (id<Credential> credential in self.allCredentials) {
     if ([credential.serviceName localizedStandardContainsString:filter] ||
-        [credential.user localizedStandardContainsString:filter]) {
+        [credential.username localizedStandardContainsString:filter]) {
       [all addObject:credential];
     }
   }

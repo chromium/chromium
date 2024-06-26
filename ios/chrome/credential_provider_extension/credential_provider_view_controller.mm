@@ -262,7 +262,7 @@ UIColor* BackgroundColor() {
   if (credential) {
     UpdateUMACountForKey(app_group::kCredentialExtensionQuickPasswordUseCount);
     ASPasswordCredential* ASCredential =
-        [ASPasswordCredential credentialWithUser:credential.user
+        [ASPasswordCredential credentialWithUser:credential.username
                                         password:credential.password];
     [self completeRequestWithSelectedCredential:ASCredential];
     return;

@@ -36,7 +36,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
 
   EXPECT_TRUE(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
-  EXPECT_NSEQ(username, credential.user);
+  EXPECT_NSEQ(username, credential.username);
   EXPECT_NSEQ(favicon, credential.favicon);
   EXPECT_NSEQ(password, credential.password);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);
@@ -108,7 +108,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
                                    recordIdentifier:recordIdentifier
                                   serviceIdentifier:url
                                         serviceName:nil
-                                               user:username
+                                           username:username
                                                note:nil];
   EXPECT_TRUE(credential);
 
@@ -141,7 +141,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
 
   EXPECT_TRUE(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
-  EXPECT_NSEQ(username, credential.user);
+  EXPECT_NSEQ(username, credential.username);
   EXPECT_NSEQ(favicon, credential.favicon);
   EXPECT_NSEQ(password, credential.password);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);

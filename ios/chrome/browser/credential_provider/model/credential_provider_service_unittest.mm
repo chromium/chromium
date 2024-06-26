@@ -194,7 +194,7 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_NSEQ(credential_store_.credentials[0].serviceName, @"g.com");
-  EXPECT_NSEQ(credential_store_.credentials[0].user, @"user");
+  EXPECT_NSEQ(credential_store_.credentials[0].username, @"user");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"qwerty123");
 }
 
@@ -531,7 +531,7 @@ TEST_F(CredentialProviderServiceTest,
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].user, @"username");
+  EXPECT_NSEQ(credential_store_.credentials[0].username, @"username");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"12345");
   histogram_tester.ExpectTotalCount(kSyncStoreHistogramName, 1);
 
@@ -621,9 +621,9 @@ TEST_F(CredentialProviderServiceTest,
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 2u);
-  EXPECT_NSEQ(credential_store_.credentials[0].user, @"homer");
+  EXPECT_NSEQ(credential_store_.credentials[0].username, @"homer");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"JSimpson");
-  EXPECT_NSEQ(credential_store_.credentials[1].user, @"marge");
+  EXPECT_NSEQ(credential_store_.credentials[1].username, @"marge");
   EXPECT_NSEQ(credential_store_.credentials[1].password, @"bouvier");
 
   // There should have been only one write to disk.
@@ -675,7 +675,7 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].user, @"username");
+  EXPECT_NSEQ(credential_store_.credentials[0].username, @"username");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"12345");
 
   // There should have been only one write to disk.

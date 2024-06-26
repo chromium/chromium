@@ -26,7 +26,7 @@ NSString* const kNoteKey = @"note";
 @synthesize recordIdentifier = _recordIdentifier;
 @synthesize serviceIdentifier = _serviceIdentifier;
 @synthesize serviceName = _serviceName;
-@synthesize user = _user;
+@synthesize username = _username;
 @synthesize note = _note;
 
 - (instancetype)initWithFavicon:(NSString*)favicon
@@ -35,7 +35,7 @@ NSString* const kNoteKey = @"note";
                recordIdentifier:(NSString*)recordIdentifier
               serviceIdentifier:(NSString*)serviceIdentifier
                     serviceName:(NSString*)serviceName
-                           user:(NSString*)user
+                       username:(NSString*)username
                            note:(NSString*)note {
   self = [super init];
   if (self) {
@@ -45,7 +45,7 @@ NSString* const kNoteKey = @"note";
     _recordIdentifier = recordIdentifier;
     _serviceIdentifier = serviceIdentifier;
     _serviceName = serviceName;
-    _user = user;
+    _username = username;
     _note = note;
   }
   return self;
@@ -67,7 +67,7 @@ NSString* const kNoteKey = @"note";
            [self.serviceIdentifier
                isEqualToString:otherCredential.serviceIdentifier] &&
            [self.serviceName isEqualToString:otherCredential.serviceName] &&
-           [self.user isEqualToString:otherCredential.user] &&
+           [self.username isEqualToString:otherCredential.username] &&
            [self.note isEqualToString:otherCredential.note];
   }
 }
@@ -90,7 +90,7 @@ NSString* const kNoteKey = @"note";
   [coder encodeObject:self.recordIdentifier forKey:kACRecordIdentifierKey];
   [coder encodeObject:self.serviceIdentifier forKey:kACServiceIdentifierKey];
   [coder encodeObject:self.serviceName forKey:kACServiceNameKey];
-  [coder encodeObject:self.user forKey:kACUserKey];
+  [coder encodeObject:self.username forKey:kACUserKey];
   [coder encodeObject:self.note forKey:kNoteKey];
 }
 
@@ -102,7 +102,7 @@ NSString* const kNoteKey = @"note";
            recordIdentifier:[coder decodeObjectForKey:kACRecordIdentifierKey]
           serviceIdentifier:[coder decodeObjectForKey:kACServiceIdentifierKey]
                 serviceName:[coder decodeObjectForKey:kACServiceNameKey]
-                       user:[coder decodeObjectForKey:kACUserKey]
+                   username:[coder decodeObjectForKey:kACUserKey]
                        note:[coder decodeObjectForKey:kNoteKey]];
 }
 
