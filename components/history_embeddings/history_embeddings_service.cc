@@ -111,21 +111,6 @@ size_t CountWords(const std::string& s) {
   return word_count;
 }
 
-// When `kSearchScoreThreshold` is set <0, the threshold in the model metadata
-// will be used. If the metadata also doesn't specify a threshold (old models
-// don't), then 0.9 will be used. This allows finch and command line to override
-// the threshold if necessary while ensuring different users with different
-// models are all using the correct threshold for their model.
-float GetScoreThreshold(const EmbedderMetadata& embedder_metadata_) {
-  if (kSearchScoreThreshold.Get() >= 0)
-    return kSearchScoreThreshold.Get();
-  if (embedder_metadata_.search_score_threshold.has_value())
-    return *embedder_metadata_.search_score_threshold;
-  // 0.9 was the correct threshold for the original model before the threshold
-  // was added to the metadata.
-  return .9;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 SearchResult::SearchResult() = default;
@@ -535,7 +520,9 @@ void HistoryEmbeddingsService::OnSearchCompleted(
     std::vector<ScoredUrl> scored_urls) {
   std::vector<ScoredUrl> filtered;
   filtered.reserve(scored_urls.size());
-  float threshold = GetScoreThreshold(*embedder_metadata_);
+  float threshold = embedder_metadata_->search_score_threshold.has_value()
+                        ? *(embedder_metadata_->search_score_threshold)
+                        : kSearchScoreThreshold.Get();
   std::copy_if(std::make_move_iterator(scored_urls.begin()),
                std::make_move_iterator(scored_urls.end()),
                std::back_inserter(filtered), [=](const ScoredUrl& scored_url) {

@@ -117,8 +117,6 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
       match.transition = ui::PAGE_TRANSITION_KEYWORD;
     }
 
-    match.RecordAdditionalInfo("passages", scored_url_row.scored_url.passage);
-
     matches_.push_back(match);
   }
 

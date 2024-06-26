@@ -151,7 +151,7 @@ class HistoryEmbeddingsService : public KeyedService,
 
  private:
   friend class HistoryEmbeddingsBrowserTest;
-  friend class HistoryEmbeddingsServicePublic;
+  friend class HistoryEmbeddingsServiceTest;
   friend class ::HistoryEmbeddingsInteractiveTest;
 
   // A utility container to wrap anything that should be accessed on
