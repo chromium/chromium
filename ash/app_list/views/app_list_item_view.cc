@@ -744,8 +744,7 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   preview_circle_radius_ = 0;
 
-  // TODO: b/345829923 - Clean up the feature flag check, which is redundant.
-  if (features::IsUserEducationEnabled() && UserEducationController::Get()) {
+  if (UserEducationController::Get()) {
     switch (context) {
       case Context::kRecentAppsView:
         break;
