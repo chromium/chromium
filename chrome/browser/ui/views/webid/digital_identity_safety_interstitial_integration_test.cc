@@ -46,18 +46,10 @@ void OnDialogShown(bool* was_dialog_shown,
 class TestDigitalIdentityProvider final
     : public content::DigitalIdentityProvider {
  public:
-  TestDigitalIdentityProvider() = default;
+  explicit TestDigitalIdentityProvider(
+      base::OnceClosure credential_request_observer)
+      : credential_request_observer_(std::move(credential_request_observer)) {}
   ~TestDigitalIdentityProvider() override = default;
-
-  void WaitTillRequestCredential() {
-    if (did_request_credential_) {
-      return;
-    }
-
-    base::RunLoop run_loop;
-    credential_request_observer_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
 
   void Request(content::WebContents* web_contents,
                const url::Origin& origin,
@@ -87,17 +79,18 @@ class TestDigitalIdentityProvider final
 // content::DigitalIdentityProvider.
 class TestBrowserClient : public ChromeContentBrowserClient {
  public:
-  explicit TestBrowserClient(
-      std::unique_ptr<content::DigitalIdentityProvider> provider)
-      : provider_(std::move(provider)) {}
+  explicit TestBrowserClient(base::OnceClosure credential_request_observer)
+      : credential_request_observer_(std::move(credential_request_observer)) {}
   ~TestBrowserClient() override = default;
 
   std::unique_ptr<content::DigitalIdentityProvider>
   CreateDigitalIdentityProvider() override {
-    return std::move(provider_);
+    return std::make_unique<TestDigitalIdentityProvider>(
+        std::move(credential_request_observer_));
   }
 
  private:
+  base::OnceClosure credential_request_observer_;
   std::unique_ptr<content::DigitalIdentityProvider> provider_;
 };
 
@@ -119,13 +112,10 @@ class DigitalIdentitySafetyInterstitialIntegrationTest
   ~DigitalIdentitySafetyInterstitialIntegrationTest() override = default;
 
   void SetUpOnMainThread() override {
-    auto unique_provider = std::make_unique<TestDigitalIdentityProvider>();
-    provider_ = unique_provider->AsWeakPtr();
-    auto unique_digital_provider =
-        static_cast<std::unique_ptr<content::DigitalIdentityProvider>>(
-            std::move(unique_provider));
-    client_ =
-        std::make_unique<TestBrowserClient>(std::move(unique_digital_provider));
+    client_ = std::make_unique<TestBrowserClient>(
+        base::BindOnce(&DigitalIdentitySafetyInterstitialIntegrationTest::
+                           OnDigitalCredentialRequested,
+                       weak_ptr_factory_.GetWeakPtr()));
     original_client_ = content::SetBrowserClientForTesting(client_.get());
 
     InProcessBrowserTest::SetUpOnMainThread();
@@ -135,13 +125,36 @@ class DigitalIdentitySafetyInterstitialIntegrationTest
     content::SetBrowserClientForTesting(original_client_.get());
   }
 
+  // Waits till DigitalIdentityProvider requests credential.
+  void WaitTillRequestCredential() {
+    if (did_request_credential_) {
+      return;
+    }
+
+    base::RunLoop run_loop;
+    credential_request_observer_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
  protected:
+  void OnDigitalCredentialRequested() {
+    did_request_credential_ = true;
+
+    if (credential_request_observer_) {
+      std::move(credential_request_observer_).Run();
+    }
+  }
+
   std::unique_ptr<TestBrowserClient> client_;
   raw_ptr<content::ContentBrowserClient> original_client_;
-  base::WeakPtr<TestDigitalIdentityProvider> provider_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  bool did_request_credential_ = false;
+  base::OnceClosure credential_request_observer_;
+
+  base::WeakPtrFactory<DigitalIdentitySafetyInterstitialIntegrationTest>
+      weak_ptr_factory_{this};
 };
 
 /**
@@ -170,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
       web_contents,
       "document.getElementById('request_age_and_name_button').click();"));
 
-  provider_->WaitTillRequestCredential();
+  WaitTillRequestCredential();
   EXPECT_TRUE(was_dialog_shown);
 }
 
@@ -200,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentitySafetyInterstitialIntegrationTest,
       web_contents,
       "document.getElementById('request_age_only_button').click();"));
 
-  provider_->WaitTillRequestCredential();
+  WaitTillRequestCredential();
 
   base::RunLoop().RunUntilIdle();
 
