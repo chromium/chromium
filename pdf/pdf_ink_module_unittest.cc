@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/ink_module.h"
+#include "pdf/pdf_ink_module.h"
 
 #include <set>
 #include <vector>
@@ -69,14 +69,14 @@ constexpr gfx::PointF kTwoPageVerticalLayoutPoint1InsidePage1(10.0f, 75.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint2InsidePage1(15.0f, 80.0f);
 constexpr gfx::PointF kTwoPageVerticalLayoutPoint3InsidePage1(20.0f, 80.0f);
 
-class FakeClient : public InkModule::Client {
+class FakeClient : public PdfInkModule::Client {
  public:
   FakeClient() = default;
   FakeClient(const FakeClient&) = delete;
   FakeClient& operator=(const FakeClient&) = delete;
   ~FakeClient() override = default;
 
-  // InkModule::Client:
+  // PdfInkModule::Client:
   PageOrientation GetOrientation() const override { return orientation_; }
 
   gfx::Vector2dF GetViewportOriginOffset() override {
@@ -153,7 +153,7 @@ class FakeClient : public InkModule::Client {
   std::vector<gfx::Rect> invalidations_;
 };
 
-class InkModuleTest : public testing::Test {
+class PdfInkModuleTest : public testing::Test {
  protected:
   base::Value::Dict CreateSetAnnotationBrushMessage(
       const std::string& type,
@@ -178,23 +178,23 @@ class InkModuleTest : public testing::Test {
   }
 
   FakeClient& client() { return client_; }
-  InkModule& ink_module() { return ink_module_; }
+  PdfInkModule& ink_module() { return ink_module_; }
 
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 
   FakeClient client_;
-  InkModule ink_module_{client_};
+  PdfInkModule ink_module_{client_};
 };
 
-TEST_F(InkModuleTest, UnknownMessage) {
+TEST_F(PdfInkModuleTest, UnknownMessage) {
   base::Value::Dict message;
   message.Set("type", "nonInkMessage");
   EXPECT_FALSE(ink_module().OnMessage(message));
 }
 
 // Verify that a set eraser message sets the annotation brush to an eraser.
-TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageEraser) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageEraser) {
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
   EXPECT_EQ(true, ink_module().enabled());
 
@@ -208,7 +208,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageEraser) {
 
 // Verify that a set pen message sets the annotation brush to a pen, with the
 // given params.
-TEST_F(InkModuleTest, HandleSetAnnotationBrushMessagePen) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
   EXPECT_EQ(true, ink_module().enabled());
 
@@ -229,7 +229,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessagePen) {
 
 // Verify that a set highlighter message sets the annotation brush to a
 // highlighter, with the given params.
-TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
   EXPECT_EQ(true, ink_module().enabled());
 
@@ -250,7 +250,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
 
 // Verify that brushes with zero color values can be set as the annotation
 // brush.
-TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
   EXPECT_EQ(true, ink_module().enabled());
 
@@ -272,7 +272,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
 // Verify that the size of the brush is translated when the size is 0. This
 // is needed because the PDF extension allows for a brush size of 0, but
 // `InkBrush` cannot have a size of 0.
-TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
   EXPECT_EQ(true, ink_module().enabled());
 
@@ -293,7 +293,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeZeroTranslation) {
 
 // Verify that the size of the brush is properly translated. The PDF extension's
 // max brush size is 1, while the max for `InkBrush` will be 8.
-TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
   EXPECT_TRUE(ink_module().OnMessage(CreateSetAnnotationModeMessage(true)));
   EXPECT_EQ(true, ink_module().enabled());
 
@@ -312,7 +312,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationBrushMessageSizeOneTranslation) {
   EXPECT_EQ(0.4f, ink_brush.GetOpacityForTesting());
 }
 
-TEST_F(InkModuleTest, HandleSetAnnotationModeMessage) {
+TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
   EXPECT_FALSE(ink_module().enabled());
 
   base::Value::Dict message = CreateSetAnnotationModeMessage(/*enable=*/false);
@@ -329,7 +329,7 @@ TEST_F(InkModuleTest, HandleSetAnnotationModeMessage) {
   EXPECT_FALSE(ink_module().enabled());
 }
 
-class InkModuleStrokeTest : public InkModuleTest {
+class PdfInkModuleStrokeTest : public PdfInkModuleTest {
  protected:
   // Mouse locations used for `RunStrokeCheckTest()`.
   static constexpr gfx::PointF kMouseDownLocation = gfx::PointF(10.0f, 15.0f);
@@ -389,17 +389,17 @@ class InkModuleStrokeTest : public InkModuleTest {
   }
 };
 
-TEST_F(InkModuleStrokeTest, NoAnnotationIfNotEnabled) {
+TEST_F(PdfInkModuleStrokeTest, NoAnnotationIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
 }
 
-TEST_F(InkModuleStrokeTest, AnnotationIfEnabled) {
+TEST_F(PdfInkModuleStrokeTest, AnnotationIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 }
 
-TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
+TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {
   // Setup to support examining the page stroke points for a layout that is
   // more complicated than what is provide by
   // `InitializeSimpleSinglePageBasicLayout()`.  Include viewport offset,
@@ -416,18 +416,19 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
 
   // There should be two points collected, for mouse down and a single mouse
   // move.  Verify that the collected points match a canonical position for
-  // the InkModule::Client setup.
+  // the PdfInkModule::Client setup.
   constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
   constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
-  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
-      ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::DocumentInkStrokeInputPointsMap
+      document_strokes_positions =
+          ink_module().GetInkStrokesInputPositionsForTesting();
   EXPECT_THAT(document_strokes_positions,
-              ElementsAre(Pair(0, InkModule::PageInkStrokeInputPoints{
+              ElementsAre(Pair(0, PdfInkModule::PageInkStrokeInputPoints{
                                       {kCanonicalMouseDownPosition,
                                        kCanonicalMouseMovePosition}})));
 }
 
-TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
+TEST_F(PdfInkModuleStrokeTest, DrawRenderTransform) {
   // Simulate a viewport that is wider than page to be rendered, and has the
   // page centered within that.  The page is positioned at top of viewport with
   // no vertical padding.
@@ -464,7 +465,7 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
   EXPECT_TRUE(draw_render_transforms.empty());
 }
 
-TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
+TEST_F(PdfInkModuleStrokeTest, InvalidationsFromStroke) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
@@ -478,7 +479,7 @@ TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
       ElementsAre(kInvalidationAreaMouseDown, kInvalidationAreaMouseMove));
 }
 
-TEST_F(InkModuleStrokeTest, StrokeOutsidePage) {
+TEST_F(PdfInkModuleStrokeTest, StrokeOutsidePage) {
   EXPECT_TRUE(
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
@@ -500,7 +501,7 @@ TEST_F(InkModuleStrokeTest, StrokeOutsidePage) {
   EXPECT_TRUE(ink_module().GetInkStrokesInputPositionsForTesting().empty());
 }
 
-TEST_F(InkModuleStrokeTest, StrokeInsidePages) {
+TEST_F(PdfInkModuleStrokeTest, StrokeInsidePages) {
   EXPECT_TRUE(
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
@@ -518,8 +519,9 @@ TEST_F(InkModuleStrokeTest, StrokeInsidePages) {
       kTwoPageVerticalLayoutPoint3InsidePage0,
       /*expect_mouse_events_handled=*/true);
 
-  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
-      ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::DocumentInkStrokeInputPointsMap
+      document_strokes_positions =
+          ink_module().GetInkStrokesInputPositionsForTesting();
   EXPECT_THAT(document_strokes_positions,
               ElementsAre(Pair(0, testing::SizeIs(1))));
 
@@ -530,7 +532,7 @@ TEST_F(InkModuleStrokeTest, StrokeInsidePages) {
       kTwoPageVerticalLayoutPoint3InsidePage1,
       /*expect_mouse_events_handled=*/true);
 
-  const InkModule::DocumentInkStrokeInputPointsMap
+  const PdfInkModule::DocumentInkStrokeInputPointsMap
       updated_document_strokes_positions =
           ink_module().GetInkStrokesInputPositionsForTesting();
   EXPECT_THAT(
@@ -538,7 +540,7 @@ TEST_F(InkModuleStrokeTest, StrokeInsidePages) {
       ElementsAre(Pair(0, testing::SizeIs(1)), Pair(1, testing::SizeIs(1))));
 }
 
-TEST_F(InkModuleStrokeTest, StrokeAcrossPages) {
+TEST_F(PdfInkModuleStrokeTest, StrokeAcrossPages) {
   EXPECT_TRUE(
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
@@ -557,13 +559,14 @@ TEST_F(InkModuleStrokeTest, StrokeAcrossPages) {
       kTwoPageVerticalLayoutPoint3InsidePage1,
       /*expect_mouse_events_handled=*/true);
 
-  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
-      ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::DocumentInkStrokeInputPointsMap
+      document_strokes_positions =
+          ink_module().GetInkStrokesInputPositionsForTesting();
   EXPECT_THAT(document_strokes_positions,
               ElementsAre(Pair(0, testing::SizeIs(1))));
 }
 
-TEST_F(InkModuleStrokeTest, StrokePageExitAndRentry) {
+TEST_F(PdfInkModuleStrokeTest, StrokePageExitAndRentry) {
   EXPECT_TRUE(
       ink_module().OnMessage(CreateSetAnnotationModeMessage(/*enable=*/true)));
 
@@ -585,14 +588,15 @@ TEST_F(InkModuleStrokeTest, StrokePageExitAndRentry) {
                                 kTwoPageVerticalLayoutPoint3InsidePage0,
                                 /*expect_mouse_events_handled=*/true);
 
-  const InkModule::DocumentInkStrokeInputPointsMap document_strokes_positions =
-      ink_module().GetInkStrokesInputPositionsForTesting();
-  const InkModule::InkStrokeInputPoints kSegment1 = {gfx::PointF(5.0f, 5.0f),
-                                                     gfx::PointF(5.0f, 0.0f)};
-  const InkModule::InkStrokeInputPoints kSegment2 = {gfx::PointF(10.0f, 0.0f),
-                                                     gfx::PointF(10.0f, 5.0f)};
+  const PdfInkModule::DocumentInkStrokeInputPointsMap
+      document_strokes_positions =
+          ink_module().GetInkStrokesInputPositionsForTesting();
+  const PdfInkModule::InkStrokeInputPoints kSegment1 = {
+      gfx::PointF(5.0f, 5.0f), gfx::PointF(5.0f, 0.0f)};
+  const PdfInkModule::InkStrokeInputPoints kSegment2 = {
+      gfx::PointF(10.0f, 0.0f), gfx::PointF(10.0f, 5.0f)};
   EXPECT_THAT(document_strokes_positions,
-              ElementsAre(Pair(0, InkModule::PageInkStrokeInputPoints{
+              ElementsAre(Pair(0, PdfInkModule::PageInkStrokeInputPoints{
                                       {kSegment1, kSegment2}})));
 }
 

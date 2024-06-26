@@ -49,7 +49,7 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-#include "pdf/ink_module.h"
+#include "pdf/pdf_ink_module.h"
 #endif
 
 namespace blink {
@@ -90,7 +90,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                                public PdfAccessibilityActionHandler,
                                public PdfAccessibilityImageFetcher,
 #if BUILDFLAG(ENABLE_PDF_INK2)
-                               public InkModule::Client,
+                               public PdfInkModule::Client,
 #endif
                                public PreviewModeClient::Client {
  public:
@@ -401,7 +401,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                           int32_t page_object_index) override;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // InkModule:
+  // PdfInkModule:
   PageOrientation GetOrientation() const override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Vector2dF GetViewportOriginOffset() override;
@@ -655,7 +655,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Null if `features::kPdfInk2` is not enabled.
-  std::unique_ptr<InkModule> const ink_module_;
+  std::unique_ptr<PdfInkModule> const ink_module_;
 #endif
 
   std::unique_ptr<PDFiumEngine> engine_;

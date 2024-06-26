@@ -124,7 +124,7 @@
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-#include "pdf/ink_module.h"
+#include "pdf/pdf_ink_module.h"
 #endif
 
 namespace chrome_pdf {
@@ -273,11 +273,12 @@ bool IsSaveDataSizeValid(size_t size) {
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-std::unique_ptr<InkModule> MaybeCreateInkModule(InkModule::Client& client) {
+std::unique_ptr<PdfInkModule> MaybeCreatePdfInkModule(
+    PdfInkModule::Client& client) {
   if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
     return nullptr;
   }
-  return std::make_unique<InkModule>(client);
+  return std::make_unique<PdfInkModule>(client);
 }
 #endif
 
@@ -304,7 +305,7 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     : client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
 #if BUILDFLAG(ENABLE_PDF_INK2)
-      ink_module_(MaybeCreateInkModule(*this)),
+      ink_module_(MaybeCreatePdfInkModule(*this)),
 #endif
       initial_params_(params) {
   DCHECK(pdf_host_);

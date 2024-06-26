@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PDF_INK_MODULE_H_
-#define PDF_INK_MODULE_H_
+#ifndef PDF_PDF_INK_MODULE_H_
+#define PDF_PDF_INK_MODULE_H_
 
 #include <stddef.h>
 
@@ -39,7 +39,7 @@ class InkInProgressStroke;
 class InkStroke;
 class PdfInkBrush;
 
-class InkModule {
+class PdfInkModule {
  public:
   using InkStrokeInputPoints = std::vector<gfx::PointF>;
 
@@ -93,10 +93,10 @@ class InkModule {
     virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
   };
 
-  explicit InkModule(Client& client);
-  InkModule(const InkModule&) = delete;
-  InkModule& operator=(const InkModule&) = delete;
-  ~InkModule();
+  explicit PdfInkModule(Client& client);
+  PdfInkModule(const PdfInkModule&) = delete;
+  PdfInkModule& operator=(const PdfInkModule&) = delete;
+  ~PdfInkModule();
 
   bool enabled() const { return enabled_; }
 
@@ -259,4 +259,4 @@ class InkModule {
 
 }  // namespace chrome_pdf
 
-#endif  // PDF_INK_MODULE_H_
+#endif  // PDF_PDF_INK_MODULE_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "pdf/ink_module.h"
+#include "pdf/pdf_ink_module.h"
 
 #include <stddef.h>
 
@@ -53,15 +53,15 @@ void CheckColorIsWithinRange(int color) {
 
 }  // namespace
 
-InkModule::InkModule(Client& client) : client_(client) {
+PdfInkModule::PdfInkModule(Client& client) : client_(client) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
   CHECK(is_drawing_stroke());
   drawing_stroke_state().ink_brush = CreateDefaultBrush();
 }
 
-InkModule::~InkModule() = default;
+PdfInkModule::~PdfInkModule() = default;
 
-void InkModule::Draw(SkCanvas& canvas) {
+void PdfInkModule::Draw(SkCanvas& canvas) {
   for (const auto& [page_index, page_ink_strokes] : ink_strokes_) {
     if (!client_->IsPageVisible(page_index)) {
       continue;
@@ -93,7 +93,7 @@ void InkModule::Draw(SkCanvas& canvas) {
   }
 }
 
-bool InkModule::HandleInputEvent(const blink::WebInputEvent& event) {
+bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   if (!enabled()) {
     return false;
   }
@@ -110,15 +110,16 @@ bool InkModule::HandleInputEvent(const blink::WebInputEvent& event) {
   }
 }
 
-bool InkModule::OnMessage(const base::Value::Dict& message) {
-  using MessageHandler = void (InkModule::*)(const base::Value::Dict&);
+bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
+  using MessageHandler = void (PdfInkModule::*)(const base::Value::Dict&);
 
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
-          {"annotationRedo", &InkModule::HandleAnnotationUndoMessage},
-          {"annotationUndo", &InkModule::HandleAnnotationRedoMessage},
-          {"setAnnotationBrush", &InkModule::HandleSetAnnotationBrushMessage},
-          {"setAnnotationMode", &InkModule::HandleSetAnnotationModeMessage},
+          {"annotationRedo", &PdfInkModule::HandleAnnotationUndoMessage},
+          {"annotationUndo", &PdfInkModule::HandleAnnotationRedoMessage},
+          {"setAnnotationBrush",
+           &PdfInkModule::HandleSetAnnotationBrushMessage},
+          {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
       });
 
   auto it = kMessageHandlers.find(*message.FindString("type"));
@@ -131,18 +132,18 @@ bool InkModule::OnMessage(const base::Value::Dict& message) {
   return true;
 }
 
-const PdfInkBrush* InkModule::GetPdfInkBrushForTesting() const {
+const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
   return is_drawing_stroke() ? drawing_stroke_state().ink_brush.get() : nullptr;
 }
 
-InkModule::DocumentInkStrokeInputPointsMap
-InkModule::GetInkStrokesInputPositionsForTesting() const {
+PdfInkModule::DocumentInkStrokeInputPointsMap
+PdfInkModule::GetInkStrokesInputPositionsForTesting() const {
   DocumentInkStrokeInputPointsMap all_strokes_points;
 
   for (const auto& [page_index, strokes] : ink_strokes_) {
     for (const auto& stroke : strokes) {
       const InkStrokeInputBatchView& input_batch = stroke.stroke->GetInputs();
-      InkModule::InkStrokeInputPoints stroke_points;
+      PdfInkModule::InkStrokeInputPoints stroke_points;
       stroke_points.reserve(input_batch.Size());
       for (size_t i = 0; i < input_batch.Size(); ++i) {
         InkStrokeInput stroke_input = input_batch.Get(i);
@@ -156,12 +157,12 @@ InkModule::GetInkStrokesInputPositionsForTesting() const {
   return all_strokes_points;
 }
 
-void InkModule::SetDrawRenderTransformCallbackForTesting(
+void PdfInkModule::SetDrawRenderTransformCallbackForTesting(
     RenderTransformCallback callback) {
   draw_render_transform_callback_for_testing_ = std::move(callback);
 }
 
-bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
+bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   blink::WebMouseEvent normalized_event = NormalizeMouseEvent(event);
@@ -174,7 +175,7 @@ bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
                              : StartEraseInkStroke(position);
 }
 
-bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
+bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   if (event.button != blink::WebPointerProperties::Button::kLeft) {
@@ -184,7 +185,7 @@ bool InkModule::OnMouseUp(const blink::WebMouseEvent& event) {
   return is_drawing_stroke() ? FinishInkStroke() : FinishEraseInkStroke();
 }
 
-bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
+bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   gfx::PointF position = event.PositionInWidget();
@@ -192,7 +193,7 @@ bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
                              : ContinueEraseInkStroke(position);
 }
 
-bool InkModule::StartInkStroke(const gfx::PointF& position) {
+bool PdfInkModule::StartInkStroke(const gfx::PointF& position) {
   int page_index = client_->VisiblePageIndexFromPoint(position);
   if (page_index < 0) {
     // Do not draw when not on a page.
@@ -229,7 +230,7 @@ bool InkModule::StartInkStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
+bool PdfInkModule::ContinueInkStroke(const gfx::PointF& position) {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   if (!state.ink_start_time.has_value()) {
@@ -286,7 +287,7 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
   return true;
 }
 
-bool InkModule::FinishInkStroke() {
+bool PdfInkModule::FinishInkStroke() {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   if (!state.ink_start_time.has_value()) {
@@ -316,38 +317,40 @@ bool InkModule::FinishInkStroke() {
   return true;
 }
 
-bool InkModule::StartEraseInkStroke(const gfx::PointF& position) {
+bool PdfInkModule::StartEraseInkStroke(const gfx::PointF& position) {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   // TODO(crbug.com/335517471): Adjust `position` if needed.
   return false;
 }
 
-bool InkModule::ContinueEraseInkStroke(const gfx::PointF& position) {
+bool PdfInkModule::ContinueEraseInkStroke(const gfx::PointF& position) {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   // TODO(crbug.com/335517471): Adjust `position` if needed.
   return false;
 }
 
-bool InkModule::FinishEraseInkStroke() {
+bool PdfInkModule::FinishEraseInkStroke() {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
   // Call client_->InkStrokeFinished() on success.
   return false;
 }
 
-void InkModule::HandleAnnotationRedoMessage(const base::Value::Dict& message) {
+void PdfInkModule::HandleAnnotationRedoMessage(
+    const base::Value::Dict& message) {
   CHECK(enabled_);
   // TODO(crbug.com/335521182): Implement redo.
 }
 
-void InkModule::HandleAnnotationUndoMessage(const base::Value::Dict& message) {
+void PdfInkModule::HandleAnnotationUndoMessage(
+    const base::Value::Dict& message) {
   CHECK(enabled_);
   // TODO(crbug.com/335521182): Implement undo.
 }
 
-void InkModule::HandleSetAnnotationBrushMessage(
+void PdfInkModule::HandleSetAnnotationBrushMessage(
     const base::Value::Dict& message) {
   CHECK(enabled_);
 
@@ -388,13 +391,13 @@ void InkModule::HandleSetAnnotationBrushMessage(
       std::make_unique<PdfInkBrush>(brush_type.value(), params);
 }
 
-void InkModule::HandleSetAnnotationModeMessage(
+void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
   enabled_ = message.FindBool("enable").value();
 }
 
 std::vector<std::unique_ptr<InkInProgressStroke>>
-InkModule::CreateInProgressStrokeSegmentsFromInputs() const {
+PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   if (!is_drawing_stroke()) {
     return {};
   }
@@ -431,7 +434,7 @@ InkModule::CreateInProgressStrokeSegmentsFromInputs() const {
   return stroke_segments;
 }
 
-gfx::PointF InkModule::ConvertEventPositionToCanonicalPosition(
+gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
     const gfx::PointF& position,
     int page_index) {
   // If the page is visible at `position`, then its rect must not be empty.
@@ -443,28 +446,28 @@ gfx::PointF InkModule::ConvertEventPositionToCanonicalPosition(
                                           client_->GetZoom());
 }
 
-InkModule::DrawingStrokeState::DrawingStrokeState() = default;
+PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;
 
-InkModule::DrawingStrokeState::~DrawingStrokeState() = default;
+PdfInkModule::DrawingStrokeState::~DrawingStrokeState() = default;
 
-InkModule::FinishedStrokeState::FinishedStrokeState(
+PdfInkModule::FinishedStrokeState::FinishedStrokeState(
     std::unique_ptr<InkStroke> stroke,
     size_t id)
     : stroke(std::move(stroke)), id(id) {}
 
-InkModule::FinishedStrokeState::FinishedStrokeState(
-    InkModule::FinishedStrokeState&&) noexcept = default;
+PdfInkModule::FinishedStrokeState::FinishedStrokeState(
+    PdfInkModule::FinishedStrokeState&&) noexcept = default;
 
-InkModule::FinishedStrokeState& InkModule::FinishedStrokeState::operator=(
-    InkModule::FinishedStrokeState&&) noexcept = default;
+PdfInkModule::FinishedStrokeState& PdfInkModule::FinishedStrokeState::operator=(
+    PdfInkModule::FinishedStrokeState&&) noexcept = default;
 
-InkModule::FinishedStrokeState::~FinishedStrokeState() = default;
+PdfInkModule::FinishedStrokeState::~FinishedStrokeState() = default;
 
-InkModule::StrokeIdGenerator::StrokeIdGenerator() = default;
+PdfInkModule::StrokeIdGenerator::StrokeIdGenerator() = default;
 
-InkModule::StrokeIdGenerator::~StrokeIdGenerator() = default;
+PdfInkModule::StrokeIdGenerator::~StrokeIdGenerator() = default;
 
-size_t InkModule::StrokeIdGenerator::GetIdAndAdvance() {
+size_t PdfInkModule::StrokeIdGenerator::GetIdAndAdvance() {
   // Die intentionally if `next_stroke_id_` is about to overflow.
   CHECK_NE(next_stroke_id_, std::numeric_limits<size_t>::max());
   return next_stroke_id_++;

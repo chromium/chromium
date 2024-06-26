@@ -211,10 +211,10 @@ if (enable_pdf) {
 
     if (enable_pdf_ink2) {
       sources += [
-        "ink_module.cc",
-        "ink_module.h",
         "pdf_ink_brush.cc",
         "pdf_ink_brush.h",
+        "pdf_ink_module.cc",
+        "pdf_ink_module.h",
         "pdf_ink_transform.cc",
         "pdf_ink_transform.h",
         "pdf_ink_undo_redo_model.cc",
@@ -469,8 +469,8 @@ if (enable_pdf) {
 
     if (enable_pdf_ink2) {
       sources += [
-        "ink_module_unittest.cc",
         "pdf_ink_brush_unittest.cc",
+        "pdf_ink_module_unittest.cc",
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
       ]
