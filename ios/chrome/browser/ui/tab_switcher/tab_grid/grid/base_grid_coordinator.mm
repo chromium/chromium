@@ -253,8 +253,11 @@
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to show a tab group UI outside the "
          "Tab Groups experiment.";
-  CHECK(!_tabGroupCoordinator) << "There is an attempt to display a tab group "
-                                  "when one is already presented.";
+  if (_tabGroupCoordinator) {
+    // There is an attempt to display a tab group when one is already presented.
+    return;
+  }
+
   // TODO(crbug.com/40942154): Replace base view controller by view controller
   // when the base grid coordinator will have access to the grid view
   // controller.
