@@ -16,6 +16,7 @@ import "mojo/public/mojom/base/uuid.mojom";
 // Routines interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 interface CrosHealthdRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the
@@ -365,6 +366,7 @@ struct CameraFrameAnalysisRoutineArgument {};
 // Please check the Error Handling section of CrosHealthdRoutinesService.
 //
 // NextMinVersion: 3, NextIndex: 3
+[Stable]
 interface RoutineControl {
   // Gets the current state of the routine. Note that if the routine fails to
   // initialize, the RoutineControl will disconnect before the callback is
@@ -392,6 +394,7 @@ interface RoutineControl {
 // Implemented by clients who desire routine update notifications.
 //
 // NextMinVersion: 2, NextIndex: 1
+[Stable]
 interface RoutineObserver {
   // Called when the routine state has changed. This is also called as soon
   // as a routine is initialized (right after calling `CreateRoutine`).
@@ -404,6 +407,7 @@ interface RoutineObserver {
 // Used to pass information regarding routine state.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct RoutineState {
   // The percentage of the completion of the routine. 0 to 100.
   uint8 percentage@0;
@@ -414,6 +418,7 @@ struct RoutineState {
 // Possible routine states.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 union RoutineStateUnion {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -585,6 +590,7 @@ struct CheckLedLitUpStateReply {
 // Information about a finished routine.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct RoutineStateFinished {
   // Whether the routine has passed or not.
   bool has_passed@0;
@@ -595,7 +601,7 @@ struct RoutineStateFinished {
 // Details about a finished routine.
 //
 // NextMinVersion: 4, NextIndex: 13
-[Extensible]
+[Stable, Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -887,22 +893,24 @@ struct BluetoothPairingRoutineDetail {
 
 // All possible results for subtests of camera routines.
 //
-// NextMinVersion: 1, NextIndex: 3
-[Extensible]
+// NextMinVersion: 1, NextIndex: 4
+[Stable, Extensible]
 enum CameraSubtestResult {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
   // The subtest was not run, possibly because the subtest was not enabled in
-  // the routine parameter. This value could also be used (as the default value)
-  // when there are Mojo version skews.
-  [Default] kNotRun = 0,
+  // the routine parameter or the subtest was not available on the device.
+  kNotRun = 1,
   // The subtest was passed.
-  kPassed = 1,
+  kPassed = 2,
   // The subtest was failed.
-  kFailed = 2,
+  kFailed = 3,
 };
 
 // Details regarding camera availability routine.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct CameraAvailabilityRoutineDetail {
   // The subtest is passed if the camera service is available.
   CameraSubtestResult camera_service_available_check@0;
@@ -1065,6 +1073,7 @@ struct SensitiveSensorRoutineDetail {
 // Details regarding camera frame analysis routine.
 //
 // NextMinVersion: 1, NextIndex: 3
+[Stable]
 struct CameraFrameAnalysisRoutineDetail {
   // The issue caught by the routine. See the fields for each subtest for their
   // details.
