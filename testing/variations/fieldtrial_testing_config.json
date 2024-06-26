@@ -22014,29 +22014,6 @@
             ]
         }
     ],
-    "TimedHTMLParserBudgetForAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "default-parser-budgetFor2GBTo4GB": "10ms",
-                        "default-parser-budgetFor4GBTo8GB": "10ms",
-                        "long-parser-budgetFor2GBTo4GB": "500ms",
-                        "long-parser-budgetFor4GBTo8GB": "100ms",
-                        "num-yields-with-default-budgetFor2GBTo4GB": "6",
-                        "num-yields-with-default-budgetFor4GBTo8GB": "6"
-                    },
-                    "enable_features": [
-                        "TimedHTMLParserBudget"
-                    ]
-                }
-            ]
-        }
-    ],
     "TimerSlackMac": [
         {
             "platforms": [
