@@ -180,7 +180,7 @@ void OneShotTimer::RunUserTask() {
 }
 
 void OneShotTimer::EnsureNonNullUserTask() {
-  DCHECK(user_task_);
+  CHECK(user_task_);
 }
 
 RepeatingTimer::RepeatingTimer() = default;
