@@ -3009,21 +3009,6 @@ bool RenderWidgetHostViewAura::CanSynchronizeVisualProperties() {
   return !needs_to_update_display_metrics_;
 }
 
-std::vector<std::unique_ptr<ui::TouchEvent>>
-RenderWidgetHostViewAura::ExtractAndCancelActiveTouches() {
-  aura::Env* env = aura::Env::GetInstance();
-  std::vector<std::unique_ptr<ui::TouchEvent>> touches =
-      env->gesture_recognizer()->ExtractTouches(window());
-  CancelActiveTouches();
-  return touches;
-}
-
-void RenderWidgetHostViewAura::TransferTouches(
-    const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) {
-  aura::Env* env = aura::Env::GetInstance();
-  env->gesture_recognizer()->TransferTouches(window(), touches);
-}
-
 void RenderWidgetHostViewAura::SetLastPointerType(
     ui::EventPointerType last_pointer_type) {
   last_pointer_type_ = last_pointer_type;

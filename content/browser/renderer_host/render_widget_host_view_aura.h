@@ -213,10 +213,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void DidNavigate() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool CanSynchronizeVisualProperties() override;
-  std::vector<std::unique_ptr<ui::TouchEvent>> ExtractAndCancelActiveTouches()
-      override;
-  void TransferTouches(
-      const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) override;
   // TODO(lanwei): Use TestApi interface to write functions that are used in
   // tests and remove FRIEND_TEST_ALL_PREFIXES.
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override;

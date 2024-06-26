@@ -2995,17 +2995,6 @@ display::ScreenInfo RenderWidgetHostViewAndroid::GetScreenInfo() const {
   return screen_info;
 }
 
-std::vector<std::unique_ptr<ui::TouchEvent>>
-RenderWidgetHostViewAndroid::ExtractAndCancelActiveTouches() {
-  ResetGestureDetection();
-  return {};
-}
-
-void RenderWidgetHostViewAndroid::TransferTouches(
-    const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) {
-  // Touch transfer for Android is not implemented in content/.
-}
-
 void RenderWidgetHostViewAndroid::ObserveDevicePosturePlatformProvider() {
   if (device_posture_observation_.IsObserving()) {
     return;

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_router_impl.h"
@@ -189,16 +188,6 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput :
   virtual void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) = 0;
-
-  // Extracts information about any active pointers and cancels any existing
-  // active pointers by dispatching synthetic cancel events.
-  virtual std::vector<std::unique_ptr<ui::TouchEvent>>
-  ExtractAndCancelActiveTouches() = 0;
-
-  // Used to transfer pointer state from one view to another. It recreates the
-  // pointer state by dispatching touch down events.
-  virtual void TransferTouches(
-      const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) = 0;
 
   virtual void SetLastPointerType(ui::EventPointerType last_pointer_type) = 0;
 

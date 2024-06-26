@@ -67,7 +67,6 @@ namespace ui {
 class Compositor;
 class Cursor;
 class LatencyInfo;
-class TouchEvent;
 enum class DomCode : uint32_t;
 struct DidOverscrollParams;
 }  // namespace ui
@@ -186,10 +185,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) override;
-  std::vector<std::unique_ptr<ui::TouchEvent>> ExtractAndCancelActiveTouches()
-      override;
-  void TransferTouches(
-      const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) override {}
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override {}
   void DisplayCursor(const ui::Cursor& cursor) override;
   input::CursorManager* GetCursorManager() override;

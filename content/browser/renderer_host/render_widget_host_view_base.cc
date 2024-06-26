@@ -885,11 +885,6 @@ double RenderWidgetHostViewBase::GetZoomLevel() const {
   return host()->delegate()->GetPendingPageZoomLevel();
 }
 
-std::vector<std::unique_ptr<ui::TouchEvent>>
-RenderWidgetHostViewBase::ExtractAndCancelActiveTouches() {
-  return {};
-}
-
 void RenderWidgetHostViewBase::TextInputStateChanged(
     const ui::mojom::TextInputState& text_input_state) {
   if (GetTextInputManager())

@@ -215,21 +215,6 @@ void GestureRecognizerImpl::TransferEventsTo(
   }
 }
 
-std::vector<std::unique_ptr<ui::TouchEvent>>
-GestureRecognizerImpl::ExtractTouches(GestureConsumer* consumer) {
-  return GetEventPerPointForConsumer(consumer, ET_TOUCH_PRESSED);
-}
-
-void GestureRecognizerImpl::TransferTouches(
-    GestureConsumer* consumer,
-    const std::vector<std::unique_ptr<ui::TouchEvent>>& touch_events) {
-  GestureEventHelper* helper = FindDispatchHelperForConsumer(consumer);
-  DCHECK(helper);
-  for (const auto& event : touch_events) {
-    helper->DispatchSyntheticTouchEvent(event.get());
-  }
-}
-
 bool GestureRecognizerImpl::GetLastTouchPointForTarget(
     GestureConsumer* consumer,
     gfx::PointF* point) {

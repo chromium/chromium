@@ -231,10 +231,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
   display::ScreenInfo GetScreenInfo() const override;
-  std::vector<std::unique_ptr<ui::TouchEvent>> ExtractAndCancelActiveTouches()
-      override;
-  void TransferTouches(
-      const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) override;
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() override;
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
   void ResetGestureDetection() override;
