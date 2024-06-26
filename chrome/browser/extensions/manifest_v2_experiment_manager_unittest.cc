@@ -6,11 +6,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
@@ -27,7 +31,12 @@ class ManifestV2ExperimentManagerUnitTestBase
 
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
-    InitializeEmptyExtensionService();
+
+    // Note: This is (subtly) different from
+    // `InitializeEmptyExtensionService()`, which doesn't initialize a
+    // testing PrefService.
+    ExtensionServiceInitParams params;
+    InitializeExtensionService(params);
 
     experiment_manager_ = ManifestV2ExperimentManager::Get(profile());
   }
@@ -366,7 +375,162 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableUnitTest,
   }
 }
 
-// TODO(https://crbug.com/339061151): Add tests for policy-installed and policy-
-// allowed extensions.
+enum class MV2PolicyLevel {
+  kAllowed,
+  kDisallowed,
+  kAllowedForAdminInstalledOnly,
+};
+
+// A test suite to allow setting various MV2-related policies.
+class ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest
+    : public ManifestV2ExperimentManagerDisableWithReEnableUnitTest {
+ public:
+  ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest() = default;
+  ~ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest() override =
+      default;
+
+  // Sets the current level of the MV2 admin policy.
+  void SetMV2PolicyLevel(MV2PolicyLevel policy_level) {
+    internal::GlobalSettings::ManifestV2Setting pref_value;
+    switch (policy_level) {
+      case MV2PolicyLevel::kAllowed:
+        pref_value = internal::GlobalSettings::ManifestV2Setting::kEnabled;
+        break;
+      case MV2PolicyLevel::kDisallowed:
+        pref_value = internal::GlobalSettings::ManifestV2Setting::kDisabled;
+        break;
+      case MV2PolicyLevel::kAllowedForAdminInstalledOnly:
+        pref_value = internal::GlobalSettings::ManifestV2Setting::
+            kEnabledForForceInstalled;
+        break;
+    }
+
+    sync_preferences::TestingPrefServiceSyncable* pref_service =
+        testing_profile()->GetTestingPrefService();
+    pref_service->SetManagedPref(pref_names::kManifestV2Availability,
+                                 base::Value(static_cast<int>(pref_value)));
+  }
+
+  void AddPolicyInstalledMV2Extension(const ExtensionId& id,
+                                      mojom::ManifestLocation location) {
+    sync_preferences::TestingPrefServiceSyncable* pref_service =
+        testing_profile()->GetTestingPrefService();
+    const base::Value* existing_value =
+        pref_service->GetManagedPref(pref_names::kExtensionManagement);
+    base::Value::Dict new_value;
+    if (existing_value) {
+      new_value = existing_value->Clone().TakeDict();
+    }
+
+    new_value.Set(id, base::Value::Dict()
+                          .Set("installation_mode", "force_installed")
+                          .Set("update_url", "http://example.com/"));
+
+    pref_service->SetManagedPref(pref_names::kExtensionManagement,
+                                 std::move(new_value));
+  }
+};
+
+// Tests that installation of all extensions is allowed if MV2 is allowed by
+// policy.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
+       ShouldBlockInstallation_DontBlockWhenAllMV2Allowed) {
+  SetMV2PolicyLevel(MV2PolicyLevel::kAllowed);
+
+  struct {
+    mojom::ManifestLocation manifest_location;
+    const char* name;
+  } test_cases[] = {
+      {mojom::ManifestLocation::kInternal, "internal"},
+      {mojom::ManifestLocation::kExternalPref, "pref"},
+      {mojom::ManifestLocation::kExternalPrefDownload, "pref download"},
+      {mojom::ManifestLocation::kExternalPolicy, "policy"},
+      {mojom::ManifestLocation::kExternalPolicyDownload, "policy download"},
+      {mojom::ManifestLocation::kUnpacked, "unpacked"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+
+    EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+        extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
+        test_case.manifest_location, HashedExtensionId(extension_id)));
+  }
+}
+
+// Tests installation of all extensions (other than component extensions) is
+// disallowed if disallowed by policy.
+TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
+       ShouldBlockInstallation_AllAreBlockedWhenMV2Disallowed) {
+  SetMV2PolicyLevel(MV2PolicyLevel::kDisallowed);
+
+  struct {
+    mojom::ManifestLocation manifest_location;
+    const char* name;
+  } test_cases[] = {
+      {mojom::ManifestLocation::kInternal, "internal"},
+      {mojom::ManifestLocation::kExternalPref, "pref"},
+      {mojom::ManifestLocation::kExternalPrefDownload, "pref download"},
+      {mojom::ManifestLocation::kExternalPolicy, "policy"},
+      {mojom::ManifestLocation::kExternalPolicyDownload, "policy download"},
+      {mojom::ManifestLocation::kUnpacked, "unpacked"},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+
+    EXPECT_TRUE(experiment_manager()->ShouldBlockExtensionInstallation(
+        extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
+        test_case.manifest_location, HashedExtensionId(extension_id)));
+  }
+}
+
+// Tests admin-installed extensions may be installed, while others may not be,
+// if the MV2 policy is set to admin-installed-only.
+TEST_F(
+    ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
+    ShouldBlockInstallation_UserInstalledAreBlockedWhenForceInstalledAllowed) {
+  SetMV2PolicyLevel(MV2PolicyLevel::kAllowedForAdminInstalledOnly);
+
+  constexpr bool kInstallShouldBeBlocked = true;
+  constexpr bool kInstallShouldBeAllowed = false;
+  constexpr bool kForceInstalled = true;
+  constexpr bool kUserInstalled = false;
+
+  struct {
+    mojom::ManifestLocation manifest_location;
+    const char* name;
+    bool force_installed;
+    bool should_block_install;
+  } test_cases[] = {
+      {mojom::ManifestLocation::kInternal, "internal", kUserInstalled,
+       kInstallShouldBeBlocked},
+      {mojom::ManifestLocation::kExternalPref, "pref", kUserInstalled,
+       kInstallShouldBeBlocked},
+      {mojom::ManifestLocation::kUnpacked, "unpacked", kUserInstalled,
+       kInstallShouldBeBlocked},
+
+      {mojom::ManifestLocation::kExternalPolicy, "policy", kForceInstalled,
+       kInstallShouldBeAllowed},
+      {mojom::ManifestLocation::kExternalPolicyDownload, "policy download",
+       kForceInstalled, kInstallShouldBeAllowed},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
+    if (test_case.force_installed) {
+      AddPolicyInstalledMV2Extension(extension_id, test_case.manifest_location);
+    }
+
+    EXPECT_EQ(
+        test_case.should_block_install,
+        experiment_manager()->ShouldBlockExtensionInstallation(
+            extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
+            test_case.manifest_location, HashedExtensionId(extension_id)));
+  }
+}
 
 }  // namespace extensions

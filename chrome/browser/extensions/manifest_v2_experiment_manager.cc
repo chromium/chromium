@@ -171,11 +171,19 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
     return false;
   }
 
-  // Always allow unpacked extensions to be installed. Otherwise, there's no
-  // way for developers to support MV2 extensions (which may still be necessary
-  // for e.g. policy).
   if (Manifest::IsUnpackedLocation(manifest_location)) {
-    return false;
+    // Unpacked extensions are special-cased.
+    // If MV2 is blocked by policy, then installation is blocked.
+    // Otherwise, we allow unpacked extensions, even if MV2 extensions are
+    // disabled. This is because it's critical for developers to continue being
+    // able to develop MV2 extensions as long as they're supported in some form
+    // in current version of Chrome.
+    ExtensionManagement* extension_management =
+        ExtensionManagementFactory::GetForBrowserContext(browser_context_);
+    if (extension_management->IsAllowedManifestVersion(
+            manifest_version, extension_id, manifest_type)) {
+      return false;
+    }
   }
 
   // Otherwise, if the extension is affected by the deprecation, it should be
