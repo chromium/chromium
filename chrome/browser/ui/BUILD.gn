@@ -4071,6 +4071,7 @@ static_library("ui") {
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/service",
       "//chrome/browser/ash/camera_mic",
+      "//chrome/browser/ash/drive",
       "//chrome/browser/ash/usb",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
