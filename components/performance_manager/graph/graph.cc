@@ -13,7 +13,11 @@ namespace performance_manager {
 Graph::Graph() = default;
 Graph::~Graph() = default;
 
-GraphOwned::GraphOwned() = default;
+GraphOwned::GraphOwned() {
+  // It's valid to create a GraphOwned object on the main thread and pass it to
+  // the PM sequence with PerformanceManager::PassToGraph().
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 GraphOwned::~GraphOwned() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
