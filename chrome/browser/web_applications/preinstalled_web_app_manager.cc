@@ -878,6 +878,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     options.add_to_management = false;
     options.add_to_desktop = false;
     options.add_to_quick_launch_bar = false;
+    options.install_without_os_integration = true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (g_override_previous_user_uninstall_for_testing_) {

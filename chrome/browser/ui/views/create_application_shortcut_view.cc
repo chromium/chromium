@@ -223,7 +223,8 @@ void CreateChromeApplicationShortcutView::OnDialogAccepted() {
     provider->scheduler().SynchronizeOsIntegration(
         shortcut_info_->app_id, base::DoNothing(),
         web_app::ConvertShortcutLocationsToSynchronizeOptions(
-            creation_locations, web_app::SHORTCUT_CREATION_BY_USER));
+            creation_locations, web_app::SHORTCUT_CREATION_BY_USER),
+        /*upgrade_to_fully_installed_if_installed=*/true);
   } else {
     web_app::CreateShortcutsWithInfo(web_app::SHORTCUT_CREATION_BY_USER,
                                      creation_locations, base::DoNothing(),

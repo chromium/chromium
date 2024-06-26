@@ -12,11 +12,11 @@ namespace web_app::proto {
 
 std::ostream& operator<<(std::ostream& os, const proto::InstallState& state) {
   switch (state) {
-    case proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE:
+    case InstallState::SUGGESTED_FROM_ANOTHER_DEVICE:
       return os << "SUGGESTED_FROM_ANOTHER_DEVICE";
-    case proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION:
+    case InstallState::INSTALLED_WITHOUT_OS_INTEGRATION:
       return os << "INSTALLED_WITHOUT_OS_INTEGRATION";
-    case proto::InstallState::INSTALLED_WITH_OS_INTEGRATION:
+    case InstallState::INSTALLED_WITH_OS_INTEGRATION:
       return os << "INSTALLED_WITH_OS_INTEGRATION";
   }
 }

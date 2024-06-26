@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -494,7 +495,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->mutable_sources()->set_aps_default(
       web_app.sources_.Has(WebAppManagement::kApsDefault));
 
-  local_data->set_is_locally_installed(web_app.is_locally_installed());
+  local_data->set_install_state(web_app.install_state());
 
   // Optional fields:
   if (web_app.launch_query_params())
@@ -1013,11 +1014,16 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   web_app->SetName(local_data.name());
 
-  if (!local_data.has_is_locally_installed()) {
-    DLOG(ERROR) << "WebApp proto parse error: no is_locally_installed field";
+  if (!local_data.has_install_state()) {
+    DLOG(ERROR) << "WebApp proto parse error: no install_state field";
     return nullptr;
   }
-  web_app->SetIsLocallyInstalled(local_data.is_locally_installed());
+  if (!proto::InstallState_IsValid(local_data.install_state())) {
+    DLOG(ERROR) << "WebApp proto parse error: invalid install_state field: "
+                << local_data.install_state();
+    return nullptr;
+  }
+  web_app->SetInstallState(local_data.install_state());
 
   auto& chromeos_data_proto = local_data.chromeos_data();
 

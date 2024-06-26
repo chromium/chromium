@@ -29,6 +29,8 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -575,6 +577,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
   // Do database migrations to ensure apps are valid before notifying anything
   // else that the sync bridge is ready.
   EnsureAppsHaveUserDisplayModeForCurrentPlatform();
+  EnsurePartiallyInstalledAppsHaveCorrectStatus();
 
   std::move(initialized_callback).Run();
 
@@ -601,6 +604,22 @@ void WebAppSyncBridge::EnsureAppsHaveUserDisplayModeForCurrentPlatform() {
       update->UpdateApp(app.app_id())
           ->SetUserDisplayMode(ToMojomUserDisplayMode(udm));
     }
+  }
+}
+
+void WebAppSyncBridge::EnsurePartiallyInstalledAppsHaveCorrectStatus() {
+  web_app::ScopedRegistryUpdate update = BeginUpdate();
+  for (const WebApp& app : registrar().GetApps()) {
+    if (app.install_state() !=
+        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
+      continue;
+    }
+    if (app.current_os_integration_states().has_shortcut()) {
+      continue;
+    }
+    update->UpdateApp(app.app_id())
+        ->SetInstallState(
+            proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
   }
 }
 
@@ -705,7 +724,10 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
       web_app->SetName(specifics.name());
     }
     // For a new app, automatically choose if we want to install it locally.
-    web_app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
+    web_app->SetInstallState(
+        AreAppsLocallyInstalledBySync()
+            ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+            : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   } else {
     web_app = std::make_unique<WebApp>(*existing_web_app);
   }
@@ -943,7 +965,8 @@ void WebAppSyncBridge::SetAppNotLocallyInstalledForTesting(
     ScopedRegistryUpdate update = BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
     if (web_app) {
-      web_app->SetIsLocallyInstalled(false);
+      web_app->SetInstallState(
+          proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
     }
   }
 }

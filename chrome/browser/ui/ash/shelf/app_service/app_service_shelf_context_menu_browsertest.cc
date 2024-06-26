@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -207,6 +208,8 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   auto web_app_install_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
           GURL("https://example.org"));
+  web_app_install_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
   webapps::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
 

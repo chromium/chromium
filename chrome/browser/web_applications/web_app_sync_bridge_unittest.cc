@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -471,8 +472,10 @@ TEST_F(WebAppSyncBridgeTest, MergeFullSyncData_LocalSetLessThanServerSet) {
   // These fields are not synced, these are just expected values.
   for (std::unique_ptr<WebApp>& expected_app_to_install :
        expected_apps_to_install) {
-    expected_app_to_install->SetIsLocallyInstalled(
-        AreAppsLocallyInstalledBySync());
+    expected_app_to_install->SetInstallState(
+        AreAppsLocallyInstalledBySync()
+            ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+            : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
     expected_app_to_install->SetIsFromSyncAndPendingInstallation(true);
   }
 
@@ -573,7 +576,10 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
 
   for (std::unique_ptr<WebApp>& app_to_add :
        CreateAppsList("https://example.org/", 10)) {
-    app_to_add->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
+    app_to_add->SetInstallState(
+        AreAppsLocallyInstalledBySync()
+            ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+            : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
     app_to_add->SetIsFromSyncAndPendingInstallation(true);
 
     ConvertAppToEntityChange(*app_to_add, syncer::EntityChange::ACTION_ADD,
@@ -1102,7 +1108,8 @@ TEST_F(WebAppSyncBridgeTest,
             std::make_unique<WebApp>(expected_app.app_id());
         entity_data_app->AddSource(WebAppManagement::kPolicy);
         entity_data_app->SetName("Name");
-        entity_data_app->SetIsLocallyInstalled(true);
+        entity_data_app->SetInstallState(
+            proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
 
         EXPECT_TRUE(IsSyncDataEqualIfApplied(
             expected_app, std::move(entity_data_app), *entity_data));
@@ -1208,7 +1215,10 @@ TEST_F(WebAppSyncBridgeTest,
 TEST_F(WebAppSyncBridgeTest, InstallAppsFromSyncAndPendingInstallation) {
   AppsList apps_in_sync_install = CreateAppsList("https://example.com/", 10);
   for (std::unique_ptr<WebApp>& app : apps_in_sync_install) {
-    app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
+    app->SetInstallState(
+        AreAppsLocallyInstalledBySync()
+            ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+            : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
     app->SetIsFromSyncAndPendingInstallation(true);
   }
 
@@ -1465,6 +1475,22 @@ TEST_F(WebAppSyncBridgeTest, SpecificsProtoWithNewFieldPreserved) {
 
   // Check that the sync proto retained its value, including the unknown field.
   EXPECT_EQ(result_proto.SerializeAsString(), serialized_proto);
+}
+
+TEST_F(WebAppSyncBridgeTest, MigratePartiallyInstalledToCorrectStatus) {
+  AppsList initial_registry_apps = CreateAppsList("https://example.com/", 10);
+  for (auto& app : initial_registry_apps) {
+    app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  }
+  Registry registry;
+  InsertAppsListIntoRegistry(&registry, initial_registry_apps);
+  database_factory().WriteRegistry(registry);
+  StartWebAppProvider();
+
+  for (const webapps::AppId& app_id : registrar().GetAppIds()) {
+    EXPECT_EQ(registrar().GetAppById(app_id)->install_state(),
+              proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+  }
 }
 
 namespace {

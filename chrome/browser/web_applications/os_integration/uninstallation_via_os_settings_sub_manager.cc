@@ -9,7 +9,9 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -52,7 +54,8 @@ void UninstallationViaOsSettingsSubManager::Configure(
 
   bool should_register =
       IsOsUninstallationSupported() &&
-      provider_->registrar_unsafe().IsLocallyInstalled(app_id) &&
+      provider_->registrar_unsafe().GetInstallState(app_id) ==
+          proto::INSTALLED_WITH_OS_INTEGRATION &&
       provider_->registrar_unsafe().CanUserUninstallWebApp(app_id);
 
   if (!should_register) {
@@ -88,6 +91,8 @@ void UninstallationViaOsSettingsSubManager::Execute(
     std::move(callback).Run();
     return;
   }
+
+  CHECK_OS_INTEGRATION_ALLOWED();
 
   if (ShouldRegisterOsUninstall(current_state)) {
     CompleteUnregistration(app_id);

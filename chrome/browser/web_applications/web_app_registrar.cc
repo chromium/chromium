@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/proto_helpers.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
@@ -648,7 +649,8 @@ void WebAppRegistrar::Start() {
   int num_multi_profile_apps = 0;
   for (const auto& app_id : multi_profile_app_ids) {
     const WebApp* app = GetAppById(app_id);
-    if (app && app->is_locally_installed() && app->WasInstalledByUser()) {
+    if (app && app->install_state() == proto::INSTALLED_WITH_OS_INTEGRATION &&
+        app->WasInstalledByUser()) {
       num_multi_profile_apps++;
     }
   }
@@ -714,18 +716,7 @@ std::optional<proto::InstallState> WebAppRegistrar::GetInstallState(
   }
   const WebApp* web_app = GetAppById(app_id);
   CHECK(web_app);
-
-  // TODO(crbug.com/340952021): Use InstallState from web_app DB post migration.
-
-  if (web_app->is_locally_installed()) {
-    if (web_app->current_os_integration_states().has_shortcut()) {
-      return proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
-    } else {
-      return proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
-    }
-  } else {
-    return proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
-  }
+  return web_app->install_state();
 }
 
 bool WebAppRegistrar::IsInstallState(
@@ -1031,10 +1022,20 @@ WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
   if (!content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile_)) {
     return {};
   }
-
   const WebApp* isolated_web_app = GetAppById(isolated_web_app_id);
-  if (!isolated_web_app || !isolated_web_app->is_locally_installed() ||
-      !isolated_web_app->isolation_data()) {
+  if (!isolated_web_app) {
+    return {};
+  }
+  // Note: This function is called after is_installed is set to true, so regular
+  // helper functions cannot be used.
+  if (isolated_web_app->install_state() !=
+          proto::INSTALLED_WITH_OS_INTEGRATION &&
+      isolated_web_app->install_state() !=
+          proto::INSTALLED_WITHOUT_OS_INTEGRATION) {
+    return {};
+  }
+
+  if (!isolated_web_app->isolation_data()) {
     return {};
   }
 
@@ -1807,7 +1808,9 @@ std::vector<webapps::AppId> WebAppRegistrar::GetAppIdsForAppSet(
 int WebAppRegistrar::CountUserInstalledNotLocallyInstalledApps() const {
   int num_non_locally_installed = 0;
   for (const WebApp& app : GetApps()) {
-    if (!app.is_locally_installed() && app.WasInstalledByUser()) {
+    if (app.install_state() ==
+            proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE &&
+        app.WasInstalledByUser()) {
       ++num_non_locally_installed;
     }
   }
@@ -1819,7 +1822,9 @@ WebAppRegistrar::CountTotalUserInstalledAppsIncludingDiy() const {
   InstallableAppCount num_user_installed(0);
   DiyAppCount num_diy_apps_user_installed(0);
   for (const WebApp& app : GetApps()) {
-    if (app.is_locally_installed() && app.WasInstalledByUser()) {
+    if ((app.install_state() == proto::INSTALLED_WITH_OS_INTEGRATION ||
+         app.install_state() == proto::INSTALLED_WITHOUT_OS_INTEGRATION) &&
+        app.WasInstalledByUser()) {
       if (app.is_diy_app()) {
         ++num_diy_apps_user_installed.value();
       }

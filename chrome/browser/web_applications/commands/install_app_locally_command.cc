@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -40,19 +41,21 @@ void InstallAppLocallyCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (!app_lock_->registrar().IsInstalled(app_id_)) {
+  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
     GetMutableDebugValue().Set("command_result", "app_not_in_registry");
     CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 
-  // Setting app to be locally installed before calling Synchronize() helps
-  // trigger the OS integration.
-  if (!app_lock_->registrar().IsLocallyInstalled(app_id_)) {
+  // Setting app to be installed with OS integration before calling
+  // Synchronize() helps trigger the OS integration.
+  if (!app_lock_->registrar().IsInstallState(
+          app_id_, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* web_app_to_update = update->UpdateApp(app_id_);
     if (web_app_to_update) {
-      web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
+      web_app_to_update->SetInstallState(
+          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
     }
   }
 

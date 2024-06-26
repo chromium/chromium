@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -195,12 +196,15 @@ base::expected<std::reference_wrapper<const WebApp>, std::string>
 FindIsolatedWebApp(WebAppProvider& provider,
                    const IsolatedWebAppUrlInfo& url_info) {
   const WebAppRegistrar& registrar = provider.registrar_unsafe();
-  const WebApp* iwa = registrar.GetAppById(url_info.app_id());
 
-  if (iwa == nullptr || !iwa->is_locally_installed()) {
+  if (!registrar.IsInstallState(
+          url_info.app_id(),
+          {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return base::unexpected("Isolated Web App not installed: " +
                             url_info.origin().Serialize());
   }
+  const WebApp* iwa = registrar.GetAppById(url_info.app_id());
 
   if (!iwa->isolation_data().has_value()) {
     return base::unexpected("App is not an Isolated Web App: " +

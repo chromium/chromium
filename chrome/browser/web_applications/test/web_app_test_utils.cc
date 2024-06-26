@@ -137,12 +137,12 @@ class RandomHelper {
 
   int64_t next_proto_time() { return syncer::TimeToProtoTime(next_time()); }
 
-  template <typename T>
+  template <typename T, auto min = T::kMinValue, auto max = T::kMaxValue>
   T next_enum() {
-    constexpr uint32_t min = static_cast<uint32_t>(T::kMinValue);
-    constexpr uint32_t max = static_cast<uint32_t>(T::kMaxValue);
-    static_assert(min <= max, "min cannot be greater than max");
-    return static_cast<T>(min + next_uint(max - min));
+    constexpr uint32_t min_u32 = static_cast<uint32_t>(min);
+    constexpr uint32_t max_u32 = static_cast<uint32_t>(max);
+    static_assert(min_u32 <= max_u32, "min cannot be greater than max");
+    return static_cast<T>(min_u32 + next_uint(max_u32 - min_u32));
   }
 
  private:
@@ -557,12 +557,13 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   web_app->AddSource(source_type);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("Name");
-  web_app->SetIsLocallyInstalled(true);
-  // This is set to prevent the RunOnOsLoginCommand scheduled by the policy
-  // manager from synchronizing os integration
-  // TODO(crbug.com/341348401): Remove this after os integration isn't
-  // triggered.
-  web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
+  // Adding OS integration to this app introduces too many edge cases in tests.
+  // Simply set this to partially installed w/ no os integration, and the
+  // correct OS integration state to match that.
+  web_app->SetInstallState(
+      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+  proto::WebAppOsIntegrationState os_state;
+  web_app->SetCurrentOsIntegrationStates(os_state);
 
   return web_app;
 }
@@ -678,7 +679,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   app->SetDarkModeThemeColor(dark_mode_theme_color);
   app->SetBackgroundColor(background_color);
   app->SetDarkModeBackgroundColor(dark_mode_background_color);
-  app->SetIsLocallyInstalled(random.next_bool());
+  app->SetInstallState(random.next_enum<proto::InstallState,
+                                        /*min=*/proto::InstallState_MIN,
+                                        /*max=*/
+                                        proto::InstallState_MAX>());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
   const sync_pb::WebAppSpecifics::UserDisplayMode user_display_modes[3] = {

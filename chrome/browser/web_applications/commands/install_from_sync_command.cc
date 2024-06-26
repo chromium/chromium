@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -42,7 +43,10 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
       webapps::WebappInstallSource::SYNC);
   finalize_options.overwrite_existing_manifest_fields = true;
   // If app is not locally installed then no OS integration like OS shortcuts.
-  finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
+  finalize_options.install_state =
+      AreAppsLocallyInstalledBySync()
+          ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+          : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
   finalize_options.add_to_applications_menu = AreAppsLocallyInstalledBySync();
   finalize_options.add_to_desktop = AreAppsLocallyInstalledBySync();
   // Never add the app to the quick launch bar after sync.

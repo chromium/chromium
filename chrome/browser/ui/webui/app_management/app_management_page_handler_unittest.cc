@@ -626,8 +626,6 @@ TEST_P(AppManagementPageHandlerTestBase, GetScopeExtensions) {
            url::Origin::Create(GURL("https://localhost:9999")))});
 
   web_app::WebAppInstallParams install_params;
-  // OS Integration is not needed for this test.
-  install_params.bypass_os_hooks = true;
   // Skip origin association validation for testing.
   install_params.skip_origin_association_validation = true;
 

@@ -2189,9 +2189,6 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
     std::string_view app_config_string) {
   base::AutoReset<bool> bypass_offline_manifest_requirement =
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
-  // TODO: resolve how to handle return value.
-  std::ignore =
-      PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   base::FilePath test_config_dir = GetResourceFile(
       FILE_PATH_LITERAL("webapps_integration/preinstalled_config_dir/"));
   web_app::SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);

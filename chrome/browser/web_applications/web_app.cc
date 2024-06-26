@@ -500,8 +500,8 @@ void WebApp::SetWebAppChromeOsData(
   chromeos_data_ = std::move(chromeos_data);
 }
 
-void WebApp::SetIsLocallyInstalled(bool is_locally_installed) {
-  is_locally_installed_ = is_locally_installed;
+void WebApp::SetInstallState(proto::InstallState install_state) {
+  install_state_ = install_state;
 }
 
 void WebApp::SetIsFromSyncAndPendingInstallation(
@@ -975,7 +975,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.display_mode_,
         app.display_mode_override_,
         app.chromeos_data_,
-        app.is_locally_installed_,
+        app.install_state_,
         app.is_from_sync_and_pending_installation_,
         app.is_uninstalling_,
         app.manifest_icons_,
@@ -1127,7 +1127,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("is_from_sync_and_pending_installation",
            is_from_sync_and_pending_installation_);
 
-  root.Set("is_locally_installed", is_locally_installed_);
+  root.Set("install_state", base::ToString(install_state_));
 
   root.Set("is_uninstalling", is_uninstalling_);
 

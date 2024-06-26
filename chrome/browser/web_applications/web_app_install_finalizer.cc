@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -285,6 +286,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   } else {
     // TODO(b/344718166): Ensure that manifest_id corresponds to app_id here.
     web_app = std::make_unique<WebApp>(app_id);
+    web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
     // Ensure `web_app` has a start_url and manifest_id set before other calls
     // that depend on state being complete, eg. `WebApp::sync_proto()`.
     web_app->SetStartUrl(web_app_info.start_url());
@@ -293,22 +295,32 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
 
-  // The UI may initiate a full install to overwrite the existing
-  // non-locally-installed app. Therefore, |is_locally_installed| can be
-  // promoted to |true|, but not vice versa.
-  web_app->SetIsLocallyInstalled(web_app->is_locally_installed() ||
-                                 options.locally_installed);
-
-  // The last install time is always updated if the app has been locally
-  // installed, but the first install time is updated only once.
   const base::Time now_time = base::Time::Now();
-  if (options.locally_installed && web_app->first_install_time().is_null()) {
-    web_app->SetFirstInstallTime(now_time);
+
+  // The UI may initiate a full install to overwrite the existing
+  // non-locally-installed app. Therefore, `install_state` can be
+  // promoted to `INSTALLED_WITH_OS_INTEGRATION`, but not vice versa.
+  if (options.install_state ==
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
+    web_app->SetInstallState(
+        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+    // The last install time is always updated if the app has been locally
+    // installed, but the first install time is updated only once.
+    if (web_app->first_install_time().is_null()) {
+      web_app->SetFirstInstallTime(now_time);
+    }
+    // The last install time is updated whenever we (re)install/update.
+    web_app->SetLatestInstallTime(now_time);
   }
 
-  // The last install time is updated whenever we (re)install/update.
-  if (options.locally_installed) {
-    web_app->SetLatestInstallTime(now_time);
+  // Handle going from SUGGESTED_FROM_ANOTHER_DEVICE ->
+  // INSTALLED_WITHOUT_OS_INTEGRATION
+  if (web_app->install_state() ==
+          proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE &&
+      options.install_state ==
+          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION) {
+    web_app->SetInstallState(
+        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
   }
 
   if (!web_app->run_on_os_login_os_integration_state()) {
@@ -368,10 +380,11 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
       *web_app, options.source, web_app_info.is_placeholder,
       web_app_info.install_url, web_app_info.additional_policy_ids);
 
-  if (!options.locally_installed) {
+  if (options.install_state !=
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
     DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
              options.add_to_quick_launch_bar))
-        << "Cannot create os hooks for a non-locally installed app";
+        << "Cannot create os hooks for a non-fully installed app";
   }
 
   CommitCallback commit_callback = base::BindOnce(
@@ -595,24 +608,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS should always have OS integration. In the future we should always
-  // be synchronizing os integration on all platforms too.
-  // https://crbug.com/328524602
-  const bool should_install_os_hooks = true;
-#else
-  const bool should_install_os_hooks =
-      !finalize_options.bypass_os_hooks &&
-      !web_app->HasOnlySource(WebAppManagement::Type::kDefault) &&
-      finalize_options.locally_installed;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (!should_install_os_hooks) {
-    std::move(callback).Run(app_id,
-                            webapps::InstallResultCode::kSuccessNewInstall);
-    return;
-  }
-
   SynchronizeOsOptions synchronize_options;
   synchronize_options.add_shortcut_to_desktop = finalize_options.add_to_desktop;
   synchronize_options.add_to_quick_launch_bar =
@@ -649,11 +644,16 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 void WebAppInstallFinalizer::OnInstallHooksFinished(
     InstallFinalizedCallback callback,
     webapps::AppId app_id) {
-  auto joined = std::move(callback).Then(
-      base::BindOnce(&WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
-                     weak_ptr_factory_.GetWeakPtr(), app_id));
-
-  std::move(joined).Run(app_id, webapps::InstallResultCode::kSuccessNewInstall);
+  // Only notify that os hooks were added if the installation was a 'full'
+  // installation.
+  if (provider_->registrar_unsafe().IsInstallState(
+          app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+    callback = std::move(callback).Then(base::BindOnce(
+        &WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
+        weak_ptr_factory_.GetWeakPtr(), app_id));
+  }
+  std::move(callback).Run(app_id,
+                          webapps::InstallResultCode::kSuccessNewInstall);
 }
 
 void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(

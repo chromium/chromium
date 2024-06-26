@@ -435,8 +435,8 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesPublishDelta) {
   GURL shortcut_url("https://example-shortcut.com/");
   auto shortcut_id = CreateShortcut(shortcut_url, "Shortcut");
 #if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS has OS integration enabled by default, and thus we get an extra
-  // publish when the os integration finishes.
+  // ChromeOS builds enable os integration in the `CreateShortcut` method, which
+  // results in an extra publish call.
   ++expected_called_num;
 #endif
   EXPECT_EQ(++expected_called_num, no_op_delegate_.num_publish_called());

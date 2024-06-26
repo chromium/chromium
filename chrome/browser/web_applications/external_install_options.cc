@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
@@ -86,7 +87,8 @@ bool ExternalInstallOptions::operator==(
         options.oem_installed,
         options.disable_if_touchscreen_with_stylus_not_supported,
         options.handles_file_open_intents,
-        options.expected_app_id
+        options.expected_app_id,
+        options.install_without_os_integration
         // clang-format on
     );
   };
@@ -166,6 +168,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("user_type_allowlist", ConvertStringList(user_type_allowlist));
   root.Set("placeholder_resolution_behavior",
            base::Value(static_cast<int>(placeholder_resolution_behavior)));
+  root.Set("install_without_os_integration", install_without_os_integration);
 
   return base::Value(std::move(root));
 }
@@ -207,6 +210,15 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.oem_installed = install_options.oem_installed;
 
   params.install_url = install_options.install_url;
+
+  if (install_options.install_without_os_integration) {
+    params.install_state =
+        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+    params.add_to_search = false;
+  }
 
   return params;
 }

@@ -136,8 +136,7 @@ TEST_F(ShortcutsVersioningMacTest, RebuildShortcutsOnVersionChange) {
   // TODO(crbug.com/343754406): Investigate why all the fields need to be
   // explicitly set to false.
   WebAppInstallParams params;
-  params.bypass_os_hooks = true;
-  params.locally_installed = false;
+  params.install_state = proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
   params.add_to_applications_menu = false;
   params.add_to_desktop = false;
   params.add_to_quick_launch_bar = false;

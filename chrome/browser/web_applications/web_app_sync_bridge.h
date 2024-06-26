@@ -266,6 +266,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   // Update apps that don't have a UserDisplayMode set for the current platform.
   void EnsureAppsHaveUserDisplayModeForCurrentPlatform();
+  void EnsurePartiallyInstalledAppsHaveCorrectStatus();
   void OnDataWritten(CommitCallback callback, bool success);
   void OnWebAppUninstallComplete(const webapps::AppId& app,
                                  webapps::UninstallResultCode code);

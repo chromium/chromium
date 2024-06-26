@@ -137,10 +137,16 @@ class WebApp {
 
   ClientData* client_data() { return &client_data_; }
 
-  // Locally installed apps have shortcuts installed on various UI surfaces.
-  // If app isn't locally installed, it is excluded from UIs and only listed as
-  // a part of user's app library.
-  bool is_locally_installed() const { return is_locally_installed_; }
+  // Installation status:
+  // - Not locally installed: The app is not installed at all on this device,
+  //   but does exist in the user's sync profile (and only is listed as part of
+  //   the user's app library).
+  // - Fully installed: The app is fully installed on this device.
+  // - Partially installed no integration: The app is considered installed, but
+  // does not have any OS integration with the operating system (no shortcuts,
+  // etc). This is used for preinstalled apps on non-CrOS device.
+  proto::InstallState install_state() const { return install_state_; }
+
   // Sync-initiated installation produces a stub app awaiting for full
   // installation process. The |is_from_sync_and_pending_installation| app has
   // only app_id, launch_url and sync_fallback_data fields defined, no icons. If
@@ -466,7 +472,7 @@ class WebApp {
   void SetUserDisplayMode(mojom::UserDisplayMode user_display_mode);
   void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
   void SetWebAppChromeOsData(std::optional<WebAppChromeOsData> chromeos_data);
-  void SetIsLocallyInstalled(bool is_locally_installed);
+  void SetInstallState(proto::InstallState install_state);
   void SetIsFromSyncAndPendingInstallation(
       bool is_from_sync_and_pending_installation);
   void SetIsUninstalling(bool is_uninstalling);
@@ -585,7 +591,8 @@ class WebApp {
   DisplayMode display_mode_ = DisplayMode::kUndefined;
   std::vector<DisplayMode> display_mode_override_;
   std::optional<WebAppChromeOsData> chromeos_data_;
-  bool is_locally_installed_ = false;
+  proto::InstallState install_state_ =
+      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
   bool is_from_sync_and_pending_installation_ = false;
   // Note: This field is not persisted in the database.
   // TODO(crbug.com/40162790): Add this field to the protocol buffer file and

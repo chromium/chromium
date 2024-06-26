@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -62,7 +63,8 @@ class WebAppInstallFinalizer {
 
     const WebAppManagement::Type source;
     const webapps::WebappInstallSource install_surface;
-    bool locally_installed = true;
+    proto::InstallState install_state =
+        proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
     bool overwrite_existing_manifest_fields = true;
     bool skip_icon_writes_on_download_failure = false;
 
@@ -77,12 +79,8 @@ class WebAppInstallFinalizer {
     // `web_app_info.isolated_web_app_version` is invalid.
     std::optional<IsolatedWebAppStorageLocation> isolated_web_app_location;
 
-    // If true, OsIntegrationManager::Synchronize() won't be called at all,
-    // meaning that all other OS Hooks related parameters below will be ignored.
-    bool bypass_os_hooks = false;
-
-    // These OS shortcut fields can't be true if |locally_installed| is false.
-    // They only have an effect when |bypass_os_hooks| is false.
+    // These are required to be false if `install_state` is not
+    // proto::INSTALLED_WITH_OS_INTEGRATION.
     bool add_to_applications_menu = true;
     bool add_to_desktop = true;
     bool add_to_quick_launch_bar = true;

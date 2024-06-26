@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/jobs/uninstall/web_app_uninstall_and_replace_job.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -39,7 +40,9 @@ InstallFromInfoJob::InstallFromInfoJob(
       install_params_(std::move(install_params)),
       install_info_(std::move(install_info)),
       callback_(std::move(install_callback)) {
-  if (install_params_.has_value() && !install_params_->locally_installed) {
+  if (install_params_.has_value() &&
+      install_params_->install_state !=
+          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
     CHECK(!install_params_->add_to_applications_menu);
     CHECK(!install_params_->add_to_desktop);
     CHECK(!install_params_->add_to_quick_launch_bar);
@@ -79,10 +82,15 @@ void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
   if (install_params_.has_value()) {
     ApplyParamsToFinalizeOptions(*install_params_, options);
   } else {
-    options.bypass_os_hooks = true;
+    options.install_state =
+        proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+    options.add_to_applications_menu = false;
+    options.add_to_quick_launch_bar = false;
+    options.add_to_desktop = false;
   }
 
-  debug_value_->Set("options.bypass_os_hooks", options.bypass_os_hooks);
+  debug_value_->Set("options.install_state",
+                    base::ToString(options.install_state));
   lock_with_app_resources_->install_finalizer().FinalizeInstall(
       *install_info_, options,
       base::BindOnce(&InstallFromInfoJob::OnInstallCompleted,

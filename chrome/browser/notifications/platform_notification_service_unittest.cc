@@ -55,6 +55,7 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -389,7 +390,8 @@ class PlatformNotificationServiceTest_WebApps
         kNotInstalledNestedWebAppStartUrl);
     web_app->title = u"Test app 3";
     web_app::WebAppInstallParams params;
-    params.locally_installed = false;
+    params.install_state =
+        web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
     // OS Hooks must be disabled for non-locally installed app.
     params.add_to_applications_menu = false;
     params.add_to_desktop = false;

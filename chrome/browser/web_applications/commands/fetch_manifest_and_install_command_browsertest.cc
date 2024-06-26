@@ -289,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   {
     ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
-    web_app->SetIsLocallyInstalled(false);
+    web_app->SetInstallState(
+        proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
     update->CreateApp(std::move(web_app));
   }
 

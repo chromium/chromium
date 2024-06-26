@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -317,7 +318,6 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   const webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
   const std::string name = "App Name";
-  const bool is_locally_installed = true;
 
   std::vector<std::unique_ptr<WebAppProto>> protos;
 
@@ -333,7 +333,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   }
 
   proto->set_name(name);
-  proto->set_is_locally_installed(is_locally_installed);
+  proto->set_install_state(proto::INSTALLED_WITH_OS_INTEGRATION);
 
   proto->mutable_sources()->set_system(false);
   proto->mutable_sources()->set_policy(false);
@@ -360,7 +360,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   EXPECT_EQ(start_url, app->start_url());
   EXPECT_EQ(name, app->untranslated_name());
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app->user_display_mode());
-  EXPECT_EQ(is_locally_installed, app->is_locally_installed());
+  EXPECT_EQ(proto::INSTALLED_WITHOUT_OS_INTEGRATION, app->install_state());
   EXPECT_TRUE(app->IsSynced());
   EXPECT_FALSE(app->IsPreinstalledApp());
 
@@ -465,7 +465,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   app->SetManifestId(GenerateManifestIdFromStartUrlOnly(start_url));
   app->SetName(name);
   app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-  app->SetIsLocallyInstalled(false);
+  app->SetInstallState(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   // chromeos_data should always be set on ChromeOS.
   if (IsChromeOsDataMandatory())
     app->SetWebAppChromeOsData(std::make_optional<WebAppChromeOsData>());
@@ -529,7 +529,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(start_url, app_copy->start_url());
   EXPECT_EQ(name, app_copy->untranslated_name());
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app_copy->user_display_mode());
-  EXPECT_FALSE(app_copy->is_locally_installed());
+  EXPECT_EQ(proto::SUGGESTED_FROM_ANOTHER_DEVICE, app_copy->install_state());
 
   auto& chromeos_data = app_copy->chromeos_data();
   if (IsChromeOsDataMandatory()) {

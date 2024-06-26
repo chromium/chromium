@@ -17,8 +17,10 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -85,7 +87,8 @@ void RunOnOsLoginSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_run_on_os_login());
 
-  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
+  if (provider_->registrar_unsafe().GetInstallState(app_id) !=
+      proto::INSTALLED_WITH_OS_INTEGRATION) {
     std::move(configure_done).Run();
     return;
   }
@@ -126,6 +129,8 @@ void RunOnOsLoginSubManager::Execute(
     std::move(execute_done).Run();
     return;
   }
+
+  CHECK_OS_INTEGRATION_ALLOWED();
 
   StartUnregistration(
       app_id, current_state, desired_state,

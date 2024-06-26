@@ -63,6 +63,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -669,11 +670,19 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
 apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   DCHECK(!IsShuttingDown());
 
-  apps::Readiness readiness =
-      web_app->is_locally_installed()
-          ? (web_app->is_uninstalling() ? apps::Readiness::kUninstalledByUser
-                                        : apps::Readiness::kReady)
-          : apps::Readiness::kDisabledByUser;
+  apps::Readiness readiness;
+
+  switch (web_app->install_state()) {
+    case proto::InstallState::INSTALLED_WITH_OS_INTEGRATION:
+    case proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION:
+      readiness =
+          (web_app->is_uninstalling() ? apps::Readiness::kUninstalledByUser
+                                      : apps::Readiness::kReady);
+      break;
+    case proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE:
+      readiness = apps::Readiness::kDisabledByUser;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK(web_app->chromeos_data().has_value());
   if (web_app->chromeos_data()->is_disabled) {
@@ -1652,7 +1661,8 @@ void WebAppPublisherHelper::ObserveWebAppSubsystems() {
 
 IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
   IconEffects icon_effects = IconEffects::kRoundCorners;
-  if (!web_app->is_locally_installed()) {
+  if (web_app->install_state() ==
+      proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE) {
     icon_effects |= IconEffects::kBlocked;
   }
 

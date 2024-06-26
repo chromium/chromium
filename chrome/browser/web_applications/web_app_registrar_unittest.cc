@@ -91,7 +91,12 @@ Registry CreateRegistryForTesting(const std::string& base_url, int num_apps) {
     web_app->SetName("Name" + base::NumberToString(i));
     web_app->SetDisplayMode(DisplayMode::kBrowser);
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-    web_app->SetIsLocallyInstalled(true);
+    web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
+    // Set an OS integration state (with shortcuts) to prevent migration to a
+    // partially installed status.
+    proto::WebAppOsIntegrationState os_state;
+    os_state.mutable_shortcut();
+    web_app->SetCurrentOsIntegrationStates(os_state);
 
     registry.emplace(app_id, std::move(web_app));
   }
@@ -338,12 +343,13 @@ TEST_F(WebAppRegistrarTest, AppsInstalledByUserMetric) {
   PopulateRegistry(CreateRegistryForTesting("https://example.com/path", 10));
   StartWebAppProvider();
 
-  histogram_tester.ExpectUniqueSample("WebApp.InstalledCount.ByUser",
-                                      /*sample=*/10,
-                                      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "WebApp.InstalledCount.ByUserNotLocallyInstalled", /*sample=*/0,
-      /*expected_bucket_count=*/1);
+  EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.InstalledCount.ByUser"),
+              base::BucketsAre(base::Bucket(/*min=*/10,
+                                            /*count=*/1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.InstalledCount.ByUserNotLocallyInstalled"),
+              base::BucketsAre(base::Bucket(/*min=*/0,
+                                            /*count=*/1)));
 }
 
 TEST_F(WebAppRegistrarTest, AppsNonUserInstalledMetric) {
@@ -375,6 +381,7 @@ TEST_F(WebAppRegistrarTest, AppsNotLocallyInstalledMetric) {
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("name");
   web_app->SetStartUrl(GURL("https://example.com/path"));
+  web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   PopulateRegistryWithApp(std::move(web_app));
   StartWebAppProvider();
 
@@ -459,7 +466,7 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
   web_app->SetDisplayMode(display_mode);
   web_app->SetUserDisplayMode(user_display_mode);
   web_app->SetDisplayModeOverride(display_mode_override);
-  web_app->SetIsLocallyInstalled(/*is_locally_installed*/ false);
+  web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
 
   PopulateRegistryWithApp(std::move(web_app));
   StartWebAppProvider();
@@ -982,7 +989,8 @@ TEST_F(
   isolated_web_app->SetIsolationData(WebApp::IsolationData(
       IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
       base::Version("1.0.0")));
-  isolated_web_app->SetIsLocallyInstalled(false);
+  isolated_web_app->SetInstallState(
+      proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs =
@@ -1065,7 +1073,7 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeBrowser) {
   const webapps::AppId app_id = web_app->app_id();
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
-  web_app->SetIsLocallyInstalled(false);
+  web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(DisplayMode::kBrowser,
@@ -1087,7 +1095,7 @@ TEST_F(WebAppRegistrarTest,
   const webapps::AppId app_id = web_app->app_id();
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
-  web_app->SetIsLocallyInstalled(false);
+  web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
 
   RegisterAppUnsafe(std::move(web_app));
 
@@ -1105,7 +1113,7 @@ TEST_F(WebAppRegistrarTest,
   // Valid manifest must have standalone display mode
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-  web_app->SetIsLocallyInstalled(true);
+  web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
   web_app->SetIsolationData(WebApp::IsolationData(
       IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
       base::Version("1.0.0")));
@@ -1128,7 +1136,7 @@ TEST_F(WebAppRegistrarTest, NotLocallyInstalledAppGetsDisplayModeOverride) {
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetDisplayModeOverride(display_mode_overrides);
-  web_app->SetIsLocallyInstalled(false);
+  web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(DisplayMode::kBrowser,
@@ -1155,7 +1163,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetDisplayModeOverride(display_mode_overrides);
-  web_app->SetIsLocallyInstalled(false);
+  web_app->SetInstallState(proto::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterAppUnsafe(std::move(web_app));
 
   EXPECT_EQ(DisplayMode::kFullscreen,

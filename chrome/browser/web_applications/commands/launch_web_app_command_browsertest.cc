@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -398,7 +399,10 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
   WebAppInstallParams params;
-  params.bypass_os_hooks = true;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+  params.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
   provider().scheduler().InstallFromInfoWithParams(
       std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -406,18 +410,13 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   ASSERT_TRUE(install_future.Wait());
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
 
-  bool os_integration_always_occurs = false;
-#if BUILDFLAG(IS_CHROMEOS)
-  os_integration_always_occurs = true;
-#endif
-
-  // Check that OS integration NOT has occurred on platforms where it is
-  // optional.
-  EXPECT_EQ(os_integration_always_occurs,
-            provider()
-                .registrar_unsafe()
-                .GetAppCurrentOsIntegrationState(app_id)
-                ->has_shortcut());
+  // Check that OS integration NOT has occurred.
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppCurrentOsIntegrationState(app_id)
+                   ->has_shortcut());
+  EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
+            proto::INSTALLED_WITHOUT_OS_INTEGRATION);
 
   base::test::TestFuture<base::WeakPtr<Browser>,
                          base::WeakPtr<content::WebContents>,
@@ -426,6 +425,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   provider().scheduler().LaunchApp(app_id, std::nullopt,
                                    launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Wait());
+  EXPECT_EQ(provider().registrar_unsafe().GetInstallState(app_id),
+            proto::INSTALLED_WITH_OS_INTEGRATION);
 
   // Check the state is correct.
   EXPECT_TRUE(AppBrowserController::IsWebApp(
@@ -435,11 +436,12 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
       launch_future.Get<base::WeakPtr<content::WebContents>>()->GetVisibleURL(),
       kStartUrl);
 
-  // Check that OS integration has occurred.
+  // Check that OS integration has occurred & the app is fully installed now.
   EXPECT_TRUE(provider()
                   .registrar_unsafe()
                   .GetAppCurrentOsIntegrationState(app_id)
                   ->has_shortcut());
+  EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(app_id));
 }
 
 }  // namespace

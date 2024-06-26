@@ -13,10 +13,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -417,6 +419,49 @@ TEST_F(OsIntegrationSynchronizeCommandTest,
 #else
   ASSERT_FALSE(os_integration_state.has_uninstall_registration());
 #endif
+}
+
+TEST_F(OsIntegrationSynchronizeCommandTest, UpgradeToFullyInstalled) {
+  auto install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
+  install_info->title = u"Test App";
+  install_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+
+  WebAppInstallParams params;
+  params.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      result;
+  provider()->scheduler().InstallFromInfoWithParams(
+      std::move(install_info), /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, result.GetCallback(),
+      params);
+  ASSERT_TRUE(result.Wait());
+  EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+
+  const webapps::AppId& app_id = result.Get<webapps::AppId>();
+  std::optional<proto::WebAppOsIntegrationState> states =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(states.has_value());
+  EXPECT_FALSE(states->has_shortcut());
+
+  base::test::TestFuture<void> done;
+  SynchronizeOsOptions options;
+  options.add_shortcut_to_desktop = true;
+  provider()->scheduler().SynchronizeOsIntegration(
+      app_id, done.GetCallback(), options,
+      /*upgrade_to_fully_installed_if_installed=*/true);
+  ASSERT_TRUE(done.Wait());
+
+  states =
+      provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(states.has_value());
+  EXPECT_TRUE(states->has_shortcut());
 }
 
 }  // namespace

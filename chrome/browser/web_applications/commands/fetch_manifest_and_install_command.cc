@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -648,7 +649,8 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
 
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
 
-  finalize_options.locally_installed = true;
+  finalize_options.install_state =
+      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
   finalize_options.overwrite_existing_manifest_fields = true;
   finalize_options.add_to_applications_menu = true;
   finalize_options.add_to_desktop = true;

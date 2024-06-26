@@ -155,6 +155,16 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, PreinstalledWebAppInstallAfterFlow) {
+  helper_.InstallPreinstalledApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
+  helper_.InstallOmniboxIcon(InstallableSite::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.UninstallFromList(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

@@ -58,7 +58,8 @@ WebAppTabHelper::GetAppIdForNotificationAttribution(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
   if (!web_app_provider ||
-      !web_app_provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
+      !web_app_provider->registrar_unsafe().IsInstallState(
+          *app_id, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
     return std::nullopt;
   }
   // Default apps are locally installed but unless an app shim has been created

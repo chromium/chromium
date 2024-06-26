@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -118,7 +119,6 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
   web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
   web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
   web_app->AddSource(WebAppManagement::Type::kIwaUserInstalled);
-  web_app->SetIsLocallyInstalled(true);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   return web_app;
 }
@@ -348,7 +348,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
       kDevAppStartUrl, WebApp::IsolationData{IwaStorageProxy{kProxyOrigin},
                                              base::Version("1.0.0")});
-  iwa->SetIsLocallyInstalled(false);
+  iwa->SetInstallState(proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterWebApp(std::move(iwa));
 
   // Verify that a PWA is installed at kAppStartUrl's origin.

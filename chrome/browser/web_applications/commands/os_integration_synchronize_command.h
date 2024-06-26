@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -18,12 +18,17 @@ namespace web_app {
 
 struct SynchronizeOsOptions;
 
-// Used to call OsIntegrationManager::Synchronize() with an app_lock.
+// Used to call OsIntegrationManager::Synchronize() with an app_lock. This
+// command can be called without the app being installed in the WebAppProvider
+// to use the `SynchronizeOsOptions::force_unregister_os_integration`
+// functionality which attempts to remove OS integration for a given app_id even
+// if it's not in the database.
 class OsIntegrationSynchronizeCommand : public WebAppCommand<AppLock> {
  public:
   OsIntegrationSynchronizeCommand(
       const webapps::AppId& app_id,
       std::optional<SynchronizeOsOptions> synchronize_options,
+      bool upgrade_to_fully_installed_if_installed,
       base::OnceClosure synchronize_callback);
   ~OsIntegrationSynchronizeCommand() override;
 
@@ -37,6 +42,7 @@ class OsIntegrationSynchronizeCommand : public WebAppCommand<AppLock> {
 
   webapps::AppId app_id_;
   std::optional<SynchronizeOsOptions> synchronize_options_ = std::nullopt;
+  bool upgrade_to_fully_installed_if_installed_;
 
   base::WeakPtrFactory<OsIntegrationSynchronizeCommand> weak_factory_{this};
 };

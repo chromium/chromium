@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -355,7 +356,6 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
   }
 
   WebAppInstallFinalizer::FinalizeOptions finalize_options(install_surface_);
-
   finalize_options.overwrite_existing_manifest_fields =
       install_params_->force_reinstall;
 
@@ -592,8 +592,6 @@ void ExternalAppResolutionCommand::InstallFromInfo() {
   if (install_options_.only_use_app_info_factory) {
     install_params_->skip_origin_association_validation = true;
   }
-
-  install_params_->bypass_os_hooks = true;
 
   if (!install_options_.app_info_factory) {
     Abort(webapps::InstallResultCode::kGetWebAppInstallInfoFailed);

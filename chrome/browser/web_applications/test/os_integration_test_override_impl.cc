@@ -493,12 +493,11 @@ bool OsIntegrationTestOverrideImpl::IsShortcutCreated(
     const webapps::AppId& app_id,
     const std::string& app_name) {
 #if BUILDFLAG(IS_WIN)
-  base::FilePath desktop_shortcut_path =
-      GetShortcutPath(profile, desktop(), app_id, app_name);
+  // A shortcut, at minimum, is in the start menu / 'application menu'
+  // directory on Windows.
   base::FilePath application_menu_shortcut_path =
       GetShortcutPath(profile, application_menu(), app_id, app_name);
-  return (base::PathExists(desktop_shortcut_path) &&
-          base::PathExists(application_menu_shortcut_path));
+  return base::PathExists(application_menu_shortcut_path);
 #elif BUILDFLAG(IS_MAC)
   base::FilePath app_shortcut_path =
       GetShortcutPath(profile, chrome_apps_folder(), app_id, app_name);

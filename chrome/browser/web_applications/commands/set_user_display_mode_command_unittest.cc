@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
@@ -44,10 +45,10 @@ class SetUserDisplayModeCommandTest : public WebAppTest {
     info->title = u"Test App";
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-    // Install as EXTERNAL_DEFAULT ensures no os integration is triggered.
-    return test::InstallWebApp(profile(), std::move(info),
-                               /*overwrite_existing_manifest_fields=*/true,
-                               webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+    return test::InstallWebAppWithoutOsIntegration(
+        profile(), std::move(info),
+        /*overwrite_existing_manifest_fields=*/true,
+        webapps::WebappInstallSource::EXTERNAL_DEFAULT);
   }
 
   void SetUserDisplayModeAndAwaitCompletion(
@@ -71,17 +72,13 @@ TEST_F(SetUserDisplayModeCommandTest, SetUserDisplayMode) {
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(state->has_shortcut());
-#endif
 
   SetUserDisplayModeAndAwaitCompletion(app_id,
                                        mojom::UserDisplayMode::kBrowser);
   state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
-#if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(state->has_shortcut());
-#endif
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
             registrar().GetAppUserDisplayMode(app_id));
 

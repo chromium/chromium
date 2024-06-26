@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
@@ -246,7 +247,7 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
-  options.locally_installed = false;
+  options.install_state = proto::SUGGESTED_FROM_ANOTHER_DEVICE;
   // OS Hooks must be disabled for non-locally installed app.
   options.add_to_applications_menu = false;
   options.add_to_desktop = false;
@@ -259,12 +260,13 @@ TEST_F(WebAppInstallFinalizerUnitTest,
     const WebApp* installed_app =
         registrar().GetAppById(result.installed_app_id);
 
-    EXPECT_FALSE(installed_app->is_locally_installed());
+    EXPECT_EQ(proto::SUGGESTED_FROM_ANOTHER_DEVICE,
+              installed_app->install_state());
     EXPECT_TRUE(installed_app->first_install_time().is_null());
     EXPECT_TRUE(installed_app->latest_install_time().is_null());
   }
 
-  options.locally_installed = true;
+  options.install_state = proto::INSTALLED_WITH_OS_INTEGRATION;
 
   {
     FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -273,7 +275,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
     const WebApp* installed_app =
         registrar().GetAppById(result.installed_app_id);
 
-    EXPECT_TRUE(installed_app->is_locally_installed());
+    EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
+              installed_app->install_state());
     EXPECT_FALSE(installed_app->first_install_time().is_null());
     EXPECT_FALSE(installed_app->latest_install_time().is_null());
     EXPECT_EQ(installed_app->first_install_time(),
@@ -288,12 +291,10 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
-  options.locally_installed = false;
-  // OS Hooks must be disabled for non-locally installed app.
   options.add_to_applications_menu = false;
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
-  options.locally_installed = true;
+  options.install_state = proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;
 
   base::Time old_first_install_time;
   base::Time old_latest_install_time;
@@ -305,7 +306,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
     const WebApp* installed_app =
         registrar().GetAppById(result.installed_app_id);
 
-    EXPECT_TRUE(installed_app->is_locally_installed());
+    EXPECT_EQ(installed_app->install_state(),
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
     old_first_install_time = installed_app->first_install_time();
     old_latest_install_time = installed_app->latest_install_time();
     EXPECT_FALSE(old_first_install_time.is_null());
@@ -322,7 +324,8 @@ TEST_F(WebAppInstallFinalizerUnitTest,
     const WebApp* installed_app =
         registrar().GetAppById(result.installed_app_id);
 
-    EXPECT_TRUE(installed_app->is_locally_installed());
+    EXPECT_EQ(installed_app->install_state(),
+              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
     EXPECT_FALSE(installed_app->first_install_time().is_null());
     EXPECT_FALSE(installed_app->latest_install_time().is_null());
     EXPECT_EQ(installed_app->first_install_time(), old_first_install_time);
@@ -413,6 +416,10 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallOsHooksDisabledForDefaultApps) {
   info->title = u"Foo Title";
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+  options.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+  options.add_to_applications_menu = false;
+  options.add_to_quick_launch_bar = false;
+  options.add_to_desktop = false;
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
@@ -506,7 +513,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_TRUE(installed_app->is_locally_installed());
+  EXPECT_EQ(installed_app->install_state(),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(ScopeExtensions({scope_extension}),
             installed_app->validated_scope_extensions());
 }
@@ -533,7 +541,8 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_TRUE(installed_app->is_locally_installed());
+  EXPECT_EQ(installed_app->install_state(),
+            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(ScopeExtensions(), installed_app->validated_scope_extensions());
 }
 

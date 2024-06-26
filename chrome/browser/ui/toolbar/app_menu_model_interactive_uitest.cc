@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -468,7 +469,8 @@ class UniversalInstallAppMenuModelInteractiveTest
     install_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
     web_app::WebAppInstallParams params;
-    params.locally_installed = false;
+    params.install_state =
+        web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
     params.add_to_applications_menu = false;
     params.add_to_desktop = false;
     params.add_to_quick_launch_bar = false;

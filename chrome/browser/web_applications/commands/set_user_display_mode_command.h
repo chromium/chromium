@@ -30,11 +30,17 @@ class SetUserDisplayModeCommand : public WebAppCommand<AppLock> {
   void StartWithLock(std::unique_ptr<AppLock> app_lock) override;
 
   // Helper method that only updates user display mode without also possibly
-  // triggering os integration. This primarily exists for places where the user
-  // display mode needs to be set as part of a different Command.
+  // triggering os integration. This automatically upgrades to
+  // `InstallState::INSTALLED_WITH_OS_INTEGRATION` if necessary. This returns
+  // true if the caller needs to synchronize os integration. If the given app_id
+  // is not installed, then this is a no-op.
+  //
+  // This primarily exists for places where the user display mode needs to be
+  // set as part of a different Command.
+  //
   // Note: This will notify any observers of the registrar of the display mode
   // change synchronously inside this method.
-  static void DoSetDisplayMode(WithAppResources& resources,
+  static bool DoSetDisplayMode(WithAppResources& resources,
                                const webapps::AppId& app_id,
                                mojom::UserDisplayMode user_display_mode,
                                bool is_user_action);

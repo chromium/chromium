@@ -108,7 +108,6 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
   info->title = u"Test name";
 
   WebAppInstallParams install_params;
-  install_params.bypass_os_hooks = false;
   install_params.add_to_applications_menu = true;
   install_params.add_to_desktop = true;
 

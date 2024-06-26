@@ -431,8 +431,6 @@ void OsIntegrationManager::StartSubManagerExecutionIfRequired(
     return;
   }
 
-  CHECK_OS_INTEGRATION_ALLOWED();
-
   ExecuteNextSubmanager(app_id, options, desired_states_ptr,
                         web_app->current_os_integration_states(), /*index=*/0,
                         std::move(write_state_to_db));
