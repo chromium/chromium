@@ -1335,8 +1335,10 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
       focus_cycler->OnViewDestroyingOrDisabling((*iter)->desk_name_view());
       focus_cycler->OnViewDestroyingOrDisabling(
           (*iter)->desk_action_view()->close_all_button());
-      focus_cycler->OnViewDestroyingOrDisabling(
-          (*iter)->desk_action_view()->combine_desks_button());
+      if (auto* combine_desks_button =
+              (*iter)->desk_action_view()->combine_desks_button()) {
+        focus_cycler->OnViewDestroyingOrDisabling(combine_desks_button);
+      }
       if (auto* desk_profiles_button = (*iter)->desk_profiles_button()) {
         focus_cycler->OnViewDestroyingOrDisabling(desk_profiles_button);
       }
@@ -1731,8 +1733,13 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
         desk->name().empty() && desk_index != -1
             ? desk_controller->GetDeskDefaultName(desk_index)
             : desk->name();
-    desk_action_view->combine_desks_button()->UpdateTooltip(
-        combine_desk_tooltip);
+    // The combine desks button only exists if the forest feature is disabled.
+    // The context menu button that would appear in its place does not need to
+    // update its tooltip as it doesn't use a formatted string.
+    if (!features::IsForestFeatureEnabled()) {
+      desk_action_view->combine_desks_button()->UpdateTooltip(
+          combine_desk_tooltip);
+    }
     desk_action_view->close_all_button()->UpdateTooltip(close_desk_tooltip);
   }
 }

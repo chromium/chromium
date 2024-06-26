@@ -25,6 +25,7 @@ class ASH_EXPORT DeskActionButton : public CloseButton,
 
  public:
   enum class Type {
+    kContextMenu,
     kCombineDesk,
     kCloseDesk,
   };

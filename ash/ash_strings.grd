@@ -2714,6 +2714,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_DESK_NAME_COMMIT" desc="Alert when the desk name is committed">
         Desk name was changed to <ph name="DESK_NAME">$1</ph>
       </message>
+      <message name="IDS_ASH_DESKS_CONTEXT_MENU_DESCRIPTION" translateable="false" desc="The tooltip that describes the action of opening the context menu for a desk.">
+        Open context menu
+      </message>
       <message name="IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and moving its windows to another desk.">
         Combine with <ph name="DESK_NAME">$1</ph>
       </message>

@@ -22,6 +22,17 @@ namespace ash {
 
 namespace {
 
+const gfx::VectorIcon* GetVectorIconForType(DeskActionButton::Type type) {
+  switch (type) {
+    case DeskActionButton::Type::kContextMenu:
+      return &kThreeDotMoreIcon;
+    case DeskActionButton::Type::kCloseDesk:
+      return nullptr;
+    case DeskActionButton::Type::kCombineDesk:
+      return &kCombineDesksIcon;
+  }
+}
+
 constexpr int kDeskCloseButtonSize = 24;
 
 }  // namespace
@@ -32,7 +43,7 @@ DeskActionButton::DeskActionButton(const std::u16string& tooltip,
                                    DeskActionView* desk_action_view)
     : CloseButton(pressed_callback,
                   CloseButton::Type::kMediumFloating,
-                  type == Type::kCombineDesk ? &kCombineDesksIcon : nullptr),
+                  GetVectorIconForType(type)),
       type_(type),
       pressed_callback_(std::move(pressed_callback)),
       desk_action_view_(desk_action_view) {
@@ -90,18 +101,31 @@ bool DeskActionButton::CanShow() const {
     return false;
   }
 
-  // The close desk button can always show, while the combine desk button shows
-  // when its desk contains app windows or there are all desk windows.
+  // The close desk button can always show, while the combine desk button or
+  // the context menu button only show when their desk contains app windows or
+  // there are all desk windows.
   return type_ == Type::kCloseDesk ||
          desk_action_view_->mini_view()->desk()->ContainsAppWindows() ||
          !desk_controller->visible_on_all_desks_windows().empty();
 }
 
 void DeskActionButton::UpdateTooltip(const std::u16string& tooltip) {
-  SetTooltipText(l10n_util::GetStringFUTF16(
-      type_ == Type::kCombineDesk ? IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION
-                                  : IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION,
-      tooltip));
+  int message_id;
+  switch (type_) {
+    case DeskActionButton::Type::kContextMenu:
+      // TODO(hewer): Upload string for translation.
+      message_id = IDS_ASH_DESKS_CONTEXT_MENU_DESCRIPTION;
+      break;
+    case DeskActionButton::Type::kCloseDesk:
+      message_id = IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION;
+      break;
+    case DeskActionButton::Type::kCombineDesk:
+      message_id = IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION;
+      break;
+  }
+  SetTooltipText(type_ == Type::kContextMenu
+                     ? l10n_util::GetStringUTF16(message_id)
+                     : l10n_util::GetStringFUTF16(message_id, tooltip));
 }
 
 BEGIN_METADATA(DeskActionButton)

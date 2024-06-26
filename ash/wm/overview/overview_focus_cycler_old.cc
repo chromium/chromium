@@ -57,7 +57,8 @@ void AddDesksBarTraversableViews(
         out_traversable_views.push_back(profiles_button);
       }
       auto* desk_action_view = mini_view->desk_action_view();
-      if (desk_action_view->combine_desks_button()->CanShow()) {
+      if (desk_action_view->combine_desks_button() &&
+          desk_action_view->combine_desks_button()->CanShow()) {
         out_traversable_views.push_back(
             desk_action_view->combine_desks_button());
       }

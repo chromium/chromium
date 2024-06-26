@@ -200,9 +200,12 @@ DeskMiniView::DeskMiniView(
   }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
-      /*combine_desks_target_name=*/DesksController::Get()
-          ->GetCombineDesksTargetName(desk_),
+      /*combine_desks_target_name=*/
+      DesksController::Get()->GetCombineDesksTargetName(desk_),
       /*close_all_target_name=*/desk_->name(),
+      /*context_menu_callback_=*/
+      base::BindRepeating(&DeskMiniView::OpenContextMenu,
+                          base::Unretained(this), ui::MENU_SOURCE_NONE),
       /*combine_desks_callback=*/
       base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
                           DeskCloseType::kCombineDesks),
@@ -328,9 +331,14 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
   // all desks.
-  auto* combine_desks_button = desk_action_view_->combine_desks_button();
+  if (features::IsForestFeatureEnabled()) {
+    auto* context_menu_button = desk_action_view_->context_menu_button();
+    context_menu_button->SetVisible(context_menu_button->CanShow());
+  } else {
+    auto* combine_desks_button = desk_action_view_->combine_desks_button();
+    combine_desks_button->SetVisible(combine_desks_button->CanShow());
+  }
   auto* close_all_button = desk_action_view_->close_all_button();
-  combine_desks_button->SetVisible(combine_desks_button->CanShow());
   close_all_button->SetVisible(close_all_button->CanShow());
   desk_action_view_->SetVisible(visible && !is_context_menu_open_);
 
@@ -577,8 +585,10 @@ void DeskMiniView::OnPreviewOrProfileAboutToBeFocusedByReverseTab() {
        (desk_profile_button_ == nullptr ||
         !desk_profile_button_->HasFocus()))) {
     auto* combine_desks_button = desk_action_view_->combine_desks_button();
+    if (combine_desks_button) {
+      combine_desks_button->SetVisible(combine_desks_button->CanShow());
+    }
     auto* close_all_button = desk_action_view_->close_all_button();
-    combine_desks_button->SetVisible(combine_desks_button->CanShow());
     close_all_button->SetVisible(close_all_button->CanShow());
     desk_action_view_->SetVisible(true);
     desk_action_view_->close_all_button()->RequestFocus();

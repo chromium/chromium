@@ -164,8 +164,9 @@ const CloseButton* GetCloseDeskButtonForMiniView(
   // When there are no windows on the desk, the `combine_desks_button` is not
   // visible, so we need to use the `close_all_button`
   const DeskActionView* desk_action_view = mini_view->desk_action_view();
-  return desk_action_view->combine_desks_button()->GetVisible()
-             ? desk_action_view->combine_desks_button()
+  auto* combine_desks_button = desk_action_view->combine_desks_button();
+  return (combine_desks_button && combine_desks_button->GetVisible())
+             ? combine_desks_button
              : desk_action_view->close_all_button();
 }
 

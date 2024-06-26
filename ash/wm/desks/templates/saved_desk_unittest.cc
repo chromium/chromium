@@ -414,7 +414,7 @@ class SavedDeskTest : public OverviewTestBase,
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kDesksTemplates, features::kForestFeature,
+        {features::kDesksTemplates,
          features::kDeskBarWindowOcclusionOptimization},
         {});
     OverviewTestBase::SetUp();
@@ -455,8 +455,9 @@ class SavedDeskTest : public OverviewTestBase,
   // tear down.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_;
 
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   std::unique_ptr<MultiUserWindowManager> multi_user_window_manager_;
   AccountId account_id_test_;
 };
@@ -4838,9 +4839,27 @@ TEST_F(SavedDeskTest, NoCrashDuringGuest) {
   EnterTabletMode();
 }
 
+class ForestSavedDeskTest : public SavedDeskTest {
+ public:
+  ForestSavedDeskTest() = default;
+  ForestSavedDeskTest(const ForestSavedDeskTest&) = delete;
+  ForestSavedDeskTest& operator=(const ForestSavedDeskTest&) = delete;
+  ~ForestSavedDeskTest() override = default;
+
+  void TearDown() override {
+    // Due to the nested ScopedFeatureLists, `scoped_feature_list_` must be
+    // reset before `this` is destroyed and `forest_feature_list_` is reset.
+    scoped_feature_list_.Reset();
+    SavedDeskTest::TearDown();
+  }
+
+ private:
+  base::test::ScopedFeatureList forest_feature_list_{features::kForestFeature};
+};
+
 // Tests that the layout of the desk mini view context menu is correct, and the
 // items are enabled and visible.
-TEST_F(SavedDeskTest, ContextMenuLayout) {
+TEST_F(ForestSavedDeskTest, ContextMenuLayout) {
   // Add a window and an empty desk.
   auto test_window = CreateAppWindow();
   NewDesk();
@@ -4875,9 +4894,42 @@ TEST_F(SavedDeskTest, ContextMenuLayout) {
   }
 }
 
+// Tests that the context menu button in the desk action view is visible under
+// the right conditions.
+TEST_F(ForestSavedDeskTest, ContextMenuButtonVisibility) {
+  // Add a window and an empty desk.
+  auto test_window = CreateAppWindow();
+  NewDesk();
+
+  // Enter overview. There should be two mini views, one to represent the desk
+  // with the window, and one to represent the empty desk.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+  ASSERT_EQ(2u, GetPrimaryRootDesksBarView()->mini_views().size());
+
+  // The context menu button should be visible on the first desk as it contains
+  // a window.
+  DeskMiniView* window_mini_view =
+      GetPrimaryRootDesksBarView()->mini_views()[0];
+  auto* context_menu_button =
+      window_mini_view->desk_action_view()->context_menu_button();
+  ASSERT_TRUE(context_menu_button);
+  EXPECT_TRUE(context_menu_button->GetVisible());
+  EXPECT_FALSE(window_mini_view->desk_action_view()->combine_desks_button());
+
+  // The context menu button should not be visible on the second desk as it does
+  // not contain a window.
+  DeskMiniView* empty_mini_view = GetPrimaryRootDesksBarView()->mini_views()[1];
+  context_menu_button =
+      empty_mini_view->desk_action_view()->context_menu_button();
+  ASSERT_TRUE(context_menu_button);
+  EXPECT_FALSE(context_menu_button->GetVisible());
+  EXPECT_FALSE(empty_mini_view->desk_action_view()->combine_desks_button());
+}
+
 // Tests that the "Save As Template" option in the desk mini view context menu
 // works as intended.
-TEST_F(SavedDeskTest, ContextMenuSaveAsTemplate) {
+TEST_F(ForestSavedDeskTest, ContextMenuSaveAsTemplate) {
   // Add a window and an empty desk.
   auto test_window = CreateAppWindow();
   NewDesk();
@@ -4919,7 +4971,7 @@ TEST_F(SavedDeskTest, ContextMenuSaveAsTemplate) {
 
 // Tests that the "Save For Later" option in the desk mini view context menu
 // works as intended.
-TEST_F(SavedDeskTest, ContextMenuSaveForLater) {
+TEST_F(ForestSavedDeskTest, ContextMenuSaveForLater) {
   // Create a test window that we release immediately as it will be closed
   // automatically by the code under test. Also create an empty desk.
   CreateAppWindow().release();
