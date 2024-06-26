@@ -15,11 +15,11 @@ class FormStructure;
 
 // Logged in UKM. Do not change or re-use values.
 enum class FormType {
-  kUnknownFormType,
-  kAddressForm,
-  kCreditCardForm,
-  kPasswordForm,
-  kStandaloneCvcForm,
+  kUnknownFormType = 0,
+  kAddressForm = 1,
+  kCreditCardForm = 2,
+  kPasswordForm = 3,
+  kStandaloneCvcForm = 4,
   kMaxValue = kStandaloneCvcForm
 };
 
