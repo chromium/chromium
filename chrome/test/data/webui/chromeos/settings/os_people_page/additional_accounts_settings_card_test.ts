@@ -24,7 +24,9 @@ suite('<additonal-accounts-settings-card>', () => {
   let userActionRecorder: FakeUserActionRecorder;
 
   suiteSetup(() => {
-    loadTimeData.overrideValues({isDeviceAccountManaged: true});
+    loadTimeData.overrideValues({
+      isDeviceAccountManaged: true,
+    });
 
     userActionRecorder = new FakeUserActionRecorder();
     setUserActionRecorderForTesting(userActionRecorder);
@@ -235,5 +237,57 @@ suite('AccountManagerAccountAdditionDisabledTests', () => {
     assertEquals(
         loadTimeData.getString('accountManagerSecondaryAccountsDisabledText'),
         tooltip.tooltipText);
+  });
+});
+
+suite('SecondaryAccountAllowedInArcPolicyTests', () => {
+  let browserProxy: TestAccountManagerBrowserProxy;
+  let additionalAccountSettingsCard: AdditionalAccountsSettingsCardElement;
+  let accountList: DomRepeat;
+  let userActionRecorder: FakeUserActionRecorder;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      isDeviceAccountManaged: true,
+      arcManagedAccountRestrictionEnabled: true,
+    });
+
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
+  });
+
+  setup(async () => {
+    browserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    const accounts = await browserProxy.getAccounts();
+
+    additionalAccountSettingsCard =
+        document.createElement('additional-accounts-settings-card');
+    additionalAccountSettingsCard.accounts = accounts;
+    document.body.appendChild(additionalAccountSettingsCard);
+    const list =
+        additionalAccountSettingsCard.shadowRoot!.querySelector<DomRepeat>(
+            '#secondaryAccountsList');
+    assertTrue(!!list);
+    accountList = list;
+
+    Router.getInstance().navigateTo(routes.OS_PEOPLE);
+    flush();
+  });
+
+  teardown(() => {
+    additionalAccountSettingsCard.remove();
+    browserProxy.reset();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('arc availability is shown for secondary accounts', () => {
+    accountList.items!.forEach((item, i) => {
+      const notAvailableInArc =
+          additionalAccountSettingsCard.shadowRoot!
+              .querySelectorAll<HTMLElement>('.arc-availability')[i];
+      assertTrue(!!notAvailableInArc);
+      assertEquals(item.isAvailableInArc, notAvailableInArc.hidden);
+    });
   });
 });

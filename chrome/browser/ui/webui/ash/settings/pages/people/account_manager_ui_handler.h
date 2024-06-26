@@ -74,6 +74,7 @@ class AccountManagerUIHandler
  private:
   friend class AccountManagerUIHandlerTest;
   friend class AccountManagerUIHandlerTestWithArcAccountRestrictions;
+  friend class AccountManagerUIHandlerTestWithManagedArcAccountRestriction;
 
   void SetProfileForTesting(Profile* profile);
 
@@ -124,6 +125,9 @@ class AccountManagerUIHandler
 
   // Refreshes the UI.
   void RefreshUI();
+
+  // Whether some accounts may not be available in ARC due to policy or config.
+  static bool AreArcAccountsRestricted();
 
   raw_ptr<Profile> profile_ = nullptr;
 

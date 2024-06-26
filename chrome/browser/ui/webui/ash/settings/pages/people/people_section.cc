@@ -175,6 +175,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL},
       {"accountNotUsedInArcLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL},
+      {"accountNotAllowedInArcLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_NOT_ALLOWED_IN_ARC_LABEL},
       {"accountUseInArcButtonLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
       {"accountStopUsingInArcButtonLabel",
@@ -218,6 +220,9 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "arcAccountRestrictionsEnabled",
       AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  html_source->AddBoolean(
+      "arcManagedAccountRestrictionEnabled",
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,

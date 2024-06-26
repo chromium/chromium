@@ -2463,6 +2463,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL" desc="Per-account label on OS Account Manager page that is shown only if the account is not available in ARC / Android apps. User can change this by clicking 'Use with Android apps button' for the account.">
     Not used with Android apps
   </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_NOT_ALLOWED_IN_ARC_LABEL" desc="Per-account label on OS Account Manager page that is shown only if the account is not allowed in ARC / Android apps. Only shown for Enterprise accounts added as secondary accounts.">
+    Can't be used with Android apps
+  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL" desc="Per-account button label on OS Account Manager page. Clicking this button makes account available in ARC / Android apps.">
    Use with Android apps
   </message>

@@ -106,7 +106,24 @@ export class AdditionalAccountsSettingsCardElement extends
       isArcAccountRestrictionsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('arcAccountRestrictionsEnabled');
+          // TODO(b/349386750): Cleanup UI to toggle ARC access after lacros is
+          // turned off.
+          return loadTimeData.getBoolean('arcAccountRestrictionsEnabled') &&
+              // Do not show the UI to toggle ARC access to accounts when policy
+              // based restrictions are enabled.
+              !loadTimeData.getBoolean('arcManagedAccountRestrictionEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * @return true if `kSecondaryAccountAllowedInArcPolicy` feature is
+       * enabled, false otherwise.
+       */
+      isArcManagedAccountRestrictionEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('arcManagedAccountRestrictionEnabled');
         },
         readOnly: true,
       },
