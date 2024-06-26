@@ -1388,16 +1388,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   ASSERT_TRUE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  auto* profile = browser()->profile();
-  OptimizationGuideKeyedService* ogks =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-
-  // Create a new ModelQualityLogEntry and pass it to the
-  // UploadModelQualityLogs.
-  std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      GetModelQualityLogEntryForCompose();
-
-  ogks->UploadModelQualityLogs(std::move(log_entry_1));
+  // Attempt to upload a new quality log.
+  ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
 
   // Upload shouldn't be blocked by metrics consent.
   histogram_tester()->ExpectBucketCount(
@@ -1409,12 +1401,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   ASSERT_FALSE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  // Create a new ModelQualityLogEntry and pass it to the
-  // UploadModelQualityLogs.
-  std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
-      GetModelQualityLogEntryForCompose();
-
-  ogks->UploadModelQualityLogs(std::move(log_entry_2));
+  // Attempt to upload a new quality log.
+  ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
 
   // Upload should be disabled as there is no metrics consent, so total
   // histogram bucket count will be 1.
@@ -1504,12 +1492,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       model_execution_features_controller()
           ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  // Create a new ModelQualityLogEntry and pass it to the
-  // UploadModelQualityLogs.
-  std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      GetModelQualityLogEntryForCompose();
-
-  ogks->UploadModelQualityLogs(std::move(log_entry_1));
+  // Attempt to upload a new quality log.
+  ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
 
   // Disable logging via via the enterprise policy to kDisable state.
   policies.Set(policy::key::kHelpMeWriteSettings,
@@ -1526,12 +1510,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       model_execution_features_controller()
           ->ShouldFeatureBeCurrentlyAllowedForLogging(compose_feature));
 
-  // Create a new ModelQualityLogEntry and pass it to the
-  // UploadModelQualityLogs.
-  std::unique_ptr<ModelQualityLogEntry> log_entr_2 =
-      GetModelQualityLogEntryForCompose();
-
-  ogks->UploadModelQualityLogs(std::move(log_entr_2));
+  // Attempt to upload a new quality log.
+  ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
 
   // Enable logging via via the enterprise policy to state kAllow this shouldn't
   // stop upload.
@@ -1552,12 +1532,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   EXPECT_TRUE(ogks->GetModelQualityLogsUploaderService()->CanUploadLogs(
       UserVisibleFeatureKey::kCompose));
 
-  // Create a new ModelQualityLogEntry and pass it to the
-  // UploadModelQualityLogs.
-  std::unique_ptr<ModelQualityLogEntry> log_entry_3 =
-      GetModelQualityLogEntryForCompose();
-
-  ogks->UploadModelQualityLogs(std::move(log_entry_3));
+  // Attempt to upload a new quality log.
+  ModelQualityLogEntry::Upload(GetModelQualityLogEntryForCompose());
 
   // Log uploads should have been recorded as disabled twice because of
   // enterprise policy.
