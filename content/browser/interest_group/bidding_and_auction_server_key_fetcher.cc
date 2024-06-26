@@ -174,6 +174,7 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeys(
     const url::Origin& coordinator,
     PerCoordinatorFetcherState& state,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
+  state.fetch_start = base::TimeTicks::Now();
   state.queue.push_back(std::move(callback));
   if (state.queue.size() > 1) {
     return;
@@ -215,7 +216,7 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeysFromNetwork(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const url::Origin& coordinator) {
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
-  state.fetch_start = base::TimeTicks::Now();
+  state.network_fetch_start = base::TimeTicks::Now();
 
   CHECK(!state.loader);
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -248,7 +249,7 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromNetworkComplete(
   }
   base::UmaHistogramTimes(
       "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkTime",
-      base::TimeTicks::Now() - state.fetch_start);
+      base::TimeTicks::Now() - state.network_fetch_start);
   base::UmaHistogramBoolean(
       "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached", was_cached);
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -322,7 +323,7 @@ void BiddingAndAuctionServerKeyFetcher::CacheKeysAndRunAllCallbacks(
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   state.keys = keys;
   state.expiration = expiration;
-  base::UmaHistogramTimes("Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime",
+  base::UmaHistogramTimes("Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime2",
                           base::TimeTicks::Now() - state.fetch_start);
 
   while (!state.queue.empty()) {

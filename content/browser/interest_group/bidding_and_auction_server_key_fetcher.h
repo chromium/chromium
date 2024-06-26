@@ -87,7 +87,11 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
     // this object.
     base::Time expiration = base::Time::Min();
 
+    // The time the key fetch starts.
     base::TimeTicks fetch_start;
+    // The time the key fetch from the network starts. This time may be after
+    // unsuccessfully trying to load the key from the database.
+    base::TimeTicks network_fetch_start;
 
     // loader_ contains the SimpleURLLoader being used to fetch the keys.
     std::unique_ptr<network::SimpleURLLoader> loader;

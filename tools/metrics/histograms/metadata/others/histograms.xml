@@ -1671,8 +1671,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime" units="ms"
-    expires_after="2024-12-08">
+<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime2"
+    units="ms" expires_after="2024-12-08">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
