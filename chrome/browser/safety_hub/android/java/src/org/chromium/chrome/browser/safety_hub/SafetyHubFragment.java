@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.os.Bundle;
 
-import androidx.preference.Preference;
-
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -49,7 +47,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpAccountPasswordCheckModule() {
-        Preference passwordCheckPreference = findPreference(PREF_PASSWORDS);
+        SafetyHubExpandablePreference passwordCheckPreference = findPreference(PREF_PASSWORDS);
         int compromisedPasswordsCount =
                 UserPrefs.get(getProfile()).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
 
@@ -74,7 +72,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpUpdateCheckModule() {
-        Preference updateCheckPreference = findPreference(PREF_UPDATE);
+        SafetyHubExpandablePreference updateCheckPreference = findPreference(PREF_UPDATE);
 
         PropertyModel updateCheckPropertyModel =
                 new PropertyModel.Builder(
@@ -93,7 +91,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpPermissionsRevocationModule() {
-        Preference permissionsPreference = findPreference(PREF_UNUSED_PERMISSIONS);
+        SafetyHubExpandablePreference permissionsPreference =
+                findPreference(PREF_UNUSED_PERMISSIONS);
 
         mPermissionsModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
@@ -115,7 +114,8 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpNotificationsReviewModule() {
-        Preference notificationsPreference = findPreference(PREF_NOTIFICATIONS_REVIEW);
+        SafetyHubExpandablePreference notificationsPreference =
+                findPreference(PREF_NOTIFICATIONS_REVIEW);
 
         mNotificationsModel =
                 new PropertyModel.Builder(
@@ -139,7 +139,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpSafeBrowsingModule() {
-        Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
+        SafetyHubExpandablePreference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
 
         mSafeBrowsingPropertyModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)

@@ -17,7 +17,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 public class SafetyHubModuleViewBinder {
     public static void bindCommonProperties(
-            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+            PropertyModel model,
+            SafetyHubExpandablePreference preference,
+            PropertyKey propertyKey) {
         if (SafetyHubModuleProperties.IS_VISIBLE == propertyKey) {
             preference.setVisible(model.get(SafetyHubModuleProperties.IS_VISIBLE));
         } else if (SafetyHubModuleProperties.ON_CLICK_LISTENER == propertyKey) {
@@ -35,7 +37,9 @@ public class SafetyHubModuleViewBinder {
     }
 
     public static void bindPasswordCheckProperties(
-            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+            PropertyModel model,
+            SafetyHubExpandablePreference preference,
+            PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey) {
             updatePasswordCheckModule(preference, model);
@@ -43,7 +47,9 @@ public class SafetyHubModuleViewBinder {
     }
 
     public static void bindUpdateCheckProperties(
-            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+            PropertyModel model,
+            SafetyHubExpandablePreference preference,
+            PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.UPDATE_STATUS == propertyKey) {
             updateUpdateCheckModule(preference, model);
@@ -51,7 +57,9 @@ public class SafetyHubModuleViewBinder {
     }
 
     public static void bindPermissionsProperties(
-            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+            PropertyModel model,
+            SafetyHubExpandablePreference preference,
+            PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey) {
             updatePermissionsModule(preference, model);
@@ -59,7 +67,9 @@ public class SafetyHubModuleViewBinder {
     }
 
     public static void bindNotificationsReviewProperties(
-            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+            PropertyModel model,
+            SafetyHubExpandablePreference preference,
+            PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT == propertyKey) {
             updateNotificationsReviewModule(preference, model);
@@ -67,40 +77,81 @@ public class SafetyHubModuleViewBinder {
     }
 
     public static void bindSafeBrowsingProperties(
-            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+            PropertyModel model,
+            SafetyHubExpandablePreference preference,
+            PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.SAFE_BROWSING_STATE == propertyKey) {
             updateSafeBrowsingModule(preference, model);
         }
     }
 
-    private static void updateSafeBrowsingModule(Preference preference, PropertyModel model) {
+    private static void updateSafeBrowsingModule(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
         @SafeBrowsingState
         int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
 
+        String title;
+        String summary;
+        Drawable iconDrawable;
+        String primaryButtonText = null;
+        String secondaryButtonText =
+                preference.getContext().getString(R.string.safety_hub_go_to_settings_button);
+
         switch (safeBrowsingState) {
             case SafeBrowsingState.STANDARD_PROTECTION:
-                preference.setIcon(getCheckmarkIcon(preference));
-                preference.setTitle(R.string.safety_hub_safe_browsing_on_title);
-                preference.setSummary(R.string.safety_hub_safe_browsing_on_summary);
+                title =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_safe_browsing_on_title);
+                summary =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_safe_browsing_on_summary);
+                iconDrawable = getCheckmarkIcon(preference);
+                primaryButtonText =
+                        preference.getContext().getString(R.string.safety_hub_turn_on_button);
                 break;
             case SafeBrowsingState.ENHANCED_PROTECTION:
-                preference.setIcon(getCheckmarkIcon(preference));
-                preference.setTitle(R.string.safety_hub_safe_browsing_enhanced_title);
-                preference.setSummary(R.string.safety_hub_safe_browsing_enhanced_summary);
+                title =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_safe_browsing_enhanced_title);
+                summary =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_safe_browsing_enhanced_summary);
+                iconDrawable = getCheckmarkIcon(preference);
                 break;
             default:
-                preference.setIcon(getErrorIcon(preference));
-                preference.setTitle(R.string.prefs_safe_browsing_no_protection_summary);
-                preference.setSummary(R.string.safety_hub_safe_browsing_off_summary);
+                title =
+                        preference
+                                .getContext()
+                                .getString(R.string.prefs_safe_browsing_no_protection_summary);
+                summary =
+                        preference
+                                .getContext()
+                                .getString(R.string.safety_hub_safe_browsing_off_summary);
+                iconDrawable = getErrorIcon(preference);
+                primaryButtonText =
+                        preference.getContext().getString(R.string.safety_hub_turn_on_button);
         }
+
+        preference.setIcon(iconDrawable);
+        preference.setTitle(title);
+        preference.setSummary(summary);
+        preference.setPrimaryButtonText(primaryButtonText);
+        preference.setSecondaryButtonText(secondaryButtonText);
     }
 
-    private static void updatePasswordCheckModule(Preference preference, PropertyModel model) {
+    private static void updatePasswordCheckModule(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
         String title;
         Drawable iconDrawable;
+        String primaryButtonText = null;
+        String secondaryButtonText = null;
         if (compromisedPasswordsCount > 0) {
             title =
                     preference
@@ -112,46 +163,87 @@ public class SafetyHubModuleViewBinder {
                                     compromisedPasswordsCount);
 
             iconDrawable = getErrorIcon(preference);
+            primaryButtonText =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_passwords_navigation_button);
         } else {
             title = preference.getContext().getString(R.string.safety_check_passwords_safe);
             iconDrawable = getCheckmarkIcon(preference);
+            secondaryButtonText =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_passwords_navigation_button);
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);
+        preference.setPrimaryButtonText(primaryButtonText);
+        preference.setSecondaryButtonText(secondaryButtonText);
     }
 
-    private static void updateUpdateCheckModule(Preference preference, PropertyModel model) {
+    private static void updateUpdateCheckModule(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
         UpdateStatusProvider.UpdateStatus updateStatus =
                 model.get(SafetyHubModuleProperties.UPDATE_STATUS);
 
+        String title;
+        String summary = null;
+        Drawable iconDrawable;
+        String primaryButtonText = null;
+        String secondaryButtonText = null;
+
         if (updateStatus == null) {
-            preference.setIcon(getCheckmarkIcon(preference));
-            preference.setTitle(R.string.safety_check_updates_updated);
-            return;
+            title = preference.getContext().getString(R.string.safety_check_updates_updated);
+            iconDrawable = getCheckmarkIcon(preference);
+            secondaryButtonText =
+                    preference.getContext().getString(R.string.safety_hub_go_to_google_play_button);
+        } else {
+            switch (updateStatus.updateState) {
+                case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
+                    title =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.menu_update_unsupported_summary_default);
+                    summary = updateStatus.latestUnsupportedVersion;
+                    iconDrawable = getErrorIcon(preference);
+                    break;
+                case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
+                    title =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_check_updates_outdated);
+                    iconDrawable = getErrorIcon(preference);
+                    primaryButtonText = preference.getContext().getString(R.string.menu_update);
+                    break;
+                default:
+                    title =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_check_updates_updated);
+                    summary = updateStatus.latestVersion;
+                    iconDrawable = getCheckmarkIcon(preference);
+                    secondaryButtonText =
+                            preference
+                                    .getContext()
+                                    .getString(R.string.safety_hub_go_to_google_play_button);
+            }
         }
 
-        switch (updateStatus.updateState) {
-            case UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION:
-                preference.setIcon(getErrorIcon(preference));
-                preference.setTitle(R.string.menu_update_unsupported_summary_default);
-                preference.setSummary(updateStatus.latestUnsupportedVersion);
-                break;
-            case UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE:
-                preference.setIcon(getErrorIcon(preference));
-                preference.setTitle(R.string.safety_check_updates_outdated);
-                break;
-            default:
-                preference.setIcon(getCheckmarkIcon(preference));
-                preference.setTitle(R.string.safety_check_updates_updated);
-                preference.setSummary(updateStatus.latestVersion);
-        }
+        preference.setIcon(iconDrawable);
+        preference.setTitle(title);
+        preference.setSummary(summary);
+        preference.setPrimaryButtonText(primaryButtonText);
+        preference.setSecondaryButtonText(secondaryButtonText);
     }
 
-    private static void updatePermissionsModule(Preference preference, PropertyModel model) {
+    private static void updatePermissionsModule(
+            SafetyHubExpandablePreference preference, PropertyModel model) {
         int sitesWithUnusedPermissionsCount =
                 model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
         String title;
         Drawable iconDrawable;
+        String primaryButtonText = null;
+        String secondaryButtonText;
         if (sitesWithUnusedPermissionsCount > 0) {
             title =
                     preference
@@ -163,20 +255,29 @@ public class SafetyHubModuleViewBinder {
                                     sitesWithUnusedPermissionsCount);
 
             iconDrawable = getWarningIcon(preference);
+            primaryButtonText = preference.getContext().getString(R.string.got_it);
+            secondaryButtonText =
+                    preference.getContext().getString(R.string.safety_hub_view_sites_button);
         } else {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
             iconDrawable = getCheckmarkIcon(preference);
+            secondaryButtonText =
+                    preference.getContext().getString(R.string.safety_hub_go_to_settings_button);
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);
+        preference.setPrimaryButtonText(primaryButtonText);
+        preference.setSecondaryButtonText(secondaryButtonText);
     }
 
     private static void updateNotificationsReviewModule(
-            Preference preference, PropertyModel model) {
+            SafetyHubExpandablePreference preference, PropertyModel model) {
         int notificationPermissionsForReviewCount =
                 model.get(SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
         String title;
         Drawable iconDrawable;
+        String primaryButtonText = null;
+        String secondaryButtonText;
         if (notificationPermissionsForReviewCount > 0) {
             title =
                     preference
@@ -188,15 +289,27 @@ public class SafetyHubModuleViewBinder {
                                     notificationPermissionsForReviewCount);
 
             iconDrawable = getWarningIcon(preference);
+            primaryButtonText =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_notifications_block_all_button);
+            secondaryButtonText =
+                    preference.getContext().getString(R.string.safety_hub_view_sites_button);
         } else {
             title =
                     preference
                             .getContext()
                             .getString(R.string.safety_hub_notifications_review_ok_title);
             iconDrawable = getCheckmarkIcon(preference);
+            secondaryButtonText =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_go_to_notifications_button);
         }
         preference.setTitle(title);
         preference.setIcon(iconDrawable);
+        preference.setPrimaryButtonText(primaryButtonText);
+        preference.setSecondaryButtonText(secondaryButtonText);
     }
 
     private static Drawable getErrorIcon(Preference preference) {

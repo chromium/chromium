@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -28,11 +29,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -220,6 +223,7 @@ public final class SafetyHubTest {
                         .getActivity()
                         .getResources()
                         .getQuantityString(R.plurals.safety_hub_permissions_warning_title, 2, 2);
+        scrollToPreference(withText(permissionsTitle));
         onView(withText(permissionsTitle)).check(matches(isDisplayed()));
 
         // Open the permissions subpage.
@@ -317,6 +321,7 @@ public final class SafetyHubTest {
                         .getResources()
                         .getQuantityString(
                                 R.plurals.safety_hub_notifications_review_warning_title, 2, 2);
+        scrollToPreference(withText(notificationsTitle));
         onView(withText(notificationsTitle)).check(matches(isDisplayed()));
 
         // Open the notifications subpage.
@@ -357,6 +362,7 @@ public final class SafetyHubTest {
         // Verify the safe browsing module is displaying the enhanced protection state.
         String safeBrowsingTitle =
                 safetyHubFragment.getString(R.string.safety_hub_safe_browsing_enhanced_title);
+        scrollToPreference(withText(safeBrowsingTitle));
         onView(withText(safeBrowsingTitle)).check(matches(isDisplayed()));
 
         // Open the Safe Browsing settings.
@@ -380,6 +386,7 @@ public final class SafetyHubTest {
         // Verify the update check module is displaying the "Update available" state.
         String updateCheckTitle =
                 safetyHubFragment.getString(R.string.safety_check_updates_outdated);
+        scrollToPreference(withText(updateCheckTitle));
         onView(withText(updateCheckTitle)).check(matches(isDisplayed()));
 
         if (BuildConfig.IS_CHROME_BRANDED) {
@@ -407,5 +414,10 @@ public final class SafetyHubTest {
         onViewWaiting(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
         TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
+    }
+
+    private void scrollToPreference(Matcher<View> matcher) {
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 }

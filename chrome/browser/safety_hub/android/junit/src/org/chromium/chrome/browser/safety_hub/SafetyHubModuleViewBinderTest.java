@@ -11,7 +11,6 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 
 import androidx.annotation.DrawableRes;
-import androidx.preference.Preference;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,22 +33,22 @@ public class SafetyHubModuleViewBinderTest {
     private static final @DrawableRes int WARNING_ICON = R.drawable.btn_info;
     private Activity mActivity;
     private PropertyModel mPasswordCheckPropertyModel;
-    private Preference mPasswordCheckPreference;
+    private SafetyHubExpandablePreference mPasswordCheckPreference;
     private PropertyModel mUpdateCheckPropertyModel;
-    private Preference mUpdateCheckPreference;
+    private SafetyHubExpandablePreference mUpdateCheckPreference;
     private PropertyModel mPermissionsPropertyModel;
-    private Preference mPermissionsPreference;
+    private SafetyHubExpandablePreference mPermissionsPreference;
     private PropertyModel mNotificationsReviewPropertyModel;
-    private Preference mNotificationsReviewPreference;
+    private SafetyHubExpandablePreference mNotificationsReviewPreference;
     private PropertyModel mSafeBrowsingPropertyModel;
-    private Preference mSafeBrowsingPreference;
+    private SafetyHubExpandablePreference mSafeBrowsingPreference;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
 
         // Set up password check preference.
-        mPasswordCheckPreference = new Preference(mActivity);
+        mPasswordCheckPreference = new SafetyHubExpandablePreference(mActivity, null);
 
         mPasswordCheckPropertyModel =
                 new PropertyModel.Builder(
@@ -61,7 +60,7 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
 
         // Set up update check preference.
-        mUpdateCheckPreference = new Preference(mActivity);
+        mUpdateCheckPreference = new SafetyHubExpandablePreference(mActivity, null);
 
         mUpdateCheckPropertyModel =
                 new PropertyModel.Builder(
@@ -73,7 +72,7 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleViewBinder::bindUpdateCheckProperties);
 
         // Set up permissions preference.
-        mPermissionsPreference = new Preference(mActivity);
+        mPermissionsPreference = new SafetyHubExpandablePreference(mActivity, null);
         mPermissionsPropertyModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.PERMISSIONS_MODULE_KEYS)
                         .build();
@@ -83,7 +82,7 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleViewBinder::bindPermissionsProperties);
 
         // Set up notifications review preference.
-        mNotificationsReviewPreference = new Preference(mActivity);
+        mNotificationsReviewPreference = new SafetyHubExpandablePreference(mActivity, null);
         mNotificationsReviewPropertyModel =
                 new PropertyModel.Builder(
                                 SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
@@ -94,7 +93,7 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
 
         // Set up safe browsing preference.
-        mSafeBrowsingPreference = new Preference(mActivity);
+        mSafeBrowsingPreference = new SafetyHubExpandablePreference(mActivity, null);
         mSafeBrowsingPropertyModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.SAFE_BROWSING_MODULE_KEYS)
                         .build();
@@ -109,8 +108,14 @@ public class SafetyHubModuleViewBinderTest {
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_passwords_safe);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(OK_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -126,9 +131,14 @@ public class SafetyHubModuleViewBinderTest {
                                 R.plurals.safety_check_passwords_compromised_exist,
                                 compromisedPasswordsCount,
                                 compromisedPasswordsCount);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
         assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
         assertEquals(
                 ERROR_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -141,10 +151,14 @@ public class SafetyHubModuleViewBinderTest {
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
         String expectedSummary = updateStatus.latestVersion;
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_google_play_button);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(expectedSummary, mUpdateCheckPreference.getSummary().toString());
         assertEquals(OK_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mUpdateCheckPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -155,9 +169,12 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_outdated);
+        String expectedPrimaryButtonText = mActivity.getString(R.string.menu_update);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertEquals(ERROR_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mUpdateCheckPreference.getPrimaryButtonText());
+        assertNull(mUpdateCheckPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -182,10 +199,14 @@ public class SafetyHubModuleViewBinderTest {
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, null);
 
         String expectedTitle = mActivity.getString(R.string.safety_check_updates_updated);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_google_play_button);
 
         assertEquals(expectedTitle, mUpdateCheckPreference.getTitle().toString());
         assertNull(mUpdateCheckPreference.getSummary());
         assertEquals(OK_ICON, shadowOf(mUpdateCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mUpdateCheckPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mUpdateCheckPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -194,10 +215,14 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_permissions_ok_title);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_settings_button);
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
         assertNull(mPermissionsPreference.getSummary());
         assertEquals(OK_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPermissionsPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -213,11 +238,16 @@ public class SafetyHubModuleViewBinderTest {
                                 R.plurals.safety_hub_permissions_warning_title,
                                 sitesWithUnusedPermissionsCount,
                                 sitesWithUnusedPermissionsCount);
+        String expectedPrimaryButtonText = mActivity.getString(R.string.got_it);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_view_sites_button);
 
         assertEquals(expectedTitle, mPermissionsPreference.getTitle().toString());
         assertNull(mPermissionsPreference.getSummary());
         assertEquals(
                 WARNING_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPermissionsPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mPermissionsPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -227,11 +257,17 @@ public class SafetyHubModuleViewBinderTest {
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_notifications_review_ok_title);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_notifications_button);
 
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
         assertNull(mNotificationsReviewPreference.getSummary());
         assertEquals(
                 OK_ICON, shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
+        assertNull(mNotificationsReviewPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText,
+                mNotificationsReviewPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -247,12 +283,21 @@ public class SafetyHubModuleViewBinderTest {
                                 R.plurals.safety_hub_notifications_review_warning_title,
                                 notificationPermissionsForReviewCount,
                                 notificationPermissionsForReviewCount);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_notifications_block_all_button);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_view_sites_button);
 
         assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
         assertNull(mNotificationsReviewPreference.getSummary());
         assertEquals(
                 WARNING_ICON,
                 shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                expectedPrimaryButtonText, mNotificationsReviewPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText,
+                mNotificationsReviewPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -263,10 +308,15 @@ public class SafetyHubModuleViewBinderTest {
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         String expectedTitle = mActivity.getString(R.string.safety_hub_safe_browsing_on_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_on_summary);
+        String expectedPrimaryButtonText = mActivity.getString(R.string.safety_hub_turn_on_button);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_settings_button);
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
         assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -279,10 +329,14 @@ public class SafetyHubModuleViewBinderTest {
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_title);
         String expectedSummary =
                 mActivity.getString(R.string.safety_hub_safe_browsing_enhanced_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_settings_button);
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
         assertEquals(OK_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertNull(mSafeBrowsingPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
     }
 
     @Test
@@ -294,9 +348,14 @@ public class SafetyHubModuleViewBinderTest {
         String expectedTitle =
                 mActivity.getString(R.string.prefs_safe_browsing_no_protection_summary);
         String expectedSummary = mActivity.getString(R.string.safety_hub_safe_browsing_off_summary);
+        String expectedPrimaryButtonText = mActivity.getString(R.string.safety_hub_turn_on_button);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_go_to_settings_button);
 
         assertEquals(expectedTitle, mSafeBrowsingPreference.getTitle().toString());
         assertEquals(expectedSummary, mSafeBrowsingPreference.getSummary().toString());
         assertEquals(ERROR_ICON, shadowOf(mSafeBrowsingPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mSafeBrowsingPreference.getPrimaryButtonText());
+        assertEquals(expectedSecondaryButtonText, mSafeBrowsingPreference.getSecondaryButtonText());
     }
 }
