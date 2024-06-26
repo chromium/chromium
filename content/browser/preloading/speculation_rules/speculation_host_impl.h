@@ -38,7 +38,6 @@ class CONTENT_EXPORT SpeculationHostImpl final
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates) override;
   void OnLCPPredicted() override;
-  void EnableNoVarySearchSupport() override;
   void InitiatePreview(const GURL& url) override;
 };
 

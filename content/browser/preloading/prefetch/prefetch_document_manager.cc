@@ -28,7 +28,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/http/http_no_vary_search_data.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -70,8 +69,6 @@ PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
       document_token_(
           static_cast<RenderFrameHostImpl*>(rfh)->GetDocumentToken()),
-      no_vary_search_support_enabled_(
-          network::features::kPrefetchNoVarySearchShippedByDefault.Get()),
       prefetch_destruction_callback_(base::DoNothing()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
@@ -387,21 +384,6 @@ void PrefetchDocumentManager::OnPrefetchSuccessful(
   } else {
     completed_non_eager_prefetches_.push_back(prefetch->GetWeakPtr());
   }
-}
-
-void PrefetchDocumentManager::EnableNoVarySearchSupportFromOriginTrial() {
-  no_vary_search_support_enabled_ = true;
-}
-
-// In order to ship No-Vary-Search header and keep the Origin Trial and be
-// able to remotely go back to Origin Trial in case we unship, we use
-// the suggested approach at
-// go/graduating-from-finch#optional-leave-a-finch-hook of using a separate
-// base feature to control shipping - in our case we will continue to use the
-// existing base feature kPrefetchNoVarySearch.
-bool PrefetchDocumentManager::NoVarySearchSupportEnabled() const {
-  return no_vary_search_support_enabled_ &&
-         base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch);
 }
 
 std::tuple<bool, base::WeakPtr<PrefetchContainer>>

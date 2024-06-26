@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "net/http/http_no_vary_search_data.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "url/gurl.h"
 
@@ -98,11 +97,6 @@ void IterateCandidates(
         IterateCandidateResult::kFinish) {
       return;
     }
-  }
-
-  // Fall back to No-Vary-Search equivalence if enabled.
-  if (!base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
-    return;
   }
 
   GURL::Replacements replacements;

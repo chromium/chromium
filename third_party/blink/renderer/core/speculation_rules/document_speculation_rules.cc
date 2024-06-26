@@ -733,12 +733,6 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   });
   candidates.Shrink(base::checked_cast<wtf_size_t>(last - candidates.begin()));
 
-  if (!sent_is_part_of_no_vary_search_trial_ &&
-      RuntimeEnabledFeatures::NoVarySearchPrefetchEnabled(execution_context)) {
-    sent_is_part_of_no_vary_search_trial_ = true;
-    host->EnableNoVarySearchSupport();
-  }
-
   probe::SpeculationCandidatesUpdated(document, candidates);
 
   using SpeculationEagerness = blink::mojom::SpeculationEagerness;

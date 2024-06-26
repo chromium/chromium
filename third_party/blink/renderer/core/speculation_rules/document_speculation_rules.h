@@ -175,7 +175,6 @@ class CORE_EXPORT DocumentSpeculationRules
   HeapVector<Member<StyleRule>> selectors_;
 
   bool initialized_ = false;
-  bool sent_is_part_of_no_vary_search_trial_ = false;
   bool was_selector_matches_enabled_ = false;
   PendingUpdateState pending_update_state_ = PendingUpdateState::kNoUpdate;
 

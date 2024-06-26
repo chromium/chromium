@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
@@ -16,7 +15,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -108,9 +106,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
   // to DevTools console.
   std::string TriggerNoVarySearchParseErrorAndGetConsoleMessage(
       network::mojom::NoVarySearchParseError parse_error) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        network::features::kPrefetchNoVarySearch);
     // Used to create responses.
     const net::IsolationInfo info;
     // Process the candidates with the |PrefetchDocumentManager| for the current
@@ -282,9 +277,6 @@ TEST_F(PrefetchDocumentManagerTest,
 }
 
 TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      network::features::kPrefetchNoVarySearch);
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
@@ -458,54 +450,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate3.html")));
 }
-
-// Struct describing the settings for No-Vary-Search experiment's flags used to
-// support shipping and origin trial.
-struct NoVarySearchExperimentConfigTestInfo {
-  bool shipped_by_default;
-  bool origin_trial_enabled;
-  bool experiment_expected_status;
-};
-
-class PrefetchDocumentManagerNoVarySearchTest
-    : public PrefetchDocumentManagerTest,
-      public testing::WithParamInterface<NoVarySearchExperimentConfigTestInfo> {
-};
-
-// Tests that the NoVarySearch feature is properly enabled/disabled when
-// setting shipping and Origin Trial flags.
-TEST_P(PrefetchDocumentManagerNoVarySearchTest,
-       NoVarySearchFeatureStatusCheck) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  bool shipped_by_default = GetParam().shipped_by_default;
-  bool origin_trial_enabled = GetParam().origin_trial_enabled;
-  bool experiment_expected_status = GetParam().experiment_expected_status;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      network::features::kPrefetchNoVarySearch,
-      {{network::features::kPrefetchNoVarySearchShippedByDefault.name,
-        shipped_by_default ? "true" : "false"}});
-
-  auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &GetPrimaryMainFrame());
-
-  if (origin_trial_enabled) {
-    prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
-  }
-
-  EXPECT_EQ(prefetch_document_manager->NoVarySearchSupportEnabled(),
-            experiment_expected_status);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    PrefetchDocumentManagerTest,
-    PrefetchDocumentManagerNoVarySearchTest,
-    ::testing::Values(NoVarySearchExperimentConfigTestInfo{false, false, false},
-                      NoVarySearchExperimentConfigTestInfo{false, true, true},
-                      NoVarySearchExperimentConfigTestInfo{true, false, true},
-                      NoVarySearchExperimentConfigTestInfo{true, true, true}));
 
 }  // namespace
 }  // namespace content

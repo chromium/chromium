@@ -33,8 +33,6 @@ std::optional<net::HttpNoVarySearchData> ProcessHead(
     const network::mojom::URLResponseHead& head,
     const GURL& url,
     RenderFrameHost* rfh) {
-  CHECK(base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
-
   // No No-Vary-Search headers.
   if (!(head.parsed_headers &&
         head.parsed_headers->no_vary_search_with_parse_error)) {

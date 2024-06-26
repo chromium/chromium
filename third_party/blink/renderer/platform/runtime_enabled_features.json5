@@ -2761,23 +2761,6 @@
       status: "experimental",
       base_feature: "none",
     },
-    // Origin trial to experiment with No-Vary-Search in Prefetch Cache.
-    // The functionality in this Origin Trial is now enabled by default in the
-    // browser by network::features::kPrefetchNoVarySearchShippedByDefault
-    // feature parameter of network::features::kPrefetchNoVarySearch.
-    // This runtime enabled feature is ignored as long as the feature
-    // parameter network::features::kPrefetchNoVarySearchShippedByDefault is
-    // not disabled via Finch.
-    // See crbug.com/1378075. Depends on SpeculationRulesPrefetchProxy to be
-    // enabled.
-    // On the browser side, the trial needs features::kPrefetchUseContentRefactor
-    // enabled. If features::kPrefetchUseContentRefactor is disabled, then
-    // the code will behave as if PrefetchNoVarySearch is disabled.
-    {
-      name: "NoVarySearchPrefetch",
-      base_feature: "none",
-      origin_trial_feature_name: "NoVarySearchPrefetch",
-    },
     {
       name: "ObservableAPI",
       status: "experimental",
@@ -3792,7 +3775,6 @@
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
       status: "stable",
-      implied_by: ["SpeculationRulesNoVarySearchHint"],
     },
     {
       name: "SpeculationRulesFetchFromHeader",
@@ -3807,7 +3789,7 @@
     },
     {
       name: "SpeculationRulesNoVarySearchHint",
-      origin_trial_feature_name: "NoVarySearchPrefetch",
+      status: "stable",
     },
     // The "expects_no_vary_search" hint is enabled if it is enabled:
     // * through an origin trial token (NoVarySearchPrefetch) or

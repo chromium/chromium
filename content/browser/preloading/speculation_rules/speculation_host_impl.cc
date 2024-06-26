@@ -94,14 +94,6 @@ void SpeculationHostImpl::OnLCPPredicted() {
   preloading_decider->OnLCPPredicted();
 }
 
-void SpeculationHostImpl::EnableNoVarySearchSupport() {
-  auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &render_frame_host());
-  CHECK(prefetch_document_manager);
-  prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
-}
-
 void SpeculationHostImpl::InitiatePreview(const GURL& url) {
   if (!base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
     mojo::ReportBadMessage("SH_PREVIEW");

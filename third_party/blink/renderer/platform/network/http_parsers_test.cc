@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
@@ -872,46 +871,7 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
   }
 }
 
-class NoVarySearchPrefetchDisabledTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<std::string_view> {
- public:
-  NoVarySearchPrefetchDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        network::features::kPrefetchNoVarySearch);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(NoVarySearchPrefetchDisabledTest, ParsingNVSReturnsDefaultURLVariance) {
-  const auto parsed_headers =
-      ParseHeaders(WTF::String::FromUTF8(GetParam()), KURL("https://a.com"));
-
-  ASSERT_TRUE(parsed_headers);
-  EXPECT_FALSE(parsed_headers->no_vary_search_with_parse_error);
-}
-
-constexpr std::string_view no_vary_search_prefetch_disabled_data[] = {
-    // No No-Vary-Search header.
-    "HTTP/1.1 200 OK\r\n"
-    "Set-Cookie: a\r\n"
-    "Set-Cookie: b\r\n\r\n",
-    // No-Vary-Search header present.
-    "HTTP/1.1 200 OK\r\n"
-    R"(No-Vary-Search: params=("a"))"
-    "\r\n\r\n",
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    NoVarySearchPrefetchDisabledTest,
-    NoVarySearchPrefetchDisabledTest,
-    testing::ValuesIn(no_vary_search_prefetch_disabled_data));
-
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
-  base::test::ScopedFeatureList feature_list(
-      network::features::kPrefetchNoVarySearch);
   const std::string_view headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
@@ -937,16 +897,7 @@ struct NoVarySearchTestData {
 
 class NoVarySearchPrefetchEnabledTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<NoVarySearchTestData> {
- public:
-  NoVarySearchPrefetchEnabledTest() {
-    feature_list_.InitAndEnableFeature(
-        network::features::kPrefetchNoVarySearch);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+      public ::testing::WithParamInterface<NoVarySearchTestData> {};
 
 TEST_P(NoVarySearchPrefetchEnabledTest, ParsingSuccess) {
   const auto& test_data = GetParam();

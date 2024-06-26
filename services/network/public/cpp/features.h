@@ -128,21 +128,6 @@ extern const base::FeatureParam<bool> kPrefetchDNSWithURLAllAnchorElements;
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant);
 
-// If enabled, then navigation requests should check the match responses in the
-// prefetch cache by using the No-Vary-Search rules if No-Vary-Search header
-// is specified in prefetched responses.
-// Feature Meta bug: crbug.com/1378072.
-// No-Vary-Search explainer:
-//   https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md
-COMPONENT_EXPORT(NETWORK_CPP)
-BASE_DECLARE_FEATURE(kPrefetchNoVarySearch);
-
-// If this feature param is true, No-Vary-Search will not only be parsed but
-// also respected by default, without needing to be turned on for a document
-// using an origin trial token.
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<bool> kPrefetchNoVarySearchShippedByDefault;
-
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
 // value of this header.

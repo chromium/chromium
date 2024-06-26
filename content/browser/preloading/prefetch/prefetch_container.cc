@@ -45,7 +45,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/client_hints.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "url/gurl.h"
@@ -1049,8 +1048,7 @@ void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
 void PrefetchContainer::OnReceivedHead() {
   // TODO(crbug.com/40946257): Current code doesn't support NVS for
   // browser-initated triggers.
-  if (IsRendererInitiated() && prefetch_document_manager_ &&
-      prefetch_document_manager_->NoVarySearchSupportEnabled()) {
+  if (IsRendererInitiated()) {
     auto* rfhi_can_be_null =
         RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
     SetNoVarySearchData(rfhi_can_be_null);

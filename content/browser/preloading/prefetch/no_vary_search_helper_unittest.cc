@@ -4,12 +4,10 @@
 
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/test_renderer_host.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,7 +112,6 @@ class NoVarySearchHelperTester final {
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
     auto weak_prefetch_container = prefetch_container->GetWeakPtr();
-    prefetch_container->SetNoVarySearchData(nullptr);
     owned_prefetches_.push_back(std::move(prefetch_container));
 
     return weak_prefetch_container;
@@ -151,10 +148,6 @@ class NoVarySearchHelperTest : public RenderViewHostTestHarness,
 };
 
 TEST_P(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-
   network::mojom::URLResponseHeadPtr head = CreateHead();
   head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
       ->search_variance =
@@ -193,10 +186,6 @@ TEST_P(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
 }
 
 TEST_P(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-
   network::mojom::URLResponseHeadPtr head = CreateHead();
   head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
       ->search_variance =
@@ -235,10 +224,6 @@ TEST_P(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
 }
 
 TEST_P(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-
   network::mojom::URLResponseHeadPtr head = CreateHead();
   head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
       ->search_variance =
@@ -284,10 +269,6 @@ TEST_P(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
 }
 
 TEST_P(NoVarySearchHelperTest, AddUrlWithoutNoVarySearchTest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-
   network::mojom::URLResponseHeadPtr head =
       network::mojom::URLResponseHead::New();
   head->parsed_headers = network::mojom::ParsedHeaders::New();
@@ -306,10 +287,6 @@ TEST_P(NoVarySearchHelperTest, AddUrlWithoutNoVarySearchTest) {
 }
 
 TEST_P(NoVarySearchHelperTest, DoNotPrefixMatch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-
   std::unique_ptr<NoVarySearchHelperTester> helper =
       std::make_unique<NoVarySearchHelperTester>(GetParam());
 
@@ -398,10 +375,6 @@ TEST_P(NoVarySearchHelperTest, DoNotPrefixMatch) {
 }
 
 TEST_P(NoVarySearchHelperTest, DoNotMatchDifferentDocumentToken) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-
   std::unique_ptr<NoVarySearchHelperTester> helper =
       std::make_unique<NoVarySearchHelperTester>(GetParam());
 

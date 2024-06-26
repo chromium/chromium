@@ -57,7 +57,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -289,7 +288,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         {{features::kPrefetchUseContentRefactor,
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 
   void MakePrefetchService(std::unique_ptr<MockPrefetchServiceDelegate>
@@ -308,14 +307,11 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
       const GURL& prefetch_url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer = blink::mojom::Referrer(),
-      bool enable_no_vary_search_header = false,
       network::mojom::NoVarySearchPtr&& no_vary_search_hint =
           network::mojom::NoVarySearchPtr()) {
     CHECK(prefetch_type.IsRendererInitiated());
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
-    if (enable_no_vary_search_header)
-      prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
 
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type,
@@ -1269,7 +1265,7 @@ class PrefetchServiceAllowAllDomainsTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"allow_all_domains", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -1316,7 +1312,7 @@ class PrefetchServiceAllowAllDomainsForExtendedPreloadingTest
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"allow_all_domains_for_extended_preloading", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -2428,8 +2424,7 @@ class PrefetchServiceLimitedPrefetchesTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"max_srp_prefetches", "2"}}}},
-        {network::features::kPrefetchNoVarySearch,
-         ::features::kPrefetchNewLimits});
+        {::features::kPrefetchNewLimits});
   }
 };
 
@@ -2571,7 +2566,7 @@ class PrefetchServiceWithHTMLOnlyTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"},
            {"html_only", "true"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -2614,7 +2609,7 @@ class PrefetchServiceAlwaysMakeDecoyRequestTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "1"},
            {"prefetch_container_lifetime_s", "-1"}}},
          {features::kPrefetchRedirects, {}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -2939,21 +2934,13 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   ExpectServingMetricsSuccess();
 }
 
-class PrefetchServiceNoVarySearchTest : public PrefetchServiceTest {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        {network::features::kPrefetchNoVarySearch}, {});
-  }
-};
-
 // TODO(crbug.com/40249481): Test flaky on lacros trybots.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NoVarySearchSuccessCase DISABLED_NoVarySearchSuccessCase
 #else
 #define MAYBE_NoVarySearchSuccessCase NoVarySearchSuccessCase
 #endif
-TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
+TEST_F(PrefetchServiceTest, MAYBE_NoVarySearchSuccessCase) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -2964,8 +2951,7 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true,
                    blink::mojom::SpeculationEagerness::kEager),
-      /*referrer=*/blink::mojom::Referrer(),
-      /*enable_no_vary_search_header=*/true);
+      /*referrer=*/blink::mojom::Referrer());
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(GURL("https://example.com/?a=1"),
@@ -3046,7 +3032,7 @@ class PrefetchServiceAllowRedirectTest : public PrefetchServiceTest {
           {{"ineligible_decoy_request_probability", "0"},
            {"prefetch_container_lifetime_s", "-1"}}},
          {features::kPrefetchRedirects, {}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -3626,7 +3612,7 @@ class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
            {"block_until_head_moderate_prefetch", "true"},
            {"block_until_head_conservative_prefetch", "true"}}},
          {features::kPrefetchRedirects, {}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -3779,7 +3765,7 @@ class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTest {
            {"block_until_head_eager_prefetch", "false"},
            {"block_until_head_moderate_prefetch", "false"},
            {"block_until_head_conservative_prefetch", "false"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -3855,7 +3841,7 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
               {"block_until_head_timeout_moderate_prefetch", "1000"},
               {"block_until_head_timeout_conservative_prefetch", "1000"},
           }}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -3933,9 +3919,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
 #endif
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        MAYBE_NVSBlockUntilHeadReceived) {
-  // For this test we need to enable kPrefetchNoVarySearch.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({network::features::kPrefetchNoVarySearch}, {});
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3947,13 +3930,11 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   no_vary_search_hint->search_variance =
       network::mojom::SearchParamsVariance::NewNoVaryParams(
           std::vector<std::string>({"a"}));
-  MakePrefetchOnMainFrame(
-      GURL("https://example.com/index.html?a=5"),
-      PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true, GetParam()),
-      /* referrer */ blink::mojom::Referrer(),
-      /* no_vary_search_support */ true,
-      /* no_vary_search_hint */ std::move(no_vary_search_hint));
+  MakePrefetchOnMainFrame(GURL("https://example.com/index.html?a=5"),
+                          PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                                       /*use_prefetch_proxy=*/true, GetParam()),
+                          /* referrer */ blink::mojom::Referrer(),
+                          std::move(no_vary_search_hint));
   task_environment()->RunUntilIdle();
 
   VerifyCommonRequestState(
@@ -4016,9 +3997,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 #endif
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        MAYBE_NVSBlockUntilHeadReceivedNoMatchNoNVSHeader) {
-  // For this test we need to enable kPrefetchNoVarySearch.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({network::features::kPrefetchNoVarySearch}, {});
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -4035,7 +4013,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true, GetParam()),
       /* referrer */ blink::mojom::Referrer(),
-      /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   task_environment()->RunUntilIdle();
 
@@ -4097,9 +4074,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 #endif
 TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        MAYBE_NVSBlockUntilHeadReceivedNoMatchByNVSHeader) {
-  // For this test we need to enable kPrefetchNoVarySearch.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({network::features::kPrefetchNoVarySearch}, {});
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -4116,7 +4090,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       PrefetchType(PreloadingTriggerType::kSpeculationRule,
                    /*use_prefetch_proxy=*/true, GetParam()),
       /* referrer */ blink::mojom::Referrer(),
-      /* no_vary_search_support */ true,
       /* no_vary_search_hint */ std::move(no_vary_search_hint));
   task_environment()->RunUntilIdle();
 
@@ -4502,7 +4475,7 @@ class PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest
               {"block_until_head_timeout_moderate_prefetch", "1000"},
               {"block_until_head_timeout_conservative_prefetch", "1000"},
           }}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 };
 
@@ -4713,7 +4686,7 @@ class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
            {"prefetch_container_lifetime_s", "-1"}}},
          {::features::kPrefetchNewLimits,
           {{"max_eager_prefetches", "2"}, {"max_non_eager_prefetches", "2"}}}},
-        {network::features::kPrefetchNoVarySearch});
+        {});
   }
 
   PrefetchContainer::Reader CompletePrefetch(
@@ -5491,9 +5464,7 @@ class PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest
               {"block_until_head_timeout_moderate_prefetch", "1000"},
               {"block_until_head_timeout_conservative_prefetch", "1000"},
               {"max_concurrent_prefetches", "2"},
-          }},
-         // For this test class we need to enable kPrefetchNoVarySearch.
-         {network::features::kPrefetchNoVarySearch, {}}},
+          }}},
         {::features::kPrefetchNewLimits});
   }
 };
@@ -5532,7 +5503,6 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
-        /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
     task_environment()->RunUntilIdle();
 
@@ -5552,7 +5522,6 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
-        /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
     task_environment()->RunUntilIdle();
 
@@ -5665,7 +5634,6 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
-        /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
     task_environment()->RunUntilIdle();
     VerifyCommonRequestStateByUrl(
@@ -5748,7 +5716,6 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
-        /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
     task_environment()->RunUntilIdle();
     VerifyCommonRequestStateByUrl(
@@ -5851,7 +5818,6 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
-        /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
     task_environment()->RunUntilIdle();
 
@@ -5871,7 +5837,6 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
         PrefetchType(PreloadingTriggerType::kSpeculationRule,
                      /*use_prefetch_proxy=*/false, GetParam()),
         /* referrer */ blink::mojom::Referrer(),
-        /* no_vary_search_support */ true,
         /* no_vary_search_hint */ std::move(no_vary_search_hint));
     task_environment()->RunUntilIdle();
 
