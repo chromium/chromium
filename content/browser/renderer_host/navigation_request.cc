@@ -142,7 +142,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
-#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
@@ -9424,10 +9424,10 @@ void NavigationRequest::OnCookiesAccessed(
     CookieAccessDetails allowed;
     CookieAccessDetails blocked;
     SplitCookiesIntoAllowedAndBlocked(details, &allowed, &blocked);
-    if (!allowed.cookie_list.empty()) {
+    if (!allowed.cookie_access_result_list.empty()) {
       GetDelegate()->OnCookiesAccessed(this, allowed);
     }
-    if (!blocked.cookie_list.empty()) {
+    if (!blocked.cookie_access_result_list.empty()) {
       GetDelegate()->OnCookiesAccessed(this, blocked);
     }
 
@@ -9436,10 +9436,12 @@ void NavigationRequest::OnCookiesAccessed(
     // `CookieChangeListener` to only track the cookie changes that potentially
     // make the document initially rendered by the navigation request outdated.
     if (allowed.type == CookieAccessDetails::Type::kChange) {
-      uint64_t cookie_modification_count = allowed.cookie_list.size();
+      uint64_t cookie_modification_count =
+          allowed.cookie_access_result_list.size();
       uint64_t http_only_cookie_modification_count = 0u;
-      for (net::CanonicalCookie& cookie : allowed.cookie_list) {
-        if (cookie.IsHttpOnly()) {
+      for (const net::CookieWithAccessResult& cookie_with_access_result :
+           allowed.cookie_access_result_list) {
+        if (cookie_with_access_result.cookie.IsHttpOnly()) {
           http_only_cookie_modification_count += details->count;
         }
       }

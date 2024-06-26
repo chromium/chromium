@@ -1000,15 +1000,18 @@ void PageSpecificContentSettings::OnCookiesAccessed(
     const content::CookieAccessDetails& details,
     content::Page* originating_page) {
   originating_page = originating_page ? originating_page : &page();
-  if (details.cookie_list.empty())
+  if (details.cookie_access_result_list.empty()) {
     return;
+  }
 
   bool blocked = details.blocked_by_policy;
   auto& model =
       blocked ? blocked_browsing_data_model_ : allowed_browsing_data_model_;
-  for (const auto& cookie : details.cookie_list) {
+  for (const auto& cookie_with_access_result :
+       details.cookie_access_result_list) {
     // The size isn't relevant here and won't be displayed in the UI.
-    model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie,
+    model->AddBrowsingData(cookie_with_access_result.cookie,
+                           BrowsingDataModel::StorageType::kCookie,
                            /*storage_size=*/0,
                            /*cookie_count=*/1,
                            /*blocked_third_party=*/

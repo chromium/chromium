@@ -63,8 +63,9 @@ struct NET_EXPORT CookieAccessResult {
 inline void PrintTo(const CookieAccessResult& car, std::ostream* os) {
   *os << "{ { ";
   PrintTo(car.status, os);
-  *os << " }, " << static_cast<int>(car.effective_same_site) << ", "
-      << static_cast<int>(car.access_semantics) << ", "
+  *os << " }, effective_same_site=" << static_cast<int>(car.effective_same_site)
+      << ", access_semantics=" << static_cast<int>(car.access_semantics)
+      << ", is_allowed_to_access_secure_cookies="
       << car.is_allowed_to_access_secure_cookies << " }";
 }
 

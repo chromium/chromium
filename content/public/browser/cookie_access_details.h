@@ -21,7 +21,7 @@ struct CONTENT_EXPORT CookieAccessDetails {
       Type type,
       const GURL& url,
       const GURL& first_party_url,
-      const net::CookieList& list,
+      const net::CookieAccessResultList& cookie_access_result_list,
       size_t count,
       bool blocked_by_policy = false,
       bool is_ad_tagged = false,
@@ -36,7 +36,7 @@ struct CONTENT_EXPORT CookieAccessDetails {
   Type type;
   GURL url;
   GURL first_party_url;
-  net::CookieList cookie_list;
+  net::CookieAccessResultList cookie_access_result_list;
   // CookieAccessDetails may be deduplicated to reduce IPC costs. In this case,
   // |count| refers to the number of instances that are duplicates of |this|
   // that would have been sent (including |this|).

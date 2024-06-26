@@ -27,6 +27,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_options.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
@@ -159,7 +160,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                  {content::CookieAccessDetails::Type::kChange,
                                   origin,
                                   origin,
-                                  {*cookie1},
+                                  {{*cookie1}},
                                   1u,
                                   false});
   content_settings = PageSpecificContentSettings::GetForFrame(
@@ -195,7 +196,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                  {content::CookieAccessDetails::Type::kChange,
                                   origin,
                                   origin,
-                                  {*cookie1},
+                                  {{*cookie1}},
                                   1u,
                                   false});
 
@@ -207,7 +208,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                  {content::CookieAccessDetails::Type::kChange,
                                   origin,
                                   origin,
-                                  {*cookie2},
+                                  {{*cookie2}},
                                   1u,
                                   true});
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
@@ -299,7 +300,7 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
                                  {content::CookieAccessDetails::Type::kChange,
                                   origin,
                                   origin,
-                                  {*cookie1},
+                                  {{*cookie1}},
                                   1u,
                                   false});
   ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
@@ -314,7 +315,7 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
                                  {content::CookieAccessDetails::Type::kChange,
                                   origin,
                                   origin,
-                                  {*cookie2},
+                                  {{*cookie2}},
                                   1u,
                                   true});
   ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
@@ -436,7 +437,7 @@ TEST_F(PageSpecificContentSettingsTest, EmptyCookieList) {
   GetHandle()->OnCookiesAccessed(
       web_contents()->GetPrimaryMainFrame(),
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
-       GURL("http://google.com"), net::CookieList(), 1u, true});
+       GURL("http://google.com"), net::CookieAccessResultList(), 1u, true});
   ASSERT_FALSE(
       content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
   ASSERT_FALSE(
@@ -459,7 +460,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedThirdPartyCookie) {
       {content::CookieAccessDetails::Type::kRead,
        /*url=*/GURL("https://google.com"),
        /*first_party_url=*/GURL("https://google.com"),
-       {*cookie},
+       {{*cookie}},
        /*count=*/1u,
        /*blocked_by_policy=*/true,
        /*is_ad_tagged=*/false,
@@ -481,7 +482,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedThirdPartyCookie) {
       {content::CookieAccessDetails::Type::kRead,
        /*url=*/GURL("https://google.com"),
        /*first_party_url=*/GURL("https://google.com"),
-       {*cookie},
+       {{*cookie}},
        /*count=*/1u,
        /*blocked_by_policy=*/true,
        /*is_ad_tagged=*/false,
@@ -507,7 +508,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedThirdPartyCookie) {
       {content::CookieAccessDetails::Type::kRead,
        /*url=*/GURL("https://google.com"),
        /*first_party_url=*/GURL("https://example.com"),
-       {*third_party_cookie},
+       {{*third_party_cookie}},
        /*count=*/1u,
        /*blocked_by_policy=*/true,
        /*is_ad_tagged=*/false,
@@ -538,18 +539,18 @@ TEST_F(PageSpecificContentSettingsTest, SiteDataObserver) {
                                  {content::CookieAccessDetails::Type::kChange,
                                   origin,
                                   origin,
-                                  {*cookie},
+                                  {{*cookie}},
                                   1u,
                                   blocked_by_policy});
 
-  net::CookieList cookie_list;
+  net::CookieAccessResultList cookie_list;
   std::unique_ptr<net::CanonicalCookie> other_cookie(
       net::CanonicalCookie::CreateForTesting(GURL("http://google.com"),
                                              "CookieName=CookieValue",
                                              base::Time::Now()));
   ASSERT_TRUE(other_cookie);
 
-  cookie_list.push_back(*other_cookie);
+  cookie_list.emplace_back(*other_cookie);
   GetHandle()->OnCookiesAccessed(
       rfh,
       {content::CookieAccessDetails::Type::kRead, GURL("http://google.com"),
@@ -814,14 +815,14 @@ TEST_F(PageSpecificContentSettingsTest, AllowedSitesCountedFromBothModels) {
                                  {content::CookieAccessDetails::Type::kRead,
                                   googleURL,
                                   googleURL,
-                                  {*cookie1},
+                                  {{*cookie1}},
                                   1u,
                                   blocked_by_policy});
   GetHandle()->OnCookiesAccessed(web_contents()->GetPrimaryMainFrame(),
                                  {content::CookieAccessDetails::Type::kRead,
                                   exampleURL,
                                   exampleURL,
-                                  {*cookie2},
+                                  {{*cookie2}},
                                   1u,
                                   blocked_by_policy});
 
@@ -908,7 +909,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest, SiteDataAccessed) {
     pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,
                              origin,
                              origin,
-                             {*cookie1},
+                             {{*cookie1}},
                              1u,
                              false});
   }
@@ -949,7 +950,7 @@ TEST_F(PageSpecificContentSettingsWithPrerenderTest,
   pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kRead,
                            url,
                            url,
-                           {*cookie},
+                           {{*cookie}},
                            1u,
                            /*blocked_by_policy=*/false});
   PageSpecificContentSettings::StorageAccessed(StorageType::INDEXED_DB,
@@ -1095,7 +1096,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, SiteDataAccessed) {
     ff_pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,
                                 origin,
                                 origin,
-                                {*cookie1},
+                                {{*cookie1}},
                                 1u,
                                 false});
   }
@@ -1125,7 +1126,7 @@ TEST_F(PageSpecificContentSettingsWithFencedFrameTest, DelegateUpdatesSent) {
   ff_pscs->OnCookiesAccessed({content::CookieAccessDetails::Type::kRead,
                               ff_url,
                               ff_url,
-                              {*cookie},
+                              {{*cookie}},
                               1u,
                               /*blocked_by_policy=*/false});
   PageSpecificContentSettings::StorageAccessed(

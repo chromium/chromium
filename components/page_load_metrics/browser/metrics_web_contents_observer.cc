@@ -539,7 +539,10 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
     const content::CookieAccessDetails& details) {
   // TODO(altimin): Propagate `CookieAccessDetails` further.
   bool is_partitioned_access = base::ranges::all_of(
-      details.cookie_list, &net::CanonicalCookie::IsPartitioned);
+      details.cookie_access_result_list,
+      [](const net::CookieWithAccessResult& cookie_with_access_result) {
+        return cookie_with_access_result.cookie.IsPartitioned();
+      });
 
   switch (details.type) {
     case content::CookieAccessDetails::Type::kRead:
@@ -549,8 +552,10 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
                             is_partitioned_access);
       break;
     case content::CookieAccessDetails::Type::kChange:
-      for (const auto& cookie : details.cookie_list) {
-        tracker.OnCookieChange(details.url, details.first_party_url, cookie,
+      for (const auto& cookie_with_access_result :
+           details.cookie_access_result_list) {
+        tracker.OnCookieChange(details.url, details.first_party_url,
+                               cookie_with_access_result.cookie,
                                details.blocked_by_policy, details.is_ad_tagged,
                                details.cookie_setting_overrides,
                                is_partitioned_access);

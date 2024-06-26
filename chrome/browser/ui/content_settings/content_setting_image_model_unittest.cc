@@ -236,8 +236,9 @@ TEST_F(ContentSettingImageModelTest, CookieAccessed) {
       ->OnCookiesAccessed({content::CookieAccessDetails::Type::kChange,
                            origin,
                            origin,
-                           {*cookie},
-                           false});
+                           {{*cookie}},
+                           /* count = */ 1u,
+                           /* blocked_by_policy = */ false});
   UpdateModelAndVerifyStates(content_setting_image_model.get(),
                              /* is_visible = */ true,
                              /* tooltip_empty = */ false);
