@@ -2835,7 +2835,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.Layout.InlineNode::ShapeText.MaxTime.InOutermostMainFrame"
+    name="Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame2"
     units="microseconds" expires_after="2024-12-08">
   <owner>chikamune@chromium.org</owner>
   <owner>
@@ -2843,15 +2843,15 @@ chromium-metrics-reviews@google.com.
   </owner>
   <summary>
     Measures the maximum elapsed time it takes to run InlineNode::ShapeText()
-    while loading the outermost main frame document. Logged on each loading of
-    the outermost main frame document.
+    while loading the outermost main frame document until finishing parsing.
+    Logged on each loading of the outermost main frame document.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
 <histogram
-    name="Blink.Layout.InlineNode::ShapeText.TotalTime.InOutermostMainFrame"
+    name="Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame2"
     units="microseconds" expires_after="2024-12-08">
   <owner>chikamune@chromium.org</owner>
   <owner>
@@ -2859,8 +2859,8 @@ chromium-metrics-reviews@google.com.
   </owner>
   <summary>
     Measures the total elapsed time it takes to run InlineNode::ShapeText()
-    while loading the outermost main frame document. Logged on each loading of
-    the outermost main frame document.
+    while loading the outermost main frame document until finishing parsing.
+    Logged on each loading of the outermost main frame document.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>

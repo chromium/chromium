@@ -4149,16 +4149,6 @@ bool Document::CheckCompletedInternal() {
       lcpp->OnOutermostMainFrameDocumentLoad();
       fetcher_->MaybeRecordLCPPSubresourceMetrics(Url());
     }
-    if (!data_->accumulated_shape_text_elapsed_time_.is_zero()) {
-      base::UmaHistogramMicrosecondsTimes(
-          "Blink.Layout.InlineNode::ShapeText.TotalTime.InOutermostMainFrame",
-          data_->accumulated_shape_text_elapsed_time_);
-    }
-    if (!data_->max_shape_text_elapsed_time_.is_zero()) {
-      base::UmaHistogramMicrosecondsTimes(
-          "Blink.Layout.InlineNode::ShapeText.MaxTime.InOutermostMainFrame",
-          data_->max_shape_text_elapsed_time_);
-    }
   }
 
   return true;
@@ -7524,6 +7514,18 @@ void Document::FinishedParsing() {
 
   // Parser should have picked up all preloads by now
   fetcher_->ClearPreloads(ResourceFetcher::kClearSpeculativeMarkupPreloads);
+
+  // Record histograms of ShapeText.
+  if (!data_->accumulated_shape_text_elapsed_time_.is_zero()) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Blink.Layout.InlineNode.ShapeText.TotalTime.InOutermostMainFrame2",
+        data_->accumulated_shape_text_elapsed_time_);
+  }
+  if (!data_->max_shape_text_elapsed_time_.is_zero()) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Blink.Layout.InlineNode.ShapeText.MaxTime.InOutermostMainFrame2",
+        data_->max_shape_text_elapsed_time_);
+  }
 }
 
 void Document::ElementDataCacheClearTimerFired(TimerBase*) {
@@ -7796,7 +7798,7 @@ FontMatchingMetrics* Document::GetFontMatchingMetrics() {
 }
 
 void Document::MaybeRecordShapeTextElapsedTime(base::TimeDelta elapsed_time) {
-  if (!IsInOutermostMainFrame() || IsLoadCompleted() ||
+  if (!IsInOutermostMainFrame() || HasFinishedParsing() ||
       IsInitialEmptyDocument() || !Url().ProtocolIsInHTTPFamily()) {
     return;
   }
