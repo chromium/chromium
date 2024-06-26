@@ -325,9 +325,10 @@ class CONTENT_EXPORT PrefetchService {
       const GURL& prefetch_url,
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Helper function for |GetPrefetchToServe| which identifies the
-  // |prefetch_container|'s that could potentially be served.
-  std::vector<PrefetchContainer*> FindPrefetchContainerToServe(
+  // Helper function for |GetPrefetchToServe|, which collects
+  // |PrefetchContainer|s that are potentially matching. Corresponds to 3.4. of
+  // https://wicg.github.io/nav-speculation/prefetch.html#wait-for-a-matching-prefetch-record
+  std::vector<PrefetchContainer*> CollectPotentiallyMatchingPrefetchContainers(
       const PrefetchContainer::Key& key,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container);

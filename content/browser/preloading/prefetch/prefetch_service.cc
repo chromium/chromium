@@ -1422,13 +1422,15 @@ void PrefetchService::DumpPrefetchesForDebug() const {
 #endif  // DCHECK_IS_ON()
 }
 
-std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
+std::vector<PrefetchContainer*>
+PrefetchService::CollectPotentiallyMatchingPrefetchContainers(
     const PrefetchContainer::Key& key,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
   std::vector<PrefetchContainer*> matches;
   std::vector<PrefetchContainer*> hint_matches;
-  DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe(" << key << ")";
+  DVLOG(1) << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers("
+           << key << ")";
   // Search for an exact or No-Vary-Search match first.
   no_vary_search::IterateCandidates(
       key, owned_prefetches_,
@@ -1476,7 +1478,8 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
 
   std::erase_if(matches, [](const auto* prefetch_container) {
     if (prefetch_container->HasPrefetchBeenConsideredToServe()) {
-      DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: skipped "
+      DVLOG(1) << "PrefetchService::"
+                  "CollectPotentiallyMatchingPrefetchContainers: skipped "
                << "because already considered to serve: "
                << *prefetch_container;
       return true;
@@ -1484,7 +1487,8 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
 
     switch (prefetch_container->GetServableState(PrefetchCacheableDuration())) {
       case PrefetchContainer::ServableState::kNotServable:
-        DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: skipped "
+        DVLOG(1) << "PrefetchService::"
+                    "CollectPotentiallyMatchingPrefetchContainers: skipped "
                     "because not servable: "
                  << *prefetch_container;
         return true;
@@ -1495,7 +1499,8 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
 
     if (prefetch_container->IsDecoy()) {
       DVLOG(1)
-          << "PrefetchService::FindPrefetchContainerToServe: skipped because "
+          << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers: "
+             "skipped because "
              "prefetch is a decoy: "
           << *prefetch_container;
       return true;
@@ -1509,13 +1514,15 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
     if (prefetch_container->GetPrefetchStatus() ==
         PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
       DVLOG(1)
-          << "PrefetchService::FindPrefetchContainerToServe: skipped because "
+          << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers: "
+             "skipped because "
              "cookies for url have changed since prefetch completed: "
           << *prefetch_container;
       return true;
     }
 
-    DVLOG(1) << "PrefetchService::FindPrefetchContainerToServe: matched: "
+    DVLOG(1) << "PrefetchService::CollectPotentiallyMatchingPrefetchContainers:"
+                " matched: "
              << *prefetch_container;
     return false;
   });
@@ -1612,8 +1619,9 @@ void PrefetchService::GetPrefetchToServe(
         serving_page_metrics_container,
     PrefetchMatchResolver& prefetch_match_resolver) {
   DumpPrefetchesForDebug();
-  auto potential_matching_prefetches = FindPrefetchContainerToServe(
-      key, std::move(serving_page_metrics_container));
+  auto potential_matching_prefetches =
+      CollectPotentiallyMatchingPrefetchContainers(
+          key, std::move(serving_page_metrics_container));
   DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
            << "): Potential matched with "
            << potential_matching_prefetches.size() << " prefetch containers.";

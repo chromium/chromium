@@ -93,9 +93,9 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       // |prefetch_container|). This will also never be called for
       // |prefetch_container| again as we don't use it to serve any subsequent
       // redirect hops for this navigation (we unset |redirect_reader_| below),
-      // and |PrefetchService::FindPrefetchContainerToServe| ignores any
-      // prefetches with the status kPrefetchNotUsedCookiesChanged (which is
-      // set in |PrefetchContainer::OnCookiesChanged|).
+      // and |PrefetchService::CollectPotentiallyMatchingPrefetchContainers|
+      // ignores any prefetches with the status kPrefetchNotUsedCookiesChanged
+      // (which is set in |PrefetchContainer::OnCookiesChanged|).
       prefetch_container->OnCookiesChanged();
     } else {
       OnGotPrefetchToServe(
