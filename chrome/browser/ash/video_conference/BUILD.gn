@@ -1,0 +1,67 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("video_conference") {
+  sources = [
+    "video_conference_app_service_client.cc",
+    "video_conference_app_service_client.h",
+    "video_conference_ash_feature_client.cc",
+    "video_conference_ash_feature_client.h",
+    "video_conference_client_wrapper.cc",
+    "video_conference_client_wrapper.h",
+    "video_conference_manager_ash.cc",
+    "video_conference_manager_ash.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/camera_mic",
+    "//chromeos/crosapi/mojom",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//ash/webui/vc_background_ui",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/camera_mic",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chromeos/crosapi/mojom:mojom_shared",
+    "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",
+    "//components/prefs",
+    "//components/user_manager",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/camera_mic",
+    "//chrome/browser/ash/crosapi",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "video_conference_manager_ash_unittest.cc" ]
+
+  deps = [
+    ":video_conference",
+    "//ash",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
+}

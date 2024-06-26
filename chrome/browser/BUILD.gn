@@ -5365,6 +5365,7 @@ static_library("browser") {
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/ash/trusted_vault",
       "//chrome/browser/ash/usb",
+      "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/nearby_sharing:share_target",
@@ -5567,6 +5568,7 @@ static_library("browser") {
       "//chrome/browser/ash/system_web_apps/apps/recorder_app",
       "//chrome/browser/ash/trusted_vault",
       "//chrome/browser/ash/usb",
+      "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper_handlers",
     ]
 

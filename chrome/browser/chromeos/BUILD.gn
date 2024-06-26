@@ -424,10 +424,11 @@ source_set("chromeos") {
     allow_circular_includes_from += [
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/attestation",
+      "//chrome/browser/ash/cert_provisioning",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/help_app",
-      "//chrome/browser/ash/cert_provisioning",
+      "//chrome/browser/ash/video_conference",
     ]
     public_deps += [
       "//ash/constants",
@@ -448,6 +449,7 @@ source_set("chromeos") {
       "//chrome/browser/ash/mahi:mahi_ash",
       "//chrome/browser/ash/system_web_apps/apps",
       "//chrome/browser/ash/system_web_apps/apps/help_app",
+      "//chrome/browser/ash/video_conference",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util",

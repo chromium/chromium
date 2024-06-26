@@ -3842,6 +3842,7 @@ static_library("ui") {
       "//chrome/browser/ash/system_web_apps/apps/vc_background_ui",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/ash/tether",
+      "//chrome/browser/ash/video_conference",
       "//chrome/browser/ash/wallpaper",
       "//chrome/browser/ash/wallpaper_handlers",
       "//chrome/browser/chromeos/extensions/vpn_provider",
