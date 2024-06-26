@@ -22,6 +22,7 @@ generate_grd("build_grdp") {
     "productivity.svg",
     "reset.svg",
     "sparkle.svg",
+    "undo.svg",
     "uploaded_image.svg",
     "upload.svg",
     "writing.svg",

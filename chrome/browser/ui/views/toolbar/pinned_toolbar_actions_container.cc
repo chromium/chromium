@@ -286,7 +286,7 @@ void PinnedToolbarActionsContainer::UpdateDividerFlexSpecification() {
 void PinnedToolbarActionsContainer::MovePinnedActionBy(actions::ActionId id,
                                                        int delta) {
   DCHECK(IsActionPinned(id));
-  const auto& pinned_action_ids = model_->pinned_action_ids();
+  const auto& pinned_action_ids = model_->PinnedActionIds();
 
   auto iter = base::ranges::find(pinned_action_ids, id);
   CHECK(iter != pinned_action_ids.end());
@@ -411,13 +411,13 @@ views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
 }
 
 void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
-  RecordPinnedActionsCount(model_->pinned_action_ids().size());
+  RecordPinnedActionsCount(model_->PinnedActionIds().size());
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void PinnedToolbarActionsContainer::OnActionRemoved(
     const actions::ActionId& id) {
-  RecordPinnedActionsCount(model_->pinned_action_ids().size());
+  RecordPinnedActionsCount(model_->PinnedActionIds().size());
   drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -662,7 +662,7 @@ void PinnedToolbarActionsContainer::ReorderViews() {
   // Pinned buttons appear first. Use the model's ordering of pinned ActionIds
   // because |pinned_buttons_| ordering is not updated on changes from the model
   // or from the user dragging to reorder.
-  for (auto id : model_->pinned_action_ids()) {
+  for (auto id : model_->PinnedActionIds()) {
     if (auto* button = GetPinnedButtonFor(id)) {
       ReorderChildView(button, index);
       index++;
@@ -696,7 +696,7 @@ void PinnedToolbarActionsContainer::UpdateViews() {
     old_ids.push_back(button->GetActionId());
   }
 
-  const std::vector<actions::ActionId>& new_ids = model_->pinned_action_ids();
+  const std::vector<actions::ActionId>& new_ids = model_->PinnedActionIds();
 
   // 1. Remove buttons for actions in the UI that are not present in the
   // model.

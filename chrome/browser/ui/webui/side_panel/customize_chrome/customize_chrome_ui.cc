@@ -228,6 +228,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       // Customize Toolbar strings.
       {"chooseToolbarIconsHeader",
        IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER},
+      {"resetToDefaultButtonLabel",
+       IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

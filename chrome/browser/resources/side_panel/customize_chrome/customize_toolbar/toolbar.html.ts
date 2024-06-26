@@ -14,6 +14,11 @@ export function getHtml(this: ToolbarElement) {
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">$i18n{toolbarHeader}</h2>
   </sp-heading>
+  <cr-button id="resetToDefaultButton" @click="${this.onResetToDefaultClicked_}"
+      class="floating-button">
+    <img id="resetToDefaultIcon" slot="prefix-icon" src="icons/undo.svg">
+    $i18n{resetToDefaultButtonLabel}
+  </cr-button>
 </div>
 <hr class="sp-cards-separator">
 <div class="sp-card" id="pinningSelectionCard">

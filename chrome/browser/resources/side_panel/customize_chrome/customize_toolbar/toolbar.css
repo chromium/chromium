@@ -33,7 +33,18 @@
 }
 
 .toggle-icon {
+  height: 20px;
   object-fit: fill;
   width: 20px;
+}
+
+#resetToDefaultButton {
+  margin: 0 0 8px 0;
+  width: 100%;
+}
+
+#resetToDefaultIcon {
   height: 20px;
+  object-fit: fill;
+  width: 20px;
 }

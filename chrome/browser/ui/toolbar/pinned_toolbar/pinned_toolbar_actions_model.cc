@@ -242,6 +242,11 @@ void PinnedToolbarActionsModel::MaybeUpdateSearchCompanionPinnedState(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+const std::vector<actions::ActionId>&
+PinnedToolbarActionsModel::PinnedActionIds() const {
+  return pinned_action_ids_;
+}
+
 void PinnedToolbarActionsModel::UpdateSearchCompanionDefaultState(
     bool companion_should_be_default_pinned) {
   bool is_valid_pin = !Contains(kActionSidePanelShowSearchCompanion) &&

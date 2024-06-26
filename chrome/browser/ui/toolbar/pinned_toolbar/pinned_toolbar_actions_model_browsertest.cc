@@ -64,7 +64,7 @@ class PinnedToolbarActionsModelTestObserver
   }
 
   void OnActionsChanged() override {
-    last_changed_ids_ = model_->pinned_action_ids();
+    last_changed_ids_ = model_->PinnedActionIds();
   }
 
   // Signals that the given action with `id` has been moved in the model.

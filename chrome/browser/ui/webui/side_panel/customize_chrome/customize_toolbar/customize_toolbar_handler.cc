@@ -250,6 +250,15 @@ void CustomizeToolbarHandler::PinAction(
   model_->UpdatePinnedState(chrome_action.value(), pin);
 }
 
+void CustomizeToolbarHandler::ResetToDefault() {
+  // By default, no actions are pinned.
+  // TODO(323962536): Chrome Labs should be pinned by default.
+  const std::vector<actions::ActionId> pinned_ids = model_->PinnedActionIds();
+  for (actions::ActionId id : pinned_ids) {
+    model_->UpdatePinnedState(id, false);
+  }
+}
+
 void CustomizeToolbarHandler::OnActionAdded(const actions::ActionId& id) {
   OnActionPinnedChanged(id, true);
 }

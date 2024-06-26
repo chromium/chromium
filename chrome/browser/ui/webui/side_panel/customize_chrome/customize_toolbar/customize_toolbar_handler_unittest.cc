@@ -56,7 +56,11 @@ class MockPinnedToolbarActionsModel : public PinnedToolbarActionsModel {
  public:
   explicit MockPinnedToolbarActionsModel(Profile* profile)
       : PinnedToolbarActionsModel(profile) {}
-  MOCK_CONST_METHOD1(Contains, bool(const actions::ActionId& action_id));
+  MOCK_METHOD(bool, Contains, (const actions::ActionId& action_id), (const));
+  MOCK_METHOD(const std::vector<actions::ActionId>&,
+              PinnedActionIds,
+              (),
+              (const));
   MOCK_METHOD(void,
               UpdatePinnedState,
               (const actions::ActionId& action_id, const bool should_pin));
@@ -247,4 +251,24 @@ TEST_F(CustomizeToolbarHandlerTest, ActionAddedRemoved) {
   mock_page_.FlushForTesting();
   EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kDevTools);
   EXPECT_EQ(pin, false);
+}
+
+TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
+  std::vector<actions::ActionId> pinned = {kActionDevTools, kActionPrint};
+  EXPECT_CALL(mock_pinned_toolbar_actions_model(), PinnedActionIds)
+      .WillOnce(testing::ReturnRef(pinned));
+
+  std::vector<actions::ActionId> reset_ids;
+  EXPECT_CALL(mock_pinned_toolbar_actions_model(), UpdatePinnedState)
+      .Times(pinned.size())
+      .WillRepeatedly([&reset_ids](actions::ActionId id, testing::Unused) {
+        reset_ids.push_back(id);
+      });
+  handler().ResetToDefault();
+
+  EXPECT_EQ(pinned.size(), reset_ids.size());
+  for (actions::ActionId id : pinned) {
+    EXPECT_NE(std::find(reset_ids.begin(), reset_ids.end(), id),
+              reset_ids.end());
+  }
 }

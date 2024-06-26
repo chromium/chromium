@@ -76,6 +76,8 @@ interface CustomizeToolbarHandler {
   ListCategories() => (array<Category> categories);
   // Pins the action with id `action_id` to (or unpins it from) the toolbar.
   PinAction(ActionId action_id, bool pinned);
+  // Resets the set of pinned action items to default.
+  ResetToDefault();
 };
 
 // WebUI-side handler for requests from the browser.

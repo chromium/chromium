@@ -8244,6 +8244,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_TOOLS_AND_ACTIONS" desc="The label for the category of actions that open special purpose tools, such as Google Translate or developer tools.">
           Tools and Actions
         </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL" desc="The label for the button to reset the set of pinned toolbar actions to the default.">
+          Reset to Default
+        </message>
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_HEADER" desc="Header for the section of Customize Chrome for selecting toolbar icons.">
@@ -8260,6 +8263,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
         <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_CATEGORY_TOOLS_AND_ACTIONS" desc="The label for the category of actions that open special purpose tools, such as Google Translate or developer tools.">
           Tools and actions
+        </message>
+        <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_BUTTON_LABEL" desc="The label for the button to reset the set of pinned toolbar actions to the default.">
+          Reset to default
         </message>
       </if>
 

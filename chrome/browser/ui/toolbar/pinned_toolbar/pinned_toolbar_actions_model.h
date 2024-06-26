@@ -86,9 +86,7 @@ class PinnedToolbarActionsModel : public KeyedService {
       bool companion_should_be_default_pinned);
 
   // Returns the ordered list of pinned ActionIds.
-  const std::vector<actions::ActionId>& pinned_action_ids() const {
-    return pinned_action_ids_;
-  }
+  virtual const std::vector<actions::ActionId>& PinnedActionIds() const;
 
  private:
   // Adds the `action_id` to the kPinnedActions pref.

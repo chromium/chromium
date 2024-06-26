@@ -87,6 +87,10 @@ export class ToolbarElement extends CrLitElement {
     this.fire('back-click');
   }
 
+  protected onResetToDefaultClicked_() {
+    this.handler_.resetToDefault();
+  }
+
   protected getActionToggleHandler_(actionId: number) {
     return (event: CustomEvent<boolean>) =>
                this.handler_.pinAction(actionId, event.detail);
