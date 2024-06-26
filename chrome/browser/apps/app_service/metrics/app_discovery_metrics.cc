@@ -421,7 +421,27 @@ std::string AppDiscoveryMetrics::GetAppStringToRecord(
 
 void AppDiscoveryMetrics::OnCapabilityAccessUpdate(
     const CapabilityAccessUpdate& update) {
-  if (!update.CameraChanged() && update.Camera().value_or(false)) {
+  // Records when the app gains camera access (either for the first time or
+  // after it was previously denied/lost).
+
+  // Note:
+  // - The 'state' is initially nullopt on the first app opening, as there is no
+  // previous state to reference.
+  // - 'state' reflects the last known access state when the app is closed or
+  // reopened.
+
+  // This condition is met when:
+  // 1. CameraChanged(): This indicates a change in camera access state
+  // between the previous state ('state') and the current update ('delta').
+  // 2. update.Camera().value_or(false): This indicates the app currently has
+  // access to the camera after applying 'delta'.
+
+  // In simpler terms, a notification is sent only when:
+  // - The app is first granted camera access ('state' is nullopt, 'delta' is
+  // true).
+  // - The app regains camera access after being denied or losing it ('state'
+  // is false, 'delta' is true).
+  if (!(update.CameraChanged() && update.Camera().value_or(false))) {
     return;
   }
 
