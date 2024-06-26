@@ -223,12 +223,12 @@ targets.legacy_matrix_compound_suite(
                 "CROS_RELEASE_LKGM",
             ],
         ),
-        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+        "chromeos_system_friendly_gtests_vmlab": targets.legacy_matrix_config(
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
-        "chromeos_system_friendly_gtests": targets.legacy_matrix_config(
+        "chromeos_system_friendly_gtests_fails_vmlab": targets.legacy_matrix_config(
             # TODO: remove experimentals after stablization.
             mixins = [
                 "experiments",
