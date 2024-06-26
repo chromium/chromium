@@ -44,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -278,6 +279,25 @@ public class AccessorySheetViewTest {
 
         onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
         onViewWaiting(withId(R.id.sheet_header_shadow));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testProcessesTouchesWhenObscured() {
+        Runnable runnable = mock(Runnable.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS).add(createTestTabWithTextView("Header"));
+                    mModel.set(ACTIVE_TAB_INDEX, 0);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(VISIBLE, true);
+                });
+
+        onViewWaiting(withId(R.id.show_keyboard))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        verify(runnable, times(1)).run();
     }
 
     @Test

@@ -61,6 +61,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -494,8 +495,56 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testCredentialClicksThroughObscuringSurfacesAreProcessed() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ANA, mItemCollectionInfo),
+                                            buildConfirmationButton(ANA, false),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertNotNull(getCredentials().getChildAt(1));
+
+        onViewWaiting(withId(R.id.username))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testButtonClicksThroughObscuringSurfacesAreProcessed() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(SHEET_ITEMS)
+                            .addAll(
+                                    asList(
+                                            buildCredentialItem(ANA, mItemCollectionInfo),
+                                            buildConfirmationButton(ANA, false),
+                                            buildFooterItem(false)));
+                    mModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertNotNull(getCredentials().getChildAt(1));
+
+        onViewWaiting(withId(R.id.touch_to_fill_button_title))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
-    public void testClicksThroughObscuringSurfacesAreIgnored() {
+    public void testClicksThroughObscuringSurfacesAreIgnoredWhenFeatureIsEnabled() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
@@ -921,7 +970,7 @@ public class TouchToFillViewTest {
         return getCredentials().getChildAt(index).findViewById(R.id.credential_origin);
     }
 
-    public static <T> T waitForEvent(T mock) {
+    private static <T> T waitForEvent(T mock) {
         return verify(
                 mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));

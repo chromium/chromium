@@ -13,6 +13,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
@@ -48,9 +51,12 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -330,8 +336,69 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testCreditCardViewProcessesClicksThroughObscuredSurfaces() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel cardModel =
+                            createCardModel(
+                                    NICKNAMED_VISA,
+                                    mItemCollectionInfo,
+                                    actionCallback,
+                                    /* isAcceptable= */ true);
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(CREDIT_CARD, cardModel));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(FILL_BUTTON, cardModel));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(withText(NICKNAMED_VISA.getCardNameForAutofillDisplay()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testAcceptButtonProcessesClicksThroughObscuredSurfaces() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel cardModel =
+                            createCardModel(
+                                    NICKNAMED_VISA,
+                                    mItemCollectionInfo,
+                                    actionCallback,
+                                    /* isAcceptable= */ true);
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(CREDIT_CARD, cardModel));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(FILL_BUTTON, cardModel));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
-    public void testCreditCardViewFiltersTouchEvents() {
+    public void testCreditCardViewFiltersClicks() {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel cardModel =
@@ -498,6 +565,57 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(
                 cardNumber.getLayout().getText().toString(),
                 is(LONG_CARD_NAME_CARD.getObfuscatedLastFourDigits()));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testIbanViewProcessesTouchEvents() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel ibanModel = createIbanModel(LOCAL_IBAN, actionCallback);
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(IBAN, ibanModel));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(FILL_BUTTON, ibanModel));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(withText(LOCAL_IBAN.getLabel()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testIbanAcceptButtonProcessesTouchEvents() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel ibanModel = createIbanModel(LOCAL_IBAN, actionCallback);
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(IBAN, ibanModel));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(new ListItem(FILL_BUTTON, ibanModel));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string.autofill_payment_method_continue_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        waitForEvent(actionCallback).run();
     }
 
     @Test
@@ -674,5 +792,11 @@ public class TouchToFillPaymentMethodViewTest {
     private static String getVirtualCardLabel() {
         return ContextUtils.getApplicationContext()
                 .getString(R.string.autofill_virtual_card_number_switch_label);
+    }
+
+    private static <T> T waitForEvent(T mock) {
+        return verify(
+                mock,
+                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 }

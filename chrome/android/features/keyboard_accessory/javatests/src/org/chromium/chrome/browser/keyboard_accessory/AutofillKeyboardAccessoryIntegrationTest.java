@@ -38,6 +38,7 @@ import org.chromium.autofill.mojom.FocusedFieldType;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -178,11 +179,35 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    public void testClicksThroughOtherSurfaceAreAreProcessed()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        loadTestPage(MultiWindowKeyboard::new);
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "KeyboardAccessory.TouchEventFiltered", true);
+        mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
+        mHelper.waitForKeyboardAccessoryToBeShown(true);
+
+        assertTrue(mHelper.getAccessoryBarView().getAdapter().getItemCount() > 0);
+        performOnRecyclerViewNthItem(
+                withId(R.id.bar_items_view),
+                0,
+                createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        mHelper.waitForKeyboardAccessoryToDisappear();
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testClicksThroughOtherSurfaceAreIgnored()
             throws ExecutionException, TimeoutException, InterruptedException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         loadTestPage(MultiWindowKeyboard::new);
+        // The metric logs potentially filtered events as well, so it doesn't depend on the feature
+        // flag being turned on of off.
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "KeyboardAccessory.TouchEventFiltered", true);
