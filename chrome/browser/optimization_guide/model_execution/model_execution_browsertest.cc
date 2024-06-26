@@ -22,7 +22,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -219,17 +219,6 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         feature, debug_reason);
   }
 
-  // Uploads the model quality logs for the feature, waits until the response is
-  // received and no response is returned from the server.
-  void UploadModelQualityLogs(std::unique_ptr<ModelQualityLogEntry> log_entry,
-                              Profile* profile = nullptr) {
-    if (!profile) {
-      profile = browser()->profile();
-    }
-    GetOptimizationGuideKeyedService(profile)->UploadModelQualityLogs(
-        std::move(log_entry));
-  }
-
   void SetExpectedBearerAccessToken(
       const std::string& expected_bearer_access_token) {
     expected_bearer_access_token_ = expected_bearer_access_token;
@@ -273,7 +262,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     } else {
       model_execution_result_ = base::unexpected(result.error());
     }
-    UploadModelQualityLogs(std::move(log_entry));
+    ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_model_execution_closure).Run();
   }
 
