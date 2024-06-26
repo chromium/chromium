@@ -317,6 +317,30 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
   return !matching_set.empty();
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(LoggedScheme)
+enum class LoggedScheme {
+  OTHER = 0,
+  SEARCH_MS = 1,
+  SEARCH = 2,
+  MAILTO = 3,
+  kMaxValue = MAILTO,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/permissions/enums.xml:ExternalProtocolScheme)
+
+void LogRequestForScheme(const std::string& scheme) {
+  LoggedScheme scheme_bucket = LoggedScheme::OTHER;
+  if (scheme == "search-ms") {
+    scheme_bucket = LoggedScheme::SEARCH_MS;
+  } else if (scheme == "mailto") {
+    scheme_bucket = LoggedScheme::MAILTO;
+  }
+
+  base::UmaHistogramEnumeration("BrowserDialogs.ExternalProtocol.Scheme",
+                                scheme_bucket);
+}
+
 }  // namespace
 
 const char ExternalProtocolHandler::kBlockStateMetric[] =
@@ -341,6 +365,8 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
     const url::Origin* initiating_origin,
     Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  LogRequestForScheme(scheme);
 
   // If we are being flooded with requests, block the request.
   if (!g_accept_requests)
