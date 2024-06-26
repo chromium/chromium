@@ -323,6 +323,9 @@ class AutofillField : public FormFieldData {
   }
   bool did_trigger_suggestions() const { return did_trigger_suggestions_; }
 
+  void set_was_focused(bool was_focused) { was_focused_ = was_focused; }
+  bool was_focused() const { return was_focused_; }
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -475,6 +478,9 @@ class AutofillField : public FormFieldData {
 
   // Denotes whether a user triggered suggestions from this field.
   bool did_trigger_suggestions_ = false;
+
+  // True iff the field was ever focused.
+  bool was_focused_ = false;
 };
 
 }  // namespace autofill

@@ -7561,6 +7561,58 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
   CheckNoSuggestionsAvailableOnFieldFocus();
 }
 
+// Ensure that focus events are properly reported to the AutofillFields.
+TEST_P(OnFocusOnFormFieldTest, FocusReporting) {
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_fields(
+      {CreateTestFormField("First name", "firstname", "",
+                           FormControlType::kInputText, "given-name"),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText, "unrecognized")});
+
+  // Observe form and retrieve pointers.
+  FormsSeen({form});
+  FormStructure* parsed_form =
+      browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(parsed_form);
+  const AutofillField* field0 =
+      parsed_form->GetFieldById(form.fields()[0].global_id());
+  const AutofillField* field1 =
+      parsed_form->GetFieldById(form.fields()[1].global_id());
+  ASSERT_TRUE(field0 && field1);
+
+  // On page load nothing should be labeled as `was_focused`
+  EXPECT_FALSE(field0->was_focused());
+  EXPECT_FALSE(field1->was_focused());
+
+  // Focus field0 and verify expectations.
+  browser_autofill_manager_->OnFocusOnFormFieldImpl(
+      form, form.fields()[0].global_id());
+  EXPECT_TRUE(field0->was_focused());
+  EXPECT_FALSE(field1->was_focused());
+
+  // Focus field1 and verify expectations.
+  browser_autofill_manager_->OnFocusOnFormFieldImpl(
+      form, form.fields()[1].global_id());
+  EXPECT_TRUE(field0->was_focused());
+  EXPECT_TRUE(field1->was_focused());
+
+  // Simulate that the forms were parsed again.
+  FormsSeen({form});
+
+  // Verify that the focus states carry over when the form is parsed again.
+  parsed_form = browser_autofill_manager_->FindCachedFormById(form.global_id());
+  ASSERT_TRUE(parsed_form);
+  field0 = parsed_form->GetFieldById(form.fields()[0].global_id());
+  field1 = parsed_form->GetFieldById(form.fields()[1].global_id());
+  ASSERT_TRUE(field0 && field1);
+  EXPECT_TRUE(field0->was_focused());
+  EXPECT_TRUE(field1->was_focused());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, OnFocusOnFormFieldTest, testing::Bool());
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

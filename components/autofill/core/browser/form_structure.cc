@@ -547,6 +547,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         cached_field->may_use_prefilled_placeholder());
     field->set_previously_autofilled(cached_field->previously_autofilled());
     field->set_did_trigger_suggestions(cached_field->did_trigger_suggestions());
+    field->set_was_focused(cached_field->was_focused());
 
     // During form parsing, we don't care for heuristic field classifications
     // and information derived from the autocomplete attribute as those are

@@ -1754,6 +1754,14 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
     ProcessPendingFormForUpload();
   }
 
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+    return;
+  }
+  autofill_field->set_was_focused(true);
+
   // Notify installed screen readers if the focus is on a field for which there
   // are suggestions to present. Ignore if a screen reader is not present. If
   // the platform is ChromeOS, then assume ChromeVox is in use as there is no
@@ -1764,10 +1772,6 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 #endif
 
-  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  GetCachedFormAndField(form, field, &form_structure, &autofill_field);
   SuggestionsContext context =
       BuildSuggestionsContext(form, form_structure, field, autofill_field,
                               AutofillSuggestionTriggerSource::kUnspecified);
