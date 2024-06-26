@@ -396,10 +396,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     features.effective_display_mode = static_cast<int>(display_mode);
     features.captures_links =
         IsPreferredAppForSupportedLinks(*app_id, profile_);
-    // AppBannerManager treats already-installed web-apps as non-promotable, so
-    // include already-installed findings as promotable.
-    features.promotable = app_banner_manager->IsProbablyPromotableWebApp(
-        /*ignore_existing_installations=*/true);
+    features.promotable = !provider->registrar_unsafe().IsDiyApp(*app_id);
     bool preinstalled_app =
         provider->registrar_unsafe().IsInstalledByDefaultManagement(*app_id);
     // Record usage duration and session counts only for installed web apps that

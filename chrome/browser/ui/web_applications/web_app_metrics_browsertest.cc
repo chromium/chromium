@@ -16,6 +16,7 @@
 #include "base/numerics/clamped_math.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
@@ -29,8 +30,11 @@
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -91,6 +95,21 @@ class WebAppMetricsBrowserTest : public WebAppBrowserTestBase {
     // Ensure async call for origin check in daily_metrics_helper completes.
     base::ThreadPoolInstance::Get()->FlushForTesting();
     base::RunLoop().RunUntilIdle();
+  }
+
+  WebAppInstallDialogCallback CreateDialogCallback(
+      bool accept = true,
+      mojom::UserDisplayMode user_display_mode =
+          mojom::UserDisplayMode::kBrowser) {
+    return base::BindOnce(
+        [](bool accept, mojom::UserDisplayMode user_display_mode,
+           content::WebContents* initiator_web_contents,
+           std::unique_ptr<WebAppInstallInfo> web_app_info,
+           WebAppInstallationAcceptanceCallback acceptance_callback) {
+          web_app_info->user_display_mode = user_display_mode;
+          std::move(acceptance_callback).Run(accept, std::move(web_app_info));
+        },
+        accept, user_display_mode);
   }
 };
 
@@ -551,6 +570,72 @@ IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, Suspend_FlushesSessionTimes) {
   // Suspend should clear timers so no background time is recorded.
   EXPECT_FALSE(ukm::TestAutoSetUkmRecorder::EntryHasMetric(
       entry, UkmEntry::kBackgroundDurationName));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
+                       InstalledWebApp_CraftedIsPromotable) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL());
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(/*accept=*/true,
+                           mojom::UserDisplayMode::kStandalone),
+      install_future.GetCallback(),
+      FallbackBehavior::kUseFallbackInfoWhenNotInstallable);
+  EXPECT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  const webapps::AppId& app_id = install_future.Get<webapps::AppId>();
+  EXPECT_FALSE(provider().registrar_unsafe().IsDiyApp(app_id));
+
+  AddBlankTabAndShow(browser());
+  ForceEmitMetricsNow();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1U);
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, GetInstallableAppURL());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kInstalledName, true);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPromotableName, true);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
+                       InstalledWebApp_DiyIsNonPromotable) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateAndAwaitInstallabilityCheck(browser(), GetNonWebAppUrl());
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(/*accept=*/true,
+                           mojom::UserDisplayMode::kStandalone),
+      install_future.GetCallback(),
+      FallbackBehavior::kUseFallbackInfoWhenNotInstallable);
+  EXPECT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  const webapps::AppId& app_id = install_future.Get<webapps::AppId>();
+  EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(app_id));
+
+  AddBlankTabAndShow(browser());
+  ForceEmitMetricsNow();
+
+  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1U);
+  auto* entry = entries[0].get();
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, GetNonWebAppUrl());
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kInstalledName, true);
+  ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+      entry, UkmEntry::kPromotableName, false);
 }
 
 }  // namespace web_app
