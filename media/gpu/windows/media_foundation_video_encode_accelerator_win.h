@@ -89,7 +89,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   IFACEMETHODIMP_(ULONG) Release() override;
   IFACEMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
 
-  enum class DriverVendor { kOther, kNvidia, kIntel, kAMD };
+  enum class DriverVendor { kOther, kNvidia, kIntel, kAMD, kQualcomm };
 
  protected:
   ~MediaFoundationVideoEncodeAccelerator() override;

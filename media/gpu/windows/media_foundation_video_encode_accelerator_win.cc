@@ -139,6 +139,21 @@ uint8_t QindextoAVEncQP(uint8_t q_index) {
   return 63;
 }
 
+// Convert AV1/VP9 AVEncVideoEncodeQP values to qindex (0-255) range.
+// This is the inverse of QindextoAVEncQP() function above.
+uint8_t AVEncQPtoQindex(VideoCodec codec, uint8_t avenc_qp) {
+  if (codec == VideoCodec::kAV1 || codec == VideoCodec::kVP9) {
+    uint8_t q_index = avenc_qp * 4;
+    if (q_index == 248) {
+      q_index = 249;
+    } else if (q_index == 252) {
+      q_index = 255;
+    }
+    return q_index;
+  }
+  return avenc_qp;
+}
+
 // According to AV1/VP9's bitstream specification, the valid range of qp
 // value (defined as base_q_idx) should be 0-255.
 bool IsValidQp(VideoCodec codec, uint64_t qp) {
@@ -202,6 +217,9 @@ MediaFoundationVideoEncodeAccelerator::DriverVendor GetDriverVendor(
   if (!_wcsnicmp(vendor_id.get(), L"VEN_8086 ", id_length)) {
     return DriverVendor::kIntel;
   }
+  if (!_wcsnicmp(vendor_id.get(), L"VEN_QCOM", id_length)) {
+    return DriverVendor::kQualcomm;
+  }
   return DriverVendor::kOther;
 }
 
@@ -221,6 +239,13 @@ int GetMaxTemporalLayerVendorLimit(
   // more than one temporal layers, thus we block Nvidia HEVC encoder for
   // temporal SVC encoding.
   if (codec == VideoCodec::kHEVC && vendor == DriverVendor::kNvidia) {
+    return 1;
+  }
+
+  // Qualcomm HEVC and AV1 encoders report temporal layer support, but will
+  // fail the tests currently, so block from temporal SVC encoding.
+  if ((codec == VideoCodec::kHEVC || codec == VideoCodec::kAV1) &&
+      vendor == DriverVendor::kQualcomm) {
     return 1;
   }
 
@@ -636,30 +661,6 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   if (config.HasTemporalLayer())
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
 
-  // Use SW BRC only in the case CBR encoding with number of temporal layers no
-  // more than 3.
-  const bool use_sw_brc =
-      bitrate_allocation_.GetMode() == Bitrate::Mode::kConstant &&
-      base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) &&
-      num_temporal_layers_ <= 3;
-
-  if (use_sw_brc && (codec_ == VideoCodec::kVP9
-#if BUILDFLAG(ENABLE_LIBAOM)
-                     || codec_ == VideoCodec::kAV1
-#endif
-                     )) {
-    VideoRateControlWrapper::RateControlConfig rate_config =
-        CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
-                                   frame_rate_, num_temporal_layers_, codec_);
-    if (codec_ == VideoCodec::kVP9) {
-      rate_ctrl_ = VP9RateControl::Create(rate_config);
-    } else if (codec_ == VideoCodec::kAV1) {
-#if BUILDFLAG(ENABLE_LIBAOM)
-      // If libaom is not enabled, |rate_ctrl_| will not be initialized.
-      rate_ctrl_ = AV1RateControl::Create(rate_config);
-#endif
-    }
-  }
   input_since_keyframe_count_ = 0;
   zero_layer_counter_ = 0;
   // Init bitream parser in the case temporal scalability encoding.
@@ -698,6 +699,35 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
                        "Failed activating an async hardware encoder MFT"});
     return false;
   }
+
+  // Use SW BRC only in the case CBR encoding with number of temporal layers no
+  // more than 3.
+  // Qualcomm (and possibly other vendor) AV1 HMFT does not work with SW BRC.
+  // More info: https://crbug.com/343757696
+  const bool use_sw_brc =
+      bitrate_allocation_.GetMode() == Bitrate::Mode::kConstant &&
+      base::FeatureList::IsEnabled(kMediaFoundationUseSoftwareRateCtrl) &&
+      vendor_ != DriverVendor::kQualcomm &&  // SW BRC and QCOM AV1 HMFT not ok
+      num_temporal_layers_ <= 3;
+
+  if (use_sw_brc && (codec_ == VideoCodec::kVP9
+#if BUILDFLAG(ENABLE_LIBAOM)
+                     || codec_ == VideoCodec::kAV1
+#endif
+                     )) {
+    VideoRateControlWrapper::RateControlConfig rate_config =
+        CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
+                                   frame_rate_, num_temporal_layers_, codec_);
+    if (codec_ == VideoCodec::kVP9) {
+      rate_ctrl_ = VP9RateControl::Create(rate_config);
+    } else if (codec_ == VideoCodec::kAV1) {
+#if BUILDFLAG(ENABLE_LIBAOM)
+      // If libaom is not enabled, |rate_ctrl_| will not be initialized.
+      rate_ctrl_ = AV1RateControl::Create(rate_config);
+#endif
+    }
+  }
+
   if (!SetEncoderModes()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
                        "Failed to set encoder modes"});
@@ -744,7 +774,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   hr = encoder_->QueryInterface(IID_PPV_ARGS(&event_generator_));
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
-                       "Couldn't get event generator"});
+                       "Couldn't get event generator: " + PrintHr(hr)});
     return false;
   }
 
@@ -755,21 +785,24 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kEncoderInitializationError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH: " +
+             PrintHr(hr)});
     return false;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kEncoderInitializationError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_BEGIN_STREAMING"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_BEGIN_STREAMING: " +
+             PrintHr(hr)});
     return false;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kEncoderInitializationError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM: " +
+             PrintHr(hr)});
     return false;
   }
 
@@ -992,6 +1025,11 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
       case Bitrate::Mode::kVariable:
         var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                              configured_frame_rate_, framerate);
+        DVLOG(3) << "bitrate_allocation_.GetPeakBps() is "
+                 << bitrate_allocation_.GetPeakBps();
+        DVLOG(3) << "configured_frame_rate_ is " << configured_frame_rate_;
+        DVLOG(3) << "framerate is " << framerate;
+        DVLOG(3) << "Setting AVEncCommonMaxBitRate to " << var.ulVal;
         hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
         if (FAILED(hr)) {
           NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
@@ -1002,6 +1040,11 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
       case Bitrate::Mode::kConstant:
         var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
                                              configured_frame_rate_, framerate);
+        DVLOG(3) << "bitrate_allocation_.GetSumBps() is "
+                 << bitrate_allocation_.GetSumBps();
+        DVLOG(3) << "configured_frame_rate_ is " << configured_frame_rate_;
+        DVLOG(3) << "framerate is " << framerate;
+        DVLOG(3) << "Setting CODECAPI_AVEncCommonMeanBitRate to " << var.ulVal;
         hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
         if (FAILED(hr)) {
           NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
@@ -1010,6 +1053,8 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
         }
         break;
       case Bitrate::Mode::kExternal:
+        DVLOG(3)
+            << "RequestEncodingParametersChange for Bitrate::Mode::kExternal";
         break;
     }
   }
@@ -1062,14 +1107,18 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   HRESULT hr = S_OK;
   // As this method is expected to be called after Flush(), it's safe to send
   // MFT_MESSAGE_COMMAND_FLUSH here. Without MFT_MESSAGE_COMMAND_FLUSH, MFT may
-  // report 0x80004005 (Unspecified error) when encode the first frame after
-  // resolution change on Intel platform.
-  if (vendor_ == DriverVendor::kIntel) {
+  // either:
+  // - report 0x80004005 (Unspecified error) when encode the first frame after
+  //   resolution change on Intel platform.
+  // - report issues with SPS/PPS in the NALU analyzer phase of the tests on
+  //   Qualcomm platform.
+  if (vendor_ == DriverVendor::kIntel || vendor_ == DriverVendor::kQualcomm) {
     hr = encoder_->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
     if (FAILED(hr)) {
       NotifyErrorStatus(
           {EncoderStatus::Codes::kSystemAPICallError,
-           "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH"});
+           "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH: " +
+               PrintHr(hr)});
       return;
     }
   }
@@ -1077,26 +1126,30 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kSystemAPICallError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_OF_STREAM"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_OF_STREAM: " +
+             PrintHr(hr)});
     return;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kSystemAPICallError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_STREAMING"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_STREAMING: " +
+             PrintHr(hr)});
     return;
   }
   hr = encoder_->SetInputType(input_stream_id_, nullptr, 0);
   if (FAILED(hr)) {
-    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Couldn't set input stream type to nullptr"});
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError,
+         "Couldn't set input stream type to nullptr: " + PrintHr(hr)});
     return;
   }
   hr = encoder_->SetOutputType(output_stream_id_, nullptr, 0);
   if (FAILED(hr)) {
-    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Couldn't set output stream type to nullptr"});
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError,
+         "Couldn't set output stream type to nullptr: " + PrintHr(hr)});
     return;
   }
   hr = MFSetAttributeSize(imf_output_media_type_.Get(), MF_MT_FRAME_SIZE,
@@ -1104,14 +1157,14 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
                           input_visible_size_.height());
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Couldn't set output frame size"});
+                       "Couldn't set output frame size: " + PrintHr(hr)});
     return;
   }
   hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),
                                0);
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Couldn't set output media type"});
+                       "Couldn't set output media type: " + PrintHr(hr)});
     return;
   }
   hr = MFSetAttributeSize(imf_input_media_type_.Get(), MF_MT_FRAME_SIZE,
@@ -1119,27 +1172,29 @@ void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
                           input_visible_size_.height());
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Couldn't set input frame size"});
+                       "Couldn't set input frame size: " + PrintHr(hr)});
     return;
   }
   hr = encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(), 0);
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Couldn't set input media type"});
+                       "Couldn't set input media type: " + PrintHr(hr)});
     return;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kSystemAPICallError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_BEGIN_STREAMING"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_BEGIN_STREAMING: " +
+             PrintHr(hr)});
     return;
   }
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
   if (FAILED(hr)) {
     NotifyErrorStatus(
         {EncoderStatus::Codes::kSystemAPICallError,
-         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM"});
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM: " +
+             PrintHr(hr)});
     return;
   }
 
@@ -1339,11 +1394,14 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   RETURN_ON_HR_FAILURE(hr, "Couldn't set video format", false);
 
   if (!rate_ctrl_) {
-    hr = imf_output_media_type_->SetUINT32(
-        MF_MT_AVG_BITRATE,
-        AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(), frame_rate_,
-                                 frame_rate_));
-    RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
+    UINT32 bitrate = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
+                                              frame_rate_, frame_rate_);
+    DVLOG(3) << "MF_MT_AVG_BITRATE is " << bitrate;
+    // Setting MF_MT_AVG_BITRATE to zero will make some encoders upset
+    if (bitrate > 0) {
+      hr = imf_output_media_type_->SetUINT32(MF_MT_AVG_BITRATE, bitrate);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
+    }
   }
   configured_frame_rate_ = frame_rate_;
 
@@ -1380,9 +1438,12 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeInputOutputParameters(
   RETURN_ON_HR_FAILURE(hr, "Couldn't set media type", false);
   hr = imf_input_media_type_->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set video format", false);
+  DVLOG(3) << "MF_MT_FRAME_RATE is " << configured_frame_rate_;
   hr = MFSetAttributeRatio(imf_input_media_type_.Get(), MF_MT_FRAME_RATE,
                            configured_frame_rate_, 1);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set frame rate", false);
+  DVLOG(3) << "MF_MT_FRAME_SIZE is " << input_visible_size_.width() << "x"
+           << input_visible_size_.height();
   hr = MFSetAttributeSize(imf_input_media_type_.Get(), MF_MT_FRAME_SIZE,
                           input_visible_size_.width(),
                           input_visible_size_.height());
@@ -1407,18 +1468,27 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
   var.vt = VT_UI4;
   switch (bitrate_allocation_.GetMode()) {
     case Bitrate::Mode::kConstant:
-      if (rate_ctrl_)
+      if (rate_ctrl_) {
+        DVLOG(3) << "SetEncoderModes() with Bitrate::Mode::kConstant and "
+                    "rate_ctrl_, using eAVEncCommonRateControlMode_Quality";
         var.ulVal = eAVEncCommonRateControlMode_Quality;
-      else
+      } else {
+        DVLOG(3) << "SetEncoderModes() with Bitrate::Mode::kConstant and no "
+                    "rate_ctrl_, using eAVEncCommonRateControlMode_CBR";
         var.ulVal = eAVEncCommonRateControlMode_CBR;
+      }
       break;
     case Bitrate::Mode::kVariable: {
       DCHECK(!rate_ctrl_);
+      DVLOG(3) << "SetEncoderModes() with Bitrate::Mode::kVariable, using "
+                  "eAVEncCommonRateControlMode_PeakConstrainedVBR";
       var.ulVal = eAVEncCommonRateControlMode_PeakConstrainedVBR;
       break;
     }
     case Bitrate::Mode::kExternal:
       // Unsupported.
+      DVLOG(3) << "SetEncoderModes() with Bitrate::Mode::kExternal, using "
+                  "eAVEncCommonRateControlMode_Quality";
       var.ulVal = eAVEncCommonRateControlMode_Quality;
       break;
   }
@@ -1433,6 +1503,8 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
        (codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kHEVC));
   if (set_svc_layer_count) {
     var.ulVal = num_temporal_layers_;
+    DVLOG(3) << "Setting CODECAPI_AVEncVideoTemporalLayerCount to "
+             << var.ulVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set temporal layer count", false);
   }
@@ -1441,6 +1513,11 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
       bitrate_allocation_.GetMode() != Bitrate::Mode::kExternal) {
     var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
                                          configured_frame_rate_, frame_rate_);
+    DVLOG(3) << "bitrate_allocation_.GetSumBps() is "
+             << bitrate_allocation_.GetSumBps();
+    DVLOG(3) << "configured_frame_rate_ is " << configured_frame_rate_;
+    DVLOG(3) << "framerate is " << frame_rate_;
+    DVLOG(3) << "Setting CODECAPI_AVEncCommonMeanBitRate to " << var.ulVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
   }
@@ -1448,23 +1525,31 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
   if (bitrate_allocation_.GetMode() == Bitrate::Mode::kVariable) {
     var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
                                          configured_frame_rate_, frame_rate_);
+    DVLOG(3) << "bitrate_allocation_.GetPeakBps() is "
+             << bitrate_allocation_.GetPeakBps();
+    DVLOG(3) << "configured_frame_rate_ is " << configured_frame_rate_;
+    DVLOG(3) << "framerate is " << frame_rate_;
+    DVLOG(3) << "Setting CODECAPI_AVEncCommonMaxBitRate to " << var.ulVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set bitrate", false);
   }
 
   if (S_OK == codec_api_->IsModifiable(&CODECAPI_AVEncAdaptiveMode)) {
     var.ulVal = eAVEncAdaptiveMode_Resolution;
+    DVLOG(3) << "Setting CODECAPI_AVEncAdaptiveMode to " << var.ulVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncAdaptiveMode, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set adaptive mode", false);
   }
 
   var.ulVal = gop_length_;
+  DVLOG(3) << "Setting CODECAPI_AVEncMPVGOPSize to " << var.ulVal;
   hr = codec_api_->SetValue(&CODECAPI_AVEncMPVGOPSize, &var);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set keyframe interval", false);
 
   if (S_OK == codec_api_->IsModifiable(&CODECAPI_AVLowLatencyMode)) {
     var.vt = VT_BOOL;
     var.boolVal = low_latency_mode_ ? VARIANT_TRUE : VARIANT_FALSE;
+    DVLOG(3) << "Setting CODECAPI_AVLowLatencyMode to " << var.boolVal;
     hr = codec_api_->SetValue(&CODECAPI_AVLowLatencyMode, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set low latency mode", false);
   }
@@ -1483,6 +1568,22 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
     var.ulVal = eAVScenarioInfo_DisplayRemoting;
     hr = codec_api_->SetValue(&CODECAPI_AVScenarioInfo, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set scenario info", false);
+  }
+
+  // For QCOM there are DCHECK issues with frame-dropping and timestamps due
+  // to the AVScenarioInfo and b-frames, respectively.  Disable these, see
+  // mfenc.c for similar logic.
+  if (vendor_ == DriverVendor::kQualcomm) {
+    var.vt = VT_UI4;
+    // More info: https://crbug.com/343757695
+    var.ulVal = eAVScenarioInfo_CameraRecord;
+    hr = codec_api_->SetValue(&CODECAPI_AVScenarioInfo, &var);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set scenario info", false);
+
+    // More info: https://crbug.com/343748806
+    var.ulVal = 0;
+    hr = codec_api_->SetValue(&CODECAPI_AVEncMPVDefaultBPictureCount, &var);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set bframe count", false);
   }
 
   return true;
@@ -1517,7 +1618,7 @@ void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
   }
   if (FAILED(hr)) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Failed to encode pending frame. " + PrintHr(hr)});
+                       "Failed to encode pending frame: " + PrintHr(hr)});
     return;
   }
   pending_input_queue_.pop_front();
@@ -1585,12 +1686,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       VARIANT var;
       var.vt = VT_UI4;
       var.ulVal = temporal_id;
+      DVLOG(3) << "Setting CODECAPI_AVEncVideoSelectLayer to " << var.ulVal;
       hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
       var.vt = VT_UI8;
       // Only 16 least significant bits are responsible for generic frame QP
       // values.
       var.ullVal = quantizer.value() & 0xFFFF;
+      DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
       hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
       RETURN_ON_HR_FAILURE(hr, "Couldn't set frame QP", hr);
       hr =
@@ -1659,6 +1762,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     VARIANT var;
     var.vt = VT_UI4;
     var.ulVal = 1;
+    DVLOG(3) << "Setting CODECAPI_AVEncVideoForceKeyFrame to " << var.ulVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoForceKeyFrame, &var);
     RETURN_ON_HR_FAILURE(hr, "Set CODECAPI_AVEncVideoForceKeyFrame failed", hr);
   }
@@ -1983,7 +2087,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     }
     // Bits 0-15: Default QP.
     if (SUCCEEDED(hr)) {
-      frame_qp = frame_qp_from_sample & 0xfffful;
+      frame_qp = AVEncQPtoQindex(codec_, frame_qp_from_sample & 0xfffful);
     }
   }
   if (!encoder_info_sent_ || should_notify_encoder_info_change) {
