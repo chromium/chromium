@@ -145,7 +145,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     for (const element of path) {
       if (element.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
           element.hasAttribute('consent-confirmation')) {
-        return element.textContent!.trim();
+        return element.innerHTML.trim();
       }
     }
     assertNotReached('No consent confirmation element found.');
@@ -162,7 +162,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
             .map(
                 element => element.hasAttribute('localized-string') ?
                     element.getAttribute('localized-string')! :
-                    element.textContent!.trim());
+                    element.innerHTML.trim());
 
     assert(consentDescription.length);
     return consentDescription;
