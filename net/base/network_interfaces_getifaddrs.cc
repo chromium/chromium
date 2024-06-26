@@ -141,6 +141,9 @@ bool IfaddrsToNetworkInterfaceList(int policy,
   for (const ifaddrs* interface = interfaces; interface != nullptr;
        interface = interface->ifa_next) {
     // Skip loopback interfaces, and ones which are down.
+    if (!(IFF_UP & interface->ifa_flags)) {
+      continue;
+    }
     if (!(IFF_RUNNING & interface->ifa_flags))
       continue;
     if (IFF_LOOPBACK & interface->ifa_flags)
