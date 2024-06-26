@@ -282,10 +282,8 @@ TEST_F(HotspotControllerConcurrencyApiTest, EnableTetheringSuccess) {
       1);
 }
 
-// TODO(crbug.com/349291155): MemorySanitizer: use-of-uninitialized-value
-// Uninitialized value was created by an allocation of 'disable_result' in the
-// stack frame.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/349291155): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_AbortEnableTethering DISABLED_AbortEnableTethering
 #else
 #define MAYBE_AbortEnableTethering AbortEnableTethering
