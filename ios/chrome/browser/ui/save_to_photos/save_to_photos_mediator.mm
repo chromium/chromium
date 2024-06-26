@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -306,8 +307,14 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                               base::SysNSStringToUTF16(imageSize));
   configuration.submitButtonTitle =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_SUBMIT);
-  configuration.askEveryTimeSwitchLabelText = l10n_util::GetNSString(
-      IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
+
+  if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
+    configuration.askEveryTimeSwitchLabelText = l10n_util::GetNSString(
+        IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
+  } else {
+    configuration.askEveryTimeSwitchLabelText = l10n_util::GetNSString(
+        IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
+  }
   [self.delegate showAccountPickerWithConfiguration:configuration
                                    selectedIdentity:defaultIdentity];
 }

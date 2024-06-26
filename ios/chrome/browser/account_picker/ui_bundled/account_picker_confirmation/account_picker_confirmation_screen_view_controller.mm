@@ -339,6 +339,9 @@ UILabel* CreateGooglePhotosTitleLabel() {
                             action:@selector(askEveryTimeSwitchAction:)
                   forControlEvents:UIControlEventValueChanged];
     _askEveryTimeSwitch.on = YES;
+    if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
+      _askEveryTimeSwitch.on = NO;
+    }
     [_askEveryTimeSwitch
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
@@ -436,9 +439,11 @@ UILabel* CreateGooglePhotosTitleLabel() {
 }
 
 - (void)askEveryTimeSwitchAction:(id)sender {
+  BOOL shouldAskEveryTime = !(_askEveryTimeSwitch.on ==
+                              IsSaveToPhotosAccountPickerImprovementEnabled());
   [_actionDelegate
       accountPickerConfirmationScreenViewController:self
-                                    setAskEveryTime:_askEveryTimeSwitch.on];
+                                    setAskEveryTime:shouldAskEveryTime];
 }
 
 - (void)primaryButtonAction:
