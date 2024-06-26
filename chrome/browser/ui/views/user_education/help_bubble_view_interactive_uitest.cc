@@ -312,9 +312,15 @@ bool SkipIfLinuxWayland() {
 
 }  // namespace
 
+// TODO(crbug.com/349545780): Re-enable this test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AnnotateMenu DISABLED_AnnotateMenu
+#else
+#define MAYBE_AnnotateMenu AnnotateMenu
+#endif
 // This is a combined test for both help bubbles anchored to menus and menu
 // annotation.
-IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, MAYBE_AnnotateMenu) {
   // See message for why this is necessary.
   if (SkipIfLinuxWayland()) {
     GTEST_SKIP_(kLinuxWaylandErrorMessage);
