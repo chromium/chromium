@@ -239,11 +239,6 @@ class ReadAnythingAppModel {
   void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
 
-  void IncrementMetric(const std::string& metric_name);
-
-  // Log speech count events.
-  void LogSpeechEventCounts();
-
  private:
   void EraseTree(const ui::AXTreeID& tree_id);
 
@@ -351,15 +346,6 @@ class ReadAnythingAppModel {
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
-
-  // Metrics for logging. Any metric that we want to track 0-counts of should
-  // be initialized here.
-  std::map<std::string, int64_t> metric_to_count_map_ = {
-      {"Accessibility.ReadAnything.ReadAloudNextButtonSessionCount", 0},
-      {"Accessibility.ReadAnything.ReadAloudPauseSessionCount", 0},
-      {"Accessibility.ReadAnything.ReadAloudPlaySessionCount", 0},
-      {"Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount", 0},
-  };
 
   // Maps fonts to whether the current base_language_code_ supports that font.
   std::map<std::string_view, bool> supported_fonts_;

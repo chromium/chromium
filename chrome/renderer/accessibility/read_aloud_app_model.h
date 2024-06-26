@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_
 
+#include "base/metrics/single_sample_metrics.h"
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -130,6 +131,10 @@ class ReadAloudAppModel {
   // e.g. "1" will return "2" to "'ve"
   int GetNextWordHighlightLength(int start_index);
 
+  // Updates the session count for the given metric name using
+  // SingleSampleMetric. These are then logged once on destruction.
+  void IncrementMetric(const std::string& metric_name);
+
  private:
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetCurrentText which called
@@ -179,6 +184,20 @@ class ReadAloudAppModel {
   // be valid, but as it is tied to the browser language, it is likely more
   // stable.
   std::string default_language_code_ = "en";
+
+  // Metrics for logging. Any metric that we want to track 0-counts of should
+  // be initialized here.
+  const int min_sample = 0;
+  const int max_sample = 1000;
+  const uint32_t buckets = 50;
+  std::map<std::string, int64_t> metric_to_count_map_ = {
+      {"Accessibility.ReadAnything.ReadAloudNextButtonSessionCount", 0},
+      {"Accessibility.ReadAnything.ReadAloudPauseSessionCount", 0},
+      {"Accessibility.ReadAnything.ReadAloudPlaySessionCount", 0},
+      {"Accessibility.ReadAnything.ReadAloudPreviousButtonSessionCount", 0},
+  };
+  std::map<std::string, std::unique_ptr<base::SingleSampleMetric>>
+      metric_to_single_sample_;
 
   // Traversal state
 

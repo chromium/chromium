@@ -402,7 +402,6 @@ ReadAnythingAppController::ReadAnythingAppController(
 
 ReadAnythingAppController::~ReadAnythingAppController() {
   RecordNumSelections();
-  LogSpeechEventCounts();
   // Stop the timer for base::unretained.
   post_user_entry_draw_timer_.Stop();
 }
@@ -1729,9 +1728,5 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
 
 void ReadAnythingAppController::IncrementMetricCount(
     const std::string& metric) {
-  model_.IncrementMetric(metric);
-}
-
-void ReadAnythingAppController::LogSpeechEventCounts() {
-  model_.LogSpeechEventCounts();
+  read_aloud_model_.IncrementMetric(metric);
 }

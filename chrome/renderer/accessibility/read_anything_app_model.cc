@@ -987,13 +987,3 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() {
   }
   return font_choices_;
 }
-
-void ReadAnythingAppModel::IncrementMetric(const std::string& metric_name) {
-  metric_to_count_map_[metric_name]++;
-}
-
-void ReadAnythingAppModel::LogSpeechEventCounts() {
-  for (const auto& [metric, count] : metric_to_count_map_) {
-    base::UmaHistogramCounts1000(metric, count);
-  }
-}

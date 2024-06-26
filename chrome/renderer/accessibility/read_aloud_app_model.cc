@@ -7,7 +7,16 @@
 #include "base/values.h"
 #include "chrome/renderer/accessibility/read_anything_node_utils.h"
 
-ReadAloudAppModel::ReadAloudAppModel() = default;
+ReadAloudAppModel::ReadAloudAppModel() {
+  for (const auto& [metric, count] : metric_to_count_map_) {
+    metric_to_single_sample_[metric] =
+        base::SingleSampleMetricsFactory::Get()->CreateCustomCountsMetric(
+            metric, min_sample, max_sample, buckets);
+    // We want to know if the counts are never incremented, so set the minimum
+    // sample in case IncrementMetric is never called.
+    metric_to_single_sample_[metric]->SetSample(min_sample);
+  }
+}
 
 ReadAloudAppModel::~ReadAloudAppModel() = default;
 
@@ -510,4 +519,13 @@ int ReadAloudAppModel::GetNextWordHighlightLength(int start_index) {
   // Get the word length of the next word following the index.
   int word_length = GetNextWord(current_text);
   return word_length;
+}
+
+void ReadAloudAppModel::IncrementMetric(const std::string& metric_name) {
+  metric_to_count_map_[metric_name]++;
+  // Update the count that will be logged on destruction.
+  if (metric_to_single_sample_[metric_name]) {
+    metric_to_single_sample_[metric_name]->SetSample(
+        metric_to_count_map_[metric_name]);
+  }
 }
