@@ -45,6 +45,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
@@ -698,6 +699,9 @@ public class NetworkChangeNotifierTest {
     @UiThreadTest
     @MediumTest
     @Feature({"Android-AppBase"})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.Q,
+            message = "https://crbug.com/40173842")
     public void testNetworkChangeNotifierJavaObservers() {
         mReceiver.register();
         // Initialize the NetworkChangeNotifier with a connection.
@@ -1093,6 +1097,9 @@ public class NetworkChangeNotifierTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // android.net.Network available in L+.
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.R,
+            message = "https://crbug.com/40173842")
     public void testVpnAccessibleDoesNotLeak() {
         ConnectivityManagerDelegate connectivityManagerDelegate =
                 new ConnectivityManagerDelegate(

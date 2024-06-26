@@ -1,7 +1,3 @@
-# https://crbug.com/1189746
--org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
--org.chromium.net.NetworkChangeNotifierTest.testVpnAccessibleDoesNotLeak
-
 # https://crbug.com/1233312
 -org.chromium.content.browser.font.AndroidFontLookupImplTest.testFetchAllFontFiles_Available
 -org.chromium.content.browser.font.AndroidFontLookupImplTest.testFetchAllFontFiles_OneNotAvailable

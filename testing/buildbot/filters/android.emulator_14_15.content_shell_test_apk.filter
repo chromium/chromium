@@ -32,6 +32,3 @@
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_copy
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_cut
 -org.chromium.content.browser.accessibility.WebContentsAccessibilityTest.testPerformAction_paste
-
-# crbug.com/1189746
--org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
