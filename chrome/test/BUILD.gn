@@ -1684,20 +1684,6 @@ if (is_android) {
   }
 }
 
-if (is_chromeos_ash) {
-  static_library("ash_crosapi_tests_runner") {
-    testonly = true
-
-    sources = [
-      "../browser/ash/crosapi/test/ash_crosapi_tests_env.cc",
-      "../browser/ash/crosapi/test/ash_crosapi_tests_env.h",
-      "../browser/ash/crosapi/test/ash_crosapi_tests_main.cc",
-    ]
-
-    deps = [ ":test_support" ]
-  }
-}
-
 static_library("browser_tests_runner") {
   testonly = true
   sources = []
@@ -13026,25 +13012,7 @@ if (is_chromeos_ash) {
     use_xvfb = use_xvfb_in_this_config
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [
-      "../browser/ash/crosapi/test/crosapi_test_base.cc",
-      "../browser/ash/crosapi/test/crosapi_test_base.h",
-      "../browser/ash/crosapi/test/file_manager_ash_crosapitest.cc",
-      "../browser/ash/crosapi/test/network_change_ash_crosapitest.cc",
-    ]
-    deps = [
-      ":ash_crosapi_tests_runner",
-      "//ash/constants",
-      "//base",
-      "//base/test:test_support",
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/crosapi/mojom",
-      "//mojo/core/embedder",
-      "//mojo/public/cpp/bindings",
-      "//mojo/public/cpp/platform",
-      "//mojo/public/cpp/system",
-      "//testing/gtest",
-    ]
+    deps = [ "//chrome/browser/ash/crosapi/test" ]
     data_deps = [ ":test_ash_chrome" ]
   }
 }
