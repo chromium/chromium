@@ -176,43 +176,39 @@ struct MEDIA_EXPORT HexRepr
     static ParseStatus::Or<typename repeat_t<reps, Unit>::type> Parse(
         ResolvedSourceString str,
         bool extrapolate_leading_zeros) {
-      Unit chunk = 0;
-      for (size_t i = 0; i < sizeof(Unit) * 2; i++) {
-        if (!extrapolate_leading_zeros && !str.Size()) {
+      if constexpr (reps == 0) {
+        if (str.Size() != 0) {
           return ParseStatusCode::kFailedToParseHexadecimalString;
         }
-        if (str.Size()) {
-          auto bits4 = str.Str()[str.Size() - 1];
-          Unit num4 = 0;
-          if (bits4 >= '0' && bits4 <= '9') {
-            num4 = bits4 - '0';
-          } else if (bits4 >= 'A' && bits4 <= 'F') {
-            num4 = bits4 - 'A' + 10;
-          } else if (bits4 >= 'a' && bits4 <= 'f') {
-            num4 = bits4 - 'a' + 10;
-          } else {
+        return std::make_tuple();
+      } else {
+        Unit chunk = 0;
+        for (size_t i = 0; i < sizeof(Unit) * 2; i++) {
+          if (!extrapolate_leading_zeros && !str.Size()) {
             return ParseStatusCode::kFailedToParseHexadecimalString;
           }
-          chunk += (num4 << (4 * i));
-          str = str.Substr(0, str.Size() - 1);
+          if (str.Size()) {
+            auto bits4 = str.Str()[str.Size() - 1];
+            Unit num4 = 0;
+            if (bits4 >= '0' && bits4 <= '9') {
+              num4 = bits4 - '0';
+            } else if (bits4 >= 'A' && bits4 <= 'F') {
+              num4 = bits4 - 'A' + 10;
+            } else if (bits4 >= 'a' && bits4 <= 'f') {
+              num4 = bits4 - 'a' + 10;
+            } else {
+              return ParseStatusCode::kFailedToParseHexadecimalString;
+            }
+            chunk += (num4 << (4 * i));
+            str = str.Substr(0, str.Size() - 1);
+          }
         }
+        auto rest = ParserImpl<reps - 1>::Parse(str, extrapolate_leading_zeros);
+        if (!rest.has_value()) {
+          return std::move(rest).error();
+        }
+        return std::tuple_cat(std::move(rest).value(), std::make_tuple(chunk));
       }
-      auto rest = ParserImpl<reps - 1>::Parse(str, extrapolate_leading_zeros);
-      if (!rest.has_value()) {
-        return std::move(rest).error();
-      }
-      return std::tuple_cat(std::move(rest).value(), std::make_tuple(chunk));
-    }
-  };
-
-  template <>
-  struct ParserImpl<0> {
-    static ParseStatus::Or<std::tuple<>> Parse(ResolvedSourceString str,
-                                               bool extrapolate_leading_zeros) {
-      if (str.Size() != 0) {
-        return ParseStatusCode::kFailedToParseHexadecimalString;
-      }
-      return std::make_tuple();
     }
   };
 
