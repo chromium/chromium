@@ -6,6 +6,9 @@ package org.chromium.chrome.browser;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+import android.view.HapticFeedbackConstants;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
@@ -144,6 +147,9 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                         mAccessibilityRefreshString = context.getResources().getString(resId);
                     }
                     mSwipeRefreshLayout.announceForAccessibility(mAccessibilityRefreshString);
+                    if (VERSION.SDK_INT >= VERSION_CODES.R) {
+                        mSwipeRefreshLayout.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                    }
                     mTab.reload();
                     RecordUserAction.record("MobilePullGestureReload");
                 });
